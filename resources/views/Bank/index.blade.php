@@ -1,0 +1,70 @@
+@extends('layouts.master-layout')
+
+@section('title','Banks')
+
+@section('breadcrumtitle','Bank')
+
+@section('navbanks','active')
+
+@section('content')
+    <section class="panels-wells">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-header-text">Banks List</h5>
+                <a href="{{ url('create-bank') }}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create New Bank
+                </a>
+
+            </div>
+            <div class="card-block">
+
+                <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
+
+                    <thead>
+                    <tr>
+
+                        <th>Image</th>
+                        <th>Bank</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($banks as $value)
+                        <tr>
+                            <td class="text-center">
+                                <img width="50" height="50" src="{{ asset('public/assets/images/banks/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                            </td>
+                            <td>{{$value->bank_name}}</td>
+                            <td class="action-icon">
+                                <a href="{{url('/edit-bank')}}/{{ Crypt::encrypt($value->bank_id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" ></i> </a>
+                                <a href="#" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Credit/Debit"><i class="icofont icofont-ui-delete text-danger f-10" ></i> </a>
+
+                            </td>
+                        </tr>
+
+                    @endforeach
+
+                    </tbody>
+
+
+                </table>
+            </div>
+        </div>
+    </section>
+@endsection
+@section('scriptcode_three')
+    <script type="text/javascript">
+        $('.table').DataTable({
+            displayLength: 10,
+            info: false,
+            language: {
+                search:'',
+                searchPlaceholder: 'Search Category',
+                lengthMenu: '<span></span> _MENU_'
+
+            },
+
+
+        });
+    </script>
+@endsection
+
