@@ -24,7 +24,7 @@ class Sidebar extends Component
      */
     public function render()
     {
-        $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[session("roleId")]);
+        $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[auth()->user()->role_id]);
         $array = [];
 
         foreach ($pageid as $value)
