@@ -8,17 +8,17 @@
     <title>Sabsoft - Login</title>
     <meta name="description" content="">
     <!-- Favicon icon -->
-    <link rel="shortcut icon" href="{{ asset('public/assets/images/favicon.png') }}" type="image/x-icon">
-    <link rel="icon" href="{{ asset('public/assets/images/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
 
-    <link rel="stylesheet" media="all" href="{{ asset('public/assets/css/merchant-public')}}" />
-    <script src="{{ asset('public/assets/js/shared-31')}}"></script>
-
-
-    <script src="{{ asset('public/assets/js/merchant-public-32')}}"></script>
+    <link rel="stylesheet" media="all" href="{{ asset('assets/css/merchant-public')}}" />
+    <script src="{{ asset('assets/js/shared-31')}}"></script>
 
 
-    <script src="{{ asset('public/assets/js/trekkie.identity.min')}}"></script>
+    <script src="{{ asset('assets/js/merchant-public-32')}}"></script>
+
+
+    <script src="{{ asset('assets/js/trekkie.identity.min')}}"></script>
 
     <style>
         @media (max-height: 600px) {
@@ -42,12 +42,12 @@
         }
         @media (min-width: 1025px) {
             .page-main:not(.split) {
-                background: url("public/assets/images/extra-profile-bg.png");
+                background: url("assets/images/extra-profile-bg.png");
                 background-color: #084c3f;
             }
         }
         .page-main:not(.split) {
-            background: url("public/assets/images/extra-profile-bg.png");
+            background: url("assets/images/extra-profile-bg.png");
             background-color: #084c3f;
         }
     </style>
@@ -68,7 +68,7 @@
                 <header class="login-card__header">
                     <h1 class="login-card__logo">
                         <a href="{{route('home')}}">
-                            <img alt="Log in to Sabsoft" src="{{ asset('public/assets/images/logo-black.png') }}" />
+                            <img alt="Log in to Sabsoft" src="{{ asset('assets/images/logo-black.png') }}" />
                         </a>          </h1>
                 </header>
 
