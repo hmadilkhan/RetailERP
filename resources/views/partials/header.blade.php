@@ -1,5 +1,5 @@
 <header class="main-header-top hidden-print bg-success">
-   <a href="{{ route('home') }}" class="logo"><img class="img-fluid able-logo" src="{{ asset('assets/images/logo.png') }}" alt="Theme-logo"></a>
+   <a href="{{ route('home') }}" class="logo"><img class="img-fluid able-logo" src="{{ asset('storage/images/logo.png') }}" alt="Theme-logo"></a>
    <nav class="navbar navbar-static-top bg-success">
       <!-- Sidebar toggle button-->
       <a href="#!" data-toggle="offcanvas" class="sidebar-toggle"></a>
@@ -10,7 +10,7 @@
           <ul class="top-nav">
             <li class="dropdown">
                <a href="#!" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" class="dropdown-toggle drop icon-circle drop-image">
-                  <span><img class="img-circle " src="{{ asset('assets/images/users/'.session('image')) }}" style="width:40px;" alt="User Image"></span>
+                  <span><img class="img-circle " src="{{ asset('storage/images/users/'.session('image')) }}" style="width:40px;" alt="User Image"></span>
                   <span>{{ (Auth::check() ? ucfirst(Auth::user()->username) : '')  }}<i class=" icofont icofont-simple-down"></i></span>
 
                </a>
