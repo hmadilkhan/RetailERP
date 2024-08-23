@@ -58,6 +58,11 @@ use Illuminate\Support\Facades\DB;
 |
 */
 
+Route::get('/storage-link', function () {
+    $targetFolder = storage_path("app/public");
+    $linkFolder = $_SERVER['DOCUMENT_ROOT'] . "/storage";
+    symlink($targetFolder, $linkFolder);
+});
 
 Auth::routes();
 Route::get('/horizontal', function () {
