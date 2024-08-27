@@ -181,6 +181,7 @@ return [
         Maatwebsite\Excel\ExcelServiceProvider::class,
         // Elibyy\TCPDF\ServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
+        CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider::class,
 
     ],
 
@@ -238,7 +239,8 @@ return [
         'Custom_Helper' => App\Helpers\custom_helper::class,
         // 'PDF' => Elibyy\TCPDF\Facades\TCPDF::class,
         // 'dPDF' => Barryvdh\DomPDF\Facade::class,
-		'domPDF' =>\Barryvdh\DomPDF\ServiceProvider::class
+		'domPDF' =>\Barryvdh\DomPDF\ServiceProvider::class,
+        'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class,
     ],
 
 ];

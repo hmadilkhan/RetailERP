@@ -12,6 +12,7 @@
         "barryvdh/laravel-dompdf": "^2.0",
         "bsecure/bsecure-laravel": "^1.0",
         "charlieuki/receiptprinter": "^1.1",
+        "cloudinary-labs/cloudinary-laravel": "^2.2",
         "crabbly/fpdf-laravel": "^1.0",
         "guzzlehttp/guzzle": "^7.0.1",
         "inertiajs/inertia-laravel": "^1.0",
