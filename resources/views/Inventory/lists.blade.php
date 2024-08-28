@@ -11,10 +11,11 @@
 
         <div class="card">
             <div class="card-header">
+          
                 <h5 class="card-header-text">Upload Inventory</h5>
                 <a href="{{ route('create-invent') }}" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Create Inventory" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus m-r-5" ></i> CREATE INVENTORY</a>
 
-                <button id="downloadsample" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Download Sample" class="btn btn-success waves-effect waves-light f-right d-inline-block m-r-10"> <i class="icofont icofont-plus m-r-5" ></i> Download Sample</button>
+                <a href="{{ url('get-sample-csv') }}" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Download Sample" class="btn btn-success waves-effect waves-light f-right d-inline-block m-r-10"> <i class="icofont icofont-plus m-r-5" ></i> Download Sample</a>
             </div>
             <div class="card-block">
                 <form method='post' action='{{url('uploadInventory')}}' enctype='multipart/form-data'>
@@ -83,6 +84,12 @@
                         <div id="ddselect" class="dropdown-secondary dropdown  f-right" style="display: none;">
                             <button class="btn btn-default btn-md dropdown-toggle waves-light bg-white b-none txt-muted" type="button" id="dropdown6" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="icofont icofont-navigation-menu"></i> Change Settings</button>
                             <div class="dropdown-menu" aria-labelledby="dropdown6" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
+                                <a class="dropdown-item waves-light waves-effect" id="btn_change_website" data-toggle="modal" data-target="#website-detail-modal"><i class="icofont icofont-company"></i>&nbsp;Link Website</a>
+                                <div class="dropdown-divider"></div> 
+                                <a class="dropdown-item waves-light waves-effect" id="btn_change_brand" data-toggle="modal" data-target="#brand-detail-modal"><i class="icofont icofont-company"></i>&nbsp;Link Brand</a> 
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item waves-light waves-effect" id="btn_change_tags" data-toggle="modal" data-target="#tags-detail-modal"><i class="icofont icofont-company"></i>&nbsp;Link Tags</a> 
+                                <div class="dropdown-divider"></div>                                
                                 <a class="dropdown-item waves-light waves-effect" id="btn_change_department"><i class="icofont icofont-company"></i>&nbsp;Change Department</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item waves-light waves-effect" id="change_subdept"><i class="icofont icofont-chart-flow-alt-2"></i>&nbsp;Change Sub Department</a>
@@ -196,7 +203,7 @@
                                 </div>
                             </th>
                             <th>Preview</th>
-                            <th>Product Code</th>
+                            <th>Code</th>
                             <th>Name</th>
 							<th>Depart</th>
                             <th>Sub-Depart</th>
@@ -224,7 +231,93 @@
                 </div>
             </div>
         </div>
+        
+            <div class="modal fade modal-flex" id="website-detail-modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">Website Change</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                               <select id="website_md" class="form-control select2">
+                                   <option>Select</option>
+                                   @foreach($websites as $val)
+                                     <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                   @endforeach
+                               </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btnwebsiteSave" class="btn btn-success waves-effect waves-light f-right">
+                                Save
+                            </button>
+                        </div>
 
+                    </div>
+                </div>
+            </div>   
+            
+            <div class="modal fade modal-flex" id="brand-detail-modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">Brand Change</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                               <select id="brand_md" name="brand" class="form-control select2">
+                                   <option>Select</option>
+                                   @foreach($brandList as $val)
+                                     <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                   @endforeach
+                               </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btnbrandSave" class="btn btn-success waves-effect waves-light f-right">
+                                Save
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>             
+            
+            <div class="modal fade modal-flex" id="tags-detail-modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">Tags Change</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                               <select id="tags_md" name="tags" class="form-control select2" multiple>
+                                   <option>Select</option>
+                                   @foreach($tagsList as $val)
+                                     <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                   @endforeach
+                               </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btntagSave" class="btn btn-success waves-effect waves-light f-right">
+                                Save
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div> 
             <div class="modal fade modal-flex" id="details-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-md" role="document">
                     <div class="modal-content">
@@ -611,13 +704,163 @@
 			</div>
 
 
+			<div class="modal fade modal-flex" id="createDeal-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+							<h4 id="mod-title" class="modal-title">Create Deal</h4>
+						</div>
+						<div class="modal-body">
+						    <form id="createDealForm" method="post">
+						        @csrf
+						        <input type="hidden" name="inventory_id" id="inventory_id"> 
+						        <input type="hidden" name="inventory_name" id="inventory_name">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Group Name</label>
+                                        <input type="text" class="form-control" placeholder="Group Name" name="group_name" id="group_name">
+                                        <span id="group_name_alert" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                       <label>Group Type</label>
+                                       <select class="select2" data-placeholder="Select Type" name="group_type" id="group_type">
+                                           <option value="">Select</option>
+                                           <option value="single">Single</option>
+                                           <option value="multiple">Multiple</option>
+                                       </select>
+                                    </div>
+                                    <span id="group_type_alert" class="text-danger"></span>
+                                </div>                                
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                       <label>Selection Limited</label>
+                                       <input type="number" min="0" value="0" class="form-control" placeholder="Selection Limited" name="selection_limited" id="selection_limited" disabled>
+                                    </div>
+                                </div>   
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                       <label>Department</label>
+                                       <select class="select2" id="department_md" data-placeholder="Select Depatrment" name="department" id="department">
+                                           <option value="">Select</option>
+                                           @foreach($department as $val)
+                                              <option value="{{ $val->department_id }}">{{ $val->department_name }}</option>
+                                           @endforeach
+                                       </select>
+                                    </div>
+                                </div> 
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                       <label>Products</label>
+                                       <select class="select2" data-placeholder="Select Products" name="products[]" id="products_md" multiple disabled>
+                                           <option value="">Select</option>
+                                       </select>
+                                    </div>
+                                </div>                                 
+                            </div>
+                          </form>    
+						</div>
+						<div class="modal-footer">
+							<button type="button" id="btn_addDeal" class="btn btn-success waves-effect waves-light">Submit</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			
+			<div class="modal fade modal-flex" id="editDeal-modal" tabindex="-1" role="dialog">
+				<div class="modal-dialog modal-lg" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+							<h4 id="mod-title" class="modal-title">Edit Deal</h4>
+						</div>
+						<div class="modal-body">
+						    <form id="editDealForm" method="post">
+						        @csrf
+						        <input type="hidden" name="inventory_id" id="inventory_id_edit"> 
+						        <input type="hidden" name="group_id" id="group_id">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label>Group Name</label>
+                                        <input type="text" class="form-control" placeholder="Group Name" name="group_name_edit" id="group_name_edit">
+                                        <span id="group_name_alert" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                       <label>Group Type</label>
+                                       <select class="select2" data-placeholder="Select Type" name="group_type_edit" id="group_type_edit">
+                                           <option value="">Select</option>
+                                           <option value="single">Single</option>
+                                           <option value="multiple">Multiple</option>
+                                       </select>
+                                    </div>
+                                    <span id="group_type_alert" class="text-danger"></span>
+                                </div>                                
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                       <label>Selection Limited</label>
+                                       <input type="number" min="0" value="0" class="form-control" placeholder="Selection Limited" name="selection_limited_edit" id="selection_limited_edit" disabled>
+                                    </div>
+                                </div>   
+                                
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                       <label>Department</label>
+                                       <select class="select2" data-placeholder="Select Depatrment" name="department_md_edit" id="department_md_edit">
+                                           <option value="">Select</option>
+                                           @foreach($department as $val)
+                                              <option value="{{ $val->department_id }}">{{ $val->department_name }}</option>
+                                           @endforeach
+                                       </select>
+                                    </div>
+                                </div> 
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                       <label>Products</label>
+                                       <select class="select2" data-placeholder="Select Products" name="products_md_edit[]" id="products_md_edit" multiple disabled>
+                                           <option value="">Select</option>
+                                       </select>
+                                    </div>
+                                </div>                                 
+                            </div>
+                          </form>    
+						</div>
+						<div class="modal-footer">
+						    <button type="button" id="btn_removeDeal" class="btn btn-danger waves-effect waves-light m-r-2">Remove</button>
+						    
+							<button type="button" id="btn_updateDeal" class="btn btn-success waves-effect waves-light">Save Changes</button>
+						</div>
+					</div>
+				</div>
+			</div>			
+			
         </div>
     </section>
 
 
 @endsection
 
+@section('scriptcode_one')
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+@endsection
+
 @section('scriptcode_three')
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
 	<script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
         // $('#loader-modal').modal("show");
@@ -692,7 +935,7 @@
                     }
                     // $('#loader-modal').modal("hide");
                     tableData(resp)
-
+                    // dealSetToInventory();
 
                 }
 
@@ -705,6 +948,15 @@
 				$.each(resp.data, function( index, value ) {
 				var stock = parseFloat(value.stock).toFixed(2);
 				stock = (stock == "NaN" ? 0.00 : stock);
+				
+				var columnDeal_btn = "";
+		
+				if(value.is_deal == 1){
+				   columnDeal_btn = "<a href='/inventory/"+value.id+"/deal-products' class='m-r-1' title='Create Deal Product'><i class='icofont icofont-plus text-success'></i></a>";
+				}else{
+				   columnDeal_btn = "<a href='/inventory/"+value.id+"/variable-products' class='m-r-1' title='Create Variable & Addon Product'><i class='icofont icofont-plus text-success'></i></a>"; 
+				}
+				
 				$("#inventtbl tbody").append(
 					"<tr>"+
 					"<td>" +
@@ -716,8 +968,8 @@
 					"<div class='captions'></div>"+
 					"</td>"+
 					"<td>" +
-					"<a href='{{ asset('public/assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' data-toggle='lightbox'  data-footer=''>"+
-					"<img width='12' height='12' data-modal='modal-12' src='{{ asset('public/assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' class='d-inline-block img-circle ' alt=''>"+
+					"<a href='{{ asset('assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' data-toggle='lightbox'  data-footer=''>"+
+					"<img width='12' height='12' data-modal='modal-12' src='{{ asset('assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' class='d-inline-block img-circle ' alt=''>"+
 					"</a>"+
 					"</td>"+
 					"<td>"+value.item_code  +"</td>"+
@@ -732,6 +984,7 @@
 					"<td>"+stock+"</td>"+
 					"<td>"+value.name+"</td>"+
 					"<td>" +
+					columnDeal_btn+
 					"<a onclick='show_barcode(\""+value.item_code+"\",\""+value.product_name+"\","+value.retail_price+")' class='p-r-10 f-18 text-success' data-toggle='tooltip' data-placement='top' title='Print Barcode' data-original-title='Barcode'><i class='icofont icofont-barcode'></i></a>"+
 						 "<a onclick='edit_route(\""+value.slug+"\")' class='p-r-10 f-18 text-warning' data-toggle='tooltip' data-placement='top' title='' data-original-title='Edit'><i class='icofont icofont-ui-edit'></i></a>"+
 						"<i class='icofont icofont-ui-delete text-danger f-18 ' onclick='deleteCall("+value.id+")' data-id='"+value.id+"' data-toggle='tooltip' data-placement='top' title='' data-original-title='Delete'></i>"+
@@ -740,12 +993,32 @@
 					"</tr>"
 				);
 			});
+			// dealSetToInventory();
 			}
 			else{
 				$("#tableend").empty();
 				$("#tableend").append("")
 			}
 		}
+		
+// 		function dealSetToInventory(){
+// <br/><span id='cell-4-"+value.id+"'></span>
+//             $.ajax({
+//                 url: "{{-- route('getDeal_up') --}}",
+//                 type: 'GET',
+//                 dataType:"json",
+//                 async : 'false',
+//                 success:function(resp){
+//                     // console.log(resp);
+//                     $.each(resp,function(i,v){
+//                         $("#cell-4-"+v.inventory_deal_id).append("<label class='badge badge-primary pointer m-r-1 p-3' id='groupDeal-"+v.group_id+"' onclick='editDeal("+v.inventory_deal_id+","+v.group_id+",\""+ v.name+"\",\""+ v.group_type+"\")'>"+v.name+"</label>");
+                        
+//                     })
+//                 }
+
+//             });		    
+		    
+// 		}
 
         function edit_route(id)
         {
@@ -826,6 +1099,7 @@
                 },
                 success:function(resp){
                     // $('#loader-modal').modal("hide");
+					console.log(resp)
                     if(page == 1){
                         $("#inventtbl tbody").empty();
                     }
@@ -856,6 +1130,14 @@
                         $.each(resp, function( index, value ) {
 						var stock = parseFloat(value.stock).toFixed(2);
 						stock = (stock == "NaN" ? 0.00 : stock);
+						var columnDeal_btn = "";
+		
+						if(value.is_deal == 1){
+						   columnDeal_btn = "<a href='/inventory/"+value.id+"/deal-products' class='m-r-1' title='Create Deal Product'><i class='icofont icofont-plus text-success'></i></a>";
+						}else{
+						   columnDeal_btn = "<a href='/inventory/"+value.id+"/variable-products' class='m-r-1' title='Create Variable & Addon Product'><i class='icofont icofont-plus text-success'></i></a>"; 
+						}
+						
                             $("#inventtbl tbody").append(
                                 "<tr>"+
                                 "<td>" +
@@ -867,8 +1149,8 @@
                                 "<div class='captions'></div>"+
                                 "</td>"+
                                 "<td>" +
-                                "<a href='{{ asset('public/assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : +"/"+value.product_image)+"' data-toggle='lightbox'  data-footer=''>"+
-                                "<img width='12' height='12' data-modal='modal-12' src='{{ asset('public/assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' class='d-inline-block img-circle ' alt=''>"+
+                                "<a href='{{ asset('assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : +"/"+value.product_image)+"' data-toggle='lightbox'  data-footer=''>"+
+                                "<img width='12' height='12' data-modal='modal-12' src='{{ asset('assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' class='d-inline-block img-circle ' alt=''>"+
                                 "</a>"+
                                 "</td>"+
                                 "<td>"+value.item_code+"</td>"+
@@ -883,6 +1165,7 @@
 								"<td>"+stock+"</td>"+
                                 "<td>"+value.name+"</td>"+
                                 "<td>" +
+								columnDeal_btn+
 								"<a onclick='edit_route(\""+value.slug+"\")' class='p-r-10 f-18 text-warning' data-toggle='tooltip' data-placement='top' title='' data-original-title='Edit'><i class='icofont icofont-ui-edit'></i></a>"+
                                 "</td>"+
                                 "</tr>"
@@ -1031,6 +1314,98 @@
             });
         }
 
+     $('#btnwebsiteSave').click(function(){
+
+            if ($('#website_md').val() == "")
+            {
+                swal("Cancelled", "Please select website :)", "error");
+            }
+            else
+            {
+
+                $(".chkbx").each(function( index ) {
+                    if($(this).is(":checked")){
+                        if(jQuery.inArray($(this).data('id'), rem_id) == -1){
+                            rem_id.push($(this).data('id'));
+                        }
+                    }
+                });
+
+                $.ajax({
+                    url: "{{ route('setProductAttribute_update')}}",
+                    type: 'POST',
+                    data:{_token:"{{ csrf_token() }}",inventid:rem_id,website:$('#website_md').val()},
+                    success:function(resp){
+                        if (resp == 'success')
+                        {
+                            window.location = "{{url('inventory-list')}}"
+                        }
+                        else
+                        {
+                            swal("Cancelled", "Cannot change website. An error occured :)", "error");
+                        }
+                    }
+
+                });//ajax end
+            }//else end
+        });
+        
+     $('#btnbrandSave').click(function(){
+
+            if ($('#brand_md').val() == ""){
+                swal("Cancelled", "Please select brand :)", "error");
+            }else{
+                    $(".chkbx").each(function( index ) {
+                        if($(this).is(":checked")){
+                            if(jQuery.inArray($(this).data('id'), rem_id) == -1){
+                                rem_id.push($(this).data('id'));
+                            }
+                        }
+                    });
+                $.ajax({
+                    url: "{{ route('setProductAttribute_update') }}",
+                    type: 'POST',
+                    data:{_token:"{{ csrf_token() }}",inventid:rem_id,brand:$('#brand_md').val()},
+                    success:function(resp, textStatus, jqXHR){
+                        // console.log(jqXHR);
+                        if (jqXHR.status == 200){
+                            window.location = "{{ url('inventory-list') }}"
+                        }else{
+                            swal("Cancelled", "Cannot change brand. An error occured :)", "error");
+                        }
+                    }
+                });//ajax end
+            }//else end
+        });  
+        
+     $('#btntagSave').click(function(){
+
+            if ($('#tags_md').val() == ""){
+                swal("Cancelled", "Please select brand :)", "error");
+            }else{
+                    $(".chkbx").each(function( index ) {
+                        if($(this).is(":checked")){
+                            if(jQuery.inArray($(this).data('id'), rem_id) == -1){
+                                rem_id.push($(this).data('id'));
+                            }
+                        }
+                    });
+                $.ajax({
+                    url: "{{ route('setProductAttribute_update') }}",
+                    type: 'POST',
+                    data:{_token:"{{ csrf_token() }}",inventid:rem_id,tags:$('#tags_md').val()},
+                    success:function(resp, textStatus, jqXHR){
+                        // console.log(jqXHR);
+                        if (jqXHR.status == 200){
+                            window.location = "{{ url('inventory-list') }}"
+                        }else{
+                            swal("Cancelled", "Cannot change brand. An error occured :)", "error");
+                        }
+                    }
+                });//ajax end
+            }//else end
+        });         
+        
 
         $('#btnDptSave').click(function(){
 
@@ -1761,9 +2136,9 @@
 
 //'https://sabsoft.com.pk//Retail/public/assets/samples/sample_inventory.csv',
         $('#downloadsample').click(function(){
-						window.open("https://sabsoft.com.pk//Retail/public/assets/samples/sample_inventory.csv");
+						window.open(location.origin+"/assets/samples/sample_inventory.csv");
                         // $.ajax({
-                            // url: '{{ asset('public/assets/samples/sample_inventory.csv')}}',
+                            // url: '{{-- asset('public/assets/samples/sample_inventory.csv') --}}',
                             // method: 'GET',
                             // xhrFields: {
                                 // responseType: 'blob'
@@ -2011,6 +2386,261 @@
 			  }
 			});
 		}
+		
+		
+		function createDeal(id,name){
+		    
+		    $('#department_md,#products,#group_type').val('').trigger('change');
+		    
+		    if(!$('#products').attr('disabled')){
+		        $('#products').attr('disabled',true);
+		    }
+		    
+		    $('#group_name,#selection_limited').val('');
+		    
+		    $("#group_name_alert,#group_type_alert").text('');
+		    
+		    $("#inventory_id").val(id);
+		    $("#inventory_name").val(name)
+		    $("#createDeal-modal").modal('show');
+		}
+		
+		function editDeal(itemId,groupId,groupName,groupType,groupLimit){
+		    
+		    $("#inventory_id_edit").val(itemId);
+		    $("#group_id").val(groupId)
+		    $("#editDeal-modal").modal('show');	
+		    
+		    $("#group_name_edit").val(groupName);
+		    
+		    $("#group_type_edit").val(groupType).trigger('change');
+		    $('#selection_limited_edit').val(groupLimit);
+		    
+    			$.ajax({
+    			  url: "{{ route('getDeal_prod_values') }}",
+    			  method : "POST",
+    			  data:{_token:'{{ csrf_token() }}',prod_id:itemId,group_id:groupId},
+    			  dataType:'json',
+    			  async: false,
+    			  success: function(resp){
+                      if(resp.departmentId != null){
+                          $("#department_md_edit").val(resp.departmentId).trigger('change');
+                           setTimeout(function() { 
+                                selectedProduct(resp.productId);
+                            },300);
+					       
+					
+                      }
+    			  }
+    			});	
+		    
+		}
+		
+		function selectedProduct(values){
+		   $("#products_md_edit").select2('val',[values]); 
+		}
+		
+		$("#group_type").on('change',function(){
+		    if($(this).val() == 'multiple'){
+		        if($('#selection_limited').attr('disabled')){
+		            $('#selection_limited').attr('disabled',false);
+		        }
+		    }else{
+		        if(!$('#selection_limited').attr('disabled')){
+		            $('#selection_limited').attr('disabled',true);
+		        }		        
+		    }
+		});
+		
+		$("#group_type_edit").on('change',function(){
+		    if($(this).val() == 'multiple'){
+		        if($('#selection_limited_edit').attr('disabled')){
+		            $('#selection_limited_edit').attr('disabled',false);
+		        }
+		    }else{
+		        if(!$('#selection_limited_edit').attr('disabled')){
+		            $('#selection_limited_edit').attr('disabled',true);
+		        }		        
+		    }
+		});		
+		
+		
+		$("#department_md").on('change',function(){
+		    productload_department_wise($(this).val(),'products_md');
+// 			$.ajax({
+// 			  url: "{{ route('invent-list-department') }}",
+// 			  method : "POST",
+// 			  data:{_token:'{{ csrf_token() }}',id:$(this).val()},
+// 			  cache: false,
+// 			  success: function(resp){
+// 			    if(resp != null){     
+// 				 $("#products_md").empty();
+				 
+// 				 if($("#products_md").attr('disabled')){
+// 				     $("#products_md").attr('disabled',false);
+// 				 }
+			 
+//     			   $.each(resp,function(i,v){
+//     			       $("#products_md").append('<option value="'+v.id+'">'+v.product_name+'</option>');
+//     			   })	 
+// 			    }
+				 
+// 			  }
+// 			});		    
+		    
+		});
+		
+		
+		$("#department_md_edit").on('change',function(){
+		    productload_department_wise($(this).val(),'products_md_edit');
+		});
+		
+		function productload_department_wise(departId,elementId){
+			$.ajax({
+			  url: "{{ route('invent-list-department') }}",
+			  method : "POST",
+			  data:{_token:'{{ csrf_token() }}',id:departId},
+			  cache: false,
+			  success: function(resp){
+			    if(resp != null){     
+				 $("#"+elementId).empty();
+				 
+				 if($("#"+elementId).attr('disabled')){
+				     $("#"+elementId).attr('disabled',false);
+				 }
+			 
+    			   $.each(resp,function(i,v){
+    			       $("#"+elementId).append('<option value="'+v.id+'">'+v.product_name+'</option>');
+    			   })	 
+			    }
+				 
+			  }
+			});			    
+		}
+		
+		
+		$("#btn_addDeal").on('click',function(){
+		    
+		    if($("#group_name").val() == ''){
+		        $("#group_name_alert").text('Field is required.');
+		    }else if($("#group_type").val() == ''){
+		        $("#group_type_alert").text('Field is required.');
+		    }else{
+    			$.ajax({
+    			  url: "{{ route('storeDeal_up') }}",
+    			  method : "POST",
+    			  data:$("#createDealForm").serialize(),
+    			  async: false,
+    			  success: function(resp){
+                     if(resp.status == 200){
+                         $("#deal_msg_md").text('Success!').addClass('alert alert-success');
+                         $("#cell-4-"+$("#inventory_id").val()).empty();
+                         // dealSetToInventory();
+                         $("#createDeal-modal").modal('hide');
+                     }else{
+                         if(resp.status == 409){
+                           $("#group_name_alert").text(resp.msg);
+                         }
+                         
+                         if(resp.status == 500){
+                           $("#deal_msg_md").text(resp.msg).addClass('alert alert-danger');
+                         }                         
+                     }
+    			  }
+    			});			        
+		    }
+		});
+		
+		$("#btn_updateDeal").on('click',function(){
+		    
+		    if($("#group_name_edit").val() == ''){
+		        $("#group_name_edit_alert").text('Field is required.');
+		    }else if($("#group_type_edit").val() == ''){
+		        $("#group_type_edit_alert").text('Field is required.');
+		    }else{
+    			$.ajax({
+    			  url: "{{ route('updateDeal_up') }}",
+    			  method : "POST",
+    			  data:$("#editDealForm").serialize(),
+    			  async: false,
+    			  success: function(resp){
+    			     console.log(resp)
+                     if(resp.status == 200){
+                         $("#deal_msg_md_edit").text('Success!').addClass('alert alert-success');
+                         $("#cell-4-"+$("#inventory_id_edit").val()).empty();
+                         // dealSetToInventory();
+                         $("#editDeal-modal").modal('hide');
+                     }else{
+                         if(resp.status == 409){
+                           $("#group_name_edit_alert").text(resp.msg);
+                         }
+                         
+                         if(resp.status == 500){
+                           $("#deal_msg_md_edit").text(resp.msg).addClass('alert alert-danger');
+                         }                         
+                     }
+    			  }
+    			});			        
+		    }
+		});
+		
+		$("#btn_removeDeal").on('click',function(){
+		    
+            swal({
+                title: "DELETE DEAL",
+                text: "Do you want to delete deal "+$("#group_name_edit").val()+"?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },function(isConfirm){
+                if(isConfirm){
+                        $.ajax({
+                            url: "{{route('removeDeal_up')}}",
+                            type: "POST",
+                            data: {_token:"{{csrf_token()}}",inventid:$("#inventory_id").val(),group_id:$("#group_id").val()},
+                            success:function(resp){
+
+                                if (resp.status == 200) {
+                                    
+                                    $("#groupDeal-"+$("#group_id").val()).remove();
+                                    
+                                    swal("Success!", "Deal is Deleted:)", "success");
+                                    $("#editDeal-modal").modal('hide');
+                                    // swal({
+                                    //     title: "Success!",
+                                    //     text: "All Products deleted Successfully :)",
+                                    //     type: "success"
+                                    // },function(isConfirm){
+                                    //     if(isConfirm){
+                                    //         window.location="{{url('/inventory-list')}}";
+                                    //     }
+                                    // });
+                                }else{
+                                    swal("Alert!", "Deal not Deleted:)", "error");
+                                }
+                            }
+
+                        });
+                }else{
+                    swal.close();
+                    // swal({
+                    //     title: "Cancel!",
+                    //     text: "All products are still inactive :)",
+                    //     type: "error"
+                    // },function(isConfirm){
+                    //     if(isConfirm){
+                    //         window.location="{{url('/inventory-list')}}";
+
+                    //     }
+                    // });
+                }
+            });		    
+		    
+		})
     </script>
 
 @endsection

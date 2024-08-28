@@ -16,7 +16,7 @@
 				@foreach($drivers as $driver)
 					<tr>
 						<td class="text-center">
-							<img src="{{ asset('public/assets/images/drivers/'.(!empty($driver->image) ? $driver->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->driver) ? $value->driver : 'placeholder.jpg' }}">
+							<img src="{{ asset('assets/images/drivers/'.(!empty($driver->image) ? $driver->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->driver) ? $value->driver : 'placeholder.jpg' }}">
 						</td>
 						<td>{{$driver->name}}</td>
 						<td>{{$driver->mobile}}</td>

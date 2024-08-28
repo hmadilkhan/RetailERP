@@ -26,8 +26,8 @@
                         </div>
                     </div>
                     <div id="dvshowreport" class="col-lg-4" style="cursor: pointer;">
-                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top" title="Inventory Valuation">
-                            <h4 class="text-sm-center">Inventory Valuation</h4>
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top" title="Stock Report">
+                            <h4 class="text-sm-center">Stock Report</h4>
                         </div>
                     </div>
 
@@ -110,6 +110,21 @@
                         </div>
                     </div>
 				</div>
+				<br>
+				<div class="row">
+					<div id="dvinventorygeneral" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top" title="Inventory General Details">
+                            <h4 class="text-sm-center">Inventory General Details</h4>
+                        </div>
+                    </div>
+					
+					<div id="dvbookingorderreport" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top" title="Booking Order Report">
+                            <h4 class="text-sm-center">Booking Order Report</h4>
+                        </div>
+                    </div>
+				</div>
+				
 
             </div>
         </div>
@@ -158,7 +173,7 @@
         <div class="modal-dialog modal-md" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myLargeModalLabel">Filter Box
+                    <h4 class="modal-title" id="filterbox"> Filter Box
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
                     </h4>
 
@@ -179,11 +194,14 @@
                     <input type="hidden" value="0" id="txtfbrreport" />
                     <input type="hidden" value="0" id="txtinvoicereport" />
                     <input type="hidden" value="0" id="txtsalesinvoicesreport" />
+                    <input type="hidden" value="0" id="txtstockreport" />
+                    <input type="hidden" value="0" id="txtinventorygeneralreport" />
+                    <input type="hidden" value="0" id="txtbookingorderreport" />
 
 
 
 
-                    <div class="row">
+                    <div class="row" id="dateFilter">
                         <div class="col-lg-6 col-md-6">
                             <div class="form-group">
                                 <label class="form-control-label">From Date</label>
@@ -197,6 +215,17 @@
                                 <label class="form-control-label">To Date</label>
                                 <input class="form-control" type="text"
                                        name="dateto" id="dateto" placeholder="DD-MM-YYYY"/>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+					
+					<div class="row" id="dvitemcode" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Item Code</label>
+                                <input class="form-control" type="text"
+                                       name="itemcode" id="itemcode" placeholder="Enter Item Code"/>
                                 <div class="form-control-feedback"></div>
                             </div>
                         </div>
@@ -220,12 +249,58 @@
                             <div class="form-group">
                                 <label class="form-control-label">Select Branch</label>
                                 <select name="branch" id="branch" data-placeholder="Select Branch" class="form-control select2"  >
-                                    <option value="">Select Branch</option>
+                                    <option value="all">All Branches</option>
                                     @if($branches)
                                         @foreach($branches as $branch)
                                             <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
                                         @endforeach
                                     @endif
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+					
+					<div class="row" id="dvdepartments" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Department</label>
+                                <select name="department" id="department" data-placeholder="Select Department" class="form-control select2"  >
+                                    <option value="">Select Department</option>
+                                    @if($departments)
+                                        @foreach($departments as $department)
+                                            <option value="{{ $department->department_id }}">{{ $department->department_name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+					
+					<div class="row" id="dvpaymentmodes" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Payment Method</label>
+                                <select name="paymentmethod" id="paymentmethod" data-placeholder="Select Payment Method" class="form-control select2"  >
+                                    <option value="">Select Payment Method</option>
+                                    @if($paymentModes)
+                                        @foreach($paymentModes as $payment)
+                                            <option value="{{ $payment->payment_id }}">{{ $payment->payment_mode }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+					
+					<div class="row" id="dvsubdepartments" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Sub Department</label>
+                                <select name="subdepartment" id="subdepartment" data-placeholder="Select Sub Department" class="form-control select2"  >
+                                    <option value="">Select Sub Department</option>
                                 </select>
                                 <div class="form-control-feedback"></div>
                             </div>
@@ -281,210 +356,468 @@
 	});
 	
 	
-        $('#dvprofitstandard').on('click', function (){
-            $('#txtprofitstandard').val(1);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(0);
-			$('#txttype').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-			$('#ExcelButton').css('display','none');
-            $('#filter-modal').modal('show');
-            showbranch();
-            showterminal();
-        });
-        $('#dvprofitdetails').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtinventory').val(0);
-            $('#txtprofitdetails').val(1);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(0);
-			$('#txttype').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-			$('#ExcelButton').css('display','none');
-            $('#filter-modal').modal('show');
-			showbranch();
-            showterminal();
-        });
-        $('#dvinventory').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(1);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(0);
-			$('#txttype').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-			$('#ExcelButton').css('display','none');
-            $('#filter-modal').modal('show');
-            showterminal();
-        });
-        $('#dvexpensesheet').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(1);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(0);
-			$('#txttype').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-			$('#ExcelButton').css('display','none');
-            $('#filter-modal').modal('show');
-            showterminal();
-        });
-        $('#dvexpensecat').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(1);
-            $('#txtsaledec').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-			$('#ExcelButton').css('display','none');
-            $('#filter-modal').modal('show');
-            showterminal();
-        });
-        $('#dvsaledecleration').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(1);
-			$('#txttype').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-            $('#filter-modal').modal('show');
-			$('#ExcelButton').css('display','none');
-            showterminal();
-        });
-        $('#dvitemsale').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(0);
-            $('#txtsaledec').val(0);
-			$('#txttype').val(1);
-            $('#txtitemsale').val(1);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-			$('#ExcelButton').css('display','block');
-			
-            $('#filter-modal').modal('show');
-            showterminal();
-            showType();
-        });
-        $('#dvsalereturn').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(0);
-			$('#txttype').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtsalereturn').val(1);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-			$('#ExcelButton').css('display','none');
-            $('#filter-modal').modal('show');
-            showterminal();
-        });
-        $('#dvstockadjustment').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(0);
-			$('#txttype').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(1);
-            $('#txtphysical').val(0);
-			$('#ExcelButton').css('display','none');
-            $('#filter-modal').modal('show');
-            showterminal();
-        });
+        // $('#dvprofitstandard').on('click', function (){
+            // $('#txtprofitstandard').val(1);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','none');
+            // $('#filter-modal').modal('show');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Profit & Loss');
+            // showbranch();
+            // showterminal();
+			// showdepartments();
+        // });
+        // $('#dvprofitdetails').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtprofitdetails').val(1);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','none');
+            // $('#filter-modal').modal('show');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Profit Details');
+			// showbranch();
+            // showterminal();
+			// showdepartments();
+        // });
+        // $('#dvinventory').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(1);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','none');
+            // $('#filter-modal').modal('show');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Inventory Details');
+			// showbranch();
+            // showdepartments();
+        // }); 
+		// $('#dvshowreport').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+            // $('#txtstockreport').val(1);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','none');
+            // $('#filter-modal').modal('show');
+			// $('#dateFilter').css('display','none');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Stock Report');
+            // showbranch();
+			// showdepartments();
+        // });
+        // $('#dvexpensesheet').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(1);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','none');
+            // $('#filter-modal').modal('show');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Expense Sheet');
+            // showterminal();
+			// showdepartments();
+        // });
+        // $('#dvexpensecat').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(1);
+            // $('#txtsaledec').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','none');
+            // $('#filter-modal').modal('show');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Expense Category');
+            // showterminal();
+			// showdepartments();
+        // });
+        // $('#dvsaledecleration').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(1);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+            // $('#filter-modal').modal('show');
+			// $('#ExcelButton').css('display','none');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Sales Declaration');
+            // showterminal();
+			// showdepartments();
+        // });
+        // $('#dvitemsale').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+            // $('#txtsaledec').val(0);
+			// $('#txttype').val(1);
+            // $('#txtitemsale').val(1);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','block');
+			// $('#dateFilter').css('display','block');
+            // $('#filter-modal').modal('show');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Item Sale Database');
+            // showterminal();
+            // showType();
+			// showdepartments();
+        // });
+        // $('#dvsalereturn').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtsalereturn').val(1);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','none');
+            // $('#filter-modal').modal('show');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Sales Return');
+            // showterminal();
+			// showdepartments();
+        // });
+        // $('#dvstockadjustment').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(1);
+            // $('#txtphysical').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+			// $('#ExcelButton').css('display','none');
+            // $('#filter-modal').modal('show');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Stock Adjustment');
+            // showterminal();
+			// showdepartments();
+			// showbranch();
+        // });
 
-        $('#dvphysical').on('click', function (){
-            $('#txtphysical').val(1);
-			$('#ExcelButton').css('display','none');
-            $('#depart-modal').modal('show');
-        });
+        // $('#dvphysical').on('click', function (){
+            // $('#txtphysical').val(1);
+			// $('#ExcelButton').css('display','none');
+            // $('#depart-modal').modal('show');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Physical Inventory Sheet');
+        // });
+		
+		// $('#dvfbrreport').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(1);
+			// $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+            // $('#txtfbrreport').val(1);
+            // $('#txtinvoicereport').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+            // $('#filter-modal').modal('show');
+			// $('#ExcelButton').css('display','block');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('FBR Report');
+            // showterminal();
+			// showdepartments();
+        // });
+		
+		// $('#dvinvoicereport').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(1);
+			// $('#txttype').val(1);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+            // $('#txtfbrreport').val(0);
+            // $('#txtinvoicereport').val(1);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+            // $('#filter-modal').modal('show');
+			// $('#ExcelButton').css('display','block');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Invoice Report');
+            // showterminal();
+			// showType();
+			// showdepartments();
+        // });
+		
+		
+		// $('#dvsalesinvoicereport').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(1);
+            // $('#txttype').val(1);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+            // $('#txtfbrreport').val(0);
+            // $('#txtinvoicereport').val(0);
+            // $('#txtsalesinvoicesreport').val(1);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(0);
+            // $('#filter-modal').modal('show');
+			// $('#ExcelButton').css('display','block');
+			// $('#dateFilter').css('display','block');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Sales Invoices');
+            // showterminal();
+			// showType();
+			// showdepartments();
+        // });
+		
+		// $('#dvinventorygeneral').on('click', function (){
+            // $('#txtprofitstandard').val(0);
+            // $('#txtprofitdetails').val(0);
+            // $('#txtinventory').val(0);
+            // $('#txtexpensesheet').val(0);
+            // $('#txtexpensecat').val(0);
+            // $('#txtsaledec').val(0);
+            // $('#txttype').val(0);
+            // $('#txtitemsale').val(0);
+            // $('#txtstockadjustment').val(0);
+            // $('#txtphysical').val(0);
+            // $('#txtfbrreport').val(0);
+            // $('#txtinvoicereport').val(0);
+            // $('#txtsalesinvoicesreport').val(0);
+			// $('#txtstockreport').val(0);
+			// $('#txtinventorygeneralreport').val(1);
+            // $('#filter-modal').modal('show');
+			// $('#ExcelButton').css('display','block');
+			// $('#dateFilter').css('display','none');
+			// $('#filterbox').text('');
+			// $('#filterbox').text('Inventory Details with Images');
+			// showdepartments();
+        // });
+		
+		// Common function to handle the button clicks
+		function handleButtonClick(buttonId, filterText, fieldMappings) {
+			// Reset all fields to 0
+			const fields = [
+				'#txtprofitstandard', '#txtprofitdetails', '#txtinventory', 
+				'#txtexpensesheet', '#txtexpensecat', '#txtsaledec', 
+				'#txttype', '#txtitemsale', '#txtstockadjustment', 
+				'#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
+				'#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport'
+			];
+			
+			fields.forEach(field => {
+				$(field).val(0);
+			});
+			
+			const filters = ['#dvbranch','#dvdepartments','#dvsubdepartments','#dvterminal','#dvtype','#dvitemcode','#dvpaymentmodes'];
+			filters.forEach(field => {
+				$(field).css('display','none');
+			});
+
+			// Set specific fields based on mapping
+			console.log(fieldMappings);
+			fieldMappings.forEach(mapping => {
+				$(mapping.field).val(mapping.value);
+			});
+
+			// Set filter text
+			$('#filterbox').text(filterText);
+
+			// Show modal and display relevant elements
+			$('#filter-modal').modal('show');
+			$('#dateFilter').css('display', fieldMappings.some(mapping => mapping.showDateFilter) ? 'block' : 'none');
+			$('#ExcelButton').css('display', fieldMappings.some(mapping => mapping.showExcelButton) ? 'block' : 'none');
+			console.log(fieldMappings.some(mapping => mapping.showBranch));
+			// Call specific functions if needed
+			if (fieldMappings.some(mapping => mapping.showBranch)) showbranch();
+			if (fieldMappings.some(mapping => mapping.showTerminal)) showterminal();
+			if (fieldMappings.some(mapping => mapping.showDepartments)) showdepartments();
+			if (fieldMappings.some(mapping => mapping.showSubDepartments)) showsubdepartments();
+			if (fieldMappings.some(mapping => mapping.showType)) showType();
+			if (fieldMappings.some(mapping => mapping.showCode)) showCode();
+			if (fieldMappings.some(mapping => mapping.showPaymentMode)) showPaymentMode();
+		}
+		
+		$('#dvprofitstandard').on('click', function () {
+			handleButtonClick('#dvprofitstandard', 'Profit & Loss', [
+				{ field: '#txtprofitstandard', value: 1, showDateFilter: true, showBranch: true  }
+			]);
+		});
+		
+		$('#dvprofitdetails').on('click', function () {
+			handleButtonClick('#dvprofitdetails', 'Profit Details', [
+				{ field: '#txtprofitdetails', value: 1, showDateFilter: true , showBranch: true  }
+			]);
+		});
+		
+		$('#dvshowreport').on('click', function () {
+			handleButtonClick('#dvshowreport', 'Stock Report', [
+				{ field: '#txtstockreport', value: 1, showDateFilter: true,showDepartments:true,showsubdepartments:true }
+			]);
+		});
+
+		$('#dvinventory').on('click', function () {
+			handleButtonClick('#dvinventory', 'Inventory Details', [
+				{ field: '#txtinventory', value: 1, showDateFilter: true , showBranch: true, showDepartments:true, showsubdepartments:true}
+			]);
+		});
+
+		$('#dvexpensesheet').on('click', function (){
+			handleButtonClick('#dvexpensesheet', 'Expense Sheet', [
+				{ field: '#txtexpensesheet', value: 1, showDateFilter: true}
+			]);
+		});
+		
+		$('#dvexpensecat').on('click', function (){
+			handleButtonClick('#dvexpensecat', 'Expense Category', [
+				{ field: '#txtexpensecat', value: 1, showDateFilter: true }
+			]);
+		});
+		
+		$('#dvsaledecleration').on('click', function (){
+			handleButtonClick('#dvsaledecleration', 'Sales Declaration', [
+				{ field: '#txtsaledec', value: 1, showDateFilter: true,showTerminal:true }
+			]);
+		});
+		
+		$('#dvitemsale').on('click', function (){
+			handleButtonClick('#dvitemsale', 'Item Sale Database', [
+				{ field: '#txtitemsale', value: 1, showDateFilter: true, showType:true, showDepartments:true, showsubdepartments:true, showTerminal:true  }
+			]);
+		});
+		
+		$('#dvsalereturn').on('click', function (){
+			handleButtonClick('#dvsalereturn', 'Sales Return', [
+				{ field: '#txtsalereturn', value: 1, showDateFilter: true, showTerminal:true, showCode:true }
+			]);
+		});
+		$('#dvphysical').on('click', function (){
+			handleButtonClick('#dvphysical', 'Physical Inventory Sheet', [
+				{ field: '#txtphysical', value: 1, showDateFilter: false, showDepartments:true }
+			]);
+		});
+		
+		$('#dvstockadjustment').on('click', function (){
+			handleButtonClick('#dvstockadjustment', 'Stock Adjustment', [
+				{ field: '#txtstockadjustment', value: 1, showDateFilter: true, showBranch:true }
+			]);
+		});
 		
 		$('#dvfbrreport').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(1);
-			$('#txttype').val(0);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-            $('#txtfbrreport').val(1);
-            $('#txtinvoicereport').val(0);
-            $('#filter-modal').modal('show');
-			$('#ExcelButton').css('display','block');
-            showterminal();
-        });
+			handleButtonClick('#dvfbrreport', 'FBR Report', [
+				{ field: '#txtfbrreport', value: 1, showDateFilter: true, showTerminal:true }
+			]);
+		});
 		
 		$('#dvinvoicereport').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(1);
-			$('#txttype').val(1);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-            $('#txtfbrreport').val(0);
-            $('#txtinvoicereport').val(1);
-            $('#filter-modal').modal('show');
-			$('#ExcelButton').css('display','block');
-            showterminal();
-			showType();
-        });
-		
+			handleButtonClick('#dvinvoicereport', 'Invoice Report', [
+				{ field: '#txtinvoicereport', value: 1, showDateFilter: true, showType:true, showTerminal:true }
+			]);
+		});
 		
 		$('#dvsalesinvoicereport').on('click', function (){
-            $('#txtprofitstandard').val(0);
-            $('#txtprofitdetails').val(0);
-            $('#txtinventory').val(0);
-            $('#txtexpensesheet').val(0);
-            $('#txtexpensecat').val(0);
-            $('#txtsaledec').val(1);
-            $('#txttype').val(1);
-            $('#txtitemsale').val(0);
-            $('#txtstockadjustment').val(0);
-            $('#txtphysical').val(0);
-            $('#txtfbrreport').val(0);
-            $('#txtinvoicereport').val(0);
-            $('#txtsalesinvoicesreport').val(1);
-            $('#filter-modal').modal('show');
-			$('#ExcelButton').css('display','block');
-            showterminal();
-			showType();
-        });
+			handleButtonClick('#dvsalesinvoicereport', 'Sales Invoices', [
+				{ field: '#txtsalesinvoicesreport', value: 1, showDateFilter: true, showType:true, showTerminal:true }
+			]);
+		});
+		
+		$('#dvinventorygeneral').on('click', function (){
+			handleButtonClick('#dvinventorygeneral', 'Inventory Details with Images', [
+				{ field: '#txtinventorygeneralreport', value: 1, showDateFilter: false, showDepartments:true, showsubdepartments:true }
+			]);
+		});
+		
+		$('#dvbookingorderreport').on('click', function (){
+			handleButtonClick('#dvbookingorderreport', 'Inventory Details with Images', [
+				{ field: '#txtbookingorderreport', value: 1, showDateFilter: true, showPaymentMode:true}
+			]);
+		});
 
         function copydate(){
             let date = $('#datefrom').val();
@@ -497,8 +830,12 @@
             let date = $('#datefrom').val();
             let todate = $('#dateto').val();
             let terminalid= $('#terminal').val();
+            let code= $('#itemcode').val();
             let branch= $('#branch').val();
             let type= $('#type').val();
+            let department= $('#department').val();
+            let subdepartment= $('#subdepartment').val();
+            let paymentmethod= $('#paymentmethod').val();
 
             if ($('#txtprofitstandard').val() == 1){
                 window.location = "{{url('profitLossStandardReport')}}?fromdate="+date+"&todate="+todate+"&branch="+branch;
@@ -508,7 +845,7 @@
             }
             if($('#txtinventory').val() == 1)
             {
-                window.location = "{{url('inventory_detailsPDF')}}?fromdate="+date+"&todate="+todate+"&branch="+branch;
+                window.location = "{{url('inventory_detailsPDF')}}?fromdate="+date+"&todate="+todate+"&branch="+branch+"&department="+department+"&subdepartment="+subdepartment;
             }
             if($('#txtexpensesheet').val() == 1)
             {
@@ -522,16 +859,13 @@
                 window.location = "{{url('salesdeclerationreport')}}?fromdate="+date+"&todate="+todate+"&terminalid="+terminalid;
             }
             if ($('#txtitemsale').val() == 1){
-                window.location = "{{url('itemsaledatabasepdf')}}?fromdate="+date+"&todate="+todate+"&terminalid="+terminalid+"&type="+$("#type").val();
+                window.location = "{{url('itemsaledatabasepdf')}}?fromdate="+date+"&todate="+todate+"&terminalid="+terminalid+"&type="+$("#type").val()+"&department="+department;
             }
             if ($('#txtsalereturn').val() == 1){
-                window.location = "{{url('salesreturnpdf')}}?fromdate="+date+"&todate="+todate+"&terminalid="+terminalid;
+                window.location = "{{url('salesreturnpdf')}}?fromdate="+date+"&todate="+todate+"&terminalid="+terminalid+"&code="+code;
             }
-            // if ($('#txtitemsale').val() == 1){
-                // window.location = "{{url('itemsaledatabasepdf')}}?fromdate="+date+"&todate="+todate+"&terminalid="+terminalid;
-            // }
             if ($('#txtstockadjustment').val() == 1){
-                window.location = "{{url('stockAdjustmentReport')}}?fromdate="+date+"&todate="+todate;
+                window.location = "{{url('stockAdjustmentReport')}}?fromdate="+date+"&todate="+todate+"&branch="+branch;
             }
 			
 			if ($('#txtfbrreport').val() == 1){
@@ -545,11 +879,20 @@
 			if ($('#txtsalesinvoicesreport').val() == 1){
                 window.location = "{{url('sales-invoices-report')}}?fromdate="+date+"&todate="+todate+"&terminalid="+terminalid+"&type="+type;
             }
+			
+			if ($('#txtstockreport').val() == 1){
+                window.location = "{{url('inventoryReport')}}?branch="+branch+"&department="+department+"&subdepartment="+subdepartment;
+            }
+			if ($('#txtinventorygeneralreport').val() == 1){
+                window.location = "{{url('inventory-image-report')}}?department="+department+"&subdepartment="+subdepartment;
+            }
+			if ($('#txtbookingorderreport').val() == 1){
+                window.location = "{{url('order-booking-report')}}?fromdate="+date+"&todate="+todate+"&paymentmethod="+paymentmethod;
+            }
         }
 		
 		function getExcelData()
 		{
-			console.log("Inside Function"+$('#txtitemsale').val())
 			let from = $('#datefrom').val();
             let to = $('#dateto').val();
             let terminal = $('#terminal').val();
@@ -563,19 +906,9 @@
             }
 		}
 
-
-        $('#dvshowreport').on('click', function (){
-            window.location = "{{url('inventoryReport')}}";
-        });
-		
 		$('#dvcustomeraging').on('click', function (){
             window.open("{{url('customer-aging')}}");
         });
-
-        {{--$('#dvphysical').on('click', function (){--}}
-        {{--    window.location = "{{url('inventoryReportPhysical')}}";--}}
-        {{--});--}}
-
 
         function showType() {
             if($('#txttype').val() == 1){
@@ -584,6 +917,14 @@
             else{
                 $('#dvtype').css("display", "none");
             }
+        }
+		
+		function showCode() {
+            $('#dvitemcode').css("display", "block");
+        }
+		
+		function showPaymentMode() {
+            $('#dvpaymentmodes').css("display", "block");
         }
 		
 		function showterminal() {
@@ -596,13 +937,32 @@
         }
 		
 		function showbranch() {
-            if($('#txtprofitstandard').val() == 1 || $('#txtprofitdetails').val() == 1 || $('#txtinventory').val() == 1){
+		if($('#txtprofitstandard').val() == 1 || $('#txtprofitdetails').val() == 1 || $('#txtinventory').val() == 1 || $('#txtstockreport').val() == 1 || $('#txtstockadjustment').val() == 1){
                 $('#dvbranch').css("display", "block");
             }
             else{
                 $('#dvbranch').css("display", "none");
             }
         }
+		showdepartments();
+		function showdepartments() {
+            if($('#txtinventory').val() == 1 || $('#txtitemsale').val() == 1 || $('#txtinventorygeneralreport').val() == 1 || $('#txtstockreport').val() == 1){
+                $('#dvdepartments').css("display", "block");
+            }
+            else{
+                $('#dvdepartments').css("display", "none");
+            }
+			if($('#txtinventory').val() == 1 || $('#txtinventorygeneralreport').val() == 1 || $('#txtitemsale').val() == 1 || $('#txtstockreport').val() == 1){
+                $('#dvsubdepartments').css("display", "block");
+            }
+            else{
+                $('#dvsubdepartments').css("display", "none");
+            }
+        }
+		
+		function showsubdepartments() {
+			$('#dvsubdepartments').css("display", "block");
+		}
         
         function getreport()
         {
@@ -616,6 +976,31 @@
             else{
                 window.location = "{{url('inventoryReportPhysical')}}?departid="+$('#depart').val();
             }
+        }
+		
+		$("#department").change(function(){
+			if($(this).val() != ""){
+				load_sub_dept($(this).val());
+			}
+		});
+		
+		
+		function load_sub_dept(id)
+        {
+            $.ajax({
+                url: "{{ url('get_sub_departments')}}",
+                type: 'POST',
+                data:{_token:"{{ csrf_token() }}",id:$("#department").val()},
+                success:function(resp){
+                    $('#subdepartment').empty();
+                    $("#subdepartment").append("<option value=''>Select Sub Department</option>");
+                    $.each(resp, function( index, value ) {
+                        $("#subdepartment").append(
+                            "<option value="+value.sub_department_id+">"+value.sub_depart_name+"</option>"
+                        );
+                    });
+                }
+            });
         }
 
 

@@ -36,7 +36,7 @@
          	 @foreach($getaccounts as $value)
          	 <tr>
                  <td class="text-center">
-                     <img width="50" height="50" src="{{ asset('public/assets/images/bank-account/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                     <img width="50" height="50" src="{{ asset('assets/images/bank-account/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                  </td>
          	 	<td>{{$value->account_title}}</td>
          	 	<td>{{$value->account_no}}</td>

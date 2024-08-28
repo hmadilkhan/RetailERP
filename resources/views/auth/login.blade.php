@@ -8,8 +8,8 @@
     <title>Sabsoft - Login</title>
     <meta name="description" content="">
     <!-- Favicon icon -->
-    <link rel="shortcut icon" href="{{ asset('storage/images/favicon.png') }}" type="image/x-icon">
-    <link rel="icon" href="{{ asset('storage/images/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
 
     <link rel="stylesheet" media="all" href="{{ asset('assets/css/merchant-public')}}" />
     <script src="{{ asset('assets/js/shared-31')}}"></script>
@@ -68,7 +68,7 @@
                 <header class="login-card__header">
                     <h1 class="login-card__logo">
                         <a href="{{route('home')}}">
-                            <img alt="Log in to Sabsoft" src="{{ asset('storage/images/logo-black.png') }}" />
+                            <img alt="Log in to Sabsoft" src="{{ asset('assets/images/logo-black.png') }}" />
                         </a>          </h1>
                 </header>
 

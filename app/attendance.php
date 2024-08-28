@@ -198,13 +198,15 @@ class attendance extends Model
     // }
 
     
-        public function attendance_sheet($branchid,$empid){
-       $result = DB::select("SELECT a.attendance_id, a.emp_id, a.branch_id, b.emp_acc, b.emp_picture, b.emp_name, c.branch_name, a.date, TIME_FORMAT(a.clock_in, '%h:%i:%s') AS clock_in, IFNULL(TIME_FORMAT(a.clock_out, '%h:%i:%s'),0) AS clockout ,IFNULL(a.late,0) AS lates, IFNULL(a.early,0) AS earlys, IFNULL(a.OT_time,0) AS ot,  IFNULL(a.ATT_time,0) AS Atttime FROM attendance_details a INNER JOIN employee_details b ON b.empid = a.emp_id INNER JOIN branch c ON c.branch_id = a.branch_id WHERE a.date = CURRENT_DATE() AND a.branch_id = ? ".($empid == '' ? '' : 'AND a.emp_id = ?'),[$branchid,$empid]);
-        return $result;
-    }
-  public function notify(){
+	public function attendance_sheet($branchid,$empid,$date = ""){
+		$date = ($date != "" ? $date : date("Y-m-d"));
+		$result = DB::select("SELECT a.attendance_id, a.emp_id, a.branch_id, b.emp_acc, b.emp_picture, b.emp_name, c.branch_name, a.date, TIME_FORMAT(a.clock_in, '%h:%i:%s') AS clock_in, IFNULL(TIME_FORMAT(a.clock_out, '%h:%i:%s'),0) AS clockout ,IFNULL(a.late,0) AS lates, IFNULL(a.early,0) AS earlys, IFNULL(a.OT_time,0) AS ot,  IFNULL(a.ATT_time,0) AS Atttime FROM attendance_details a INNER JOIN employee_details b ON b.empid = a.emp_id INNER JOIN branch c ON c.branch_id = a.branch_id WHERE a.date = ? AND a.branch_id = ? ".($empid == '' ? '' : 'AND a.emp_id = ?'),[$date,$branchid,$empid]);
+		return $result;
+	}
+	
+	public function notify(){
        $result = DB::select("SELECT a.id, b.emp_name, b.emp_picture, TIME_FORMAT(a.ClockIn, '%h:%i %p') as ClockIn, a.acc_no from attendance_in a INNER JOIN employee_details b ON b.emp_acc = a.acc_no WHERE a.notify_id = 1 AND a.dateIN = CURRENT_DATE()");
-        return $result;
+       return $result;
     }
 
       public function notify_checkout(){

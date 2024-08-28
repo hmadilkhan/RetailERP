@@ -29,6 +29,18 @@
 							<div class="form-control-feedback text-danger" id="type_alert"></div>
 						</div>
 					</div>
+					
+					<div class="col-lg-3 col-md-3">
+						<div class="form-group">
+							<label class="form-control-label">Mode</label>
+							<select class="form-control select2" id="mode" name="mode">
+								<option value="addons">Addons</option>
+								<option value="variations">Variations</option>
+								<option value="groups">Deal Groups</option>
+							</select> 
+							<div class="form-control-feedback text-danger" id="type_alert"></div>
+						</div>
+					</div>
 
 					<div class="col-lg-3 col-md-3">
 						<div class="form-group">

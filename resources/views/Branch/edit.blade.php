@@ -113,7 +113,7 @@
 			<div class="col-lg-3 col-md-3">
 				<div class="form-group">
 					 <label class="form-control-label">Reports</label>
-                     <select multiple name="report[]" id="report" data-placeholder="Select Company" class="form-control select2" >
+                     <select multiple name="reportlist[]" id="report" data-placeholder="Select Company" class="form-control select2" >
                         <option value="">Select Reports</option>
                         @if($reports)
                           @foreach($reports as $value)
@@ -140,7 +140,7 @@
         
 			 <div class="col-md-3" >
 					<a href="#">
-						<img id="vdpimg" src="{{ asset('public/assets/images/branch/'.(!empty($details[0]->branch_logo) ? $details[0]->branch_logo : 'placeholder.jpg').'') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+						<img id="vdpimg" src="{{ asset('assets/images/branch/'.(!empty($details[0]->branch_logo) ? $details[0]->branch_logo : 'placeholder.jpg').'') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 						</a>
 					 <div class="form-group{{ $errors->has('vdimg') ? 'has-danger' : '' }} ">
 						 <label for="vdimg" class="form-control-label">Branch Logo</label>

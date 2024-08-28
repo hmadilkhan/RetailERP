@@ -1,0 +1,1002 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\WebsiteDetail;
+use App\WebsiteContact;
+use App\Models\InventoryDepartment;
+use App\Models\Company;
+use App\branch;
+use App\terminal;
+use App\Http\Resources\websiteDeliveryAreaResource\deliveryAreasResource;
+use Session, Image, DB, Auth, Validator, File;
+
+class WebsiteController extends Controller
+{
+    public function index(Request $request)
+    {
+        return view("websites.index", [
+            "websites" => WebsiteDetail::with("company")->get(),
+        ]);
+    }
+
+    public function create(Request $request)
+    {
+        return view("websites.create", [
+            "companies" => Company::all()
+        ]);
+    }
+    
+    // public function show(Request $request)
+    // {
+        // return 2;
+    // }
+
+    public function store(Request $request)
+    {
+        // |regex:/^[a-zA-Z]+$/u
+        $this->validate($request, [
+            "company_id"  => "required",
+            "type"        => "required",
+            "theme"       => "required",
+            "name"        => "required|max:255|unique:website_details",
+            "url"         => "required",
+            // "logo"        => "required",
+            // "favicon"     => "required",
+        ]);
+
+        try {
+            $imageFavicon = null;
+            $imageLogo    = null;
+
+            $websiteName  = strtolower(str_replace(array(" ","'"),'-', $request->post('name')));
+
+            if (!empty($request->logo)) {
+                $request->validate([
+                    'logo' => 'mimes:jpeg,png,jpg,gif,svg,webp|max:100',
+                ]);
+
+                $imageLogo = $websiteName . '-logo.' . $request->logo->getClientOriginalExtension();
+                $imglogo = Image::make($request->logo)->resize(150, 70);
+                $res = $imglogo->save(public_path('assets/images/website/' . $imageLogo), 75);
+            }
+
+            if (!empty($request->favicon)) {
+                $request->validate([
+                    'favicon' => 'mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                ]);
+
+                $imageFavicon = $websiteName . '-favicon.' . $request->favicon->getClientOriginalExtension();
+                $imgfavicon = Image::make($request->favicon)->resize(150, 70);
+                $res = $imgfavicon->save(public_path('assets/images/website/' . $imageFavicon), 75);
+            }
+
+
+            $website = WebsiteDetail::create(array_merge(
+                $request->except(["_token", "step", "logo", "favicon"]),
+                ['logo' => $imageLogo, 'favicon' => $imageFavicon, 'theme_id' => 0, 'is_open' => 1]
+            ));
+
+
+            if (!isset($website->id)) {
+                if ($imageFavicon) {
+                    if (\File::exists(public_path('assets/images/website/' . $imageFavicon))) {
+                        \File::delete(public_path('assets/images/website/' . $imageFavicon));
+                    }
+                }
+
+                if ($imageLogo) {
+                    if (\File::exists(public_path('assets/images/website/' . $imageLogo))) {
+                        \File::delete(public_path('assets/images/website/' . $imageLogo));
+                    }
+                }
+                Session::flash('error', 'Server issue');
+                return redirect()->route("website.create");
+            }
+
+
+            DB::table('website_theme')
+                ->insert([
+                    'website_id'      => $website->id,
+                    'name'            => $request->post('type'),
+                    'fontstyle'       => 'Poppins',
+                    'font_url'        => 'https://fonts.googleapis.com/css2?family=Poppins&family=Roboto&family=Corben&display=swap',
+                    'product_list'    => 2,
+                    'cart_layout'     => 1,
+                    'back_to_top_btn' => 1,
+                    'location_modal'  => 0,
+                    'top_contact_box' => 1,
+                    'product_view'    => 'page_view'
+                ]);
+
+            Session::flash('success', 'Success!');
+            return redirect()->route("website.index");
+        } catch (Exception $e) {
+            Session::flash('error', $e->getMessage());
+            return redirect()->route("website.create");
+        }
+    }
+
+    public function edit(Request $request, $id)
+    {
+
+        $website_detail = WebsiteDetail::find($id);
+        if ($website_detail == null) {
+
+            Session::flash('error', 'Record not found!');
+            return redirect()->route('website.index');
+        }
+
+
+        return view("websites.edit", [
+            "website" => $website_detail,
+            "companies" => Company::all()
+        ]);
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $website_detail = WebsiteDetail::find($id);
+
+        $this->validate($request, [
+            "company_id"  => "required",
+            "type"        => "required",
+            "theme"       => "required",
+            "url"         => "required",
+        ]);
+
+        try {
+
+
+            $websiteName  = strtolower(str_replace(array(" ","'"),'-', $request->post('name')));
+
+            if (!empty($request->favicon)) {
+                $request->validate([
+                    'favicon' => 'mimes:jpeg,png,jpg,gif,svg,webp|max:100',
+                ]);
+
+
+                if (\File::exists(public_path('assets/images/website/' . $website_detail->favicon))) {
+                    \File::delete(public_path('assets/images/website/' . $website_detail->favicon));
+                }
+
+                $imageFavicon = $websiteName . '-favicon.' . $request->file('favicon')->getClientOriginalExtension();
+                $img = Image::make($request->file('favicon'))->resize(64, 64);
+                $res0 = $img->save(public_path('assets/images/website/' . $imageFavicon), 75);
+            }
+
+            if (!empty($request->logo)) {
+
+                $request->validate([
+                    'logo' => 'mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+                ]);
+
+
+                if (\File::exists(public_path('assets/images/website/' . $website_detail->logo))) {
+                    \File::delete(public_path('assets/images/website/' . $website_detail->logo));
+                }
+
+                $imageLogo = $websiteName . '-logo.' . $request->file('logo')->getClientOriginalExtension();
+                $img = Image::make($request->file('logo'))->resize(200, 200);
+                $res1 = $img->save(public_path('assets/images/website/' . $imageLogo), 75);
+            }
+
+            
+            if ($website_detail->name  != $request->name) {
+                // regex:/^[a-zA-Z]+$/u
+                $rule = [
+                    "name" => "required|max:255|unique:website_details",
+                ];
+                $this->validate($request, $rule);
+            }
+
+            $website_detail->company_id  = $request->company_id;
+            $website_detail->type        = $request->type;
+            $website_detail->name        = $request->name;
+            $website_detail->topbar      = $request->topbar;
+            $website_detail->theme       = $request->theme;
+            $website_detail->url         = $request->url;
+            $website_detail->whatsapp    = $request->whatsapp;
+            $website_detail->uan_number  = $request->uan_number;
+
+            if (isset($imageLogo)) {
+                $website_detail->logo   = $imageLogo;
+            }
+
+            if (isset($imageFavicon)) {
+                $website_detail->favicon  = $imageFavicon;
+            }
+
+            $website_detail->save();
+
+
+            return redirect()->route("website.index");
+        } catch (Exception $e) {
+            return redirect()->route("website.edit", $website_detail->id);
+        }
+    }
+
+
+
+    // ======================================================================================
+    //                  Website Slider Modules
+    //======================================================================================= 
+
+    public function getSlider(Request $request)
+    {
+
+        return view("websites.sliders.index", [
+            "websites"          => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
+            "departments"       => InventoryDepartment::where('company_id', Auth::user()->company_id)->get(),
+            "websiteSlider"     => DB::table('website_sliders')
+                ->join('website_details', 'website_details.id', 'website_sliders.website_id')
+                ->select('website_details.*')
+                ->where('website_details.company_id', Auth::user()->company_id)
+                ->groupBy('website_details.name')
+                ->get(),
+            "websiteSliderList" => DB::table('website_sliders')
+                ->join('website_details', 'website_details.id', 'website_sliders.website_id')
+                ->select('website_sliders.id', 'website_sliders.website_id', 'website_sliders.slide','website_sliders.invent_department_id', 'website_sliders.invent_department_name', 'website_sliders.prod_id')
+                ->where('website_details.company_id', Auth::user()->company_id)
+                ->get()
+        ]);
+    }
+
+
+
+    public function create_slider()
+    {
+
+        return view("websites.sliders.create", [
+            //  "products"    => DB::table('inventory_general as inventGeneral')
+            //                           ->join('website_products as webprod','webprod.inventory_id','inventGeneral.id')
+            //                           ->where(['variations.company_id'=>Auth::user()->company_id,'variations.status'=>1])
+            //                           ->select('prod_var_rel.id','prod_var_dtl.price','prod_var_dtl.image','variations.name as variat_name','posProducts.item_name as product_name','inventGeneral.product_name as parent_prod')
+            //                           ->get();
+            "websites"    => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
+            "departments" => InventoryDepartment::where('company_id', Auth::user()->company_id)->get()
+        ]);
+    }
+    
+    public function getWebsite_prod(Request $request){
+        
+        return DB::table('website_products')
+                  ->join('inventory_general','inventory_general.id','website_products.inventory_id')
+                  ->where('website_products.website_id',$request->id)
+                  ->select('inventory_general.id','inventory_general.product_name')
+                  ->get();
+    }
+
+
+    public function store_slider(Request $request)
+    {
+
+        $rules = [
+            'website' => 'required',
+            'image'   => 'required|mimes:jpg,jpeg,png|dimensions:width=1520,height=460'
+        ];
+
+        $this->validate($request, $rules);
+
+        $image             = $request->file('image');
+        $imageName         = time(). '.' . $image->getClientOriginalExtension();
+        $productSlug       = null;
+        $invent_department = null;
+
+        $path = $this->create_folder(Auth::user()->company_id, $request->website);
+
+        if ($path == false) {
+            return response()->json('Image not uploaded.', 500);
+        }
+
+        if (!$image->move($path, $imageName)) {
+            return response()->json('Image not uploaded.', 500);
+        }
+        
+        if(!empty($request->product)){
+            $getprodSlug = DB::table('inventory_general')->where('id','=',$request->product)->select('slug')-first();
+            $productSlug = $getprodSlug->slug;
+            
+            $invent_department = null;
+        }
+        
+        if(!empty($request->depart)){
+            $get_inventDepart = DB::table('inventory_department')->where('department_id','=',$request->post('depart'))->select('department_name')->first();
+            $invent_department = $get_inventDepart->department_name;
+            
+            $productSlug = null;
+        }        
+
+        $result = DB::table('website_sliders')
+            ->insertGetId([
+                'website_id'             => $request->website,
+                'invent_department_id'   => !empty($request->product) ? null : $request->post('depart'),
+                'invent_department_name' => $invent_department,
+                'prod_id'                => !empty($request->depart) ? null : $request->post('product'),
+                'prod_slug'              => $productSlug,
+                'slide'                  => $imageName,
+                'status'                 => 1
+            ]);
+
+        if ($result) {
+
+            Session::flash('success', 'Success!');
+        } else {
+
+            Session::flash('error', 'Invalid record');
+        }
+        return redirect()->route('sliderLists');
+    }
+
+    public function update_slide(Request $request)
+    {
+        
+        $Slide = $request->file('slide_md'); 
+        $productSlug = null;
+        $departName  = null;
+        
+        $columnArray = ['updated_at'=>date("Y-m-d H:i:s")];
+        
+        $get = DB::table('website_sliders')->where('id','=',$request->id)->first();
+        
+        if($Slide != ''){
+            
+            $rules = [
+                       'slide_md'   => 'required|mimes:jpg,jpeg,png|dimensions:width=1520,height=460'
+                    ];
+    
+            $this->validate($request, $rules);
+    
+            $imageName   = time(). '.' . $Slide->getClientOriginalExtension();
+        
+            $path = $this->create_folder(session('company_id'),$request->webId);
+    
+            if ($path == false) {
+                Session::flash('error','Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+    
+            if (!$Slide->move($path, $imageName)) {
+                Session::flash('error','Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+            
+             if(\File::exists(public_path('assets/images/website/sliders').session('company_id').'/'.$request->webId.'/'.$get->slide)){
+                  \File::delete(public_path('assets/images/website/sliders').session('company_id').'/'.$request->webId.'/'.$get->slide);
+              }
+           $columnArray['slide']= $imageName;
+        }
+        
+        if(!empty($request->post('product_md'))){
+            $productSlug = DB::table('inventory_general')->where('id','=',$request->post('product_md'))->select('slug')->first();
+            $columnArray['prod_id']   = $request->post('product_md');
+            $columnArray['prod_slug'] = $productSlug->slug;
+            
+            $columnArray['invent_department_id']   = null;
+            $columnArray['invent_department_name'] = null;
+        } 
+        
+        if(!empty($request->post('depart_md'))){
+            $departName = DB::table('inventory_department')->where('department_id','=',$request->post('depart_md'))->select('department_name')->first();
+            $columnArray['invent_department_id']   = $request->post('depart_md');
+            $columnArray['invent_department_name'] = $departName->department_name;
+            
+            $columnArray['prod_id']   = null;
+            $columnArray['prod_slug'] = null;
+        } 
+        
+        
+     
+        
+    //   return $columnArray;
+        $result = DB::table('website_sliders')
+                     ->where('id','=',$request->id)
+                     ->update($columnArray);
+        
+        if($result){
+            Session::flash('success','Success!');
+        }else{
+            Session::flash('error','Server Issue record not updated.');
+        }
+        
+      return redirect()->route('sliderLists');   
+    }
+
+    public function create_folder($comFOldName, $webFoldName)
+    {
+        $path   = public_path('assets/images/website/sliders/') . $comFOldName . '/' . $webFoldName;
+        $result = true;
+        if (!File::isDirectory($path)) {
+            $result = File::makeDirectory($path, 0777, true, true);
+        }
+
+        return ($result) ? $path : false;
+    }
+    
+    public function destroy_slide(Request $request){
+     
+        if(!isset($request->id)){
+            Session::flash('error','Server Issue invalid fields');
+            return redirect()->route('sliderLists');
+        }
+        
+       $id = $request->id;
+       
+        if($request->post('mode'.$id) == ''){
+            $get = DB::table('website_sliders')->where('website_id','=',$id)->get();
+            
+            if($get != null){
+                foreach($get as $val){
+                    if(\File::exists(public_path('assets/images/website/sliders/').session('company_id').'/'.$id.'/'.$val->slide)){
+                        \File::delete(public_path('assets/images/website/sliders/').session('company_id').'/'.$id.'/'.$val->slide);
+                    }
+                }
+                
+               $process = DB::table('website_sliders')->where('website_id','=',$id)->delete();
+            }
+            
+        }else{
+            $get = DB::table('website_sliders')->where('id','=',$request->post('mode'.$id))->first();
+            if($get != null){
+                
+               if(\File::exists(public_path('assets/images/website/sliders/').session('company_id').'/'.$id.'/'.$get->slide)){
+                   \File::delete(public_path('assets/images/website/sliders/').session('company_id').'/'.$id.'/'.$get->slide);
+               }
+                
+               $process = DB::table('website_sliders')->where('id','=',$request->post('mode'.$id))->delete();
+            }           
+            
+        }
+        
+        if($process){
+            Session::flash('success','Success!');
+        }else{
+            Session::flash('error','Server Issue slide not removed.'); 
+        }
+        
+       return redirect()->route('sliderLists');  
+    }
+
+
+    public function getSocialLink(Request $request)
+    {
+        $companyId = session('company_id');
+        
+        $socialFullNameArray = ['fb'=>'FaceBook','youtube'=>'Youtube','insta'=>'Instagram','linkedin'=>'Linkedin','twite'=>'Twitter'];
+
+        return view("websites.social-link.index", [
+                            "websites"       => WebsiteDetail::where('company_id',$companyId)->get(),
+                            "lists"          => DB::table('website_social_connects as sociaLinks')
+                                                ->join('website_details', 'website_details.id', 'sociaLinks.website_id')
+                                                ->whereIn('sociaLinks.website_id', WebsiteDetail::where('company_id','=',$companyId)->pluck('id'))
+                                                ->select('sociaLinks.*', 'website_details.name')
+                                                ->get(),
+                            "socialFullName"  =>$socialFullNameArray
+
+        ]);
+    }
+
+    public function store_SocialLink(Request $request)
+    {
+        $rules = [
+                  'website'     => 'required',
+                  'socialType'  => 'required',
+                  'url'         => 'required',
+                 ];
+                 
+        $this->validate($request,$rules);   
+        
+        $iconArray = ['fb'=>'icofont icofont-social-facebook','insta'=>'icofont icofont-social-instagram','youtube'=>''];
+
+        if(DB::table('website_social_connects')->where(['website_id'=>$request->website,'social_type'=>$request->socialType])->count() > 0){
+            return redirect()->route('socialList')->with('socialType','this social account already exists')->withInput();
+        }
+        
+        $result = DB::table('website_social_connects')
+            ->insert([
+                'website_id'   => $request->website,
+                'social_type'  => $request->socialType,
+                'icon'         => $iconArray[$request->socialType],
+                'url'          => $request->url,
+                'status'       => 1,
+                'created_at'   => date("Y-m-d H:i:s")
+            ]);     
+        
+        if($result){
+            Session::flash('success','Success!');
+        }else{
+            Session::flash('error','Error! record is not submit');
+        }
+        
+      return redirect()->route('socialList');
+    }
+    
+    public function update_socialLink(Request $request){
+        if(empty($request->id) && empty($request->type)) {
+            Session::flash('error', 'Server issue invalid fields.');
+            return redirect()->route('socialList');
+        }
+   
+       if(DB::table('website_social_connects')->where(['id'=>$request->id,'social_type'=>$request->type])->update(['url'=>$request->value])){
+          Session::flash('success', 'Success!');
+        }else{
+          Session::flash('error', 'Server issue record not updated.');  
+        }
+        
+       return redirect()->route('socialList'); 
+    }
+    
+
+
+    public function destroy_socialLink(Request $request)
+    {
+            if(empty($request->id)) {
+                Session::flash('error', 'Server issue record is not removed.');
+                return redirect()->route('socialList');
+            }
+
+         if(isset($request->mode)){
+            if (DB::table('website_social_connects')->where(['id' => $request->id])->delete()) {
+                Session::flash('success', 'Successfully');
+            } else {
+                Session::flash('error', 'Error Not Removed.');
+            }         
+         }else{
+            if (DB::table('website_social_connects')->where(['website_id' => $request->id])->delete()) {
+                Session::flash('success', 'Successfully');
+            } else {
+                Session::flash('error', 'Error Not Removed.');
+            }         
+         }
+         
+        return redirect()->route('socialList');     
+    }
+
+
+    // ======================================================================================
+    //                  Website Delivery areas
+    //======================================================================================= 
+
+    public function getDeliveryArea(Request $request, branch $branch)
+    {
+
+        $companyId = Auth::user()->company_id;
+
+        $deliveryAreaLists = DB::table('website_delivery_areas as AreaList')
+            ->join('website_details', 'website_details.id', 'AreaList.website_id')
+            ->join('branch', 'branch.branch_id', 'AreaList.branch_id')
+            ->select('website_details.id as website_id', 'website_details.name as website_name', 'AreaList.branch_id', 'branch.branch_name', 'AreaList.city_id as city', 'AreaList.estimate_time', 'AreaList.charge', 'AreaList.min_order', 'AreaList.status')
+            ->where(['website_details.company_id' => $companyId, 'AreaList.remove' => 0])
+            ->groupBy('AreaList.branch_id')
+            ->get();
+        $deliveryAreaValues = DB::table('website_delivery_areas')
+            ->whereIn('branch_id', DB::table('website_delivery_areas as AreaList')
+                ->join('website_details', 'website_details.id', 'AreaList.website_id')
+                ->join('branch', 'branch.branch_id', 'AreaList.branch_id')
+                ->select('AreaList.branch_id')
+                ->where('website_details.company_id', '=', $companyId)
+                ->pluck('AreaList.branch_id'))
+            ->where('remove', '=', 0)
+            ->select('id', 'branch_id', 'name', 'longitude', 'latitude','charge','min_order')
+            ->get();
+
+        return view("websites.delivery-area.index", [
+            "websites"           => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
+            "city"               => DB::table('city')->where('country_id', 170)->get(),
+            "deliveryList"       => $deliveryAreaLists,
+            "deliveryAreaValues" => $deliveryAreaValues
+        ]);
+    }
+    
+    public function getDeliveryAreaValues(Request $request){
+        $companyId = Auth::user()->company_id;
+        return DB::table('website_delivery_areas')
+            ->whereIn('branch_id', DB::table('website_delivery_areas as AreaList')
+                ->join('website_details', 'website_details.id', 'AreaList.website_id')
+                ->join('branch', 'branch.branch_id', 'AreaList.branch_id')
+                ->select('AreaList.branch_id')
+                ->where('website_details.company_id', '=', $companyId)
+                ->pluck('AreaList.branch_id'))
+            ->where(['website_id'=>$request->webId,'branch_id'=>$request->branchId])
+            ->select('id', 'branch_id', 'name','charge','min_order')
+            ->get();
+    }
+
+    public function getWebsiteBranches(Request $request, branch $branch)
+    {
+        return response()->json($branch->getWebsiteBranches($request->websiteId));
+    }
+
+    public function store_deliveryArea(Request $request)
+    {
+
+        $result = null;
+        $areas  = explode(',', $request->areas);
+
+        for ($i = 0; $i < count($areas); $i++) {
+            $result = DB::table('website_delivery_areas')
+                ->insert([
+                    'branch_id'       => $request->branch,
+                    'city_id'         => $request->city,
+                    'website_id'      => $request->website,
+                    'name'            => addslashes($areas[$i]),
+                    'estimate_time'   => $request->time_estimate,
+                    'charge'          => $request->charge,
+                    'min_order'       => $request->min_order == '' ? 0 : $request->min_order,
+                    'status'          => 0,
+                ]);
+        }
+
+        return $result == null ? response()->json('Error! Record is not created!', 500) : response()->json('Success!', 200);
+    }
+
+    public function single_deliveryAreaName_store(Request $request)
+    {
+
+        $branchId       = $request->branchId;
+        $branchName     = $request->branchName;
+        $websiteId      = $request->websiteId;
+        $websiteName    = $request->websiteName;
+        $areaName       = $request->areaName_md;
+
+        if (DB::table('website_delivery_areas')->where(['website_id' => $websiteId, 'name' => $areaName])->count() > 0) {
+
+            return response()->json(['error' => 'This ' . $areaName . ' area already taken this ' . addslashes($websiteName) . ' website for this branch ' . $branchName]);
+        }
+
+        $getRecord = DB::table('website_delivery_areas')
+            ->where(['website_id' => $websiteId, 'branch_id' => $branchId])
+            ->first();
+
+        if ($getRecord == null) {
+            return response()->json(['error' => 'Server Issue']);
+        }
+
+
+        $resp = DB::table('website_delivery_areas')
+            ->insert([
+                'branch_id'       => $getRecord->branch_id,
+                'city_id'         => $getRecord->city_id,
+                'website_id'      => $getRecord->website_id,
+                'name'            => addslashes($areaName),
+                'estimate_time'   => $getRecord->estimate_time,
+                'charge'          => $getRecord->charge,
+                'min_order'       => $getRecord->min_order,
+                'status'          => $getRecord->status,
+            ]);
+
+
+        return $resp ? response()->json('success', 200) : response()->json(['error' => 'Record is not submited Server issue please try again later']);
+    }
+
+    public function update_deliveryAreaSpecificField(Request $request)
+    {
+
+        if (empty($request->webid) || empty($request->branchid)) {
+            Session::flash('error', 'Invalid fields');
+            return redirect()->route('deliveryAreasList');
+        }
+
+
+        $columnNames_array = ['status', 'min_order', 'charge'];
+        $get_columnName = null;
+        $value          = null;
+
+        $websiteId  = $request->webid;
+        $branchId   = $request->branchid;
+
+        foreach (collect($request->all())->keys() as $key) {
+            if (in_array($key, $columnNames_array)) {
+                $get_columnName = $key;
+                $value          = $request->post($get_columnName);
+                break;
+            }
+        }
+
+
+        if (!in_array($get_columnName, $columnNames_array) || empty($websiteId) || empty($branchId)) {
+            Session::flash('error', 'Empty fields');
+            return redirect()->route('deliveryAreasList');
+        }
+
+        if (DB::table('website_delivery_areas')->where(['website_id' => $websiteId, 'branch_id' => $branchId])->update([$get_columnName => $value])) {
+            Session::flash('success', 'Success!');
+        } else {
+            Session::flash('error', 'Server issue record is not updated');
+        }
+
+        return redirect()->route('deliveryAreasList');
+    }
+
+    public function update_deliveryArea(Request $request)
+    {
+         
+        $uniqueId    = $request->id;
+        $areaName    = $request->area;
+        $charge      = $request->charge;
+//      $websiteId   = $request->webId;
+//      $websiteName = $request->webName;
+
+        if (empty($uniqueId)) {
+            return response()->json(['status'=>500,'msg'=>'Invalid field']);
+        }
+
+//      if (DB::table('website_delivery_areas')->where(['website_id' => $websiteId, 'name' => $areaName])->where('id', '!=', $uniqueId)->count() > 0) {
+
+//          return response()->json('This ' . $areaName . ' area name already taken this ' . $websiteName . ' wsebsite.',);
+//      }
+
+        if (DB::table('website_delivery_areas')->where(['id'=>$uniqueId])->update(['name' => $areaName,'charge'=>$charge])) {
+            return response()->json(['status'=>200]);
+        } else {
+            return response()->json(['status'=>500,'msg'=>'Server issue record is not updated.']);
+        }
+    }
+
+    public function destroy_deliveryArea(Request $request)
+    {
+
+        if (empty($request->webid) || empty($request->branchid)) {
+            Session::flash('error', 'Server issue record is not removed.');
+            return redirect()->route('deliveryAreasList');
+        }
+
+        if (DB::table('website_delivery_areas')->where(['website_id' => $request->webid, 'branch_id' => $request->branchid])->update(['remove' => 1])) {
+            Session::flash('success', 'Successfully');
+        } else {
+            Session::flash('error', 'This ' . $request->branchName . ' branch delivery area remove for this ' . $request->websiteName . ' website.');
+        }
+
+        return redirect()->route('deliveryAreasList');
+    }
+
+    public function destroy_deliveryAreaValue(Request $request)
+    {
+
+        if (empty($request->id) || empty($request->branchid)) {
+            
+            if(!isset($request->stp_redirect)){
+                return response()->json(['status'=>'Invalid field']);
+            }
+              Session::flash('error', 'Server issue record is not removed.');
+             return redirect()->route('deliveryAreasList');
+        }
+
+        if (DB::table('website_delivery_areas')->where(['id' => $request->id, 'branch_id' => $request->branchid])->update(['remove' => 1])) {
+            
+            if(!isset($request->stp_redirect)){
+                return response()->json(['status'=>200]);
+            }   
+            Session::flash('success', 'Successfully');
+        } else {
+            
+            if(!isset($request->stp_redirect)){
+                return response()->json(['status'=>500,'msg'=>'This '.$request->area.' delivery area not remove.']);
+            }
+            
+            Session::flash('error', 'This ' . $request->areaName . ' delivery area not remove for this ' . $request->branchName . ' branch.');
+        }
+
+        return redirect()->route('deliveryAreasList');
+    }
+
+    public function getTerminalAssign(Request $request, branch $branch)
+    {
+        $terminalAssign = [];
+    
+        if ($request->id != "") {
+            $terminalAssign = DB::table("website_terminal_bind")
+                             ->join("branch","branch.branch_id","=","website_terminal_bind.branch_id")
+                             ->join("terminal_details","terminal_details.terminal_id","=","website_terminal_bind.terminal_id")
+                             ->join("website_details","website_details.id","=","website_terminal_bind.website_id")
+                             ->select("website_terminal_bind.id","website_details.id as website_id","website_details.name","branch.branch_id","branch.branch_name","terminal_details.terminal_id","terminal_details.terminal_name")
+                             ->where("website_terminal_bind.id",$request->id)
+                             ->get();
+        }
+        return view("websites.terminal-assign.index", [
+            "websites" => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
+            "terminalAssign" => (!empty($terminalAssign) != "" ? $terminalAssign[0] : []),
+            "terminalAssigns" => $this->getAllTerminalAssign(),
+        ]);
+    }
+
+    public function getTerminalsFromBranches(Request $request, terminal $terminal)
+    {
+        return response()->json($terminal->getterminals($request->branchId));
+    }
+
+    public function storeterminalBind(Request $request)
+    {
+        $this->validate($request, [
+            "website"  => "required",
+            "branch"        => "required",
+            "terminal"       => "required",
+        ]);
+        if ($request->id == "") {
+            DB::table('website_branches')
+                ->insert([
+                    'website_id'  => $request->website,
+                    'branch_id'   => $request->branch,
+                    'terminal_id' => $request->terminal,
+                    'user_id'     => auth()->user()->id,
+                    'created_at'  => date("Y-m-d H:i:s"),
+                ]);
+        } else {
+            DB::table('website_branches')
+                ->where("id", $request->id)
+                ->update([
+                    'website_id'  => $request->website,
+                    'branch_id'   => $request->branch,
+                    'terminal_id' => $request->terminal,
+                    'updated_at'  => date("Y-m-d H:i:s"),
+                ]);
+        }
+        return redirect()->route("terminalAssignList");
+    }
+    
+    public function deleteTerminalBind(Request $request)
+    {
+        if ($request->id != "") {
+            DB::table('website_branches')->where("id", $request->id)->delete();
+            return response()->json(["status" => 200,"message" => "Terminal deleted successfully"]);
+        }
+        return response()->json(["status" => 500,"message" => "Some Error Occurred"]);
+    }
+
+    public function getAllTerminalAssign()
+    {
+        return DB::table("website_branches")
+                             ->join("branch","branch.branch_id","=","website_branches.branch_id")
+                             ->join("terminal_details","terminal_details.terminal_id","=","website_branches.terminal_id")
+                             ->join("website_details","website_details.id","=","website_branches.website_id")
+                             ->whereIn("website_branches.branch_id",DB::table("branch")->where("company_id",auth()->user()->company_id)->pluck("branch_id"))
+                             ->select("website_branches.id","website_details.name","branch.branch_name","terminal_details.terminal_name")
+                             ->get();
+    }
+
+    public function viewBranchTiming(Request $request, branch $branch)
+    {
+        return view("websites.branch-timing.index", [
+            "websites" => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
+            "days" => ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"],
+        ]);
+    }
+
+    public function storeBranchTiming(Request $request)
+    {
+    
+        // UPDATE THE RECORD
+        if ($request->mode == "update") {
+            for ($i=0; $i < count($request->id); $i++) { 
+                DB::table("website_branches_schedule")
+                ->where("id",$request->id[$i])
+                ->update([
+                        "opening_time" => date("H:i",strtotime($request->starttime[$i])),
+                        "closing_time" => date("H:i",strtotime($request->endtime[$i])),
+                ]);
+            }
+        }else{
+            if (count($request->dayname) > 0) {
+                for ($i=0; $i < count($request->dayname); $i++) { 
+                    DB::table("website_branches_schedule")
+                    ->insert([
+                            "branch_id" => $request->branch_id,
+                            "day" => $request->dayname[$i],
+                            "opening_time" => date("H:i",strtotime($request->starttime[$i])),
+                            "closing_time" => date("H:i",strtotime($request->endtime[$i])),
+                    ]);
+                }
+            }
+        }
+        return redirect()->route("branchTimingList");
+        // foreach ($request->dayname as $key => $value) {
+        //  echo substr($value, 0, 3);
+        // }
+
+        // foreach ($request->starttime as $key => $value) {
+        //  echo date("H:i:s",strtotime( $value));
+        // }
+    }
+
+    public function getBranchTiming(Request $request)
+    {
+        return view("websites.branch-timing.branch-table",[
+            "days" => ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"],
+            "websiteId" => $request->websiteId,
+            "branchId" => $request->branchId,
+            "timings" => DB::table("website_branches_schedule")->where("branch_id",$request->branchId)->get(),
+        ]);
+    }
+    
+    
+    public function website_setting(Request $request){
+        
+        $companyId  = Auth::user()->company_id;
+        $GetWebsite = null;
+        $webId      = null;
+        
+         if(isset($request->id)){
+             $webId = $request->id;
+             $GetWebsite = WebsiteDetail::join('website_theme','website_theme.website_id','website_details.id')
+                                         ->where(['website_details.id'=>$webId,'website_details.company_id'=>$companyId])
+                                         ->select('website_details.*','website_theme.fontstyle','website_theme.checkout_otp','website_theme.cart_layout','website_theme.product_view',
+                                         'website_theme.location_modal','website_theme.back_to_top_btn','website_theme.product_list','website_theme.depart_nav_layout','website_theme.top_contact_box'
+                                         ,'website_theme.footer_layout')
+                                         ->first();
+         }
+         
+        return view('websites.setting.index',
+                     [
+                       "websiteLists" => WebsiteDetail::where('company_id',$companyId)->get(),
+                       "GetWebsite"   => $GetWebsite,
+                       "webId"        => $webId,
+                     ]);
+    }
+    
+    public function webSetting_saveChanges(Request $request){
+       
+        if (empty($request->id)) {
+            return response()->json('Invalid fields');
+        }
+        
+        $columnNames_array = ['is_open','maintenance_mode','logo','favicon','fontstyle','checkout_otp','topbar'];
+        $websiteId  = $request->id;
+        $companyId  = Auth::user()->company_id; 
+        $value = addslashes($request->val);
+        
+        $getRecord_webTheme  = DB::table('website_theme')->where('website_id','=',$websiteId)->first();
+        $getRecord_webDetail = DB::table('website_details')->where(['id'=>$websiteId,'company_id'=>$companyId])->first();
+        
+        if($getRecord_webDetail == null){
+            return response()->json('Invalid fields');
+        }
+     
+     if($request->mode == 'theme'){ 
+         $getRecord_webTheme = (array) $getRecord_webTheme; 
+         if($getRecord_webTheme[$request->col] == $request->val){
+             return response()->json('success');
+         }
+         
+        if(DB::table('website_theme')->where('website_id','=',$websiteId)->update([$request->col=>$value])){
+            return response()->json('success');
+        }else{
+            return response()->json('error');
+        }
+     }else{
+          $getRecord_webDetail = (array) $getRecord_webDetail; 
+          
+         if(in_array($request->col,['logo','favicon','dark_logo'])){
+
+                // $request->validate([
+                //     'logo' => 'mimes:jpeg,png,jpg,gif,svg,webp|max:100',
+                // ]);
+                
+                $websiteName  = strtolower(str_replace(array(" ","'"),'-', $getRecord_webDetail['name']));
+                
+                $image = $request->file('value');
+
+                $imageName = $websiteName.'-'.$request->col.'.'.$image->getClientOriginalExtension();
+                
+                // $imglogo = Image::make($request->value)->resize(150, 70);
+                $image->move(public_path('assets/images/website'),$imageName);             
+             
+                $value = $imageName;
+         }else{
+         
+             if($getRecord_webDetail[$request->col] == $request->val){
+                 return response()->json('success');
+             }
+         }
+         
+        
+        if(DB::table('website_details')->where(['id'=>$websiteId,'company_id'=>$companyId])->update([$request->col=>($value == '' ? null : $value)])){
+            return response()->json('success');
+        }else{
+            return response()->json('error');
+        }        
+     }
+     
+    }   
+}

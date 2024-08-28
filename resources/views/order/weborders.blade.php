@@ -26,46 +26,47 @@
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
-                            <label class="form-control-label">Receipt No</label>
-                            <input type='text' class="form-control" id="receipt" name="receipt" placeholder="Receipt No"/>
+                            <label class="form-control-label">Order ID</label>
+                            <input type='text' class="form-control" id="receipt" name="receipt" value="{{ Request::has('receipt') ? Request::get('receipt') : '' }}" placeholder="Order Id"/>
                             <span class="help-block text-danger" id="rpbox"></span>
                         </div>
                     </div>
                     <div id="from" class="col-md-3">
                         <div class="form-group">
                             <label class="form-control-label">From Date</label>
-                            <input type='text' class="form-control" id="fromdate" name="fromdate" placeholder="DD-MM-YYYY"/>
+                            <input type='text' class="form-control" id="fromdate" name="fromdate" value="{{ Request::has('first') ? Request::get('first') : '' }}" placeholder="DD-MM-YYYY"/>
                             <span class="help-block text-danger" id="rpbox"></span>
                         </div>
                     </div>
                     <div id="to" class="col-md-3">
                         <div class="form-group">
                             <label class="form-control-label">To Date</label>
-                            <input type='text' class="form-control" id="todate" name="todate" placeholder="DD-MM-YYYY"/>
+                            <input type='text' class="form-control" id="todate" name="todate" value="{{ Request::has('second') ? Request::get('second') : '' }}" placeholder="DD-MM-YYYY"/>
                             <span class="help-block text-danger" id="dbox"></span>
                         </div>
                     </div>
-                    <div id="deliveryfrom" class="col-md-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Delivery From Date</label>
-                            <input type='text' class="form-control" id="del_from" name="rpdate" placeholder="DD-MM-YYYY"/>
-                            <span class="help-block text-danger" id="rpbox"></span>
-                        </div>
-                    </div>
-                    <div id="deliveryto" class="col-md-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Delivery To Date</label>
-                            <input type='text' class="form-control" id="del_to" name="date" placeholder="DD-MM-YYYY"/>
-                            <span class="help-block text-danger" id="dbox"></span>
-                        </div>
-                    </div>
+                    <!--<div id="deliveryfrom" class="col-md-3">-->
+                    <!--    <div class="form-group">-->
+                    <!--        <label class="form-control-label">Delivery From Date</label>-->
+                    <!--        <input type='text' class="form-control" id="del_from" name="rpdate" placeholder="DD-MM-YYYY"/>-->
+                    <!--        <span class="help-block text-danger" id="rpbox"></span>-->
+                    <!--    </div>-->
+                    <!--</div>-->
+                    <!--<div id="deliveryto" class="col-md-3">-->
+                    <!--    <div class="form-group">-->
+                    <!--        <label class="form-control-label">Delivery To Date</label>-->
+                    <!--        <input type='text' class="form-control" id="del_to" name="date" placeholder="DD-MM-YYYY"/>-->
+                    <!--        <span class="help-block text-danger" id="dbox"></span>-->
+                    <!--    </div>-->
+                    <!--</div>-->
 
                     <div class="col-md-3">
                         <label class="form-control-label">Select Customer</label>
                         <select id="customer" name="customer" data-placeholder="Select Customer" class="f-right select2">
                             <option value="">Select Customer</option>
+                            @php $customer_parameter = Request::has('customer') ? Request::get('customer') : null  @endphp 
                             @foreach($customer as $value)
-                                <option value="{{ $value->id }}">{{ $value->name }}</option>
+                                <option {{ $customer_parameter == $value->id ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -80,11 +81,24 @@
                         <label class="form-control-label">Select Branch</label>
                         <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2">
                             <option value="">Select Branch</option>
+                           @php $branch_fltr = Request::has('branch') ? Request::get('receipt') : null;  @endphp
                             @foreach($branch as $value)
-                                <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
+                                <option {{ $branch_fltr == $value->branch_id ? 'selected' : '' }} value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                             @endforeach
                         </select>
                     </div>
+                   @if($website != null) 
+                    <div class="col-md-4">
+                        <label class="form-control-label">Select Website</label>
+                        <select id="website" name="website" data-placeholder="Select Website Name" class="f-right select2">
+                                <option value="">Select Website</option>
+                            @php $website_Id = isset($websiteId) ? $websiteId : null @endphp
+                            @foreach($website as $value)
+                                <option {{ $website_Id == $value->id ? 'selected' : '' }}  value="{{ $value->id }}">{{ $value->name }}</option>
+                            @endforeach
+                        </select>
+                    </div> 
+                   @endif    
                 </div>
 
                 <div class="row">
@@ -104,19 +118,19 @@
             </div>
             <hr/>
             <div class="card-block">
-
+               <audio id="orderSound" class="d-none" src="{{ asset('assets/sound/doorbell-sound.wav') }}"> </audio>     
                 <div class="project-table">
                     <table id="order_table" class="table table-striped nowrap dt-responsive" width="100%">
                         <thead>
                         <tr>
+                            <th class="d-none">#</th>
                             <th>Order#</th>
                             <th>Date</th>
                             <th>Branch</th>
-                            <th>Receipt No</th>
                             <th>Customer</th>
-                            <th>Delivery Date</th>
+                            <th>Contact</th>
                             <th>Total Amount</th>
-                            <th>Branch</th>
+                            <!--<th>Branch</th>-->
                              <th>Status</th>
                              <th>Action</th>
 
@@ -124,23 +138,23 @@
                         </thead>
                         <tbody>
                             @foreach($totalorders as $value)
-                                <tr class="{{($value->isSeen == 1 ? 'bg-warning' : '')}}">
-                                    <td>{{$value->id}}</td>
+                                <tr id="tbRow{{ $value->id }}" style="background-color:{{($value->isSeen == 1 ? '#efefef' : '')}}" >
+                                    <td class="d-none">{{ $value->id }}</td>
+                                    <td>{{$value->url_orderid}}</td>
                                     <td>{{$value->date}}</td>
                                     <td>{{$value->branch}}</td>
-                                    <td>{{$value->receipt_no}}</td>
                                     <td>{{$value->name}}</td>
-                                    <td>{{$value->delivery_date}}</td>
+                                    <td>{{$value->mobile}}</td>
                                     <td>{{number_format($value->total_amount,2)}}</td>
-                                    <td>
-                                        <select id="branch{{$value->id}}" class="form-control select2" dataplaceholder="Select Branch" onchange="branchChange('branch{{$value->id}}','{{$value->id}}','{{$value->receipt_no}}')" >
+                                    <!--<td>-->
+                                    <!--    <select id="branch{{--$value->id--}}" class="form-control select2" dataplaceholder="Select Branch" onchange="branchChange('branch{{--$value->id--}}','{{--$value->id--}}','{{--$value->receipt_no--}}')" >-->
 
-                                            @foreach($branch as $val)
-                                                <option {{($val->branch_name == $value->branch ? 'selected' : '')}} value="{{$val->branch_id}}">{{$val->branch_name}}</option>
-                                            @endforeach
+                                    <!--        @foreach($branch as $val)-->
+                                    <!--            <option {{--($val->branch_name == $value->branch ? 'selected' : '')--}} value="{{--$val->branch_id--}}">{{--$val->branch_name--}}</option>-->
+                                    <!--        @endforeach-->
 
-                                        </select>
-                                    </td>
+                                    <!--    </select>-->
+                                    <!--</td>-->
                                     <td>
                                         <select id="status{{$value->id}}" class="form-control select2" dataplaceholder="Select Status" onchange="statusChange('status{{$value->id}}','{{$value->id}}','{{$value->receipt_no}}')">
 
@@ -151,7 +165,24 @@
                                         </select>
                                     </td>
                                     <td class='action-icon'>
-                                        <i onclick='getBill("{{$value->id}}","{{$value->receipt_no}}","{{$value->date}}","{{$value->name}}","{{$value->mobile}}","{{$value->order_mode}}","{{$value->order_status_name}}","{{$value->total_amount}}","{{$value->receive_amount}}","{{$value->payment_mode}}","{{$value->address}}")' class='icofont icofont-eye-alt text-info' data-toggle='tooltip' data-placement='top' title='' data-original-title='View'></i>&nbsp;
+                                        
+                                        <input type="hidden" name="orderId{{ $value->id }}" value="{{$value->url_orderid}}">
+                                        <input type="hidden" name="receiptId{{ $value->id }}" value="{{$value->receipt_no}}">
+                                        <input type="hidden" name="receiptDate{{ $value->id }}" value="{{$value->date}}">
+                                        <input type="hidden" name="custName{{ $value->id }}" value="{{$value->name}}">
+                                        <input type="hidden" name="mobile{{ $value->id }}" value="{{$value->mobile}}">
+                                        <input type="hidden" name="orderStatus{{ $value->id }}" value="{{$value->order_status_name}}">
+                                        <input type="hidden" name="totalAmount{{ $value->id }}" value="{{$value->total_amount}}">
+                                        <input type="hidden" name="address{{ $value->id }}" value="{{$value->address}}">
+                                        <input type="hidden" name="landmark{{ $value->id }}" value="{{$value->landmark}}">
+                                        <input type="hidden" name="deliveryCharge{{ $value->id }}" value="{{$value->delivery_charges}}">
+                                        <input type="hidden" name="deliveryAreaName{{ $value->id }}" value="{{$value->delivery_area_name}}">
+                                        <input type="hidden" name="deliveryType{{ $value->id }}" value="{{$value->delivery_type}}">
+                                        
+                                       <a href="{{ route('getWebsiteSaleReceiptDetails',$value->url_orderid) }}" class="m-r-1"><i class='icofont icofont-eye-alt {{($value->isSeen == 1 ? '' : 'text-primary')}}' data-toggle='tooltip' data-placement='top' title='' data-original-title='View'></i> </a>                                       
+                                        
+                                       <!--<i onclick='getBill("{{--$value->id--}}","{{--$value->receipt_no--}}","{{--$value->date--}}","{{--$value->name--}}","{{--$value->mobile--}}","{{--$value->order_mode--}}","{{--$value->order_status_name--}}","{{--$value->total_amount--}}","{{--$value->receive_amount--}}","{{--$value->payment_mode--}}","{{--$value->address--}}")' class='icofont icofont-eye-alt text-info' data-toggle='tooltip' data-placement='top' title='' data-original-title='View'></i>-->
+                                        <!--&nbsp;-->
                                         &nbsp;<i onclick="showReceipt('{{$value->receipt_no}}')" class='icofont icofont icofont-printer text-success' data-toggle='tooltip' data-placement='top' title='' data-original-title='Print Receipt'></i>
                                     </td>
 
@@ -178,7 +209,7 @@
 
                     <div class="row">
                         <div class="col-md-3">
-                            <label class="f-w-600">Receipt No :</label>
+                            <label class="f-w-600">Order Id :</label>
                         </div>
                         <div class="col-md-3">
                             <label id="receiptno" class="">1234564897978</label>
@@ -204,7 +235,23 @@
                             <label id="mobile" class="">0311-1234567</label>
                         </div>
                     </div>
-					<div class="row">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="f-w-600">Delivery Area:</label>
+                        </div>
+                        <div class="col-md-9">
+                            <label id="deliveryAreaName" class=""></label>
+                        </div>
+                    </div> 
+                    <div class="row">
+                        <div class="col-md-3">
+                            <label class="f-w-600">Delivery Type:</label>
+                        </div>
+                        <div class="col-md-9">
+                            <label id="deliveryType" class=""></label>
+                        </div>
+                    </div>                                        
+                    <div class="row">
                         <div class="col-md-3">
                             <label class="f-w-600">Address:</label>
                         </div>
@@ -214,10 +261,10 @@
                     </div>
                     <div class="row">
                         <div class="col-md-3">
-                            <label class="f-w-600">Order Type:</label>
+                            <label class="f-w-600">Land Mark:</label>
                         </div>
                         <div class="col-md-3">
-                            <label id="type" class="">Take Away</label>
+                            <label id="landmark" class="">Land Mark</label>
                         </div>
                         <div class="col-md-3">
                             <label class="f-w-600 f-right">Status :</label>
@@ -246,26 +293,47 @@
 
                     <hr/>
                     <div class="row">
+                        
+                      <div class="col-md-6">
+                            <label class="f-w-600 f-left">Sub Amount :</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label id="subTotal" class="f-right">10000</label>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="f-w-600 f-left">Delivery Charge :</label>
+                        </div>
+                        <div class="col-md-6">
+                            <label id="deliveryCharge" class="f-right">1000</label>
+                        </div>
+
                         <div class="col-md-6">
                             <label class="f-w-600 f-left">Total Amount :</label>
                         </div>
                         <div class="col-md-6">
-                            <label id="tamount" class="f-right">10000</label>
-                        </div>
+                            <label id="totalAmount" class="f-right">10000</label>
+                        </div>                        
+                        <!--<div class="col-md-6">-->
+                        <!--    <label class="f-w-600 f-left">Total Amount :</label>-->
+                        <!--</div>-->
+                        <!--<div class="col-md-6">-->
+                        <!--    <label id="tamount" class="f-right">10000</label>-->
+                        <!--</div>-->
 
-                        <div class="col-md-6">
-                            <label class="f-w-600 f-left">Advance :</label>
-                        </div>
-                        <div class="col-md-6">
-                            <label id="receive" class="f-right">1000</label>
-                        </div>
+                        <!--<div class="col-md-6">-->
+                        <!--    <label class="f-w-600 f-left">Advance :</label>-->
+                        <!--</div>-->
+                        <!--<div class="col-md-6">-->
+                        <!--    <label id="receive" class="f-right">1000</label>-->
+                        <!--</div>-->
 
-                        <div class="col-md-6">
-                            <label class="f-w-600 f-left">Bal. Amount :</label>
-                        </div>
-                        <div class="col-md-6">
-                            <label id="bal" class="f-right">10000</label>
-                        </div>
+                        <!--<div class="col-md-6">-->
+                        <!--    <label class="f-w-600 f-left">Bal. Amount :</label>-->
+                        <!--</div>-->
+                        <!--<div class="col-md-6">-->
+                        <!--    <label id="bal" class="f-right">10000</label>-->
+                        <!--</div>-->
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -305,15 +373,31 @@
 @section('scriptcode_three')
     <script type="text/javascript">
         $(".select2").select2();
+        
+      
+        var Interval_checkOrder = setInterval(checkOrders, 10000);
 
+        $(".btn_close_md").on('click',function(){
+            Interval_checkOrder = setInterval(checkOrders, 10000);            
+        })
+     
 		
         $('#paymentmode').change(function(){
             trf_details($('#paymentmode').val());
         });
-
+        
         $('#fetch').click(function(){
-            window.location = "{{url('web-orders-filter')}}?first="+$('#fromdate').val()+"&second="+$('#todate').val()+"&customer="+$('#customer').val()+"&receipt="+$('#receipt').val()+"&branch="+$('#branch').val();
-        });
+            if($('#fromdate').val() != '' || $('#todate').val() != '' || $('#receipt').val() != '' || $('#branch').val() != '' || $('#customer').val() != '' || $('#website').val() != ''){
+               window.location = "{{route('getWebOrderFilter')}}?first="+$('#fromdate').val()+"&second="+$('#todate').val()+"&customer="+$('#customer').val()+"&receipt="+$('#receipt').val()+"&branch="+$('#branch').val()+"&website="+$('#website').val()+"&page_mode=1";
+            }
+            
+        });        
+
+        // $('#fetch').click(function(){
+   
+            
+        //     window.location = "{{url('web-orders-filter')}}?first="+$('#fromdate').val()+"&second="+$('#todate').val()+"&customer="+$('#customer').val()+"&receipt="+$('#receipt').val()+"&branch="+$('#branch').val();
+        // });
 
         function branchChange(id,receipt,receiptNo){     
             $.ajax({
@@ -324,7 +408,7 @@
                     branch : $('#'+id).val()
                 },
                 success:function(result){
-					orderSeen(receiptNo)
+					orderSeen(receiptNo,receipt)
                     swal_alert("Success","Branch changed successfully","success","false")
                 }
             });
@@ -364,29 +448,33 @@
 		function statusChangeFromDB(receipt,status,receiptNo,rider)
 		{
 			 $.ajax({
-                url: "{{url('/change-order-status')}}",
+                url: "{{url('/sales/change-website-order-status')}}",
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",
-                    receipt:receipt,
-                    status : status,
-					rider:rider
+                    id:receipt,
+                    status : status
                 },
                 success:function(result){
-					orderSeen(receiptNo)
+                    console.log(result)
+					orderSeen(receiptNo,receipt)
 					$('#order-status-modal').modal("hide");
                     swal_alert("Success","Status changed successfully","success","false")
                 }
             });
 		}
 		
-		async function orderSeen(ReceiptNo){
+		async function orderSeen(ReceiptNo,tbrowId){
 			  $.ajax({
 					url : "{{url('/order-seen')}}",
 					type : "POST",
 					data : {_token : "{{csrf_token()}}", receiptNo:ReceiptNo},
 					dataType : 'json',
-					success : function(result){
-						
+					success : function(resp){
+						if(resp.status == true){
+						       if($("#tbRow"+tbrowId).hasClass('bg-primary')){  
+                                    $("#tbRow"+tbrowId).removeClass('bg-primary');
+                               }
+						}
 					}
 				});
 		}
@@ -576,6 +664,223 @@
             window.location = "{{url('print')}}"+"/"+ReceiptNo;
         }
 
+
+       function getBill_website(id)
+        {
+            clearInterval(Interval_checkOrder);
+            orderSeen($("input[name='receiptId"+id+"']").val(),id);
+           
+           if($("#tbRow"+id).hasClass('bg-primary')){  
+                $("#tbRow"+id).removeClass('bg-primary');
+           }
+            
+            $('#product-modal').modal("show");
+            $('#receiptno').text($("input[name='orderId"+id+"']").val());
+            $('#date').text($("input[name='receiptDate"+id+"']").val());
+            $('#name').text($("input[name='custName"+id+"']").val());
+            $('#mobile').text($("input[name='mobile"+id+"']").val());
+           
+            $('#status').text($("input[name='orderStatus"+id+"']").val());
+            $('#address').text($("input[name='address"+id+"']").val());
+            $('#landmark').text($("input[name='landmark"+id+"']").val());
+            $('#deliveryCharge').text("Rs. "+numberWithCommas($("input[name='deliveryCharge"+id+"']").val()));
+            $('#deliveryAreaName').text($("input[name='deliveryAreaName"+id+"']").val());
+            $('#deliveryType').text($("input[name='deliveryType"+id+"']").val());
+
+                var subTotal = parseInt($("input[name='totalAmount"+id+"']").val()) - parseInt($("input[name='deliveryCharge"+id+"']").val());
+            $('#subTotal').text("Rs. "+numberWithCommas(subTotal));
+            $('#totalAmount').text("Rs. "+numberWithCommas($("input[name='totalAmount"+id+"']").val()));
+            
+
+            $.ajax({
+                url: "{{--route('getWebstieSaleReceiptDetails')--}}",
+                type: 'GET',
+                dataType:"json",
+                async:true,
+                data:{_token:"{{ csrf_token() }}",
+                    id:id,
+                },
+                success:function(result){
+                     console.log(result);
+                    $("#tablemodal tbody").empty();
+                    for(var count =0;count < result.products.length; count++){
+
+                        var AddonArray = result.products[count].prod_addons;
+                        var addonColmn = '';
+                        
+                        var dealArray = result.products[count].deal;
+                        var dealColmn = '';                        
+
+                          if(result.products[count].prod_variation.length == 0){
+                              
+                                if(dealArray.length != 0){
+                                    for(var deal_count =0;deal_count < dealArray.length; deal_count++){
+                                        
+                                         dealColmn += '<br/><strong>'+dealArray[deal_count].name+':</strong>';
+                                           for(var deal_vl_count =0;deal_vl_count < dealArray[deal_count].values.length; deal_vl_count++){
+                                                   dealColmn += '<p>'+dealArray[deal_count].values[deal_vl_count].name+'</p>';
+                                                   
+                                              for(var dealAddon_count =0;dealAddon_count < dealArray[deal_count].values[deal_vl_count].addons.length; dealAddon_count++){
+                                                   dealColmn += '<br/><strong>Addon</strong><br/><strong>'+dealArray[deal_count].values[deal_vl_count].addons[dealAddon_count].name+':</strong>'; 
+                                                   for(var dealAddonVal_count =0;dealAddonVal_count < dealArray[deal_count].values[deal_vl_count].addons[dealAddon_count].values.length; dealAddonVal_count++){
+                                                       var tmp = dealArray[deal_count].values[deal_vl_count].addons[dealAddon_count].values[dealAddonVal_count].name;
+                                                   dealColmn += '<p>'+tmp+'</p>'; 
+                                                 }
+                                               }                                                   
+                                                   
+                                           }
+                                      }
+                                }                                
+                                                              
+                              
+                                $("#tablemodal tbody").append(
+                                    "<tr>" +
+                                    "<td >"+result.products[count].product_name+"<br/>"+dealColmn+"</td>" +
+                                    "<td >"+result.products[count].total_qty+"</td>" +
+                                    "<td '>"+numberWithCommas(result.products[count].webcart_amount)+"</td>" +
+                                    "</tr>"
+                                ) 
+                                                                                        
+                            }else{
+                                
+
+                                
+                                if(AddonArray.length != 0){
+                                    for(var addon_count =0;addon_count < AddonArray.length; addon_count++){
+                                        
+                                         addonColmn += '<br/><strong>Addons</strong><br/><strong>'+AddonArray[addon_count].name+':</strong>';
+                                           for(var addon_vl_count =0;addon_vl_count < AddonArray[addon_count].values.length; addon_vl_count++){
+                                               var addonPrice = AddonArray[addon_count].values[addon_vl_count].price == 0 ? '' : AddonArray[addon_count].values[addon_vl_count].price;
+                                                   addonColmn += '<p>'+AddonArray[addon_count].values[addon_vl_count].name+'</p>'; 
+                                           }
+                                      }
+                                }      
+                                
+                                
+                                for(var count2 =0;count2 < result.products[count].prod_variation.length; count2++){
+                                    
+                                     var VariationArray = result.products[count].prod_variation[count2].variation;
+                                     var variatColmn = '';
+                                        if(VariationArray.length > 0){
+                                            for(var variat_count =0;variat_count < VariationArray.length; variat_count++){
+                                                 variatColmn += '<br/><strong>'+VariationArray[variat_count].name+':</strong>';
+                                                   for(var variat_vl_count =0;variat_vl_count < VariationArray[variat_count].values.length; variat_vl_count++){
+                                                       var variatPrice = VariationArray[variat_count].values[variat_vl_count].price == 0 ? '' : VariationArray[variat_count].values[variat_vl_count].price;
+                                                           variatColmn += '<p>'+VariationArray[variat_count].values[variat_vl_count].name+'</p>'; 
+                                                   }
+                                              }
+                                        }                                      
+                                            
+                                        var row =   "<tr>" +
+                                                    "<td >"+result.products[count].product_name+"<br/>"+result.products[count].prod_variation[count2].variate_name+"  "+variatColmn+addonColmn+"</td>" +
+                                                    "<td >"+result.products[count].prod_variation[count2].total_qty+"</td>" +
+                                                    "<td >"+numberWithCommas(result.products[count].webcart_amount)+"</td>" +
+                                                    "</tr>";
+                                        $("#tablemodal tbody").append(row); 
+                               }
+                            }
+                            
+
+
+                              
+                    //         // for(var count2 =0;count2 < result.variatItem.length; count2++){
+                    //         //     $("#tablemodal tbody").append(
+                    //         //         "<tr>" +
+                    //         //         "<td >"+result.variatItem[count2].item_name+"</td>" +
+                    //         //         "<td >"+result.variatItem[count2].total_qty+"</td>" +
+                    //         //         "<td '>"+parseInt(result.variatItem[count2].total_amount).toLocaleString()+"</td>" +
+                    //         //         "</tr>"
+                    //         //     )
+                                
+                    //         // }                        
+                    }
+                }
+            });
+         
+
+        }
+
+      function checkOrders(){
+         
+        $.ajax({
+                url:'{{ route("checkwebsiteOrders") }}',
+                type:'POST',
+                data:{_token:'{{ csrf_token() }}'},
+                dataType:'json',
+                async:true,
+                success:function(resp){
+                   var sound = $("#orderSound");
+                     if(resp.status){
+                        // notify('You have a new order', 'success');
+                        var orderLists = resp.orders;
+                        var orderstatus = resp.orderStatus;
+                        
+                        for(var i =0;i < orderLists.length; i++){
+                            if($("#tbRow"+orderLists[i].id).length == 0){
+                                notify('You have a new order', 'success');
+                                sound.get(0).play();
+                                $("#order_table tbody").prepend(
+                                 '<tr id="tbRow'+orderLists[i].id+'" class="bg-primary">'+
+                                    '<td class="d-none">'+orderLists[i].id+'</td>'+
+                                    '<td>'+orderLists[i].url_orderid+'</td>'+
+                                    '<td>'+orderLists[i].date+'</td>'+
+                                    '<td>'+orderLists[i].branch+'</td>'+
+                                    '<td>'+orderLists[i].name+'</td>'+
+                                    '<td>'+orderLists[i].mobile+'</td>'+
+                                    '<td>'+numberWithCommas(orderLists[i].total_amount)+'</td>'+
+                                    '<td><select id="status'+orderLists[i].id+'"  class="form-control select2" dataplaceholder="Select Status"></select></td>'+
+                                    '<td class="action-icon">'+
+                                        '<input type="hidden" name="orderId'+orderLists[i].id+'" value="'+orderLists[i].url_orderid+'">'+
+                                        '<input type="hidden" name="receiptId'+orderLists[i].id+'" value="'+orderLists[i].receipt_no+'">'+
+                                        '<input type="hidden" name="receiptDate'+orderLists[i].id+'" value="'+orderLists[i].date+'">'+
+                                        '<input type="hidden" name="custName'+orderLists[i].id+'" value="'+orderLists[i].name+'">'+
+                                        '<input type="hidden" name="mobile'+orderLists[i].id+'" value="'+orderLists[i].mobile+'">'+
+                                        '<input type="hidden" name="orderStatus'+orderLists[i].id+'" value="'+orderLists[i].order_status_name+'">'+
+                                        '<input type="hidden" name="totalAmount'+orderLists[i].id+'" value="'+orderLists[i].total_amount+'">'+
+                                        '<input type="hidden" name="address'+orderLists[i].id+'" value="'+orderLists[i].address+'">'+
+                                        '<input type="hidden" name="landmark'+orderLists[i].id+'" value="'+orderLists[i].landmark+'">'+
+                                        '<input type="hidden" name="deliveryCharge'+orderLists[i].id+'" value="{'+orderLists[i].delivery_charges+'">'+
+                                        '<input type="hidden" name="deliveryAreaName'+orderLists[i].id+'" value="'+orderLists[i].delivery_area_name+'">'+
+                                        '<input type="hidden" name="deliveryType'+orderLists[i].id+'" value="'+orderLists[i].delivery_type+'">'+
+                                        '<a href="'+location.origin+'/sales/website-order-detail/'+orderLists[i].url_orderid+'" class="m-r-1"><i class="icofont icofont-eye-alt"  data-toggle="tooltip" data-placement="top" title="" data-original-title="View"></i></a>'+
+                                        '<i onclick="showReceipt(\''+orderLists[i].receipt_no+'\')" class="icofont icofont icofont-printer text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Print Receipt"></i>'
+                                    +'</td></tr>');
+                                       
+                                       $("#status"+orderLists[i].id).attr("onchange","statusChange('status"+orderLists[i].id+"','"+orderLists[i].id+"','"+orderLists[i].receipt_no+"')");
+                                       
+                                       $("#status"+orderLists[i].id).select2();
+                                       
+                                    for(var c=0; c < orderstatus.length;c++){
+                                         if(c == 0){
+                                             $("#status"+orderLists[i].id).append("<option value=''>Select</option>");
+                                         }
+                                         
+                                         if(orderstatus[c].order_status_name == orderLists[i].order_status_name){
+                                             $("#status"+orderLists[i].id).append("<option selected value="+orderstatus[c].order_status_id+">"+orderstatus[c].order_status_name+"</option>");
+                                         }else{
+                                             $("#status"+orderLists[i].id).append("<option value="+orderstatus[c].order_status_id+">"+orderstatus[c].order_status_name+"</option>");
+                                         }
+                                        
+                                    }
+                            }
+                        }
+                        
+                          //window.location="{{route('getWebOrderFilter')}}?first="+$('#fromdate').val()+"&second="+$('#todate').val()+"&customer="+$('#customer').val()+"&receipt="+$('#receipt').val()+"&branch="+$('#branch').val()+"&website="+$('#website').val()+"&page_mode=1";
+                     
+                         // window.location=location.origin+'/web-orders-view';
+                         
+                     }
+                  }
+                  
+               })
+        }
+        
+function numberWithCommas(number) {
+    var parts = number.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}        
+        
 
     </script>
 @endsection

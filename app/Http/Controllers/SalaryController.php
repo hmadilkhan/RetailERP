@@ -115,6 +115,20 @@ class SalaryController extends Controller
         $permission = $salary->check_permision();
 		$salarydetails = DB::table("increment_details")->where("emp_id",$request->empid)->get();
 		$employee = DB::table("employee_details")->where("empid",$request->empid)->get();
+		$totalsalary = DB::table("increment_details")->where("emp_id",$request->empid)->get();
+	    $totalminutes = 14400; // This come from the calculation Total day * daily hours * total second = 30 * 8 * 60 = 14400
+	    $security_deposit = 0;
+	    $perminsalary = 0;
+		$otamount = 0;
+		
+		if(!empty($totalsalary)){
+			if($totalsalary[0]->gross_salary == "0" or $totalsalary[0]->gross_salary == ""){
+				$perminsalary = number_format($totalsalary[0]->basic_pay / $totalminutes,2);
+			}else{
+				$perminsalary = number_format($totalsalary[0]->gross_salary * $totalminutes,2);
+			}
+		}
+		
         if (count($permission) != 0) {
           if ($permission[0]->allowances != 0) {
 			$allowances = $salary->getallowance_details($request->empid);
@@ -134,7 +148,12 @@ class SalaryController extends Controller
           else{
           $overtime = "";
           }
-            return view('Salary.grosshead-salary', compact('allowances','bonus','overtime','salarydetails','employee'));
+		  $ot = $salary->calculateOvertime($request->empid,$request->fromdate,$request->todate);
+		  if($ot[0]->ot > 0){
+			$otamount = $perminsalary * $ot[0]->ot;  
+		  }
+		  
+            return view('Salary.grosshead-salary', compact('allowances','bonus','overtime','salarydetails','employee','otamount'));
         }
         else{
               return 0;
@@ -146,27 +165,63 @@ class SalaryController extends Controller
        $permission = $salary->check_permision();
 	   $eobi = DB::table("eobi")->where("company_id",session("company_id"))->get();
 	   $employee = DB::table("employee_details")->where("empid",$request->empid)->get();
+	   $totalsalary = DB::table("increment_details")->where("emp_id",$request->empid)->get();
+	   $totalminutes = 14400; // This come from the calculation Total day * daily hours * total second = 30 * 8 * 60 = 14400
 	   $security_deposit = 0;
+	   $perminsalary = 0;
+	   
+		if(!empty($totalsalary)){
+			if($totalsalary[0]->gross_salary == "0" or $totalsalary[0]->gross_salary == ""){
+				$perminsalary = number_format($totalsalary[0]->basic_pay / $totalminutes,2);
+			}else{
+				$perminsalary = number_format($totalsalary[0]->gross_salary * $totalminutes,2);
+			}
+		}
+		
         if (count($permission) != 0) {
           if ($permission[0]->advance != 0) {
           $advance = $salary->getadvance_details($request->empid,$request->fromdate,$request->todate);
+		  
           }
           else{
             $advance = "";
           }
            if ($permission[0]->loan != 0) {
           $loan = $salary->getloanamt_details($request->empid);
+		  
           }
           else{
             $loan = "";
           }
           if ($permission[0]->taxes != 0) {
           $tax = $salary->gettax_amount($request->empid);
+		 
           }
           else{
             $tax = "";
           }
+		  
           $absentamt = $salary->getabsent_amount($request->empid,$request->fromdate,$request->todate);
+          $late = $salary->calculateLate($request->empid,$request->fromdate,$request->todate);
+          $early = $salary->calculateEarly($request->empid,$request->fromdate,$request->todate);
+          $ot = $salary->calculateOvertime($request->empid,$request->fromdate,$request->todate);
+		  
+		  $lateamount = 0;
+		  $earlyamount = 0;
+		  $otamount = 0;
+		  
+		  if($late[0]->late > 0){
+			$lateamount = $perminsalary * $late[0]->late;
+		  }
+		  
+		  if($early[0]->early > 0){
+			$earlyamount = $perminsalary * $early[0]->early;
+		  }
+		  
+		  if($ot[0]->ot > 0){
+			$otamount = $perminsalary * $ot[0]->ot;  
+		  }
+
 		  if($employee[0]->security_deposit == 1){
 			$branch = DB::table("employee_shift_details")->where("emp_id",$request->empid)->get();
 			$deposits = DB::table("hr_branch_security_deposit")->where("branch_id",$branch[0]->branch_id)->get();
@@ -176,7 +231,7 @@ class SalaryController extends Controller
 				$security_deposit = $deposits[0]->monthly_deduction;
 			}
 		  }
-          return view('Salary.deductionhead-salary', compact('advance','loan','absentamt','tax','eobi','employee','security_deposit','employee')); 
+          return view('Salary.deductionhead-salary', compact('advance','loan','absentamt','tax','eobi','employee','security_deposit','employee','lateamount','earlyamount','otamount')); 
         }
 		
         else{
@@ -449,6 +504,7 @@ class SalaryController extends Controller
 
     public function getdetails(salary $salary, request $request){
     $details = $salary->salary_details($request->fromdate,$request->todate,$request->branchid,$request->empid);
+	
    return $details;
     }
 

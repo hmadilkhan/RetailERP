@@ -35,37 +35,29 @@
 					<select class="form-control" name="type" id="type">
 						<option>Select</option>
 						<option {{ old('type') == 'restaurant' ? 'selected' : '' }} value="restaurant">Restaurant</option>
-						<option {{ old('type') == 'retail' ? 'selected' : '' }} value="retail">Retail</option>
+						<option {{ old('type') == 'grocery' ? 'selected' : '' }} value="grocery">Grocery</option>
+						<option {{ old('type') == 'boutique' ? 'selected' : '' }} value="boutique">Boutique</option>
 					</select>
 					@error('type')
 						<div class="form-control-feedback text-danger">Field is required please select it</div>
 					@enderror
 				</div>
 
-				<div class="form-group">
-					<label class="form-control-label">Theme</label>
-					<select class="form-control" name="theme" id="theme">
-					  <option>Select</option>
-					  <option {{ old('theme') == 'restaurant' ? 'selected' : '' }} value="restaurant">Restaurant Theme</option>
-					  <option {{ old('theme') == 'retail' ? 'selected' : '' }} value="retail">Retail Theme</option>
-					</select>
-					@error('theme')
-						<div class="form-control-feedback text-danger">Field is required please select it</div>
-					@enderror
-				</div>				
-
                 <div class="form-group">
                     <label class="control-label">Website Name</label>
                     <input name="name" type="text" class="form-control" placeholder="Website Name" value="{{ old('name') }}" />
+                    @error('name')
+                     <div class="form-control-feedback text-danger">{{ $message }}</div>
+                    @enderror 
                 </div>
                 <div class="form-group">
                     <label class="control-label">Domain Name</label>
                     <input name="url" type="text" class="form-control" placeholder="Domain Name" value="{{ old('url') }}"/>
                 </div>
-                <div class="form-group">
-                    <label class="control-label">TopBar</label>
-                    <input type="text" class="form-control" name="topbar" placeholder="TopBar Message" value="{{ old('topbar') }}" />
-                </div>
+                <!--<div class="form-group">-->
+                <!--    <label class="control-label">TopBar</label>-->
+                <!--    <input type="text" class="form-control" name="topbar" placeholder="TopBar Message" value="{{-- old('topbar') --}}" />-->
+                <!--</div>-->
 
                 <div class="form-group">
                     <label class="control-label">UAN Number</label>
@@ -78,7 +70,7 @@
 
 				<div class="form-group @error('logo') 'has-danger' @enderror ">
 				<a href="#">
-					<img id="preview" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+					<img id="preview" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 				</a>					
 					<label for="logo" class="form-control-label">Logo</label></br>
 
@@ -93,7 +85,7 @@
 
 				<div class="form-group @error('favicon') 'has-danger' @enderror ">
 				<a href="#">
-					<img id="fpreview" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+					<img id="fpreview" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 				</a>					
 					<label for="favicon" class="form-control-label">Favicon</label></br>
 
@@ -212,6 +204,6 @@
 
 
 @section('css_code')
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/wizardform.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/wizardform.css') }}">
    
 @endsection

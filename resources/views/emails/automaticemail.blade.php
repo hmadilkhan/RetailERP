@@ -34,7 +34,7 @@
                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 16px; vertical-align: top; color: #fff; font-weight: 500; text-align: center; border-radius: 3px 3px 0 0; background-color: #4CAF50; margin: 0; padding: 20px;"
                                         align="center" bgcolor="#4CAF50 !important" valign="top">
                                         <!--<a href="https://sabsoft.com.pk/Retail/" style="font-size:32px;color:#fff;"> SABIFY</a> -->
-                                        <img width="210" height="100" src="{{asset('public/assets/images/email/sabify.png')}}" />
+                                        <img width="210" height="100" src="{{asset('assets/images/email/sabify.png')}}" />
                                         <br>
                                         <span style="margin-top: 10px;display: block;"><b>{{$body->reportname}} of {{$body->company_name}} (
                                                 {{$body->branch_name}} )</b></span>

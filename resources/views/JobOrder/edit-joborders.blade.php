@@ -52,7 +52,7 @@
             <div class="card-block">
                 <div class="row">
                     <!-- product select box -->
-                    <div class="col-lg-6  col-sm-12">
+                    <div class="col-lg-4  col-sm-12">
                         <div class="form-group">
                             <label class="form-control-label">Select Product</label>
                             <select class="select2 form-control" data-placeholder="Select Product" id="product"  name="product" onchange="getuom()">
@@ -88,6 +88,17 @@
                         <div class="form-group">
                             <label class="form-control-label">Weight | Quantity</label>
                             <input type="text" readonly="true"  name="weight" placeholder="0" id="weight" class="form-control" />
+                            <span class="help-block"></span>
+                        </div>
+                    </div>
+					<div class="col-lg-2  col-sm-12">
+                        <div class="form-group">
+                            <label class="form-control-label">Used in DineIn</label>
+                            <select class="select2 form-control" data-placeholder="Select DineIn" id="dinein"  name="dinein">
+                                <option value="">Select DineIn</option>
+								<option value="1">YES</option>
+								<option value="0">NO</option>
+                            </select>
                             <span class="help-block"></span>
                         </div>
                     </div>
@@ -129,6 +140,7 @@
                             <th>Product</th>
                             <th>Quantity</th>
                             <th>Amount</th>
+                            <th>Used In DineIn</th>
                             <th>Action</th>
                         </tr>
                         </thead>
@@ -311,6 +323,7 @@
                                     {
                                         getDetails();
                                         getCosting();
+										emptyControls();
                                     }
                                 }
                             });
@@ -331,17 +344,28 @@
                             usage: $('#itemqty').val(),
                             amount: $('#cost').val(),
                             productmode: $('#productmode').val(),
+                            dineIn: $('#dinein').val(),
                         },
                         success : function(result){
                             swal_alert("Success !","Updated Successfully!","success");
                             mode = "insert";
                             getDetails();
                             getCosting();
+							emptyControls();
                         }
                     });
                 }
             }
         });
+		function emptyControls(){
+			$('#update_id').val('').change();
+			$('#product').val('');
+			$('#itemqty').val('');
+			$('#cost').val('');
+			$('#productmode').val('');
+			$('#dinein').val('').change();
+		}
+		
         getDetails();
         function getDetails(){
             $.ajax({
@@ -357,7 +381,8 @@
                             "<td>"+value.product_name +"</td>" +
                             "<td>"+value.usage_qty +"</td>" +
                             "<td>"+value.cost+"</td>" +
-                            "<td class='action-icon'><i id='btn"+index+"' onclick='updateItem("+value.recipy_details_id+","+value.item_id+","+value.mode_id+","+value.usage_qty+","+value.cost+")'  class='icofont icofont-ui-edit' data-toggle='tooltip' data-placement='top' title='' data-original-title='Edit'></i>"+" &nbsp;"+"<i id='btn"+index+"' onclick='deleteItem("+value.recipy_details_id+","+value.recipy_id+")'  class='icofont icofont-ui-delete' data-toggle='tooltip' data-placement='top' title='' data-original-title='Delete'></i></td>" +
+                            "<td>"+(value.used_in_dinein == 1 ? 'YES' : 'No')+"</td>" +
+                            "<td class='action-icon'><i id='btn"+index+"' onclick='updateItem("+value.recipy_details_id+","+value.item_id+","+value.mode_id+","+value.usage_qty+","+value.cost+","+value.used_in_dinein+")'  class='icofont icofont-ui-edit' data-toggle='tooltip' data-placement='top' title='' data-original-title='Edit'></i>"+" &nbsp;"+"<i id='btn"+index+"' onclick='deleteItem("+value.recipy_details_id+","+value.recipy_id+")'  class='icofont icofont-ui-delete' data-toggle='tooltip' data-placement='top' title='' data-original-title='Delete'></i></td>" +
                             "</tr>"
                         );
                     });
@@ -365,13 +390,14 @@
             });
         }
 
-        function updateItem(id,itemid,productmode,qty,amount){
+        function updateItem(id,itemid,productmode,qty,amount,usedIn){
 
             mode = "update";
             $("#product").val(itemid).change();
             $('#update_id').val(id);
             $('#itemqty').val(qty);
             $('#cost').val(amount);
+            $('#dinein').val(usedIn).change();
         }
 
         function deleteItem(id,recipyid)

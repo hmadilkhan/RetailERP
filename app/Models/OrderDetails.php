@@ -25,4 +25,14 @@ class OrderDetails extends Model
 	{
 		return number_format($this->total_amount,2);
 	}
+	
+	public function itemstatus() 
+    {
+        return $this->belongsTo(OrderStatus::class, 'status', 'order_status_id');
+    }
+	
+	public function statusLogs() 
+    {
+        return $this->hasMany(OrderItemStatusLog::class, 'item_id', 'receipt_detail_id');
+    }
 }

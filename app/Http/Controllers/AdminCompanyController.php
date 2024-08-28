@@ -6,6 +6,8 @@ use App\adminCompany;
 use App\branch;
 use Illuminate\Http\Request;
 use Image;
+use Illuminate\Support\Facades\DB;
+use \stdClass;
 
 class AdminCompanyController extends Controller
 {
@@ -38,7 +40,9 @@ class AdminCompanyController extends Controller
     {
         $country = adminCompany::getcountry();
         $city = adminCompany::getcity();
-        return view('Admin.Company.create', compact('country','city')); 
+		$currencies = DB::table('currencies')->get();
+		$packages = DB::table('packages')->get();
+        return view('Admin.Company.create', compact('country','city','currencies','packages')); 
     }
 
     /**
@@ -49,8 +53,7 @@ class AdminCompanyController extends Controller
      */
     public function store(Request $request,adminCompany $adminCompany,branch $branch)
     {
-
-        $imageName= "";
+	    $imageName= "";
         $posbg = "";
         $rules = [
             'companyname' => 'required',
@@ -108,9 +111,21 @@ class AdminCompanyController extends Controller
             'pos_background' => $posbg,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
+			'package_id' => $request->package,
         ];
 
         $result =  $adminCompany->insert($items);
+		
+		if($request->currency != ""){
+			$myObj = new stdClass();
+			$myObj->currency = $request->currency;
+			$myJSON = json_encode($myObj);
+			
+			DB::table("settings")->insert([
+				"company_id" =>  $result,
+				"data" =>  $myJSON,
+			]);
+		}
 		
 		$items = 
 		[
@@ -160,7 +175,12 @@ class AdminCompanyController extends Controller
         $country = adminCompany::getcountry();
         $city = adminCompany::getcity();
         $company = $adminCompany->getCompanyById($request->id);
-        return view('Admin.Company.edit', compact('country','city','company')); 
+		$currencies = DB::table('currencies')->get();
+		$setting = DB::table('settings')->where("company_id",$request->id)->get();
+		$setting = json_decode($setting[0]->data,true);
+		$currencyname = $setting["currency"];
+		$packages = DB::table('packages')->get();
+        return view('Admin.Company.edit', compact('country','city','company','currencies','currencyname','packages')); 
     }
 
     /**
@@ -195,7 +215,7 @@ class AdminCompanyController extends Controller
 //            $request->posbgimg->move(public_path('assets/images/pos-background/'), $posbg);
         }
 
-
+		
 
         if(!empty($request->vdimg)){
                 $image_path = public_path('assets/images/company/'.$request->prev_logo);  // Value is not URL but directory file path
@@ -227,9 +247,21 @@ class AdminCompanyController extends Controller
             'logo' =>  ($imageName == "" ? $request->prev_logo : $imageName),
             'pos_background' => ($posbg == "" ? $request->pos_bg_logo : $posbg),
             'updated_at' => date('Y-m-d H:i:s'),
+			'package_id' => $request->package,
         ];
 
         $result =  $adminCompany->updateCompany($items,$request->company_id);
+		
+		if($request->currency != ""){
+			$myObj = new stdClass();
+			$myObj->currency = $request->currency;
+			$myJSON = json_encode($myObj);
+			
+			DB::table("settings")->where("company_id",$request->company_id)->update([
+				"data" =>  $myJSON,
+			]);
+		}
+		
         return redirect()->route('company.index');
 
         

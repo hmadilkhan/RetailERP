@@ -211,7 +211,7 @@
                     @foreach($details as $value)
                         <tr>
                             <td class="text-center">
-                                <img width="42" height="42" src="{{ asset('public/assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
+                                <img width="42" height="42" src="{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
                             </td>
 {{--                            <td >{{$value->branch_name}}</td>--}}
 {{--                            <td >{{$value->department_name}}</td>--}}
@@ -548,7 +548,7 @@
 
                                 $("#tblposproducts tbody").append(
                                     "<tr>" +
-                                    "<td class='text-center'><img width='42' height='42' src='public/assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
+                                    "<td class='text-center'><img width='42' height='42' src='assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
                                     "<td>"+result[count].item_code +" | "+result[count].item_name+"</td>" +
                                     "<td>"+result[count].product_name+"</td>" +
                                     "<td>"+result[count].department_name+"</td>" +

@@ -109,6 +109,8 @@ class branch extends Model
                    ->join('branch','branch.branch_id','web_branches.branch_id')
                    ->select('branch.branch_id','branch.branch_name')
                    ->where('web_branches.website_id',$websiteId)
+                   ->where('web_branches.status',1)
+                   ->groupBy('web_branches.branch_id')
                    ->get();
     }    
 

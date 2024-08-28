@@ -42,6 +42,80 @@
   display: inline-block;
 }
 
+/*.switch {*/
+/*  position: relative;*/
+/*  display: inline-block;*/
+/*  width: 60px;*/
+/*  height: 34px;*/
+/*}*/
+
+/* Hide default HTML checkbox */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 43px;
+  height: 21px;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+  /*content:'On';*/
+}
+
+input+.slider:before {
+	/*content: "Off";*/
+ }
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
 /*img {
   height: 100%;
 
@@ -68,22 +142,30 @@
            <h5 class="card-header-text">Discount List</h5>
            <a href="{{url('/create-discount')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Discount
               </a>
+              
+           <a href="javascript:void(0)" class="btn btn-danger waves-effect waves-light f-right m-r-1 d-none" id="removeAllBtn" data-id="{{ $status }}"> <i class="icofont icofont-plus f-18 m-r-5"></i>Remove All
+              </a>              
         </div>
 		<div class="col-md-12 m-b-2">
-		<a href="{{($status == 2  ? url('/get-discount') :  url('/get-discount/2'))}}"> <div class="captions">{{($status == 2 ? 'Show Active Items' : 'Show In-Active Items')}}</div> </a>
+		<a href="{{($status == 2  ? url('/get-discount') :  url('/get-discount/in-active'))}}"> <div class="captions">{{($status == 2 ? 'Show Active Items' : 'Show In-Active Items')}}</div> </a>
 
                     </div>
-        <div class="card-block">
+        <div class="card-block responsive">
 		
      <table id="expensetb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
          <thead>
             <tr>
                
-               <th>ID</th>
+               <th class="d-none">ID</th>
+               <th><input type="checkbox" id="headCheckbox"></th>
                <th>Code</th>
+               <th>Website Name</th>
                <th>Start Date</th>
                <th>Expiration Date</th>
+               <th>Applies To</th>
+               <th>Customer Eligibilty</th>
                <th>Type</th>
+               <th>Open Discount</th>
                <th>Status</th>
                <th>Action</th>
                
@@ -93,19 +175,39 @@
       		@if($discount)
       			@foreach($discount as $value)
       				<tr>
-      					<td>{{$value->discount_id}}</td>
+      					<td class="d-none">{{$value->discount_id}}</td>
+      					<td><input type="checkbox" class="child-chkbx" value="{{ $value->discount_id }}"></td>
       					<td>{{$value->discount_code}}</td>
+      					<td>{{$value->website_name}}</td>
       					<td>{{$value->startdate.' '.$value->starttime}}</td>
       					<td>{{$value->enddate.' '.$value->endtime}}</td>
-      					<td>{{$value->type_name}}</td>
-      					<td>{{$value->name}}</td>
+      					<td>{{ $value->applies_name }}</td>
+      					<td>{{ $value->customer_eligibilty == 1 ? 'EveryOne' : 'Limited'}}</td>
+      					<td>{{$value->type_name.' ('.$value->discount_value.')' }}</td>
+      					<td>{{ $value->open_discount == 1 ? 'Open Discount' : 'Voucher Apply' }}</td>
+      					<td>
+                          <label class="badge badge-{{ $value->status == 1 ? 'primary' : 'danger' }}">{{$value->status_name}}</label>
+      					</td>
       					<td class="action-icon">
-
-      							<a  class="p-r-10 f-18 text-primary" onclick="modelcall('{{ $value->discount_id }}')" title="" data-original-title="View"><i class="icofont icofont-eye-alt"></i></a>
-                               
-                                <a href="{{ url('/edit-discount') }}/{{ Crypt::encrypt($value->discount_id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+                         <!-- <div class="form-group">    -->
+                         <!--     <label>-->
+                         <!--       <input type="checkbox" onchange="" data-toggle="toggle" {{ $value->status == 1 ? 'checked' : '' }}>-->
+                         <!--     </label> -->
+                         <!--</div> -->
+                         
+                                <!-- Rounded switch -->
+                                <label class="switch m-r-1">
+                                  <input type="checkbox" title="" data-original-title="Active/In-Active Switch" 
+                                  onclick="switchMode({{ $value->discount_id }},{{ $value->status }},'{{$value->discount_code}}',this)" {{ $value->status == 1 ? 'checked' : '' }}>
+                                  <span class="slider round"></span>
+                                </label>
                                 
-                                <a class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="discountDelete('{{ $value->discount_id }}')" data-id="{{ $value->discount_id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></a>
+      							<a  class="p-r-10 f-18 text-primary" onclick="modelcall('{{ $value->discount_id }}')" title="" data-original-title="View">
+      							    <i class="icofont icofont-eye-alt"></i></a>
+                               
+                                <!--<a href="{{-- url('/edit-discount') --}}/{{-- Crypt::encrypt($value->discount_id) --}}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>-->
+                                
+                                <a class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="discountDelete({{ $value->discount_id }},{{$status}})" data-id="{{ $value->discount_id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></a>
 
                              </td> 
       				</tr>
@@ -214,11 +316,79 @@
                      </div>
                      <!-- end of modal fade -->
                   </div>
+                  
+                  <div class="modal fade modal-flex " id="createSchedule-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
+                     <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                         <div class="modal-header"> 
+                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            <h4 class="modal-title">Create Schedule</h4>
+                          </div>
+                          
+                          <div class="modal-body">
+                              <input type="hidden" name="discount_id" id="discount_id_md">
+                              <div class="row">
+        <div class="col-lg-6 col-md-6">
+          <div class="form-group">
+            <label class="form-control-label">Start Date</label>
+            <input type='text' class="form-control" id="startdate" name="startdate" placeholder="DD-MM-YYYY" value="{{ date('Y-m-d') }}"/>
+            <span class="help-block text-danger" id="rpbox"></span>
+          </div>
+        </div>
+        <div class="col-lg-6 col-md-6">
+          <div class="form-group">
+            <label class="form-control-label">Start Time</label>
+            <input type='text' class="form-control" id="starttime" name="starttime" placeholder="H:i Am" value="{{ date('h:i A', strtotime(date('H:i'))) }}"/>
+            <span class="help-block text-danger" id="rpbox"></span>
+          </div>
+        </div>
+
+        <div class="col-lg-12 col-md-12 rkmd-checkbox checkbox-rotate checkbox-ripple">
+          <label class="input-checkbox checkbox-primary">
+            <input type="checkbox" id="chkEndDate" name="chkEndDate">
+            <span class="checkbox"></span>
+            <span class="ripple"></span></label>
+          <div class="captions"> End Date.</div>
+        </div>
+
+        <div id="divEndSection" class="d-none">
+          <div class="col-lg-6 col-md-6">
+            <div class="form-group">
+              <label class="form-control-label">End Date</label>
+              <input type='text' class="form-control" id="enddate" name="enddate" placeholder="DD-MM-YYYY" />
+              <span class="help-block text-danger" id="rpbox"></span>
+            </div>
+          </div>
+          <div class="col-lg-6 col-md-6">
+            <div class="form-group">
+              <label class="form-control-label">End Time</label>
+              <input type='text' class="form-control" id="endtime" name="endtime" placeholder="DD-MM-YYYY" />
+              <span class="help-block text-danger" id="rpbox"></span>
+            </div>
+          </div>
+        </div>
+    </div>    
+                            
+                           </div>
+                           <div class="modal-footer">
+                               <button type="button" class="btn btn-success" onclick="re_active_discount()">Save Changes</button>
+                        </div>
+                        </div>
+                     </div>
+                     <!-- end of modal fade -->
+                  </div>                  
   
 @endsection
 
 
+@section('scriptcode_one')
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+@endsection
+
 @section('scriptcode_three')
+ <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
 
   <script type="text/javascript" >
     
@@ -241,6 +411,158 @@ $(".select2").select2();
     });
 
 });
+
+$("#headCheckbox").on('click',function(){
+    if($(this).is(':checked')){
+         $('.child-chkbx').prop('checked', true);
+         if($("#removeAllBtn").hasClass('d-none')){
+            $("#removeAllBtn").removeClass('d-none').addClass('d-inline-block'); 
+         }
+    }else{
+         $('.child-chkbx').prop('checked', false); 
+
+         if(!$("#removeAllBtn").hasClass('d-none')){
+            $("#removeAllBtn").addClass('d-none').removeClass('d-inline-block'); 
+         }         
+         
+    }
+});
+
+$("#removeAllBtn").on('click',function(){
+    swal({
+            title: "Are you sure?",
+            text: "You want to remove all discount!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "yes plx!",
+            cancelButtonText: "cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm){
+            if(isConfirm){
+              var idArray = [];
+              $(".child-chkbx").each(function(){
+                  if($(this).is(':checked')){
+                      if($.inArray($(this).val(),idArray) == -1){
+                          idArray.push($(this).val());
+                      }
+                  }
+              })
+                        $.ajax({
+                            url: "{{url('/remove-discount')}}",
+                            type: 'POST',
+                            data:{_token:"{{ csrf_token() }}",
+                                id:idArray,mode:'removeAll'
+                            },
+                            success:function(resp){
+                                if(resp == 1){
+                                    swal({
+                                        title: "Success!",
+                                        text: "",
+                                        type: "success"
+                                    },function(isConfirm){
+                                        if(isConfirm){
+                                            window.location="{{ url('/get-discount') }}"+($(this).attr('data-id') == 2 ? 'in-active' : '');
+                                        }
+                                    });
+                                }
+                            }
+
+                        });
+            }else {
+                swal("Cancelled", "Operation Cancelled:)", "error");
+            }
+        });    
+});
+
+function switchMode(discId,status,voucher,element){
+ var status_name = null; 
+ var value = 2;
+    if($(element).is(':checked')){
+        status_name = 'Active';
+        value = 1;
+    }else{
+        status_name = 'In-Active';
+        value = 2;
+    }
+    
+    swal({
+            title: "Are you sure?",
+            text: "You want to "+status_name+" this discount voucher "+voucher+" !",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "yes plx!",
+            cancelButtonText: "cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm){
+            if(isConfirm){
+                
+                  if(status == 1){
+                        $.ajax({
+                            url: "{{url('/remove-discount')}}",
+                            type: 'POST',
+                            data:{_token:"{{ csrf_token() }}",
+                                id:discId,mode:value
+                            },
+                            success:function(resp){
+                                if(resp == 1){
+                                    swal({
+                                        title: "Success!",
+                                        text: "Campaign "+status_name+" successfully.",
+                                        type: "success"
+                                    },function(isConfirm){
+                                        if(isConfirm){
+                                            window.location="{{ url('/get-discount') }}";
+                                        }
+                                    });
+                                }
+                            }
+
+                        });
+                        
+                  }else{
+                      swal.close();
+                      $("#createSchedule-modal").modal('show');
+                      $("#discount_id_md").val(discId);
+                  }
+            }else {
+                swal("Cancelled", "Operation Cancelled:)", "error");
+              if(status == 1){
+                  $(element).prop('checked', true);
+              }else{
+                  $(element).prop('checked', false);
+              }
+            }
+        });
+}
+
+function re_active_discount(){
+        $.ajax({
+            url: "{{route('reactiveDiscount')}}",
+            type: 'POST',
+            data:{_token:"{{ csrf_token() }}",
+                id:$("#discount_id_md").val(),startdate:$("#startdate").val(),startime:$("#starttime").val(),endate:$("#enddate").val(),endtime:$("#endtime").val()
+            },
+            success:function(resp){
+                if(resp == 1){
+                    swal({
+                        title: "Success!",
+                        type: "success"
+                    },function(isConfirm){
+                        if(isConfirm){
+                            window.location="{{ url('/get-discount') }}";
+                        }
+                    });
+                }
+            }
+
+        });
+}
 
 function modelcall(id)
 {
@@ -444,8 +766,8 @@ function resizeImg(imgId) {
     }
 }
 
-function discountDelete(id){
-	
+function discountDelete(id,md){
+
             swal({
                     title: "Are you sure?",
                     text: "This campaign will be delete !",
@@ -473,7 +795,7 @@ function discountDelete(id){
                                         type: "success"
                                     },function(isConfirm){
                                         if(isConfirm){
-                                            window.location="{{ url('/get-discount') }}";
+                                            window.location="{{ url('/get-discount') }}"+(md == 2 ? '/in-active' : '');
                                         }
                                     });
                                 }
@@ -486,6 +808,58 @@ function discountDelete(id){
                     }
                 });
 }
+
+  $('#chkEndDate').change(function() {
+    if ($('#chkEndDate').prop("checked") == true) {
+        
+         if($('#divEndSection').hasClass('d-none')){
+             $('#divEndSection').removeClass('d-none');
+         }
+    //   $('#divEndSection').css('display', 'block');
+    } else if ($('#chkEndDate').prop("checked") == false) {
+         if(!$('#divEndSection').hasClass('d-none')){
+             $('#divEndSection').addClass('d-none');
+         }        
+        
+    //   $('#divEndSection').css('display', 'none');
+    //   $('#endtime').val('');
+    //   if ($('#startdate') != "") {
+    //     var d = new Date($('#startdate').val());
+    //     var month = myFunction($('#startdate').val());
+    //     var value = "Active from " + month + " " + d.getDate();
+    //     $('#disc_date').empty();
+    //     $('#disc_date').append("<li>" + value + "</li>")
+    //   } else {
+    //     $('#disc_date').empty();
+    //   }
+    }
+  });
+
+  $('#startdate,#enddate').bootstrapMaterialDatePicker({
+    format: 'YYYY-MM-DD',
+    time: false,
+    clearButton: true,
+
+    icons: {
+      date: "icofont icofont-ui-calendar",
+      up: "icofont icofont-rounded-up",
+      down: "icofont icofont-rounded-down",
+      next: "icofont icofont-rounded-right",
+      previous: "icofont icofont-rounded-left"
+    }
+  });
+
+  $('#starttime,#endtime').datetimepicker({
+    format: 'LT',
+    icons: {
+      time: "icofont icofont-clock-time",
+      date: "icofont icofont-ui-calendar",
+      up: "icofont icofont-rounded-up",
+      down: "icofont icofont-rounded-down",
+      next: "icofont icofont-rounded-right",
+      previous: "icofont icofont-rounded-left"
+    }
+  });
 
 </script>
 

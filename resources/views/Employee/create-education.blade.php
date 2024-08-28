@@ -62,7 +62,7 @@
         </div>
  <div class="col-lg-4 col-md-4">
                     <a href="#">
-                <img id="docimgs" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                <img id="docimgs" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                 </a>
              <div class="form-group{{ $errors->has('docimg') ? 'has-danger' : '' }} ">
                  <label for="docimg" class="form-control-label">Upload Document</label>
@@ -174,7 +174,7 @@
  	<input type="hidden" name="oldimage" id="oldimage" value="">
  	<input type="hidden" name="educationid" id="educationid" value="">
                     <a href="#">
-                <img id="docimgsmodal" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                <img id="docimgsmodal" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                 </a>
              <div class="form-group{{ $errors->has('docimg') ? 'has-danger' : '' }} ">
                  <label for="docimgmodal" class="form-control-label">Upload Document</label>
@@ -284,7 +284,7 @@ function getdetails(id){
                     for(var count =0;count < result.length; count++){
                         $("#tbleducation tbody").append(
                           "<tr>" +
-                           "<td class='text-center'><img width='42' height='42' src='public/assets/images/employees/documents/"+((result[count].document != "") ? result[count].document : 'placeholder.jpg')+"' class='d-inline-block img-circle' alt='"+result[count].document+"'/></td>" +
+                           "<td class='text-center'><img width='42' height='42' src='assets/images/employees/documents/"+((result[count].document != "") ? result[count].document : 'placeholder.jpg')+"' class='d-inline-block img-circle' alt='"+result[count].document+"'/></td>" +
                             "<td>"+result[count].degree_name+"</td>" +  
                             "<td>"+result[count].passing_year+"</td>" +  
                             "<td>"+result[count].institute_name+"</td>" +  
@@ -348,7 +348,7 @@ function edit(id,degree,year,institute,image,empid){
   $('#passingyearmodal').val(year);
   $('#institutemodal').val(institute);
 
-  $('#docimgsmodal').attr("src","./public/assets/images/employees/documents/"+image);
+  $('#docimgsmodal').attr("src","./assets/images/employees/documents/"+image);
 
   $("#update-modal").modal("show");
 

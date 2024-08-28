@@ -38,7 +38,7 @@
                                          @if($value->mode == 3)
                                            <tr>
                                               <td class="img-pro">
-                                                 <img src="{{ asset('public/assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="img-fluid d-inline-block" alt="tbl">
+                                                 <img src="{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="img-fluid d-inline-block" alt="tbl">
                                               </td>
                                               <td>{{$value->item_code}}</td>
                                               <td class="pro-name">

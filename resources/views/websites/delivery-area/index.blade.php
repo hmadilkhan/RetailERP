@@ -1,8 +1,8 @@
 @extends('layouts.master-layout')
 
-@section('title','Create Delivery Area')
+@section('title','Delivery Area Lists')
 
-@section('breadcrumtitle','Create Delivery Area')
+@section('breadcrumtitle','Delivery Area Lists')
 
 @section('navwebsite','active')
 
@@ -24,81 +24,94 @@
     <h5 class="card-header-text">Create Delivery Area</h5>
   </div>      
     <div class="card-block ">
-     <form id="deliveryAreasForm" method="post">
+     <form id="deliveryAreasForm" action="{{ route('deliveryAreaStore') }}" method="post">
        @csrf
       <div class="row">
          <div class="col-md-4">
-            <div class="form-group">
-              <label class="form-control-label">Website</label>
-              <select name="website" id="website" data-placeholder="Select" class="form-control select2">
-                <option value="">Select</option>
-                @if($websites)
-                   @php $oldWebsite = old('website'); @endphp
-                  @foreach($websites as $val)
-                    <option {{ old('website') == $val->id ? 'selected' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
-                  @endforeach
-                @endif
-              </select>
-                <div class="form-control-feedback text-danger" id="website_alert"></div>
-             </div>
-         </div>
-
-         <div class="col-md-4">
+          <div class="form-group">
+            <label class="form-control-label">Website</label>
+            <select name="website" id="website" data-placeholder="Select" class="form-control select2">
+              <option value="">Select</option>
+              @foreach($website as $val)
+                 <option {{ old('$website') == $val->id ? 'selected' : '' }} data-type="{{ $val->type }}" value="{{ $val->id }}" >{{ $val->name }}</option> 
+              @endforeach
+            </select>
+              @error('website')
+              <div class="form-control-feedback text-danger" id="website_alert">Field is rquired</div>
+              @enderror
+           </div>    
+         </div>  
+         <div class="col-md-4">    
           <div class="form-group">
             <label class="form-control-label">Branch</label>
             <select name="branch" id="branch" data-placeholder="Select" class="form-control select2" disabled>
               <option value="">Select</option>
             </select>
-              <div class="form-control-feedback text-danger" id="branch_alert"></div>
+              @error('branch')
+              <div class="form-control-feedback text-danger" id="branch_alert">Field is rquired</div>
+              @enderror
            </div>
+          </div> 
          </div>
          
-         <div class="col-md-4">
-          <div class="form-group">
-            <label class="form-control-label">City</label>
-            <select name="city" id="city" data-placeholder="Select" class="form-control select2">
-              <option value="">Select</option>
-              @if($city)
-                 @php $oldcity = old('city'); @endphp
-                @foreach($city as $val)
-                  <option {{ old('city') == $val->city_id ? 'selected' : '' }} value="{{ $val->city_id }}">{{ $val->city_name }}</option>
-                @endforeach
-              @endif
-            </select>
-              <div class="form-control-feedback text-danger" id="city_alert"></div>
-           </div>
-         </div> 
-      </div>  
-
       <div class="row">
-
-  
+        <div class="col-md-4">
+          <div class="form-group">       
+            <label for="charges" class="form-control-label">Delivery Charge</label>
+            <input type="text" name="charges" id="charges" class="form-control" value="{{ old('charges') }}">
+              <div class="form-control-feedback text-danger" id="charges_alert"></div>
+          </div>  
+        </div>  
+        <div class="col-md-4">
+          <div class="form-group">       
+            <label for="min_order" class="form-control-label">Minium Order</label>
+            <input type="text" name="min_order" id="min_order" class="form-control" value="{{ old('min_order') ? old('min_order') : 0 }}">
+          </div>  
+        </div>          
+      </div>
+      
+      <div id="areaBox" class="row d-none">
         <div class="col-md-4">
           <div class="form-group">       
             <label for="area" class="form-control-label">Area</label>
             <br/>
-            <input type="text" name="areas" id="areas" class="form-control">
-            <div class="form-control-feedback text-danger" id="areas_alert"></div>
+              @php $oldArea = old('areas') ? explode(',',old('areas')) : null; @endphp
+            <input type="text" name="areas" id="areas" class="form-control" value="@if($oldArea != null) @foreach($oldArea as $val) {{ $val }} @endforeach @endif">
+            <!--<div class="form-control-feedback text-danger" id="areas_alert"></div>-->
+              <div class="form-control-feedback text-danger" id="areas_alert"></div>
           </div> 
-        </div>
-        <div class="col-md-3">
+        </div>  
+        <div class="col-md-4">
           <div class="form-group">       
             <label for="estimate_time" class="form-control-label">Time Estimate</label>
             <input type="text" name="estimate_time" id="estimate_time" class="form-control">
+            <div class="form-control-feedback text-danger" id="estimate_time_alert"></div>
           </div>  
-        </div>
-        <div class="col-md-3">
+        </div>        
+      </div>
+
+      <div id="cityBox" class="row d-none">
+        <div class="col-md-4">
           <div class="form-group">       
-            <label for="charge" class="form-control-label">Delivery Charge</label>
-            <input type="text" name="charge" id="charge" class="form-control">
-          </div>  
-        </div>  
-        <div class="col-md-2">
+            <label for="city" class="form-control-label">City</label>
+            <br/>
+              @php $oldCity = old('city') ? explode(',',old('city')) : []; @endphp
+            <select name="city[]" id="city" data-placeholder="Select" class="form-control select2" multiple>
+              <option value="">Select</option>
+              @foreach($city as $val)
+                 <option {{ in_array($val->city_id,$oldCity) ? 'selected' : '' }}  value="{{ $val->city_id }}" >{{ $val->city_name }}</option> 
+              @endforeach
+            </select>
+              <div class="form-control-feedback text-danger" id="city_alert"></div>
+          </div> 
+        </div> 
+        <div class="col-md-4">
           <div class="form-group">       
-            <label for="min_order" class="form-control-label">Minium Order</label>
-            <input type="text" name="min_order" id="min_order" class="form-control" value="0">
+            <label for="estimate_day" class="form-control-label">Estimate of days</label>
+            <input type="text" name="estimate_day" id="estimate_day" class="form-control">
+            <div class="form-control-feedback text-danger" id="estimate_day_alert"></div>            
           </div>  
-        </div>          
+        </div>        
       </div>
 
                   
@@ -123,44 +136,63 @@
          </div>
        <div class="card-block">
 
-     <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%" cellspacing="0">
+     <table id="deliveryTable" class="table table-striped" width="100%" cellspacing="0">
          <thead>
             <tr>
                <th>Website</th>
                <th>Branch</th>
-               <th>City</th>
-               <th>Areas</th>
-               <th>Charge</th>
-               <th>Min of Order</th>
+               <th>Locations</th>
                <th>Action</th>
             </tr>
 		</thead>
 		<tbody>
       @if(isset($deliveryList))
-       @foreach($deliveryList as $value)
+       @foreach($deliveryList as $parent_rowVal)
 				<tr>
-				  <td>{{ $value->website_name }}</td>
-				  <td>{{ $value->branch_name }}</td>
-          <td>{{ $value->city }}</td>
-          <td>
+				  <td>{{ $parent_rowVal->website_name }}</td>
+				  <td>{{ $parent_rowVal->branch_name }}</td>
+
+          <td id="areaColumn{{ $parent_rowVal->branch_id }}" onclick="getAreaValues({{ $parent_rowVal->branch_id }},{{ $parent_rowVal->is_city }},{{ $parent_rowVal->website_id }})"  class="pointer">
             @php $count = 0 @endphp
-	          @if(!empty($deliveryAreaValues))
-             @foreach($deliveryAreaValues as $area_val)
-                 @if($area_val->branch_id == $value->branch_id)
+             @foreach($deliveryAreaValue as $area_val)
+                 @if($area_val->website_id == $parent_rowVal->website_id)
+                  
                    @php $count = $count + 1 @endphp
+                   <input type="hidden" id="removeUrlArea{{ $area_val->id }}" value="{{ route('deliveryAreaValueDestroy',[$area_val->id,$area_val->branch_id]) }}"/>
+                   @if($area_val->is_city == 1)
                    
-                   <input type="hidden" id="modifyUrl{{ $area_val->id }}" value="{{ route('deliveryAreaUpdate',$area_val->id) }}"/>
-                   <label class="label bg-primary m-1 pointer" id="label{{ $area_val->id }}" onclick="editArea({{ $area_val->id }},{{ $value->website_id }},'{{ $area_val->name }}','{{ $value->website_name }}')">{{ $area_val->name }}</label>
+                   <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->city_name.' - Rs.'.$area_val->charge }}</label>
+                   @else
+                   <!--<input type="hidden" id="modifyUrlArea{{-- $area_val->id --}}" value="{{-- route('deliveryAreaNameUpdate',$area_val->id) --}}"/>-->
+                   
+                   <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->name.' - Rs.'.$area_val->charge }}</label>
+                   
+                   @endif
                  @endif  
              @endforeach
-            @endif 
-
           </td>
-          <td id="charge{{ $value->branch_id }}" class="pointer" onclick="modifyField({{ $value->branch_id }},'{{ $value->charge }}','charge')">{{ 'PKR '.$value->charge }}</td>
-          <td id="minOrder{{ $value->branch_id }}" class="pointer" onclick="modifyField({{ $value->branch_id }},'{{ $value->min_order }}','min_order')">{{ 'PKR '.$value->min_order }}</td>
+          <!--<td id="charge{{-- $value->branch_id --}}"   class="pointer" onclick="modifyField({{-- $value->branch_id --}},'{{-- $value->charge --}}','charge')">-->
+          <!--    <input type="hidden" id="modifyUrl{{-- $value->branch_id --}}" value="{{-- route('deliveryAreaUpdate',[$value->website_id,$value->branch_id]) --}}"/> {{-- 'PKR '.$value->charge --}}</td>-->
+          <!--<td id="minOrder{{-- $value->branch_id --}}" class="pointer" onclick="modifyField({{-- $value->branch_id --}},'{{-- $value->min_order --}}','min_order')">{{-- 'PKR '.$value->min_order --}}</td>-->
 				  <td class="action-icon">
-          <i class="icofont icofont-ui-wifi text-dark f-18" data-toggle="tooltip" data-placement="top" data-original-title="Live " onclick="aliveAllArea({{ $value->website_id }},{{ $value->branch_id }})"></i>
-					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm pointer" data-toggle="tooltip" data-placement="top" data-original-title="Delete" onclick="removeAllArea({{ $value->website_id }},{{ $value->branch_id }})"></i>
+                    				      
+                    <a href="javascript:void(0)" class="m-r-1" title="Add Area Name" onclick="createSingleLocation({{ $parent_rowVal->branch_id }},'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->is_city }},{{ $parent_rowVal->website_id }},'{{ $parent_rowVal->website_name }}')"><i class="icofont icofont-plus text-success"></i></a>				      
+				      
+                    <i class="icofont icofont-ui-wifi {{ $parent_rowVal->status == 1 ? 'text-success' : 'text-muted' }} f-18 m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Live " onclick="swalModal({{ $parent_rowVal->branch_id }},1,'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->status }})"></i>
+          
+					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm pointer m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Delete" onclick="swalModal({{ $parent_rowVal->branch_id }},0,'{{ addslashes($parent_rowVal->branch_name) }}','')"></i>
+					
+					<form id="removeDeliveryArea{{ $parent_rowVal->branch_id }}" action="{{ route('deliveryAreaDestroy',$parent_rowVal->branch_id) }}" method="post">
+					    @csrf
+					    @method('DELETE')
+					    <input type="hidden" name="branchName" value="{{ $parent_rowVal->branch_name }}">
+					</form>
+					
+					<form id="DeliveryAreaForm_act_inact{{ $parent_rowVal->branch_id }}" action="{{ route('deliveryAreaUpdate',$parent_rowVal->branch_id) }}" method="post">
+					    @csrf
+					    @method('Patch')
+					    <input type="hidden" name="status" id="status{{ $parent_rowVal->branch_id }}" value="1">
+					</form>
 				  </td>
 				</tr>
        @endforeach
@@ -178,27 +210,32 @@
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                               <span aria-hidden="true">&times;</span>
                           </button>
-                  <h4 class="modal-title">Edit Area Name</h4>
+                  <h4 class="modal-title" id="title_editmd">Edit Area Name</h4>
                </div>
                <div class="modal-body">
                    
-                   <form action="" name="editForm_md" method="post">
-                     @csrf
-                     @method('PATCH')
-
-                     <input type="hidden" name="id">
-                     <input type="hidden" name="webId">
-                     <input type="hidden" name="webName">
-
-                     <div class="form-group">
-                       <label>Area Name</label>
-                       <input type="text" name="areaName" id="areaName" class="form-control">
-                     </div>
-
-                   </form>
+                   <div class="" id="alert_md"></div>
+                   
+                     <table class="table area_table_md">
+                         <thead>
+                            <tr>
+                              <th>Location</th>
+                              <th>Charge</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                            
+                          </tbody>
+                    </table>
+                   
                </div>
                <div class="modal-footer">
-                  <button type="button" id="btn_update_areaName" class="btn btn-success waves-effect waves-light">Update</button>
+                  <button type="button" class="btn btn-default waves-effect waves-light" data-dismiss="modal">Close</button>
                </div>
             </div>
          </div>
@@ -220,12 +257,14 @@
                      @method('PATCH')
 
                      <input type="hidden" name="branchId" id="branchId_md_mf">
+                     <input type="hidden" name="mode" value="1" id="mode_md_mf">
 
                      <div class="form-group">
-                       <label id="labelName_md_mf">label</label>
-                       <input type="text" name="" id="inputName_md_mf" class="form-control">
+                       <label id="area_md_mf">Area Name</label>
+                       <input type="text" name="" id="area_md_mf" class="form-control">
+                       <span id="area_md_mf_alert"></span>
                      </div>
-
+                     
                    </form>
                </div>
                <div class="modal-footer">
@@ -234,6 +273,61 @@
             </div>
          </div>
       </div> 
+      
+<div class="modal fade modal-flex" id="createSingleLocation_Modal" tabindex="-1" role="dialog">
+         <div class="modal-dialog modal-md" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                          </button>
+                  <h4 class="modal-title" id="title_md_csl">Add Area Name</h4>
+               </div>
+               <div class="modal-body">
+                   <form id="createLocationForm_md" method="post">
+                     @csrf
+                     <input type="hidden" name="branchId" id="branchId_md_can"> 
+                     <input type="hidden" name="branchName" id="branchName_md_can">
+                     <input type="hidden" name="websiteId" id="websiteId_md"> 
+                     <input type="hidden" name="websiteName" id="websiteName_md">                     
+                     <input type="hidden" name="iscity" id="city_md_can">
+
+                      <div class="form-group d-none" id="cityBox_md">       
+                        <label for="city" class="form-control-label">City</label>
+                        <br/>
+                        <select name="city" id="city_md" data-placeholder="Select" class="form-control select2">
+                          <option value="">Select</option>
+                          @foreach($city as $val)
+                             <option value="{{ $val->city_id }}" >{{ $val->city_name }}</option> 
+                          @endforeach
+                        </select>
+                          <div class="text-danger" id="city_md_alert"></div>
+                      </div> 
+                     
+                     <div class="form-group d-none" id="areaBox_md">
+                       <input type="text" name="areaName_md" id="areaName_md" class="form-control" placeholder="Area Name">
+                       <span id="areaName_md_alert"></span>
+                     </div>
+                     <div class="form-group">
+                       <input type="text" name="charges_md" id="charges_md" class="form-control" placeholder="Delivery Charges">
+                       <span id="charges_md_alert"></span>
+                     </div>                     
+                     <div class="form-group">
+                       <input type="text" name="min_order_md" id="min_order_md" class="form-control" placeholder="Min Order">
+                       <span id="min_order_md_alert"></span>
+                     </div>  
+                     <div class="form-group">
+                       <input type="text" name="estimate_md" id="estimate_md" class="form-control" placeholder="Estimate Time">
+                       <span id="estimate_md_alert"></span>
+                     </div>                      
+                   </form>
+               </div>
+               <div class="modal-footer">
+                  <button type="button" id="btn_creatre_md_can" class="btn btn-success waves-effect waves-light">Save</button>
+               </div>
+            </div>
+         </div>
+      </div>      
 
 @endsection
 
@@ -249,7 +343,7 @@
      maxTags: 40
     });
 
-	$('.table').DataTable({
+	$('#deliveryTable').DataTable({
         bLengthChange: true,
         displayLength: 10,
         info: false,
@@ -259,160 +353,450 @@
           lengthMenu: '<span></span> _MENU_'
         }
     });
+    
+    $("#btn_remove_md").on('click',function(){
+        $("#removeDeliveryAreaValueForm"+$("#id_md_edarea").val()).submit();
+    }); 
+ 
 
+  $("#btn_create").on('click',function(){
+     
 
-  function modifyField(id,value,md){
-
-      $("#modal_modifyField").modal('show');
-
-      $("#labelName_md_mf").text(md.replace('_',' '));
-
-      $("#inputName_md_mf").val(value).attr('name',md);
-      $("#branchId_md_mf").val(id);
-  }
-
-
-   function editArea(id,webId,areaName,webName){
-     $("#editArea_md").modal('show');
-
-     $("#id").val(id);
-     $("#webId").val(webId);
-     $("#areaName").val(areaName);
-     $("#webName").val(webName); 
-
-     $("form[name='editForm_md']").attr('action',$("#modifyUrl"+id).val());   
-   }
-
-   $("#btn_update_areaName").on('click',function(){
-      $("form[name='editForm_md']").submit();
-   })
-
-   $("#btn_create").on('click',function(){
       var process_md = true;
 
-      if($("#website").val().length === 0 ){
-           $("#website").focus();
-           $("#website_alert").html('Select website name is required.');
-           process_md = false;
+      if($("#website").val() == ''){
+          $("#website").focus();
+          $("#website_alert").text('Select website is required.');   
+          process_md = false;   
       }
-
-      if($("#branch").val().length === 0 ){
-           $("#branch").focus();
-           $("#branch_alert").html('Select branch name is required.');   
-           process_md = false;   
-      }
-
-
-      if($("#city").val().length === 0 ){
-           $("#city").focus();
-           $("#city_alert").html('Select city name is required.');   
-           process_md = false;   
-      }
-
-
-      if($("#city").val().length === 0 ){
-           $("#city").focus();
-           $("#city_alert").html('Select city name is required.');   
-           process_md = false;   
-      }
+      
+      if($("#branch").val() == ''){
+          $("#branch").focus();
+          $("#branch_alert").text('Select branch name is required.');   
+          process_md = false;   
+      }  
+      
+      if($("#charges").val() == ''){
+          $("#charges").focus();
+          $("#charges_alert").text('field is required.');   
+          process_md = false;   
+      } 
+      
+      if(!$("#areaBox").hasClass('d-none') && $("#areas").val() == ''){
+          $("#areas").focus();
+          $("#areas_alert").text('field is required.');   
+          process_md = false;   
+      }  
+      
+      if(!$("#cityaBox").hasClass('d-none') && $("#time_estimate").val() == ''){
+          $("#time_estimate").focus();
+          $("#time_estimate_alert").text('field is required.');   
+          process_md = false;   
+      }       
+      
+      if(!$("#cityaBox").hasClass('d-none') && $("#city").val() == ''){
+          $("#city").focus();
+          $("#city_alert").text('field is required.');   
+          process_md = false;   
+      }       
+      
+      if(!$("#cityaBox").hasClass('d-none') && $("#estimate_day").val() == ''){
+          $("#estimate_day").focus();
+          $("#estimate_day_alert").text('field is required.');   
+          process_md = false;   
+      } 
 
 
       if(process_md){
-                   $.ajax({
-                    url:'{{ route("deliveryAreaStore") }}',
-                    type:"POST",
-                    data:$('#deliveryAreasForm').serialize(),
-                    dataType:"json",
-                    success:function(resp,status){
-                      //console.log(resp+'/n'+status)
-                       if(status == 'success'){
-                            window.location = "{{ route('deliveryAreasList') }}";
-                       }
-                      if(resp == 1){
-                          if(r.contrl != ""){
-                            $("#"+r.contrl).focus();
-                            $("#"+r.contrl+"_alert").html(r.msg);
-                          }
-                          swal_alert('Alert!',r.msg,'error',false); 
+            $("#deliveryAreasForm").submit();
+                //   $.ajax({
+                //     url:'{{-- route("deliveryAreaStore") --}}',
+                //     type:"POST",
+                //     data:$('#deliveryAreasForm').serialize(),
+                //     dataType:"json",
+                //     success:function(resp,status){
+                //       //console.log(resp+'/n'+status)
+                //       if(status == 'success'){
+                //             window.location = "{{-- route('deliveryAreasList') --}}";
+                //       }
+                //       if(resp == 1){
+                //           if(r.contrl != ""){
+                //             $("#"+r.contrl).focus();
+                //             $("#"+r.contrl+"_alert").html(r.msg);
+                //           }
+                //           swal_alert('Alert!',r.msg,'error',false); 
 
-                      }else {
-                         $("#deptname_alert").html('');
-                        swal_alert('Successfully!',r.msg,'success',true);
-                         $("#subdpt").tagsinput('removeAll');
-                      }
-                    }
-                  });
+                //       }else {
+                //          $("#deptname_alert").html('');
+                //         swal_alert('Successfully!',r.msg,'success',true);
+                //          $("#subdpt").tagsinput('removeAll');
+                //       }
+                //     }
+                //   });
       }
 
-   });
-
-
-  function swal_alert(title,msg,type,mode){
+  }); 
     
-      swal({
-            title: title,
-            text: msg,
-            type: type
-         },function(isConfirm){
-         if(isConfirm){
-            if(mode==true){
-              window.location="{{ route('deliveryAreasList') }}";
-            }
-          }
-      });
-}
+    
+  function getAreaValues(brnhId,md,webId){
+      $(".area_table_md tbody").empty();
+        $.ajax({
+                url: "{{ route('getdeliveryAreasValues') }}",
+                type:"POST",
+                dataType:"json",
+                data:{_token:"{{ csrf_token()}}",
+                branchId:brnhId,
+                website:webId,
+                mode:md,
+              },
+              success:function(r){  
+                  if(md == 1){
+                      $('#title_editmd').text('Edit City Name');
+                  }else{
+                      $('#title_editmd').text('Edit Area Name');
+                  }
+                $("#editArea_md").modal("show");
+                
+                $(".area_table_md").removeClass('dataTable');
+                  for(var s=0;s < r.length ;s++){
+                      if(md == 1){ 
+                          $(".area_table_md tbody").append(
+                              "<tr id='tbl_md_row"+r[s].id+"'>"+
+                                "<td><input type='text' value='"+r[s].city_name +"' class='form-control' id='name_md_"+r[s].id+"'/>"+
+                                "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/>"+
+                                "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i></td>"+
+                              "</tr>"
+                           );
+                      }
+                      
+                      if(md == 0){
+                          $(".area_table_md tbody").append(
+                              "<tr id='tbl_md_row"+r[s].id+"'>"+
+                                "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/>"+
+                                "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/>"+
+                                "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i></td>"+
+                              "</tr>"
+                           );                          
+                      }
+                   }
+              }
+        });
+      
+  }
+  
+  function updateAreaDetail(id,brnchId){
+    
+      $.ajax({
+              url:"{{ route('deliveryAreaNameUpdate') }}",
+              type:"POST",
+              data:{_token:'{{ csrf_token() }}',id:id,area:$("#name_md_"+id).val(),charge:$("#charge_md_"+id).val()},
+              async:true,
+              dataType:'json',
+              success:function(resp){
+                   console.log(resp)
+                   if(resp.status == 200){
+                       $("#alert_md").text('Success!').addClass('alert alert-success');
+                       
+                       $("#areaLabel"+id).text($("#name_md_"+id).val()+' - Rs.'+$("#charge_md_"+id).val());
+                   }else{
+                       $("#alert_md").text(resp.msg).addClass('alert alert-alert');
+                   }
+              }
+             });
+      
+  }
+  
+  function removeAreaDetail(id,brnchId){
 
-
-function removeAllArea(id,webId){
-
-
-            swal({
-                title: "DELETE PRODUCTS",
-                text: "Do you want to delete products?",
+         swal({
+                title: 'Remove Delivery Area',
+                text:  'Are you sure you want to remove this '+$("#name_md_"+id).val()+' delivery area?',
                 type: "warning",
                 showCancelButton: true,
-                confirmButtonClass: "btn-danger",
+                confirmButtonClass: "btn btn-danger",
                 confirmButtonText: "YES",
                 cancelButtonText: "NO",
                 closeOnConfirm: false,
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-
+                      $.ajax({
+                              url:$("#removeUrlArea"+id).val(),
+                              type:"DELETE",
+                              data:{_token:'{{ csrf_token() }}',id:id,stp_redirect:1},
+                              async:true,
+                              dataType:'json',
+                              success:function(resp){
+                                   console.log(resp)
+                                   if(resp.status == 200){
+                                       $("#alert_md").text('Success!').addClass('alert alert-success');
+                                       
+                                       $("#areaLabel"+id).remove();
+                                       $("#tbl_md_row"+id).remove();
+                                   }else{
+                                       $("#alert_md").text(resp.msg).addClass('alert alert-alert');
+                                   }
+                              }
+                             });                    
                 }else{
-                    swal({
-                        title: "Cancel!",
-                        text: "All products are still inactive :)",
-                        type: "error"
-                    },function(isConfirm){
-                        if(isConfirm){
-                            //window.location="{{--url('/inventory-list')--}}";
-
-                        }
-                    });
+                    swal.close();
                 }
+                
+            });      
+  }
+    
+    
+  function createSingleLocation(brnhId,brnhName,md,webId,webName){
+      
+      if(md == 1){
+          $("#title_md_csl").text('Add City Name');
+          $("#city_md_can").val(1);
+          divBox_on_off('cityBox_md',1);
+          divBox_on_off('areaBox_md',0);
+          
+          $("#estimate_md").attr('placeholder','Estimate of day');
+      }else{
+          $("#title_md_csl").text('Add Area Name');
+          $("#city_md_can").val(0);
+          divBox_on_off('cityBox_md',0);
+          divBox_on_off('areaBox_md',1);
+          
+          $("#estimate_md").attr('placeholder','Estimate time');
+      }
+      
+      $("#createSingleLocation_Modal").modal('show');
+      
+      $("#branchId_md_can").val(brnhId);
+      $("#branchName_md_can").val(brnhName);
+      $("#websiteId_md").val(webId);
+      $("#websiteName_md").val(webName);
+      
+  }   
+  
+  function singleArea_md(){
+      var ElementId = ['locationName_md_alert','min_order_md_alert','charges_md_alert'];
+      
+      $.each(ElementId,function(i,v){
+          if($("#"+v).hasClass('text-danger')){
+              $("#"+v).text('').removeClass('text-danger');
+          }
+      })
+  }
+  
+  $("#btn_creatre_md_can").on('click',function(){
+    
+    var process = true;  
+    
+      singleArea_md();
+      
+      if($("#areaName_md").val() == '' && $("#city_md_can").val() == 0){
+          $("#areaName_md").focus();
+          $("#areaName_md_alert").text('Field is required.').addClass('text-danger');
+          process = false; 
+      }
+      
+      if($("#city_md").val() == '' && $("#city_md_can").val() == 1){
+          $("#city_md").focus();
+          $("#city_md_alert").text('Field is required.').addClass('text-danger');
+          process = false; 
+      }      
+      
+      if($("#charges_md").val() == ''){
+          $("#charges_md").focus();
+          $("#charges_md_alert").text('Field is required.').addClass('text-danger');
+          process = false; 
+      }
+      
+      if($("#min_order_md").val() == ''){
+          $("#min_order_md").focus();
+          $("#min_order_md_alert").text('Field is required.').addClass('text-danger');
+          process = false; 
+      } 
+      
+      if(process){
+          $.ajax({
+                   url:'{{ route("deliveryAreaNameStore") }}',
+                   type:'POST',
+                   data:$("#createLocationForm_md").serialize(),
+                   dataType:'json',
+                   async:true,
+                   success:function(resp){
+                    console.log(Object.keys(resp))
+                      if($.inArray('error',Object.keys(resp)) != -1){
+                          if($.inArray('control',Object.keys(resp)) != -1){ 
+                              $("#"+resp.control).focus();
+                              swal('Cancel!',resp.error,'error');
+                              $("#"+resp.control+"_alert").text(resp.error);
+                          }else{
+                               $("#msg_alert").text(resp.error);
+                          }
+                      }
+                      
+                      if(resp=='success'){
+                           window.location= '{{ route("deliveryAreasList") }}';
+                      }
+                   }
+              
+          });
+      }
+  })
+
+
+  function modifyField(id,value,md){
+      
+      if($("#inputName_md_mf_alert").hasClass('text-danger')){
+          $("#inputName_md_mf_alert").text('').removeClass('text-danger');
+      }
+
+      $("#modal_modifyField").modal('show');
+
+      $("#labelName_md_mf").text(md.replace('_',' '));
+      $("#mode_md_mf").val(md);
+      $("#inputName_md_mf").val(value).attr('name',md);
+    //   $("#branchId_md_mf").val(id);
+    
+      $("form[name='modifyFieldForm_md']").attr('action',$("#modifyUrl"+id).val())
+  }
+  
+  $("#btn_update_md_mf").on('click',function(){
+      if($("#inputName_md_mf").val() == ''){
+          $("#inputName_md_mf").focus();
+          $("#inputName_md_mf_alert").text('field is required.').addClass('text-danger');
+      }else{
+         $("form[name='modifyFieldForm_md']").submit(); 
+      }
+      
+  });
+
+
+   function editArea(id,areaName,charge){
+     $("#editArea_md").modal('show');
+
+     $("#id_md_edarea").val(id);
+     $("#areaName").val(areaName);
+     $("#charge").val(charge); 
+
+     $("form[name='editForm_md']").attr('action',$("#modifyUrlArea"+id).val());   
+   }
+
+//   $("#btn_update_areaName").on('click',function(){
+//       $("form[name='editForm_md']").submit();
+//   })
+
+
+
+
+//   function swal_alert(title,msg,type,mode){
+    
+//       swal({
+//             title: title,
+//             text: msg,
+//             type: type
+//          },function(isConfirm){
+//          if(isConfirm){
+//             if(mode==true){
+//               window.location="{{ route('deliveryAreasList') }}";
+//             }
+//           }
+//       });
+// }
+
+
+
+
+
+function swalModal(branchId,mode,brnhName,status){
+  var title,text='';
+  var btnClass = 'btn-danger'; 
+       if(mode == 1){
+           title    = (status == 1 ? 'In-Activate' : 'Activate')+' Delivery Areas';
+           text     = 'Are you sure you want to '+(status == 1 ? 'In-Activate' : 'Activate')+' the delivery area from the '+brnhName+' branch?';
+           btnClass = 'btn-success';
+       }else{
+           title = 'Remove Delivery Areas';
+           text  = 'Are you sure you want to remove the delivery area from the '+brnhName+' branch?';           
+       }        
+
+            swal({
+                title: title,
+                text:  text,
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: btnClass,
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },function(isConfirm){
+                if(isConfirm){
+                     if(mode == 1){
+                            if(status == 1){
+                                $("#status"+branchId).val(0);
+                            }
+                         $("#DeliveryAreaForm_act_inact"+branchId).submit();
+                     }else{
+                         $("#removeDeliveryArea"+branchId).submit();
+                     }
+                }else{
+                    swal.close();
+                }
+                
+                // else{
+                //     swal({
+                //         title: "Cancel!",
+                //         text: "All products are still inactive :)",
+                //         type: "error"
+                //     },function(isConfirm){
+                //         if(isConfirm){
+                //             //window.location="{{--url('/inventory-list')--}}";
+
+                //         }
+                //     });
+                // }
             });
         }
 
 
-   $("#website").on('change',function(){
-        
+  $("#website").on('change',function(){
+      
+       if($(this).find(':selected').attr('data-type') == 'restaurant'){
+          divBox_on_off('areaBox',1);
+          divBox_on_off('cityBox',0);
+       }else{
+          divBox_on_off('cityBox',1);
+          divBox_on_off('areaBox',0);
+       }
+
         $.ajax({
                  url:'{{ route("getWebsiteBranches") }}',
                  type:'POST',
                  data:{_token:'{{ csrf_token() }}',websiteId:$(this).val()},
                  async:true,
                  success:function(resp){
+                    //  console.log(resp)
                     if(resp != null){
-                       $("#branch").attr('disabled',false);
-                       $.each(resp,function(i,v){
+                      $("#branch").attr('disabled',false);
+                      $("#branch").empty();
+                      $.each(resp,function(i,v){
                           $("#branch").append("<option value='"+v.branch_id+"'>"+v.branch_name+"<option>")
-                       })
+                      })
                     }
                  }
         });
-   });
+  });
 
+
+  function divBox_on_off(elementId,mode){
+     if(mode == 1){
+         if($("#"+elementId).hasClass('d-none')){
+             $("#"+elementId).removeClass('d-none');
+         }
+     }else{
+         if(!$("#"+elementId).hasClass('d-none')){
+             $("#"+elementId).addClass('d-none');
+         }         
+     }
+  }
 
  </script>
 @endsection

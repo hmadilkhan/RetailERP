@@ -61,10 +61,10 @@
                              data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"></i></a>
                              
                              <a href="javascript:void(0)">
-                             <i onclick="" class="text-danger text-center icofont icofont-trash" 
+                             <i onclick="remove('{{ addslashes($val->product_name.' | '.$val->parent_prod) }}',{{ $val->id }})" class="text-danger text-center icofont icofont-trash" 
                              data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove"></i> </a>
 
-                             <form id="removeForm{{ $val->id }}" action="{{ route('removeVariation',$val->id) }}" class="d-none">
+                             <form id="removeForm{{ $val->id }}" action="{{ route('removeVariation',$val->id) }}" method="post" class="d-none">
                                 @csrf
                                 @method('DELETE')
                              </form>
@@ -116,7 +116,27 @@
  
     } );
   
+        function remove(name,id){
 
+            swal({
+                    title: "Are you sure?",
+                    text: "Do you want to Delete "+ name +" product variation?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "delete it!",
+                    cancelButtonText: "cancel plx!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm){
+                    if(isConfirm){
+                        $("#removeForm"+id).submit();
+                    }else {
+                        swal("Cancelled", "Product variations Safe :)", "error");
+                    }
+                });
+        }
 
 </script>
 

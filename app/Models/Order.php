@@ -11,6 +11,11 @@ class Order extends Model
     protected $guarded = [];
     public $timestamps = false;
 	
+	public function user()
+    {
+        return $this->belongsTo(User::class, 'userid', 'id');
+    }
+	
 	public function orderdetails()
     {
         return $this->hasMany(OrderDetails::class,"receipt_id","id");
@@ -50,10 +55,20 @@ class Order extends Model
     {
         return $this->hasOne(Customer::class, 'id', 'customer_id');
     }
+    
+// 	public function customerAddress()
+//     {
+//         return $this->hasOne(CustomerAddress::class, 'id', 'cust_location_id')->where('status',1);
+//     }    
 	
 	public function orderStatus() 
     {
         return $this->hasOne(OrderStatus::class, 'order_status_id', 'status');
+    }
+	
+	public function statusLogs() 
+    {
+        return $this->hasMany(OrderStatusLogs::class, 'order_id', 'id');
     }
 	
 	public function orderAssign() 

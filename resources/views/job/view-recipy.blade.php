@@ -27,7 +27,7 @@
        	 		<label class="card-header-text" style="font-size: xx-large; font-weight: bold;">{{$details[0]->finish_good}}</label><br>
        	 		<br>
  			  <a href="#">
- 	<img  src="{{ asset('public/assets/images/products/'.(!empty($details[0]->image) ? $details[0]->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle m-l-15" alt="{{ !empty($details[0]->image) ? $details[0]->image : 'placeholder.jpg' }}" style="width: 180px;height: 180px;" >
+ 	<img  src="{{ asset('assets/images/products/'.(!empty($details[0]->image) ? $details[0]->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle m-l-15" alt="{{ !empty($details[0]->image) ? $details[0]->image : 'placeholder.jpg' }}" style="width: 180px;height: 180px;" >
     </a>
     <br>
     <br>

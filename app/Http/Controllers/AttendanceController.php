@@ -228,6 +228,28 @@ class AttendanceController extends Controller
 
 
     public function getattendetails(attendance $attendance,request $request){
+		
+		$sheet = $attendance->attendance_sheet($request->branchid,$request->empid,$request->date);
+		if(count($sheet) > 0){
+			$item = [
+				"attendance_id" => $sheet[0]->attendance_id,
+				"Atttime" => $sheet[0]->Atttime,
+				"branch_id" => $sheet[0]->branch_id,
+				"clock_in" => date("H:i",strtotime($sheet[0]->clock_in)),
+				"clock_out" => date("H:i",strtotime($sheet[0]->clockout)),
+				"date" => $sheet[0]->date,
+				"earlys" => $sheet[0]->earlys,
+				"emp_acc" => $sheet[0]->emp_acc,
+				"emp_id" => $sheet[0]->emp_id,
+				"emp_name" => $sheet[0]->emp_name,
+				"emp_picture" => $sheet[0]->emp_picture,
+				"lates" => $sheet[0]->lates,
+				"ot" => $sheet[0]->ot,
+			];
+			return $item;
+		}else{
+			return 0;
+		}
         //check absent data
         $absent = $attendance->chk_absent($request->empid,$request->date);
 

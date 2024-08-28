@@ -8,7 +8,7 @@ use App\sideBar;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 
-class SideBarController extends Controller
+class sideBarController extends Controller
 {
     public function __construct()
     {

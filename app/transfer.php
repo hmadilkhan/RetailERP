@@ -5,7 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-class Transfer extends Model
+class transfer extends Model
 {
 	public function get_transfer_orders($demandid){
 		$result = DB::select('SELECT transfer_id, transfer_No, date FROM transfer_general_details WHERE demand_id = ? AND status_id != 7',[$demandid]);

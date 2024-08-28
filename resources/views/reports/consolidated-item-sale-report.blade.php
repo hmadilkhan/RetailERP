@@ -21,7 +21,7 @@
             <div  class="col-md-3">
               <div class="form-group">
                  <label class="form-control-label">Product Name</label>
-                 <select id="product_name" name="product_name" class="f-right select2" data-placeholder="Select Payment Mode">
+                 <select id="product_name" name="product_name" class="f-right select2" data-placeholder="Select Product Name">
                      <option value="">Select Payment Mode</option>
                      @foreach($inventory as $value)
                          <option value="{{ $value->id }}">{{ $value->item_code. " | " .$value->product_name }}</option>
@@ -77,7 +77,7 @@
              <div class="col-md-3">
                  <label class="form-control-label">Select Branch</label>
                  <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2">
-                     <option value="">Select Branch</option>
+                     <option value="all">All Branch</option>
                      @foreach($branch as $value)
                          <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                      @endforeach

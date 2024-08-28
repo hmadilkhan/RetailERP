@@ -77,7 +77,7 @@
                                     @foreach($vendorProducts as $value)
                                         @if($value->status == 1)
                                             <tr>
-                                                <td class='text-center'><img src='{{asset('public/assets/images/products/'.($value->image == "" ? "placeholder.jpg" :  $value->image))}}' alt="{{$value->image}}"/></td>
+                                                <td class='text-center'><img src='{{asset('assets/images/products/'.($value->image == "" ? "placeholder.jpg" :  $value->image))}}' alt="{{$value->image}}"/></td>
                                                 <td>{{$value->item_code}}</td>
                                                 <td>{{$value->product_name}}</td>
                                                 <td>
@@ -107,7 +107,7 @@
                                     @foreach($vendorProducts as $value)
                                         @if($value->status == 2)
                                             <tr>
-                                                <td class='text-center'><img src='{{asset('public/assets/images/products/'.($value->image == "" ? "placeholder.jpg" :  $value->image))}}' alt="{{$value->image}}"/></td>
+                                                <td class='text-center'><img src='{{asset('assets/images/products/'.($value->image == "" ? "placeholder.jpg" :  $value->image))}}' alt="{{$value->image}}"/></td>
                                                 <td>{{$value->item_code}}</td>
                                                 <td>{{$value->product_name}}</td>
                                                 <td>

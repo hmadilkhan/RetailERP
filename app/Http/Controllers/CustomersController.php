@@ -38,6 +38,8 @@ class CustomersController extends Controller
         //         {
         //              DB::table("customers")->where("id",$val->id)->update(["slug"=>strtolower(Str::random(4))]);
         //         }
+        
+        // return $details;
         return view('customer.lists', compact('details'));
     }
 
@@ -1011,6 +1013,7 @@ class CustomersController extends Controller
 	{
 		$company = $vendor->company(session('company_id'));
 		$details = $customer->getcustomers();
+		$branch = DB::table("branch")->where("branch_id",session("branch"))->get();
 		
 		$pdf = new pdfClass();
         $pdf->AliasNbPages();
@@ -1071,7 +1074,7 @@ class CustomersController extends Controller
         //report name
         $pdf->ln(15);
         $pdf->SetFont('Arial', 'B', 18);
-        $pdf->Cell(190, 10, 'Customers Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Customers Report ('.(session("roleId") != 2 ? $branch[0]->branch_name : "").')', 'B,T', 1, 'L');
 		
 		$pdf->SetFont('Arial', 'B', 11);
         $pdf->Cell(10, 8, 'Sr.', 'B', 0, 'L');

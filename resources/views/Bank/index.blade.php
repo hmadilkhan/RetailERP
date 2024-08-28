@@ -31,7 +31,7 @@
                     @foreach($banks as $value)
                         <tr>
                             <td class="text-center">
-                                <img width="50" height="50" src="{{ asset('public/assets/images/banks/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                                <img width="50" height="50" src="{{ asset('assets/images/banks/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                             </td>
                             <td>{{$value->bank_name}}</td>
                             <td class="action-icon">

@@ -33,7 +33,7 @@ $closingBalance = round($heads[0]->closingBal);
    <div class="col-lg-4 col-md-4">
       <div class="card dashboard-product">
          <span id="odate" class="text-primary f-right f-18 f-w-300">{{date("d M Y",strtotime($heads[0]->date)).' '.date("h:i A",strtotime($heads[0]->time))}}</span>
-         <span class="label label-info">OPENING </span>
+         <span class="label label-info">OPENING {{$negative}}</span>
          <h2 id="ob" class="dashboard-total-products">{{session("currency")}} {{number_format(isset($heads[0]->bal)?$heads[0]->bal:0,0)}}</h2>
          <!--  <span class="label label-info">OPENING</span> -->
          <div class="side-box">

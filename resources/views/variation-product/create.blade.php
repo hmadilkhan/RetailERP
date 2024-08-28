@@ -98,7 +98,7 @@
 
                         <div class="col-lg-4 col-md-4">
                             <a href="#">
-                                <img id="productimages" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                                <img id="productimages" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                             </a>
                             <div class="form-group{{ $errors->has('productimage') ? 'has-danger' : '' }} ">
                                 <label for="productimage" class="form-control-label">Product Image</label>

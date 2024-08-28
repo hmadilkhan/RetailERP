@@ -28,7 +28,7 @@ class VariationProductController extends Controller
                        ->join('pos_products_gen_details as posProducts','posProducts.pos_item_id','prod_var_rel.pos_variable_id')
                        ->join('inventory_general as inventGeneral','inventGeneral.id','posProducts.product_id')
                        ->join('variations','variations.id','prod_var_rel.variation_id')
-                       ->where(['variations.company_id'=>Auth::user()->company_id,'variations.status'=>1])
+                       ->where(['variations.company_id'=>session('company_id'),'variations.status'=>1,'prod_var_rel.status'=>1])
                        ->select('prod_var_rel.id','prod_var_dtl.price','prod_var_dtl.image','variations.name as variat_name','posProducts.item_name as product_name','inventGeneral.product_name as parent_prod')
                        ->get();
           
@@ -44,14 +44,14 @@ class VariationProductController extends Controller
     public function create(posProducts $posProducts)
     {
          $getposProduct = $posProducts->getposproducts();
-         $variations    = Variation::where(['parent'=>0,'status'=>1,'company_id'=>Auth::user()->company_id])->get();
+         $variations    = Variation::where(['parent'=>0,'status'=>1,'company_id'=>session('company_id')])->get();
          
         return view('variation-product.create',compact('getposProduct','variations'));
     }
 
     public function getVariat_values(Request $request,posProducts $posProducts){
 
-         return response()->json(Variation::where(['parent'=>$request->id,'company_id'=>Auth::user()->company_id])->get(),200);
+         return response()->json(Variation::where(['parent'=>$request->id,'company_id'=>session('company_id'),'status'=>1])->get(),200);
     }
 
     /**
@@ -73,7 +73,7 @@ class VariationProductController extends Controller
            $this->validate($request,$rules);
 
 
-           if(DB::table('product_variable_relation')->where(['variation_id'=>$request->post('variat_values'),'pos_variable_id'=>$request->post('posproduct')])->count() > 0){
+           if(DB::table('product_variable_relation')->where(['variation_id'=>$request->post('variat_values'),'pos_variable_id'=>$request->post('posproduct'),'status'=>1])->count() > 0){
                   Session::flash('variat_values','This '.$request->post('variat_values_name').' variation values is already taken');
                 
                   $rules = [
@@ -192,7 +192,7 @@ class VariationProductController extends Controller
     
            $this->validate($request,$rules);
 
-           if(DB::table('product_variable_relation')->where(['variation_id'=>$request->post('variat_values'),'pos_variable_id'=>$request->post('posproduct')])->where('id','!=',$id)->count() > 0){
+           if(DB::table('product_variable_relation')->where(['variation_id'=>$request->post('variat_values'),'pos_variable_id'=>$request->post('posproduct'),'status'=>1])->where('id','!=',$id)->count() > 0){
                   Session::flash('variat_values','This '.$request->post('variat_values_name').' variation values is already taken');
                 
                   $rules = [
@@ -247,7 +247,14 @@ class VariationProductController extends Controller
     }    
 
     public function destroy(Request $request,$id){
-
+    //   return $id;
+      if(DB::table('product_variable_relation')->update(['status'=>0])->where('id',$id)){
+           Session::flash('success','Success!');
+      }else{
+         Session::flash('error','Error! Server Issue');  
+      }
+       
+      return redirect()->route('listVariatProduct');  
     }  
 
 

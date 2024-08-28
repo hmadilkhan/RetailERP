@@ -176,18 +176,24 @@
 
             <div class="col-md-4">
                <label for="image" class="form-control-label">Image</label>
-             <a href="{{ asset('public/assets/images/products/'.(empty($data[0]->image) ? 'placeholder.jpg' : $data[0]->image).'') }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}" data-footer="{{$data[0]->product_description}}">
+             <a href="{{ asset('assets/images/products/'.(empty($data[0]->image) ? 'placeholder.jpg' : $data[0]->image).'') }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}" data-footer="{{$data[0]->product_description}}">
 
-                        <img id="simg" src="{{ asset('public/assets/images/products/'.(empty($data[0]->image) ? 'placeholder.jpg' : $data[0]->image).'') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
+                        <img id="simg" src="{{ asset('assets/images/products/'.(empty($data[0]->image) ? 'placeholder.jpg' : $data[0]->image).'') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
                         </a>
 
                     <div class="form-group {{ $errors->has('image') ? 'has-danger' : '' }} m-t-10">
                                 
 
                                     <label for="image" class="custom-file">
-                                                <input type="file" name="image[]" id="image" class="custom-file-input" multiple="">
+                                                <input type="file" name="image[]" id="image" class="custom-file-input" multiple>
                                                 <span class="custom-file-control"></span>
                                             </label>
+
+                                    <div>       
+                                      <label class="pointer"><input type="checkbox" name="actual_image_size" class="" {{ $data[0]->actual_image_size == 1 ? 'checked' : null }}>
+                                      You want to actual image size</label>
+                                    </div>                                               
+                                            
                                 @if ($errors->has('image'))
                                     <div class="form-control-feedback">{{ $errors->first('image') }}</div>
                                 @endif
@@ -195,26 +201,55 @@
                 
               </div>
          </div>
+         
+ @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
+        
+           <div class="row m-t-2 {{ count($selectedWebsites->toArray()) > 0 ? '' : 'd-none' }}" id="prodAdvans_Media">
+            <hr/>   
+               <div class="col-md-5">
+                   <div class="form-group">
+                       <label class="form-control-label">Product Video</label>
+                       <br/>
+                        <label for="prodvideo" class="custom-file">
+                            <input type="file" name="prodvideo" id="prodvideo" class="custom-file-input">
+                            <span class="custom-file-control"></span>
+                        </label>
+                   </div>
+               </div>
+               <div class="col-md-7">
+                   <div class="form-group">
+                       <label class="form-control-label">Product Gallery</label>
+                       <br/>
+                        <label for="prodgallery" class="custom-file">
+                            <input type="file" name="prodgallery[]" id="prodgallery" class="custom-file-input" multiple>
+                            <span class="custom-file-control"></span>
+                        </label>
+                   </div>
+               </div>               
+               
+           </div>
+        @endif           
+         
 		 <hr/>
 		 <div class="row">
-			<div class="col-lg-4 col-md-4">
-				<div class="form-group {{ $errors->has('addons') ? 'has-danger' : '' }}">
-                  <label class="form-control-label">Select Addons of the product (if any)</label>
-                    <select class="form-control  select2" data-placeholder="Select Addons" id="addons" name="addons[]" multiple>
-                       <option value="">Addons</option>
-                       @if($totaladdons)
-                              @foreach($totaladdons as $addon)
-                                  <option {{(in_array($addon->id, $selectedAddons->toArray()) ? 'selected="selected"' : '' )}}  value="{{$addon->id}}">{{$addon->name}}</option>
-                              @endforeach
-                       @endif
-                    </select> 
-                    @if ($errors->has('addons'))
-                      <div class="form-control-feedback">Required field can not be blank.</div>
-                    @endif
-              </div>
-			</div>
+			<!--<div class="col-lg-3 col-md-3">-->
+			<!--	<div class="form-group {{-- $errors->has('addons') ? 'has-danger' : '' --}}">-->
+   <!--               <label class="form-control-label">Select Addons of the product (if any)</label>-->
+   <!--                 <select class="form-control  select2" data-placeholder="Select Addons" id="addons" name="addons[]" multiple>-->
+   <!--                    <option value="">Addons</option>-->
+                       {{--@if($totaladdons)--}}
+                              {{--@foreach($totaladdons as $addon)--}}
+   <!--                               <option {{--(in_array($addon->id, $selectedAddons->toArray()) ? 'selected="selected"' : '' )--}}  value="{{--$addon->id--}}">{{--$addon->name--}}</option>-->
+                              {{--@endforeach--}}
+                      {{--@endif--}}
+   <!--                 </select> -->
+                    {{--@if ($errors->has('addons'))--}}
+   <!--                   <div class="form-control-feedback">Required field can not be blank.</div>-->
+                    {{--@endif--}}
+   <!--           </div>-->
+			<!--</div>-->
 			@if(count($websites) > 0)
-			<div class="col-lg-4 col-md-4">
+			<div class="col-lg-3 col-md-3">
 				<div class="form-group {{ $errors->has('website') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Select Website (Select on where product to show)</label>
                     <select class="form-control  select2" data-placeholder="Select Website" id="website" name="website[]" multiple>
@@ -231,7 +266,62 @@
               </div>
 			</div>
 			@endif
+			<div class="col-lg-3 col-md-3">
+				<div class="form-group"> 
+				   <label>Is Deal</label>
+				   <br/>
+				 <label>
+				     @php $isDeal = old('is_deal') ? old('is_deal') : $data[0]->is_deal @endphp
+					<input id="is_deal" name="is_deal" type="checkbox" data-toggle="toggle" data-size="mini" {{ $isDeal == 1 ? 'checked' : '' }}>
+				  </label> 
+				</div>			    
+			</div>
 		 </div>
+		 
+		 
+
+       <div class="row">
+            <div class="col-lg-3 col-md-3">
+				<div class="form-group {{ $errors->has('priority') ? 'has-danger' : '' }}">
+                  <label class="form-control-label">Product Priority</label>
+                    <input type="number" class="form-control" name="priority" min="0" value="{{ old('priority') ? old('priority') : $data[0]->priority  }}">
+              </div>
+			</div>           
+           
+            <div class="col-lg-3 col-md-3">
+				<div class="form-group {{ $errors->has('brand') ? 'has-danger' : '' }}">
+                  <label class="form-control-label">Brand</label>
+                    <select class="form-control  select2" data-placeholder="Select Brand" id="brand" name="brand">
+                       <option value="">Select</option>
+                              @php $brandOld_val = old('brand') ? old('brand') : $data[0]->brand_id @endphp 
+                              @foreach($brandList as $val)
+                                  <option {{ $brandOld_val == $val->id ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
+                              @endforeach
+                    </select> 
+                    @if ($errors->has('brand'))
+                      <div class="form-control-feedback">Required field can not be blank.</div>
+                    @endif
+              </div>
+			</div>
+			
+            <div class="col-lg-3 col-md-3">
+				<div class="form-group {{ $errors->has('tags') ? 'has-danger' : '' }}">
+                  <label class="form-control-label">Tags</label>
+                    <select class="form-control  select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
+                       <option value="">Select</option>
+                              @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray() @endphp 
+                              @foreach($tagsList as $val)
+                                  <option {{ (in_array($val->id,$tagsOld_val)) ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
+                              @endforeach
+                    </select> 
+                    @if ($errors->has('tags'))
+                      <div class="form-control-feedback">Required field can not be blank.</div>
+                    @endif
+              </div>
+			</div>
+       </div>
+      <hr/>		 
+		 
 
         <div class="row">
             <div class="col-lg-12 col-md-12">
@@ -327,7 +417,7 @@
             <div id="gallery" class="row gallery">
                 @foreach($images as $value)
                     <div class="img-wrap col-md-2 ">
-                        <img width=200 height=200 style="margin-left:5px;margin-top:20px;" src="{{ asset('public/assets/images/products/'.$value->image)}}"/>
+                        <img width=200 height=200 style="margin-left:5px;margin-top:20px;" src="{{ asset('assets/images/products/'.$value->image)}}"/>
                         <center> <button onclick="deleteImage('{{$value->id}}','{{$value->image}}')" class="btn btn-danger btn-icon waves-effect waves-light m-t-10" type="button" ><i class="icofont icofont-ui-delete"></i></button></center>
                     </div>
 {{--                    <img width=200 height=200 style="margin-left:20px;margin-top:20px;" src="{{ asset('public/assets/images/products/'.$value->image)}}"/>--}}
@@ -447,8 +537,12 @@
               </div>
           </div>
 @endsection
+@section('scriptcode_one')
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+@endsection
 @section('scriptcode_three')
-    <script src="{{ asset('public/ckeditor/ckeditor.js') }}"></script>
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
+    <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 	<script type="text/javascript">
       CKEDITOR.replace( 'summary-ckeditor' );
@@ -467,27 +561,22 @@
 			    contentType: false,
 			    cache: false,
 			    processData: false,
-				success: function(data)
+				success: function(data,statusText,getStatus)
 				{
 				  console.log("",data); // show response from the php script.
 				  if(data == 1)
 				  {
 					  location.reload();
-					/*@if(auth()->user()->company_id == 7)
-					  sunmiCloud();  
-					@else
-						location.reload();
-					@endif*/
 				  }
+				  
+		
 				}
 			});
 		});
 		
 		function sunmiCloud(){
-			
 			rem_id.push($("#id").val());
-			console.log(rem_id)		
-			
+			// console.log(rem_id)		
 			$.ajax({
 				url: "{{url('/sunmi-cloud')}}",
 				type: "POST",
@@ -495,16 +584,7 @@
 					inventory:rem_id,
 				},
 				success:function(resp){
-					// console.log(resp);
-					
 					sendToSunmi(resp)
-					
-					// swal({
-						// title: "Success!",
-						// text: "Price Change Successfully!",
-						// type: "success"
-					// });
-					// window.location="{{url('/inventory-list')}}";
 				}
 			});
 		}
@@ -645,6 +725,19 @@
              reader.readAsDataURL(input.files[0]);
          }
      }
+     
+    $("#website").on('change',function(){
+      if($(this).val() != ''){    
+        if($("#prodAdvans_Media").hasClass('d-none')){
+            $("#prodAdvans_Media").removeClass('d-none')
+        }
+      }else{
+        if(!$("#prodAdvans_Media").hasClass('d-none')){
+            $("#prodAdvans_Media").addClass('d-none')
+        }
+      }
+    });      
+     
     subDepart();
     function subDepart(){
       var depart = '{{$data[0]->sub_department_id}}';

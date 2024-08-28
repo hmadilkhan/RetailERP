@@ -66,7 +66,7 @@ class apiController extends Controller
     public function productJSON(Request $request)
     {
         $product = DB::select('
-        SELECT a.id,a.item_code,a.product_name,a.slug,a.short_description, a.product_description,a.details,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
+        SELECT a.id,a.item_code,a.product_name,a.slug,a.short_description, a.product_description,a.details,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
     INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
@@ -78,7 +78,7 @@ class apiController extends Controller
 	public function productJSONByDepartment(Request $request)
     {
         $product = DB::select('
-        SELECT a.id,a.item_code,a.product_name,a.slug,a.short_description, a.product_description,a.details,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
+        SELECT a.id,a.item_code,a.product_name,a.slug,a.short_description, a.product_description,a.details,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
     INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
@@ -90,7 +90,7 @@ class apiController extends Controller
     public function productJSONByID(Request $request)
     {
         $product = DB::select('
-        SELECT a.id,a.department_id,a.sub_department_id,a.slug,a.short_description,a.item_code,a.details,a.product_name,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
+        SELECT a.id,a.department_id,a.sub_department_id,a.slug,a.short_description,a.item_code,a.details,a.product_name,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
     INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
@@ -109,7 +109,7 @@ class apiController extends Controller
     public function productByDepartment(Request $request)
     {
         $product = DB::select('
-        SELECT a.id,a.item_code,a.product_name,a.short_description,a.slug,a.details,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
+        SELECT a.id,a.item_code,a.product_name,a.short_description,a.slug,a.details,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
     INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
@@ -120,7 +120,7 @@ class apiController extends Controller
     public function productByRelated(Request $request)
     {
         $product = DB::select('
-        SELECT a.id,a.item_code,a.product_name,a.short_description,a.slug,a.details,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
+        SELECT a.id,a.item_code,a.product_name,a.short_description,a.slug,a.details,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
     INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
@@ -132,7 +132,7 @@ class apiController extends Controller
     public function productBySubdepartment(Request $request)
     {
         $product = DB::select('
-        SELECT a.id,a.item_code,a.product_name,a.product_description,a.slug,a.department_id,b.department_name, c.sub_department_id,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
+        SELECT a.id,a.item_code,a.product_name,a.product_description,a.slug,a.department_id,b.department_name, c.sub_department_id,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
     INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
@@ -223,7 +223,7 @@ class apiController extends Controller
     public function topcollection(Request $request)
     {
         $user_id = DB::table("user_authorization")->where("company_id",$request->id)->get();
-            $result = DB::select('SELECT a.id,a.item_code,a.slug,a.product_name,a.short_description,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
+            $result = DB::select('SELECT a.id,a.item_code,a.slug,a.product_name,a.short_description,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
     INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
@@ -234,7 +234,7 @@ class apiController extends Controller
     public function newproduct(Request $request)
     {
         $user_id = DB::table("user_authorization")->where("company_id",$request->id)->get();
-        $result = DB::select('SELECT a.id,a.item_code,a.slug,a.product_name,a.short_description,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
+        $result = DB::select('SELECT a.id,a.item_code,a.slug,a.product_name,a.short_description,a.product_description,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a
     INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
@@ -311,7 +311,7 @@ class apiController extends Controller
     }
     public function getjsonsearch(Request $request){
         $product = DB::select('
-        SELECT a.id,a.item_code,a.product_name,a.slug,a.short_description, a.product_description,a.details,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("http://sabsoft.com.pk/Retail/public/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a 
+        SELECT a.id,a.item_code,a.product_name,a.slug,a.short_description, a.product_description,a.details,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = 10 ),0) as qty FROM inventory_general a 
         INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1 
         INNER JOIN inventory_department b on b.department_id = a.department_id 
         INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id 

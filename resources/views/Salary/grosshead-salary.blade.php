@@ -45,17 +45,23 @@
             <td>Bonus</td>
             <td>{{number_format($bonus[0]->bonus_amount,2)}}</td>
           </tr>
+		  <tr>
+            <?php $gross = $gross + $otamount ?>
+            <td>OT (per min)</td>
+            <td>{{number_format($otamount,2)}}</td>
+          </tr>
 		  @endif
            <input type="hidden"  id="setbasicsalary" value="{{$salarydetails[0]->basic_pay}}">
            <input type="hidden"  id="setpffund" value="{{$salarydetails[0]->pf_fund}}">
            <input type="hidden"  id="setallowance" value="{{$salarydetails[0]->allowance}}">
            <input type="hidden"  id="setbonusamt" value="{{$bonus[0]->bonus_amount}}">
            <input type="hidden" name="bonusid" id="bonusid" value="{{$bonus[0]->bonus_id}}">
+           <input type="hidden" name="otamount" id="otamount" value="{{$otamount}}">
           
 
            @if($overtime)
             <tr>
-              <?php $gross = $gross + $overtime[0]->otamount ?>
+            <?php $gross = $gross + $overtime[0]->otamount ?>
             <td>Over Time</td>
             <td >{{number_format($overtime[0]->otamount,2)}}</td>
           </tr>

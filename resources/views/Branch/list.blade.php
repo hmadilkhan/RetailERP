@@ -36,7 +36,7 @@
               @foreach($details as $value)
                     <tr>
                       <td class="text-center">
-                                   <img width="42" height="42" src="{{ asset('public/assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg' }}">
+                                   <img width="42" height="42" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg' }}">
                              </td>
                           
                           <td>{{$value->branch_name}}</td>

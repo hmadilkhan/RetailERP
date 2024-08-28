@@ -17,6 +17,12 @@ class joborder extends Model
             ->get();
         return $result;
     }
+	
+	public function getRestaurantList()
+    {
+        $result = DB::select('SELECT a.recipy_id,b.product_name,(SELECT SUM(cost_price) FROM `inventory_stock` WHERE `product_id` IN (SELECT item_id FROM `recipy_details` WHERE `recipy_id` = a.recipy_id and used_in_dinein = 1)) as DineInCost, (SELECT SUM(cost_price) FROM `inventory_stock` WHERE `product_id` IN (SELECT item_id FROM `recipy_details` WHERE `recipy_id` = a.recipy_id)) as TakedelCost,c.ingredients_cost,c.material_cost,c.infrastructure_cost FROM recipy_general a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN recipy_account c on c.recipy_id = a.recipy_id where a.branch_id = ? and a.status_id = 1',[session('branch')]);
+        return $result;
+    }
 
     public function getfinishgoods()
     {

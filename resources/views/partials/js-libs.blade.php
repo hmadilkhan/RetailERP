@@ -26,16 +26,16 @@
    <script src="{{ asset('assets/plugins/countdown/js/jquery.counterup.js') }}"></script>
 
    <!-- Echart js -->
-  <!--  <script src="{{ asset('assets/plugins/charts/echarts/js/echarts-all.js') }}"></script> -->
+  <!--  <script src="{{-- asset('assets/plugins/charts/echarts/js/echarts-all.js') --}}"></script> -->
 
-   <!--<script src="{{ asset('assets/highcharts.js') }}"></script>
-   <script src="{{ asset('assets/modules/exporting.js') }}"></script>
-   <script src="{{ asset('assets/highcharts-3d.js') }}"></script>-->
+   <!--<script src="{{-- asset('assets/highcharts.js') --}}"></script>
+   <script src="{{-- asset('assets/modules/exporting.js') --}}"></script>
+   <script src="{{-- asset('assets/highcharts-3d.js') --}}"></script>-->
 
    <!-- custom js -->
    <script type="text/javascript" src="{{ asset('assets/js/main.min.js') }}"></script>
    <script type="text/javascript" src="{{ asset('assets/js/menu-horizontal.min.js') }}"></script>
-  <!--  <script type="text/javascript" src="{{ asset('assets/pages/dashboard.js') }}"></script> -->
+  <!--  <script type="text/javascript" src="{{-- asset('assets/pages/dashboard.js') --}}"></script> -->
    <script type="text/javascript" src="{{ asset('assets/pages/accordion.js') }}"></script>
    <script type="text/javascript" src="{{ asset('assets/pages/elements.js') }}"></script>
    <script src="{{ asset('assets/js/menu.min.js') }}"></script>

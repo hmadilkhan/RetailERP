@@ -10,6 +10,6 @@ class AddonCategory extends Model
 	
 	public function addons()
 	{
-		return $this->hasMany("App\Addon","addon_category_id","id");
+		return $this->hasMany("App\Addon","addon_category_id","id")->where("status",1);
 	}
 }

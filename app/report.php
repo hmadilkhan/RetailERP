@@ -196,8 +196,24 @@ class report extends Model
 
 
     //inventory query
-    public  function get_inventory_details(){
-        $result = DB::select('SELECT a.id, a.product_name, SUM(c.balance) AS qty, b.name AS um, (SELECT AVG(e.cost_price) from inventory_stock e WHERE e.product_id = a.id AND e.status_id = 1) AS cost, d.retail_price, c.cost_price  FROM inventory_general a INNER JOIN inventory_uom b ON b.uom_id = a.uom_id INNER JOIN inventory_stock c ON c.product_id = a.id AND c.status_id = 1 INNER JOIN inventory_price d ON d.product_id = a.id AND d.status_id = 1 WHERE a.status = 1 AND a.company_id = ? GROUP BY a.id',[session("company_id")]);
+    public  function get_inventory_details($branch,$department="",$subdepartment=""){
+		$filter = "";
+		if($department != ""){
+			$filter .= " and a.department_id = ".$department;
+		}
+		if($subdepartment != ""){
+			$filter .= " and a.sub_department_id = ".$subdepartment;
+		}
+        $result = DB::select('SELECT a.id, a.product_name, a.item_code, SUM(c.qty) AS totalqty, SUM(c.balance) AS qty, b.name AS um, (SELECT AVG(e.cost_price) from inventory_stock e WHERE e.product_id = a.id AND e.status_id = 1) AS cost, d.retail_price, c.cost_price,a.image  FROM inventory_general a INNER JOIN inventory_uom b ON b.uom_id = a.uom_id INNER JOIN inventory_stock c ON c.product_id = a.id AND c.status_id = 1 INNER JOIN inventory_price d ON d.product_id = a.id AND d.status_id = 1 WHERE a.status = 1 AND a.company_id = ? and c.branch_id = ? '.$filter.' GROUP BY a.id',[session("company_id"),$branch]);
+        return $result;
+    }
+	
+	public  function get_inventory_details_with_image($department,$subdepartment){
+		$filter = "";
+		if($subdepartment != ""){
+			$filter = " and a.sub_department_id = ".$subdepartment;
+		}
+        $result = DB::select('SELECT a.id, a.product_name, a.item_code,b.department_name,c.sub_depart_name ,a.image  FROM inventory_general a  INNER JOIN inventory_department b ON b.department_id = a.department_id INNER JOIN inventory_sub_department c ON c.sub_department_id = a.sub_department_id WHERE a.status = 1 AND a.company_id = ? and a.department_id = ? '.$filter.' GROUP BY a.id',[session("company_id"),$department]);
         return $result;
     }
 
@@ -208,13 +224,30 @@ class report extends Model
     }
 
     //get inventory products
-    public  function  get_inventory_products(){
-        $result = DB::select('SELECT * FROM inventory_general a WHERE a.company_id = ? AND a.status = 1',[session("company_id")]);
+    public  function  get_inventory_products($branch,$department,$subdepartment= ""){
+		$filter = "";
+		if($department != ""){
+			$filter .= " and a.department_id = ".$department;
+		}
+		if($subdepartment != ""){
+			$filter .= " and a.sub_department_id = ".$subdepartment;
+		}
+		if($branch != ""){
+			$filter .= " and id IN (SELECT product_id FROM `inventory_stock` where branch_id = ".$branch." )";
+		}
+        $result = DB::select("SELECT * FROM inventory_general a WHERE a.company_id = ? AND a.status = 1 ".$filter."",[session("company_id")]);
         return $result;
     }
 
-    public  function  stock_report_details($productid,$fromdate,$todate){
-        $result = DB::select('SELECT * FROM inventory_stock_report_table WHERE product_id = ? AND DATE(date) BETWEEN ? AND ?',[$productid,$fromdate,$todate]);
+    public  function  stock_report_details($productid,$fromdate,$todate,$branch,$department){
+		$filter = "";
+		if($department != ""){
+			$filter .= " and b.department_id = ".$department;
+		}
+		if($branch != ""){
+			$filter .= " and a.branch_id = ".$branch;
+		}
+        $result = DB::select("SELECT * FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id WHERE a.product_id = ? AND DATE(a.date) BETWEEN ? AND ? ".$filter,[$productid,$fromdate,$todate]);
         return $result;
     }
 
@@ -226,7 +259,7 @@ class report extends Model
 	public  function  get_branches(){
 
         if (session("roleId") == 2) {
-			$result = DB::table('branch')->where("branch_id",session('branch'))->where("company_id",session("company_id"))->where("status_id",1)->select("branch_id","branch_name")->get();
+			$result = DB::table('branch')->where("company_id",session("company_id"))->where("status_id",1)->select("branch_id","branch_name")->get();
             return $result;
         }else if(session("roleId") == 16){
 			$branchIds = DB::table("user_branches")->where("user_id",auth()->user()->id)->pluck("branch_id");
@@ -236,6 +269,11 @@ class report extends Model
             $result = DB::table('branch')->where("branch_id",session('branch'))->where("branch_id",session("branch"))->where("status_id",1)->select("branch_id","branch_name")->get();
             return $result;
         }
+    }
+	
+	public  function  getPaymentModes(){
+		$result = DB::table('sales_payment')->whereIn("payment_id",[1,2])->get();
+		return $result;
     }
 
     //sales decleration report
@@ -272,7 +310,7 @@ class report extends Model
 			$filter = " opening_id IN (SELECT opening_id FROM `sales_opening` WHERE date between '".$fromdate."' and '".$todate."' and terminal_id = ".$terminal.")";
 		}
 		$terminalFilter = " and a.terminal_id = ".($terminal != "" && $terminal != 0  ? $terminal : "(SELECT terminal_id FROM `terminal_details` where branch_id IN (SELECT branch_id FROM `branch` WHERE `company_id` = ".session('company_id')."))" );
-        $result = DB::select("SELECT (SELECT COUNT(*) FROM `sales_receipt_details` where receipt_id = a.id) as countItems,(SELECT SUM(total_qty) FROM `sales_receipt_details` where receipt_id = a.id) as totalItems,a.id,a.receipt_no,a.terminal_id,a.actual_amount,a.total_amount,b.sales_tax_amount,b.srb,a.date,b.discount_amount,c.name as customer,d.order_mode,a.void_receipt FROM sales_receipts a INNER JOIN sales_account_subdetails b on b.receipt_id = a.id LEFT JOIN customers c on c.id = a.customer_id INNER JOIN sales_order_mode d on d.order_mode_id = a.order_mode_id where ".$filter);
+        $result = DB::select("SELECT (SELECT COUNT(*) FROM `sales_receipt_details` where receipt_id = a.id) as countItems,(SELECT SUM(total_qty) FROM `sales_receipt_details` where receipt_id = a.id) as totalItems,a.id,a.receipt_no,a.terminal_id,a.actual_amount,a.total_amount,b.sales_tax_amount,b.srb,a.date,b.discount_amount,c.name as customer,d.order_mode,a.void_receipt,e.receive_amount FROM sales_receipts a LEFT JOIN sales_account_subdetails b on b.receipt_id = a.id LEFT JOIN customers c on c.id = a.customer_id INNER JOIN sales_order_mode d on d.order_mode_id = a.order_mode_id LEFT JOIN sales_account_general e on e.receipt_id = a.id where ".$filter,[$fromdate,$todate,$terminal]);
         return $result;
     }
 	
@@ -333,16 +371,22 @@ class report extends Model
     }
 	
     public function get_departments(){
-       $result = DB::table('inventory_department')->where('company_id',session("company_id"))->get();
+       $result = DB::table('inventory_department')->where('company_id',session("company_id"))->where('status',1)->get();
        return $result;
     }
 
     //item sale database
-    public  function  itemsale_details($fromdate,$todate,$terminalid,$type){
+    public function  itemsale_details($fromdate,$todate,$terminalid,$type,$department,$subdepartment = ""){
 		if($type != "" && $type == "datewise"){
 			$filter = "  a.date between '".$fromdate."' and '".$todate."' and a.terminal_id = ".$terminalid."";
 		}else{
 			$filter = "  a.opening_id IN (SELECT a.opening_id FROM `sales_opening` a WHERE a.date between '".$fromdate."' and '".$todate."' and a.terminal_id = ".$terminalid.")";
+		}
+		if($department != ""){
+			$filter .= " and c.department_id = ".$department;
+		}
+		if($subdepartment != ""){
+			$filter .= " and c.sub_department_id = ".$subdepartment;
 		}
         $result = DB::select('SELECT c.id as itemId,c.item_code as code ,c.product_name, SUM(b.total_qty) as qty, SUM(b.total_amount) as amount,item_price as price, b.total_cost as cost,a.void_receipt,c.weight_qty FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN inventory_general c ON c.id = b.item_code WHERE '.$filter.' GROUP BY b.item_code',[$fromdate,$todate,$terminalid]);
         return $result;
@@ -356,8 +400,22 @@ class report extends Model
     }
 
     // sales return database
-    public  function  salereturn_details($fromdate,$todate,$terminalid){
-        $result = DB::select('SELECT d.receipt_no,c.product_name, SUM(qty) as qty, SUM(amount) as amount, timestamp FROM sales_return a INNER JOIN sales_receipt_details b ON b.receipt_id = a.receipt_id INNER JOIN inventory_general c ON c.id = b.item_code INNER JOIN sales_receipts d on d.id = a.receipt_id WHERE a.opening_id IN (SELECT a.opening_id FROM sales_opening a WHERE a.date BETWEEN ? AND ? AND a.terminal_id = ?) GROUP BY a.receipt_id,a.item_id ',[$fromdate,$todate,$terminalid]);
+    public  function  salereturn_details($fromdate,$todate,$terminalid,$code){
+		$filter = "";
+		if($code != ""){
+			$filter .= " and c.item_code = ".$code;
+		}
+        $result = DB::select('SELECT d.receipt_no,c.product_name, SUM(qty) as qty, SUM(amount) as amount, e.date,e.time FROM sales_return a  INNER JOIN inventory_general c ON c.id = a.item_id INNER JOIN sales_receipts d on d.id = a.receipt_id INNER JOIN sales_opening e on e.opening_id = a.opening_id WHERE a.opening_id IN (SELECT a.opening_id FROM sales_opening a WHERE a.date BETWEEN ? AND ? AND a.terminal_id = ?) '.$filter.' GROUP BY a.receipt_id,a.item_id ',[$fromdate,$todate,$terminalid]);
+        return $result;
+    }
+	
+	// 
+	public  function  orderBookingQuery($fromdate,$todate,$paymentmethod){
+		$filter = "";
+		if($paymentmethod != ""){
+			$filter .= " and a.payment_mode_id  = ".$paymentmethod;
+		}
+        $result = DB::select('SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2 and b.branch = ? '.$filter ,[$fromdate,$todate,session('branch')]);
         return $result;
     }
 
@@ -378,8 +436,12 @@ class report extends Model
 
     //stock adjustment report
 
-    public  function  stockadjustment($fromdate,$todate){
-        $result = DB::select('SELECT c.grn_id,b.product_name,a.narration,a.adjustment_mode,a.qty,d.name,f.vendor_name FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_stock c on c.stock_id = a.foreign_id INNER JOIN inventory_uom d on d.uom_id = b.uom_id inner join vendor_product e on e.product_id = b.id INNER JOIN vendors f on f.id = e.vendor_id  WHERE Date(a.date) BETWEEN ? AND ? AND a.adjustment_mode != "NULL" AND a.branch_id IN (SELECT branch.branch_id FROM branch WHERE branch.company_id = ?)',[$fromdate,$todate,session("company_id")]);
+    public  function  stockadjustment($fromdate,$todate,$branch=""){
+		$filter  = "";
+		if($branch != "" && $branch != "all"){
+			$filter .= " and c.branch_id = ".$branch;
+		}
+        $result = DB::select('SELECT c.grn_id,b.item_code,b.product_name,a.narration,a.adjustment_mode,a.qty,d.name FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_stock c on c.stock_id = a.foreign_id INNER JOIN inventory_uom d on d.uom_id = b.uom_id  WHERE Date(a.date) BETWEEN ? AND ? AND a.adjustment_mode != "NULL" AND a.branch_id IN (SELECT branch.branch_id FROM branch WHERE branch.company_id = ?) '.$filter,[$fromdate,$todate,session("company_id")]);
         return $result;
     }
 	
@@ -419,7 +481,40 @@ class report extends Model
     	$result = DB::select('SELECT a.exp_id,a.date,b.expense_category,a.expense_details,SUM(a.net_amount) as balance FROM expenses a INNER JOIN expense_categories b on b.exp_cat_id = a.exp_cat_id WHERE a.branch_id = ? '.$filter.' GROUP BY date(a.created_at),b.expense_category',[session('branch')]);
     	return $result;
     }
+	
+	public function getSalesItemByDate($from,$to,$company,$branch)
+	{
+		$filter = "";
+		$datefilter = "";
+		if(session("roleId") == 2){
+			$filter = "and b.branch IN ( Select branch_id from branch where company_id = ".$company.")";
+			$datefilter = "and b.opening_id IN (SELECT terminal_id FROM `terminal_details` where branch_id IN (Select branch_id from branch where company_id = ".$company."))";
+		}else{
+			$filter = "and b.branch = ".$branch;
+			$datefilter = "and b.opening_id IN (SELECT terminal_id FROM `terminal_details` where branch_id IN (Select branch_id from branch where branch_id = ".$branch."))";
+		}
+		return DB::select("SELECT b.id,a.item_code,a.item_name,SUM(a.total_qty) as totalqty,c.recipy_id,a.receipt_id,b.opening_id,b.date FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id LEFT JOIN recipy_general c on c.product_id = a.item_code WHERE b.date between ? and ? and c.recipy_id > 0 ".$filter." group by a.item_code",[$from,$to]);
+	}
+	
+	public function getRecipeDetails($company)
+	{
+		return DB::select("SELECT a.recipy_id,a.item_id,a.mode_id,a.usage_qty,b.product_name,c.name as uom FROM recipy_details a INNER JOIN inventory_general b on b.id = a.item_id INNER JOIN inventory_uom c on c.uom_id = b.uom_id  where recipy_id IN (Select recipy_id from recipy_general where branch_id IN (Select branch_id from branch where company_id = ?) and status_id = 1)",[$company]);
+	}
+	
+	public function getInventories($inventArray)
+	{
+		return DB::table("inventory_general")->join("inventory_uom","inventory_uom.uom_id","=","inventory_general.uom_id")->whereIn("id",$inventArray)->get();
+	}
 
+	public function getAllItemUsage($from,$to)
+	{
+		return DB::select("SELECT b.product_name,c.name as uom,SUM(a.usage_qty) as usageQty,SUM(a.total_qty) as totalQty,SUM(a.total_usage) as totalUsage,(SELECT AVG(cost_price) FROM `inventory_stock` where product_id = b.id) as cost,SUM(a.previous_stock) as previous_stock,SUM(a.current_stock) as current_stock,SUM(d.wastage) as wastage,SUM(d.stock) as closing_stock FROM daily_recipe_usage a 
+		INNER JOIN inventory_general b on b.id = a.item_id 
+		INNER JOIN inventory_uom c on c.uom_id = b.uom_id 
+		LEFT JOIN physical_stock_taking d on d.inventory_id = a.item_id and d.entry_date between ? and ?
+		where a.original_date between ? and ?
+		group by a.item_id;",[$from,$to,$from,$to]);
+	}
 
 
 

@@ -375,7 +375,7 @@
 
                 <div class="col-lg-4 col-md-4">
                     <a href="#">
-                <img id="empimgs" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                <img id="empimgs" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                 </a>
              <div class="form-group{{ $errors->has('empimg') ? 'has-danger' : '' }} ">
                  <label for="empimg" class="form-control-label">Profile Picture</label>
@@ -388,7 +388,7 @@
               </div>
             <div class="col-lg-4 col-md-4">
                         <a href="#">
-                            <img id="docimgs1" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                            <img id="docimgs1" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                         </a>
                         <div class="form-group">
                             <label for="docimg1" class="form-control-label">Document Image 1</label>
@@ -402,7 +402,7 @@
 
              <div class="col-lg-4 col-md-4">
                  <a href="#">
-                     <img id="docimgs2" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                     <img id="docimgs2" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                  </a>
                  <div class="form-group">
                      <label for="docimg2" class="form-control-label">Document Image 2</label>

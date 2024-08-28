@@ -100,7 +100,7 @@
                     <div class="col-md-4">
                         <label for="image" class="form-control-label">Image</label>
                         <a href="#">
-                            <img id="simg" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
+                            <img id="simg" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
                         </a>
 
                         <div class="form-group {{ $errors->has('image') ? 'has-danger' : '' }} m-t-10">
@@ -174,8 +174,8 @@
                 @foreach($terminals as $value)
                     <tr>
                         <td class="text-center">
-                            <a href="{{ asset('public/assets/images/receipt/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" data-toggle="lightbox" data-title="Article : {{$value->id.' '.$value->terminal_name}}" data-footer="{{$value->header}}">
-                                <img width="32" height="32" data-modal="modal-12" src="{{ asset('public/assets/images/receipt/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                            <a href="{{ asset('assets/images/receipt/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" data-toggle="lightbox" data-title="Article : {{$value->id.' '.$value->terminal_name}}" data-footer="{{$value->header}}">
+                                <img width="32" height="32" data-modal="modal-12" src="{{ asset('assets/images/receipt/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                             </a>
                         </td>
                         <td >{{$value->terminal_name}}</td>
@@ -267,7 +267,7 @@
             if(desktop == 1){
                 $('input:radio[id=desktop]').prop('checked', true);
             }
-            $('#simg').attr('src','{{asset('public/assets/images/receipt/')}}'+"/"+image);
+            $('#simg').attr('src','{{asset('assets/images/receipt/')}}'+"/"+image);
         }
 
         $('#btnCancel').click(function (e) {

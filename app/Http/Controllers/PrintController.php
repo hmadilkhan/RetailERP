@@ -10,6 +10,7 @@ use App\pdfClass;
 use App\receiptpdf;
 use App\labelPrinter;
 use Crabbly\Fpdf\Fpdf;
+use App\Models\Code128;
 use Illuminate\Support\Facades\DB;
 use PDF;
 use App\Customer;
@@ -135,7 +136,7 @@ class PrintController extends Controller
             $pdf->Cell(10,5,$val->total_qty,0,0,'C',1);
             $pdf->Cell(10,5,number_format($val->total_amount,0),0,1,'C',1);
 			
-			if($val->note != "" && $val->note != "None"){
+			if($val->note != "" && $val->note != "Note : None"){
 				$pdf->SetFont('Arial','BI',8);
 				$pdf->Cell(5,5,"",0,0,'L',1);
 				$pdf->Cell(70,5,"Note: ".$val->note,0,1,'L',1);
@@ -231,6 +232,364 @@ class PrintController extends Controller
 
 
 
+    }
+	
+	public function printVoucher(Request $request,order $order,Vendor $vendor)
+    {
+		$itemQty = 0;
+        $tQty = 0;
+		$general = $order->getReceiptGeneral($request->receipt);
+        $company = $vendor->getCompanyByBranch($general[0]->branchId);
+        $branch = $vendor->getBranch($general[0]->branchId);
+        $details = $order->orderItemsForPrint($general[0]->receiptID);
+
+        $pdf = new Code128('L', 'mm', 'A4');
+        $pdf->SetAutoPageBreak(false);
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+        $pdf->SetMargins(3, 0,[0,3]);
+        $pdf->SetFont('Arial', 'B', 25);
+		
+        $pdf->Cell(90, 0, $pdf->Image(public_path('assets/images/company/'.$company[0]->logo),40,2,-200), 0, 0, 'C');
+        $pdf->Cell(2, 0, "", 0, 0, 'C');
+        $pdf->Cell(95, 0, $pdf->Image(public_path('assets/images/company/'.$company[0]->logo),135,2,-200), 0, 0, 'C');
+        $pdf->Cell(2, 0, "", 0, 0, 'C');
+        $pdf->Cell(95, 0, $pdf->Image(public_path('assets/images/company/'.$company[0]->logo),226 ,2,-200), 0, 1, 'C');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->ln(18);
+
+        $pdf->SetFont('Arial', 'B', 15);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(95, 7, $company[0]->name, 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, $company[0]->name, 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, $company[0]->name, 0, 1, 'C', 1);
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(95, 7, $branch[0]->branch_address, 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, $branch[0]->branch_address, 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, $branch[0]->branch_address, 0, 1, 'C', 1);
+		$pdf->SetFont('Arial', 'B', 12);		
+		$pdf->Cell(95, 7, ucwords($general[0]->customerName), 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, ucwords($general[0]->customerName), 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, ucwords($general[0]->customerName), 0, 1, 'C', 1);
+		$pdf->SetTextColor(255,0,0);
+		$pdf->Cell(95, 7, strtoupper($general[0]->payment_mode. " payment"), 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, strtoupper($general[0]->payment_mode. " payment"), 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, strtoupper($general[0]->payment_mode. " payment"), 0, 1, 'C', 1);
+		
+		$pdf->SetTextColor(0, 0, 0);
+        
+		$pdf->SetFont('Arial', 'B', 15);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(95, 7, 'OFFICE COPY', 'B', 0, 'C', 1);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(2, 7, '', 0, 0, 'C', 1);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(95, 7, 'CUSTOMER COPY', 'B', 0, 'C', 1);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(2, 7, '', 0, 0, 'C', 0);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(95, 7, 'WORKSHOP COPY', 'B', 1, 'C', 1);
+		
+        $pdf->ln(3);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(22, 8, 'Receipt No.', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(32.5, 8, $general[0]->receipt_no, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(15, 8, 'Date', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(25.5, 8, date("d-m-Y",strtotime($general[0]->date)), 0, 0, 'L');
+        $pdf->Cell(2, 8, "", 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(22, 8, 'Receipt No.', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(32.5, 8, $general[0]->receipt_no, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(15, 8, 'Date', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(25.5, 8, date("d-m-Y",strtotime($general[0]->date)), 0, 0, 'L');
+        $pdf->Cell(2, 8, "", 0, 0, 'L');
+		
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(22, 8, 'Receipt No.', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(32.5, 8, $general[0]->receipt_no, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(15, 8, 'Date', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(25.5, 8, date("d-m-Y",strtotime($general[0]->date)), 0, 1, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(22, 8, 'Order #', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(32.5, 8, $general[0]->receiptID, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(15, 8, 'Time', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(25.5, 8, date("H:i a",strtotime($general[0]->time)), 0, 0, 'L');
+        $pdf->Cell(2, 8, "", 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(22, 8, 'Order #', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(32.5, 8, $general[0]->receiptID, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(15, 8, 'Time', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(25.5, 8, date("H:i a",strtotime($general[0]->time)), 0, 0, 'L');
+        $pdf->Cell(2, 8, "", 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(22, 8, 'Order #', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(32.5, 8, $general[0]->receiptID, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(15, 8, 'Time', 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(25.5, 8, date("H:i a",strtotime($general[0]->time)), 0, 1, 'L');
+
+        $pdf->ln(2);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->setFillColor(233,233,233);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(53,7,'Product',0,0,'L',1);
+        $pdf->Cell(15,7,'Price',0,0,'L',1);
+        $pdf->Cell(13,7,'Qty',0,0,'C',1);
+        $pdf->Cell(14,7,'Price',0,0,'C',1);
+		$pdf->setFillColor(255,255,255);
+        $pdf->SetTextColor(0,0,0);
+		
+        $pdf->Cell(2,7,'',0,0,'C',1);
+		
+		$pdf->setFillColor(233,233,233);
+        $pdf->SetTextColor(0,0,0);
+		$pdf->Cell(53,7,'Product',0,0,'L',1);
+        $pdf->Cell(15,7,'Price',0,0,'L',1);
+        $pdf->Cell(13,7,'Qty',0,0,'C',1);
+        $pdf->Cell(14,7,'Price',0,0,'C',1);
+		$pdf->setFillColor(255,255,255);
+        $pdf->SetTextColor(0,0,0);
+		
+        $pdf->Cell(2,7,'',0,0,'C',1);
+		
+		$pdf->setFillColor(233,233,233);
+        $pdf->SetTextColor(0,0,0);
+		$pdf->Cell(53,7,'Product',0,0,'L',1);
+        $pdf->Cell(15,7,'Price',0,0,'L',1);
+        $pdf->Cell(13,7,'Qty',0,0,'C',1);
+        $pdf->Cell(14,7,'Price',0,1,'C',1);
+		
+		
+		$pdf->setFillColor(255,255,255);
+        $pdf->SetTextColor(0,0,0);
+		$pdf->ln(1);
+		foreach ($details as $val){
+			$pdf->SetFont('Arial','',10);
+            $itemQty++;
+            $tQty = $tQty + $val->total_qty;
+
+            $pdf->Cell(53,5,$val->product_name,0,0,'L',1);
+            $pdf->Cell(15,5,$val->item_price,0,0,'L',1);
+            $pdf->Cell(13,5,$val->total_qty,0,0,'C',1);
+            $pdf->Cell(14,5,number_format($val->total_amount,0),0,0,'C',1);
+			$pdf->Cell(2,7,'',0,0,'C',1);
+			$pdf->Cell(53,5,$val->product_name,0,0,'L',1);
+            $pdf->Cell(15,5,$val->item_price,0,0,'L',1);
+            $pdf->Cell(13,5,$val->total_qty,0,0,'C',1);
+            $pdf->Cell(14,5,number_format($val->total_amount,0),0,0,'C',1);
+			$pdf->Cell(2,7,'',0,0,'C',1);
+			$pdf->Cell(53,5,$val->product_name,0,0,'L',1);
+            $pdf->Cell(15,5,$val->item_price,0,0,'L',1);
+            $pdf->Cell(13,5,$val->total_qty,0,0,'C',1);
+            $pdf->Cell(14,5,number_format($val->total_amount,0),0,1,'C',1);
+			
+			$pdf->ln(1);
+			$pdf->SetFont('Arial','I',8);
+			
+			$notes = str_split($val->note, 55);
+			// echo count($notes);
+			// exit();
+			$finalIndex = count($notes)-1;
+			for($i = 0; $i < count($notes); $i++){
+				// echo $i."</br>";
+				$pdf->Cell(5,5,"",0,0,'L',1);
+				$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($val->note,0,59),0,0,'L',1);
+				
+				$pdf->Cell(2,7,'',0,0,'C',1);
+				$pdf->Cell(5,5,"",0,0,'L',1);
+				$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($val->note,0,59),0,0,'L',1);
+				
+				$pdf->Cell(2,7,'',0,0,'C',1);
+				$pdf->Cell(5,5,"",0,0,'L',1);
+				if($i == $finalIndex){
+					$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($val->note,0,59),0,1,'L',1);
+				}else{
+					$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($val->note,0,59),0,1,'L',1);
+				}
+			}
+		
+			// if($val->note != "" && $val->note != "Note : None"){
+				
+				// $pdf->Cell(5,5,"",0,0,'L',1);
+				// $pdf->Cell(90,5,"Note1: ".substr($val->note,0,59),0,0,'L',1);
+
+			// }
+			// $pdf->Cell(2,7,'',0,0,'C',1);
+			
+			// if($val->note != "" && $val->note != "Note : None"){
+				// $pdf->Cell(5,5,"",0,0,'L',1);
+				// $pdf->Cell(90,5,"Note2: Hello 2",0,0,'L',1);
+			// }
+			// $pdf->Cell(2,7,'',0,0,'C',1);
+			
+			// if($val->note != "" && $val->note != "Note : None"){
+				// $pdf->Cell(5,5,"",0,0,'L',1);
+				// $pdf->Cell(90,5,"Note3: Hello 3",0,1,'L',1);
+			// }
+        }
+
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(35, 8, 'Customer Name', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(60, 8, ucwords($general[0]->customerName), 0, 0, 'L');
+        // $pdf->Cell(2, 8, "", 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(35, 8, 'Customer Name', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(60, 8, ucwords($general[0]->customerName), 0, 0, 'L');
+        // $pdf->Cell(2, 8, "", 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(35, 8, 'Customer Name', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(60, 8, ucwords($general[0]->customerName), 0, 1, 'L');
+
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(25, 8, 'Father Name', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(70, 8, 'Noor Muhammad Khan', 0, 0, 'L');
+        // $pdf->Cell(2, 8, "", 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(25, 8, 'Father Name', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(70, 8, 'Noor Muhammad Khan', 0, 0, 'L');
+        // $pdf->Cell(2, 8, "", 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(25, 8, 'Father Name', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(70, 8, 'Noor Muhammad Khan', 0, 1, 'L');
+
+
+
+        
+
+        // $pdf->ln(3);
+        // $pdf->SetFont('Arial', 'B', 12);
+        // $pdf->setFillColor(0, 0, 0);
+        // $pdf->SetTextColor(255, 255, 255);
+        // $pdf->Cell(35, 8, 'Fee Month', 1, 0, 'C', 1);
+        // $pdf->Cell(60, 8, 'May - 2023', 1, 0, 'C', 1);
+        // $pdf->Cell(2, 8, "", 0, 0, 'L');
+        // $pdf->Cell(35, 8, 'Fee Month', 1, 0, 'C', 1);
+        // $pdf->Cell(60, 8, 'May - 2023', 1, 0, 'C', 1);
+        // $pdf->Cell(2, 8, "", 0, 0, 'L');
+        // $pdf->Cell(35, 8, 'Fee Month', 1, 0, 'C', 1);
+        // $pdf->Cell(60, 8, 'May - 2023', 1, 1, 'C', 1);
+
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+
+        $pdf->SetFont('Arial', '', 11);
+        // foreach ($feesTypes as $key => $feeType) {
+            // $pdf->Cell(35, 8, "Monthly ", 1, 0, 'C', 1);
+            // $pdf->Cell(60, 8, '500.00', 1, 0, 'C', 1);
+            // $pdf->Cell(2, 8, "", 0, 0, 'L');
+            // $pdf->Cell(35, 8, "Monthly ", 1, 0, 'C', 1);
+            // $pdf->Cell(60, 8, '500.00', 1, 0, 'C', 1);
+            // $pdf->Cell(2, 8, "", 0, 0, 'L');
+            // $pdf->Cell(35, 8, "Monthly ", 1, 0, 'C', 1);
+            // $pdf->Cell(60, 8, '500.00', 1, 1, 'C', 1);
+        // }
+
+        $pdf->SetFont('Arial', 'B', 12);
+        // $pdf->Cell(35, 8, 'Total', 1, 0, 'C', 1);
+        // $pdf->Cell(60, 8, '2500.00', 1, 0, 'C', 1);
+        // $pdf->Cell(2, 8, "", 0, 0, 'L');
+        // $pdf->Cell(35, 8, 'Total', 1, 0, 'C', 1);
+        // $pdf->Cell(60, 8, '2500.00', 1, 0, 'C', 1);
+        // $pdf->Cell(2, 8, "", 0, 0, 'L');
+        // $pdf->Cell(35, 8, 'Total', 1, 0, 'C', 1);
+        // $pdf->Cell(60, 8, '2500.00', 1, 1, 'C', 1);
+
+        // $pdf->Ln(3);
+        $pdf->SetFont('Arial', 'B', 15);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(95, 7, 'SIGNATURE', 'B', 0, 'C', 1);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(2, 7, '', 0, 0, 'C', 1);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(95, 7, 'SIGNATURE', 'B', 0, 'C', 1);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(2, 7, '', 0, 0, 'C', 0);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(95, 7, 'SIGNATURE', 'B', 1, 'C', 1);
+    
+
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Ln(3);
+
+        // $pdf =new Code128();
+        // $pdf->Cell(95, 4, $pdf->Code128(50,150,"1234",30,20), 0, 1, 'L');
+        // $pdf->Code128(100,150,"1234",80,20);
+
+        // $pdf->Cell(95, 4, '1. Only cash payment will be accepted in the bank', 0, 0, 'L');
+        // $pdf->Cell(2, 4, '', 0, 0, 'C', 1);
+        // $pdf->Cell(95, 4, '1. Only cash payment will be accepted in the bank', 0, 0, 'L');
+        // $pdf->Cell(2, 4, '', 0, 0, 'C', 1);
+        // $pdf->Cell(95, 4, '1. Only cash payment will be accepted in the bank', 0, 1, 'L');
+
+        // $pdf->Cell(95, 4, '2. Ensuring the timely receipt of fee voucher is the responsibility of parents.', 0, 0, 'L');
+        // $pdf->Cell(2, 4, '', 0, 0, 'C', 1);
+        // $pdf->Cell(95, 4, '2 Ensuring the timely receipt of fee voucher is the responsibility of parents', 0, 0, 'L');
+        // $pdf->Cell(2, 4, '', 0, 0, 'C', 1);
+        // $pdf->Cell(95, 4, '2. Ensuring the timely receipt of fee voucher is the responsibility of parents', 0, 1, 'L');
+
+        // $pdf->Cell(95, 4, '3. Parents must retain their copy of the paid fee vouchers', 0, 0, 'L');
+        // $pdf->Cell(2, 4, '', 0, 0, 'C', 1);
+        // $pdf->Cell(95, 4, '3. Parents must retain their copy of the paid fee vouchers', 0, 0, 'L');
+        // $pdf->Cell(2, 4, '', 0, 0, 'C', 1);
+        // $pdf->Cell(95, 4, '3. Parents must retain their copy of the paid fee vouchers', 0, 1, 'L');
+
+        // $pdf->Cell(95, 4, '4. Fee once paid is not transferable and non-refundable ', 0, 0, 'L');
+        // $pdf->Cell(2, 4, '', 0, 0, 'C', 1);
+        // $pdf->Cell(95, 4, '4. Fee once paid is not transferable and non-refundable ', 0, 0, 'L');
+        // $pdf->Cell(2, 4, '', 0, 0, 'C', 1);
+        // $pdf->Cell(95, 4, '4. Fee once paid is not transferable and non-refundable ', 0, 1, 'L');
+
+        
+
+        // $pdf->Cell(35, 0, $pdf->Image("http://localhost/php/index.php?code=12345", 30, 178, 35, 35, "png"), 0, 0, 'C', 1);
+        // $pdf->Cell(35, 0, $pdf->Image("http://localhost/php/index.php?code=12345", 125, 178, 35, 35, "png"), 0, 0, 'C', 1);
+        // $pdf->Cell(35, 0, $pdf->Image("http://localhost/php/index.php?code=12345", 223, 178, 35, 35, "png"), 0, 1, 'C', 1);
+
+
+
+        return response($pdf->Output())
+            ->header('Content-Type', 'application/pdf');
     }
 
     public function labelPrintingsixtyforty(Request $request,Vendor $vendor,order $order)
@@ -492,6 +851,8 @@ class PrintController extends Controller
 
 
     }
+	
+	
 }
 
 //REFERENCE LINK FOR BARCODES : http://www.fpdf.org/en/script/script88.php

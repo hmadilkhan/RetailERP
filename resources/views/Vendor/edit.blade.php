@@ -170,7 +170,7 @@
                        <div class="row">
                         <div class="col-md-4">
                                <a href="#">
-                                <img id="plogo" src="{{ asset('public/assets/images/vendors/'.(empty($company[0]->logo) ? 'placeholder.jpg' : $company[0]->logo).'') }}" class="thumb-img img-fluid width-100" alt="{{ empty($vendor->image) ? 'placeholder.jpg' : $company[0]->logo }}" class="thumb-img img-fluid width-100" alt="{{ empty($company[0]->logo) ? 'placeholder.jpg' : $company[0]->logo }}" style="width: 128px;height: 128px;">
+                                <img id="plogo" src="{{ asset('assets/images/vendors/'.(empty($company[0]->logo) ? 'placeholder.jpg' : $company[0]->logo).'') }}" class="thumb-img img-fluid width-100" alt="{{ empty($vendor->image) ? 'placeholder.jpg' : $company[0]->logo }}" class="thumb-img img-fluid width-100" alt="{{ empty($company[0]->logo) ? 'placeholder.jpg' : $company[0]->logo }}" style="width: 128px;height: 128px;">
                                 </a>
                             <div class="form-group{{ $errors->has('logo') ? 'has-danger' : '' }} ">
                                  <label for="logo" class="form-control-label">Company Logo</label>
@@ -187,7 +187,7 @@
                         </div>
                         <div class="col-md-4" >
                             <a href="#">
-                            <img id="vdpimg" src="{{ asset('public/assets/images/vendors/'.(empty($vendor->image) ? 'placeholder.jpg' : $vendor->image).'') }}" class="thumb-img img-fluid width-100" alt="{{ empty($vendor->image) ? 'placeholder.jpg' : $vendor->image }}" style="width: 128px;height: 128px;">
+                            <img id="vdpimg" src="{{ asset('assets/images/vendors/'.(empty($vendor->image) ? 'placeholder.jpg' : $vendor->image).'') }}" class="thumb-img img-fluid width-100" alt="{{ empty($vendor->image) ? 'placeholder.jpg' : $vendor->image }}" style="width: 128px;height: 128px;">
                                 </a>
                              <div class="form-group{{ $errors->has('vdimg') ? 'has-danger' : '' }} ">
                                  <label for="vdimg" class="form-control-label">Vendor Image</label>

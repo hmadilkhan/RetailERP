@@ -6,9 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\Branch;
 
-class Inventory extends Model
+class inventory extends Model
 {
     protected  $guarded = [];
+    
+    // public function getDeal(){
+    //     return $this->hasMany("App\InventoryDealGeneral","inventory_deal_id","id");
+    // }
 	
 	public function searchProductByNameAndItemCode($search)
 	{
@@ -36,11 +40,23 @@ class Inventory extends Model
 		return $result;
 	}
 	
-    static public function getData(){
+    public function getData(){
         // DB::enableQueryLog();
+    	 
+        
 	
 		if(session("roleId") == 2)
 		{
+			// return DB::table('inventory_stock as stock')
+			// ->join('inventory_general as invent','invent.id','=','stock.product_id')
+			// ->join('inventory_uom as u','u.uom_id','=','invent.uom_id')
+			// ->join('inventory_department as dept','dept.department_id','=','invent.department_id')
+			// ->join('inventory_sub_department as sdept','sdept.sub_department_id','=','invent.sub_department_id')
+			// ->join('inventory_product_mode','inventory_product_mode.product_mode_id','=','invent.product_mode')
+			// ->join('inventory_price','inventory_price.product_id','=','invent.id')
+			// ->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image',DB::raw('SUM(stock.balance) As stock'))
+			// ->where('stock.status_id',1)
+			// ->get();
 			$query = DB::table('inventory_general as invent')
 			->join('inventory_uom as u','u.uom_id','=','invent.uom_id')
 			->join('inventory_department as dept','dept.department_id','=','invent.department_id')
@@ -56,7 +72,7 @@ class Inventory extends Model
 			->groupBy("invent.id")
 			->orderBy("invent.id");
 			
-			$inventory = $query->paginate(5);
+			$inventory = $query->paginate(50);
 			return $inventory;
 		}
 		else
@@ -76,8 +92,9 @@ class Inventory extends Model
 			->groupBy("invent.id")
 			->orderBy("invent.id");
 			
-			$inventory = $query->paginate(5);
+			$inventory = $query->paginate(50);
 			return $inventory;
+			
 		}
        
        // $inventory = $query->toSql();
@@ -140,7 +157,7 @@ public function updateProductName($id,$name)
         return $inventory;
     }
 
-    static public function getInactiveData(){
+    public function getInactiveData(){
         $inventory = DB::table('inventory_general as invent')
             ->join('inventory_uom as u','u.uom_id','=','invent.uom_id')
             ->join('inventory_department as dept','dept.department_id','=','invent.department_id')
@@ -198,6 +215,81 @@ public function updateProductName($id,$name)
             return $result;
         }
     }
+	
+	public function getInventoryForPagewiseByFilters($code="",$name="",$dept="",$sdept="",$retail_price="",$ref="",$status="",$nonstock=0)
+	{
+		if($status==""){
+			$status = 1;
+		}
+		// echo "Non Stock".$nonstock;
+		// return $nonstock;
+		// return DB::table("inventory_stock")->where("branch_id",session('branch'))->pluck("product_id");
+		$query = DB::table('inventory_general as invent')
+		->join('inventory_uom as u','u.uom_id','=','invent.uom_id')
+		->join('inventory_department as dept','dept.department_id','=','invent.department_id')
+		->join('inventory_sub_department as sdept','sdept.sub_department_id','=','invent.sub_department_id')
+		->join('inventory_product_mode','inventory_product_mode.product_mode_id','=','invent.product_mode')
+		->join('inventory_price','inventory_price.product_id','=','invent.id')
+		->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id')
+		
+		
+		->where(function ($query) use ($code,$name,$dept,$sdept,$retail_price,$ref,$nonstock) {
+
+			if($nonstock == 0){
+				 $query->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id');
+				 $query->where('inventory_stock.branch_id',session('branch'));
+				 $query->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image',DB::raw('SUM(inventory_stock.balance) As stock'));
+			}
+			if($nonstock == 1){
+				$query->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image');
+			}
+			if($nonstock == 0){
+				$query->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id');
+				if(session("roleId") == 2){
+					$query->whereIn('inventory_stock.branch_id',DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"));
+				}else{
+					$query->where('inventory_stock.branch_id',session('branch'));
+				}
+			}
+			
+			if(!empty($code)){
+				$query->where('invent.item_code', 'like', '%'.$code.'%');
+			}
+			if(!empty($name)){
+			   $query->where('invent.product_name', 'like', '%'.$name.'%');
+			}  
+		    if(!empty($dept)){
+			   $query->where('invent.department_id', $dept);
+		    }
+		    if(!empty($sdept) && $sdept != "all"){
+			   $query->where('invent.sub_department_id',$sdept);
+		    }
+		    if(!empty($retail_price)){
+			   $query->where('inventory_price.retail_price',$retail_price);
+		    }
+		    if(!empty($ref)){
+			   $query->whereIn('inventory_reference.product_id',$ids);
+		    }
+			if($nonstock == 1){
+				if(session("roleId") == 2){
+					$query->whereNotIn("invent.id",DB::table("inventory_stock")->whereIn("branch_id",DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"))->pluck("product_id"));	
+				}else{
+					$query->whereNotIn("invent.id",DB::table("inventory_stock")->where("branch_id",session('branch'))->pluck("product_id"));
+				}
+				 
+			}
+		})
+		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image',DB::raw('SUM(inventory_stock.balance) As stock'))
+		->where('invent.company_id',session('company_id'))
+		->where('invent.status',$status)
+		->where('inventory_price.status_id',1)
+		// ->where('inventory_stock.branch_id',session('branch'))
+		->groupBy("invent.id")
+		->orderBy("invent.id");
+		
+		return $query->paginate(50);
+
+    }
 
     public function getDataByName($code,$name,$dept,$sdept,$retail_price,$ref){
         // echo 1;exit;
@@ -254,7 +346,7 @@ public function updateProductName($id,$name)
 			})
 			->groupBy("invent.id","inventory_reference.product_id")
 			->orderBy("invent.id")
-            ->paginate(10);
+            ->paginate(100);
             // ->toSql();
         // print_r(DB::getQueryLog());exit;    
         return $inventory;
@@ -292,7 +384,7 @@ public function updateProductName($id,$name)
             // ->where('invent.sub_department_id', 'like', '%'.$sdept.'%')
 			->where('inventory_stock.branch_id',session('branch'))
             ->orderBy("invent.id")
-            ->paginate(10);
+            ->paginate(100);
 
         return $inventory;
     }
@@ -348,7 +440,7 @@ public function updateProductName($id,$name)
 
     public function department(){
 
-    	$result = DB::table('inventory_department')->where('company_id',session('company_id'))->get();
+    	$result = DB::table('inventory_department')->where('company_id',session('company_id'))->where('status',1)->get();
     	return $result;
     }
 
@@ -421,6 +513,7 @@ public function updateProductName($id,$name)
 			 $count = DB::table('pos_products_gen_details')->where('product_id',$id)->count();
 			 if($count > 0){
 				DB::table('pos_products_gen_details')->where('product_id',$id)->update(['status_id' => $status]); 
+				DB::table('website_products')->where('inventory_id',$id)->update(['status' => 0]);
 			 }
 			
             return 1;
@@ -522,6 +615,7 @@ public function updateProductName($id,$name)
 	public function delete_all_inventory($inventid){
 		DB::table('inventory_qty_reminders')->whereIn('inventory_id', $inventid)->delete();
 	   	DB::table('inventory_price')->whereIn('product_id', $inventid)->delete();
+	   	DB::table('website_products')->whereIn('inventory_id', $inventid)->delete();
 	    $result = DB::table('inventory_general')->whereIn('id', $inventid)->delete();
         return $result;
     }
@@ -546,7 +640,7 @@ public function updateProductName($id,$name)
 
     public function get_departments()
     {
-        $result = DB::table('inventory_department')->where('company_id', session("company_id"))->get();
+        $result = DB::table('inventory_department')->where('company_id', session("company_id"))->where('status', 1)->get();
         return $result;
     }
 

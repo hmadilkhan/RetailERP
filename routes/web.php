@@ -6,44 +6,62 @@ use App\Http\Controllers\AdminBranchController;
 use App\Http\Controllers\AdminCompanyController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminUsersController;
+use App\Http\Controllers\AdvanceSalaryController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\BankDiscountController;
+use App\Http\Controllers\BonusController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BusinessPoliciesController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\DeliveryController;
+use App\Http\Controllers\DemandController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DesignationController;
 use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\DriverController;
 use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\EmployeeSecurityDepositController;
+use App\Http\Controllers\EobiController;
 use App\Http\Controllers\ExcelExportController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HRPermissionController;
+use App\Http\Controllers\HrProductController;
+use App\Http\Controllers\IncrementController;
 use App\Http\Controllers\Inventory_DepartmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\KitchenDepartmentController;
+use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\LoanController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PosProductController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\purchaseController;
+use App\Http\Controllers\ReceiveddemandController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\SalesController;
 use App\Http\Controllers\ServiceProviderOrderController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SideBarController;
 use App\Http\Controllers\SMSController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\TerminalController;
 use App\Http\Controllers\TransferController;
+use App\Http\Controllers\UnitofmeasureController;
 use App\Http\Controllers\UserDetailsController;
+use App\Http\Controllers\VariationController;
 use App\Http\Controllers\VariationProductController;
+use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
 use App\Livewire\ViewInventory;
 use Illuminate\Support\Facades\DB;
@@ -86,6 +104,7 @@ Route::post('/addons/update', [AddonController::class, "update"])->name('addons.
 Route::post('/addons/delete', [AddonController::class, "destroy"])->name('addons.delete');
 Route::post('/addons/category/update', [AddonCategoryController::class, "update"])->name('addon-category.update');
 Route::post('/addons/category/delete', [AddonCategoryController::class, "destroy"])->name('addon-category.delete');
+Route::post('/get-products-by-department', [AddonCategoryController::class, 'getProductByDepartment'])->name('get.products.by.department');
 
 Route::get('/blogin', 'TestController@login');
 Route::get('/border', 'TestController@create_order');
@@ -99,6 +118,7 @@ Route::post('/admin/logout', [AdminController::class, "logout"])->name('admin.lo
 /******************************* BARCODE PRINTING STARTS FROM HERE *******************************/
 Route::post('/printBarcode', [PrintController::class, 'printBarcode']);
 Route::get('/print/{receipt}', [PrintController::class, 'index']);
+Route::get('/voucher/{receipt}', [PrintController::class, 'printVoucher']);
 Route::get('/try/{receipt}', [PrintController::class, 'try']);
 /******************************* 60 x 40 *******************************/
 Route::get('/6040single', [PrintController::class, 'labelPrintingsixtyforty']);
@@ -124,6 +144,7 @@ Route::get('reports/pdf-export-item-sale-report-date-wise', [ExcelExportControll
 //Discount
 Route::get('/get-discount/{mode?}', [DiscountController::class, 'index']);
 Route::post('/remove-discount', [DiscountController::class, 'inactiveDiscount']);
+Route::post('/reactive-discount', [DiscountController::class, 'reactiveDiscount'])->name('reactiveDiscount');
 Route::get('/create-discount', [DiscountController::class, 'create']);
 Route::get('/edit-discount/{id}', [DiscountController::class, 'edit']);
 Route::get('/load-department', [DiscountController::class, 'loadDepartment']);
@@ -133,6 +154,7 @@ Route::get('/load-products-for-dropdown-edit', [DiscountController::class, 'load
 Route::get('/load-products-by-search', [DiscountController::class, 'loadProductsBySearch']);
 Route::get('/load-customers', [DiscountController::class, 'loadCustomers']);
 Route::post('/save-discount', [DiscountController::class, 'saveDiscount']);
+Route::post('/update-discount', [DiscountController::class, 'updateDiscount']);
 Route::post('/get-discount-info', [DiscountController::class, 'getDiscountInfo']);
 Route::post('/get-discount-categories', [DiscountController::class, 'getDiscountCategories']);
 Route::post('/get-discount-products', [DiscountController::class, 'getDiscountProducts']);
@@ -191,8 +213,8 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/companies', [CompanyController::class, 'show']);
     Route::get('/createcompany', [CompanyController::class, 'index']);
 
-    Route::get('/create-permission', 'UserDetailsController@sales_permission_insert');
-    Route::get('/permission/{id}', 'UserDetailsController@sales_permission');
+    Route::get('/create-permission', [UserDetailsController::class, 'sales_permission_insert']);
+    Route::get('/permission/{id}', [UserDetailsController::class, 'sales_permission']);
 
     //Terminals
     Route::get('/terminals', [TerminalController::class, 'view']);
@@ -220,10 +242,11 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/branch-emails/{id}', [BranchController::class, 'getEmail']);
     Route::post('/save-email', [BranchController::class, 'saveEmail']);
     Route::post('/delete-email', [BranchController::class, 'deleteEmail']);
-    Route::get('/send-report', 'ReportController@generatedSystematicReport');
+    Route::get('/send-report', [ReportController::class, 'generatedSystematicReport']);
 });
 
 
+Route::get('/send-logout-notification/{id}', 'UserDetailsController@sendPushNotificationToUserDevice');
 Route::middleware(['statusCheck'])->group(function () {
     Route::get('/dashboard', [HomeController::class, "index"])->name('home');
     Route::post('/getTerminals', [HomeController::class, 'getTerminalsByBranch']);
@@ -320,12 +343,12 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::any('serviceProviderLedgerPDF', [DeliveryController::class, 'serviceProviderLedgerPDF']);
     Route::any('edit-delivery-narration', [DeliveryController::class, 'updateDeliveryNarration']);
     Route::any('edit-additional-charge', [DeliveryController::class, 'updateAdditionalCharge']);
-    Route::get('/delivery-charges', [DeliveryController::class, 'view']);
-    Route::post('/insert-charges', [DeliveryController::class, 'store']);
-    Route::post('/update-charges', [DeliveryController::class, 'update']);
-    Route::PUT('/inactive-charges', [DeliveryController::class, 'inactivecharges']);
-    Route::get('/inacive-delivery-charges', [DeliveryController::class, 'inactive']);
-    Route::PUT('/reactive-charges', [DeliveryController::class, 'reactive']);
+    // Route::get('/delivery-charges', [DeliveryController::class, 'view']);
+    // Route::post('/insert-charges', [DeliveryController::class, 'store']);
+    // Route::post('/update-charges', [DeliveryController::class, 'update']);
+    // Route::PUT('/inactive-charges', [DeliveryController::class, 'inactivecharges']);
+    // Route::get('/inacive-delivery-charges', [DeliveryController::class, 'inactive']);
+    // Route::PUT('/reactive-charges', [DeliveryController::class, 'reactive']);
     Route::post('/store-category', [DeliveryController::class, 'store_category']);
     Route::get('/service-provider', [DeliveryController::class, 'show']);
     Route::get('/service-provider-create', [DeliveryController::class, 'show_create']);
@@ -385,6 +408,7 @@ Route::middleware(['statusCheck'])->group(function () {
     // inventory module //
     Route::get('/create-inventory', [InventoryController::class, "create"])->name('create-invent');
     Route::get('/inventory-list', [InventoryController::class, "index"])->name('invent-list');
+    Route::post('/get-inventory-department_wise', [InventoryController::class, "getDeparmtent_wise_Inventory"])->name('invent-list-department');
     Route::get('/edit-invent/{id}/', [InventoryController::class, 'getData'])->name('edit-invent');
     Route::post('/insert-inventory', [InventoryController::class, 'insert'])->name('insert');
     Route::post('/update-inventory', [InventoryController::class, 'modify'])->name('update');
@@ -410,6 +434,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/insertnewprice', [InventoryController::class, 'insertnewprice']);
     Route::post('/sunmi-cloud', [InventoryController::class, 'sunmiCloud']);
     Route::get('/get-inventory-pagewise', [InventoryController::class, 'getInventory']);
+    Route::get('/get-inventory-by-page', [InventoryController::class, 'fetchData']); // this is used for Pagination
     Route::get('/get-inactive-inventory', [InventoryController::class, 'getInactiveInventory']);
     Route::get('/get-non-stock-inventory', [InventoryController::class, 'getNonStockInventory']);
     Route::get('/get-inventory-by-name', [InventoryController::class, 'getInventoryByName']);
@@ -425,6 +450,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/get-export-csv-for-retail-price', [InventoryController::class, 'exportInventoryRetailPriceUpdateCsv']);
     Route::post('/uploadStockOpening', [InventoryController::class, 'uploadStockCsv']);
     Route::get('/display-inventory', [InventoryController::class, 'displayInventory']);
+    Route::get('/get-sample-csv', [InventoryController::class, 'exportSampleInventoryCsv']);
+    Route::get('/display-inventory', [InventoryController::class, 'displayInventory']);
     Route::get('/fetch-inventory-data', [InventoryController::class, 'fetch_data']);
     Route::post('/change-inventory-status', [InventoryController::class, 'changeInventoryStatus']);
     Route::get('/generate-inventory-slug', [InventoryController::class, 'test']);
@@ -439,9 +466,13 @@ Route::middleware(['statusCheck'])->group(function () {
 
 
     // variation module //
-    Route::get('/inventory/variations', [VariationController::class,'index'])->name('listVariation');
-    Route::post('/inventory/variation/created', [VariationController::class,'store'])->name('CreateVariat');
-    Route::delete('/inventory/variation/{id}/remove', [VariationController::class,'destroy'])->name('DestroyVariat');
+    Route::get('/inventory/variations', [VariationController::class, 'index'])->name('listVariation');
+    Route::post('/inventory/variation/created', [VariationController::class, 'store'])->name('CreateVariat');
+    Route::post('/inventory/variation/single-value-add', [VariationController::class, 'singleVariationAdd'])->name('singleVariationAdd');
+    Route::post('/inventory/variation/update', [VariationController::class, 'update'])->name('modifyVariat');
+    Route::post('/inventory/variation/update-value', [VariationController::class, 'updateValue'])->name('modifyVariatSubValue');
+    Route::delete('/inventory/variation/{id}/remove', [VariationController::class, 'destroy'])->name('DestroyVariat');
+    Route::post('/inventory/variation/remove-value', [VariationController::class, 'destroyVariat_value'])->name('DestroyVariat_value');
 
 
     // variation product module //
@@ -453,6 +484,10 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::patch('/inventory/variation-product/{id}/update', [VariationProductController::class, 'update'])->name('updateVariation');
     Route::delete('/inventory/variation-product/{id}/remove', [VariationProductController::class, 'destroy'])->name('removeVariation');
     Route::get('/inventory/variation-product/{filename}/image', [VariationProductController::class, 'imageView'])->name('imageVariatProduct');
+    Route::resource('inventory/brands', BranchController::class);
+
+    // Tag
+    Route::resource('inventory/tags', TagController::class);
 
     // Orders Module //
     Route::get('/test-query', [OrderController::class, 'testQuery']);
@@ -460,6 +495,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/web-orders-view', [OrderController::class, 'webOrders']);
     Route::get('/sales/website-orders-list', [OrderController::class, 'websiteOrders']);
     Route::get('/sales/website-order-detail', [OrderController::class, 'websiteOrderDetail'])->name('getWebstieSaleReceiptDetails');
+    Route::get('/sales/change-order-status-from-website/{id}/{status}/{ordercode?}', [OrderController::class, 'statusUpdate_websiteOrder']);
+    Route::post('/sales/change-website-order-status', [OrderController::class, 'statusUpdate_websiteOrder']);
     Route::post('/sales/check-website-order', [OrderController::class, 'checkwebsiteOrders'])->name('checkwebsiteOrders');
     Route::get('/sales/website-orders-filter', [OrderController::class, 'websiteOrdersFilter'])->name('getWebsiteOrderFilter');
     Route::get('/web-orders-filter', [OrderController::class, 'webOrdersFilter']);
@@ -481,11 +518,13 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/orders-report', [OrderController::class, 'exportPDF']);
     Route::post('/change-order-branch', [OrderController::class, 'changeOrderBranch']);
     Route::post('/change-order-status', [OrderController::class, 'changeOrderStatus']);
+    Route::post('/order-change-status', [OrderController::class, 'changeOrderStatuswithLogs']);
     Route::post('/order-seen', [OrderController::class, 'orderSeen']);
     Route::post('/assign-service-provider', [OrderController::class, 'assignServiceProvider']);
     Route::get('/orders-view-new', [OrderController::class, 'ordersviewnew']);
     Route::get('/get-pos-orders-new', [OrderController::class, 'getNewPOSOrders']);
     Route::post('/make-receipt-void', [OrderController::class, 'makeReceiptVoid']);
+    Route::post('/make-receipt-delivered', [OrderController::class, 'makeReceiptDelivered']);
 
     // SERVICE PROVIDERS ORDERS
     Route::get('/service-providers-orders', [ServiceProviderOrderController::class, 'index']);
@@ -503,6 +542,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::put('/invent-depart-modify', [Inventory_DepartmentController::class, 'depart_update'])->name('invent_deptup');
     Route::put('/invent-sbdepart-modify', [Inventory_DepartmentController::class, 'sb_depart_update'])->name('invent_sb_deptup');
     Route::post('/adddepartment', [Inventory_DepartmentController::class, 'adddepartment']);
+    Route::post('/deletedepartment', [Inventory_DepartmentController::class, 'deleteDepartment']);
     Route::post('/addsubdepart', [Inventory_DepartmentController::class, 'addsubdepartment']);
     Route::put('/updatedepart', [Inventory_DepartmentController::class, 'updatedepart']);
     Route::get('/getsubdepart', [Inventory_DepartmentController::class, 'getsubdepart']);
@@ -543,98 +583,98 @@ Route::middleware(['statusCheck'])->group(function () {
 
     //Customer Module
     Route::resource('customer', CustomersController::class);
-    Route::get('/editcustomers/{id}', [CustomersController::class,'edit']);
-    Route::put('/updatecustomers', [CustomersController::class,'update']);
-    Route::put('/inactivecustomer', [CustomersController::class,'remove']);
-    Route::post('/getCityById', [CustomersController::class,'getCity']);
-    Route::get('/ledgerDetails/{id}', [CustomersController::class,'LedgerDetails']);
-    Route::get('/discount-panel/{id}', [CustomersController::class,'discountPanel']);
-    Route::post('/discount-insert', [CustomersController::class,'discountInsert']);
-    Route::post('/discount-update', [CustomersController::class,'discountUpdate']);
-    Route::post('/get-insert', [CustomersController::class,'loadDiscount']);
-    Route::post('/get-products', [CustomersController::class,'getProducts']);
-    Route::post('/delete-products', [CustomersController::class,'deleteProduct']);
-    Route::get('/measurement/{id}', [CustomersController::class,'createMeasurement']);
-    Route::post('/measurementUpdate', [CustomersController::class,'measurementUpdate']);
-    Route::post('/measurementPantUpdate', [CustomersController::class,'updatePantMeasurement']);
-    Route::get('/customer-report', [CustomersController::class,'customer_report']);
-    Route::post('/customer-report-filter', [CustomersController::class,'customer_report_filter']);
-    Route::get('/receivable', [CustomersController::class,'exportpDF']);
-    Route::post('/uploadFile', [CustomersController::class,'uploadFile']);
-    Route::post('/all_customers_remove', [CustomersController::class,'all_customers_remove']);
-    Route::post('/active-customer', [CustomersController::class,'activeCustomer']);
-    Route::post('/multiple-active-customer', [CustomersController::class,'multipleactiveCustomer']);
-    Route::post('/customer-names', [CustomersController::class,'get_names']);
-    Route::any('/search-customer-by-names', [CustomersController::class,'get_customer_names'])->name('search-customer-by-names');
-    Route::post('/get-order-general', [CustomersController::class,'getReceiptGeneral']);
-    Route::get('/create-customer-payment/{id}', [CustomersController::class,'createPayment']);
-    Route::post('/make-customer-cash-payment', [CustomersController::class,'make_cash_payment']);
-    Route::post('/make-customer-bank-payment', [CustomersController::class,'make_bank_payment']);
-    Route::get('/adjustment-customer', [CustomersController::class,'adjustment']);
-    Route::any('/edit-adjustment-customer', [CustomersController::class,'editAdjustment']);
-    Route::get('/get-customer-receipts/{id}', [CustomersController::class,'getCustomerReceipts']);
-    Route::get('/customer-ledger-report/{id}/{from?}/{to?}', [CustomersController::class,'ledgerPDF']);
-    Route::any('/customer-payment-log', [CustomersController::class,'customer_payment_log'])->name('customer-payment-log');
-    Route::any('/customer-due-date', [CustomersController::class,'customer_due_date'])->name('customer-due-date');
-    Route::any('/customer-due-payment', [CustomersController::class,'customer_due_payment'])->name('customer-due-payment');
-    Route::any('/get-customer-due-payment', [CustomersController::class,'get_customer_due_payment'])->name('get-customer-due-payment');
-    Route::get('/customers-report-pdf', [CustomersController::class,'customerPDF']);
-    Route::get('/test-tcpdf', [CustomersController::class,'TCPDF']);
-    Route::get('/customer-list', [CustomersController::class,'customerList']);
-    Route::post('/mobile-app-status', [CustomersController::class,'changeMobileAppStatus']);
+    Route::get('/editcustomers/{id}', [CustomersController::class, 'edit']);
+    Route::put('/updatecustomers', [CustomersController::class, 'update']);
+    Route::put('/inactivecustomer', [CustomersController::class, 'remove']);
+    Route::post('/getCityById', [CustomersController::class, 'getCity']);
+    Route::get('/ledgerDetails/{id}', [CustomersController::class, 'LedgerDetails']);
+    Route::get('/discount-panel/{id}', [CustomersController::class, 'discountPanel']);
+    Route::post('/discount-insert', [CustomersController::class, 'discountInsert']);
+    Route::post('/discount-update', [CustomersController::class, 'discountUpdate']);
+    Route::post('/get-insert', [CustomersController::class, 'loadDiscount']);
+    Route::post('/get-products', [CustomersController::class, 'getProducts']);
+    Route::post('/delete-products', [CustomersController::class, 'deleteProduct']);
+    Route::get('/measurement/{id}', [CustomersController::class, 'createMeasurement']);
+    Route::post('/measurementUpdate', [CustomersController::class, 'measurementUpdate']);
+    Route::post('/measurementPantUpdate', [CustomersController::class, 'updatePantMeasurement']);
+    Route::get('/customer-report', [CustomersController::class, 'customer_report']);
+    Route::post('/customer-report-filter', [CustomersController::class, 'customer_report_filter']);
+    Route::get('/receivable', [CustomersController::class, 'exportpDF']);
+    Route::post('/uploadFile', [CustomersController::class, 'uploadFile']);
+    Route::post('/all_customers_remove', [CustomersController::class, 'all_customers_remove']);
+    Route::post('/active-customer', [CustomersController::class, 'activeCustomer']);
+    Route::post('/multiple-active-customer', [CustomersController::class, 'multipleactiveCustomer']);
+    Route::post('/customer-names', [CustomersController::class, 'get_names']);
+    Route::any('/search-customer-by-names', [CustomersController::class, 'get_customer_names'])->name('search-customer-by-names');
+    Route::post('/get-order-general', [CustomersController::class, 'getReceiptGeneral']);
+    Route::get('/create-customer-payment/{id}', [CustomersController::class, 'createPayment']);
+    Route::post('/make-customer-cash-payment', [CustomersController::class, 'make_cash_payment']);
+    Route::post('/make-customer-bank-payment', [CustomersController::class, 'make_bank_payment']);
+    Route::get('/adjustment-customer', [CustomersController::class, 'adjustment']);
+    Route::any('/edit-adjustment-customer', [CustomersController::class, 'editAdjustment']);
+    Route::get('/get-customer-receipts/{id}', [CustomersController::class, 'getCustomerReceipts']);
+    Route::get('/customer-ledger-report/{id}/{from?}/{to?}', [CustomersController::class, 'ledgerPDF']);
+    Route::any('/customer-payment-log', [CustomersController::class, 'customer_payment_log'])->name('customer-payment-log');
+    Route::any('/customer-due-date', [CustomersController::class, 'customer_due_date'])->name('customer-due-date');
+    Route::any('/customer-due-payment', [CustomersController::class, 'customer_due_payment'])->name('customer-due-payment');
+    Route::any('/get-customer-due-payment', [CustomersController::class, 'get_customer_due_payment'])->name('get-customer-due-payment');
+    Route::get('/customers-report-pdf', [CustomersController::class, 'customerPDF']);
+    Route::get('/test-tcpdf', [CustomersController::class, 'TCPDF']);
+    Route::get('/customer-list', [CustomersController::class, 'customerList']);
+    Route::post('/mobile-app-status', [CustomersController::class, 'changeMobileAppStatus']);
 
     //Master
-    Route::get('/get-masters', [MasterController::class,'index']);
-    Route::get('/create-master', [MasterController::class,'create']);
-    Route::post('/store-master', [MasterController::class,'store']);
-    Route::put('/updatemasters', [MasterController::class,'update']);
-    Route::post('/remove-master', [MasterController::class,'remove']);
-    Route::get('/ledger-details/{id}', [MasterController::class,'LedgerDetails']);
-    Route::get('/edit-master/{id}', [MasterController::class,'edit']);
-    Route::get('/ledger-payment/{id}', [MasterController::class,'LedgerPayment']);
-    Route::post('/debit-insert', [MasterController::class,'debitInsert']);
-    Route::post('/createPayment', [MasterController::class,'ledgerInsert']);
-    Route::get('/category/{id}', [MasterController::class,'category']);
-    Route::post('/get-categories', [MasterController::class,'getcategory']);
-    Route::post('/addCategory', [MasterController::class,'insertCategory']);
-    Route::post('/get-master', [MasterController::class,'getMaster']);
-    Route::post('/master-rate-insert', [MasterController::class,'MasterRateInsert']);
-    Route::post('/master-rate-list', [MasterController::class,'getRateList']);
-    Route::post('/rate-update', [MasterController::class,'MasterRateUpdate']);
-    Route::post('/get-receipt', [MasterController::class,'getReceipt']);
-    Route::get('/work-load', [MasterController::class,'workload']);
-    Route::get('/work-load/{id}', [MasterController::class,'workloadDetails']);
-    Route::post('/received-from-master', [MasterController::class,'updateMasterAssign']);
-    Route::get('/master-report', [MasterController::class,'master_report']);
-    Route::post('/master-report-filter', [MasterController::class,'master_report_filter']);
-    Route::get('/masterpayable', [MasterController::class,'exportPDF']);
-    Route::get('/workloadreport', [MasterController::class,'exportWorkLoadPDF']);
+    Route::get('/get-masters', [MasterController::class, 'index']);
+    Route::get('/create-master', [MasterController::class, 'create']);
+    Route::post('/store-master', [MasterController::class, 'store']);
+    Route::put('/updatemasters', [MasterController::class, 'update']);
+    Route::post('/remove-master', [MasterController::class, 'remove']);
+    Route::get('/ledger-details/{id}', [MasterController::class, 'LedgerDetails']);
+    Route::get('/edit-master/{id}', [MasterController::class, 'edit']);
+    Route::get('/ledger-payment/{id}', [MasterController::class, 'LedgerPayment']);
+    Route::post('/debit-insert', [MasterController::class, 'debitInsert']);
+    Route::post('/createPayment', [MasterController::class, 'ledgerInsert']);
+    Route::get('/category/{id}', [MasterController::class, 'category']);
+    Route::post('/get-categories', [MasterController::class, 'getcategory']);
+    Route::post('/addCategory', [MasterController::class, 'insertCategory']);
+    Route::post('/get-master', [MasterController::class, 'getMaster']);
+    Route::post('/master-rate-insert', [MasterController::class, 'MasterRateInsert']);
+    Route::post('/master-rate-list', [MasterController::class, 'getRateList']);
+    Route::post('/rate-update', [MasterController::class, 'MasterRateUpdate']);
+    Route::post('/get-receipt', [MasterController::class, 'getReceipt']);
+    Route::get('/work-load', [MasterController::class, 'workload']);
+    Route::get('/work-load/{id}', [MasterController::class, 'workloadDetails']);
+    Route::post('/received-from-master', [MasterController::class, 'updateMasterAssign']);
+    Route::get('/master-report', [MasterController::class, 'master_report']);
+    Route::post('/master-report-filter', [MasterController::class, 'master_report_filter']);
+    Route::get('/masterpayable', [MasterController::class, 'exportPDF']);
+    Route::get('/workloadreport', [MasterController::class, 'exportWorkLoadPDF']);
 
     //Demand Module
-    Route::get('/demand', 'DemandController@index');
-    Route::get('/create-demand', 'DemandController@add_demand');
-    Route::post('/additems', 'DemandController@insert_item_details');
-    Route::post('/viewitems', 'DemandController@get_demandlist');
-    Route::put('/updateitem', 'DemandController@update_qty');
-    Route::delete('/deleteitem', 'DemandController@del_item');
-    Route::put('/updatestatus', 'DemandController@update_status');
-    Route::get('/demand-details/{id}', 'DemandController@show');
-    Route::get('/edit-demand/{id}', 'DemandController@edit');
-    Route::put('/removedemand', 'DemandController@update_status');
-    Route::put('/all-demand-remove', 'DemandController@all_demand_state_up');
-    Route::put('/updatestatusdemand', 'DemandController@update_status');
-    Route::get('/demandorderReport/{id}', 'DemandController@demandorderReport');
+    Route::get('/demand', [DemandController::class, 'index']);
+    Route::get('/create-demand', [DemandController::class, 'add_demand']);
+    Route::post('/additems', [DemandController::class, 'insert_item_details']);
+    Route::post('/viewitems', [DemandController::class, 'get_demandlist']);
+    Route::put('/updateitem', [DemandController::class, 'update_qty']);
+    Route::delete('/deleteitem', [DemandController::class, 'del_item']);
+    Route::put('/updatestatus', [DemandController::class, 'update_status']);
+    Route::get('/demand-details/{id}', [DemandController::class, 'show']);
+    Route::get('/edit-demand/{id}', [DemandController::class, 'edit']);
+    Route::put('/removedemand', [DemandController::class, 'update_status']);
+    Route::put('/all-demand-remove', [DemandController::class, 'all_demand_state_up']);
+    Route::put('/updatestatusdemand', [DemandController::class, 'update_status']);
+    Route::get('/demandorderReport/{id}', [DemandController::class, 'demandorderReport']);
 
 
     //Demand Received Module
-    Route::get('/received-demand', 'receiveddemandController@index');
-    Route::get('/received-demandpanel/{id}', 'receiveddemandController@show');
-    Route::put('/update-status', 'receiveddemandController@update_status');
-    Route::post('/stock', 'receiveddemandController@getstock');
-    Route::post('/transfer', 'receiveddemandController@insert');
+    Route::get('/received-demand', [ReceiveddemandController::class, 'index']);
+    Route::get('/received-demandpanel/{id}', [ReceiveddemandController::class, 'show']);
+    Route::put('/update-status', [ReceiveddemandController::class, 'update_status']);
+    Route::post('/stock', [ReceiveddemandController::class, 'getstock']);
+    Route::post('/transfer', [ReceiveddemandController::class, 'insert']);
 
-    Route::post('/chk', 'receiveddemandController@check');
-    Route::put('/updateitemstatus', 'receiveddemandController@updatedemanditem');
+    Route::post('/chk', [ReceiveddemandController::class, 'check']);
+    Route::put('/updateitemstatus', [ReceiveddemandController::class, 'updatedemanditem']);
 
     //view transfer order
     Route::get('/view-transfer/{id}', [TransferController::class, 'index']);
@@ -678,41 +718,41 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/showtransferdetails/{id}', [TransferController::class, 'show_transferdetails']);
 
     //ADD BANK
-    Route::get('/get-banks', [BankController::class,'getBanks']);
-    Route::get('/create-bank', [BankController::class,'addNewBank']);
-    Route::post('/save-bank', [BankController::class,'saveNewBank']);
-    Route::get('/edit-bank/{id}', [BankController::class,'editBank']);
-    Route::post('/update-bank', [BankController::class,'updateBank']);
+    Route::get('/get-banks', [BankController::class, 'getBanks']);
+    Route::get('/create-bank', [BankController::class, 'addNewBank']);
+    Route::post('/save-bank', [BankController::class, 'saveNewBank']);
+    Route::get('/edit-bank/{id}', [BankController::class, 'editBank']);
+    Route::post('/update-bank', [BankController::class, 'updateBank']);
     //Accounts
-    Route::get('/bankaccounts-details', [BankController::class,'index']);
-    Route::post('/submitbankdetails', [BankController::class,'submit_details']);
-    Route::post('/createaccount', [BankController::class,'insert_account']);
-    Route::get('/view-accounts', [BankController::class,'show']);
-    Route::get('/create-deposit/{id}', [BankController::class,'show_deposit']);
-    Route::get('/cash-deposit', [BankController::class,'cash_ledger']);
-    Route::post('/cashLedgerDeposit', [BankController::class,'insert_cashLedger']);
-    Route::post('/depositamount', [BankController::class,'insert_deposit']);
-    Route::get('/getaccountdetails/{id}', [BankController::class,'getdetails']);
-    Route::put('/updateaccount', [BankController::class,'updateaccountdetails']);
-    Route::get('/customer-ledger', [CustomersController::class,'LedgerDetails']);
-    Route::post('/ledger-details', [CustomersController::class,'LedgerDetailsByID']);
-    Route::get('/vendor-ledger', 'VendorController@LedgerDetails');
-    Route::get('/vendor-report', 'VendorController@vendor_report_panel');
-    Route::post('/vendor-ledger-details', 'VendorController@LedgerDetailsByID');
-    Route::get('/master-ledger', 'MasterController@LedgerDetails');
-    Route::post('/master-ledger-details', 'MasterController@LedgerPayment');
-    Route::get('/view-cheque', [BankController::class,'chequeView']);
-    Route::post('/insert-cheque', [BankController::class,'chequeInsert']);
-    Route::post('/insert-chequeStatus', [BankController::class,'chequeStatusInsert']);
-    Route::post('/save-chequeClearance', [BankController::class,'clearance']);
-    Route::get('/getdetails-cheque', [BankController::class,'viewbychequeid']);
-    Route::get('/chequemodule/{date}', [BankController::class,'cheque_module']);
-    Route::get('/filterCheques', [BankController::class,'filter_cheque']);
-    Route::post('/editledgernarration', [BankController::class,'editledgernarration']);
-    Route::post('/editbankrnarration', [BankController::class,'editbankrnarration']);
-    Route::get('/cashledgerPDF', [BankController::class,'cashledgerPDF']);
-    Route::get('/bankledgerPDF/{id}', [BankController::class,'bankledgerPDF']);
-    Route::post('/add-vendor-products-from-purchase-order', 'VendorController@saveProductFromPurchaseOrder');
+    Route::get('/bankaccounts-details', [BankController::class, 'index']);
+    Route::post('/submitbankdetails', [BankController::class, 'submit_details']);
+    Route::post('/createaccount', [BankController::class, 'insert_account']);
+    Route::get('/view-accounts', [BankController::class, 'show']);
+    Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
+    Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);
+    Route::post('/cashLedgerDeposit', [BankController::class, 'insert_cashLedger']);
+    Route::post('/depositamount', [BankController::class, 'insert_deposit']);
+    Route::get('/getaccountdetails/{id}', [BankController::class, 'getdetails']);
+    Route::put('/updateaccount', [BankController::class, 'updateaccountdetails']);
+    Route::get('/customer-ledger', [CustomersController::class, 'LedgerDetails']);
+    Route::post('/ledger-details', [CustomersController::class, 'LedgerDetailsByID']);
+    Route::get('/vendor-ledger', [VendorController::class, 'LedgerDetails']);
+    Route::get('/vendor-report', [VendorController::class, 'vendor_report_panel']);
+    Route::post('/vendor-ledger-details', [VendorController::class, 'LedgerDetailsByID']);
+    Route::get('/master-ledger', [MasterController::class, 'LedgerDetails']);
+    Route::post('/master-ledger-details', [MasterController::class, 'LedgerPayment']);
+    Route::get('/view-cheque', [BankController::class, 'chequeView']);
+    Route::post('/insert-cheque', [BankController::class, 'chequeInsert']);
+    Route::post('/insert-chequeStatus', [BankController::class, 'chequeStatusInsert']);
+    Route::post('/save-chequeClearance', [BankController::class, 'clearance']);
+    Route::get('/getdetails-cheque', [BankController::class, 'viewbychequeid']);
+    Route::get('/chequemodule/{date}', [BankController::class, 'cheque_module']);
+    Route::get('/filterCheques', [BankController::class, 'filter_cheque']);
+    Route::post('/editledgernarration', [BankController::class, 'editledgernarration']);
+    Route::post('/editbankrnarration', [BankController::class, 'editbankrnarration']);
+    Route::get('/cashledgerPDF', [BankController::class, 'cashledgerPDF']);
+    Route::get('/bankledgerPDF/{id}', [BankController::class, 'bankledgerPDF']);
+    Route::post('/add-vendor-products-from-purchase-order', [VendorController::class, 'saveProductFromPurchaseOrder']);
 
     //Users
     Route::get('/usersDetails', [UserDetailsController::class, 'index']);
@@ -728,7 +768,7 @@ Route::middleware(['statusCheck'])->group(function () {
     // Route::get('/create-user','UserDetailsController@index');
 
     //uom
-    Route::post('/adduom', 'UnitofmeasureController@store');
+    Route::post('/adduom', [UnitofmeasureController::class, 'store']);
 
 
     //Business Policy
@@ -914,113 +954,126 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::put('/updateleavedetails', [EmployeeController::class, 'updateleavedetails']);
 
     //Leaves Form
-    Route::get('/showleaves', 'LeaveController@view');
-    Route::get('/showleave_form', 'LeaveController@showform');
-    Route::get('/getleavehead', 'LeaveController@leaveheads');
-    Route::get('/getleavebalance', 'LeaveController@leavebalance');
-    Route::POST('/submitleave', 'LeaveController@storeleaveform');
-    Route::PUT('/updateleavestatus', 'LeaveController@updatestatus');
+    Route::get('/showleaves', [LeaveController::class, 'view']);
+    Route::get('/showleave_form', [LeaveController::class, 'showform']);
+    Route::get('/getleavehead', [LeaveController::class, 'leaveheads']);
+    Route::get('/getleavebalance', [LeaveController::class, 'leavebalance']);
+    Route::POST('/submitleave', [LeaveController::class, 'storeleaveform']);
+    Route::PUT('/updateleavestatus', [LeaveController::class, 'updatestatus']);
 
+
+    //Public Holiday
+    Route::get('/get-public-holidays', [EmployeeController::class, 'showPublicHolidays']);
+    Route::get('/create-public-holidays', [EmployeeController::class, 'createPublicHolidays']);
+    Route::post('/get-department-by-branch', [EmployeeController::class, 'getDepartments']);
+    Route::post('/mark-public-holiday', [EmployeeController::class, 'savePublicHoliday']);
 
     //Increment Details
-    Route::get('/showincrement', 'IncrementController@view');
-    Route::get('/createincrement', 'IncrementController@show');
-    Route::get('/getbasicsalary', 'IncrementController@getbasicsal');
-    Route::get('/gettaxslab_byempid', 'IncrementController@gettaxslab');
-    Route::get('/getallowance_byempid', 'IncrementController@getallowances');
-    Route::post('/allowance_increment', 'IncrementController@allowanceincre');
-    Route::post('/store_increment', 'IncrementController@store');
+    Route::get('/showincrement', [IncrementController::class, 'view']);
+    Route::get('/createincrement', [IncrementController::class, 'show']);
+    Route::get('/getbasicsalary', [IncrementController::class, 'getbasicsal']);
+    Route::get('/gettaxslab_byempid', [IncrementController::class, 'gettaxslab']);
+    Route::get('/getallowance_byempid', [IncrementController::class, 'getallowances']);
+    Route::post('/allowance_increment', [IncrementController::class, 'allowanceincre']);
+    Route::post('/store_increment', [IncrementController::class, 'store']);
 
 
     //Bonus Details
-    Route::get('/showbonus', 'BonusController@view');
-    Route::get('/createbonus', 'BonusController@show');
-    Route::post('/store_bonus', 'BonusController@store');
-    Route::put('/delete_bonus', 'BonusController@delete');
-    Route::get('/editbonus/{id}', 'BonusController@edit');
-    Route::put('/update_bonus', 'BonusController@update');
+    Route::get('/showbonus', [BonusController::class, 'view']);
+    Route::get('/createbonus', [BonusController::class, 'show']);
+    Route::post('/store_bonus', [BonusController::class, 'store']);
+    Route::put('/delete_bonus', [BonusController::class, 'delete']);
+    Route::get('/editbonus/{id}', [BonusController::class, 'edit']);
+    Route::put('/update_bonus', [BonusController::class, 'update']);
 
     //Promotion Details
-    Route::get('/showpromotion', 'PromotionController@view');
-    Route::get('/createpromotion', 'PromotionController@show');
-    Route::get('/getoldetails', 'PromotionController@getoldetails');
-    Route::get('/getdesigbyempid', 'PromotionController@getdesigbyempid');
-    Route::put('/promotion', 'PromotionController@promote_employee');
+    Route::get('/showpromotion', [PromoController::class, 'view']);
+    Route::get('/createpromotion', [PromoController::class, 'show']);
+    Route::get('/getoldetails', [PromoController::class, 'getoldetails']);
+    Route::get('/getdesigbyempid', [PromoController::class, 'getdesigbyempid']);
+    Route::put('/promotion', [PromoController::class, 'promote_employee']);
 
 
     //Loan
-    Route::get('/view-loandeduct', 'LoanController@view');
-    Route::get('/show-loandeduct', 'LoanController@show');
-    Route::post('/insert-loandeduct', 'LoanController@store');
-    Route::post('/delete-loandeduct', 'LoanController@deletededuct');
-    Route::get('/edit-loandeduct/{id}', 'LoanController@edit');
-    Route::post('/update-loandeduct', 'LoanController@updatededuct');
-    Route::get('/loandetails', 'LoanController@viewdetails');
-    Route::get('/show-issueloan', 'LoanController@showloan');
-    Route::post('/get-employee', 'LoanController@getempbybranch');
-    Route::post('/issueloan', 'LoanController@issueloan');
-    Route::post('/insert-loandeduct-modal', 'LoanController@insert');
-    Route::post('/previousdata', 'LoanController@getpreivousdetails');
-    Route::put('/remove-loan', 'LoanController@remove');
-    Route::get('/getinstallments', 'LoanController@getinstallments');
-    Route::put('/loandeduction', 'LoanController@loandeduction');
-    Route::get('/getdetails_loan', 'LoanController@getdetails_loan_inactive');
+    Route::get('/view-loandeduct', [LoanController::class, 'view']);
+    Route::get('/show-loandeduct', [LoanController::class, 'show']);
+    Route::post('/insert-loandeduct', [LoanController::class, 'store']);
+    Route::post('/delete-loandeduct', [LoanController::class, 'deletededuct']);
+    Route::get('/edit-loandeduct/{id}', [LoanController::class, 'edit']);
+    Route::post('/update-loandeduct', [LoanController::class, 'updatededuct']);
+    Route::get('/loandetails', [LoanController::class, 'viewdetails']);
+    Route::get('/show-issueloan', [LoanController::class, 'showloan']);
+    Route::post('/get-employee', [LoanController::class, 'getempbybranch']);
+    Route::post('/issueloan', [LoanController::class, 'issueloan']);
+    Route::post('/insert-loandeduct-modal', [LoanController::class, 'insert']);
+    Route::post('/previousdata', [LoanController::class, 'getpreivousdetails']);
+    Route::put('/remove-loan', [LoanController::class, 'remove']);
+    Route::get('/getinstallments', [LoanController::class, 'getinstallments']);
+    Route::put('/loandeduction', [LoanController::class, 'loandeduction']);
+    Route::get('/getdetails_loan', [LoanController::class, 'getdetails_loan_inactive']);
 
     //Advance Salary
-    Route::get('/view-advancelist', 'AdvanceSalaryController@view');
-    Route::get('/show-advancesal', 'AdvanceSalaryController@show');
-    Route::post('/get-employeebybranch', 'AdvanceSalaryController@getempbybranch');
-    Route::post('/insert-advance', 'AdvanceSalaryController@store');
-    Route::get('/previousdetails', 'AdvanceSalaryController@getpreivousdetails');
-    Route::get('/getinactivedetails', 'AdvanceSalaryController@getinactivedetails');
-    Route::get('/getbasicpay', 'AdvanceSalaryController@getbasicsalary');
+    Route::get('/view-advancelist', [AdvanceSalaryController::class, 'view']);
+    Route::get('/show-advancesal', [AdvanceSalaryController::class, 'show']);
+    Route::post('/get-employeebybranch', [AdvanceSalaryController::class, 'getempbybranch']);
+    Route::post('/insert-advance', [AdvanceSalaryController::class, 'store']);
+    Route::get('/previousdetails', [AdvanceSalaryController::class, 'getpreivousdetails']);
+    Route::get('/getinactivedetails', [AdvanceSalaryController::class, 'getinactivedetails']);
+    Route::get('/getbasicpay', [AdvanceSalaryController::class, 'getbasicsalary']);
 
     //Reports
-    Route::get('/attrpt-show', [ReportController::class,'attreport_show']);
-    Route::get('/attendancerpt', [ReportController::class,'attendancereport']);
-    Route::get('/pdfattendance', [ReportController::class,'pdf_attendance']);
-    Route::get('/pdfsalarysheet', [ReportController::class,'consolidated_salary_sheet']);
-    Route::get('/pdfloandetails', [ReportController::class,'pdf_loandetails']);
-    Route::get('/pdfadvancedetails', [ReportController::class,'pdf_advancedetails']);
-    Route::get('/reportdashboard', [ReportController::class,'show']);
-    Route::get('/erpreportdashboard', [ReportController::class,'erpreportdashboard']);
-    Route::get('/profitLossStandardReport', [ReportController::class,'profitLossStandardReport']);
-    Route::get('/profitLossDetailsReport', [ReportController::class,'profitLossDetailsReport']);
-    Route::get('/inventoryReport', [ReportController::class,'inventoryReport']);
-    Route::get('/customer-aging', [ReportController::class,'customerAgingReport']);
-    Route::get('/cash_voucher', [ReportController::class,'cash_voucher']);
-    Route::get('/inventory_detailsPDF', [ReportController::class,'inventory_detailsPDF']);
-    Route::get('/test', [ReportController::class,'pdfTest']);
-    Route::get('/expense_by_categorypdf', [ReportController::class,'expense_by_categorypdf']);
-    Route::get('/salesdeclerationreport', [ReportController::class,'salesdeclerationreport']);
-    Route::get('/itemsaledatabasepdf', [ReportController::class,'itemsaledatabasepdf']);
-    Route::get('/salesreturnpdf', [ReportController::class,'salesreturnpdf']);
-    Route::get('/inventoryReportPhysical', [ReportController::class,'inventoryReportPhysical']);
-    Route::get('/stockAdjustmentReport', [ReportController::class,'stockAdjustmentReport']);
-    Route::get('/fbr-report', [ReportController::class,'fbrReport']);
-    Route::get('/invoice-report', [ReportController::class,'invoiceReport']);
-    Route::get('/sales-invoices-report', [ReportController::class,'salesInvoicesReport']);
+    Route::get('/attrpt-show', [ReportController::class, 'attreport_show']);
+    Route::get('/attendancerpt', [ReportController::class, 'attendancereport']);
+    Route::get('/pdfattendance', [ReportController::class, 'pdf_attendance']);
+    Route::get('/pdfsalarysheet', [ReportController::class, 'consolidated_salary_sheet']);
+    Route::get('/pdfloandetails', [ReportController::class, 'pdf_loandetails']);
+    Route::get('/pdfadvancedetails', [ReportController::class, 'pdf_advancedetails']);
+    Route::get('/reportdashboard', [ReportController::class, 'show']);
+    Route::get('/erpreportdashboard', [ReportController::class, 'erpreportdashboard']);
+    Route::get('/profitLossStandardReport', [ReportController::class, 'profitLossStandardReport']);
+    Route::get('/profitLossDetailsReport', [ReportController::class, 'profitLossDetailsReport']);
+    Route::get('/inventoryReport', [ReportController::class, 'inventoryReport']);
+    Route::get('/customer-aging', [ReportController::class, 'customerAgingReport']);
+    Route::get('/cash_voucher', [ReportController::class, 'cash_voucher']);
+    Route::get('/inventory_detailsPDF', [ReportController::class, 'inventory_detailsPDF']);
+    Route::get('/test', [ReportController::class, 'pdfTest']);
+    Route::get('/expense_by_categorypdf', [ReportController::class, 'expense_by_categorypdf']);
+    Route::get('/salesdeclerationreport', [ReportController::class, 'salesdeclerationreport']);
+    Route::get('/itemsaledatabasepdf', [ReportController::class, 'itemsaledatabasepdf']);
+    Route::get('/salesreturnpdf', [ReportController::class, 'salesreturnpdf']);
+    Route::get('/inventoryReportPhysical', [ReportController::class, 'inventoryReportPhysical']);
+    Route::get('/stockAdjustmentReport', [ReportController::class, 'stockAdjustmentReport']);
+    Route::get('/fbr-report', [ReportController::class, 'fbrReport']);
+    Route::get('/invoice-report', [ReportController::class, 'invoiceReport']);
+    Route::get('/sales-invoices-report', [ReportController::class, 'salesInvoicesReport']);
+    Route::get('/factory-operation-report', [ReportController::class, 'factoryOperationReport']);
+    Route::get('/inventory-image-report', [ReportController::class, 'inventoryImageReport']);
+    Route::get('/order-booking-report', [ReportController::class, 'orderBookingReport']);
 
-    Route::get('reports/item-sale-report', [ReportController::class,'getIndex'])->name('itemSaleReport');
-    Route::post('reports/search-item-sale-report', [ReportController::class,'getItemSaleReport'])->name('SrchISReport');
-    Route::get('reports/consolidated-item-sale-report', [ReportController::class,'getConsolidatedItemSaleReport'])->name('consolidated.itemSaleReport');
-    Route::post('reports/consolidated-item-sale-report', [ReportController::class,'postConsolidatedItemSaleReport'])->name('consolidated.SrchISReport');
-    Route::post('reports/getTerminals', [ReportController::class,'getTerminals'])->name('getTerminals');
-    Route::get('reports/excel-export-item-sale-report', [ReportController::class,'getItemSaleReportExcelExport'])->name('excelExportItemSales');
-    Route::get('reports/consolidated-excel-export-item-sale-report', [ReportController::class,'getConsolidatedItemSaleReportExcelExport'])->name('excelExportItemSales');
-    Route::get('reports/pdf-export-item-sale-report', [ReportController::class,'getItemSaleReportPdfExport'])->name('pdfExportItemSales');
-    Route::get('reports/excel-export-orders-report', [ReportController::class,'getOrdersReportExcelExport'])->name('excelExportOrders');
+    Route::get('reports/item-sale-report', [ReportController::class, 'getIndex'])->name('itemSaleReport');
+    Route::post('reports/search-item-sale-report', [ReportController::class, 'getItemSaleReport'])->name('SrchISReport');
+    Route::get('reports/consolidated-item-sale-report', [ReportController::class, 'getConsolidatedItemSaleReport'])->name('consolidated.itemSaleReport');
+    Route::post('reports/consolidated-item-sale-report', [ReportController::class, 'postConsolidatedItemSaleReport'])->name('consolidated.SrchISReport');
+    Route::post('reports/getTerminals', [ReportController::class, 'getTerminals'])->name('getTerminals');
+    Route::get('reports/excel-export-item-sale-report', [ReportController::class, 'getItemSaleReportExcelExport'])->name('excelExportItemSales');
+    Route::get('reports/consolidated-excel-export-item-sale-report', [ReportController::class, 'getConsolidatedItemSaleReportExcelExport'])->name('excelExportItemSales');
+    Route::get('reports/pdf-export-item-sale-report', [ReportController::class, 'getItemSaleReportPdfExport'])->name('pdfExportItemSales');
+    Route::get('reports/excel-export-orders-report', [ReportController::class, 'getOrdersReportExcelExport'])->name('excelExportOrders');
+    Route::get('reports/excel-export-orders-report',  [ReportController::class, 'getOrdersReportExcelExport'])->name('excelExportOrders');
+    Route::get('reports/excel-export-stock-report',  [ReportController::class, 'getStockReportExcelExport'])->name('excelExportStock');
+    Route::get('raw-usage-report',  [ReportController::class, 'rawUsage'])->name('raw.usage');
+    Route::get('generate-daily-usage/{from}/{to}',  [ReportController::class, 'generateDailyUsage'])->name('generate.raw.usage');
 
     //SMS
-    Route::get('/view-sms', 'SMSController@view');
-    Route::post('/insert-sms', 'SMSController@store');
-    Route::get('/getsmsdetails', 'SMSController@getdetails');
-    Route::post('/update-smsdetails', 'SMSController@update');
-    Route::post('/update-smsgeneral', 'SMSController@updategeneral');
-    Route::put('/inactive-number', 'SMSController@inactivenumber');
-    Route::put('/inactive-all', 'SMSController@inactiveall');
-    Route::get('/inactivedetails', 'SMSController@inactivedetails');
-    Route::put('/reactive', 'SMSController@reactive');
+    Route::get('/view-sms', [SMSController::class, 'view']);
+    Route::post('/insert-sms', [SMSController::class, 'store']);
+    Route::get('/getsmsdetails', [SMSController::class, 'getdetails']);
+    Route::post('/update-smsdetails', [SMSController::class, 'update']);
+    Route::post('/update-smsgeneral', [SMSController::class, 'updategeneral']);
+    Route::put('/inactive-number', [SMSController::class, 'inactivenumber']);
+    Route::put('/inactive-all', [SMSController::class, 'inactiveall']);
+    Route::get('/inactivedetails', [SMSController::class, 'inactivedetails']);
+    Route::put('/reactive', [SMSController::class, 'reactive']);
 
     // PFFUND
     Route::get('/view-pf-fund', 'PfundController@index');
@@ -1028,84 +1081,84 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/get-pf-fund', 'PfundController@getFunds');
 
     // EOBI
-    Route::get('/view-eobi', 'EobiController@index');
-    Route::post('/insert-eobi', 'EobiController@store');
-    Route::post('/get-eobi', 'EobiController@getFunds');
+    Route::get('/view-eobi', [EobiController::class, 'index']);
+    Route::post('/insert-eobi', [EobiController::class, 'store']);
+    Route::post('/get-eobi', [EobiController::class, 'getFunds']);
 
     // PER PCS SLIPS
-    Route::get('/view-hr-products', 'HrProductController@index');
-    Route::post('/insert-hr-products', 'HrProductController@store');
-    Route::post('/get-hr-products', 'HrProductController@getFunds');
-    Route::post('/delete-hr-products', 'HrProductController@delete');
-    Route::post('/get-hr-products', 'HrProductController@getProducts');
-    Route::get('/get-emp-per-pcs', 'HrProductController@getDailyEmployeeTask');
-    Route::post('/update-hr-products', 'HrProductController@update');
-    Route::post('/save-perpcs-salary', 'HrProductController@perpcsSalary');
+    Route::get('/view-hr-products', [HrProductController::class, 'index']);
+    Route::post('/insert-hr-products', [HrProductController::class, 'store']);
+    Route::post('/get-hr-products', [HrProductController::class, 'getFunds']);
+    Route::post('/delete-hr-products', [HrProductController::class, 'delete']);
+    Route::post('/get-hr-products', [HrProductController::class, 'getProducts']);
+    Route::get('/get-emp-per-pcs', [HrProductController::class, 'getDailyEmployeeTask']);
+    Route::post('/update-hr-products', [HrProductController::class, 'update']);
+    Route::post('/save-perpcs-salary', [HrProductController::class, 'perpcsSalary']);
 
-    Route::get('/view-steam-press-products', 'HrProductController@getSteamPressProducts');
-    Route::post('/insert-steam-press-products', 'HrProductController@steamProductStore');
-    Route::post('/update-steam-press-products', 'HrProductController@steamProductUpdate');
-    Route::post('/delete-steam-press-products', 'HrProductController@steamProductDelete');
-    Route::get('/get-emp-steam-per-pcs', 'HrProductController@getDailySteamEmployeeTask');
-    Route::get('/get-emp-cotton-per-pcs', 'HrProductController@getDailyCottonEmployeeTask');
+    Route::get('/view-steam-press-products', [HrProductController::class, 'getSteamPressProducts']);
+    Route::post('/insert-steam-press-products', [HrProductController::class, 'steamProductStore']);
+    Route::post('/update-steam-press-products', [HrProductController::class, 'steamProductUpdate']);
+    Route::post('/delete-steam-press-products', [HrProductController::class, 'steamProductDelete']);
+    Route::get('/get-emp-steam-per-pcs', [HrProductController::class, 'getDailySteamEmployeeTask']);
+    Route::get('/get-emp-cotton-per-pcs', [HrProductController::class, 'getDailyCottonEmployeeTask']);
 
     // EMPLOYEE SECURITY DEPOSIT
-    Route::get('/view-security-deposit/{id?}', 'EmployeeSecurityDepositController@index');
-    Route::post('/store-security-deposit', 'EmployeeSecurityDepositController@store');
-    Route::post('/update-security-deposit', 'EmployeeSecurityDepositController@update');
-    Route::post('/delete-security-deposit', 'EmployeeSecurityDepositController@delete');
+    Route::get('/view-security-deposit/{id?}', [EmployeeSecurityDepositController::class, 'index']);
+    Route::post('/store-security-deposit', [EmployeeSecurityDepositController::class, 'store']);
+    Route::post('/update-security-deposit', [EmployeeSecurityDepositController::class, 'update']);
+    Route::post('/delete-security-deposit', [EmployeeSecurityDepositController::class, 'delete']);
 
 
     /******************************************** HR ROUTES *************************************************************/
 
     //Sales Panel
-    Route::get('/sales-panel', 'SalesController@index');
-    Route::post('/get-inventory', 'SalesController@getProducts');
+    Route::get('/sales-panel', [SalesController::class, 'index']);
+    Route::post('/get-inventory', [SalesController::class, 'getProducts']);
 
     //Job Order
-    Route::get('/joborder', 'JobController@getList');
-    Route::get('/create-job', 'JobController@create');
-    Route::post('/get-raw-materials', 'JobController@getRaw');
-    Route::post('/add-job', 'JobController@addJob');
-    Route::post('/add-sub-job', 'JobController@addJobDetails');
-    Route::post('/load-job', 'JobController@getJobData');
-    Route::post('/calculate-cost', 'JobController@getCost');
-    Route::post('/item-update', 'JobController@ItemUpdate');
-    Route::post('/item-delete', 'JobController@ItemDelete');
-    Route::post('/account-add', 'JobController@accountAdd');
-    Route::post('/account-update', 'JobController@accountUpdate');
-    Route::post('/received-product', 'JobController@ReceivedProduct');
-    Route::get('/edit-job/{id}', 'JobController@edit');
-    Route::get('/repeat-job', 'JobController@RepeatJobOrder');
-    Route::post('/get-job-id', 'JobController@getJobIdFromProduct');
-    Route::post('/get-temp', 'JobController@getJobDataFromID');
-    Route::post('/get-temp-data', 'JobController@getTempData');
-    Route::post('/temp-update', 'JobController@TempUpdate');
-    Route::post('/insert-into-temp', 'JobController@InsertIntoTemp');
-    Route::post('/calculate-temp-cost', 'JobController@getTempCost');
-    Route::post('/temp-item-delete', 'JobController@TempItemDelete');
-    Route::post('/chk-recipy-exists', 'JobController@chk_recipy_exists');
-    Route::get('/getdetails/{id}', 'JobController@getdetails');
-    Route::get('/deletejoborder', 'JobController@deletejoborder');
-    Route::get('/getworkorder', 'JobController@getorderdetails');
-    Route::get('/getworkorder-sum', 'JobController@getorderdetailsSUM');
-    Route::post('/workorder-account', 'JobController@accsubmit');
-    Route::put('/update-orderqty', 'JobController@orderqty_update');
-    Route::post('/suborder-delete', 'JobController@orderdetails_delete');
-    Route::get('/getunitofmessaure', 'JobController@getunitofmeassure');
+    Route::get('/joborder', [JobController::class, 'getList']);
+    Route::get('/create-job', [JobController::class, 'create']);
+    Route::post('/get-raw-materials', [JobController::class, 'getRaw']);
+    Route::post('/add-job', [JobController::class, 'addJob']);
+    Route::post('/add-sub-job', [JobController::class, 'addJobDetails']);
+    Route::post('/load-job', [JobController::class, 'getJobData']);
+    Route::post('/calculate-cost', [JobController::class, 'getCost']);
+    Route::post('/item-update', [JobController::class, 'ItemUpdate']);
+    Route::post('/item-delete', [JobController::class, 'ItemDelete']);
+    Route::post('/account-add', [JobController::class, 'accountAdd']);
+    Route::post('/account-update', [JobController::class, 'accountUpdate']);
+    Route::post('/received-product', [JobController::class, 'ReceivedProduct']);
+    Route::get('/edit-job/{id}', [JobController::class, 'edit']);
+    Route::get('/repeat-job', [JobController::class, 'RepeatJobOrder']);
+    Route::post('/get-job-id', [JobController::class, 'getJobIdFromProduct']);
+    Route::post('/get-temp', [JobController::class, 'getJobDataFromID']);
+    Route::post('/get-temp-data', [JobController::class, 'getTempData']);
+    Route::post('/temp-update', [JobController::class, 'TempUpdate']);
+    Route::post('/insert-into-temp', [JobController::class, 'InsertIntoTemp']);
+    Route::post('/calculate-temp-cost', [JobController::class, 'getTempCost']);
+    Route::post('/temp-item-delete', [JobController::class, 'TempItemDelete']);
+    Route::post('/chk-recipy-exists', [JobController::class, 'chk_recipy_exists']);
+    Route::get('/getdetails/{id}', [JobController::class, 'getdetails']);
+    Route::get('/deletejoborder', [JobController::class, 'deletejoborder']);
+    Route::get('/getworkorder', [JobController::class, 'getorderdetails']);
+    Route::get('/getworkorder-sum', [JobController::class, 'getorderdetailsSUM']);
+    Route::post('/workorder-account', [JobController::class, 'accsubmit']);
+    Route::put('/update-orderqty', [JobController::class, 'orderqty_update']);
+    Route::post('/suborder-delete', [JobController::class, 'orderdetails_delete']);
+    Route::get('/getunitofmessaure', [JobController::class, 'getunitofmeassure']);
 
     //Job Order Process
-    Route::get('/job-order', 'JobController@getJobDetails');
-    Route::post('/job-cancel', 'JobController@jobCancel');
-    Route::post('/job-cost', 'JobController@jobCost');
-    Route::post('/job-submit', 'JobController@jobSubmit');
-    Route::post('/recipy-limit', 'JobController@getrecipyCalculation');
-    Route::get('/getworkorderdetails/{id}', 'JobController@workorderdetails');
-    Route::get('/joborder-inactive', 'JobController@getList_inactive');
-    Route::GET('/createagain-joborder', 'JobController@createagain');
-    Route::POST('/inactiveoldecipy', 'JobController@inactiveoldecipy');
-    Route::POST('/reactiverecipy', 'JobController@reactiverecipy');
-    Route::POST('/inactiverecipy', 'JobController@inactiverecipy');
+    Route::get('/job-order', [JobController::class, 'getJobDetails']);
+    Route::post('/job-cancel', [JobController::class, 'jobCancel']);
+    Route::post('/job-cost', [JobController::class, 'jobCost']);
+    Route::post('/job-submit', [JobController::class, 'jobSubmit']);
+    Route::post('/recipy-limit', [JobController::class, 'getrecipyCalculation']);
+    Route::get('/getworkorderdetails/{id}', [JobController::class, 'workorderdetails']);
+    Route::get('/joborder-inactive', [JobController::class, 'getList_inactive']);
+    Route::GET('/createagain-joborder', [JobController::class, 'createagain']);
+    Route::POST('/inactiveoldecipy', [JobController::class, 'inactiveoldecipy']);
+    Route::POST('/reactiverecipy', [JobController::class, 'reactiverecipy']);
+    Route::POST('/inactiverecipy', [JobController::class, 'inactiverecipy']);
 
 
 
@@ -1114,47 +1167,42 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/delete_data', 'EmptyDataController@deletedatabase');
 
     //Pos Produtcs
-    Route::get('/posproducts', 'PosProductController@show');
-    Route::post('/insert-posproducts', 'PosProductController@store');
-    Route::put('/inactive-posproducts', 'PosProductController@delete');
-    Route::get('/inactive-posproducts', 'PosProductController@inactiveposproducts');
-    Route::put('/reactive-posproducts', 'PosProductController@reactiveposproduct');
-    Route::put('/update-posproducts', 'PosProductController@update');
-    Route::get('/verifycode', 'PosProductController@codeverify');
+    Route::get('/posproducts', [PosProductController::class, 'show']);
+    Route::post('/insert-posproducts', [PosProductController::class, 'store']);
+    Route::put('/inactive-posproducts', [PosProductController::class, 'delete']);
+    Route::get('/inactive-posproducts', [PosProductController::class, 'inactiveposproducts']);
+    Route::put('/reactive-posproducts', [PosProductController::class, 'reactiveposproduct']);
+    Route::put('/update-posproducts', [PosProductController::class, 'update']);
+    Route::get('/verifycode', [PosProductController::class, 'codeverify']);
+    Route::post('/pos-product/get-variation', [PosProductController::class, 'getVariation_posproduct'])->name('getVariation_posproduct');
+    Route::post('/pos-product/get-variation-product-values', [PosProductController::class, 'getVariationProduct_values'])->name('getVariationProduct_values');
+    Route::post('/pos-product/store-variation', [PosProductController::class, 'storeVariation'])->name('storeVariation');
+    Route::post('/pos-product/update-variation', [PosProductController::class, 'updateVariation'])->name('updateVariation');
+    Route::post('/pos-product/destroy-variation', [PosProductController::class, 'destroyVariation'])->name('removeVariation_posproduct');
+    Route::post('/pos-product/reload-variation', [PosProductController::class, 'reloadVariation'])->name('reloadVariation_posproduct');
 
     /******************************* DRIVERS STARTS HERE **********************************/
-    Route::get('/drivers', 'DriverController@index')->name("driver.list");
-    Route::get('/create-driver', 'DriverController@create')->name("driver.create");
-    Route::post('/get-drivers', 'DriverController@getDriversList')->name("driver.get");
-    Route::post('/create-driver', 'DriverController@store')->name("driver.store");
-    Route::get('/driver/{id}', 'DriverController@edit')->name("driver.edit");
-    Route::post('/update-driver', 'DriverController@update')->name("driver.update");
-    Route::post('/delete-driver', 'DriverController@inactiveOrActive')->name("driver.delete");
+    Route::get('/drivers', [DriverController::class, 'index'])->name("driver.list");
+    Route::get('/create-driver', [DriverController::class, 'create'])->name("driver.create");
+    Route::post('/get-drivers', [DriverController::class, 'getDriversList'])->name("driver.get");
+    Route::post('/create-driver', [DriverController::class, 'store'])->name("driver.store");
+    Route::get('/driver/{id}', [DriverController::class, 'edit'])->name("driver.edit");
+    Route::post('/update-driver', [DriverController::class, 'update'])->name("driver.update");
+    Route::post('/delete-driver', [DriverController::class, 'inactiveOrActive'])->name("driver.delete");
     /******************************* DRIVERS ENDS HERE **********************************/
 
     /******************************* VEHICLES STARTS HERE **********************************/
-    Route::get('/vehicles', 'VehicleController@index')->name("vehicle.list");
-    Route::get('/create-vehicle', 'VehicleController@create')->name("vehicle.create");
-    Route::post('/get-vehicles', 'VehicleController@getVehiclesList')->name("vehicle.get");
-    Route::post('/create-vehicle', 'VehicleController@store')->name("vehicle.store");
-    Route::get('/vehicle/{id}', 'VehicleController@edit')->name("vehicle.edit");
-    Route::post('/update-vehicle', 'VehicleController@update')->name("vehicle.update");
-    Route::post('/delete-vehicle', 'VehicleController@inactiveOrActive')->name("vehicle.delete");
+    Route::get('/vehicles', [VehicleController::class, 'index'])->name("vehicle.list");
+    Route::get('/create-vehicle', [VehicleController::class, 'create'])->name("vehicle.create");
+    Route::post('/get-vehicles', [VehicleController::class, 'getVehiclesList'])->name("vehicle.get");
+    Route::post('/create-vehicle', [VehicleController::class, 'store'])->name("vehicle.store");
+    Route::get('/vehicle/{id}', [VehicleController::class, 'edit'])->name("vehicle.edit");
+    Route::post('/update-vehicle', [VehicleController::class, 'update'])->name("vehicle.update");
+    Route::post('/delete-vehicle', [VehicleController::class, 'inactiveOrActive'])->name("vehicle.delete");
     /******************************* VEHICLES ENDS HERE **********************************/
 
     /******************************* OPENING CLOSING STARTS HERE **********************************/
     Route::get('/opening-closing', 'OpeningClosingController@index')->name("opening.closing");
     /******************************* OPENING CLOSING ENDS HERE **********************************/
 
-    Route::resource('website', 'WebsiteController');
-    Route::get('website/slider/lists', 'WebsiteController@getSlider')->name('sliderLists');
-    Route::post('website/slider/store', 'WebsiteController@store_slider')->name('sliderStore');
-
-    Route::get('website/social-link/lists', 'WebsiteController@getSocialLink');
-    Route::post('website/social-link/store', 'WebsiteController@store_SocialLink')->name('socialinkStore');
-
-    Route::get('website/delivery-area/lists', 'WebsiteController@getDeliveryArea')->name('deliveryAreasList');
-    Route::post('website/delivery-area/-get-website-branches', 'WebsiteController@getWebsiteBranches')->name('getWebsiteBranches');
-    Route::post('website/delivery-area/store', 'WebsiteController@store_deliveryArea')->name('deliveryAreaStore');
-    Route::patch('website/delivery-area/{id}/update', 'WebsiteController@update_deliveryArea')->name('deliveryAreaUpdate');
 });

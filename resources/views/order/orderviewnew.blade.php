@@ -8,21 +8,26 @@
 @section('navorder','active')
 
 @section('content')
-
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
  <section class="panels-wells">
     <div class="card">
 		<div class="card-header">
-         <h5 class="card-header-text">Order Details</h5>
-         <div class="row m-l-20">
+         <h3 class="">Order Details</h3>
+		 <hr/>
+     
+			<!--<div id="customernumber" class="col-md-2">
               <div class="rkmd-checkbox checkbox-rotate checkbox-ripple">
                   <label class="input-checkbox checkbox-primary">
                   <input type="checkbox" id="checkbox">
                   <span class="checkbox"></span>
-              </label>
+				  </label>
                   <div class="captions">Search Delivery Orders </div>
               </div>
-          </div>
-         <div class="row">
+              </div>-->
+			<div class="checkbox">
+				<label><input type="checkbox" id="checkbox"> Search Delivery Orders</label>
+			</div>
+         <div class="row ">
             <div id="customernumber" class="col-md-2">
               <div class="form-group">
                     <label class="form-control-label">Mobile No.</label>
@@ -84,8 +89,9 @@
             </div>
 
          <!--</div>
-
+		 
          <div class="row">-->
+		 {{--@if(session("roleId") != 20 && session("roleId") != 19)	--}}
              <div class="col-md-3">
                  <label class="form-control-label">Select Payment Mode</label>
                  <select id="paymentmode" name="paymentmode" class="f-right select2" data-placeholder="Select Payment Mode">
@@ -113,22 +119,26 @@
                      @endforeach
                  </select>
              </div>
-             <div class="col-md-3">
+		{{--@endif --}}
+             <div class="col-md-3" style="margin-top: 20px;">
                  <label class="form-control-label">Select Branch</label>
                  <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2">
-                     <option value="all">All</option>
+                     @if(session('roleId') == 2 or session('roleId') == 17)
+					 <option value="all">All</option>
+					 @endif
                      @foreach($branch as $value)
                          <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                      @endforeach
                  </select>
              </div>
-
+ 
              <div class="col-md-3" style="margin-top: 20px;">
                  <label class="form-control-label">Select Terminal</label>
                  <select id="terminal" name="terminal" data-placeholder="Select Terminal" class="f-right select2">
                      <option value="">Select Terminal</option>
                  </select>
              </div>
+			  @if(session("roleId") != 20 && session("roleId") != 19)
               <div class="col-md-3" style="margin-top: 20px;">
                  <label class="form-control-label">Select Customer</label>
                  <select id="customer" name="customer" data-placeholder="Select Customer" class="f-right select2">
@@ -146,13 +156,25 @@
                      <option value="srb">SRB</option>
                  </select>
              </div>
-			 <div class="col-md-3" style="margin-top: 20px;">
+			 
+			 <div class="col-md-3" style="margin-top: 20px;" >
                  <label class="form-control-label">Select Type</label>
                  <select id="type" name="type" data-placeholder="Select Type" class="f-right select2">
                      <option value="declaration">Declaration</option>
                      <option value="datewise">Datewise</option>
                  </select>
              </div>
+			 @endif
+			 @if(session("roleId") == 20 or session("roleId") == 19)
+				 <div class="col-md-3" style="margin-top: 20px;" >
+					 <label class="form-control-label">Select Type</label>
+					 <select id="type" name="type" data-placeholder="Select Type" disabled class="f-right select2">
+						 <option value="declaration">Declaration</option>
+						 <option selected value="datewise">Datewise</option>
+					 </select>
+				 </div>
+			 @endif
+			 
          <!--</div>
 
          <div class="row">-->
@@ -162,12 +184,15 @@
 				 <button type="button" onclick="clearSearchFields()" class="btn btn-info waves-effect waves-light m-t-25 m-r-10 f-right"  >
                      <i class="icofont icofont-file-pdf" > </i>Clear All
                  </button>
+				 
 				 <button type="button" id="btnExcel"  class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right"  >
                      <i class="icofont icofont-file-excel" > </i>Excel Export
                  </button>
+				 @if(session("roleId") != 20 && session("roleId") != 19)
 				 <button type="button" id="btnPdf"  class="btn btn-danger waves-effect waves-light m-t-25 m-r-10 f-right"  >
                      <i class="icofont icofont-file-pdf" > </i>PDF Export
                  </button>
+				 @endif
 				 <button type="button" id="fetch"  class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right"  >
                      <i class="icofont icofont-ui-check"> </i>Fetch
                  </button>
@@ -177,19 +202,70 @@
          
          </div>
          <hr/> 
-		 @if(session("roleId") != 17)
-			<div class="row dashboard-header m-l-2">
-               <div class="col-lg-3 col-md-6">
+		 {{-- @if(session("roleId") != 17) --}}
+			
+				<div class="row m-l-2">
+               <div class="col-lg-2 col-md-6">
                   <div class="card dashboard-product">
                      <span>Total Orders</span>
-                     <h2 class="dashboard-total-products" id="totalorders">{{$totalorders[0]->totalorders}}</h2>
-                     <span class="label label-warning">Orders</span>
+                     <h2 class="dashboard-total-products" id="totalorders"></h2>
+                     <span class="label label-info">Orders</span>
                      <div class="side-box">
                         <i class="ti-package text-warning-color"></i>
                      </div>
                   </div>
                </div>
-               
+			   <div class="col-lg-2 col-md-6">
+                  <div class="card dashboard-product">
+                     <span>Pending Orders</span>
+                     <h2 class="dashboard-total-products" id="pendingorders"></h2>
+                     <span class="label label-danger">Pending</span>
+                     <div class="side-box">
+                        <i class="ti-package text-warning-color"></i>
+                     </div>
+                  </div>
+               </div>
+			   <div class="col-lg-2 col-md-6">
+                  <div class="card dashboard-product">
+                     <span>Processing Orders</span>
+                     <h2 class="dashboard-total-products" id="processingorders"></h2>
+                     <span class="label label-warning">Processing</span>
+                     <div class="side-box">
+                        <i class="ti-package text-warning-color"></i>
+                     </div>
+                  </div>
+               </div>
+			    <div class="col-lg-2 col-md-6">
+                  <div class="card dashboard-product">
+                     <span>Void Orders</span>
+                     <h2 class="dashboard-total-products" id="voidorders"></h2>
+                     <span class="label label-danger">Void</span>
+                     <div class="side-box">
+                        <i class="ti-package text-warning-color"></i>
+                     </div>
+                  </div>
+               </div>
+			   <div class="col-lg-2 col-md-6">
+                  <div class="card dashboard-product">
+                     <span>Dispatch Orders</span>
+                     <h2 class="dashboard-total-products" id="dispatchorders">0</h2>
+                     <span class="label label-info">Dispatch</span>
+                     <div class="side-box">
+                        <i class="ti-package text-info-color"></i>
+                     </div>
+                  </div>
+               </div>
+			   <div class="col-lg-2 col-md-6">
+                  <div class="card dashboard-product">
+                     <span>Delivered Orders</span>
+                     <h2 class="dashboard-total-products" id="deliveredorders"></h2>
+                     <span class="label label-success">Delivered</span>
+                     <div class="side-box">
+                        <i class="ti-package text-warning-color"></i>
+                     </div>
+                  </div>
+               </div>
+               {{--
                <div class="col-lg-3 col-md-6">
                   <div class="card dashboard-product">
                      <span>Total Sales</span>
@@ -200,9 +276,9 @@
                      </div>
                   </div>
                </div>
-            </div>
-		@endif
-		<hr/> 		 
+            </div> --}}
+		{{--  @endif --}}
+			 
 		<div class="card-block">
 			<div id="table_data">
 			{{--@include('partials.orders_table')--}}
@@ -243,6 +319,42 @@
 				</div>
 		</div>
 	</div>
+	<div class="modal fade modal-flex" id="assign-modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-md" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+						<h4 id="mod-title" class="modal-title">Pickup Person Details</h4>
+					</div>
+					<div class="modal-body">
+						<div class="row">
+							<input type="hidden" id="orderidforpicker" name="orderidforpicker" />
+							<div class="col-md-12">
+								 <label class="form-control-label">Select Branch</label>
+								 <select id="branchmodal" name="branchmodal" data-placeholder="Select Branch" class="f-right select2">
+									 @foreach($branch as $value)
+										 <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
+									 @endforeach
+								 </select>
+							 </div>
+							<div class="col-md-12 m-t-2">
+								<label class="form-control-label">Enter Name</label>
+								<input type="text"  name="namemodal" id="namemodal" class="form-control" />
+							</div>
+							<div class="col-md-12 m-t-2">
+								<label class="form-control-label">Enter Mobile</label>
+								<input type="text"  name="mobilemodal" id="mobilemodal" class="form-control" />
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" id="btn_submit" class="btn btn-success waves-effect waves-light">Assign</button>
+					</div>
+				</div>
+		</div>
+	</div>
 	<div class="modal fade modal-flex" id="void-modal" tabindex="-1" role="dialog">
 		<div class="modal-dialog modal-md" role="document">
 			<input type="hidden"  name="voidId" id="voidId" class="form-control" />
@@ -266,6 +378,34 @@
 				</div>
 			<div class="modal-footer">
 			<button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light" onClick="saveVoid()">Save Department</button>
+			</div>
+			</div>
+		</div>
+	</div> 
+	
+	<div class="modal fade modal-flex" id="delivered-modal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-md" role="document">
+			<input type="hidden"  name="orderId" id="orderId" class="form-control" />
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">Mark as Delivered</h4>
+				</div>
+				<div class="modal-body">
+					<div class="row">
+						<div class="col-md-12">
+							<div class="form-group"> 
+								<label class="form-control-label">Delivery Date :</label>
+								<input type="date"  name="delivery_date" id="delivery_date" class="form-control" />
+								<span id="delivery_mesasge" class="text-danger"></span>
+							</div>
+						</div>
+					</div>   
+				</div>
+			<div class="modal-footer">
+			<button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light" onClick="saveDelivery()">Save</button>
 			</div>
 			</div>
 		</div>
@@ -294,6 +434,8 @@
 		  previous: "icofont icofont-rounded-left"
 		}
     });
+	
+	
    
     $('#checkbox').change(function(){
 		  if ($('#checkbox').is(":checked"))
@@ -304,6 +446,7 @@
 			$('#deliveryto').css("display","block");
 			$('#rpdate').val('');
 			$('#date').val('');
+			$("#type").val("datewise").change();
 		  }
 		  else
 		  {
@@ -311,6 +454,7 @@
 			$('#to').css("display","block");
 			$('#deliveryfrom').css("display","none");
 			$('#deliveryto').css("display","none");
+			$("#type").val("declaration").change();
 		  }
 	});
 			$('#from').css("display","block");
@@ -388,10 +532,16 @@
 	  $('#sp-modal').modal("show");
 	  $("#orderidforsp").val(receiptId);
 	}
+	
+	function assignToBranchModal(receiptId)
+	{
+	  $('#assign-modal').modal("show");
+	  $("#orderidforpicker").val(receiptId);
+	}
   
 	$("#btn_assign").click(function(){
-	  var sp = $("#serviceprovider").val();
-	  var receiptId = $("#orderidforsp").val();
+	  let sp = $("#serviceprovider").val();
+	  let receiptId = $("#orderidforsp").val();
 	  if(sp == ""){
 		  alert("Please Select Service Provider")
 	  }else{
@@ -411,8 +561,40 @@
 	  }
 	})
 	
+	$("#btn_submit").click(function(){
+	  let name = $("#namemodal").val();
+	  let mobile = $("#mobilemodal").val();
+	  let receiptId = $("#orderidforpicker").val();
+	  let branch = $("#branchmodal").val();
+	  if(name == ""){
+		  alert("Please enter name")
+	  }else if(mobile == ""){
+		   alert("Please enter mobile")
+	  }else if(branch == ""){
+		   alert("Please enter branch")
+	  }else{
+		  $.ajax({
+			url : "{{url('/change-order-status-with-logs')}}",
+			type : "POST",
+			data : {_token : "{{csrf_token()}}", receipt:receiptId,status:10,name:name,mobile:mobile,comments:"NULL",branch:branch},
+			dataType : 'json',
+			success : function(result){
+				console.log(result);
+				if(result.status == 200){
+					$('#assign-modal').modal("hide");
+					fetch_data(1);
+				}
+			}
+		});
+	  }
+	})
+	
 	function showReceipt(ReceiptNo) {
 		orderSeen(ReceiptNo);
+	}
+	
+	function showOrderDetails(ReceiptId) {
+		window.open("{{url('order-detail')}}/"+ReceiptId)
 	}
 	
 	async function orderSeen(ReceiptNo){
@@ -546,6 +728,45 @@
 									$("#reason_mesasge").html("");
 									$("#void-modal").modal("hide");
 									$("#voidId").val("")
+							   }
+						   });
+					 }
+				}
+
+			});
+		}
+	}
+	
+	function deliveredReceipt(id)
+	{
+		$("#orderId").val(id);
+		$("#delivered-modal").modal("show");
+	}
+	
+	function saveDelivery()
+	{
+		$("#delivery_mesasge").html("");
+		if($("#delivery_date").val() == ""){
+			$("#delivery_mesasge").html("Please select Delivery Date");
+		}else{
+			$.ajax({
+				url: "{{ url('make-receipt-delivered')}}",
+				type: 'POST',
+				data:{_token:"{{ csrf_token() }}",id:$("#orderId").val(),reason:$("#delivery_date").val()},
+				dataType:"json",
+				success:function(resp){
+					if(resp.status == 200){
+						 swal({
+							title: "Delivered",
+							text: resp.message,
+							type: "success"
+						   },function(isConfirm){
+							   if(isConfirm){
+								   fetch_data(1)
+								// window.location="{{ route('vendors.index') }}";
+									$("#delivery_mesasge").html("");
+									$("#delivered-modal").modal("hide");
+									$("#orderId").val("")
 							   }
 						   });
 					 }

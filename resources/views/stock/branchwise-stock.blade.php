@@ -40,7 +40,7 @@
                                              <div class="media d-flex">
                                                              <div class="media-left media-middle">
                                                    <a >
-                                                      <img class="media-object img-circle" src="{{ asset('public/assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
+                                                      <img class="media-object img-circle" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
                                                    </a>
                                                 </div>
                                                 <div class="media-body">
@@ -70,7 +70,21 @@
                       <div class="card">
                         <div class="card-header">
                            <h1 class=" text-info" id="headername"></h1>
+						   <div class="row">
+								<div class="col-md-2">
+									<div class="rkmd-checkbox checkbox-rotate">
+										<label class="input-checkbox checkbox-primary">
+											<input type="checkbox" id="chkSearch" name="chkSearch">
+											<span class="checkbox"></span>
+										</label>
+										<div class="captions">Search in all places</div>
+									</div>
+								</div>
+							</div>
+							<br/>
+							<input type="hidden" id="searchItem" value="false"/>
                             <div class="row">
+								<input type="hidden" id="branch_id" />
                                 <div class="col-md-3 col-sm-4">
                                     <div  id="itemcode" class="form-group">
                                         <label class="form-control-label "><i class="icofont icofont-barcode"></i> Search ItemCode</label>
@@ -108,12 +122,11 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6">
-
-                                </div>
-                                <div class="col-md-6">
-                                    <button type="button" id="search" data-placement="bottom" class="btn btn-success  waves-effect waves-light f-right m-r-10">Search</button>
-
+                           
+                                <div class="col-md-12 f-right">
+                                    <button type="button" id="clear" data-placement="bottom" class="btn btn-warning  waves-effect waves-light f-right m-r-10">Clear</button>
+									<button type="button" id="search" data-placement="bottom" class="btn btn-success  waves-effect waves-light f-right m-r-10">Search</button>
+                                    <button type="button" onclick="excelExport()" data-placement="bottom" class="btn btn-success  waves-effect waves-light f-right m-r-10"><i class="icofont icofont-file-excel" > </i>Export to Excel</button>
                                 </div>
                             </div>
                       </div>
@@ -136,33 +149,6 @@
                                        </tr>
                                     </thead>
                                     <tbody>
-{{--                                     @if($stocks)--}}
-{{--                                        @foreach ($stocks as $value)--}}
-
-{{--                                           <tr>--}}
-{{--                                              <td class="img-pro">--}}
-{{--                                                 <img src="{{ asset('public/assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="img-fluid d-inline-block" alt="tbl">--}}
-{{--                                              </td>--}}
-{{--                                              <td>{{$value->item_code}}</td>--}}
-{{--                                              <td class="pro-name">--}}
-{{--                                                 <h6>{{$value->product_name}}</h6>--}}
-{{--                                               <!--   <span class="text-muted f-12">{{$value->product_description}}</span> -->--}}
-{{--                                              </td>--}}
-{{--                                              <td >{{$value->name}}</td>--}}
-{{--                                              <td>{{$value->department_name}}</td>--}}
-{{--                                              <td>{{number_format($value->amount,2)}}</td>--}}
-{{--                                              <td>{{$value->qty}}</td>--}}
-{{--                                              <td>--}}
-{{--                                                <label class="{{($value->qty > 0 && $value->qty > $value->reminder_qty) ? 'text-success' : (($value->qty < $value->reminder_qty) ? 'text-warning' : 'text-danger')}}">{{($value->qty > 0 && $value->qty > $value->reminder_qty) ? 'In Stock' : (($value->qty < $value->reminder_qty) ? 'Low Stock' : 'Out Of Stock')}}</label>--}}
-{{--                                                 --}}
-{{--                                              </td>--}}
-{{--                                              <td class="action-icon">--}}
-{{--                                                  <a href="{{url('stock-details',$value->id)}}" class="p-r-10 text-primary f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"><i class="icofont icofont-eye-alt"></i></a>--}}
-{{--                                              </td>--}}
-{{--                                           </tr>--}}
-
-{{--                                          @endforeach--}}
-{{--                                     @endif--}}
                                        
                                     </tbody>
                                  </table>
@@ -202,12 +188,30 @@
       page = 1;
       getdetails(branch,'',page,$('#code').val(),$('#name').val(),$('#depart').val(),$('#subdepart').val())
   });
-
+  $('#branch_id').val("{{session('branch')}}");
   function branchClick(branchid,branchname){
       page = 1;
       branch = branchid;
+	  $('#branch_id').val(branchid);
       getdetails(branch,branchname,page,$('#code').val(),$('#name').val(),$('#depart').val(),$('#subdepart').val())
   }
+  
+  function excelExport()
+  { 
+	  let url = "{{url('reports/excel-export-stock-report')}}"+"?branchid="+$('#branch_id').val()+"&code="+$('#code').val()+"&name="+$('#name').val()+"&dept="+$('#depart').val()+"&sdept="+$('#subdepart').val()
+	  window.open(url);
+  }
+  
+  $("#clear").click(function(){
+	  $('#code').val('');
+	  $('#name').val('');
+	  $('#depart').val('').change();
+	  $('#subdepart').val('').change();
+	  $('#chkSearch').prop('checked', false);
+	   $("#searchItem").val(false);
+	  $("#tblstock tbody").empty();
+	  getdetails('{{session('branch')}}','',page,$('#code').val(),$('#name').val(),$('#depart').val(),$('#subdepart').val());
+  })
 
   load_department();
   function load_department()
@@ -273,7 +277,6 @@
                         type: 'POST',
                         data:{_token:"{{ csrf_token() }}",id:id},
                         success:function(resp){
-                          console.log(resp);
                             if(resp == 1){
                                  swal({
                                         title: "Deleted",
@@ -322,6 +325,17 @@
         }
 
   });
+  
+	$("#chkSearch").on('click',function(){
+        if($(this).is(":checked")){
+           $("#searchItem").val(true);
+		   $("#showBranchHeader").css("display","block");
+        }else {
+          $("#searchItem").val(false);
+		  $("#showBranchHeader").css("display","none");
+        }
+	});
+  
 
   getdetails('{{session('branch')}}','',page,$('#code').val(),$('#name').val(),$('#depart').val(),$('#subdepart').val())
   function getdetails(branchid,branchname,page,code,name,dept,sdept){
@@ -338,21 +352,21 @@
                         code:code,
                         name:name,
                         dept:dept,
-                        sdept:sdept
+                        sdept:sdept,
+						search: $("#searchItem").val()
 
                       },
                         dataType: 'json',
                         success : function(result){
-							console.log(result)
                           $("#headername").html(branchname);
-
+						  
 
                           for(var count =0;count < result.data.length; count++){
                             $("#tblstock tbody").append(
                               "<tr>" +
-                                "<td class='pro-name' > <img src='{{ asset('public/assets/images/products/')}}"+(result.data[count].image == "" ? "/placeholder.jpg" : "/"+result.data[count].image)+"' class='img-fluid d-inline-block'></td>" +
+                                "<td class='pro-name' > <img src='{{ asset('assets/images/products/')}}"+(result.data[count].image == "" ? "/placeholder.jpg" : "/"+result.data[count].image)+"' class='img-fluid d-inline-block'></td>" +
                                 "<td>"+result.data[count].item_code+"</td>" +
-                                "<td><h6>"+result.data[count].product_name+"</h6><span class='text-success f-16'>"+branchname+"</span></td>" +
+                                "<td><h6>"+result.data[count].product_name+"</h6><span class='text-success f-16'>"+result.data[count].branch_name+"</span></td>" +
                                
                                 "<td>"+result.data[count].department_name+" </td>" +
                                 "<td>"+result.data[count].sub_depart_name+" </td>" +

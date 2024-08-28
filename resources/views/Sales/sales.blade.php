@@ -44,7 +44,7 @@
                                  <tbody>
                                     <tr>
                                        <td class="img-pro">
-                                          <img src="public/assets/images/e-commerce/product-list/pro-l1.png" class="img-fluid d-inline-block" alt="tbl">
+                                          <img src="assets/images/e-commerce/product-list/pro-l1.png" class="img-fluid d-inline-block" alt="tbl">
                                        </td>
                                        <td class="pro-name">
                                           <h6>Frock Designs</h6>
@@ -54,7 +54,7 @@
                                     </tr>
                                     <tr>
                                        <td class="img-pro">
-                                          <img src="public/assets/images/e-commerce/product-list/pro-l6.png" class="img-fluid d-inline-block" alt="tbl">
+                                          <img src="assets/images/e-commerce/product-list/pro-l6.png" class="img-fluid d-inline-block" alt="tbl">
                                        </td>
                                        <td class="pro-name">
                                           <h6> Style Tops </h6>
@@ -65,7 +65,7 @@
                                     </tr>
                                     <tr>
                                        <td class="img-pro">
-                                          <img src="public/assets/images/e-commerce/product-list/pro-l2.png" class="img-fluid d-inline-block" alt="tbl">
+                                          <img src="assets/images/e-commerce/product-list/pro-l2.png" class="img-fluid d-inline-block" alt="tbl">
                                        </td>
                                        <td class="pro-name">
                                           <h6> Kurta Women </h6>
@@ -76,7 +76,7 @@
                                     </tr>
                                     <tr>
                                        <td class="img-pro">
-                                          <img src="public/assets/images/e-commerce/product-list/pro-l3.png" class="img-fluid d-inline-block" alt="tbl">
+                                          <img src="assets/images/e-commerce/product-list/pro-l3.png" class="img-fluid d-inline-block" alt="tbl">
                                        </td>
                                        <td class="pro-name">
                                           <h6> T Shirts For Women </h6>
@@ -86,7 +86,7 @@
                                     </tr>
                                     <tr>
                                        <td class="img-pro">
-                                          <img src="public/assets/images/e-commerce/product-list/pro-l1.png" class="img-fluid d-inline-block" alt="tbl">
+                                          <img src="assets/images/e-commerce/product-list/pro-l1.png" class="img-fluid d-inline-block" alt="tbl">
                                        </td>
                                        <td class="pro-name">
                                           <h6>Frock Designs</h6>
@@ -97,7 +97,7 @@
                                     </tr>
                                     <tr>
                                        <td class="img-pro">
-                                          <img src="public/assets/images/e-commerce/product-list/pro-l6.png" class="img-fluid d-inline-block" alt="tbl">
+                                          <img src="assets/images/e-commerce/product-list/pro-l6.png" class="img-fluid d-inline-block" alt="tbl">
                                        </td>
                                        <td class="pro-name">
                                           <h6> Style Tops </h6>
@@ -107,7 +107,7 @@
                                     </tr>
                                     <tr>
                                        <td class="img-pro">
-                                          <img src="public/assets/images/e-commerce/product-list/pro-l1.png" class="img-fluid d-inline-block" alt="tbl">
+                                          <img src="assets/images/e-commerce/product-list/pro-l1.png" class="img-fluid d-inline-block" alt="tbl">
                                        </td>
                                        <td class="pro-name">
                                           <h6>Frock Designs</h6>
@@ -118,7 +118,7 @@
                                     </tr>
                                     <tr>
                                        <td class="img-pro">
-                                          <img src="public/assets/images/e-commerce/product-list/pro-l6.png" class="img-fluid d-inline-block" alt="tbl">
+                                          <img src="assets/images/e-commerce/product-list/pro-l6.png" class="img-fluid d-inline-block" alt="tbl">
                                        </td>
                                        <td class="pro-name">
                                           <h6> Style Tops </h6>
@@ -216,8 +216,8 @@
 
 @section('scriptcode_three')
 
-<script type="text/javascript" src="{{ URL::asset('public/js/purchase-script.js') }} "></script>
-<script type="text/javascript" src="{{ URL::asset('public/assets/pages/dashboard4.js')}}"></script>
+<script type="text/javascript" src="{{ URL::asset('js/purchase-script.js') }} "></script>
+<script type="text/javascript" src="{{ URL::asset('assets/pages/dashboard4.js')}}"></script>
 <script type="text/javascript">
 	function getDetails(id)
 	{

@@ -106,7 +106,7 @@
                        <div class="col-lg-2 col-md-2">
                   <div class="form-group">
                      <a href="#">
-                <img id="empimgs" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                <img id="empimgs" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                 </a>
                   </div>
              </div>
@@ -355,7 +355,7 @@ else if ($('#salarydatefrom').val() == '') {
       $('#early').html(resp[0].early);
       $('#otduration').html(resp[0].ot);
       $('#basicpay').html(resp[0].basic_salary);
-      $('#empimgs').attr("src","./public/assets/images/employees/images/"+resp[0].emp_picture);
+      $('#empimgs').attr("src","./assets/images/employees/images/"+resp[0].emp_picture);
 
      }
   });  
@@ -657,7 +657,7 @@ function emp_ledger(){
         salcategory: $('#salcat').val(),
       },
     success:function(resp){
-            console.log(resp);
+            // console.log(resp);
       if (resp > 0) {
                  swal({
                     title: "Success",

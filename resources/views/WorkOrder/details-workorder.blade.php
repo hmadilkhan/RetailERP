@@ -48,7 +48,7 @@
                             @foreach($details as $value)
                                 <tr>
                                     <td class="text-center">
-                                        <img width="42" height="42" src="{{ asset('public/assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                                        <img width="42" height="42" src="{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                                     </td>
                                     <td>{{$value->product_name}}</td>
                                     <td>{{$value->order_qty}}</td>

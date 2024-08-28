@@ -16,7 +16,7 @@
                         <div class="col-sm-4 text-center">
                             <!--  <h1>A</h1> -->
 
-                            <center> <img width="200" height="200" class="media-object  img-circle" src="{{ asset('public/assets/images/company/'.(($company[0]->logo) ? $company[0]->logo : 'placeholder.jpg')) }}" alt="Generic placeholder image"/></center>
+                            <center> <img width="200" height="200" class="media-object  img-circle" src="{{ asset('assets/images/company/'.(($company[0]->logo) ? $company[0]->logo : 'placeholder.jpg')) }}" alt="Generic placeholder image"/></center>
 
                         </div>
                         <div class="col-sm-8">
@@ -182,7 +182,7 @@
 
 
 @section('scriptcode_three')
-    <script type="text/javascript" src="{{ asset('public/assets/pages/button-fab.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/pages/button-fab.js') }}"></script>
     <script type="text/javascript">
 
     </script>

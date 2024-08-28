@@ -70,7 +70,7 @@
 					<div id="gallery" class="row gallery">
 						@foreach($images as $value)
 							<div class="img-wrap col-md-3  ">
-								<img width=200 height=200 class="m-b-1" style="margin-left:10px;margin-top:20px;" src="{{ asset('public/assets/images/mobile/'.$value->image)}}"/>
+								<img width=200 height=200 class="m-b-1" style="margin-left:10px;margin-top:20px;" src="{{ asset('assets/images/mobile/'.$value->image)}}"/>
 								<center><label class="form-control-label m-b-1">{{$value->product_name}}</label></center>
 								<center><label class="form-control-label m-b-1">{{$value->description}}</label></center>
 								<center> <button onclick="deleteImage('{{$value->id}}','{{$value->image}}')" class="btn btn-danger btn-icon waves-effect waves-light m-t-10" type="button" ><i class="icofont icofont-ui-delete"></i></button></center>

@@ -19,7 +19,7 @@
                         <div class="card-block text-center">
                            <div class="horizontal-card-img">
                               <h2>{{ $vendor->vendor_name }}</h2>
-                              <img class="media-object img-circle" src="{{ asset('public/assets/images/vendors/'.(empty($vendor->image) ? 'placeholder.jpg' : $vendor->image) .'') }}" alt="{{ empty($vendor->image) ? 'placeholder.jpg' : $vendor->image }}">
+                              <img class="media-object img-circle" src="{{ asset('assets/images/vendors/'.(empty($vendor->image) ? 'placeholder.jpg' : $vendor->image) .'') }}" alt="{{ empty($vendor->image) ? 'placeholder.jpg' : $vendor->image }}">
                            </div>
                             <div class="row following">
                                 <table class="table">
@@ -45,7 +45,7 @@
                         <div class="card-block text-center">
                            <div class="horizontal-card-img">
                               <h2>{{ $vendor->vendor_name }}</h2>
-                              <img class="media-object img-circle" src="{{ asset('public/assets/images/vendors/'.$vendor->image.'') }}" alt="Generic placeholder image">
+                              <img class="media-object img-circle" src="{{ asset('assets/images/vendors/'.$vendor->image.'') }}" alt="Generic placeholder image">
                            </div>
                             <div class="row following">
                                 <table class="table">

@@ -178,9 +178,9 @@ public function edit(branch $branch, Request $request){
          ];
          $branch = $branch->branch_update($request->br_id, $items);
 		 
-		 if(count($request->report) > 0){
+		 if(!empty($request->reportlist) && count($request->reportlist) > 0){
 			DB::table("branch_reports")->where("branch_id", $request->br_id)->delete();
-			foreach($request->report as $report){
+			foreach($request->reportlist as $report){
 				DB::table("branch_reports")->insert([
 					"branch_id" => $request->br_id,
 					"report_id" => $report,

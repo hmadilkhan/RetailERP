@@ -30,24 +30,26 @@
                <th>Company Name</th>
                <th>Type</th>
                <th>Website Name</th>
-               <th>Domain Name</th>
-               <th>Logo</th>
-               <th>Status</th>
+               <th>Domain</th>
+               <!--<th>Status</th>-->
                <th>Action</th>
             </tr>
 		</thead>
 		<tbody>
               @foreach($websites as $value)
 				<tr>
-				  <td class="text-center"><img width="42" height="42" src="{{ asset('public/assets/images/website/'.(!empty($value->logo) ? $value->logo : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
+				  <td class="text-center"><img width="42" height="42" src="{{ asset('assets/images/website/'.(!empty($value->logo) ? $value->logo : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
 				  <td>{{$value->company->name}}</td>
-				  <td>{{$value->type}}</td>
-				  <td>{{$value->web_name}}</td>
-				  <td>{{$value->url}}</td>
-				  <td>{{($value->status == 1 ? "Active" : "In-Active")}}</td>
+				  <td>{{$value->name}}</td>
+				  <td><a href="{{$value->url}}" target="_blank" class="btn btn-link"><i class="icofont icofont-link"></i> Go to Website</a></td>
+				  <!--<td><label class="badge badge-{{-- $value->status == 1 ? 'success' : 'muted' --}} p-5">{{-- $value->status == 1 ? 'Active' : 'In-Active' --}}</label></td>-->
 				  <td class="action-icon">
 					<a href="{{ route('website.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
-					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
+					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ addslashes($value->company->name) }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
+					<form action="{{ route('website.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
+					    @csrf
+					    @method('DELETE')
+					</form>
 				  </td>
 				</tr>
              @endforeach
@@ -73,5 +75,25 @@
         }
 
     });
+    
+    function remove(webId,webName){
+            swal({
+                title: 'Remove Website',
+                text:  'Are you sure remove slider from '+webName+' website?',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: 'btn btn-danger',
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },function(isConfirm){
+                if(isConfirm){
+                     $("#removeForm"+webId).submit();
+                }else{
+                    swal.close();
+                }
+            });        
+    }    
 </script>
 @endsection

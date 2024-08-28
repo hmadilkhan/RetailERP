@@ -127,7 +127,7 @@
 
                     <td class="action-icon">
                         <a class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" onclick="edit('{{$value->id}}','{{$value->page_name}}','{{$value->page_url}}','{{$value->navclass}}','{{$value->icofont}}','{{$value->parent_id}}','{{$value->page_mode}}','{{$value->icofont_arrow}}')"><i class="icofont icofont-ui-edit text-primary f-18" ></i> </a>
-                        <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
+                        <i class="icofont icofont-ui-delete text-danger f-18" data-id="{{ $value->id }}" onclick="warningRemove({{ $value->id }})" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
 
                     </td>
 
@@ -255,6 +255,48 @@
             }
 
         });
+        
+        function warningRemove(uid){
+            swal({
+                    title: "Are you sure?",
+                    text: "Do you want to Delete",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "delete it!",
+                    cancelButtonText: "cancel plx!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm){
+                    if(isConfirm){
+                        $.ajax({
+                            url: "{{url('/remove-page')}}",
+                            type: 'POST',
+                            data:{_token:"{{ csrf_token() }}",
+                                id:uid,
+                            },
+                            success:function(resp){
+                                if(resp == 1){
+                                    swal({
+                                        title: "Deleted",
+                                        text: "Successfully Deleted!",
+                                        type: "success"
+                                    },function(isConfirm){
+                                        if(isConfirm){
+                                            window.location="{{ url('/pages') }}";
+                                        }
+                                    });
+                                }
+                            }
+
+                        });
+
+                    }else {
+                        swal("Cancelled", "Operation Cancelled :)", "error");
+                    }
+                });            
+        }
 
         //Alert confirm
         $('.alert-confirm').on('click',function(){

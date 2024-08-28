@@ -45,9 +45,9 @@ $deduction = 0;
           </tr>
            <input type="hidden" id="SETtaxamt" value="{{$tax[0]->tax_amount}}">
           @endif
-		   @if($eobi)
+		   @if(!$eobi->isEmpty())
              <tr>
-           <?php $deduction = $deduction + $eobi[0]->amount; ?>
+           <?php $deduction = $deduction + (!empty($eobi) ? $eobi[0]->amount : 0); ?>
             <td>EOBI</td>
             <td >{{number_format($eobi[0]->amount,2)}}</td>
           </tr>
@@ -61,6 +61,21 @@ $deduction = 0;
           </tr>	
 		  <input type="hidden" id="SetSecurityDeposit" value="{{$security_deposit}}">
 		  @endif
+
+             <tr>
+           <?php $deduction = $deduction + $lateamount; ?>
+            <td>Late</td>
+            <td >{{number_format($lateamount,2)}}</td>
+          </tr>
+           <input type="hidden" id="SETlateamount" value="{{$lateamount}}">
+
+
+             <tr>
+           <?php $deduction = $deduction + $earlyamount; ?>
+            <td>Early</td>
+            <td >{{number_format($earlyamount,2)}}</td>
+          </tr>
+           <input type="hidden" id="SETearlyamount" value="{{$earlyamount}}">
 		  <tr>
             <td style="border-top:2px solid"><b>Total Deduction</b></td>
             <td style="border-top:2px solid"><b>{{number_format($deduction,2)}}</b></td>

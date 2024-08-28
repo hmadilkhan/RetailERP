@@ -315,6 +315,7 @@ $('#startdate,#enddate').bootstrapMaterialDatePicker({
             previous: "icofont icofont-rounded-left"
         }
     });
+    
 startupFunction();
  function startupFunction()
  {
@@ -621,6 +622,8 @@ function myFunction(date) {
   var n = month[d.getMonth()];
   return n;
 }
+
+
 
 $('#btnFinalSubmit').click(function(){
   

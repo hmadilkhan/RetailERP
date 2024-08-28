@@ -15,7 +15,7 @@
             </div>
             <div class="card-block">
                 <div class="row">
-					@if(session('roleId') == 17 )
+					@if(session('roleId') == 17 or session('roleId') == 2 )
 					<div class="col-lg-3 col-md-3">
                         <div class="form-group">
                             <label class="form-control-label">Select Branch</label>
@@ -504,7 +504,7 @@
         }
         
         function creategrn() {
-			@if(session('roleId') == 17)
+			@if(session('roleId') == 17 or session('roleId') == 12)
 				if($('#branch').val() == "")
 				{
 					swal({

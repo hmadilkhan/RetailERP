@@ -107,7 +107,7 @@
                            <div class="media">
                               <div class="media-left media-middle">
                                  <a href="#">
-                                    <img class="media-object img-circle" src="{{ asset('public/assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="100" height="100">
+                                    <img class="media-object img-circle" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="100" height="100">
                                  </a>
                               </div>
                               <div class="media-body">
@@ -164,7 +164,7 @@
                           @foreach($getpresent as $value)
                            <div class="card" >
                               <div class="item" >
-                                   <img class="card-img-top" src="{{ asset('public/assets/images/employees/images/'.(!empty($value->emp_picture) ? $value->emp_picture : 'placeholder.jpg').'') }}" width="50" height="180">
+                                   <img class="card-img-top" src="{{ asset('assets/images/employees/images/'.(!empty($value->emp_picture) ? $value->emp_picture : 'placeholder.jpg').'') }}" width="50" height="180">
                                  <div class="card-block text-center">
                                     <label class="form-control-label">{{$value->emp_name}}</label>
                                     <label class="form-control-label">Clock In Time {{$value->clock_in}}</label>
@@ -203,7 +203,7 @@
                           @foreach($getabsent as $value)
                            <div class="card" >
                               <div class="item" >
-                                   <img class="card-img-top" src="{{ asset('public/assets/images/employees/images/'.(!empty($value->emp_picture) ? $value->emp_picture : 'placeholder.jpg').'') }}" width="50" height="180">
+                                   <img class="card-img-top" src="{{ asset('assets/images/employees/images/'.(!empty($value->emp_picture) ? $value->emp_picture : 'placeholder.jpg').'') }}" width="50" height="180">
                                  <div class="card-block text-center">
                                     <label class="form-control-label">{{$value->emp_name}}</label>
                                     <label class="form-control-label">{{$value->branch_name}}</label>
@@ -406,7 +406,7 @@
                         success : function(resp){
                           var count=0;
                           $.each(resp,function(index,value){
-                            $('#abc').append('<div class="card"><div class="item"><img class="card-img-top" src="./public/assets/images/employees/images/'+value.emp_picture+'" width="50" height="180"><div class="card-block text-center" ><h4 class="card-title">'+value.emp_name+'</h4><h6 class="card-text">'+value.branch_name+'</h6></div></div>')
+                            $('#abc').append('<div class="card"><div class="item"><img class="card-img-top" src="./assets/images/employees/images/'+value.emp_picture+'" width="50" height="180"><div class="card-block text-center" ><h4 class="card-title">'+value.emp_name+'</h4><h6 class="card-text">'+value.branch_name+'</h6></div></div>')
                             count++;
                           });
                           }

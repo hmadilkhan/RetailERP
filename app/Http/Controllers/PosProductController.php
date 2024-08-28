@@ -5,8 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\posProducts;
+use App\AddonCategory;
+use App\Addon;
+use App\InventoryVariation;
+use App\InventoryVariationProduct;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
+use Session;
 
 class PosProductController extends Controller
 {
@@ -20,9 +25,33 @@ class PosProductController extends Controller
             $getfinishgood = $posProducts->getfinishgood();
             $details = $posProducts->getposproducts();
 			$uoms = $posProducts->getuom();
-            return view('Pos_Products.pos-products', compact('getbranch','getfinishgood','details','uoms'));
+			$totalvariation = AddonCategory::where("company_id",session("company_id"))->where("mode","variations")->where('status',1)->get();
+			$inventoryVariations = InventoryVariation::whereIn('product_id',DB::table('pos_products_gen_details')->where('branch_id',session('branch'))->pluck('pos_item_id'))
+			                                         ->where('inventory_variations.status',1)
+			                                         ->join('addon_categories','addon_categories.id','inventory_variations.variation_id')
+			                                         ->select('inventory_variations.*','addon_categories.name')
+			                                         ->get();
+			                                         
+            return view('Pos_Products.pos-products', compact('getbranch','getfinishgood','details','uoms','totalvariation','inventoryVariations'));
         }
-
+     
+     public function getVariation_posproduct(Request $request){
+        return Addon::where("addon_category_id",$request->id)->where('status','=',1)->get();
+     }
+     
+     public function reloadVariation(Request $request){
+        return InventoryVariation::where('product_id',$request->id)
+			                                         ->where('inventory_variations.status',1)
+			                                         ->join('addon_categories','addon_categories.id','inventory_variations.variation_id')
+			                                         ->select('inventory_variations.*','addon_categories.name')
+			                                         ->get();
+     }     
+     
+     public function getVariationProduct_values(Request $request){
+         
+         return InventoryVariationProduct::where('inventory_variation_id',$request->id)->where('status',1)->pluck('product_id');
+     }
+     
      public function store(posProducts $posProducts, request $request){
 
 		$imageName = '';
@@ -64,7 +93,7 @@ class PosProductController extends Controller
     		'date' => date('Y-m-d'),
     	 ];
  			$price = $posProducts->insert('pos_product_price',$items);
-
+ 			
  			return 1;
      	}
 
@@ -74,6 +103,84 @@ class PosProductController extends Controller
 
 
     }
+    
+    public function storeVariation(Request $request){
+        
+        $process = true;
+        
+        $existsRecord = InventoryVariation::where(['variation_id'=>$request->variations,"product_id"=>$request->itemId,'status'=>1])->count();
+        
+        if($existsRecord > 0){
+            return response()->json(['status'=>409,'msg'=>'This variation is already taken this product '.$request->productName]);
+        }
+    
+ 		
+        $getID = InventoryVariation::create([
+                            					"variation_id" => $request->variations,
+                            					"product_id"   => $request->itemId,
+                                			]);
+                                	
+        if(!empty($request->products) && isset($getID->id)){   
+			foreach($request->products as $value){
+        			InventoryVariationProduct::create([
+                                					"inventory_variation_id" => $getID->id,
+                                					"product_id"             => $value,
+                                				]);
+			}
+        }
+	
+	    if($getID){
+	        
+	        return response()->json(['status'=>200]);
+	    }else{
+	        return response()->json(['status'=>500,'msg'=>'Server Issue! Record is not submit.']);
+	    }
+		
+// 		  Session::flash('success','Success!');
+		  
+// 	  return redirect()->route('posProducts');
+    }
+    
+    public function updateVariation(Request $request){
+        
+        $process = true;
+        
+        $existsRecord = InventoryVariation::where(["id"=>$request->id,'status'=>1])->count();
+        
+        if($existsRecord == 0){
+            return response()->json(['status'=>500,'msg'=>'This variation is removed this product '.$request->productName.' please refresh the page.']);
+        }
+        
+        InventoryVariationProduct::where("inventory_variation_id",$request->id)->update(["status" => 0]);
+
+		foreach($request->products as $value){
+    			InventoryVariationProduct::create([
+                            					"inventory_variation_id" => $request->id,
+                            					"product_id"             => $value,
+                            				]);
+		}
+
+	   // if($getID){
+	        
+	        return response()->json(['status'=>200]);
+	   // }else{
+	   //     return response()->json(['status'=>500,'msg'=>'Server Issue! Record is not submit.']);
+	   // }
+		
+// 		  Session::flash('success','Success!');
+		  
+// 	  return redirect()->route('posProducts');
+    }    
+    
+    
+    public function destroyVariation(Request $request){
+        
+        if(InventoryVariation::where('id',$request->id)->update(['status'=>0])){
+           return response()->json(['status'=>200]); 
+        }else{
+           return response()->json(['status'=>500,'msg'=>'Server Issue! Record is not removed.']); 
+        }
+    }
 
      public function delete(posProducts $posProducts, request $request){
 
@@ -82,6 +189,11 @@ class PosProductController extends Controller
     		'status_id' => 2,
     	 ];
  			$result = $posProducts->update_pos_gendetails($request->subid,$items);
+ 			
+ 			if($result){
+ 			    InventoryVariation::where('product_id',$request->subid)->update(['status'=>0]);    
+ 			}
+ 			
  			return 1;
     }
 
@@ -101,41 +213,59 @@ class PosProductController extends Controller
     }
 
      public function update(posProducts $posProducts, request $request){
-
 	//update general details
+		if(!empty($request->updateproduct)){
+			$request->validate([
+			  'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+			]);
+			
+			if($request->prevImageName != ""){
+				$file_path = public_path('assets/images/products/'.$request->prevImageName) ;
+				if(file_exists($file_path)){
+					unlink($file_path);
+				}
+			}
+			
+			$pname = str_replace(' ', '',$request->itemnamemodal);
+			$imageName = time().'.'.$request->updateproduct->getClientOriginalExtension();
+			$request->updateproduct->move(public_path('assets/images/products/'), $imageName);
+        }
 
-         	$items = [
-    		'item_code' => $request->itemcode,
-    		'item_name' => $request->itemname,
-    		'quantity' => $request->qty,
-			'uom' => $request->uom,
+		$items = [
+			'item_code' => $request->itemmodalcode,
+			'item_name' => $request->itemnamemodal,
+			'quantity' => $request->qtymodal,
+			'uom' => $request->uommodal,
+			'image' => !empty($request->updateproduct) ? $imageName : $request->prevImageName,
+		];
+ 		
+		$update = $posProducts->update_pos_gendetails($request->itemid,$items);
 
-    	 ];
- 			$update = $posProducts->update_pos_gendetails($request->itemid,$items);
-
-    //get id and change status to inactive
-    	 $id = $posProducts->getid($request->itemid);
-    	 	$items = [
-             		'status_id' => 2, //inactive old price
-             		'date' => date('Y-m-d'),
-             	 ];
+		//get id and change status to inactive
+    	$id = $posProducts->getid($request->itemid);
+		$items = [
+			'status_id' => 2, //inactive old price
+			'date' => date('Y-m-d'),
+		];
 		$result = $posProducts->update_pos_price($id[0]->price_id,$items);
+		
+		
 
-			//insert new price in price table and status 1
- 			$items = [
-				'actual_price' => $request->ap,
-				'tax_rate' => $request->taxrate,
-				'tax_amount' => $request->taxamount,
-        		'retail_price' => $request->rp,
-        		'wholesale_price' => $request->wp,
-        		'online_price' => $request->op,
-        		'discount_price' => $request->dp,
-        		'pos_item_id' => $request->itemid,
-        		'status_id' => 1,
-        		'date' => date('Y-m-d'),
-        	 ];
- 			$result = $posProducts->insert('pos_product_price',$items);
- 			return 1;
+		//insert new price in price table and status 1
+		$items = [
+			'actual_price' => $request->apmodal,
+			'tax_rate' => $request->modaltaxrate,
+			'tax_amount' => $request->modaltaxamount,
+			'retail_price' => $request->rpmodal,
+			'wholesale_price' => $request->wpmodal,
+			'online_price' => $request->opmodal,
+			'discount_price' => $request->dpmodal,
+			'pos_item_id' => $request->itemid,
+			'status_id' => 1,
+			'date' => date('Y-m-d'),
+		 ];
+		$result = $posProducts->insert('pos_product_price',$items);
+ 		return 1;
 }
 
 		 public function view(posProducts $posProducts){

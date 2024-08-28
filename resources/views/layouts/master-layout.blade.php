@@ -24,7 +24,7 @@
 		 <!-- Navbar header-->
 		@include('partials.header')
 		<!-- end Navbar header -->
-			<!-- Side-Nav-->-->
+			<!-- Side-Nav-->
 {{--			  @include('partials.side-bar-nav')--}}
                  <x-sidebar/>
 			<!-- end Side-Nav -->

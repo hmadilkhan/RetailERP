@@ -45,20 +45,20 @@
                             <span class="help-block text-danger" id="dbox"></span>
                         </div>
                     </div>
-                    <div id="deliveryfrom" class="col-md-2">
-                        <div class="form-group">
-                            <label class="form-control-label">Delivery From Date</label>
-                            <input type='text' class="form-control" id="del_from" name="rpdate" placeholder="DD-MM-YYYY"/>
-                            <span class="help-block text-danger" id="rpbox"></span>
-                        </div>
-                    </div>
-                    <div id="deliveryto" class="col-md-2">
-                        <div class="form-group">
-                            <label class="form-control-label">Delivery To Date</label>
-                            <input type='text' class="form-control" id="del_to" name="date" placeholder="DD-MM-YYYY"/>
-                            <span class="help-block text-danger" id="dbox"></span>
-                        </div>
-                    </div>
+                    <!--<div id="deliveryfrom" class="col-md-2">-->
+                    <!--    <div class="form-group">-->
+                    <!--        <label class="form-control-label">Delivery From Date</label>-->
+                    <!--        <input type='text' class="form-control" id="del_from" name="rpdate" placeholder="DD-MM-YYYY"/>-->
+                    <!--        <span class="help-block text-danger" id="rpbox"></span>-->
+                    <!--    </div>-->
+                    <!--</div>-->
+                    <!--<div id="deliveryto" class="col-md-2">-->
+                    <!--    <div class="form-group">-->
+                    <!--        <label class="form-control-label">Delivery To Date</label>-->
+                    <!--        <input type='text' class="form-control" id="del_to" name="date" placeholder="DD-MM-YYYY"/>-->
+                    <!--        <span class="help-block text-danger" id="dbox"></span>-->
+                    <!--    </div>-->
+                    <!--</div>-->
                 </div>
 
                 <div class="row">
@@ -129,7 +129,7 @@
                         </thead>
                         <tbody>
                             @foreach($totalorders as $value)
-                                <tr class="{{($value->isSeen == 1 ? 'bg-primary' : '')}}">
+                                <tr id="tbRow{{ $value->id }}" class="{{($value->isSeen == 1 ? 'bg-primary' : '')}}">
                                     <td class="d-none">{{$value->id}}</th>
                                     <td>{{$value->url_orderid}}</td>
                                     <td>{{$value->date}}</td>
@@ -148,6 +148,7 @@
                                     </td>
                                     <td class='action-icon'>
                                         <input type="hidden" name="orderId{{ $value->id }}" value="{{$value->url_orderid}}">
+                                        <input type="hidden" name="receiptId{{ $value->id }}" value="{{$value->receipt_no}}">
                                         <input type="hidden" name="receiptDate{{ $value->id }}" value="{{$value->date}}">
                                         <input type="hidden" name="custName{{ $value->id }}" value="{{$value->name}}">
                                         <input type="hidden" name="mobile{{ $value->id }}" value="{{$value->mobile}}">
@@ -306,11 +307,11 @@
     <script type="text/javascript">
 
         var OrCount = '{{ count($totalorders) }}';
-        
-        var myInterval = setInterval(checkOrders(), 5000);
+       
+        var Interval_checkOrder = setInterval(checkOrders, 5000);
 
         $(".btn_close_md").on('click',function(){
-            myInterval = setInterval(checkOrders(), 5000);            
+            Interval_checkOrder = setInterval(checkOrders, 5000);            
         })
 
         $(".select2").select2();
@@ -373,12 +374,11 @@
         function statusChangeFromDB(receipt,status,receiptNo,rider)
         {
              $.ajax({
-                url: "{{url('/change-order-status')}}",
+                url: "{{url('/sales/change-website-order-status')}}",
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",
                     receipt:receipt,
                     status : status,
-                    rider:rider
                 },
                 success:function(result){
                     orderSeen(receiptNo)
@@ -437,7 +437,9 @@
 
         function getBill(id)
         {
-            clearInterval(myInterval);
+            clearInterval(Interval_checkOrder);
+            orderSeen($("input[name='receiptId"+id+"']").val());
+            $("#tbRow"+id).removeClass('bg-primary');
             $('#product-modal').modal("show");
             $('#orderId_md').text($("input[name='orderId"+id+"']").val());
             $('#date_md').text($("input[name='receiptDate"+id+"']").val());
@@ -555,21 +557,26 @@
         // }
  
       function checkOrders(){
-
+           
         $.ajax({
                 url:'{{ route("checkwebsiteOrders") }}',
-                type:'GET',
+                type:'POST',
+                data:{_token:'{{ csrf_token() }}'},
                 dataType:'json',
                 async:true,
                 success:function(resp){
-
+                   console.log(resp)
                      if(resp){
-                         window.location=location.origin+'/Retail/sales/website-orders-list';
+                        notify('You have a new order', 'success'); 
+                        
+                       window.location=location.origin+'/sales/website-orders-list';
                      }
                 }
                   
                })
         }
+        
+     
 
   // setInterval(function() {
 

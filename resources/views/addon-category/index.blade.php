@@ -37,6 +37,17 @@
 							<div class="form-control-feedback text-danger" id="type_alert"></div>
 						</div>
 					</div>
+					<div class="col-lg-3 col-md-3">
+						<div class="form-group">
+							<label class="form-control-label">Mode</label>
+							<select class="form-control select2" id="mode" name="mode">
+								<option value="addons" selected>Addons</option>
+								<option value="variations">Variations</option>
+								<option value="groups">Deal Groups</option>
+							</select> 
+							<div class="form-control-feedback text-danger" id="type_alert"></div>
+						</div>
+					</div>
 				   </div>	
                    <div class="row">
 					<div class="col-lg-3 col-md-3">
@@ -50,14 +61,20 @@
 							<div class="form-control-feedback text-danger" id="type_alert"></div>
 						</div>
 					</div>					
-
 					<div class="col-lg-3 col-md-3">
 						<div class="form-group">
-							<label class="form-control-label">Description</label>
-							<textarea class="form-control" id="description" name="description" type="text" rows="2"></textarea>
-							<span class="form-control-feedback text-danger" id="description_alert"></span>
+							<label class="form-control-label">Selection Limited</label>
+							<input type="text" class="form-control" id="addon_limit" name="addon_limit">
+							<span class="form-control-feedback text-danger" id="addon_limit_alert"></span>
 						</div>
 					</div>
+					<!--<div class="col-lg-3 col-md-3">-->
+					<!--	<div class="form-group">-->
+					<!--		<label class="form-control-label">Description</label>-->
+					<!--		<textarea class="form-control" id="description" name="description" rows="2"></textarea>-->
+					<!--		<span class="form-control-feedback text-danger" id="description_alert"></span>-->
+					<!--	</div>-->
+					<!--</div>-->
                   </div>
 					
 						<div class="form-group row">
@@ -85,6 +102,7 @@
 					<tr>
 					   <th>Name</th>
 					   <th>Type</th>
+					   <th>Mode</th>
 					   <th>Addons</th>
 					   <th>Is Required</th>
 					   <th>Description</th>
@@ -96,14 +114,15 @@
 				  @if($categories)
 					@foreach($categories as $category)
 						   <tr style="cursor: pointer;">
-							 <td onclick="editAddonCategory('{{$category->id}}','{{$category->name}}','{{$category->show_website_name}}','{{$category->type}}','{{$category->is_required}}','{{$category->description}}','{{$category->addon_limit}}')">{{ $category->name }}</td>
+							 <td onclick="editAddonCategory('{{$category->id}}','{{$category->name}}','{{$category->show_website_name}}','{{$category->type}}','{{$category->is_required}}','{{$category->description}}','{{$category->addon_limit}}','{{$category->mode}}')">{{ $category->name }}</td>
 							 <td>{{ $category->type}}</td>
-							 <td onclick="editaddons('{{$category->id}}','{{$category->addons}}')" >{{ $category->addons->pluck("name")->implode(',')}}</td>
+							 <td>{{ ucfirst($category->mode)}}</td>
+							 <td onclick="editaddons('{{$category->id}}','{{$category->addons}}','{{$category->mode}}')" >{{ $category->addons->pluck("name")->implode(',')}}</td>
 							 <td>{{ $category->is_required == 1 ? 'Yes' : 'No' }}</td>
 							 <td>{{ $category->description}}</td>
 							 <td>{{ $category->addon_limit}}</td>
 							 <td class="action-icon">
-								 <i onclick="addaddon('{{$category->id}}')" class="text-success text-center icofont icofont-plus" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Addons"></i>
+								 <i onclick="addaddon('{{$category->id}}','{{$category->mode}}')" class="text-success text-center icofont icofont-plus" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Addons"></i>
 								 <i onclick="deleteAddonCategory('{{$category->id}}','{{$category->addons->count()}}')" class="text-danger text-center icofont icofont-trash" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete Addons"></i>
 						   </td>            
 						 </tr>
@@ -146,10 +165,22 @@
 						<div class="form-group">
 							<label class="form-control-label">Addon Type</label>
 							<select class="form-control select2" id="edit_type" name="edit_type">
+							    <option value="">Select</option>
 								<option value="single">Single</option>
 								<option value="multiple">Multiple</option>
 							</select> 
 							<div class="form-control-feedback text-danger message" id="edit_type_alert"></div>
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12">
+						<div class="form-group">
+							<label class="form-control-label">Mode</label>
+							<select class="form-control select2" id="edit_mode" name="edit_mode">
+								<option value="addons" selected>Addons</option>
+								<option value="variations">Variations</option>
+								<option value="groups">Deal Groups</option>
+							</select> 
+							<div class="form-control-feedback text-danger" id="type_alert"></div>
 						</div>
 					</div>
 					<div class="col-lg-12 col-md-12">
@@ -163,16 +194,16 @@
 							<div class="form-control-feedback text-danger message" id="edit_type_alert"></div>
 						</div>
 					</div>
-					<div class="col-lg-12 col-md-12">
-						<div class="form-group">
-							<label class="form-control-label">Description</label>
-							<textarea class="form-control" id="edit_description" name="edit_description" type="text" rows="2"></textarea>
-							<span class="form-control-feedback text-danger message" id="edit_description_alert"></span>
-						</div>
-					</div>
+					<!--<div class="col-lg-12 col-md-12">-->
+					<!--	<div class="form-group">-->
+					<!--		<label class="form-control-label">Description</label>-->
+					<!--		<textarea class="form-control" id="edit_description" name="edit_description" type="text" rows="2"></textarea>-->
+					<!--		<span class="form-control-feedback text-danger message" id="edit_description_alert"></span>-->
+					<!--	</div>-->
+					<!--</div>-->
 					<div class="col-md-12">
 						<div class="form-group"> 
-							<label class="form-control-label">Limit:</label>
+							<label class="form-control-label">Selection Limit:</label>
 							<input type="text"  name="edit_addon_limit" id="edit_addon_limit" class="form-control" value="0"/>
 							<div class="form-control-feedback text-danger message" id="edit_addon_limit_alert"></div>
 						</div>
@@ -186,6 +217,58 @@
 		</div>
 	</div>
 </div> 
+<div class="modal fade modal-flex" id="group-modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-md" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Add Groups Items</h4>
+			</div>
+		<div class="modal-body">
+			<form id="group-items-form" method="POST" >
+				@csrf
+				<input type="hidden" name="group_addon_category_id" id="group_addon_category_id" class="form-control" />
+				<div class="row">
+					<div class="col-lg-12 col-md-12">
+						<div class="form-group">
+							<label class="form-control-label">Select Department</label>
+							<select class="form-control select2" id="departme" name="departme">
+								<option value="">Select</option>
+								@foreach($departments as $department)
+									<option value="{{$department->department_id}}">{{$department->department_name}}</option>
+								@endforeach
+							</select>
+							<div class="form-control-feedback text-danger message" id="department_alert"></div>
+						</div>
+					</div>
+					<div class="col-lg-12 col-md-12">
+						<div class="form-group">
+							<label class="form-control-label">Select Product</label>
+							<select class="form-control select2" id="produc" name="produc">
+								<option value="">Select Product</option>
+							</select>
+							<div class="form-control-feedback text-danger message" id="product_alert"></div>
+						</div>
+					</div>
+					<!--<div class="col-md-12" id="">-->
+					<!--	<div class="form-group"> -->
+					<!--		<label class="form-control-label">Price:</label>-->
+					<!--		<input type="text"  name="addon_price" id="addon_price" class="form-control" value="0"/>-->
+					<!--		<div class="form-control-feedback text-danger" id="addon_price_alert"></div>-->
+					<!--	</div>-->
+					<!--</div>-->
+				</div>   
+			</form>
+		</div>
+		<div class="modal-footer">
+			<button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light" onClick="insertAddon()">Add Addon</button>
+		</div>
+		</div>
+	</div>
+</div> 
+
 <div class="modal fade modal-flex" id="subdepartment-modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">
@@ -193,21 +276,42 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title">Add Sub Department</h4>
+				<h4 class="modal-title">Add Addon Items</h4>
 			</div>
 		<div class="modal-body">
 			<form id="addon-form" method="POST" >
 				@csrf
 				<input type="hidden"  name="addon_category_id" id="addon_category_id" class="form-control" />
 				<div class="row">
-					<div class="col-md-12">
-						<div class="form-group"> 
-							<label class="form-control-label">Name:</label>
-							<input type="text"  name="addon_name" id="addon_name" class="form-control" />
-							<div class="form-control-feedback text-danger" id="addon_name_alert"></div>
+					<div id="departmentDiv" class="col-lg-12 col-md-12" style="display:block;">
+						<div class="form-group">
+							<label class="form-control-label">Select Department</label>
+							<select class="form-control select2" id="department" name="department">
+								<option value="">Select</option>
+								@foreach($departments as $department)
+									<option value="{{$department->department_id}}">{{$department->department_name}}</option>
+								@endforeach
+							</select>
+							<div class="form-control-feedback text-danger message" id="department_alert"></div>
 						</div>
 					</div>
-					<div class="col-md-12">
+					<div id="productDiv" class="col-lg-12 col-md-12" style="display:block;">
+						<div class="form-group">
+							<label class="form-control-label">Select Product</label>
+							<select class="form-control select2" id="products" name="products[]" multiple>
+								<option value="">Select Product</option>
+							</select>
+							<div class="form-control-feedback text-danger message" id="product_alert"></div>
+						</div>
+					</div>
+					<!--<div class="col-md-12">-->
+					<!--	<div class="form-group"> -->
+					<!--		<label class="form-control-label">Name:</label>-->
+					<!--		<input type="text"  name="addon_name" id="addon_name" class="form-control" />-->
+					<!--		<div class="form-control-feedback text-danger" id="addon_name_alert"></div>-->
+					<!--	</div>-->
+					<!--</div>-->
+					<div class="col-md-12 d-none" id="priceBox">
 						<div class="form-group"> 
 							<label class="form-control-label">Price:</label>
 							<input type="text"  name="addon_price" id="addon_price" class="form-control" value="0"/>
@@ -225,20 +329,20 @@
 </div> 
 
 <div class="modal fade modal-flex" id="addons-modal" tabindex="-1" role="dialog">
-	<div class="modal-dialog modal-md" role="document">
+	<div class="modal-dialog modal-lg" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 				<span aria-hidden="true">&times;</span>
 				</button>
 				<h4 class="modal-title">Edit Addons</h4>
-				<hr/>
+				<!--<hr/>-->
 			</div>
 			<div class="modal-body">
 				<input type="hidden" name="addon_category_id" id="addon_category_id" value="0" />
 
 
-				<table class="table full-width sb_tble">
+				<table class="table full-width sb_tble d-none">
 					<thead>
 						<tr>
 							<th>Name</th>
@@ -250,9 +354,25 @@
 						<tr>
 							<td></td>
 							<td></td>
+							<td></td>
 						</tr>
 					</tbody>
 				</table>
+				
+				<table class="table full-width group_tble d-none">
+					<thead>
+						<tr>
+							<th>Name</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td></td>
+							<td></td>
+						</tr>
+					</tbody>
+				</table>				
 			</div>
 			<div class="modal-footer">
 				<a href="javascript:void()" onclick="window.location.href='{{route('addon-category.index')}}'"   data-dismiss="modal" class="btn btn-success waves-effect waves-light">OK</a>
@@ -306,11 +426,60 @@
 		}
 	});
 	
-	function addaddon(id){
-        $('#name').val('');
+	$("#department").change(function(){
+		emptyDropdown("products")
+		$.ajax({
+			url:'{{ route("get.products.by.department") }}',
+			type:"POST",
+			data:{_token:"{{csrf_token()}}",department_id : $(this).val()},
+			dataType:"json",
+			success:function(response){
+				if(response.status == 200){
+					$.each(response.products,function(index,value){
+						$("#products").append("<option value="+value.id+">"+value.product_name+"</option>");
+					})
+				}else {
+					emptyDropdown("products")
+				}
+			}
+		});
+	});
+	
+	function emptyDropdown(id){
+		$("#"+id).empty();
+		$("#"+id).append("<option value=''>Select Product</option>");
+	}
+	
+	$("#products").change(function(){
+		$("#addon_name").val($("#products option:selected" ).text())
+	})
+	
+	function addaddon(id,mode){
+        
         $('#price').val('');
-        $('#addon_category_id').val(id);
-        $("#subdepartment-modal").modal("show");
+		$('#addon_category_id').val(id);
+		$('#name').val('');
+
+		if(mode == "groups"){
+// 			$('#departmentDiv').css("display","block");
+// 			$('#productDiv').css("display","block");
+			$('#department').val('').change();
+			$('#products').val('').change();
+			
+// 			if(!$("#priceBox").hasClass('d-none')){
+// 			    $("#priceBox").addClass('d-none');
+// 			}
+		}else{
+// 			$('#departmentDiv').css("display","none");
+// 			$('#productDiv').css("display","none");
+			$('#department').val('').change();
+			$('#products').val('').change();
+			
+// 			if($("#priceBox").hasClass('d-none')){
+// 			    $("#priceBox").removeClass('d-none');
+// 			}			
+		}
+		$("#subdepartment-modal").modal("show");
 	}
 	
 	function insertAddon()
@@ -357,19 +526,51 @@
 	  });
 	}
 	
-	function editaddons(categoryId,AddonsList)
+	function editaddons(categoryId,AddonsList,mode)
 	{
+		$(".sb_tble tbody,.group_tble tbody").empty();
 		let addons = JSON.parse(AddonsList)
 		$("#addons-modal").modal("show");
+		
+		if(mode == 'groups'){
+		    if($(".group_tble").hasClass('d-none')){
+		        $(".group_tble").removeClass('d-none');
+		    }
+		    
+		    if(!$(".sb_tble").hasClass('d-none')){
+		        $(".sb_tble").addClass('d-none');
+		    }		    
+		}else{
+		    if($(".sb_tble").hasClass('d-none')){
+		        $(".sb_tble").removeClass('d-none');
+		    }
+		    
+		    if(!$(".group_tble").hasClass('d-none')){
+		        $(".group_tble").addClass('d-none');
+		    }		    
+		}
+		
 		$.each(addons,function(index,value){
+		    var columnExtra = null;
+		    
+		  if(mode == 'groups'){
+			$(".group_tble tbody").append(
+			  "<tr>" +
+				"<td><input type='text' value='"+value.name +"' class='form-control' id='name_"+value.id+"'/>"+
+				"<td class='action-icon'><button onclick='update("+ value.id+","+categoryId+")' class='btn btn-primary m-r-1'></button>&nbsp;<button onclick='deleteAddon("+ value.id+")' class='btn btn-danger'></button></td>"+
+			  "</tr>"
+			  );		        
+		  }else{
+		    
 			$(".sb_tble tbody").append(
 			  "<tr>" +
 				"<td><input type='text' value='"+value.name +"' class='form-control' id='name_"+value.id+"'/>"+
 				"<td><input type='text' value='"+value.price+"' class='form-control' id='price_"+value.id+"'/>"+
 				"<div class='form-control-feedback text-danger' id='tbx_"+value.id+"_alert'></div>"+"</td>"+
-				"<td class='action-icon'><i onclick='update("+ value.id+","+categoryId+")' class='text-warning icofont icofont-pencil f-24'></i>&nbsp;<i onclick='deleteAddon("+ value.id+")' class='text-danger icofont icofont-trash f-24'></i></td>"+
+				"<td class='action-icon'><button onclick='update("+ value.id+","+categoryId+")' class='btn btn-primary m-r-1'>Update</button>&nbsp;<button onclick='deleteAddon("+ value.id+")' class='btn btn-danger'>Remove</button></td>"+
 			  "</tr>"
 			  );
+		  }
 		})
 		 
 	}
@@ -382,12 +583,19 @@
 	  // else if($("#price_"+id).val() == ""){
 			//   $("#price_"+id+"_alert").html('price is required.').addClass('text-danger');
 	  // }
+	  
+	  var getPrice = 0;
+	  
+	  if($("#price_"+id).length != 0){
+	      getPrice = $("#price_"+id).val();
+	  }
+	  
 	  else {
 		  $("#tbx_"+id+"_alert").html('').removeClass('text-danger');
 		  $.ajax({
 			url:'{{ route("addons.update") }}',
 			type:"POST",
-			data:{_token:"{{ csrf_token()}}",id:id,name:$("#name_"+id).val(),price:$("#price_"+id).val(),category:addonId},
+			data:{_token:"{{ csrf_token()}}",id:id,name:$("#name_"+id).val(),price:getPrice,category:addonId},
 			dataType:"json",
 			success:function(response){
 	 
@@ -461,17 +669,18 @@
 	}
 	
 	
-	function editAddonCategory (id,name,sw_addon_name,type,is_requiredMode,description,limit)
+	function editAddonCategory (id,name,sw_addon_name,type,is_requiredMode,description,limit,mode)
 	{
+	    $("#edit-category-modal").modal("show");
+	    
 		$("#edit_addon_name").val(name);
 		$("#edit_show_website_name").val(sw_addon_name);
-		$("#edit_type").val(type).change();
-		$("#edit_description").val(description);
+		$("#edit_type").val(type).trigger('change');
+		//$("#edit_description").val(description);
 		$("#category_id").val(id);
 		$("#edit_addon_limit").val(limit);
-		$("#edit-category-modal").modal("show");
-
-		$("#edit_is_required :selected").val(is_requiredMode);
+		$("#edit_is_required").val(is_requiredMode).trigger('change');
+		$("#edit_mode").val(mode).trigger('change');
 	}
 	
 	function updateAddonCategory()
@@ -489,7 +698,7 @@
 		  $.ajax({
 			url:'{{ route("addon-category.update") }}',
 			type:"POST",
-			data:{_token:"{{ csrf_token()}}",id:$("#category_id").val(),name:$("#edit_addon_name").val(),show_website_addoname:$("#edit_show_website_name").val(),type:$("#edit_type").val(),is_required:$("#edit_is_required").val(),description:$("#edit_description").val(),limit:$("#edit_addon_limit").val()},
+			data:{_token:"{{ csrf_token()}}",id:$("#category_id").val(),name:$("#edit_addon_name").val(),show_website_addoname:$("#edit_show_website_name").val(),type:$("#edit_type").val(),is_required:$("#edit_is_required").val(),description:$("#edit_description").val(),limit:$("#edit_addon_limit").val(),mode:$("#edit_mode").val()},
 			dataType:"json",
 			success:function(response){
 	            

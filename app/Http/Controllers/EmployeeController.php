@@ -927,6 +927,53 @@ $docName = "";
         $result = $employee->update_leaves_details($request->id,$item);
         return 1;
     }
+	
+	public function showPublicHolidays()
+	{
+		$results = DB::table("hr_public_holidays")->join("employee_details","employee_details.empid","=","hr_public_holidays.emp_id")->get();
+		return view('Employee.public_holidays',compact('results')); 
+	}
+	
+	public function createPublicHolidays()
+	{
+		$branches = DB::table("branch")->where("company_id",session("company_id"))->get();
+		return view('Employee.create_public_holiday',compact('branches')); 
+	}
+	
+	public function getDepartments(Request $request)
+	{
+		$departments = DB::table("departments")->where("branch_id",$request->branch_id)->get();
+		return response()->json(["status" => 200,"departments" => $departments]); 
+	}
+	
+	public function savePublicHoliday(Request $request)
+	{
+		$rules = [
+            'branch' => 'required',
+            'department' => 'required',
+            'date' => 'required',
+            'reason' => 'required',
+        ];
+        $this->validate($request, $rules);
+		$employees = DB::table("employee_shift_details")->where("branch_id",$request->branch)->where("department_id",$request->department)->get();
+		foreach($employees as $employee){
+			$count = DB::table("hr_public_holidays")->where("emp_id",$employee->emp_id)->where("date",$request->date)->count();
+			if($count == 0){
+				DB::table("hr_public_holidays")->insert([
+					"emp_id" => $employee->emp_id,
+					"date" => $request->date,
+					"reason" => $request->reason,
+				]);
+				DB::table("attendance_details")->insert([
+					"emp_id" =>  $employee->emp_id,
+					"branch_id" => $request->branch,
+					"date" =>  $request->date,
+					"prefix" =>  "H",
+				]);
+			}
+		}
+		return redirect("create-public-holidays"); 
+	}
 
 
 

@@ -56,9 +56,27 @@ class salary extends Model
     }
 
     public function emp_details($empid,$fromdate, $todate){
-        $result = DB::select("SELECT a.empid, a.emp_acc, a.emp_name, a.emp_fname, a.emp_contact, a.emp_picture,a.pf_enable ,f.basic_pay AS basic_salary,f.pf_fund,f.allowance,f.gross_salary ,c.branch_name, d.department_name, e.designation_name, (SELECT COUNT(attendance_id) FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ?) AS present, (SELECT IFNULL(SUM(late),0) FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ?) AS late, (SELECT IFNULL(SUM(OT_time),0) FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ? ) AS ot, (SELECT IFNULL(SUM(early),0) FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ?) AS early, (SELECT COUNT(id) from absent_details WHERE absent_date BETWEEN ? AND ? AND acc_no = ?) AS absent, (SELECT IFNULL(SUM(days),0) FROM leaves_avail_details WHERE emp_id = ? AND from_date BETWEEN ? AND ? AND to_date BETWEEN ? AND ?) AS leaves FROM employee_details a INNER JOIN employee_shift_details b ON b.emp_id = a.empid AND a.status_id = b.status_id INNER JOIN branch c ON c.branch_id = b.branch_id INNER JOIN departments d ON d.department_id = b.department_id INNER JOIN designation e ON e.designation_id = b.designation_id INNER JOIN increment_details f ON f.emp_id = a.empid AND f.status_id = a.status_id WHERE a.empid = ?",[$fromdate, $todate,$empid,$fromdate, $todate,$empid,$fromdate, $todate,$empid,$fromdate, $todate,$empid,$fromdate, $todate,$empid,$empid,$fromdate, $todate,$fromdate, $todate,$empid]);
+        $result = DB::select("SELECT a.empid, a.emp_acc, a.emp_name, a.emp_fname, a.emp_contact, a.emp_picture,a.pf_enable ,f.basic_pay AS basic_salary,f.pf_fund,f.allowance,f.gross_salary ,c.branch_name, d.department_name, e.designation_name, (SELECT COUNT(DISTINCT date) FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ? ) AS present, (SELECT IFNULL(SUM(late),0) FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ? and clock_out != '00:00:00') AS late, (SELECT IFNULL(SUM(OT_time),0) FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ? and clock_out != '00:00:00') AS ot, (SELECT IFNULL(SUM(early),0) FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ? and clock_out != '00:00:00') AS early, (SELECT COUNT(id) from absent_details WHERE absent_date BETWEEN ? AND ? AND acc_no = ?) AS absent, (SELECT IFNULL(SUM(days),0) FROM leaves_avail_details WHERE emp_id = ? AND from_date BETWEEN ? AND ? AND to_date BETWEEN ? AND ?) AS leaves FROM employee_details a INNER JOIN employee_shift_details b ON b.emp_id = a.empid AND a.status_id = b.status_id INNER JOIN branch c ON c.branch_id = b.branch_id INNER JOIN departments d ON d.department_id = b.department_id INNER JOIN designation e ON e.designation_id = b.designation_id INNER JOIN increment_details f ON f.emp_id = a.empid AND f.status_id = a.status_id WHERE a.empid = ?",[$fromdate, $todate,$empid,$fromdate, $todate,$empid,$fromdate, $todate,$empid,$fromdate, $todate,$empid,$fromdate, $todate,$empid,$empid,$fromdate, $todate,$fromdate, $todate,$empid]);
         return $result;
     }
+	
+	public function calculateLate($empid,$fromdate, $todate)
+	{
+		$result = DB::select("SELECT IFNULL(SUM(late),0) as late FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ?",[$fromdate,$todate,$empid]);
+		return $result;
+	}
+	
+	public function calculateEarly($empid,$fromdate, $todate)
+	{
+		$result = DB::select("SELECT IFNULL(SUM(early),0) as early FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ?",[$fromdate,$todate,$empid]);
+		return $result;
+	}
+	
+	public function calculateOvertime($empid,$fromdate, $todate)
+	{
+		$result = DB::select("SELECT IFNULL(SUM(OT_time),0) as ot FROM attendance_details WHERE date BETWEEN ? AND ? AND emp_id = ?",[$fromdate,$todate,$empid]);
+		return $result;
+	}
 
     public function get_gross_deduct_details($empid,$fromdate, $todate){
       $get = DB::select('SELECT a.salary_category_id FROM increment_details a INNER JOIN salary_category b ON b.id = a.salary_category_id WHERE a.emp_id = ? AND a.status_id = 1',[$empid]);
@@ -154,7 +172,7 @@ class salary extends Model
 
       public function getabsent_amount($empid,$fromdate,$todate)
     {
-      $result = DB::select('Select IFNULL(((SELECT COUNT(id) AS absent from absent_details WHERE acc_no = ? AND absent_date BETWEEN ? AND ? AND weekday = 0 AND event = 0) * (SELECT CASE WHEN salary_category_id = 1 THEN gross_salary ELSE gross_salary/30 END FROM increment_details WHERE emp_id = ? AND status_id = 1)),0)AS absent_amt',[$empid,$fromdate,$todate,$empid]);
+      $result = DB::select('Select IFNULL(((SELECT COUNT(id) AS absent from absent_details WHERE acc_no = ? AND absent_date BETWEEN ? AND ? AND weekday = 0 AND event = 0) * (SELECT CASE WHEN salary_category_id = 1 THEN basic_pay ELSE basic_pay/30 END FROM increment_details WHERE emp_id = ? AND status_id = 1)),0)AS absent_amt',[$empid,$fromdate,$todate,$empid]);
     return $result;
     }
 

@@ -142,7 +142,7 @@
                for(var count =0;count < result.length; count++){
                     $(".table tbody").append(
                       "<tr>" +
-                        "<td class='text-center'><img src='../public/assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
+                        "<td class='text-center'><img src='../assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
                          "<td>"+result[count].item_code+"</td>" +  
                         "<td>"+result[count].product_name+"</td>" +  
                         "<td>"+result[count].discount.toLocaleString()+"</td>" +

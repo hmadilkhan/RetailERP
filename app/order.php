@@ -149,11 +149,19 @@ class order extends Model
 	
 	public function getNewPOSOrdersQuery($request)
 	{	
-		
+		$fromDate = "";
+		$toDate = "";
+		if($request->deli_from != "" && $request->deli_to != ""){
+			$fromDate = $request->deli_from;
+			$toDate = $request->deli_to;
+		}else if($request->first != "" && $request->second != ""){
+			$fromDate = $request->first;
+			$toDate = $request->second;
+		}
 		if($request->branch == "all"){
-			$openingIds = SalesOpening::whereBetween("date", [$request->first, $request->second])->whereIn("terminal_id",DB::table("terminal_details")->whereIn("branch_id",DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");	
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id",DB::table("terminal_details")->whereIn("branch_id",DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");	
 		}else{
-			$openingIds = SalesOpening::whereBetween("date", [$request->first, $request->second])->where("terminal_id",$request->terminal)->pluck("opening_id");	
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->where("terminal_id",$request->terminal)->pluck("opening_id");	
 		}
 
 		return DB::table("sales_receipts")
@@ -164,11 +172,19 @@ class order extends Model
             ->join("sales_order_status","sales_order_status.order_status_id","=","sales_receipts.status")
             ->join("sales_payment","sales_payment.payment_id","=","sales_receipts.payment_id")
 			->where("sales_receipts.web","=",0)
+			
 			->when($request->first != "" && $request->second != "" && $request->type == "declaration" , function($query) use ($request,$openingIds){
 				$query->whereIn("sales_receipts.opening_id",$openingIds);
 			})
 			->when($request->first != "" && $request->second != "" && $request->type == "datewise" , function($query) use ($request){
 				$query->whereBetween("sales_receipts.date", [$request->first, $request->second]);
+			})
+			->when($request->deli_from != "" && $request->deli_to != "" && $request->type == "declaration"  , function($query) use ($request,$openingIds){
+				$query->whereIn("sales_receipts.opening_id",$openingIds);
+			})
+			->when($request->deli_from != "" && $request->deli_to != "" && $request->type == "datewise" , function($query) use ($request){
+				// $query->whereBetween("sales_receipts.delivery_date", [date("Ymd",strtotime($request->deli_from)), date("Ymd",strtotime($request->deli_to))]);
+				$query->whereBetween(DB::raw('DATE(sales_receipts.order_delivery_date)'), [$request->deli_from, $request->deli_to]);
 			})
 			->when($request->order_no != "" , function($query) use ($request){
 				$query->where('sales_receipts.id',$request->order_no);
@@ -217,6 +233,90 @@ class order extends Model
 	}
 	
 	public function getTotalAndSumofOrdersQuery($request)
+	{	
+		$fromDate = $request->deli_from;
+		$toDate = $request->deli_to;
+		if($request->deli_from != "" && $request->deli_to != ""){
+			$fromDate = $request->deli_from;
+			$toDate = $request->deli_to;
+		}else if($request->first != "" && $request->second != ""){
+			$fromDate = $request->first;
+			$toDate = $request->second;
+		}
+		if($request->branch == "all"){
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id",DB::table("terminal_details")->whereIn("branch_id",DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");	
+		}else{
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->where("terminal_id",$request->terminal)->pluck("opening_id");	
+		}
+
+		return DB::table("sales_receipts")
+				->leftjoin("sales_order_status","sales_order_status.order_status_id","=","sales_receipts.status")
+			->when($request->first != "" && $request->second != "" && $request->type == "declaration" , function($query) use ($request,$openingIds){
+				$query->whereIn("sales_receipts.opening_id",$openingIds);
+			})
+			->when($request->first != "" && $request->second != "" && $request->type == "datewise" , function($query) use ($request){
+				$query->whereBetween("sales_receipts.date", [$request->first, $request->second]);
+			})
+			->when($request->deli_from != "" && $request->deli_to != "" && $request->type == "declaration"  , function($query) use ($request,$openingIds){
+				$query->whereIn("sales_receipts.opening_id",$openingIds);
+			})
+			->when($request->deli_from != "" && $request->deli_to != "" && $request->type == "datewise" , function($query) use ($request){
+				// $query->whereBetween("sales_receipts.delivery_date", [date("Ymd",strtotime($request->deli_from)), date("Ymd",strtotime($request->deli_to))]);
+				$query->whereBetween(DB::raw('DATE(sales_receipts.order_delivery_date)'), [$request->deli_from, $request->deli_to]);
+			})
+			->when($request->order_no != "" , function($query) use ($request){
+				$query->where('sales_receipts.id',$request->order_no);
+			})
+			->when($request->machineOrderNo != "" , function($query) use ($request){
+				$query->where('sales_receipts.machine_terminal_count',$request->machineOrderNo);
+			})
+			->when($request->branch != "" && $request->branch != "all" , function($query) use ($request){
+				$query->where('sales_receipts.branch',$request->branch);
+			})
+			->when($request->branch == "" && $request->branch != "all", function($query) use ($request){
+				$query->where('sales_receipts.branch',session('branch'));
+			})
+			->when($request->branch == "all" , function($query) use ($request){
+				$query->whereIn('sales_receipts.branch',DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"));
+			})
+			->when($request->terminal != "" && $request->branch != "all" , function($query) use ($request){
+				$query->where('sales_receipts.terminal_id',$request->terminal);
+			})
+			->when($request->payMode != "" , function($query) use ($request){
+				$query->where('sales_receipts.payment_id',$request->payMode);
+			})
+			->when($request->mode != "" , function($query) use ($request){
+				$query->where('sales_receipts.order_mode_id',$request->mode);
+			})
+			->when($request->receipt != "" , function($query) use ($request){
+				$query->where('sales_receipts.receipt_no',$request->receipt);
+			})
+			->when($request->customer != "" , function($query) use ($request){
+				$query->where('sales_receipts.customer_id',$request->customer);
+			})
+			->when($request->status != "" , function($query) use ($request){
+				$query->where('sales_receipts.status',$request->status);
+			})
+			->when($request->first != "" , function($query) use ($request){
+				$query->where("sales_receipts.date",'>=',$request->first);
+			})
+			->when($request->second != "" , function($query) use ($request){
+				$query->where("sales_receipts.date",'<=',$request->second);
+			})
+			->when($request->sales_tax != "" , function($query) use ($request){
+				$query->where("sales_receipts.fbrInvNumber",'!=',"");
+			})
+			->where("sales_receipts.web","=",0)
+			// ->whereIn("sales_receipts.status",[1,4,12])
+			// ->where("sales_receipts.void_receipt","!=",1)
+            // ->selectRaw("COUNT(sales_receipts.id) as totalorders,SUM(sales_receipts.total_amount) as totalamount")
+            ->selectRaw("COUNT(sales_receipts.id) as totalorders,sales_order_status.order_status_name")
+            // ->orderBy("sales_receipts.id","desc")
+			->groupBy("status")
+            ->get();
+	}
+	
+	public function getTotalNofOrdersByStatusQuery($request)
 	{	
 		if($request->branch == "all"){
 			$openingIds = SalesOpening::whereBetween("date", [$request->first, $request->second])->whereIn("terminal_id",DB::table("terminal_details")->whereIn("branch_id",DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");	
@@ -283,8 +383,9 @@ class order extends Model
 			})
 			->where("sales_receipts.web","=",0)
 			->where("sales_receipts.void_receipt","!=",1)
-            ->selectRaw("COUNT(sales_receipts.id) as totalorders,SUM(sales_receipts.total_amount) as totalamount")
+            ->selectRaw("COUNT(sales_receipts.id) as totalorders")
             ->orderBy("sales_receipts.id","desc")
+			->groupBy("status")
             ->get();
 	}
 
@@ -362,7 +463,7 @@ class order extends Model
 
 	//GEt WEb Orders parameters
 //$first,$second,$status,$customer,$receipt,$mode,$delFrom,$delTo,$branch,$terminal,$payMode
-	public function getWebOrders($branch)
+	public function getWebOrders($branch,$isSeen)
     {
         $filter = "";
 //        if ($branch == "")
@@ -422,24 +523,34 @@ class order extends Model
 //        }
         if(session('roleId') == 2){
             $filter = " and a.branch IN (SELECT branch_id FROM branch where company_id = ".session("company_id")." )";
+        }elseif(session('roleId') == 18){
+            $filter = " and a.branch IN (".$branch.") ";
         }else{
             $filter = " and a.branch = ".session("branch")." ";
         }
 
+       
+        if($isSeen == 1){
+            $filter .= ' and a.isSeen=1 and DATE_FORMAT(a.date,"%Y-%m-%d") = "'.date('Y-m-d').'"';
+        } 
 
 
 
-
-        $result = DB::select('SELECT a.id,a.receipt_no,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount, f.payment_mode,a.isSeen,a.fbrInvNumber from sales_receipts a
+        $result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount,f.payment_mode,a.isSeen,a.fbrInvNumber,h.address,h.landmark,a.delivery_area_name,i.delivery_charges_amount as delivery_charges,a.delivery_type from sales_receipts a
 							INNER JOIN sales_order_mode b on b.order_mode_id = a.order_mode_id
 							INNER JOIN customers c on c.id = a.customer_id
 							INNER JOIN sales_order_status d on d.order_status_id = a.status
 							INNER JOIN branch g on g.branch_id = a.branch
 							INNER JOIN sales_account_general e on e.receipt_id = a.id
 							INNER JOIN sales_payment f on f.payment_id = a.payment_id
+							INNER JOIN customer_addresses h on h.id = a.cust_location_id
+							INNER JOIN sales_account_subdetails i on i.receipt_id = a.id
                             where  a.web = 1 '.$filter.'  order by a.id DESC');
         return $result;
     }
+    
+    
+    
 
     
 	public function getWebsiteOrders($branch)
@@ -614,6 +725,24 @@ class order extends Model
 							INNER JOIN sales_payment f on f.payment_id = a.payment_id
                             where  a.web = 1 '.$filter.'  order by a.id DESC');
         return $result;
+    }
+
+    public function web_onlineOrderDetails($id){
+
+        if(session('roleId') == 2){
+            $filter = " and sales_receipts.branch IN (SELECT branch_id FROM branch where company_id = ".session("company_id")." )";
+        }else{
+            $filter = " and sales_receipts.branch = ".session("branch")." ";
+        }
+
+    	 return DB::table('sales_receipts')
+			         ->join('sales_account_subdetails','sales_account_subdetails.receipt_id','sales_receipts.id')
+			         ->join('sales_order_status','sales_order_status.order_status_id','sales_receipts.status')
+			         ->join('branch','branch.branch_id','sales_receipts.branch')
+			         ->join('website_details','website_details.id','sales_receipts.website_id')
+			         ->select('sales_receipts.*','sales_order_status.order_status_name as status_name','website_details.name as website_name','website_details.order_estimate_time','sales_account_subdetails.discount_amount','sales_account_subdetails.discount_percentage','branch.branch_name')
+			         ->whereRaw('sales_receipts.url_orderid = ? '.$filter,$id)
+			         ->first();
     }
 
 	public function orderStatus()
@@ -875,7 +1004,12 @@ class order extends Model
 
    public function getBranch()
    {
-       $result = DB::table('branch')->where('company_id',session('company_id'))->get();
+	   if(session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19 or session('roleId') == 20){
+		   $result = DB::table('branch')->where('company_id',session('company_id'))->get();
+	   }else{
+		   $result = DB::table('branch')->where('branch_id',session('branch'))->get();
+	   }
+       
        return $result;
    }
 
@@ -914,6 +1048,56 @@ class order extends Model
             return 0;
         }
 
+    }
+	
+	public function sentToWorkshop($itemId)
+	{
+		$items = [
+			"mode" => "worker",
+		];
+		if(DB::table('sales_receipt_details')->where('receipt_detail_id',$itemId)->update($items))
+		{
+			return 1;
+		}
+		else
+        {
+            return 0;
+        }
+	}
+	
+	public function changeItemStatus($id,$itemId,$status)
+    {
+		$items = [
+			"status" => $status,
+		];
+        if(DB::table('sales_receipt_details')->where('receipt_detail_id',$itemId)->update($items))
+        {
+            DB::table("sales_online_item_status")->insert(["order_id" => $id,"item_id" => $itemId,"status_id" => $status,"branch_id" =>session('branch'),"user_id" => auth()->user()->id , "date" => date("Y-m-d"),"time" => date("H:i:s")] );
+			return 1; 
+        }
+        else
+        {
+            return 0;
+        }
+
+    }
+	
+	
+	
+	public function updateOrderStatusWithLogs($id,$status,$name,$mobile,$comments,$branch)
+    {
+		if(DB::table('sales_receipts')->where('id',$id)->update(["status" => $status])){
+			if(DB::table("sales_online_order_status")->insert(["order_id" => $id,"status_id" => $status, "branch_id" => $branch ,"name" => $name,"mobile" => $mobile,"comments" => $comments , "date" => date("Y-m-d"),"time" => date("H:i:s")] ))
+			{
+				return 1; 
+			}
+			else
+			{
+				return 0;
+			}
+		}else{
+			return 0;
+		}
     }
 	
 	public function getRiders()

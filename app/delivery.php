@@ -78,8 +78,14 @@ class delivery extends Model
 
 
     public function getserviceproviders($statusid){
-        $result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id WHERE a.status_id = ? AND a.branch_id = ?',[$statusid,session('branch')]);
-        return $result;
+		if(session("roleId") == 2){
+			$result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id WHERE a.status_id = ? AND a.branch_id IN (Select branch_id from branch where company_id = ?)',[$statusid,session('company_id')]);
+			return $result;
+		}else{
+			$result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id WHERE a.status_id = ? AND a.branch_id = ?',[$statusid,session('branch')]);
+			return $result;
+		}
+        
     }
 	
 	public function getServiceProviderPaymentInfo()

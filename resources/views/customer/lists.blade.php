@@ -111,7 +111,7 @@
                               </div>
                             </td>
                             <td class="text-center">
-                            <img width="42" height="42" src="{{ asset('public/assets/images/customers/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                            <img width="42" height="42" src="{{ asset('assets/images/customers/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                                 </td>
                              <td>{{$value->name}}</td>
                              <td>{{number_format($value->balance,2)}}</td>
@@ -195,7 +195,7 @@
                               </div>
                             </td>
                             <td class="text-center">
-                            <img width="42" height="42" src="{{ asset('public/assets/images/customers/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                            <img width="42" height="42" src="{{ asset('assets/images/customers/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                                 </td>
                              <td>{{$value->name}} | {{$value->balance}}</td>
                              <td>{{$value->mobile}}</td>
@@ -610,7 +610,7 @@
   $('#downloadsample').click(function(){
 
         $.ajax({
-        url: 'https://sabsoft.com.pk/Retail/public/assets/samples/sample_customer.csv',
+        url: 'https://sabsoft.com.pk/Retail/assets/samples/sample_customer.csv',
         method: 'GET',
         xhrFields: {
             responseType: 'blob'

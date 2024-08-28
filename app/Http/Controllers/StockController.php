@@ -40,7 +40,7 @@ class StockController extends Controller
 
 	public function brnchwisestock(stock $stock, request $request)
 	{
-        $details = $stock->getStockByBranchPageWise($request->branchid,$request->code,$request->name,$request->dept,$request->sdept);
+        $details = $stock->getStockByBranchPageWise($request->branchid,$request->code,$request->name,$request->dept,$request->sdept,$request->search);
 		return $details;
 	}
 

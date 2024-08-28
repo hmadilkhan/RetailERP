@@ -157,7 +157,7 @@
 
 @section('scriptcode_three')
 @include('../partials._datatable')
-<script type="text/javascript" src="{{ URL::asset('public/js/purchase-script.js') }} "></script>
+<script type="text/javascript" src="{{ URL::asset('js/purchase-script.js') }} "></script>
 <script type="text/javascript">
   var oTable;    
   $(document).ready(function(){

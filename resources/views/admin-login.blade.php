@@ -13,32 +13,32 @@
     <meta name="author" content="Sabsoft">
 
     <!-- Favicon icon -->
-    <link rel="shortcut icon" href="{{ asset('public/assets/images/favicon.png') }}" type="image/x-icon">
-    <link rel="icon" href="{{ asset('public/assets/images/favicon.ico') }}" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
 
     <!-- Google font-->
-   <link href="{{ asset('public/assets/css6ff6.css?family=Ubuntu:400,500,700') }}" rel="stylesheet">
+   <link href="{{ asset('assets/css6ff6.css?family=Ubuntu:400,500,700') }}" rel="stylesheet">
 
     <!-- Font Awesome -->
-    <link href="{{ asset('public/assets/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('assets/css/font-awesome.min.css') }}" rel="stylesheet" type="text/css">
 
     <!--ico Fonts-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/icon/icofont/css/icofont.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
 
     <!-- Required Fremwork -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('public/components/bootstrap/dist/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css') }}">
 
     <!-- waves css -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('public/components/Waves/dist/waves.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('components/Waves/dist/waves.min.css') }}">
 
     <!-- Style.css -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/main.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/main.css') }}">
 
     <!-- Responsive.css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/responsive.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
 
     <!--color css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/color/color-1.min.css') }}" id="color"/>
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/color/color-1.min.css') }}" id="color"/>
 
 </head>
 <body>
@@ -52,7 +52,7 @@
                     <form class="md-float-material" method="POST" action="{{ url('/admin/login') }}">
                         @csrf
                    <div class="text-center">
-                            <img src="{{ asset('public/assets/images/logo-black.png') }}">
+                            <img src="{{ asset('assets/images/logo-black.png') }}">
                         </div>
                         <h3 class="text-center txt-primary">
                             Sign In to Admin panel
@@ -121,16 +121,16 @@
 </section>
 
 <!-- Required Jqurey -->
-<script src="{{asset('public/components/Jquery/dist/jquery.min.js') }}"></script>
-<script src="{{asset('public/components/jquery-ui/jquery-ui.min.js') }}"></script>
+<script src="{{asset('components/Jquery/dist/jquery.min.js') }}"></script>
+<script src="{{asset('components/jquery-ui/jquery-ui.min.js') }}"></script>
 <!-- tether.js -->
-<script src="{{asset('public/components/tether/dist/js/tether.min.js') }}"></script>
+<script src="{{asset('components/tether/dist/js/tether.min.js') }}"></script>
 <!-- waves effects.js -->
-<script src="{{asset('public/components/Waves/dist/waves.min.js') }}"></script>
+<script src="{{asset('components/Waves/dist/waves.min.js') }}"></script>
 <!-- Required Framework -->
-<script src="{{asset('public/components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+<script src="{{asset('components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
 <!-- Custom js -->
-<script type="text/javascript" src="{{asset('public/assets/pages/elements.js') }}"></script>
+<script type="text/javascript" src="{{asset('assets/pages/elements.js') }}"></script>
 
 
 

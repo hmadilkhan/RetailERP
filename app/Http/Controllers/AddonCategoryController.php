@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\AddonCategory;
+use App\Models\InventoryDepartment;
+use App\Models\Inventory;
 use App\Addon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +21,7 @@ class AddonCategoryController extends Controller
 		// return AddonCategory::with("addons")->where("company_id",session("company_id"))->get();
         return view("addon-category.index",[
 			"categories" => AddonCategory::with("addons")->where("company_id",session("company_id"))->get(),
+			"departments" => InventoryDepartment::where("company_id",session("company_id"))->get(),
 		]);
     }
 
@@ -50,7 +53,9 @@ class AddonCategoryController extends Controller
 					"company_id"         => session("company_id"),
 					"type"               => $request->type,
                     "is_required"        => $request->is_required,
-					"description"        => $request->description,
+				// 	"description"        => $request->description,
+					"mode"        		 => $request->mode,
+					"addon_limit"        => $request->addon_limit,
 				]);
 				return response()->json(["status" => 200,"contrl" => "name"]);
 			}else{
@@ -104,6 +109,7 @@ class AddonCategoryController extends Controller
 					"description"        => $request->description,
 					"addon_limit"        => $request->limit,
 					"user_id"            => auth()->user()->id,
+					"mode"               => $request->mode,
 				]);
 				return response()->json(["status" => 200,"contrl" => "name"]);
 			}else{
@@ -133,4 +139,14 @@ class AddonCategoryController extends Controller
 			return response()->json(["status" => 500,"contrl" => "name","msg" => "Error : ".$e->getMessage() ]);
 		}
     }
+	
+	public function getProductByDepartment(Request $request)
+	{
+		if($request->department_id != ""){
+			$products = Inventory::where("department_id",$request->department_id)->where("company_id",session("company_id"))->select("id","product_name")->get();
+			return response()->json(["status" => 200,"products" => $products]);
+		}else{
+			return response()->json(["status" => 500,"products" => []]);
+		}
+	}
 }

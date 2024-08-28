@@ -109,7 +109,47 @@
               </div>
           </div>
           <div class="row">
-           <div class="col-lg-12 col-md-4">
+		  <div class="col-md-4">
+			   <div class="form-group {{ $errors->has('country') ? 'has-danger' : '' }}">
+					<label class="form-control-label">Currency</label>
+					<select name="currency" id="currency" data-placeholder="Select Currency" class="form-control select2" >
+						<option>Select Currency</option>
+						@if($currencies)
+						  @foreach($currencies as $currency)
+							@if($currencyname == $currency->name)
+							  <option selected="selected" value="{{ $currency->name }}">{{ $currency->name }}</option>
+							@else
+							  <option value="{{ $currency->name }}">{{ $currency->name }}</option>
+							@endif
+						  @endforeach
+						@endif
+					</select>
+					  @if ($errors->has('currency'))
+						<div class="form-control-feedback">Required field can not be blank.</div>
+					@endif
+				</div>
+			</div>
+			<div class="col-md-4">
+			   <div class="form-group {{ $errors->has('country') ? 'has-danger' : '' }}">
+					<label class="form-control-label">Packages</label>
+					<select name="package" id="package" data-placeholder="Select Packages" class="form-control select2" >
+						<option>Select Packages</option>
+						@if($packages)
+						  @foreach($packages as $package)
+							@if($company[0]->package_id == $package->id)
+							  <option selected="selected" value="{{ $package->id }}">{{ $package->name }}</option>
+							@else
+							  <option value="{{ $package->id }}">{{ $package->name }}</option>
+							@endif
+						  @endforeach
+						@endif
+					</select>
+					  @if ($errors->has('package'))
+						<div class="form-control-feedback">Required field can not be blank.</div>
+					@endif
+				</div>
+			</div>
+           <div class="col-lg-4 col-md-4">
                <div class="form-group {{ $errors->has('company_address') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Company Address</label>
                  <textarea name="company_address" id="company_address" class="form-control">{{ $company[0]->address }}</textarea>
@@ -120,7 +160,7 @@
               </div>
                       <div class="col-md-4" >
                             <a href="#">
-                                <img id="vdpimg" src="{{ asset('public/assets/images/company/'.$company[0]->logo) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                                <img id="vdpimg" src="{{ asset('assets/images/company/'.$company[0]->logo) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                                 </a>
                              <div class="form-group {{ $errors->has('vdimg') ? 'has-danger' : '' }} ">
 
@@ -138,7 +178,7 @@
 
                           <div class="col-md-4" >
                               <a href="#">
-                                  <img id="posbimg" src="{{ asset('public/assets/images/pos-background/'.$company[0]->pos_background) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                                  <img id="posbimg" src="{{ asset('assets/images/pos-background/'.$company[0]->pos_background) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                               </a>
                               <div class="form-group {{ $errors->has('posbgimg') ? 'has-danger' : '' }} ">
                                   <label for="posbgimg" class="form-control-label">POS Background</label>

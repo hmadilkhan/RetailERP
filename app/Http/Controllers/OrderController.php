@@ -11,11 +11,14 @@ use App\Customer;
 use App\Vendor;
 use App\Models\Order as OrderModel;
 use App\Models\Terminal;
-use App\Http\Resources\onlineSalesResource\ProductResource;
+use App\Models\OrderStatus;
+use App\Models\CustomerAccount;
+use App\Http\Resources\onlineSalesResource\salesReceiptResource;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Arr;
 
 class OrderController extends Controller
 {
@@ -68,6 +71,44 @@ class OrderController extends Controller
     	return view('order.orderview',compact('orders','customer','mode','branch','paymentMode','orders','serviceproviders'));
     }
 	
+	public function orderdetails(Request $request)
+	{
+		$orders = OrderModel::with("orderdetails","orderdetails.inventory","orderdetails.itemstatus","orderdetails.statusLogs","orderdetails.statusLogs.status","orderAccount","orderAccountSub","customer","branchrelation","orderStatus","statusLogs","statusLogs.status","statusLogs.branch")->where("id",$request->id)->first();
+		$received = CustomerAccount::where("receipt_no",$request->id)->sum('received');
+		$statuses = OrderStatus::all();
+		// return $received;
+		// return $orders;
+		return view("order.order-details",compact("orders","received","statuses"));
+	}
+	
+	public function orderStatusChange(Request $request,order $order)
+	{
+		$order->updateStatusOrder($request->id,$request->status,0);
+		return redirect()->route("order.details",$request->id);
+	}
+	
+	public function sentToWorkshop(Request $request,order $order)
+	{
+		$order->sentToWorkshop($request->itemId);
+		return redirect()->route("order.details",$request->id);
+	}
+	
+	public function changeItemStatus(Request $request,order $order)
+	{
+		$order->changeItemStatus($request->id,$request->itemId,$request->status);
+		return redirect()->route("order.details",$request->id);
+	}
+
+    public function statusUpdate_websiteOrder(Request $request,order $order)
+    {
+        $order->updateStatusOrder($request->id,$request->status,0);
+        if($request->ordercode == null){
+         return 1;
+        }
+
+        return redirect()->route("getWebsiteSaleReceiptDetails",$request->ordercode);
+    }    
+	
 	public function ordersviewnew(Request $request,order $order,Customer $customer)
     {
 		$request->type = "declaration";
@@ -81,6 +122,8 @@ class OrderController extends Controller
         $orders = "";//$order->getNewPOSOrdersQuery($request);
 		// return $orders;
 		$totalorders = $order->getTotalAndSumofOrdersQuery($request);
+		// return $totalorders;
+		// $totalNumberOfOrders = $order->getTotalNofOrdersByStatusQuery($request);
     	return view('order.orderviewnew',compact('orders','customer','mode','branch','paymentMode','orders','serviceproviders','totalorders','statuses'));
     }
 	
@@ -91,6 +134,11 @@ class OrderController extends Controller
 		// return $orders;
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
 		// return $totalorders;
+		// $filteredArray = Arr::where($totalorders->toArray(), function ($value, $key) {
+			// return $value->order_status_name == "Void";
+		// });
+		// $collection = collect($totalorders);
+		// return $collection->filter(fn ($item) => $item->order_status_name == "Void")->values()->all();
 		return view('partials.orders_table',compact('orders','totalorders'));
     }
 	
@@ -113,14 +161,15 @@ class OrderController extends Controller
 
     public function webOrders(Request $Request,order $order,Customer $customer)
     {
-        $customer = $order->getCustomers();
-        $orders = $order->orderStatus();
-        $paymentMode = $order->paymentMode();
-        $mode = $order->ordersMode();
-        $branch = $order->getBranch();
-        $totalorders = $order->getWebOrders(session("branch"));
-		$riders = $order->getRiders();
-        return view('order.weborders',compact('orders','customer','mode','branch','paymentMode','totalorders','riders'));
+        $customer     = $order->getCustomers();
+        $orders       = $order->orderStatus();
+        $paymentMode  = $order->paymentMode();
+        $mode         = $order->ordersMode();
+        $branch       = $order->getBranch();
+        $website      = DB::table('website_details')->where('company_id',Auth::user()->company_id)->select('id','name')->get();
+        $totalorders  = $order->getWebOrders(DB::table("user_branches")->where('user_id',Auth::user()->id)->pluck('branch_id')->implode(','),0);
+		$riders       = $order->getRiders();
+        return view('order.weborders',compact('orders','customer','mode','branch','paymentMode','totalorders','riders','website'));
     }
 
     public function websiteOrders(Request $Request,order $order,Customer $customer)
@@ -138,19 +187,32 @@ class OrderController extends Controller
         return view('order.website_orders',compact('orders','customer','mode','branch','paymentMode','totalorders','riders','website'));
     }
 
-    public function checkwebsiteOrders(Request $request){
-       
-       if(DB::table('sales_receipts')
-          ->whereIn('branch',DB::table('user_branches')
-                                ->where('user_id',Auth::user()->id)
-                                ->pluck('branch_id'))
-          ->where(['isSeen'=>1,'web'=>1])
-          ->count() > 0){
+    public function checkwebsiteOrders(Request $request,order $order){
+        // $branch = null;
+        // if(session('roleId') == '2'){
+        //     $branch = DB::table('website_branches')
+        //                  ->whereIn('website_id',[DB::table('website_details')->where('company_id',session('company_id'))->pluck('id')])
+        //                  ->pluck('branch_id');
+        // }else{
+        //     $branch = DB::table('user_branches')
+        //                  ->where('user_id',session('userid'))
+        //                  ->pluck('branch_id');
+        // }
+        
+    //   if($branch != null){
+          $order_status    = $order->orderStatus();
+          $getOrders       = $order->getWebOrders(DB::table("user_branches")->where('user_id',Auth::user()->id)->pluck('branch_id')->implode(','),1);
           
-          return response()->json(true);
-        }
+         if($getOrders > 0){
+            return response()->json(['status'=>true,'orders'=>$getOrders,"orderStatus"=>$order_status]);
+          }else{
+              return response()->json(['status'=>false]);
+          }          
+          
+          
+    //     }
     	
-       return response()->json(false);
+    //   return response()->json(false);
     }
 
     public function websiteOrderDetail(Request $request,order $order,Customer $customer){
@@ -162,43 +224,58 @@ class OrderController extends Controller
         // $variatItem = DB::select('SELECT * FROM sales_receipt_details where receipt_id =  ? and parent_item_code != "" ',[$request->id]);
 
         // $subVariatItem = DB::select('SELECT * FROM sales_receipt_variations where receipt_id = ?',[$request->id]);
+        
+        // $orders = OrderModel::with("orderdetails","orderdetails.inventory","orderAccount","orderAccountSub","customer","orderStatus")->where("url_orderid",$request->id)->where("branch",session('branch'))->first();
+        // return $orders;
 
-        $products = ProductResource::collection(DB::table('inventory_general')->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')->where('sales_receipt_details.receipt_id',$request->id)->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code','sales_receipt_details.item_name','sales_receipt_details.total_qty','sales_receipt_details.total_amount','sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id')->get());
+// DB::table('inventory_general')->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')->where('sales_receipt_details.receipt_id',$request->id)->where('sales_receipt_details.mode','inventory-general')->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code','sales_receipt_details.item_name','sales_receipt_details.total_qty','sales_receipt_details.total_amount','sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id','sales_receipt_details.discount_value','sales_receipt_details.discount_code','sales_receipt_details.actual_price')->get()
+       
+       $record = $order->web_onlineOrderDetails($request->id);
 
-         $data = ["products"=>$products];
-
-        return response()->json($data,200);
+       if($record == null){
+          Session::flash('error','Error! order detail not found.');
+          return redirect()->url('web-orders-view');
+       }
+                              
+        $orders = new salesReceiptResource($record);
+                                             
+          if($orders != null){
+              $orders = json_encode($orders);
+              $orders = json_decode($orders);
+          }                                     
+        // return response()->json($orders);
+        // die();
+        //  $data = ["products"=>$products];
+        return view("order.online-order-details",compact("orders"));
+        // return response()->json($data,200);
     }
 
-
-
-     public function websiteOrdersFilter(Request $request,order $order)
+    public function websiteOrdersFilter(Request $request,order $order)
     {
-        $websiteId = $request->website; 
-        $customer = $order->getcustomers();
-        $orders = $order->orderStatus();
+        $websiteId   = $request->website; 
+        $customer    = $order->getcustomers();
+        $orders      = $order->orderStatus();
         $paymentMode = $order->paymentMode();
-        $mode = $order->ordersMode();
-        $branch = $order->getBranch();
-        $riders = $order->getRiders();
+        $mode        = $order->ordersMode();
+        $branch      = $order->getBranch();
+        $riders      = $order->getRiders();
         $totalorders = $order->getWebsiteOrdersFilter($request->first,$request->second,$request->customer,$request->receipt,$request->branch,$websiteId);
-        $website  = DB::table('website_details')->where('company_id',Auth::user()->company_id)->select('id','name')->get();
+        $website     = DB::table('website_details')->where('company_id',Auth::user()->company_id)->select('id','name')->get();
 
-        return view('order.website_orders',compact('orders','customer','mode','branch','paymentMode','totalorders','riders','website','websiteId'));
+        return view('order.weborders',compact('orders','customer','mode','branch','paymentMode','totalorders','riders','website','websiteId'));
     }
 
     public function webOrdersFilter(Request $request,order $order)
     {
-        $websiteId = isset($request->website) ? $request->website : null;
-
-        $customer = $order->getcustomers();
-        $orders = $order->orderStatus();
-        $paymentMode = $order->paymentMode();
-        $mode = $order->ordersMode();
-        $branch = $order->getBranch();
-		$riders = $order->getRiders();
-        $totalorders = $order->getWebOrdersFilter($request->first,$request->second,$request->customer,$request->receipt,$request->branch,$websiteId);
-        $website  = DB::table('website_details')->where('company_id',Auth::user()->company_id)->select('id','name')->get();
+        $websiteId    = $request->website;
+        $customer     = $order->getcustomers();
+        $orders       = $order->orderStatus();
+        $paymentMode  = $order->paymentMode();
+        $mode         = $order->ordersMode();
+        $branch       = $order->getBranch();
+		$riders       = $order->getRiders();
+        $totalorders  = $order->getWebOrdersFilter($request->first,$request->second,$request->customer,$request->receipt,$request->branch);
+        $website      = DB::table('website_details')->where('company_id',Auth::user()->company_id)->select('id','name')->get();
 
         return view('order.weborders',compact('orders','customer','mode','branch','paymentMode','totalorders','riders')); 
     }
@@ -219,6 +296,16 @@ class OrderController extends Controller
     {
         $result = $order->updateStatusOrder($request->receipt,$request->status,$request->rider);
         return $result;
+    }
+	
+	public function changeOrderStatuswithLogs(Request $request,order $order)
+    {
+        $result = $order->updateOrderStatusWithLogs($request->receipt,$request->status,$request->name,$request->mobile,$request->comments,$request->branch);
+		if($result > 0){
+			return response()->json(["status" => 200]);
+		}else{
+			return response()->json(["status" => 500]);
+		}
     }
 
     public function orderAssign(Request $request,order $order,master $master,inventory $inventory)
@@ -546,6 +633,7 @@ class OrderController extends Controller
 		
 	}
 
+
 	public function makeReceiptVoid(Request $request)
 	{
 		try{
@@ -554,6 +642,20 @@ class OrderController extends Controller
 				$order = OrderModel::findOrFail($request->id);
 				$this->sendPushNotification($order->id,$order->receipt_no,$order->terminal_id);
 				return response()->json(["status" => 200,"message" => "Receipt has been voided"]);
+			}else{
+				return response()->json(["status" => 403,"message" => "Order Id is null"]);
+			}
+		}catch(\Exception $e){
+			
+		}
+	}
+	
+	public function makeReceiptDelivered(Request $request)
+	{
+		try{
+			if($request->id != ""){
+				OrderModel::where("id",$request->id)->update(["order_delivery_date" => $request->reason,"status" => 4]);
+				return response()->json(["status" => 200,"message" => "Receipt has been delivered"]);
 			}else{
 				return response()->json(["status" => 403,"message" => "Order Id is null"]);
 			}
@@ -581,7 +683,7 @@ class OrderController extends Controller
             "notification" => [
                 "title" => $title,
                 "body" => $body,
-				"icon" => "https://sabsoft.com.pk/Retail/public/assets/images/Sabify72.png",
+				"icon" => "https://retail.sabsoft.com.pk/assets/images/Sabify72.png",
                 "content_available" => true,
                 "priority" => "high",
 				// "click_action" => ,

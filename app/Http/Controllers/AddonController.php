@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Addon;
+use App\Models\Inventory;
 use Illuminate\Http\Request;
 
 class AddonController extends Controller
@@ -38,12 +39,20 @@ class AddonController extends Controller
 		try{
 			$count = Addon::where("name",$request->name)->where("addon_category_id",$request->addon_category_id)->count();
 			if($count == 0){
-				Addon::create([
-					"name" => $request->addon_name,
-					"price" => $request->addon_price,
-					"addon_category_id" => $request->addon_category_id,
-					"user_id" => auth()->user()->id,
-				]);
+			    
+			   foreach($request->products as $val){
+			         $getInventoryName = Inventory::where('company_id',session('company_id'))->where('id',$val)->first();
+			         
+        				Addon::create([
+        					"name"                 => ($getInventoryName) ? $getInventoryName->product_name : '',
+        					"price"                => isset($request->addon_price) ? $request->addon_price : null,
+        					"inventory_product_id" => $val,
+        					"addon_category_id"    => $request->addon_category_id,
+        					"user_id"              => auth()->user()->id,
+        				]);
+			   }
+			    
+
 				return response()->json(["status" => 200,"contrl" => "name"]);
 			}else{
 				return response()->json(["status" => 500,"contrl" => "name","msg" => "Addon created successfully"]);

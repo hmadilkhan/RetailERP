@@ -142,7 +142,6 @@ class DemandController extends Controller
        $sender = $demand->get_sender_info(Crypt::decrypt($request->id));
         $reciver = $demand->get_reciver_info();
         $purchaseid = $demand->get_purchase_id(Crypt::decrypt($request->id));
-
         return view('Demand.demand-details',compact('details','sender','reciver','purchaseid'));
 
     }

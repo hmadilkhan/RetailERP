@@ -36,7 +36,7 @@
                     <tr>
 
                          <td class="text-center">
-                                 <img width="42" height="42" src="{{ asset('public/assets/images/company/'.(!empty($value->logo) ? $value->logo : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}">
+                                 <img width="42" height="42" src="{{ asset('assets/images/company/'.(!empty($value->logo) ? $value->logo : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}">
                           </td>
                           <td>{{$value->name}}</td>
                           <td>{{$value->city_name}}</td>

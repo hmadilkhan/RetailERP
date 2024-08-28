@@ -226,7 +226,7 @@ $('#chkactive').change(function(){
 
                         $("#tblemp tbody").append(
                           "<tr>" +
-                             "<td class='text-center'><img width='42' height='42' src='public/assets/images/employees/images/"+((result[count].emp_picture != "") ? result[count].emp_picture : 'placeholder.jpg')+"' alt='"+result[count].emp_picture+"'/></td>" +
+                             "<td class='text-center'><img width='42' height='42' src='assets/images/employees/images/"+((result[count].emp_picture != "") ? result[count].emp_picture : 'placeholder.jpg')+"' alt='"+result[count].emp_picture+"'/></td>" +
                             "<td>"+result[count].emp_acc+"</td>" +  
                             "<td>"+result[count].emp_name+"</td>" +  
                             "<td>"+result[count].emp_contact+"</td>" +  

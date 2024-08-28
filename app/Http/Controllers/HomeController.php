@@ -271,7 +271,7 @@ class HomeController extends Controller
             "notification" => [
                 "title" => $request->title,
                 "body" => $request->body,
-				"icon" => "https://sabsoft.com.pk/Retail/public/assets/images/desktop-notify-icon.png",
+				"icon" => "https://retail.sabsoft.com.pk/assets/images/desktop-notify-icon.png",
                 "content_available" => true,
                 "priority" => "high",
 				// "click_action" => ,

@@ -213,12 +213,12 @@ else{
           },
             success:function(resp){ 
                 if(resp != 0){
-                  $('#clockin').val(resp[0].clock_in);
-                  $('#clockout').val(resp[0].clock_out);
-                  $('#late').val(resp[0].late);
-                  $('#early').val(resp[0].early);
-                  $('#ot').val(resp[0].OT_time);
-                  $('#attendanceid').val(resp[0].attendance_id);
+                  $('#clockin').val(resp.clock_in);
+                  $('#clockout').val(resp.clock_out);
+                  $('#late').val(resp.lates);
+                  $('#early').val(resp.earlys);
+                  $('#ot').val(resp.ot);
+                  $('#attendanceid').val(resp.attendance_id);
                   }
                   else{
                        swal({

@@ -120,7 +120,7 @@
 
                         <div class="col-lg-4 col-md-4">
                             <a href="#">
-                                <img id="productimages" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                                <img id="productimages" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                             </a>
                             <div class="form-group{{ $errors->has('productimage') ? 'has-danger' : '' }} ">
                                 <label for="productimage" class="form-control-label">Product Image</label>
@@ -221,6 +221,7 @@
 {{--                        <th>Branch</th>--}}
 {{--                        <th>Department</th>--}}
                         <th>Item Code | Name</th>
+                        <th>Variations</th>
                         <th>UOM</th>
                         <th>Ref. Product</th>
                         <th>Retail Price</th>
@@ -232,19 +233,29 @@
                     @foreach($details as $value)
                         <tr>
                             <td class="text-center">
-                                <img width="42" height="42" src="{{ asset('public/assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
+                                <img width="42" height="42" src="{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
                             </td>
 {{--                            <td >{{$value->branch_name}}</td>--}}
 {{--                            <td >{{$value->department_name}}</td>--}}
 
-                            <td >{{$value->item_code}} | {{$value->item_name}}</td>
+                            <td>{{$value->item_code}} | {{$value->item_name}} </td>
+                            <td id="cell-5-{{ $value->pos_item_id }}">
+                                
+                                  @foreach($inventoryVariations as $variation)
+                                     @if($variation->product_id == $value->pos_item_id)
+                                           <label class="badge badge-primary m-r-1 pointer" id="lable-variation-{{ $variation->id }}" onclick="variationValue({{ $variation->id }},{{ $variation->variation_id }},{{ $variation->product_id }})"> {{ $variation->name }} </label>
+                                     @endif           
+                                  @endforeach
+                            </td>
                             <td >{{$value->uomname}}</td>
                             <td >{{$value->product_name}}</td>
                             <td >{{$value->retail_price}}</td>
                             <td >{{$value->status_name}}</td>
                             <td class="action-icon">
+                                
+                                <i class="icofont icofont-plus text-success pointer m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" onclick="createVariation({{ $value->pos_item_id }})"></i>                                
 
-                                <a  class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit('{{$value->pos_item_id}}','{{$value->item_code}}','{{$value->item_name}}','{{$value->actual_price}}','{{$value->tax_rate}}','{{$value->tax_amount}}','{{$value->retail_price}}','{{$value->wholesale_price}}','{{$value->online_price}}','{{$value->discount_price}}','{{$value->quantity}}','{{$value->uom_id}}')" ></i> </a>
+                                <a  class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit('{{$value->pos_item_id}}','{{$value->item_code}}','{{$value->item_name}}','{{$value->actual_price}}','{{$value->tax_rate}}','{{$value->tax_amount}}','{{$value->retail_price}}','{{$value->wholesale_price}}','{{$value->online_price}}','{{$value->discount_price}}','{{$value->quantity}}','{{$value->uom_id}}','{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}')" ></i> </a>
 
                                 <i class="icofont icofont-ui-delete text-danger f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" onclick="remove('{{$value->item_name}}','{{$value->pos_item_id}}')"></i>
 
@@ -327,6 +338,8 @@
                     </button>
                     <h4 class="modal-title">Update Modal</h4>
                 </div>
+				<form id="update-pos-product"  method="POST" enctype="multipart/form-data">
+				@csrf
                 <div class="modal-body">
                     <div class="row">
 
@@ -340,6 +353,7 @@
                                 <label class="form-control-label">Item Name:</label>
                                 <input type="text" name="itemnamemodal" id="itemnamemodal" class="form-control"  />
                                 <input type="hidden" name="itemid" id="itemid" class="form-control"  />
+                                <input type="hidden" name="prevImageName" id="prevImageName" class="form-control"  />
                             </div>
                         </div>
                         <div class="col-md-4 col-lg-4">
@@ -415,16 +429,111 @@
                                 <input type="number" min="0" name="opmodal" id="opmodal" class="form-control"  />
                             </div>
                         </div>
+						<div class="col-lg-4 col-md-4">
+							<a href="#">
+								<img id="updateproductimage" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+							</a>
+							<div class="form-group{{ $errors->has('updateproduct') ? 'has-danger' : '' }} ">
+								<label for="updateproduct" class="form-control-label">Product Image</label>
+								<br/>
+								<label for="updateproduct" class="custom-file">
+									<input type="file" name="updateproduct" id="updateproduct" class="custom-file-input">
+									<span class="custom-file-control"></span>
+								</label>
+						</div>
+					</div>
                     </div>
+					
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-primary waves-effect waves-light" onClick="update()">
+                    <button type="submit" class="btn btn-primary waves-effect waves-light">
                         <i class="icofont icofont-edit-alt"> </i>
                         Update</button>
                 </div>
+				</form>
             </div>
         </div>
     </div>
+    
+    
+<div class="modal fade modal-flex" id="variation-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Create Variation</h4>
+                </div>
+				<form id="variationForm" method="POST" enctype="multipart/form-data">
+				  @csrf
+				  <input type="hidden" name="itemId" id="itemId_md">
+                <div class="modal-body">
+                    
+                    <div id="createVariationModal_alert"></div>
+                    
+			      <div class="form-group">
+                          <label class="form-control-label">Select Variations of the product (if any)</label>
+                            <select class="form-control  select2" data-placeholder="Select Variations" id="variations" name="variations">
+                               <option value="">Select Variations</option>
+                              @if($totalvariation)
+                                      @foreach($totalvariation as $variation)
+                                        <option value="{{$variation->id}}">{{$variation->name}}</option>
+                                      @endforeach
+                               @endif
+                            </select>
+                           <div class="text-danger" id="variations_alert_md"></div>
+                    </div>
+                    <div class="form-group m-l-5">
+                        <label class="form-control-label">Select Products</label>
+                        <select name="products[]" id="products" multiple="multiple" class="form-control select2" disabled style="width: 75%"></select>
+                        <div class="text-danger" id="products_alert_md"></div>
+                    </div> 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary waves-effect waves-light" id="btnaddVariation">
+                      Submit</button>
+                </div>
+				</form>
+            </div>
+        </div>
+    </div>    
+    
+    
+<div class="modal fade modal-flex" id="edit-variation-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">Edit Variation Values</h4>
+                </div>
+				<form id="variationEditForm" method="POST" enctype="multipart/form-data">
+				  @csrf
+				  <input type="hidden" name="itemId_edit_md" id="itemId_edit_md">
+				  <input type="hidden" name="id" id="inventory_variation_unid_edit_md">
+				  <input type="hidden" name="variationid" id="variationId">
+                <div class="modal-body">
+                    <div id="editVariationModal_alert"></div>
+                    <h3 id="edit_md_variationName"></h3>
+                    <div class="form-group m-l-5">
+                        <label class="form-control-label">Select Products</label>
+                        <select name="products[]" id="products_edit_md" multiple="multiple" class="form-control select2" disabled style="width: 75%"></select>
+                        <div class="text-danger" id="products_alert_edit_md"></div>
+                    </div> 
+     			       
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger waves-effect waves-light m-r-1" id="btnRemoveVariation" onclick="remove_variation_cmd()">
+                      Remove</button>
+                    <button type="button" class="btn btn-primary waves-effect waves-light" id="btnupdateVariation">
+                      Save Changes</button>
+                </div>
+				</form>
+            </div>
+        </div>
+    </div>     
 @endsection
 
 @section('scriptcode_three')
@@ -444,11 +553,13 @@
             }
 
         });
+        
+var obj = [];       
 
         function readURL(input,id) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
-
+			
                 reader.onload = function(e) {
                     $('#'+id).attr('src', e.target.result);
                 }
@@ -457,19 +568,22 @@
             }
         }
 
-        $("#productimage").change(function() {
+        $("productimage").change(function() {
             readURL(this,'productimages');
         });
 
-        function toggle(){
+		$("#updateproduct").change(function() {
+            readURL(this,'updateproductimage');
+        });
 
+        function toggle(){
             $('#insert-card').toggle();
         }
 
 
 
-        $('#upload_form').on('submit', function(event){
-            event.preventDefault();
+	$('#upload_form').on('submit', function(event){
+		event.preventDefault();
 
        if ($('#finishgood').val() == "") {
                 swal({
@@ -511,6 +625,7 @@
                     processData: false,
 
                     success:function(resp){
+                        console.log(resp);
                         if(resp == 1){
                             swal({
                                 title: "Success",
@@ -600,7 +715,7 @@
 
                                 $("#tblposproducts tbody").append(
                                     "<tr>" +
-                                    "<td class='text-center'><img width='42' height='42' src='public/assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
+                                    "<td class='text-center'><img width='42' height='42' src='assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
                                     "<td>"+result[count].branch_name+"</td>" +
                                     "<td>"+result[count].item_name+"</td>" +
                                     "<td>"+result[count].department_name+"</td>" +
@@ -662,7 +777,7 @@
                 });
         }
 
-        function edit(id,code,name,ap,taxrate,taxamount,rp,wp,op,dp,qty,uomId){
+        function edit(id,code,name,ap,taxrate,taxamount,rp,wp,op,dp,qty,uomId,src,image){
             $('#update-modal').modal('show');
             $('#itemid').val(id);
             $('#itemmodalcode').val(code);
@@ -676,29 +791,39 @@
             $('#dpmodal').val(dp);
             $('#qtymodal').val(qty);
             $('#uommodal').val(uomId).change();
+			$("#updateproductimage").attr("src",src);
+			$("#prevImageName").val(image);
+			console.log(src)
         }
 
 
-        function update(){
+        // function update(){
+		 $('#update-pos-product').on('submit', function(event){
+            event.preventDefault();
 
             $.ajax({
                 url: "{{url('/update-posproducts')}}",
-                type: 'PUT',
-                data:{_token:"{{ csrf_token() }}",
-                    itemid: $('#itemid').val(),
-                    itemcode: $('#itemmodalcode').val(),
-                    itemname: $('#itemnamemodal').val(),
-                    uom: $('#uommodal').val(),
-                    ap: $('#apmodal').val(),
-                    taxrate: $('#modaltaxrate').val(),
-                    taxamount: $('#modaltaxamount').val(),
-                    rp: $('#rpmodal').val(),
-                    wp: $('#wpmodal').val(),
-                    op: $('#opmodal').val(),
-                    dp: $('#dpmodal').val(),
-                    qty: $('#qtymodal').val(),
-                },
+                type: 'POST',
+				data: new FormData(this),
+				contentType: false,
+				cache: false,
+				processData: false,
+                // data:{_token:"{{ csrf_token() }}",
+                    // itemid: $('#itemid').val(),
+                    // itemcode: $('#itemmodalcode').val(),
+                    // itemname: $('#itemnamemodal').val(),
+                    // uom: $('#uommodal').val(),
+                    // ap: $('#apmodal').val(),
+                    // taxrate: $('#modaltaxrate').val(),
+                    // taxamount: $('#modaltaxamount').val(),
+                    // rp: $('#rpmodal').val(),
+                    // wp: $('#wpmodal').val(),
+                    // op: $('#opmodal').val(),
+                    // dp: $('#dpmodal').val(),
+                    // qty: $('#qtymodal').val(),
+                // },
                 success:function(resp){
+					console.log(resp)
                     if (resp != 2) {
                         swal({
                             title: "success",
@@ -719,7 +844,7 @@
                     }
                 }
             });
-        }
+        });
 
 
         $('#btngen').on('click', function(){
@@ -824,6 +949,249 @@
 		   $('#modaltaxrate').val(taxrate);
 		   $("#rpmodal").val(Math.round(retailPrice));
 	   });
+	   
+	   function createVariation(id){
+	       $("#itemId_md").val(id);
+	       $("#variation-modal").modal('show');
+	   }
+	   
+      $("#variation-modal").on('hide.bs.modal', function(){
+           $("#variations,#products").empty();
+           modalControl_clear();
+      });	   
+	   
+	   $("#variations").on('change',function(){
+          callVariation($(this).val(),'products','');
+	   })
+
+	   //$("#variations_edit_md").on('change',function(){
+    //       callVariation($(this).val(),'products_edit_md','');
+	   //})
+	   
+	   function callVariation(vid,element,selectedValue){
+	       
+               $.ajax({
+                 url:'{{ route("getVariation_posproduct") }}',
+                 type:'POST',
+                 data:{_token:'{{ csrf_token() }}',id:vid},
+                 dataType:'json',
+                 async:false,
+                 success:function(resp){
+                    //  console.log(resp);
+                     if(resp != ''){
+                         $("#"+element).empty();
+                        //  $("#"+element).append('<option value="">Select</option>');
+                         
+                         $.each(resp,function(i,v){
+                             $("#"+element).append('<option selected value="'+v.id+'">'+v.name+'</option>');
+                         })
+                         
+                         if($("#"+element).attr('disabled')){
+                             $("#"+element).attr('disabled',false);
+                         }
+                     }
+                 }
+               });	       
+	       
+	   }
+	   
+	   $("#btnaddVariation").on('click',function(){
+	       modalControl_clear();
+	       
+	       if($("#variations").val() != '' && $("#products").val() != ''){
+	           //  $("#variationForm").submit();
+	           
+              $.ajax({
+                     url:'{{ route("storeVariation") }}',
+                     type:'POST',
+                     data:$('#variationForm').serialize(),
+                     dataType:'json',
+                     async:false,
+                     success:function(resp){
+                         console.log(resp);
+                         if(resp.status == 200){
+                              $("#createVariationModal_alert").text('Success!').addClass('alert alert-success');
+                              reloadVariation($("#itemId_md").val());
+                            //   window.loctions = '{{-- route("posProducts") --}}'; 
+                         }else{
+                             if(resp.status == 409){
+                                $("#variations_alert_md").text(resp.msg); 
+                             }
+                             
+                             if(resp.status == 500){
+                                $("#createVariationModal_alert").text(resp.msg).addClass('alert alert-danger');                              
+                             }                             
+                         }
+                     }
+                  }); 	           
+	           
+	       }else{
+	           if($("#variations").val() == ''){
+	            $("#variations_alert_md").text('Select variation field is required!');
+	           }
+	           
+	           if($("#products").attr('disabled')  && $("#products").val() == ''){
+	            $("#products_alert_md").text('Select variation field is required!');
+	           }	           
+	       }
+	   })
+	   
+
+	   $("#btnupdateVariation").on('click',function(){
+	       modalControl_clear();
+	       
+	       if( $("#products_edit_md").val() != ''){
+              $.ajax({
+                     url:'{{ route("updateVariation") }}',
+                     type:'POST',
+                     data:$('#variationEditForm').serialize(),
+                     dataType:'json',
+                     async:false,
+                     success:function(resp){
+                         //console.log(resp);
+                         if(resp.status == 200){
+                              $("#editVariationModal_alert").text('Success!').addClass('alert alert-success');
+                              reloadVariation($("#itemId_edit_md").val());
+                                // window.loction = '{{-- route("posProducts") --}}'; 
+                         }else{
+                             if(resp.status == 500){
+                                $("#editVariationModal_alert").text(resp.msg).addClass('alert alert-danger');                              
+                             }                             
+                         }
+                     }
+                  }); 	           
+	           
+	       }else{
+	           if($("#products_edit_md").val() == ''){
+	            $("#products_alert_edit_md").text('Select variation field is required!');
+	           }	           
+	       }
+	   })	   
+	   
+	   
+	   function variationValue(unid,variation,itemId){
+	       $("#edit-variation-modal").modal('show');
+	       $("#itemId_edit_md").val(itemId);
+	       $("#inventory_variation_unid_edit_md").val(unid);
+	       $("#edit_md_variationName").text($("#lable-variation-"+unid).text());
+	       //$("#variations_edit_md").val(variation).trigger('change');
+	       callVariation(variation,'products_edit_md','');
+	       
+              $.ajax({
+                     url:'{{ route("getVariationProduct_values") }}',
+                     type:'POST',
+                     data:{_token:'{{ csrf_token() }}',id:unid},
+                     dataType:'json',
+                     async:false,
+                     success:function(resp){
+                        //  console.log(resp);
+                         if(resp != ''){
+                            $("#products_edit_md").val('').change();
+                            
+                            //  $.each(resp,function(i,v){
+                                //  $("#products_edit_md").val(v.product_id).change();
+                                 $("#products_edit_md").select2('val',[resp]);
+                            //  })                            
+                         }
+                     }
+                  });
+	   }
+	   
+	   function modalControl_clear(){
+         
+          $("#variation_alert_md,#products_alert_md,#products_alert_edit_md").text('');
+          
+          if($("#createVariationModal_alert,#editVariationModal_alert").hasClass('alert alert-danger')){
+              $("#createVariationModal_alert,#editVariationModal_alert").removeClass('alert alert-danger').text('');
+          }	
+          
+          if($("#createVariationModal_alert,#editVariationModal_alert").hasClass('alert alert-success')){
+              $("#createVariationModal_alert,#editVariationModal_alert").removeClass('alert alert-success').text('');
+          }	
+
+        //   if($("#editVariationModal_alert").hasClass('alert alert-danger')){
+        //       $("#editVariationModal_alert").removeClass('alert alert-danger').text('');
+        //   }	
+          
+        //   if($("#editVariationModal_alert").hasClass('alert alert-danger')){
+        //       $("#editVariationModal_alert").removeClass('alert alert-danger').text('');
+        //   }	          
+          
+	   }
+	   
+	   function remove_variation_cmd(){
+            swal({
+                    title: "Are you sure?",
+                    text: "You want remove this "+$("#edit_md_variationName").text()+" variation!",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "yes plx!",
+                    cancelButtonText: "cancel plx!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm){
+                    if(isConfirm){
+                        $.ajax({
+                            url: "{{ route('removeVariation_posproduct') }}",
+                            type: 'POST',
+                            data:{_token:"{{ csrf_token() }}",
+                                id:$("#itemId_edit_md").val(),
+                            },
+                            success:function(resp){
+                                if(resp.status == 200){
+                                    swal({
+                                        title: "Remove Variation",
+                                        text: "Success!",
+                                        type: "success"
+                                    },function(isConfirm){
+                                        if(isConfirm){
+                                            window.location="{{ route('posProducts') }}";
+                                        }
+                                    });
+                                }
+                                
+                                if(resp.status == 500){
+                                    // swal({
+                                    //     title: "Remove Variation",
+                                    //     text: "Alert! "+resp.msg,
+                                    //     type: "alert"
+                                    // });
+                                    
+                                    swal("Error Remove Variation",resp.msg, "error");
+                                }                                
+                            }
+
+                        });
+
+                    }else {
+                        swal("Cancelled", "Operation Cancelled:)", "error");
+                    }
+                });	       
+	       
+	   }
+	   
+	   function reloadVariation(prodId){
+         $.ajax({
+                 url:'{{ route("reloadVariation_posproduct") }}',
+                 type:'POST',
+                 data:{_token:'{{ csrf_token() }}',id:prodId},
+                 dataType:'json',
+                 async:false,
+                 success:function(resp){
+                     //console.log(resp);
+                     if(resp != ''){
+                          $("cell-5-"+prodId).empty();
+                          
+                          $.each(resp,function(i,v){
+                                 $("cell-5-"+prodId).append('<lable class="badge badge-primary m-r-1 pointer" id="lable-variation-'+v.id+'" onclick="variationValue('+v.id+','+v.variation_id+','+v.product_id+')">'+v.name+'</lable>');
+                          })                          
+                     }
+                 }
+          });	       
+	   }
+	   
     </script>
 @endsection
 

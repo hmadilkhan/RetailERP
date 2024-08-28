@@ -35,7 +35,7 @@ class inventory_department extends Model
 
      // get department record //
     public static function getdepartment($id){
-     return DB::table("inventory_department")->where(['company_id'=>session('company_id').(empty($id) ? "',department_id=>".$id."'" : "") ])->get();
+     return DB::table("inventory_department")->where(['company_id'=>session('company_id').(empty($id) ? "',department_id=>".$id."'" : "") ])->where("status",1)->get();
 
     } 
 

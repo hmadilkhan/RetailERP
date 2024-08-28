@@ -45,7 +45,7 @@
             <div class="media d-flex">
               <div class="media-left media-middle">
                <a href="#">
-                <img class="media-object img-circle" src="{{ asset('public/assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
+                <img class="media-object img-circle" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
               </a>
             </div>
             <div class="media-body p-t-10">
@@ -75,7 +75,7 @@
             <div class="media d-flex">
               <div class="media-left media-middle">
                <a href="#">
-                <img class="media-object img-circle" src="{{ asset('public/assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
+                <img class="media-object img-circle" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
               </a>
             </div>
             <div class="media-body p-t-10">
@@ -151,7 +151,6 @@
 	var terminal = 0 ;
 	var terminal_name = "";
 	function getdetails(branch,status,branchstatus){
-		console.log(branchstatus)
 		if(branchstatus == "close"){
 			getCloseTerminals(branch,status)
 		}else{
@@ -175,7 +174,6 @@
         dataType : 'json',
         async:false,
         success : function(result){
-			console.log(result)
          $('#terminalTab').html('');
          $.each(result, function( index, value ) {
           if (index == 0) {
@@ -183,9 +181,9 @@
            terminal = value.terminal_id;
            terminal_name = value.terminal_name;
            $('#terminalName').html(value.terminal_name);
-                    // getPermission(value.terminal_id);
-                    getPartial(value.terminal_id)
-               		// getHeads(value.terminal_id);
+            // getPermission(value.terminal_id);
+            getPartial(value.terminal_id)
+            // getHeads(value.terminal_id);
                	}
                  $('#terminalTab').append(
                   "<li id="+value.terminal_id+" onclick='getPartial("+value.terminal_id+",1)' class='nav-item m-t-5 f-24'><a id="+value.terminal_id+" class='nav-link "+(index == 0 ? "active" : "")+"'  data-toggle='tab' href='#tab-home' role='tab'>" +value.terminal_name+"</a></li>"
@@ -228,10 +226,9 @@
 			$.ajax({
 				url : "{{url('/get-close-declarations')}}",
 				type : "POST",
-				data : {_token : "{{csrf_token()}}",terminal:terminal,date:date},
+				data : {_token : "{{csrf_token()}}",terminal:terminalId,date:date},
 				dataType : 'json',
 				success : function(result){
-				console.log(result)
 					$('#declartionTab').html('');
 					$('#div_details').html('');
 					$.each(result, function( index, value ) {
@@ -420,7 +417,6 @@
 				)
 			},
 			success : function(result){
-				console.log(result)
 				$('#div_details').html();
 				$('#div_details').html(result);
 		    },

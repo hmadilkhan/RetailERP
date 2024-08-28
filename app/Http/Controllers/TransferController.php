@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-use App\Transfer;
+use App\transfer;
 use App\demand;
 use App\pdfClass;
 use App\Vendor;
@@ -12,30 +12,30 @@ use Crabbly\Fpdf\Fpdf;
 
 class TransferController extends Controller
 {
-    public function index(Request $request, Transfer $transfer)
+    public function index(Request $request, transfer $transfer)
     {
         $gettransfer = $transfer->get_transfer_orders($request->id);
         $demandid = $request->id;
         return view('Received-Demands.view-transfer', compact('gettransfer','demandid'));
     }
 
-    public function show(Request $request, Transfer $transfer)
+    public function show(Request $request, transfer $transfer)
     {
     	 $getdetails = $transfer->tranferOrder_details($request->toid);
     	 return $getdetails;
     }
 
-    public function show_transferdetails(Request $request, Transfer $transfer)  {
+    public function show_transferdetails(Request $request, transfer $transfer)  {
        $getdetails = $transfer->tranferOrder_details($request->id);
        return view('Received-Demands.view-transferdetails', compact('getdetails'));
     }
 
-    public function transferlist(Transfer $transfer){
+    public function transferlist(transfer $transfer){
     	$transferlist = $transfer->get_transferlist();
     	 return view('Received-Demands.transferorder-list', compact('transferlist'));
     }
 
-    public function deliverychallan(Request $request, Transfer $transfer){
+    public function deliverychallan(Request $request, transfer $transfer){
 
  		$getdetails = $transfer->tranferOrder_details($request->id);
  		$transferlist = $transfer->get_transferlist();
@@ -43,17 +43,17 @@ class TransferController extends Controller
     	return view('Received-Demands.create-deliverychallan', compact('getdetails','status','transferlist'));
     }
 
-     public function getstock(Request $request, Transfer $transfer){
+     public function getstock(Request $request, transfer $transfer){
         $stock = $transfer->stock_details($request->itemcode,'');
         return $stock;
     }
 
-     public function updatetransferitem(Request $request, Transfer $transfer){
+     public function updatetransferitem(Request $request, transfer $transfer){
         $result = $transfer->updateitem_transfer($request->id, $request->statusid);
         return $result;
     }
 
-    public function updatechllan(Request $request, Transfer $transfer){
+    public function updatechllan(Request $request, transfer $transfer){
     	
     	$challanid = $transfer->getchallanid($request->transferid, session('branch'));
 
@@ -83,7 +83,7 @@ class TransferController extends Controller
     }
 
 
-     public function insert(Request $request, Transfer $transfer){
+     public function insert(Request $request, transfer $transfer){
 
 		$exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid);
   
@@ -169,27 +169,27 @@ class TransferController extends Controller
     	
     }
 
-    public function challanlist(request $request , Transfer $transfer){
+    public function challanlist(request $request , transfer $transfer){
 
     	$challans = $transfer->get_challanlist();
     	 return view('Received-Demands.view-deliveryChallans', compact('challans'));
     }
 
-    public function challandetails(request $request, Transfer $transfer){
+    public function challandetails(request $request, transfer $transfer){
     	$details = $transfer->get_challan_Details($request->id);
     	$challanid = $request->id;
     	 return view('Received-Demands.deliverchallan-details', compact('details','challanid'));
     	
     }
 
-    public function createGRN(request $request, Transfer $transfer)
+    public function createGRN(request $request, transfer $transfer)
     {
     	$details = $transfer->get_challan_Details($request->id);
     	return view('Received-Demands.create-GRN',compact('details'));
     }
 
 
-     public function grn_insert(Request $request, Transfer $transfer){
+     public function grn_insert(Request $request, transfer $transfer){
 
      	if ($request->grn == "") {
 
@@ -268,7 +268,7 @@ class TransferController extends Controller
      }
 
 
-     public function getdetails_po(request $request, Transfer $transfer, demand $demand)
+     public function getdetails_po(request $request, transfer $transfer, demand $demand)
      {
      	$sender = $demand->get_sender_info();
         $reciver = $demand->get_reciver_info();
@@ -279,10 +279,9 @@ class TransferController extends Controller
      }
 
 
-      public function purchaseorder_insert(Request $request, Transfer $transfer)
+      public function purchaseorder_insert(Request $request, transfer $transfer)
       {
       	if ($request->poid == "") {
-
       	$count = $transfer->count_PO();
         $count = $count[0]->counter + 1;
 
@@ -318,6 +317,10 @@ class TransferController extends Controller
         	'demand_id' => $request->demandid,
         ];
         $podemand = $transfer->insert_PO('purchase_demand',$items);
+		 $items=[
+        	'purchase_id' =>$pogeneral,
+        ];
+        $poaccount = $transfer->insert_PO('purchase_account_details',$items);
         return $pogeneral;
       }
       else{
@@ -325,7 +328,7 @@ class TransferController extends Controller
         	'purchase_id' => $request->poid,
             'item_code' => $request->productid,
             'unit' => $request->unit,
-            'quantity' => 0,
+            'quantity' => $request->balance,
             'price' =>0,
             'total_amount' =>0,
         ];
@@ -336,21 +339,21 @@ class TransferController extends Controller
 
   }
 
-  public function edit_transfer(Request $request, Transfer $transfer)
+  public function edit_transfer(Request $request, transfer $transfer)
   {
     $result = $transfer->edit_transfer($request->id, $request->qty);
     return 1;
   }
 
 
-    public function gettransferorders(Request $request, Transfer $transfer)
+    public function gettransferorders(Request $request, transfer $transfer)
   {
     $details = $transfer->gettransferorders();
     return view('Received-Demands.transfer-view', compact('details'));
     
   }
 
-   public function removetransferorder(Request $request, Transfer $transfer)
+   public function removetransferorder(Request $request, transfer $transfer)
   {
     $result = $transfer->removetransferorder($request->id, $request->statusid);
     return 1;
@@ -358,7 +361,7 @@ class TransferController extends Controller
 
 
 
-      public function create_transferorder(Request $request, Transfer $transfer)
+      public function create_transferorder(Request $request, transfer $transfer)
   {
     $branches = $transfer->getbranches();
     $headoffice = $transfer->get_headoffice();
@@ -381,19 +384,19 @@ class TransferController extends Controller
     
   }  
 
-  public function trf_stock(Request $request, Transfer $transfer)
+  public function trf_stock(Request $request, transfer $transfer)
   {
     $stock = $transfer->getstock($request->productid, $request->branchid);
     return $stock;
 
   }  
 
-  public function get_products(Request $request, Transfer $transfer)
+  public function get_products(Request $request, transfer $transfer)
   {
      $products = $transfer->getproducts($request->branchid);
      return $products;
   }
-  public function insert_trf(Request $request, Transfer $transfer)
+  public function insert_trf(Request $request, transfer $transfer)
   {
 
     $exsist = $transfer->exsits_chk_trf($request->trfid);
@@ -451,49 +454,49 @@ class TransferController extends Controller
     }
   }
 
-    public function trf_details(Request $request, Transfer $transfer)
+    public function trf_details(Request $request, transfer $transfer)
   {
     $trfdetails = $transfer->trf_details($request->trfid);
     return $trfdetails;
   }
 
-   public function trf_delete(Request $request, Transfer $transfer)
+   public function trf_delete(Request $request, transfer $transfer)
   {
     $trfdel = $transfer->trf_delete($request->trfid);
     return $trfdel;
   }
 
-   public function trf_submit_update(Request $request, Transfer $transfer)
+   public function trf_submit_update(Request $request, transfer $transfer)
   {
     $result = $transfer->trf_submit_update($request->id, $request->statusid);
     return $result;
   }
 
-   public function trf_list(Request $request, Transfer $transfer)
+   public function trf_list(Request $request, transfer $transfer)
   {
     $gettransfer = $transfer->get_trf_orders_without_demand();
      return view('Transfer.view-transferorders', compact('gettransfer'));
   }
 
-  public function trforder_delete(Request $request, Transfer $transfer)
+  public function trforder_delete(Request $request, transfer $transfer)
   {
     $trfdel = $transfer->trforder_delete($request->trfid);
     return $trfdel;
   }
 
-    public function get_trf_details(Request $request, Transfer $transfer)
+    public function get_trf_details(Request $request, transfer $transfer)
   {
     $getdetails = $transfer->get_trf_details($request->id);
     return view('Transfer.transferorder-details', compact('getdetails'));
   }
 
-   public function qty_update_trf(Request $request, Transfer $transfer)
+   public function qty_update_trf(Request $request, transfer $transfer)
   {
     $result = $transfer->qty_update_trf($request->id, $request->qty);
     return $result;
   }
 
-  public function insert_direct_chalan(Request $request, Transfer $transfer){
+  public function insert_direct_chalan(Request $request, transfer $transfer){
 
     $exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid);
   
@@ -558,7 +561,7 @@ class TransferController extends Controller
     }
 
 
- public function edit_trf_details(Request $request, Transfer $transfer)
+ public function edit_trf_details(Request $request, transfer $transfer)
   {
     $getdetails = $transfer->get_details($request->id);
     $branches = $transfer->getbranches();
@@ -570,7 +573,7 @@ class TransferController extends Controller
 
 
     //transfer report
-    public function transferReport(Request $request,Vendor $vendor, Transfer $transfer)
+    public function transferReport(Request $request,Vendor $vendor, transfer $transfer)
     {
 
 
@@ -695,7 +698,7 @@ class TransferController extends Controller
 
 
     //Delivery Challan report
-    public function dcreport(Request $request,Vendor $vendor, Transfer $transfer)
+    public function dcreport(Request $request,Vendor $vendor, transfer $transfer)
     {
 
 

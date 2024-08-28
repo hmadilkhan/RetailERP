@@ -36,4 +36,9 @@ class Inventory extends Model
 		return $this->hasMany(InventoryPos::class,"product_id","id");
 	}
 	
+	public function deals()
+	{
+		return $this->hasMany("App\InventoryDealGeneral","inventory_deal_id","id")->where("status",1);
+	}
+	
 }

@@ -29,7 +29,7 @@ class UserDetailsController extends Controller
     {
         if($request->company != "")
         {
-            return DB::table("branch")->where("company_id",$request->company)->get();
+           return DB::table("branch")->where("company_id",$request->company)->get();
         }
     }
 
@@ -147,8 +147,7 @@ class UserDetailsController extends Controller
     
     public function edit(Request $request, userDetails $users)
     {
-
-       $country = $users->getcountry();
+        $country = $users->getcountry();
         $city = $users->getcity();
         $role = $users->getroles();
         $branch = $users->getbranches();
@@ -394,7 +393,7 @@ class UserDetailsController extends Controller
             "notification" => [
                 "title" => $title,
                 "body" => $firebaseToken[0]->fullname,
-				"icon" => "https://sabsoft.com.pk/Retail/public/assets/images/Sabify72.png",
+				"icon" => "https://retail.sabsoft.com.pk/assets/images/Sabify72.png",
                 "content_available" => true,
                 "priority" => "high",
 				// "click_action" => ,
@@ -420,8 +419,9 @@ class UserDetailsController extends Controller
         curl_setopt($ch, CURLOPT_POSTFIELDS, $dataString);
 		
 		curl_exec($ch);
+       
         $response = curl_exec($ch);
-
+        // print_r(json_encode($response));
         $headers1 = [
             'Authorization: key=' . $server_api_key_mobile,
             'Content-Type: application/json',
@@ -438,7 +438,7 @@ class UserDetailsController extends Controller
 
         curl_exec($chs);
         $response1 = curl_exec($chs);
-		
+		// print_r(json_encode($response1));
 		return 1;//json_encode($response1)." <br/>".json_encode($response);
 	}
 	
@@ -459,7 +459,7 @@ class UserDetailsController extends Controller
             "notification" => [
                 "title" => $title,
                 "body" => $message,
-				"icon" => "https://sabsoft.com.pk/Retail/public/assets/images/Sabify72.png",
+				"icon" => "https://retail.sabsoft.com.pk/assets/images/Sabify72.png",
                 "content_available" => true,
                 "priority" => "high",
 				// "click_action" => ,

@@ -27,8 +27,47 @@
                 </div>
                 <br/>
                 <br/>
-
+				@if(auth()->user()->company->application_id == 2)
                 <div class="project-table">
+                    <table id="tbljoborders" class="table table-striped nowrap dt-responsive" width="100%">
+                        <thead>
+                        <tr>
+                            <th>Job Order Name</th>
+                            <th>DineIn Cost</th>
+                            <th>Takeaway & Delivery Cost</th>
+                            <th>Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @if($result)
+                            @foreach($result as $value)
+                                <tr>
+
+                                    <td>{{$value->product_name}}</td>
+                                    <td>{{$value->DineInCost + $value->infrastructure_cost}}</td>
+                                    <td>{{$value->TakedelCost + $value->infrastructure_cost}}</td>
+                                    <td class="action-icon">
+
+                                        <a href="{{ url('/getdetails') }}/{{ Crypt::encrypt($value->recipy_id) }}" class="p-r-10 f-18 text-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"><i class="icofont icofont-eye-alt"></i></a>
+                                        &nbsp;
+
+                                    <!--      <i class="icofont icofont-rotation f-20  text-info"  data-toggle="tooltip" data-placement="top" title="" data-original-title="Repeat"></i>&nbsp;
+
+                                <i class="icofont icofont-vehicle-delivery-van f-20  text-success" data-id="{{ $value->recipy_id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delivery"></i>&nbsp; -->
+
+                                        <a href="{{ url('/edit-job') }}/{{ Crypt::encrypt($value->recipy_id) }}" class="p-r-10 f-18 text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+                                        <a class='p-r-10 f-18 text-warning' data-toggle='tooltip' data-placement='top'  data-original-title='Delete' onclick='inactive("{{ $value->recipy_id }}")' ><i class='icofont icofont-ui-delete'></i></a>
+
+                                    <!--  <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" data-id="{{ $value->recipy_id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i> -->
+                                    </td>
+                                </tr>
+                            @endforeach
+                        @endif
+                        </tbody>
+                    </table>
+                </div>
+				@else
+				<div class="project-table">
                     <table id="tbljoborders" class="table table-striped nowrap dt-responsive" width="100%">
                         <thead>
                         <tr>
@@ -71,6 +110,7 @@
                         </tbody>
                     </table>
                 </div>
+				@endif
             </div>
         </div>
     </section>

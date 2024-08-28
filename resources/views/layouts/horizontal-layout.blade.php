@@ -28,29 +28,29 @@
    <link href="../../../fonts.googleapis.com/css6ff6.css?family=Ubuntu:400,500,700" rel="stylesheet">
 
    <!-- themify -->
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/icon/themify-icons/themify-icons.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/themify-icons/themify-icons.css') }}">
 
    <!-- Material icons -->
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/icon/material-design/css/material-design-iconic-font.min.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/material-design/css/material-design-iconic-font.min.css') }}">
 
    <!-- iconfont -->
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/icon/icofont/css/icofont.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
 
    <!-- simple line icon -->
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/icon/simple-line-icons/css/simple-line-icons.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/simple-line-icons/css/simple-line-icons.css') }}">
 
    <!-- Required Fremwork -->
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/components/bootstrap/dist/css/bootstrap.min.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css') }}">
 
    <!-- Style.css -->
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/main.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/main.css') }}">
 
    <!-- Responsive.css-->
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/responsive.css') }}">
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/menu.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/menu.css') }}">
 
    <!-- Responsive.css-->
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/responsive.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
 
 </head>
 
@@ -496,30 +496,30 @@
    </div>
    <!-- Javascripts-->
 	   <!-- Required Jqurey -->
-   <script src="{{ asset('public/components/Jquery/dist/jquery.min.js')}}"></script>
-   <script src="{{ asset('public/components/jquery-ui/jquery-ui.min.js')}}"></script>
-   <script src="{{ asset('public/components/tether/dist/js/tether.min.js')}}"></script>
+   <script src="{{ asset('components/Jquery/dist/jquery.min.js')}}"></script>
+   <script src="{{ asset('components/jquery-ui/jquery-ui.min.js')}}"></script>
+   <script src="{{ asset('components/tether/dist/js/tether.min.js')}}"></script>
 
    <!-- Required Fremwork -->
-   <script src="{{ asset('public/components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
+   <script src="{{ asset('components/bootstrap/dist/js/bootstrap.min.js')}}"></script>
    <!-- waves effects.js -->
    <script src="../bower_components/Waves/dist/waves.min.js')}}"></script>
 
    <!-- Scrollbar JS-->
-   <script src="{{ asset('public/components/jquery-slimscroll/jquery.slimscroll.js')}}"></script>
-   <script src="{{ asset('public/components/jquery.nicescroll/dist/jquery.nicescroll.min.js')}}"></script>
+   <script src="{{ asset('components/jquery-slimscroll/jquery.slimscroll.js')}}"></script>
+   <script src="{{ asset('components/jquery.nicescroll/dist/jquery.nicescroll.min.js')}}"></script>
 
    <!--classic JS-->
-   <script src="{{ asset('public/components/classie/classie.js')}}"></script>
+   <script src="{{ asset('components/classie/classie.js')}}"></script>
 
    <!-- notification -->
-   <script src="{{ asset('public/assets/plugins/notification/js/bootstrap-growl.min.js')}}"></script>
+   <script src="{{ asset('assets/plugins/notification/js/bootstrap-growl.min.js')}}"></script>
 
    <!-- custom js -->
    <!-- <script type="text/javascript" src="assets/js/main.min.js"></script> -->
-   <script src="{{ asset('public/assets/js/main.min.js')}}"></script>
-   <script src="{{ asset('public/assets/js/menu-horizontal.min.js')}}"></script>
-   <script src="{{ asset('public/assets/pages/elements.js')}}"></script>
+   <script src="{{ asset('assets/js/main.min.js')}}"></script>
+   <script src="{{ asset('assets/js/menu-horizontal.min.js')}}"></script>
+   <script src="{{ asset('assets/pages/elements.js')}}"></script>
 
 
 </body>

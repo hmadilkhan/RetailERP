@@ -139,6 +139,7 @@ class userDetails extends Model
 
 	public function delete_user($id){
 		 $result = DB::table('user_authorization')->where('authorization_id', $id)->update(['status_id'=>2]);
+		 $result = DB::table('user_details')->where('id', $id)->update(['deleted_at'=> date("Y-m-d H:i:s")]);
     	 return $result;
 	}
 

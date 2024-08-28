@@ -37,6 +37,48 @@
    }
 </style>
 
+{{-- <div class="row">--}}
+{{-- <div class="col-xl-12">--}}
+
+{{-- --}}
+{{-- <div class="card-block outer">--}}
+{{-- <div class="row">--}}
+{{-- <div class="wrapper">--}}
+{{-- <div id="draggablePanelList "> --}}
+{{-- @foreach($branches as $value)--}}
+{{-- <div class="col-xl-3 col-lg-6 inner" style="cursor: pointer;"  onclick="getdetails('{{(session('roleId') == 2 ? $value->branch_id : $value->terminal_id)}}','{{$value->identify}}')" >--}}
+{{-- <div class="card">--}}
+{{-- <div class="card-block">--}}
+{{-- <div class="media d-flex">--}}
+{{-- <div class="media-left media-middle">--}}
+{{-- <a href="#">--}}
+{{-- <img class="media-object img-circle" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">--}}
+{{-- </a>--}}
+{{-- </div>--}}
+{{-- <div class="media-body">--}}
+{{-- <span class="counter-txt f-w-600 f-20">--}}
+{{-- <span class="text-primary"> Rs. {{number_format($value->sales,0)}} /=</span>--}}
+{{-- </span>--}}
+{{-- <h6 class="f-w-300 m-t-5">{{--}}
+{{-- (session("roleId") == 2 ? $value->branch_name : $value->terminal_name) --}}
+{{-- }}--}}
+{{-- </h6>--}}
+{{-- </div>--}}
+{{-- </div>--}}
+{{-- <ul>--}}
+{{-- <li class="new-users">--}}
+{{-- </li>--}}
+{{-- </ul>--}}
+{{-- </div>--}}
+{{-- </div>--}}
+{{-- </div>--}}
+{{-- @endforeach--}}
+{{-- </div>--}}
+{{-- </div>--}}
+{{-- </div>--}}
+{{-- </div>--}}
+{{-- </div>--}}
+{{-- </div> --}}
 @if($permission)
 <div class="row dashboard-header m-t-15">
    <div class="col-lg-6 col-md-6" onclick="" style="cursor:pointer;">
@@ -624,6 +666,7 @@
          },
          dataType: 'json',
          success: function(result) {
+            console.log(result)
             $('#terminalTab').html('');
             $.each(result, function(index, value) {
                $('#terminalTab').append(

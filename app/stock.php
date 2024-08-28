@@ -128,7 +128,51 @@ SELECT a.receipt_detail_id as id,"" as grn, b.receipt_no as receipt_id,b.date,d.
         return $inventory;
     }
 
-    public function getStockByBranchPageWise($branch,$code,$name,$dept,$sdept)
+    public function getStockByBranchPageWise($branch,$code,$name,$dept,$sdept,$status)
+    {
+        $result = DB::table("inventory_general")
+            ->join("inventory_uom",'inventory_uom.uom_id','=','inventory_general.uom_id')
+			->leftJoin("inventory_uom AS con",'con.uom_id','=','inventory_general.cuom')
+            ->join("inventory_department",'inventory_department.department_id','=','inventory_general.department_id')
+            ->join("inventory_sub_department",'inventory_sub_department.sub_department_id','=','inventory_general.sub_department_id')
+            ->join("inventory_stock",'inventory_stock.product_id','=','inventory_general.id')
+            ->join("branch",'inventory_stock.branch_id','=','branch.branch_id')
+            ->join("inventory_qty_reminders",'inventory_qty_reminders.inventory_id','=','inventory_general.id')
+            ->join("inventory_price",'inventory_price.product_id','=','inventory_general.id')
+            ->select("inventory_general.*","inventory_uom.name","con.name as cname","inventory_department.department_name","inventory_sub_department.sub_depart_name",DB::raw('SUM(balance) as qty'),"inventory_price.retail_price as amount","inventory_qty_reminders.reminder_qty","branch.branch_name")
+            ->where("inventory_price.status_id",1)
+            ->where("inventory_general.status",1)
+			->when($code != "",function($query) use ($code){
+				return $query->where('inventory_general.item_code', 'like', '%'.$code.'%');
+			})
+			->when($name != "",function($query) use ($name){
+				return $query->where('inventory_general.product_name', 'like', '%'.$name.'%');
+			})
+			->when($dept != "",function($query)use ($dept){
+				return $query->where('inventory_general.department_id', 'like', '%'.$dept.'%');
+			})
+			->when($sdept != "",function($query) use ($sdept){
+				return $query->where('inventory_general.sub_department_id', 'like', '%'.$sdept.'%');
+			})
+            // ->where('inventory_general.item_code', 'like', '%'.$code.'%')
+            // ->where('inventory_general.product_name', 'like', '%'.$name.'%')
+            // ->where('inventory_general.department_id', 'like', '%'.$dept.'%')
+            // ->where('inventory_general.sub_department_id', 'like', '%'.$sdept.'%')
+
+			->when($status == "true",function($query){
+				return $query->whereIn("inventory_stock.branch_id",DB::table('branch')->where("company_id",session("company_id"))->pluck("branch_id"))->groupBy("inventory_general.id")->groupBy("inventory_stock.branch_id");
+			},function($q) use ($branch){
+				return $q->where("inventory_stock.branch_id",$branch)->groupBy("inventory_general.id");
+			})
+
+            // ->where("inventory_stock.branch_id",$branch)
+            // ->groupBy("inventory_general.id")
+            ->paginate(100);
+			// ->toSql();
+        return $result;
+    }
+	
+	public function getStockByBranchForExcel($branch,$code,$name,$dept,$sdept)
     {
         $result = DB::table("inventory_general")
             ->join("inventory_uom",'inventory_uom.uom_id','=','inventory_general.uom_id')
@@ -147,7 +191,7 @@ SELECT a.receipt_detail_id as id,"" as grn, b.receipt_no as receipt_id,b.date,d.
             ->where('inventory_general.sub_department_id', 'like', '%'.$sdept.'%')
             ->where("inventory_stock.branch_id",$branch)
             ->groupBy("inventory_general.id")
-            ->paginate(10);
+            ->get();
         return $result;
     }
 

@@ -89,7 +89,7 @@
            @foreach($details as $value)
                  <tr>
                      <td class="text-center">
-                    <img width="42" height="42" src="{{ asset('public/assets/images/employees/images/'.(!empty($value->emp_picture) ? $value->emp_picture : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->emp_picture) ? $value->emp_picture : 'placeholder.jpg' }}"/>
+                    <img width="42" height="42" src="{{ asset('assets/images/employees/images/'.(!empty($value->emp_picture) ? $value->emp_picture : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->emp_picture) ? $value->emp_picture : 'placeholder.jpg' }}"/>
                       </td>
                    <td >{{$value->emp_acc}} | {{$value->emp_name}}</td>
                    <td >{{$value->branch_name}}</td>
@@ -214,7 +214,7 @@
                    for(var count =0;count < result.length; count++){
                         $("#tblsalary tbody").append(
                           "<tr>" +
-                          "<td class='text-center'><img width='42' height='42' class='d-inline-block img-circle' src='public/assets/images/employees/images/"+((result[count].emp_picture != "") ? result[count].emp_picture : 'placeholder.jpg')+"' alt='"+result[count].emp_picture+"'/></td>" +
+                          "<td class='text-center'><img width='42' height='42' class='d-inline-block img-circle' src='assets/images/employees/images/"+((result[count].emp_picture != "") ? result[count].emp_picture : 'placeholder.jpg')+"' alt='"+result[count].emp_picture+"'/></td>" +
                             "<td>"+result[count].emp_acc+" | "+result[count].emp_name+"</td>" +  
                             "<td>"+result[count].branch_name+"</td>" +  
                             "<td>"+result[count].date+"</td>" +  

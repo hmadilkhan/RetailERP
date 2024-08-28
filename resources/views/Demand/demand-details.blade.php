@@ -11,11 +11,21 @@
   <section class="panels-wells">
               <div class="card">
                   <div class="card-header">
-     <h5 class="card-header-text">Demand Details</h5><br/>
-                     
-                                    </a></h5>
-                 
-    
+     <h5 class="card-header-text">Demand Details</h5>
+	 <div class="f-right">
+	 
+	@if(session('roleId') == 2)
+	@if($details[0]->status1  == "Pending")
+	<button class="icofont icofont-close fa-3x btn btn-warning btn-md f-right" data-toggle="tooltip" data-placement="top" title="" data-original-title="Reject Demand" onclick="update_demand_status()">Reject</button>
+	
+	<button class="icofont icofont-truck-loaded fa-3x btn btn-info btn-md f-right" data-toggle="tooltip" data-placement="top" title="" data-original-title="Transfer" onclick="transfer('{{$details[0]->doid}}')">Transfer</button>
+	<button class="icofont icofont-money-bag fa-3x btn btn-primary btn-md f-right" data-toggle="tooltip" data-placement="top" title="" data-original-title="Purchase" onclick="purchase('{{$details[0]->doid}}')">Purchase</button>
+	@endif
+	@endif
+	<button class="icofont icofont-print fa-3x btn btn-danger btn-md f-right" data-toggle="tooltip" data-placement="top" title="" data-original-title="Print" onclick="generate_pdf()">Print</button>
+	 </div>
+	 
+	 <br/>
                      </div>
                   <div class="card-block">
 
@@ -118,40 +128,32 @@
                   </div>
                   @if(session('roleId') == 2)
 
-                  <div class="row m-t-50">
+                    <div class="row m-t-50">
                        <div class="radial">
                            <button class="icofont icofont-money-bag fa-3x"
                             id="fa-2" data-toggle="tooltip" data-placement="top" title="" data-original-title="Purchase" onclick="purchase('{{$details[0]->doid}}')"></button>
 
-                           <button class="icofont icofont-print fa-3x" id="fa-3" data-toggle="tooltip" data-placement="top" title="" data-original-title="Print" onclick="generate_pdf()"></button>
-                           <button class="icofont icofont-truck-loaded fa-3x" id="fa-4" data-toggle="tooltip" data-placement="top" title="" data-original-title="Transfer" onclick="transfer('{{$details[0]->doid}}')"></button>
-                    @if($details[0]->status1  == "Pending")
-                            <button class="icofont icofont-close fa-3x" id="fa-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Reject Demand" onclick="update_demand_status()"></button>
-                            @endif
+                            <button class="icofont icofont-print fa-3x" id="fa-3" data-toggle="tooltip" data-placement="top" title="" data-original-title="Print" onclick="generate_pdf()"></button>
+                            <button class="icofont icofont-truck-loaded fa-3x" id="fa-4" data-toggle="tooltip" data-placement="top" title="" data-original-title="Transfer" onclick="transfer('{{$details[0]->doid}}')"></button>
+							@if($details[0]->status1  == "Pending")
+									<button class="icofont icofont-close fa-3x" id="fa-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Reject Demand" onclick="update_demand_status()"></button>
+							@endif
                            <button class="fab">
                                 <i class="icofont icofont-plus fa-3x" id="plus"></i>
                             </button>
                         </div>
-                      </div>
+                    </div>
                   @else
                       <div class="row">
                           <div class="col-md-12">
                               <div class="form-group">
                                   <div class="button-group ">
-                                      {{--                     <button type="button" id="btnsubmit" class="btn btn-md btn-success waves-effect waves-light f-right" onclick="alert('Work in process')"><i class="icofont icofont-file-excel"> </i>--}}
-                                      {{--                        Export to Excel Sheet--}}
-                                      {{--                     </button>--}}
                                       <button type="button" id="btndraft" onclick="generate_pdf()" class="btn btn-md btn-danger waves-effect waves-light f-right m-r-20"> <i class="icofont icofont-file-pdf"> </i>
                                           Print Pdf
                                       </button>
                                   </div>
                               </div>
                           </div>
-                          {{--                        <div class="col-sm-12">--}}
-                          {{--                           <h6>Terms And Condition :</h6>--}}
-                          {{--                           <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.--}}
-                          {{--                              Duis aute irure dolor </p>--}}
-                          {{--                        </div>--}}
                       </div>
                       <br>
                       @endif
@@ -162,7 +164,7 @@
  @section('scriptcode_three')
 
   <!-- Fab buttons -->
-   <script type="text/javascript" src="{{ asset('public/assets/pages/button-fab.js') }}"></script>
+   <script type="text/javascript" src="{{ asset('assets/pages/button-fab.js') }}"></script>
 
 
    <script type="text/javascript">
@@ -192,7 +194,9 @@
         let arr = [];
         $(this).find('label').each(function(j){
           arr.push($(this).text());
+		  console.log($(this).text)
     });
+	console.log("Complete",arr);
 
         if (arr[7] != 0) {
 
@@ -202,15 +206,17 @@
           data:{_token:"{{csrf_token()}}",
           poid:poid,
           productid:arr[0],
-          balance:arr[7],
-          unit:arr[8],
+          // balance:arr[7],
+          // unit:arr[8],
+		  balance:arr[4],
+          unit:arr[5],
           demandid:id,
           },
          async:false,
              success:function(resp){
               console.log(resp);
               poid = resp;
-              window.location= "/erp/edit/"+poid;
+              window.location= "/edit/"+poid;
               
               }
     });

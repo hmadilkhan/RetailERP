@@ -30,14 +30,17 @@ class Customer extends Model
     public function getcustomers($id = "")
     {
         $filter = "";
+        $webfilter = "";
         if (session("roleId") == 2) {
             $filter .= " and a.user_id IN(SELECT user_id FROM user_authorization where company_id = " . session("company_id") . ")";
+            $webfilter .= " and a.company_id = ".session("company_id");
         } else {
             $filter .= " and a.user_id IN(SELECT user_id FROM user_authorization where branch_id = " . session("branch") . ")";
+            $webfilter .= " and a.branch_id = ".session("branch");
         }
 		
 		if($id != ""){
-			$filter .= " and a.id = ".$id." ";
+			$filter .= " and a.id = ".$id." ";        
 		}
 
         $customers = DB::select('SELECT (SELECT
@@ -55,7 +58,21 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             INNER JOIN accessibility_mode b ON b.status_id = a.status_id
             INNER JOIN user_authorization c ON c.user_id = a.user_id
             INNER JOIN branch d ON d.branch_id = c.branch_id
-            WHERE a.status_id IN(1,2) ' . $filter . 'order by a.id,balance DESC');
+            WHERE a.status_id IN(1,2) ' . $filter . ' UNION SELECT (SELECT
+  ABS(IFNULL(SUM(total_amount - credit ),0) + 
+  IFNULL((SELECT SUM(debit) FROM customer_account WHERE cust_id = a.id AND receipt_no = 0),0)
+  - IFNULL((SELECT
+      SUM(credit)
+    FROM
+      customer_account
+    WHERE cust_id = a.id
+      AND receipt_no = 0),0))
+FROM
+  customer_account
+WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_name, a.name,a.is_mobile_app_user, a.mobile, a.nic, a.credit_limit,a.status_id, b.status_name,a.slug  FROM customers a
+            INNER JOIN accessibility_mode b ON b.status_id = a.status_id
+            INNER JOIN branch d ON d.branch_id = a.branch_id
+            WHERE a.status_id IN(1,2) ' . $webfilter );
         return $customers;
     }
 	

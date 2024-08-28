@@ -71,7 +71,7 @@
                     </div>
 					<div class="col-md-4" >
 						<a href="#">
-							<img id="vdpimg" src="{{ asset('public/assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+							<img id="vdpimg" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 						</a>
 						<div class="form-group{{ $errors->has('logo') ? 'has-danger' : '' }} ">
 							<label for="logo" class="form-control-label">Image</label>

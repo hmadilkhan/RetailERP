@@ -35,8 +35,10 @@ class DepartmentController extends Controller
 
        	$count = $depart->exist($request->department, $request->branch);
     	if ($count[0]->counts == 0) {
+
+    	    
     	$items = [
-    		'branch_id' => $request->branch,
+    		'branch_id'       => $request->branch,
     		'department_name' => $request->department,
     	 ];
     	 $result = $depart->insert($items);

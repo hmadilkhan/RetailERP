@@ -255,7 +255,7 @@
                         $("#trftable tbody").append(
                           "<tr>" +
                             "<td class='pro-name' >"+result[count].transfer_item_id+"</td>" +
-                             "<td class='text-center'><img width='42' height='42' src='../public/assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
+                             "<td class='text-center'><img width='42' height='42' src='../assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
                             "<td>"+result[count].product_name+"</td>" +  
                             "<td>"+result[count].Transfer_Qty+"</td>" +  
                             "<td class='action-icon'><i onclick='changeqty("+result[count].transfer_item_id+","+result[count].Transfer_Qty+")' class='icofont icofont-ui-edit' data-toggle='tooltip' data-placement='top' title='' data-original-title='Edit'></i>"+" &nbsp;"+"<i onclick='trf_delete("+result[count].transfer_item_id+")' class='icofont icofont-ui-delete' data-toggle='tooltip' data-placement='top' title='' data-original-title='Delete'></i></td>" +

@@ -31,6 +31,9 @@
          <thead>
             <tr>
                <th>Image</th>
+			    @if(session("roleId") == 2)
+					<th>Branch</th>
+				@endif
                <th>Service Provider</th>
                <th>Category</th>
                <th>Contact Person</th>
@@ -45,8 +48,11 @@
           @foreach($providers as $value)
                  <tr>
                      <td class="text-center">
-                         <img width="50" height="50" src="{{ asset('public/assets/images/service-provider/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                         <img width="50" height="50" src="{{ asset('assets/images/service-provider/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                      </td>
+					@if(session("roleId") == 2)
+						<td >{{$value->branch_name}}</td>
+					@endif	
                    <td >{{$value->provider_name}}</td>
                    <td >{{$value->category}}</td>
                    <td >{{$value->person}}</td>

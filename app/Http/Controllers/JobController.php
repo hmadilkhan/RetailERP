@@ -12,7 +12,12 @@ class JobController extends Controller
 {
     public function getList(Request $request,joborder $joborder)
     {
-        $result = $joborder->getList(1);
+		if(auth()->user()->company->application_id == 2){
+			$result = $joborder->getRestaurantList();
+		}else{
+			$result = $joborder->getList(1);
+		}
+        
         return view('JobOrder.view-joborders', compact('result'));
     }
 
@@ -20,7 +25,6 @@ class JobController extends Controller
     {
         $products = $joborder->getfinishgoods();
         $raw = $joborder->getproducts();
-//        $uom = $joborder->getuom();
         return view("JobOrder.create-joborders",compact('products','raw'));
     }
 
@@ -40,6 +44,7 @@ class JobController extends Controller
                 'branch_id' => session("branch"),
                 'wastage' => 0,
                 'status_id' => 1, //by default active
+                
             ];
             $general = $joborder->insert('recipy_general',$items);
             return $general;
@@ -58,6 +63,7 @@ class JobController extends Controller
                 'mode_id' => $request->productmode,
                 'usage_qty' => $request->usage,
                 'cost' => $request->amount,
+				'used_in_dinein' => $request->dinein, //by default active
             ];
             $Itemdetails = $joborder->insert_sub_details($details);
         }
@@ -87,6 +93,7 @@ class JobController extends Controller
             'mode_id' => $request->productmode,
             'usage_qty' => $request->usage,
             'cost' => $request->amount,
+            'used_in_dinein' => $request->dineIn,
         ];
 
         $Itemdetails = $joborder->UpdateJobSubDetails($request->updateid,$details);

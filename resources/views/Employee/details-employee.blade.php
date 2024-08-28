@@ -25,7 +25,7 @@
             	<div class="row">
        	 <div class="col-lg-2 col-md-2">
  			  <a href="#">
- 	<img  src="{{ asset('public/assets/images/employees/images/'.(!empty($details[0]->emp_picture) ? $details[0]->emp_picture : 'placeholder.jpg').'') }}" class="d-inline-block img-circle m-l-15" alt="{{ !empty($details[0]->emp_picture) ? $details[0]->emp_picture : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
+ 	<img  src="{{ asset('assets/images/employees/images/'.(!empty($details[0]->emp_picture) ? $details[0]->emp_picture : 'placeholder.jpg').'') }}" class="d-inline-block img-circle m-l-15" alt="{{ !empty($details[0]->emp_picture) ? $details[0]->emp_picture : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
     </a>
 </div>
 </div>    
@@ -116,8 +116,8 @@
        	 <div class="col-lg-4 col-md-4">
        	 <div class="form-group">
  <h5>Documnet Image 1</h5>
-             <a href="{{ asset('public/assets/images/employees/documents/'.(!empty($details[0]->document1) ? $details[0]->document1 : 'placeholder.jpg').'') }}" data-toggle="lightbox">
-                 <img  src="{{ asset('public/assets/images/employees/documents/'.(!empty($details[0]->document1) ? $details[0]->document1 : 'placeholder.jpg').'') }}" class="thumb-img img-fluid" alt="{{ !empty($details[0]->document1) ? $details[0]->document1 : 'placeholder.jpg' }}" style="width: 150px;height: 150px;">
+             <a href="{{ asset('assets/images/employees/documents/'.(!empty($details[0]->document1) ? $details[0]->document1 : 'placeholder.jpg').'') }}" data-toggle="lightbox">
+                 <img  src="{{ asset('assets/images/employees/documents/'.(!empty($details[0]->document1) ? $details[0]->document1 : 'placeholder.jpg').'') }}" class="thumb-img img-fluid" alt="{{ !empty($details[0]->document1) ? $details[0]->document1 : 'placeholder.jpg' }}" style="width: 150px;height: 150px;">
              </a>
 
 </div>
@@ -125,8 +125,8 @@
     <div class="col-lg-4 col-md-4">
         <div class="form-group">
             <h5>Documnet Image 2</h5>
-            <a href="{{ asset('public/assets/images/employees/documents/'.(!empty($details[0]->document2) ? $details[0]->document2 : 'placeholder.jpg').'') }}" data-toggle="lightbox">
-                <img  src="{{ asset('public/assets/images/employees/documents/'.(!empty($details[0]->document2) ? $details[0]->document2 : 'placeholder.jpg').'') }}" class="thumb-img img-fluid" alt="{{ !empty($details[0]->document2) ? $details[0]->document2 : 'placeholder.jpg' }}" style="width: 150px;height: 150px;">
+            <a href="{{ asset('assets/images/employees/documents/'.(!empty($details[0]->document2) ? $details[0]->document2 : 'placeholder.jpg').'') }}" data-toggle="lightbox">
+                <img  src="{{ asset('assets/images/employees/documents/'.(!empty($details[0]->document2) ? $details[0]->document2 : 'placeholder.jpg').'') }}" class="thumb-img img-fluid" alt="{{ !empty($details[0]->document2) ? $details[0]->document2 : 'placeholder.jpg' }}" style="width: 150px;height: 150px;">
             </a>
         </div>
     </div>
