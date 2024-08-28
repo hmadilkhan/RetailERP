@@ -1223,7 +1223,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/delete_data', 'EmptyDataController@deletedatabase');
 
     //Pos Produtcs
-    Route::get('/posproducts', [PosProductController::class, 'show']);
+    Route::get('/posproducts', [PosProductController::class, 'show'])->name('posProducts');;
     Route::post('/insert-posproducts', [PosProductController::class, 'store']);
     Route::put('/inactive-posproducts', [PosProductController::class, 'delete']);
     Route::get('/inactive-posproducts', [PosProductController::class, 'inactiveposproducts']);
