@@ -45,6 +45,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PosProductController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\PromoController;
+use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\purchaseController;
 use App\Http\Controllers\ReceiveddemandController;
 use App\Http\Controllers\ReportController;
@@ -1043,11 +1044,11 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::put('/update_bonus', [BonusController::class, 'update']);
 
     //Promotion Details
-    Route::get('/showpromotion', [PromoController::class, 'view']);
-    Route::get('/createpromotion', [PromoController::class, 'show']);
-    Route::get('/getoldetails', [PromoController::class, 'getoldetails']);
-    Route::get('/getdesigbyempid', [PromoController::class, 'getdesigbyempid']);
-    Route::put('/promotion', [PromoController::class, 'promote_employee']);
+    Route::get('/showpromotion', [PromotionController::class, 'view']);
+    Route::get('/createpromotion', [PromotionController::class, 'show']);
+    Route::get('/getoldetails', [PromotionController::class, 'getoldetails']);
+    Route::get('/getdesigbyempid', [PromotionController::class, 'getdesigbyempid']);
+    Route::put('/promotion', [PromotionController::class, 'promote_employee']);
 
 
     //Loan
