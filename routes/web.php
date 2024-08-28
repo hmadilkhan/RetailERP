@@ -83,7 +83,7 @@ Route::get('/storage-link', function () {
     symlink($targetFolder, $linkFolder);
 });
 
-Auth::routes();
+// Auth::routes();
 Route::get('/horizontal', function () {
     $pages = DB::table("pages_details")->get();
     return view("Test.index", compact('pages'));
