@@ -729,7 +729,6 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::put('/update-status', [ReceivedDemandController::class, 'update_status']);
     Route::post('/stock', [ReceivedDemandController::class, 'getstock']);
     Route::post('/transfer', [ReceivedDemandController::class, 'insert']);
-
     Route::post('/chk', [ReceivedDemandController::class, 'check']);
     Route::put('/updateitemstatus', [ReceivedDemandController::class, 'updatedemanditem']);
 
