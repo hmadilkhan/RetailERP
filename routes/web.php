@@ -460,6 +460,9 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/assign-product-to-vendors', [InventoryController::class, 'assignProductToVendors']);
     Route::get('/test-notification/{code}/{mode}/{message}', [InventoryController::class, 'sendPushNotificationForPermission']);
     Route::post('/get-product-code', [InventoryController::class, 'autoGenerateCode']);
+    Route::post('/inventory/getProduct_attribute', [InventoryController::class, 'getProduct_attribute'])->name('getProduct_attribute');
+    Route::post('/inventory/product-attribute-insert', [InventoryController::class, 'insertProduct_attribute'])->name('insertProduct_attribute');
+    Route::post('/inventory/product-attribute-update', [InventoryController::class, 'setProductAttribute_update'])->name('setProductAttribute_update');
 
     Route::get('/get-pos-orders', [OrderController::class, 'getPOSOrders']);
     Route::get('/get-pos-filter-orders', [OrderController::class, 'getPOSFilterOrders']);
@@ -1204,5 +1207,4 @@ Route::middleware(['statusCheck'])->group(function () {
     /******************************* OPENING CLOSING STARTS HERE **********************************/
     Route::get('/opening-closing', 'OpeningClosingController@index')->name("opening.closing");
     /******************************* OPENING CLOSING ENDS HERE **********************************/
-
 });
