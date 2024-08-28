@@ -35,6 +35,7 @@ use App\Http\Controllers\IncrementController;
 use App\Http\Controllers\Inventory_DepartmentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\InventoryDealController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\KitchenDepartmentController;
 use App\Http\Controllers\LeaveController;
@@ -466,7 +467,58 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::get('/get-pos-orders', [OrderController::class, 'getPOSOrders']);
     Route::get('/get-pos-filter-orders', [OrderController::class, 'getPOSFilterOrders']);
+    Route::get('/change-order-status/{id}/{status}', [OrderController::class, 'orderStatusChange']);
+    Route::get('/sent-to-workshop/{id}/{itemId}', [OrderController::class, 'sentToWorkshop']);
+    Route::get('/change-item-status/{id}/{itemId}/{status}', [OrderController::class, 'changeItemStatus']);
 
+    Route::post('/inventory/variable-products/set-variation-all-variable-product', [InventoryController::class, 'set_variationAllVariableProduct'])->name('set_variationAllVariableProduct');
+    Route::post('/inventory/variable-products/get-variation-values', [InventoryController::class, 'getInventoryVariationProduct_values'])->name('VariableProduct_VariationValues');
+    Route::post('/inventory/variable-products/store-variation', [InventoryController::class, 'addVariation'])->name('storeVariableProduct_variation');
+    Route::post('/inventory/variable-products/update-variation', [InventoryController::class, 'updateVariation'])->name('updateVariableProduct_variation');
+    Route::post('/inventory/variable-products/remove-variation', [InventoryController::class, 'removeVariation'])->name('removeVariation_variableProduct');
+
+
+    Route::get('/inventory/{id}/deal-products', [InventoryController::class, 'createDealProduct'])->name('createDealProduct');
+    Route::post('/inventory/update-deal-product', [InventoryController::class, 'updateDeal_product'])->name('updateDealProduct_up');
+    Route::post('/inventory/store-dealproducts', [InventoryController::class, 'storeDeal_product'])->name('storeDeal_product');
+    Route::post('/inventory/deal-products/reload', [InventoryController::class, 'reload_dealProducts'])->name('reloadDealProduct');
+    Route::post('/inventory/deal-product-remove', [InventoryController::class, 'removeDeal_product'])->name('removeDeal_product');
+
+    Route::post('/inventory/deal-products/addons', [InventoryController::class, 'get_addons_dealProduct'])->name('getAddons_dealProduct');
+    Route::post('/inventory/deal-products/store-addon', [InventoryController::class, 'store_addon_dealProduct'])->name('storeAddon_dealProduct');
+    Route::post('/inventory/deal-products/store-addon-single-value', [InventoryController::class, 'store_singleValue_addonDealProduct'])->name('store_singleValue_addonDealProduct');
+    Route::post('/inventory/deal-products/update-addon', [InventoryController::class, 'update_addonDealProduct'])->name('update_addonDealProduct');
+    Route::post('/inventory/deal-products/get-addon-values', [InventoryController::class, 'loadAddonValues'])->name('getAddonValues_dealProduct');
+    Route::post('/inventory/deal-products/remove-addon', [InventoryController::class, 'removeAddon_dealProduct'])->name('removeAddon_dealProduct');
+    Route::post('/inventory/deal-products/remove-addon-value', [InventoryController::class, 'removeAddonValue_dealProduct'])->name('removeAddonValue_dealProduct');
+
+
+    Route::post('/inventory/store-addon', [InventoryController::class, 'storeAddon'])->name('storeAddon');
+    Route::post('/inventory/store-addon-single-value', [InventoryController::class, 'store_singleValueAddon'])->name('store_singleValueAddon');
+    Route::post('/inventory/update-addons', [InventoryController::class, 'updateAddon'])->name('updateAddon');
+    Route::post('/inventory/get-addons', [InventoryController::class, 'loadAddons'])->name('loadAddons');
+    Route::post('/inventory/get-addon-values', [InventoryController::class, 'loadAddonValues'])->name('loadAddonValues');
+    Route::post('/inventory/remove-addon', [InventoryController::class, 'removeAddon'])->name('removeAddon');
+    Route::post('/inventory/remove-addon-value', [InventoryController::class, 'removeAddonValue'])->name('removeAddonValue');
+
+
+
+    // inventory deal updated
+    Route::get('/inventory/deals-debug', [InventoryController::class, 'getInventoryDeals'])->name('getDeal_up');
+    Route::post('/inventory/deals-product-value', [InventoryController::class, 'getInventoryDeals_prodValues'])->name('getDeal_prod_values');
+    Route::post('/inventory/store-deal', [InventoryController::class, 'storeDeal'])->name('storeDeal_up');
+    Route::post('/inventory/store-deal-value', [InventoryController::class, 'singleDealProduct_store'])->name('storeDealValue_single');
+    Route::post('/inventory/update-deal', [InventoryController::class, 'updateDeal'])->name('updateDeal_up');
+    Route::post('/inventory/remove-deals', [InventoryController::class, 'removeDeal'])->name('removeDeal_up');
+
+    // Inventory Deal
+    Route::get('/inventory/deals', [InventoryDealController::class,'index'])->name('listInventDeal');
+    Route::get('/inventory/deal/get-group-values', [InventoryDealController::class,'getGroups_values'])->name('getGroupValues');
+    Route::get('/inventory/deal/create', [InventoryDealController::class,'create'])->name('dealCreate');
+    Route::post('/inventory/deal/store', [InventoryDealController::class,'store'])->name('dealStore');
+    Route::post('/inventory/deal/update', [InventoryDealController::class,'update'])->name('dealUpdate');
+    Route::post('/inventory/deal/detail', [InventoryDealController::class,'get_deal_detail'])->name('dealDetail');
+    Route::post('/inventory/deal/remove', [InventoryDealController::class,'destroy'])->name('dealRemove');
 
     // variation module //
     Route::get('/inventory/variations', [VariationController::class, 'index'])->name('listVariation');
@@ -487,6 +539,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::patch('/inventory/variation-product/{id}/update', [VariationProductController::class, 'update'])->name('updateVariation');
     Route::delete('/inventory/variation-product/{id}/remove', [VariationProductController::class, 'destroy'])->name('removeVariation');
     Route::get('/inventory/variation-product/{filename}/image', [VariationProductController::class, 'imageView'])->name('imageVariatProduct');
+    
     Route::resource('inventory/brands', BranchController::class);
 
     // Tag
