@@ -64,7 +64,6 @@ use App\Http\Controllers\VariationProductController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
 use App\Livewire\ViewInventory;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
@@ -83,7 +82,7 @@ Route::get('/storage-link', function () {
     symlink($targetFolder, $linkFolder);
 });
 
-// Auth::routes();
+Auth::routes();
 Route::get('/horizontal', function () {
     $pages = DB::table("pages_details")->get();
     return view("Test.index", compact('pages'));
