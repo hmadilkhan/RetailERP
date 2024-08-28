@@ -556,7 +556,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/sales/change-website-order-status', [OrderController::class, 'statusUpdate_websiteOrder']);
     Route::post('/sales/check-website-order', [OrderController::class, 'checkwebsiteOrders'])->name('checkwebsiteOrders');
     Route::get('/sales/website-orders-filter', [OrderController::class, 'websiteOrdersFilter'])->name('getWebsiteOrderFilter');
-    Route::get('/web-orders-filter', [OrderController::class, 'webOrdersFilter']);
+    Route::get('/web-orders-filter', [OrderController::class, 'webOrdersFilter'])->name('getWebOrderFilter');
     Route::post('/get-orders', [OrderController::class, 'getOrderById']);
     Route::post('/get-web-orders', [OrderController::class, 'getWebOrders']);
     Route::post('/get-terminal', [OrderController::class, 'getTerminal']);
