@@ -47,7 +47,7 @@ use App\Http\Controllers\PrintController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\purchaseController;
-use App\Http\Controllers\ReceiveddemandController;
+use App\Http\Controllers\ReceivedDemandController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalaryController;
 use App\Http\Controllers\SalesController;
@@ -513,13 +513,13 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/inventory/remove-deals', [InventoryController::class, 'removeDeal'])->name('removeDeal_up');
 
     // Inventory Deal
-    Route::get('/inventory/deals', [InventoryDealController::class,'index'])->name('listInventDeal');
-    Route::get('/inventory/deal/get-group-values', [InventoryDealController::class,'getGroups_values'])->name('getGroupValues');
-    Route::get('/inventory/deal/create', [InventoryDealController::class,'create'])->name('dealCreate');
-    Route::post('/inventory/deal/store', [InventoryDealController::class,'store'])->name('dealStore');
-    Route::post('/inventory/deal/update', [InventoryDealController::class,'update'])->name('dealUpdate');
-    Route::post('/inventory/deal/detail', [InventoryDealController::class,'get_deal_detail'])->name('dealDetail');
-    Route::post('/inventory/deal/remove', [InventoryDealController::class,'destroy'])->name('dealRemove');
+    Route::get('/inventory/deals', [InventoryDealController::class, 'index'])->name('listInventDeal');
+    Route::get('/inventory/deal/get-group-values', [InventoryDealController::class, 'getGroups_values'])->name('getGroupValues');
+    Route::get('/inventory/deal/create', [InventoryDealController::class, 'create'])->name('dealCreate');
+    Route::post('/inventory/deal/store', [InventoryDealController::class, 'store'])->name('dealStore');
+    Route::post('/inventory/deal/update', [InventoryDealController::class, 'update'])->name('dealUpdate');
+    Route::post('/inventory/deal/detail', [InventoryDealController::class, 'get_deal_detail'])->name('dealDetail');
+    Route::post('/inventory/deal/remove', [InventoryDealController::class, 'destroy'])->name('dealRemove');
 
     // variation module //
     Route::get('/inventory/variations', [VariationController::class, 'index'])->name('listVariation');
@@ -540,7 +540,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::patch('/inventory/variation-product/{id}/update', [VariationProductController::class, 'update'])->name('updateVariation');
     Route::delete('/inventory/variation-product/{id}/remove', [VariationProductController::class, 'destroy'])->name('removeVariation');
     Route::get('/inventory/variation-product/{filename}/image', [VariationProductController::class, 'imageView'])->name('imageVariatProduct');
-    
+
     Route::resource('inventory/brands', BranchController::class);
 
     // Tag
@@ -724,14 +724,14 @@ Route::middleware(['statusCheck'])->group(function () {
 
 
     //Demand Received Module
-    Route::get('/received-demand', [ReceiveddemandController::class, 'index']);
-    Route::get('/received-demandpanel/{id}', [ReceiveddemandController::class, 'show']);
-    Route::put('/update-status', [ReceiveddemandController::class, 'update_status']);
-    Route::post('/stock', [ReceiveddemandController::class, 'getstock']);
-    Route::post('/transfer', [ReceiveddemandController::class, 'insert']);
+    Route::get('/received-demand', [ReceivedDemandController::class, 'index']);
+    Route::get('/received-demandpanel/{id}', [ReceivedDemandController::class, 'show']);
+    Route::put('/update-status', [ReceivedDemandController::class, 'update_status']);
+    Route::post('/stock', [ReceivedDemandController::class, 'getstock']);
+    Route::post('/transfer', [ReceivedDemandController::class, 'insert']);
 
-    Route::post('/chk', [ReceiveddemandController::class, 'check']);
-    Route::put('/updateitemstatus', [ReceiveddemandController::class, 'updatedemanditem']);
+    Route::post('/chk', [ReceivedDemandController::class, 'check']);
+    Route::put('/updateitemstatus', [ReceivedDemandController::class, 'updatedemanditem']);
 
     //view transfer order
     Route::get('/view-transfer/{id}', [TransferController::class, 'index']);

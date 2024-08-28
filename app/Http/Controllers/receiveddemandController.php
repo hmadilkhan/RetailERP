@@ -8,7 +8,7 @@ use App\receiveddemand;
 use App\demand;
 
 
-class ReceiveddemandController extends Controller
+class ReceivedDemandController extends Controller
 {
     public function __construct()
     {
