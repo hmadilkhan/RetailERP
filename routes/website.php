@@ -69,6 +69,6 @@ Route::middleware(['statusCheck'])->group(function () {
         Route::post('/get-depart-n-subdepart', [WebsiteController::class, ' getDepart_n_subDepart_website_product'])->name('getDepart_n_subDepart_wb');
     });
 
-    Route::resource('website', 'WebsiteController');
+    Route::resource('website', WebsiteController::class);
     /******************************* website panel route closing **********************************/
 });
