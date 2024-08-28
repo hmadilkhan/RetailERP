@@ -4,15 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\WebsiteDetail;
-use App\WebsiteContact;
 use App\WebsiteProduct;
-use App\inventory;
 use App\Models\InventoryDepartment;
 use App\Models\Company;
 use App\branch;
 use App\terminal;
-use App\Http\Resources\websiteDeliveryAreaResource\deliveryAreasResource;
-use Session, Image, DB, Auth, Validator, File;
+use Illuminate\Support\Facades\DB;
+use Session, Image, Auth, Validator, File;
 
 class WebsiteController extends Controller
 {
