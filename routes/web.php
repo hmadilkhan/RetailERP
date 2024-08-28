@@ -64,6 +64,7 @@ use App\Http\Controllers\VariationProductController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
 use App\Livewire\ViewInventory;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 /*
 |--------------------------------------------------------------------------
