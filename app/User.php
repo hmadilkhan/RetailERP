@@ -61,4 +61,10 @@ class User extends Authenticatable
     {
         return session("roleId");
     }
+
+    public function canBeImpersonated()
+    {
+        // Example logic: Only allow non-admin users to be impersonated
+        return $this->role !== 'admin';
+    }
 }
