@@ -33,8 +33,8 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class InventoryController extends Controller
 {
-
-
+    // use MediaTrait;
+    // $this->uploads($request->file,"images/company",);
     public function __construct()
     {
         $this->middleware('auth');
@@ -170,9 +170,9 @@ class InventoryController extends Controller
         if (!empty($request->image)) {
              $image = $request->image;
              $imageName = "";
-            //          $request->validate([
-            //              'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            //          ]);
+                     $request->validate([
+                         'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                     ]);
 
             // foreach ($request->file('image') as $image) {
                 $imageName = time() . '-' . pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
