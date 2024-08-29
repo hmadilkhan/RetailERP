@@ -151,7 +151,7 @@ class InventoryController extends Controller
             'ap'            => 'required',
             'product_mode'  => 'required',
             // 'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
-            'image.*'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
 
         ];
 
@@ -214,19 +214,19 @@ class InventoryController extends Controller
                     
                     $folder = strtolower($company_name->name);
                     
-                if(Cloudinary::upload($image->getRealPath(),[
-                    'public_id'      => strtolower($imageName),
-                    'folder'         => $folder,
-                    'transformation' => $transformationArray
-                  ])->getSecurePath()){
+                    $imageData = Cloudinary::upload($image->getRealPath(), [
+                                                'public_id'      => strtolower($imageName),
+                                                'folder'         => $folder,
+                                                'transformation' => $transformationArray
+                                            ])->getSecurePath();
                       
-                      $slice = Str::afterLast($image, '/');
-                      if(isset($transformationArray['width'])){
-                        $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/w_".$transformationArray['width'].",h_".$transformationArray['height'].",c_".$transformationArray['crop'].",f_auto,q_auto/{$folder}/{$slice}";
-                      }else{
-                        $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/f_auto,q_auto/{$folder}/{$slice}";  
-                      }
-                  } 
+                    //   $slice = Str::afterLast($image, '/');
+                    //   if(isset($transformationArray['width'])){
+                    //     $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/w_".$transformationArray['width'].",h_".$transformationArray['height'].",c_".$transformationArray['crop'].",f_auto,q_auto/{$folder}/{$slice}";
+                    //   }else{
+                    //     $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/f_auto,q_auto/{$folder}/{$slice}";  
+                    //   }
+                  //} 
             // }
         }
 
