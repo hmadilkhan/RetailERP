@@ -47,13 +47,13 @@
 
         @media (min-width: 1025px) {
             .page-main:not(.split) {
-                background: url("assets/images/extra-profile-bg.png");
+                background: url("storage/images/extra-profile-bg.png");
                 background-color: #084c3f;
             }
         }
 
         .page-main:not(.split) {
-            background: url("assets/images/extra-profile-bg.png");
+            background: url("storage/images/extra-profile-bg.png");
             background-color: #084c3f;
         }
     </style>
