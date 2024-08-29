@@ -47,6 +47,8 @@ class InventoryController extends Controller
      */
     public function index(inventory $inventory, Brand $brand)
     {
+
+        $Cloudinaryurl = Cloudinary::getUrl('grocery store/1724940108-51ceqwn1sul._ac_sy741_.jpg'); 
         $department = $inventory->department();
         $subdepartment = ''; //$inventory->subDepartment();
         $uom = $inventory->uom();
@@ -66,7 +68,7 @@ class InventoryController extends Controller
             if (in_array(Auth::user()->username, ['fn1009'])) {
                 return view('Inventory.livewirelist', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
             } else {
-                return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+                return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList','Cloudinaryurl'));
             }
         } else {
             $inventory = '';
