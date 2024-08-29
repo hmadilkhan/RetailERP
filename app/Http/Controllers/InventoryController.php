@@ -170,13 +170,13 @@ class InventoryController extends Controller
         if (!empty($request->image)) {
              $image = $request->file('image');
             // return $image->getRealPath();
-             $imageName = "";
+            //  $imageName = "";
                      $request->validate([
                          'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
                      ]);
 
             // foreach ($request->file('image') as $image) {
-                $imageName = time() . '-' . pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
+                $imageName = time().'-'.pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME).'.'.$image->getClientOriginalExtension();
                 
                 $transformationArray = [];
                 
