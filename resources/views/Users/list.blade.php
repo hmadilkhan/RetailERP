@@ -55,7 +55,7 @@
               </td>
               <td class="action-icon">
                 @if(session("roleId") == 1)
-                  <a class="p-r-10 f-18 text-info" href="{{ route('impersonate', ['userId' => $targetUserId]) }}"><i class="fa fa-user-o"></i>Impersonate</a>
+                  <a class="p-r-10 f-18 text-info" href="{{ route('impersonate', ['userId' => session("userid")]) }}"><i class="fa fa-user-o"></i>Impersonate</a>
                 @endif
                 <a href="{{ url('/user-edit') }}/{{ Crypt::encrypt($value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
 
