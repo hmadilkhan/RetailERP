@@ -59,6 +59,14 @@
                     <td>{{ $inventory->stock }}</td>
                     <td>{{ $inventory->name }}</td>
                     <td>
+                        @if ($inventory->is_deal == 1)
+                            <a href='/inventory/{{ $inventory->id }}/deal-products' class='m-r-1'
+                                title='Create Deal Product'><i class='icofont icofont-plus text-success'></i></a>
+                        @else
+                            <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
+                                title='Create Variable & Addon Product'><i
+                                    class='icofont icofont-plus text-success'></i></a>
+                        @endif
                         <a onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
                             class='p-r-10 f-18 text-success' data-toggle='tooltip' data-placement='top'
                             title='Print Barcode' data-original-title='Barcode'><i
@@ -72,6 +80,7 @@
                         &nbsp;<i
                             onclick='assignToVendorModal("{{ $inventory->id }}") class="icofont icofont icofont-business-man #3A6EFF" data-toggle='tooltip'
                             data-placement='top' title='' data-original-title='Assign To Vendors'></i>
+
                     </td>
                 </tr>
             @endforeach
@@ -99,6 +108,7 @@
 </div>
 <script>
     var rem_id = [];
+
     function toggleDdSelect() {
         if ($(".chkbx:checked").length > 0) {
             $("#ddselect").css("display", "block");
@@ -111,6 +121,7 @@
         $(".chkbx").prop("checked", isChecked).change();
         toggleDdSelect();
     });
+
     function chkbox(id) {
         const totalCheckboxes = $(".chkbx").length;
         const checkedCheckboxes = $(".chkbx:checked").length;
