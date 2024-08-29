@@ -63,7 +63,7 @@ class InventoryController extends Controller
             $inventories = $inventory->getInventoryForPagewiseByFilters();
             // return $inventories;
             $inventory = '';
-            if (!in_array(Auth::user()->username, ['demoadmin', 'fnkhan'])) {
+            if (in_array(Auth::user()->username, ['demoadmin', 'fnkhan'])) {
                 return view('Inventory.livewirelist', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
             } else {
                 return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
