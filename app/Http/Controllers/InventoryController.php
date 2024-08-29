@@ -168,7 +168,7 @@ class InventoryController extends Controller
         
         $imageData = '';
         if (!empty($request->image)) {
-             $image = $request->image;
+             $image = $request->file('image');
             // return $image->getRealPath();
              $imageName = "";
                      $request->validate([
