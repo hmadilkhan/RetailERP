@@ -9,8 +9,8 @@
     <title>Sabsoft - Login</title>
     <meta name="description" content="">
     <!-- Favicon icon -->
-    <link rel="shortcut icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
-    <link rel="icon" href="{{ asset('assets/images/favicon.ico') }}" type="image/x-icon">
+    {{-- <link rel="shortcut icon" href="{{ asset('storage/images/favicon.png') }}" type="image/x-icon"> --}}
+    <link rel="icon" href="{{ asset('storage/images/favicon.ico') }}" type="image/x-icon">
 
     <link rel="stylesheet" media="all" href="{{ asset('assets/css/merchant-public') }}" />
     <script src="{{ asset('assets/js/shared-31') }}"></script>
