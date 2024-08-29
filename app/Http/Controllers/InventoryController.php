@@ -214,7 +214,7 @@ class InventoryController extends Controller
                     
                     $folder = strtolower($company_name->name);
                     
-                if(Cloudinary::upload($image->getRealPath(), [
+                if(Cloudinary::upload($image->getRealPath(),[
                     'public_id'      => strtolower($imageName),
                     'folder'         => $folder,
                     'transformation' => $transformationArray
