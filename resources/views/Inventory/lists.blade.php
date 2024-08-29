@@ -8,7 +8,7 @@
 
 @section('content')
     <section class="panels-wells">
-    {{ isset($Cloudinaryurl) ? $Cloudinaryurl : '' }}
+  
         <div class="card">
             <div class="card-header">
           
