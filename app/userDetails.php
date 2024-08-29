@@ -7,10 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class userDetails extends Model
 {
-    
-
-
-
     public function getcountry()
     {
     	$country = DB::table('country')->get();

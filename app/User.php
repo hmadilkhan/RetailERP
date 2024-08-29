@@ -5,12 +5,11 @@ namespace App;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-
-
+use Lab404\Impersonate\Models\Impersonate;
 
 class User extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable, Impersonate;
 
     /**
      * The attributes that are mass assignable.
@@ -18,13 +17,20 @@ class User extends Authenticatable
      * @var array
      */
     protected $table = 'user_details';
-	
+
 
     protected $fillable = [
-        'fullname', 'username', 'password','email','contact','country_id','city_id','address'
+        'fullname',
+        'username',
+        'password',
+        'email',
+        'contact',
+        'country_id',
+        'city_id',
+        'address'
     ];
 
-    protected $appends = [ 'role' ];
+    protected $appends = ['role'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -32,25 +38,27 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
-	
-	public function company(){
-		return $this->belongsTo(company::class,"company_id","company_id");
-	}
-	
-	public function branch(){
-		return $this->belongsTo(branch::class,"branch_id","branch_id");
-	}
+
+    public function company()
+    {
+        return $this->belongsTo(company::class, "company_id", "company_id");
+    }
+
+    public function branch()
+    {
+        return $this->belongsTo(branch::class, "branch_id", "branch_id");
+    }
     /**
      * The attributes that should be cast to native types.
      *
      * @var array
      */
-	
-        public function getRoleAttribute()
-        {
-            return session("roleId");
-        }
 
+    public function getRoleAttribute()
+    {
+        return session("roleId");
+    }
 }
