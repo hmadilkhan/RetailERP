@@ -13,9 +13,9 @@ class ImpersonateController extends Controller
         $user = User::findOrFail(auth()->user()->id);
         $userToImpersonate = User::findOrFail($userId);
 
-        if ($user->canImpersonate() && $userToImpersonate->canBeImpersonated()) {
-            Auth::user()->impersonate($userToImpersonate);
-        }
+        // if ( $userToImpersonate->canBeImpersonated()) {
+            // $userToImpersonate->impersonate($userToImpersonate);
+        // }
 
         return redirect()->route('home'); // Change to the route you want to redirect to after impersonation
     }

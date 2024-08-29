@@ -26,7 +26,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Config;
 use Illuminate\Support\Str;
-use Image,File,Auth;
+use Image, File, Auth;
 use Illuminate\Support\Facades\Http;
 
 
@@ -44,30 +44,34 @@ class InventoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(inventory $inventory,Brand $brand)
+    public function index(inventory $inventory, Brand $brand)
     {
         $department = $inventory->department();
         $subdepartment = ''; //$inventory->subDepartment();
         $uom = $inventory->uom();
         $branch = $inventory->branch();
         // $inventory = ''; //$inventory->getData();
-		$vendors = DB::table("vendors")->where("status_id",1)->where("user_id",session("company_id"))->get();
-		$references = DB::select("SELECT * FROM `inventory_reference` where product_id IN (Select id from inventory_general where company_id = ?) and refrerence != '' GROUP by refrerence",[session('company_id')]);
-		
-		$websites   = DB::table("website_details")->where("company_id",session("company_id"))->where("status",1)->get();
+        $vendors = DB::table("vendors")->where("status_id", 1)->where("user_id", session("company_id"))->get();
+        $references = DB::select("SELECT * FROM `inventory_reference` where product_id IN (Select id from inventory_general where company_id = ?) and refrerence != '' GROUP by refrerence", [session('company_id')]);
+
+        $websites   = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
         $brandList  = $brand->getBrand();
         $tagsList   = Tag::getTags();
-		
-		//if(session("company_id") == 7 or session("company_id") ==  102 && Auth::user()->username != 'demoadmin'){ //or session("company_id") ==  102 session("company_id") == 7 or
-		if(in_array(session("company_id"),[7,102]) && !in_array(Auth::user()->username,['demoadmin','fnkhan'])){
-			$inventories = $inventory->getInventoryForPagewiseByFilters();
-			// return $inventories;
-			 $inventory = '';
-			return view('Inventory.listnew', compact('inventory','inventories', 'department', 'subdepartment', 'uom', 'branch','vendors','references','websites','tagsList','brandList'));
-		}else{
-			$inventory = '';
-			return view('Inventory.lists', compact('inventory', 'department', 'subdepartment', 'uom', 'branch','vendors','references','websites','tagsList','brandList'));
-		}
+
+        //if(session("company_id") == 7 or session("company_id") ==  102 && Auth::user()->username != 'demoadmin'){ //or session("company_id") ==  102 session("company_id") == 7 or
+        if (in_array(session("company_id"), [7, 102]) && !in_array(Auth::user()->username, ['demoadmin', 'fnkhan'])) {
+            $inventories = $inventory->getInventoryForPagewiseByFilters();
+            // return $inventories;
+            $inventory = '';
+            if (!in_array(Auth::user()->username, ['demoadmin', 'fnkhan'])) {
+                return view('Inventory.livewirelist', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+            } else {
+                return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+            }
+        } else {
+            $inventory = '';
+            return view('Inventory.lists', compact('inventory', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+        }
     }
 
     public function getInventory(inventory $inventory)
@@ -75,73 +79,72 @@ class InventoryController extends Controller
         $inventory = $inventory->getData();
         return $inventory;
     }
-	
-	function fetchData(Request $request,inventory $inventory)
+
+    function fetchData(Request $request, inventory $inventory)
     {
-		if($request->ajax())
-		{
-		  $inventories = $inventory->getInventoryForPagewiseByFilters($request->code, $request->name, $request->dept, $request->sdept,$request->rp,$request->ref,$request->status,$request->nonstock);
-		  return view('Inventory.inventory_table', compact('inventories'))->render();
-		}
+        if ($request->ajax()) {
+            $inventories = $inventory->getInventoryForPagewiseByFilters($request->code, $request->name, $request->dept, $request->sdept, $request->rp, $request->ref, $request->status, $request->nonstock);
+            return view('Inventory.inventory_table', compact('inventories'))->render();
+        }
     }
-    
-    
+
+
     public function getDeparmtent_wise_Inventory(Request $request)
     {
-        return DB::table('inventory_general')->where('sub_department_id',$request->id)->get();
-    }    
+        return DB::table('inventory_general')->where('sub_department_id', $request->id)->get();
+    }
 
     public function getInactiveInventory(inventory $inventory)
     {
         $inventory = $inventory->getInactiveData();
         return $inventory;
     }
-	
-	public function getNonStockInventory(Request $request,inventory $inventory)
+
+    public function getNonStockInventory(Request $request, inventory $inventory)
     {
-        $inventory = $inventory->getNonStockInventory($request->code, $request->name, $request->dept, $request->sdept,$request->rp,$request->ref);
+        $inventory = $inventory->getNonStockInventory($request->code, $request->name, $request->dept, $request->sdept, $request->rp, $request->ref);
         return $inventory;
     }
 
     public function getInventoryByName(Request $request, inventory $inventory)
     {
-        $inventory = $inventory->getDataByName($request->code, $request->name, $request->dept, $request->sdept,$request->rp,$request->ref);
+        $inventory = $inventory->getDataByName($request->code, $request->name, $request->dept, $request->sdept, $request->rp, $request->ref);
         return $inventory;
     }
 
     public function getInactiveInventoryBySearch(Request $request, inventory $inventory)
     {
-        $inventory = $inventory->getInactiveInventoryBySearch($request->code, $request->name, $request->dept, $request->sdept,$request->ref);
+        $inventory = $inventory->getInactiveInventoryBySearch($request->code, $request->name, $request->dept, $request->sdept, $request->ref);
         return $inventory;
     }
-	
-	public function autoGenerateCode(Request $request, inventory $inventory)
-	{
-		$code = "";
-		if($request->departmentId != "" && $request->subdepartmentId != ""){
-			$result = $inventory->getDepartAndSubDepart($request->departmentId,$request->subdepartmentId);
-			if(!empty($result) && $result[0]->deptcode != ""){
-				$code = $result[0]->deptcode."-".$result[0]->sdeptcode."-".rand(1000,9999);
-			}else{
-				$code = substr($result[0]->department_name, 0, 1).substr($result[0]->sub_depart_name, 0, 1)."-".rand(1000,9999);
-			}
-			return response()->json(["status" => 200,"code" => $code,"result" => $result ]);
-		}else{
-			return response()->json(["status" => 500,"code" => "" ]);
-		}
-	}
+
+    public function autoGenerateCode(Request $request, inventory $inventory)
+    {
+        $code = "";
+        if ($request->departmentId != "" && $request->subdepartmentId != "") {
+            $result = $inventory->getDepartAndSubDepart($request->departmentId, $request->subdepartmentId);
+            if (!empty($result) && $result[0]->deptcode != "") {
+                $code = $result[0]->deptcode . "-" . $result[0]->sdeptcode . "-" . rand(1000, 9999);
+            } else {
+                $code = substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
+            }
+            return response()->json(["status" => 200, "code" => $code, "result" => $result]);
+        } else {
+            return response()->json(["status" => 500, "code" => ""]);
+        }
+    }
 
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
-        
+
         $websiteMode = null; // website mode "retail" and "restaurent" use of purpose image size 
-		
+
         $rules = [
             'code'          => 'required',
             'name'          => 'required',
             'reminder'      => 'required',
             'uom'           => 'required',
-			'cuom'          => 'required',
+            'cuom'          => 'required',
             'depart'        => 'required',
             'subDepart'     => 'required',
             'rp'            => 'required',
@@ -153,11 +156,11 @@ class InventoryController extends Controller
         ];
 
         $this->validate($request, $rules);
-        
-        if(!empty($request->website)){
-            $result =  WebsiteDetail::where('company_id',session('company_id'))->where('id',$request->website)->first();
-            if(isset($result->type) && $result->type == 'boutique'){
-                    $websiteMode = 1;
+
+        if (!empty($request->website)) {
+            $result =  WebsiteDetail::where('company_id', session('company_id'))->where('id', $request->website)->first();
+            if (isset($result->type) && $result->type == 'boutique') {
+                $websiteMode = 1;
             }
         }
 
@@ -170,21 +173,21 @@ class InventoryController extends Controller
 
             foreach ($request->file('image') as $image) {
                 $imageName = time() . '-' . $image->getClientOriginalName() . '.' . $image->getClientOriginalExtension();
-                
-              if(isset($request->actual_image_size)){    
-                  $res = Image::make($image)
-                               ->save(public_path('assets/images/products/' . $imageName)); 
-                   //   $image->move(public_path('assets/images/products/'),$imageName)
-              }else{
-                if($websiteMode == 1){
-                    $img = Image::make($image)->resize(250, 344); 
-                }else{
-                
-                    $img = Image::make($image)->resize(400, 400);
+
+                if (isset($request->actual_image_size)) {
+                    $res = Image::make($image)
+                        ->save(public_path('assets/images/products/' . $imageName));
+                    //   $image->move(public_path('assets/images/products/'),$imageName)
+                } else {
+                    if ($websiteMode == 1) {
+                        $img = Image::make($image)->resize(250, 344);
+                    } else {
+
+                        $img = Image::make($image)->resize(400, 400);
+                    }
+
+                    $res = $img->save(public_path('assets/images/products/' . $imageName));
                 }
-                
-                $res = $img->save(public_path('assets/images/products/' . $imageName));                  
-              }
 
                 //                $imageName= time().'.'.$image->getClientOriginalName();
                 //                $image->move(public_path('assets/images/products/'), $imageName);
@@ -197,7 +200,7 @@ class InventoryController extends Controller
             'department_id' => $request->depart,
             'sub_department_id' => $request->subDepart,
             'uom_id' => $request->uom,
-			'cuom' => $request->cuom,
+            'cuom' => $request->cuom,
             'product_mode' => $request->product_mode,
             'priority' => $request->priority,
             'item_code' => $request->code,
@@ -335,230 +338,230 @@ class InventoryController extends Controller
 
             DB::table('inventory_stock')->insert($items);
         }
-       
-		$terminals = DB::table("terminal_details")->where("branch_id",session("branch"))->where("status_id",1)->get();
-		foreach($terminals as $value){
-			$items = [
-				"branchId" => session("branch"),
-				"terminalId" => $value->terminal_id,
-				"productId" => $productid,
-				"status" => 1,
-				"date" => date("Y-m-d"),
-				"time" => date("H:i:s"),
-			]; 
-			DB::table("inventory_download_status")->insert($items);
-		}
-		
-		if(!empty($request->vendor))
-		{
-			foreach($request->vendor as $singleVendor){
-				DB::table('vendor_product')->insert([
-					"vendor_id" => $singleVendor,
-					"product_id" => $productid,
-					"status" => 1,
-				]);
-			}
-		}
-		
-		if(!empty($request->website))
-		{
-			foreach($request->website as $website){
-				WebsiteProduct::create([
-					"website_id" => $website,
-					"inventory_id" => $productid,
-				]);
-			}
-		}		
-		
-// 		if(!empty($request->brand)){
-// 				DB::table('inventory_brands')->insert([
-// 					"inventory_id" => $productid,
-// 					"brand_id"     => $request->brand,
-// 					'created_at'   => date("Y-m-d H:i:s")
-// 				]);
-// 		}
-		
-		if(!empty($request->tags)){
-		    foreach($request->tags as $val){
-				DB::table('inventory_tags')->insert([
-					"inventory_id" => $productid,
-					"tag_id"     => $val,
-					'created_at'   => date("Y-m-d H:i:s")
-				]);
-		    }
-		}
-		
-       //Product Gallery		
-		if(!empty($request->prodgallery)){
-		    $count = 1;
-		      foreach($request->prodgallery as $val){ 
-            		    $prodGallery = $val;
-            		    $imageName   = $productid.time().'-'.$count.'.'.$prodGallery->getClientOriginalExtension();
-                        $response    = Image::make($image)
-                                             ->save(public_path('assets/images/products/' . $imageName));             		    
-            		    if($response){	
-                          	DB::table('inventory_images')->insert([
-            					"item_id" => $productid,
-            					"image"   => $imageName,
-            				]);
-            				
-            				$count++;
-            		    }
-		         }
-		}		
-		
-		//Product video
-		if(!empty($request->prodvideo)){
-		    $prodVideo = $request->prodvideo;
-		    
-		    $prodVideoName = $productid.time().'.'.$prodVideo->getClientOriginalExtension();
-		    
-		    if($prodVideo->move(public_path('assets/video/products/'),$prodVideoName)){
-		        
-              	DB::table('inventory_video')->insert([
-					"inventory_id" => $productid,
-					"file"         => $prodVideoName,
-					'created_at'   => date("Y-m-d H:i:s")
-				]);	
-		    }
-		}		
-		
-		
-// 		if(!empty($request->addons))
-// 		{
-// 			foreach($request->addons as $singleAddon){
-// 				InventoryAddon::create([
-// 					"addon_id" => $singleAddon,
-// 					"product_id" => $productid,
-// 				]);
-// 			}
-// 		}
 
-// 		if(!empty($request->extraproducts))
-// 		{
-// 			foreach($request->extraproducts as $extra){
-// 				DB::table("inventory_extra_products")->insert([
-// 					"extra_product_id" => $extra,
-// 					"product_id" => $productid,
-// 				]);
-// 			}
-// 		}
-	   $this->sendPushNotification($request->code,$request->name,"store");
-	   return  redirect()->back();
+        $terminals = DB::table("terminal_details")->where("branch_id", session("branch"))->where("status_id", 1)->get();
+        foreach ($terminals as $value) {
+            $items = [
+                "branchId" => session("branch"),
+                "terminalId" => $value->terminal_id,
+                "productId" => $productid,
+                "status" => 1,
+                "date" => date("Y-m-d"),
+                "time" => date("H:i:s"),
+            ];
+            DB::table("inventory_download_status")->insert($items);
+        }
+
+        if (!empty($request->vendor)) {
+            foreach ($request->vendor as $singleVendor) {
+                DB::table('vendor_product')->insert([
+                    "vendor_id" => $singleVendor,
+                    "product_id" => $productid,
+                    "status" => 1,
+                ]);
+            }
+        }
+
+        if (!empty($request->website)) {
+            foreach ($request->website as $website) {
+                WebsiteProduct::create([
+                    "website_id" => $website,
+                    "inventory_id" => $productid,
+                ]);
+            }
+        }
+
+        // 		if(!empty($request->brand)){
+        // 				DB::table('inventory_brands')->insert([
+        // 					"inventory_id" => $productid,
+        // 					"brand_id"     => $request->brand,
+        // 					'created_at'   => date("Y-m-d H:i:s")
+        // 				]);
+        // 		}
+
+        if (!empty($request->tags)) {
+            foreach ($request->tags as $val) {
+                DB::table('inventory_tags')->insert([
+                    "inventory_id" => $productid,
+                    "tag_id"     => $val,
+                    'created_at'   => date("Y-m-d H:i:s")
+                ]);
+            }
+        }
+
+        //Product Gallery		
+        if (!empty($request->prodgallery)) {
+            $count = 1;
+            foreach ($request->prodgallery as $val) {
+                $prodGallery = $val;
+                $imageName   = $productid . time() . '-' . $count . '.' . $prodGallery->getClientOriginalExtension();
+                $response    = Image::make($image)
+                    ->save(public_path('assets/images/products/' . $imageName));
+                if ($response) {
+                    DB::table('inventory_images')->insert([
+                        "item_id" => $productid,
+                        "image"   => $imageName,
+                    ]);
+
+                    $count++;
+                }
+            }
+        }
+
+        //Product video
+        if (!empty($request->prodvideo)) {
+            $prodVideo = $request->prodvideo;
+
+            $prodVideoName = $productid . time() . '.' . $prodVideo->getClientOriginalExtension();
+
+            if ($prodVideo->move(public_path('assets/video/products/'), $prodVideoName)) {
+
+                DB::table('inventory_video')->insert([
+                    "inventory_id" => $productid,
+                    "file"         => $prodVideoName,
+                    'created_at'   => date("Y-m-d H:i:s")
+                ]);
+            }
+        }
+
+
+        // 		if(!empty($request->addons))
+        // 		{
+        // 			foreach($request->addons as $singleAddon){
+        // 				InventoryAddon::create([
+        // 					"addon_id" => $singleAddon,
+        // 					"product_id" => $productid,
+        // 				]);
+        // 			}
+        // 		}
+
+        // 		if(!empty($request->extraproducts))
+        // 		{
+        // 			foreach($request->extraproducts as $extra){
+        // 				DB::table("inventory_extra_products")->insert([
+        // 					"extra_product_id" => $extra,
+        // 					"product_id" => $productid,
+        // 				]);
+        // 			}
+        // 		}
+        $this->sendPushNotification($request->code, $request->name, "store");
+        return  redirect()->back();
     }
-    
-    public function getProduct_attribute(Request $request,Brand $brand){
-       $columnName = $request->control; 
-       
-         if($columnName == 'brand'){
+
+    public function getProduct_attribute(Request $request, Brand $brand)
+    {
+        $columnName = $request->control;
+
+        if ($columnName == 'brand') {
 
             return $brand->getBrand();
-          
-         }elseif($columnName=='tag'){
+        } elseif ($columnName == 'tag') {
 
-            return Tag::getTags();          
-         }else{
-             return response()->json('Error invalid parameter values.',500);
-         }          
-        
+            return Tag::getTags();
+        } else {
+            return response()->json('Error invalid parameter values.', 500);
+        }
     }
-    
-    public function insertProduct_attribute(Request $request){
-       
-       $columnName = $request->control;
 
-         if($columnName == 'brand'){
-             
-            if(Brand::where('company_id',session('company_id'))->where('name',$request->value)->count() > 0){
-                return response()->json('Error! This '.$request->value.' brand already exists.',409); 
+    public function insertProduct_attribute(Request $request)
+    {
+
+        $columnName = $request->control;
+
+        if ($columnName == 'brand') {
+
+            if (Brand::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
+                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
             }
-             
-            return Brand::create(['name'=>$request->value,'slug'=>preg_replace("/[\s_]/", "-",strtolower($request->value)),'company_id' => session('company_id'),'created_at'=>date('Y-m-d H:i:s')]) ? response()->json('success',200) : response()->json('Error record is not saved.',500);
-          
-         }elseif($columnName=='tag'){
 
-            if(Tag::where('company_id',session('company_id'))->where('name',$request->value)->count() > 0){
-                return response()->json('Error! This '.$request->value.' brand already exists.',409); 
-            }             
-             
-            return Tag::create(['name'=>$request->value,'slug'=>preg_replace("/[\s_]/", "-",strtolower($request->value)),'company_id' => session('company_id'),'created_at'=>date('Y-m-d H:i:s')]) ? response()->json('success',200) : response()->json('Error record is not saved.',500);          
-         }elseif($columnName=='attribute'){
+            return Brand::create(['name' => $request->value, 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)), 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
+        } elseif ($columnName == 'tag') {
 
-            if(Attribute::where('company_id',session('company_id'))->where('name',$request->value)->count() > 0){
-                return response()->json('Error! This '.$request->value.' brand already exists.',409); 
-            }             
-             
-            return Attribute::create(['name'=>$request->value,'company_id'=>session('company_id'),'created_at'=>date('Y-m-d H:i:s')]) ? response()->json('success',200) : response()->json('Error record is not saved.',500);          
-         }else{
-             return response()->json('Error invalid parameter values.',500);
-         }        
-        
-    }    
-    
-    public function setProductAttribute_update(Request $request){
-        
-         if(!empty($request->website)){
-    			foreach($request->inventid as $productid){
-    			   $existsProduct =  WebsiteProduct::where('website_id',$request->website)->where('inventory_id',$productid)->where('status',1)->first();
-    			   if($existsProduct == null){
-        				WebsiteProduct::create([
-        					"website_id" => $request->website,
-        					"inventory_id" => $productid,
-        				]);
-    			   }
-    			}
-    			return response()->json('success',200);
-         }elseif(!empty($request->brand)){
-    			foreach($request->inventid as $productid){
-        				DB::table('inventory_general')
-        				  ->where('id',$productid)
-        				  ->update([
-        					"brand_id" => $request->brand,
-        				   ]);
-    			}
-    			return response()->json('success',200);             
-         }elseif(!empty($request->tags)){
-    			foreach($request->inventid as $productid){
-            		    foreach($request->tags as $val){
-            		     $existsProduct =  DB::table('inventory_tags')->where('tag_id',$val)->where('inventory_id',$productid)->where('status',1)->first();
-    			          if($existsProduct == null){
-            				DB::table('inventory_tags')->insert([
-            					"inventory_id" => $productid,
-            					"tag_id"     => $val,
-            					'created_at'   => date("Y-m-d H:i:s")
-            				]);
-    			          }
-            		    }
-    			}
-    			return response()->json('success',200);              
-         }else{
-             return redirect()->route('invent-list');
-         } 
-        
+            if (Tag::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
+                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
+            }
+
+            return Tag::create(['name' => $request->value, 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)), 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
+        } elseif ($columnName == 'attribute') {
+
+            if (Attribute::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
+                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
+            }
+
+            return Attribute::create(['name' => $request->value, 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
+        } else {
+            return response()->json('Error invalid parameter values.', 500);
+        }
     }
-    
-    
-    public function getInventoryDeals(Request $request){
-        
-        return DB::table('inventory_deal_general')->whereIn('inventory_deal_id',DB::table('inventory_general')
-                                                                            		  ->where('company_id',session('company_id'))
-                                                                            		  ->where('status',1)
-                                                                            		  ->pluck('id')
-                                                            )
-                                                ->join('addon_categories','addon_categories.id','inventory_deal_general.group_id')
-                                                ->where('inventory_deal_general.status',1)
-                                                ->select('inventory_deal_general.*','addon_categories.name','addon_categories.type as group_type')
-                                                ->get();
+
+    public function setProductAttribute_update(Request $request)
+    {
+
+        if (!empty($request->website)) {
+            foreach ($request->inventid as $productid) {
+                $existsProduct =  WebsiteProduct::where('website_id', $request->website)->where('inventory_id', $productid)->where('status', 1)->first();
+                if ($existsProduct == null) {
+                    WebsiteProduct::create([
+                        "website_id" => $request->website,
+                        "inventory_id" => $productid,
+                    ]);
+                }
+            }
+            return response()->json('success', 200);
+        } elseif (!empty($request->brand)) {
+            foreach ($request->inventid as $productid) {
+                DB::table('inventory_general')
+                    ->where('id', $productid)
+                    ->update([
+                        "brand_id" => $request->brand,
+                    ]);
+            }
+            return response()->json('success', 200);
+        } elseif (!empty($request->tags)) {
+            foreach ($request->inventid as $productid) {
+                foreach ($request->tags as $val) {
+                    $existsProduct =  DB::table('inventory_tags')->where('tag_id', $val)->where('inventory_id', $productid)->where('status', 1)->first();
+                    if ($existsProduct == null) {
+                        DB::table('inventory_tags')->insert([
+                            "inventory_id" => $productid,
+                            "tag_id"     => $val,
+                            'created_at'   => date("Y-m-d H:i:s")
+                        ]);
+                    }
+                }
+            }
+            return response()->json('success', 200);
+        } else {
+            return redirect()->route('invent-list');
+        }
     }
-    
-    public function getInventoryDeals_prodValues(Request $request){
+
+
+    public function getInventoryDeals(Request $request)
+    {
+
+        return DB::table('inventory_deal_general')->whereIn(
+            'inventory_deal_id',
+            DB::table('inventory_general')
+                ->where('company_id', session('company_id'))
+                ->where('status', 1)
+                ->pluck('id')
+        )
+            ->join('addon_categories', 'addon_categories.id', 'inventory_deal_general.group_id')
+            ->where('inventory_deal_general.status', 1)
+            ->select('inventory_deal_general.*', 'addon_categories.name', 'addon_categories.type as group_type')
+            ->get();
+    }
+
+    public function getInventoryDeals_prodValues(Request $request)
+    {
         return DB::table('inventory_deal_details')
-                                                ->join('inventory_general','inventory_general.id','inventory_deal_details.product_id')
-                                                ->join('inventory_department','inventory_department.department_id','inventory_general.department_id')
-                                                ->join('inventory_sub_department','inventory_sub_department.sub_department_id','inventory_general.sub_department_id')
-                                                ->where(['inventory_deal_details.inventory_general_id'=>$request->id,'inventory_deal_details.status'=>1])
-                                                ->select('inventory_deal_details.*','inventory_department.department_name','inventory_sub_department.sub_depart_name')
-                                                ->get();  
+            ->join('inventory_general', 'inventory_general.id', 'inventory_deal_details.product_id')
+            ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
+            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_general.sub_department_id')
+            ->where(['inventory_deal_details.inventory_general_id' => $request->id, 'inventory_deal_details.status' => 1])
+            ->select('inventory_deal_details.*', 'inventory_department.department_name', 'inventory_sub_department.sub_depart_name')
+            ->get();
         // $getRecord = DB::table('inventory_deal_details')->whereIn('inventory_general_id',DB::table('inventory_deal_general')
         //                                                                     		  ->where('inventory_deal_id',$request->prod_id)
         //                                                                     		  ->where('group_id',$request->group_id)
@@ -571,156 +574,152 @@ class InventoryController extends Controller
         //                                         ->select('inventory_deal_details.*','addons.inventory_product_id','addons.name','addons.quantity','inventory_department.department_name')
         //                                         ->get();  
         //   return $getRecord;                                      
-            // $productId = [];
-            
-            // $departmentId = $getRecord[0]->department_id;
-            
-            // foreach($getRecord as $val){
-            //     array_push($productId,$val->inventory_product_id);
-            // }
-            
-        // return response()->json(['departmentId'=>$departmentId,'productId'=>$productId]);    
-    }    
-    
-    public function storeDeal(Request $request){
-        try{
-        $count = AddonCategory::whereIn("id",DB::table('inventory_deal_general')->where('inventory_deal_id',$request->inventory_id)->where('status',1)->pluck('group_id'))->where("status",1)->where("name",$request->group_name)->count();
-        
-        if($count != 0){
-           return response()->json(["status" => 409,"contrl" => "group_name","msg"=>"This ".$request->group_name." group name is already taken from product ".$request->inventory_name]); 
-        }
-      
-// 			if($count == 0){
-			   $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $request->group_name,
-                                                    "show_website_name"  => $request->group_name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $request->group_type,
-                                                    "is_required"        => 1,
-                                					"mode"        		 => 'groups',
-                                					"addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    $getproducts = $request->products;
-                    foreach($getproducts as $prod_val){
-                        $getInventoryName = DB::table('inventory_general')->where('id',$prod_val)->first();
-                              Addon::create([
-                            					"inventory_product_id"   => $prod_val,
-                                                "name"                   => $getInventoryName->product_name,
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryDealGeneral_ID = InventoryDealGeneral::create([
-                                                            'inventory_deal_id' => $request->inventory_id,
-                                                            'group_id'          => $getAddonCategoryId->id,
-                                                            'status'            => 1,
-                                                            'created_at'        => date("Y-m-d H:i:s"),
-                                                            'updated_at'        => date("Y-m-d H:i:s"),
-                                                      ]);  
-                                                      
-                    if($getInventoryDealGeneral_ID){
-                          $getDealGroup_values = Addon::where('addon_category_id',$getAddonCategoryId->id)->get();
-                            foreach($getDealGroup_values  as $prod_val){
-                                InventoryDealDetail::create([
-                                                                'inventory_general_id'  => $getInventoryDealGeneral_ID->id,
-                                                                'sub_group_id'          => $prod_val->id,
-                                                                'status'                => 1,
-                                                          ]);                    
-                            }                        
-                        
-                    }                                  
-                  
-                    
-                }
-              return response()->json(["status" => 200]);  
-        }catch(Exception $e){
-            return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-        }
-// 			}else{
-			    
-// 			}
-    }
-    
-    public function updateDeal(Request $request){
-        try{
-             $count = AddonCategory::whereIn("id",DB::table('inventory_deal_general')->where('inventory_deal_id',$request->inventory_id)->where('group_id','!=',$request->group_id)->where('status',1)->pluck('group_id'))->where("status",1)->where("name",$request->group_name)->count();
-            
-             if($count != 0){
-              return response()->json(["status" => 409,"control" => "group_name_editmd","msg"=>"This ".$request->group_name." group name is already taken from product ".$request->inventory_name]); 
-             }
-             
-            AddonCategory::where('id',$request->group_id)->update(['status'=>0]); 
-            Addon::where('addon_category_id',$request->group_id)->update(['status'=>0]); 
-            
-            $getIdInventory_deal_general = InventoryDealGeneral::where('inventory_deal_id',$request->inventory_id)->where('group_id',$request->group_id)->pluck('id');            
-             InventoryDealGeneral::where('inventory_deal_id',$request->inventory_id)->where('group_id',$request->group_id)->update(['status'=>0]); 
-             InventoryDealDetail::where('inventory_general_id',$getIdInventory_deal_general)->update(['status'=>0]); 
-             
-            
-              $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $request->group_name,
-                                                    "show_website_name"  => $request->group_name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $request->group_type,
-                                                    "is_required"        => 1,
-                                					"mode"        		 => 'groups',
-                                					"addon_limit"        => isset($request->selection_limit) ? $request->selection_limit: 0,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    $getproducts = $request->products;
-                    $getproductQuantity = $request->product_qty;
-                    for($i=0;$i<count($getproducts);$i++){
-                        $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                              Addon::create([
-                            					"inventory_product_id"   => $prod_val,
-                                                "name"                   => $getInventoryName->product_name,
-                                                "quantity"               => $getproductQuantity[$i],
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryDealGeneral_ID = InventoryDealGeneral::create([
-                                                            'inventory_deal_id' => $request->inventory_id,
-                                                            'group_id'          => $getAddonCategoryId->id,
-                                                            'status'            => 1,
-                                                            'created_at'        => date("Y-m-d H:i:s"),
-                                                            'updated_at'        => date("Y-m-d H:i:s"),
-                                                      ]);  
-                                                      
-                    if($getInventoryDealGeneral_ID){
-                          $getDealGroup_values = Addon::where('addon_category_id',$getAddonCategoryId->id)->get();
-                            foreach($getDealGroup_values  as $prod_val){
-                                InventoryDealDetail::create([
-                                                                'inventory_general_id'  => $getInventoryDealGeneral_ID->id,
-                                                                'sub_group_id'          => $prod_val->id,
-                                                                'status'                => 1,
-                                                          ]);                    
-                            }                        
-                        
-                    }                                  
-                  
-                    
-                }
-              return response()->json(["status" => 200]);              
-        
-        }catch(Exception $e){
-            return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-        }        
-    }    
+        // $productId = [];
 
-    public function removeDeal(Request $request){
-       if(AddonCategory::where('id',$request->group_id)->update(['status'=>0]) && InventoryDealGeneral::where('group_id',$request->group_id)->where('inventory_deal_id',$request->inventid)->update(['status'=>0])){
-          return response()->json(["status" => 200]); 
-       }else{
-          return response()->json(["status" => 500,"msg"=>'Server issue! record is not removed.']); 
-       }
+        // $departmentId = $getRecord[0]->department_id;
+
+        // foreach($getRecord as $val){
+        //     array_push($productId,$val->inventory_product_id);
+        // }
+
+        // return response()->json(['departmentId'=>$departmentId,'productId'=>$productId]);    
+    }
+
+    public function storeDeal(Request $request)
+    {
+        try {
+            $count = AddonCategory::whereIn("id", DB::table('inventory_deal_general')->where('inventory_deal_id', $request->inventory_id)->where('status', 1)->pluck('group_id'))->where("status", 1)->where("name", $request->group_name)->count();
+
+            if ($count != 0) {
+                return response()->json(["status" => 409, "contrl" => "group_name", "msg" => "This " . $request->group_name . " group name is already taken from product " . $request->inventory_name]);
+            }
+
+            // 			if($count == 0){
+            $getAddonCategoryId = AddonCategory::create([
+                "name"               => $request->group_name,
+                "show_website_name"  => $request->group_name,
+                "user_id"            => auth()->user()->id,
+                "company_id"         => session("company_id"),
+                "type"               => $request->group_type,
+                "is_required"        => 1,
+                "mode"                 => 'groups',
+                "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
+            ]);
+
+            if ($getAddonCategoryId) {
+                $getproducts = $request->products;
+                foreach ($getproducts as $prod_val) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $prod_val)->first();
+                    Addon::create([
+                        "inventory_product_id"   => $prod_val,
+                        "name"                   => $getInventoryName->product_name,
+                        "addon_category_id"      => $getAddonCategoryId->id,
+                        "user_id"                => auth()->user()->id,
+                    ]);
+                }
+
+                $getInventoryDealGeneral_ID = InventoryDealGeneral::create([
+                    'inventory_deal_id' => $request->inventory_id,
+                    'group_id'          => $getAddonCategoryId->id,
+                    'status'            => 1,
+                    'created_at'        => date("Y-m-d H:i:s"),
+                    'updated_at'        => date("Y-m-d H:i:s"),
+                ]);
+
+                if ($getInventoryDealGeneral_ID) {
+                    $getDealGroup_values = Addon::where('addon_category_id', $getAddonCategoryId->id)->get();
+                    foreach ($getDealGroup_values  as $prod_val) {
+                        InventoryDealDetail::create([
+                            'inventory_general_id'  => $getInventoryDealGeneral_ID->id,
+                            'sub_group_id'          => $prod_val->id,
+                            'status'                => 1,
+                        ]);
+                    }
+                }
+            }
+            return response()->json(["status" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+        // 			}else{
+
+        // 			}
+    }
+
+    public function updateDeal(Request $request)
+    {
+        try {
+            $count = AddonCategory::whereIn("id", DB::table('inventory_deal_general')->where('inventory_deal_id', $request->inventory_id)->where('group_id', '!=', $request->group_id)->where('status', 1)->pluck('group_id'))->where("status", 1)->where("name", $request->group_name)->count();
+
+            if ($count != 0) {
+                return response()->json(["status" => 409, "control" => "group_name_editmd", "msg" => "This " . $request->group_name . " group name is already taken from product " . $request->inventory_name]);
+            }
+
+            AddonCategory::where('id', $request->group_id)->update(['status' => 0]);
+            Addon::where('addon_category_id', $request->group_id)->update(['status' => 0]);
+
+            $getIdInventory_deal_general = InventoryDealGeneral::where('inventory_deal_id', $request->inventory_id)->where('group_id', $request->group_id)->pluck('id');
+            InventoryDealGeneral::where('inventory_deal_id', $request->inventory_id)->where('group_id', $request->group_id)->update(['status' => 0]);
+            InventoryDealDetail::where('inventory_general_id', $getIdInventory_deal_general)->update(['status' => 0]);
+
+
+            $getAddonCategoryId = AddonCategory::create([
+                "name"               => $request->group_name,
+                "show_website_name"  => $request->group_name,
+                "user_id"            => auth()->user()->id,
+                "company_id"         => session("company_id"),
+                "type"               => $request->group_type,
+                "is_required"        => 1,
+                "mode"                 => 'groups',
+                "addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
+            ]);
+
+            if ($getAddonCategoryId) {
+                $getproducts = $request->products;
+                $getproductQuantity = $request->product_qty;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+                    Addon::create([
+                        "inventory_product_id"   => $prod_val,
+                        "name"                   => $getInventoryName->product_name,
+                        "quantity"               => $getproductQuantity[$i],
+                        "addon_category_id"      => $getAddonCategoryId->id,
+                        "user_id"                => auth()->user()->id,
+                    ]);
+                }
+
+                $getInventoryDealGeneral_ID = InventoryDealGeneral::create([
+                    'inventory_deal_id' => $request->inventory_id,
+                    'group_id'          => $getAddonCategoryId->id,
+                    'status'            => 1,
+                    'created_at'        => date("Y-m-d H:i:s"),
+                    'updated_at'        => date("Y-m-d H:i:s"),
+                ]);
+
+                if ($getInventoryDealGeneral_ID) {
+                    $getDealGroup_values = Addon::where('addon_category_id', $getAddonCategoryId->id)->get();
+                    foreach ($getDealGroup_values  as $prod_val) {
+                        InventoryDealDetail::create([
+                            'inventory_general_id'  => $getInventoryDealGeneral_ID->id,
+                            'sub_group_id'          => $prod_val->id,
+                            'status'                => 1,
+                        ]);
+                    }
+                }
+            }
+            return response()->json(["status" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+    }
+
+    public function removeDeal(Request $request)
+    {
+        if (AddonCategory::where('id', $request->group_id)->update(['status' => 0]) && InventoryDealGeneral::where('group_id', $request->group_id)->where('inventory_deal_id', $request->inventid)->update(['status' => 0])) {
+            return response()->json(["status" => 200]);
+        } else {
+            return response()->json(["status" => 500, "msg" => 'Server issue! record is not removed.']);
+        }
     }
 
 
@@ -729,32 +728,32 @@ class InventoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(inventory $inventory,Vendor $vendor,Brand $brand)
+    public function create(inventory $inventory, Vendor $vendor, Brand $brand)
     {
-		// if(auth()->user()->id == 864){
-			// $stocks = DB::select("SELECT * FROM `inventory_stock` WHERE `branch_id` = 219 and product_id IN (SELECT id FROM `inventory_general` where company_id = 74 and department_id = 855)");
-			// $branchIds = [237,238,239,240,243,244,245,246,249];
-			// foreach($branchIds as $branch){
-				// foreach($stocks as $key => $stock){
-					// DB::table("inventory_stock")->insert([
-						// "grn_id" => $stock->grn_id,
-						// "product_id" =>$stock->product_id,
-						// "uom" =>$stock->uom,
-						// "cost_price" =>$stock->cost_price,
-						// "retail_price" =>$stock->retail_price,
-						// "wholesale_price" =>$stock->wholesale_price,
-						// "discount_price" =>$stock->discount_price,
-						// "qty" =>$stock->qty,
-						// "balance" =>$stock->balance,
-						// "status_id" =>$stock->status_id,
-						// "branch_id" =>$branch,
-						// "date" => date("Y-m-d H:i:s"),
-						// "narration" =>$stock->narration,
-					// ]);
-				// }
-			// }
-			
-		// }
+        // if(auth()->user()->id == 864){
+        // $stocks = DB::select("SELECT * FROM `inventory_stock` WHERE `branch_id` = 219 and product_id IN (SELECT id FROM `inventory_general` where company_id = 74 and department_id = 855)");
+        // $branchIds = [237,238,239,240,243,244,245,246,249];
+        // foreach($branchIds as $branch){
+        // foreach($stocks as $key => $stock){
+        // DB::table("inventory_stock")->insert([
+        // "grn_id" => $stock->grn_id,
+        // "product_id" =>$stock->product_id,
+        // "uom" =>$stock->uom,
+        // "cost_price" =>$stock->cost_price,
+        // "retail_price" =>$stock->retail_price,
+        // "wholesale_price" =>$stock->wholesale_price,
+        // "discount_price" =>$stock->discount_price,
+        // "qty" =>$stock->qty,
+        // "balance" =>$stock->balance,
+        // "status_id" =>$stock->status_id,
+        // "branch_id" =>$branch,
+        // "date" => date("Y-m-d H:i:s"),
+        // "narration" =>$stock->narration,
+        // ]);
+        // }
+        // }
+
+        // }
         $department = $inventory->department();
         $subdepartment = $inventory->subDepartment();
         $uom = $inventory->uom();
@@ -764,15 +763,15 @@ class InventoryController extends Controller
         $attributes  = Attribute::get_attributes();
         $mode = $inventory->getProductMode();
         $vendors = $vendor->getVendors();
-		$websites = DB::table("website_details")->where("company_id",session("company_id"))->where("status",1)->get();
-		$totaladdons = AddonCategory::where("company_id",session("company_id"))->where("mode","addons")->where('status',1)->get();
-// 		$extras = DB::table("extra_products")->whereNull("parent")->get();
-      
-         if(Auth::user()->username == 'demoadmin'){
-             return view('Inventory.create-debug', compact('department', 'subdepartment', 'uom', 'branch', 'mode','vendors','totaladdons','websites','brandList','tagsList','attributes'));
-         }else{
-            return view('Inventory.create', compact('department', 'subdepartment', 'uom', 'branch', 'mode','vendors','totaladdons','websites','brandList','tagsList'));
-         }
+        $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
+        $totaladdons = AddonCategory::where("company_id", session("company_id"))->where("mode", "addons")->where('status', 1)->get();
+        // 		$extras = DB::table("extra_products")->whereNull("parent")->get();
+
+        if (Auth::user()->username == 'demoadmin') {
+            return view('Inventory.create-debug', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList', 'attributes'));
+        } else {
+            return view('Inventory.create', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList'));
+        }
     }
 
     /**
@@ -795,7 +794,7 @@ class InventoryController extends Controller
         return $result;
     }
 
-    public function getData(Request $request, inventory $inventory,Brand $brand)
+    public function getData(Request $request, inventory $inventory, Brand $brand)
     {
         $department = $inventory->department();
         $subdepartment = $inventory->subDepartment();
@@ -808,16 +807,16 @@ class InventoryController extends Controller
         $images = $inventory->getImages($request->id);
         $references =  $inventory->getReferences($request->id);
         $prices = $inventory->getpricebyproduct($data[0]->id);
-		$websites = DB::table("website_details")->where("company_id",session("company_id"))->where("status",1)->get();
-		$totaladdons = AddonCategory::where("company_id",session("company_id"))->where("mode","addons")->get();
-		$selectedAddons = InventoryAddon::where("product_id",$data[0]->id)->pluck("addon_id");
-		$selectedWebsites = WebsiteProduct::where("inventory_id",$data[0]->id)->pluck("website_id");
-		$extras = DB::table("extra_products")->whereNull("parent")->get();
-		$selectedExtras = DB::table("inventory_extra_products")->where("product_id",$data[0]->id)->pluck("extra_product_id");
-		
-		$inventoryBrand = DB::table("inventory_brands")->where("inventory_id",$data[0]->id)->pluck("brand_id");
-		
-		$inventoryTags = DB::table("inventory_tags")->where("inventory_id",$data[0]->id)->pluck("tag_id");
+        $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
+        $totaladdons = AddonCategory::where("company_id", session("company_id"))->where("mode", "addons")->get();
+        $selectedAddons = InventoryAddon::where("product_id", $data[0]->id)->pluck("addon_id");
+        $selectedWebsites = WebsiteProduct::where("inventory_id", $data[0]->id)->pluck("website_id");
+        $extras = DB::table("extra_products")->whereNull("parent")->get();
+        $selectedExtras = DB::table("inventory_extra_products")->where("product_id", $data[0]->id)->pluck("extra_product_id");
+
+        $inventoryBrand = DB::table("inventory_brands")->where("inventory_id", $data[0]->id)->pluck("brand_id");
+
+        $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->pluck("tag_id");
 
         foreach ($references as $refval) {
             $ref[] = $refval->refrerence;
@@ -827,8 +826,8 @@ class InventoryController extends Controller
         } else {
             $references = "";
         }
-          
-        return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices','totaladdons','selectedAddons','websites','selectedWebsites','extras','selectedExtras','tagsList','brandList','inventoryBrand','inventoryTags'));
+
+        return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
     }
 
 
@@ -849,9 +848,7 @@ class InventoryController extends Controller
      * @param  \App\inventory  $inventory
      * @return \Illuminate\Http\Response
      */
-    public function edit(inventory $inventory)
-    {
-    }
+    public function edit(inventory $inventory) {}
 
     /**
      * Update the specified resource in storage.
@@ -868,39 +865,39 @@ class InventoryController extends Controller
         $invent = new inventory();
         $websiteMode = null;
         if ($request->image != "") {
-            
+
             $rules = [
-                        // 'image'     =>'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
-                        'image.*'   =>'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
-                     ];
-                     
-            $this->validate($request,$rules);         
-            
-            if(!empty($request->website)){
-                $result =  WebsiteDetail::where('company_id',session('company_id'))->where('id',$request->website)->first();
-                if(isset($result->type) && $result->type == 'boutique'){
-                        $websiteMode = 1;
+                // 'image'     =>'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
+                'image.*'   => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
+            ];
+
+            $this->validate($request, $rules);
+
+            if (!empty($request->website)) {
+                $result =  WebsiteDetail::where('company_id', session('company_id'))->where('id', $request->website)->first();
+                if (isset($result->type) && $result->type == 'boutique') {
+                    $websiteMode = 1;
                 }
-            }            
-            
+            }
+
             foreach ($request->file('image') as $image) {
-                $imageName = time().'.' . $image->getClientOriginalExtension();
-             if(isset($request->actual_image_size)){ 
-                 
-                  $res = Image::make($image)
-                               ->save(public_path('assets/images/products/' . $imageName));
-                               
-                //   $res = $image->move(public_path('assets/images/products/'),$imageName); 
-              }else{
-                if($websiteMode == 1){
-                    $img = Image::make($image)->resize(250, 344);
-                }else{
-                    $img = Image::make($image)->resize(400, 400);
-                } 
-                
-                $res = $img->save(public_path('assets/images/products/' . $imageName));
-              }
-                $data[] = $imageName; 
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                if (isset($request->actual_image_size)) {
+
+                    $res = Image::make($image)
+                        ->save(public_path('assets/images/products/' . $imageName));
+
+                    //   $res = $image->move(public_path('assets/images/products/'),$imageName); 
+                } else {
+                    if ($websiteMode == 1) {
+                        $img = Image::make($image)->resize(250, 344);
+                    } else {
+                        $img = Image::make($image)->resize(400, 400);
+                    }
+
+                    $res = $img->save(public_path('assets/images/products/' . $imageName));
+                }
+                $data[] = $imageName;
             }
 
             $fields = [
@@ -909,14 +906,14 @@ class InventoryController extends Controller
                 'sub_department_id' => $request->subDepart,
                 'priority' => $request->priority,
                 'uom_id' => $request->uom,
-				'cuom' => $request->cuom,
+                'cuom' => $request->cuom,
                 'product_mode' => $request->product_mode,
                 'item_code' => $request->code,
                 'product_name' => $request->name,
                 'product_description' => $request->description,
                 'image' => $data[0],
                 'status' => 1,
-                'is_deal'=>(isset($request->is_deal) ? 1 : 0),
+                'is_deal' => (isset($request->is_deal) ? 1 : 0),
                 'created_at' => date('Y-m-d H:s:i'),
                 'updated_at' => date('Y-m-d H:s:i'),
                 'weight_qty' => $request->weight,
@@ -924,8 +921,8 @@ class InventoryController extends Controller
                 'details'  => $request->details,
                 'brand_id' => $request->brand
             ];
-			
-			
+
+
 
             $result = $invent->modify($fields, $request->id);
 
@@ -943,7 +940,7 @@ class InventoryController extends Controller
                 'department_id' => $request->depart,
                 'sub_department_id' => $request->subDepart,
                 'uom_id' => $request->uom,
-				'cuom' => $request->cuom,
+                'cuom' => $request->cuom,
                 'product_mode' => $request->product_mode,
                 'item_code' => $request->code,
                 'product_name' => $request->name,
@@ -951,7 +948,7 @@ class InventoryController extends Controller
                 'created_at' => date('Y-m-d H:s:i'),
                 'updated_at' => date('Y-m-d H:s:i'),
                 'weight_qty' => $request->weight,
-                'is_deal'=>(isset($request->is_deal) ? 1 : 0),
+                'is_deal' => (isset($request->is_deal) ? 1 : 0),
                 'short_description' => $request->sdescription,
                 'details'  => $request->details,
                 'brand_id' => $request->brand
@@ -972,102 +969,101 @@ class InventoryController extends Controller
         }
 
         $prices = $invent->getpricebyproduct($request->id);
-		
+
         // if ($request->rp != $prices[0]->retail_price || $request->wp != $prices[0]->wholesale_price || $request->op != $prices[0]->online_price || $request->dp != $prices[0]->discount_price) 
-		// {
-		// return $prices;
-            $items = [
-                'status_id' => 2,
-            ];
+        // {
+        // return $prices;
+        $items = [
+            'status_id' => 2,
+        ];
 
-            $price = $invent->updateprice($prices[0]->price_id, $items);
+        $price = $invent->updateprice($prices[0]->price_id, $items);
 
-            //insert new prices
-            $items = [
-				'cost_price' => ($request->cost_price != "" ? $request->cost_price : "0.00"),
-                'actual_price' => ($request->ap != "" ? $request->ap : "0.00"),
-                'tax_rate' => ($request->taxrate != "" ? $request->taxrate : "0"),
-                'tax_amount' => ($request->taxamount != "" ? $request->taxamount : "0"),
-                'retail_price' => ($request->rp != "" ?  $request->rp : "0.00"),
-                'wholesale_price' => ($request->wp != "" ? $request->wp : "0.00"),
-                'online_price' => ($request->op != "" ? $request->op : "0.00"),
-                'discount_price' => ($request->dp != "" ? $request->dp : "0.00" ),
-                'product_id' => $request->id,
-                'status_id' => 1,
-            ];
-            $price = $invent->insert_pram('inventory_price', $items);
+        //insert new prices
+        $items = [
+            'cost_price' => ($request->cost_price != "" ? $request->cost_price : "0.00"),
+            'actual_price' => ($request->ap != "" ? $request->ap : "0.00"),
+            'tax_rate' => ($request->taxrate != "" ? $request->taxrate : "0"),
+            'tax_amount' => ($request->taxamount != "" ? $request->taxamount : "0"),
+            'retail_price' => ($request->rp != "" ?  $request->rp : "0.00"),
+            'wholesale_price' => ($request->wp != "" ? $request->wp : "0.00"),
+            'online_price' => ($request->op != "" ? $request->op : "0.00"),
+            'discount_price' => ($request->dp != "" ? $request->dp : "0.00"),
+            'product_id' => $request->id,
+            'status_id' => 1,
+        ];
+        $price = $invent->insert_pram('inventory_price', $items);
         // }
 
-		$terminals = DB::table("terminal_details")->where("branch_id",session("branch"))->where("status_id",1)->get();
-		foreach($terminals as $value){
-			$items = [
-				"branchId" => session("branch"),
-				"terminalId" => $value->terminal_id,
-				"productId" => $request->id,
-				"status" => 1,
-				"date" => date("Y-m-d"),
-				"time" => date("H:i:s"),
-			]; 
-			DB::table("inventory_download_status")->insert($items);
-		}
-		
-// 		InventoryAddon::where("product_id",$request->id)->delete();
-// 		if(!empty($request->addons))
-// 		{
-// 			foreach($request->addons as $singleAddon){
-// 				InventoryAddon::create([
-// 					"addon_id" => $singleAddon,
-// 					"product_id" => $request->id,
-// 				]);
-// 			}
-// 		}
-		
-		WebsiteProduct::where("inventory_id",$request->id)->delete();
-		if(!empty($request->website))
-		{
-			foreach($request->website as $website){
-				WebsiteProduct::create([
-					"website_id" => $website,
-					"inventory_id" => $request->id,
-				]);
-			}
-		}
-		
-		
-// 		DB::table('inventory_brands')->where("inventory_id",$request->id)->delete();
-// 		if(!empty($request->brand)){
-// 				DB::table('inventory_brands')->insert([
-// 					"inventory_id" => $request->id,
-// 					"brand_id"     => $request->brand,
-// 					'created_at'   => date("Y-m-d H:i:s")
-// 				]);
-// 		}
-		
-		DB::table('inventory_tags')->where("inventory_id",$request->id)->delete();
-		if(!empty($request->tags)){
-		    foreach($request->tags as $val){
-				DB::table('inventory_tags')->insert([
-					"inventory_id" => $request->id,
-					"tag_id"     => $val,
-					'created_at'   => date("Y-m-d H:i:s")
-				]);
-		    }
-		}			
-		
-		
-// 		DB::table("inventory_extra_products")->where("product_id",$request->id)->delete();
-// 		if(!empty($request->extraproducts))
-// 		{
-// 			foreach($request->extraproducts as $extra){
-// 				DB::table("inventory_extra_products")->insert([
-// 					"extra_product_id" => $extra,
-// 					"product_id" => $request->id,
-// 				]);
-// 			}
-// 		}
-		
-		$this->sendPushNotification($request->code,$request->name,"update");
-    //   return redirect()->back();
+        $terminals = DB::table("terminal_details")->where("branch_id", session("branch"))->where("status_id", 1)->get();
+        foreach ($terminals as $value) {
+            $items = [
+                "branchId" => session("branch"),
+                "terminalId" => $value->terminal_id,
+                "productId" => $request->id,
+                "status" => 1,
+                "date" => date("Y-m-d"),
+                "time" => date("H:i:s"),
+            ];
+            DB::table("inventory_download_status")->insert($items);
+        }
+
+        // 		InventoryAddon::where("product_id",$request->id)->delete();
+        // 		if(!empty($request->addons))
+        // 		{
+        // 			foreach($request->addons as $singleAddon){
+        // 				InventoryAddon::create([
+        // 					"addon_id" => $singleAddon,
+        // 					"product_id" => $request->id,
+        // 				]);
+        // 			}
+        // 		}
+
+        WebsiteProduct::where("inventory_id", $request->id)->delete();
+        if (!empty($request->website)) {
+            foreach ($request->website as $website) {
+                WebsiteProduct::create([
+                    "website_id" => $website,
+                    "inventory_id" => $request->id,
+                ]);
+            }
+        }
+
+
+        // 		DB::table('inventory_brands')->where("inventory_id",$request->id)->delete();
+        // 		if(!empty($request->brand)){
+        // 				DB::table('inventory_brands')->insert([
+        // 					"inventory_id" => $request->id,
+        // 					"brand_id"     => $request->brand,
+        // 					'created_at'   => date("Y-m-d H:i:s")
+        // 				]);
+        // 		}
+
+        DB::table('inventory_tags')->where("inventory_id", $request->id)->delete();
+        if (!empty($request->tags)) {
+            foreach ($request->tags as $val) {
+                DB::table('inventory_tags')->insert([
+                    "inventory_id" => $request->id,
+                    "tag_id"     => $val,
+                    'created_at'   => date("Y-m-d H:i:s")
+                ]);
+            }
+        }
+
+
+        // 		DB::table("inventory_extra_products")->where("product_id",$request->id)->delete();
+        // 		if(!empty($request->extraproducts))
+        // 		{
+        // 			foreach($request->extraproducts as $extra){
+        // 				DB::table("inventory_extra_products")->insert([
+        // 					"extra_product_id" => $extra,
+        // 					"product_id" => $request->id,
+        // 				]);
+        // 			}
+        // 		}
+
+        $this->sendPushNotification($request->code, $request->name, "update");
+        //   return redirect()->back();
         return  1;
     }
 
@@ -1119,14 +1115,14 @@ class InventoryController extends Controller
 
         $rules = [
             'product' => 'required',
-			'branch' => 'required',
-			'uom' => 'required',
-			'qty' => 'required',
-			'cp' => 'required',
+            'branch' => 'required',
+            'uom' => 'required',
+            'qty' => 'required',
+            'cp' => 'required',
         ];
         $this->validate($request, $rules);
 
-        if ($inventory->getCheckByStock($request->product,$request->branch)) {
+        if ($inventory->getCheckByStock($request->product, $request->branch)) {
             session(['status' => 'Product is already openend.']);
             return redirect("stock-opening")->With('status', 'Product is already openend');
         } else {
@@ -1165,7 +1161,7 @@ class InventoryController extends Controller
             $lastStock = $stock->getLastStock($request->product);
             $stk = empty($lastStock) ? 0 : $lastStock[0]->stock;
             $stk = $stk + $request->qty;
-			
+
 
             $report = [
                 'date' => date('Y-m-d H:s:i'),
@@ -1215,7 +1211,7 @@ class InventoryController extends Controller
             $valid_extension = array("csv", "xlsx");
 
             // 2MB in Bytes
-            $maxFileSize = 5000000;//2097152;
+            $maxFileSize = 5000000; //2097152;
 
             // Check file extension
             if (in_array(strtolower($extension), $valid_extension)) {
@@ -1252,107 +1248,104 @@ class InventoryController extends Controller
                         $i++;
                     } //while bracket closed
                     fclose($file);
-                    if(isset($request->update)){	
-                      foreach ($importData_arr as $importData) {
-                        $result = $inventory->updateProductName($importData[0],$importData[2]);
-						$result = $inventory->findProductByIdInPriceTable($importData[0]);
-						
-                        if($result == true){
-                            $inventory->updateToRetailPrice($importData[0],$importData[3],$importData[4],$importData[5],$importData[6],$importData[7],$importData[8],$importData[9]);
+                    if (isset($request->update)) {
+                        foreach ($importData_arr as $importData) {
+                            $result = $inventory->updateProductName($importData[0], $importData[2]);
+                            $result = $inventory->findProductByIdInPriceTable($importData[0]);
+
+                            if ($result == true) {
+                                $inventory->updateToRetailPrice($importData[0], $importData[3], $importData[4], $importData[5], $importData[6], $importData[7], $importData[8], $importData[9]);
+                            }
                         }
-                      }  
-
-
-                    }else{
-                    // Insert to MySQL database
+                    } else {
+                        // Insert to MySQL database
                         foreach ($importData_arr as $importData) {
                             // echo  $importData[1];  exit;  
-							$departmentId = "";
-							$subDepartmentId = "";
-							$uomId = "";
-							
-							$departmentCount = DB::table("inventory_department")->where("department_name",$importData[10])->where("company_id",session("company_id"))->count();
-							if($departmentCount == 0){
-								$departmentId = DB::table("inventory_department")->insertGetId([
-									"company_id" => session("company_id"),
-									"department_name" => $importData[10],
-									"date" => date("Y-m-d"),
-									"time" => date("H:i:s"),
-								]);
-								$departmentId = $departmentId;
-							}else{
-								$departmentId = DB::table("inventory_department")->where("department_name",$importData[10])->where("company_id",session("company_id"))->get();
-								$departmentId = $departmentId[0]->department_id;
-							}
+                            $departmentId = "";
+                            $subDepartmentId = "";
+                            $uomId = "";
 
-							$subDepartmentCount = DB::table("inventory_sub_department")->where("department_id",$departmentId)->where("sub_depart_name",$importData[11])->count();
-							if($subDepartmentCount == 0){
-								$subDepartmentId = DB::table("inventory_sub_department")->insertGetId([
-									"department_id" => $departmentId,
-									"sub_depart_name" => $importData[11],
-				
-								]);
-								$subDepartmentId = $subDepartmentId;
-							}else{
-								$subDepartmentId = DB::table("inventory_sub_department")->where("department_id",$departmentId)->where("sub_depart_name",$importData[11])->get();
-								$subDepartmentId = $subDepartmentId[0]->sub_department_id;
-							}
-							
-							$uomCount = DB::table("inventory_uom")->where("name",$importData[12])->count();
-							if($uomCount == 0){
-								$uomId = DB::table("inventory_uom")->insertGetId([
-									"name" => $importData[12],
-				
-								]);
-								$uomId = $uomId;
-							}else{
-								$uomId = DB::table("inventory_uom")->where("name",$importData[12])->get();
-								$uomId = $uomId[0]->uom_id;
-							}
-				
-							$count = DB::table("inventory_general")->where("company_id",session("company_id"))->where("item_code",$importData[0])->count();
-							if($count == 0){
-								$insertData = array(
-									'company_id' => session('company_id'),
-									'department_id' => $departmentId,//isset($deptandSubdept[0]->departID) ? $deptandSubdept[0]->departID : 0,
-									'sub_department_id' => $subDepartmentId ,//isset($deptandSubdept[0]->sub_department_id) ? $deptandSubdept[0]->sub_department_id : 0,
-									'uom_id' => $uomId,//1,
-									'product_mode' => 2,
-									'item_code' => $importData[0],
-									'product_name' =>$importData[1],// preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $importData[1]), Raza asked to remove this   
-									'product_description' => $importData[2],
-									'image' => '',
-									'weight_qty' => 1,
-									'cuom' => 1,
-									'status' => 1,
-									'slug' => strtolower(str_replace(' ', '-', preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $importData[1]))) . "-" . strtolower(Str::random(4)),
-									'created_at' => date('Y-m-d H:s:i'),
-									'updated_at' => date('Y-m-d H:s:i')
-								);
+                            $departmentCount = DB::table("inventory_department")->where("department_name", $importData[10])->where("company_id", session("company_id"))->count();
+                            if ($departmentCount == 0) {
+                                $departmentId = DB::table("inventory_department")->insertGetId([
+                                    "company_id" => session("company_id"),
+                                    "department_name" => $importData[10],
+                                    "date" => date("Y-m-d"),
+                                    "time" => date("H:i:s"),
+                                ]);
+                                $departmentId = $departmentId;
+                            } else {
+                                $departmentId = DB::table("inventory_department")->where("department_name", $importData[10])->where("company_id", session("company_id"))->get();
+                                $departmentId = $departmentId[0]->department_id;
+                            }
 
-								$result = $inventory->insert($insertData);
-							
+                            $subDepartmentCount = DB::table("inventory_sub_department")->where("department_id", $departmentId)->where("sub_depart_name", $importData[11])->count();
+                            if ($subDepartmentCount == 0) {
+                                $subDepartmentId = DB::table("inventory_sub_department")->insertGetId([
+                                    "department_id" => $departmentId,
+                                    "sub_depart_name" => $importData[11],
+
+                                ]);
+                                $subDepartmentId = $subDepartmentId;
+                            } else {
+                                $subDepartmentId = DB::table("inventory_sub_department")->where("department_id", $departmentId)->where("sub_depart_name", $importData[11])->get();
+                                $subDepartmentId = $subDepartmentId[0]->sub_department_id;
+                            }
+
+                            $uomCount = DB::table("inventory_uom")->where("name", $importData[12])->count();
+                            if ($uomCount == 0) {
+                                $uomId = DB::table("inventory_uom")->insertGetId([
+                                    "name" => $importData[12],
+
+                                ]);
+                                $uomId = $uomId;
+                            } else {
+                                $uomId = DB::table("inventory_uom")->where("name", $importData[12])->get();
+                                $uomId = $uomId[0]->uom_id;
+                            }
+
+                            $count = DB::table("inventory_general")->where("company_id", session("company_id"))->where("item_code", $importData[0])->count();
+                            if ($count == 0) {
+                                $insertData = array(
+                                    'company_id' => session('company_id'),
+                                    'department_id' => $departmentId, //isset($deptandSubdept[0]->departID) ? $deptandSubdept[0]->departID : 0,
+                                    'sub_department_id' => $subDepartmentId, //isset($deptandSubdept[0]->sub_department_id) ? $deptandSubdept[0]->sub_department_id : 0,
+                                    'uom_id' => $uomId, //1,
+                                    'product_mode' => 2,
+                                    'item_code' => $importData[0],
+                                    'product_name' => $importData[1], // preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $importData[1]), Raza asked to remove this   
+                                    'product_description' => $importData[2],
+                                    'image' => '',
+                                    'weight_qty' => 1,
+                                    'cuom' => 1,
+                                    'status' => 1,
+                                    'slug' => strtolower(str_replace(' ', '-', preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $importData[1]))) . "-" . strtolower(Str::random(4)),
+                                    'created_at' => date('Y-m-d H:s:i'),
+                                    'updated_at' => date('Y-m-d H:s:i')
+                                );
+
+                                $result = $inventory->insert($insertData);
 
 
-								$inventory->ReminderInsert($result, 0);
 
-								$prices = [
-									"actual_price" => $importData[3], 
-									"cost_price" => $importData[3], 
-									"tax_rate"=> $importData[4],
-									"tax_amount" => $importData[5],
-									"retail_price" => $importData[6],
-									"wholesale_price" => $importData[7],
-									"online_price" => $importData[8],
-									"discount_price" => $importData[9],
-									"product_id" => $result,
-									"status_id" => 1,
-								];
+                                $inventory->ReminderInsert($result, 0);
 
-								$inventory->insert_pram("inventory_price", $prices);
-							}
+                                $prices = [
+                                    "actual_price" => $importData[3],
+                                    "cost_price" => $importData[3],
+                                    "tax_rate" => $importData[4],
+                                    "tax_amount" => $importData[5],
+                                    "retail_price" => $importData[6],
+                                    "wholesale_price" => $importData[7],
+                                    "online_price" => $importData[8],
+                                    "discount_price" => $importData[9],
+                                    "product_id" => $result,
+                                    "status_id" => 1,
+                                ];
+
+                                $inventory->insert_pram("inventory_price", $prices);
+                            }
                         }
-                    
                     }
                     Session::flash('message', '1');
                 } else {
@@ -1406,8 +1399,8 @@ class InventoryController extends Controller
             return 0;
         }
     }
-	
-	public function all_invent_delete(Request $request, inventory $inventory)
+
+    public function all_invent_delete(Request $request, inventory $inventory)
     {
 
         $result = $inventory->delete_all_inventory($request->inventid);
@@ -1454,17 +1447,17 @@ class InventoryController extends Controller
             return 0;
         }
     }
-	
-	public function update_tax(Request $request, inventory $inventory)
+
+    public function update_tax(Request $request, inventory $inventory)
     {
-		$result = 0;
+        $result = 0;
         $products = $inventory->get_all_product_taxes($request->prev_tax);
-		
-		foreach($products as $product){
-			$newTaxAmount = $product->actual_price * ($request->new_tax / 100);
-			$retailPrice = $product->actual_price + $newTaxAmount;
-			$result = $inventory->update_single_product_tax($product->price_id,$request->new_tax,$newTaxAmount,$retailPrice);
-		}
+
+        foreach ($products as $product) {
+            $newTaxAmount = $product->actual_price * ($request->new_tax / 100);
+            $retailPrice = $product->actual_price + $newTaxAmount;
+            $result = $inventory->update_single_product_tax($product->price_id, $request->new_tax, $newTaxAmount, $retailPrice);
+        }
 
         if ($result) {
             return 1;
@@ -1507,8 +1500,8 @@ class InventoryController extends Controller
             return 0;
         }
     }
-	
-	public function get_taxes(Request $request, inventory $inventory)
+
+    public function get_taxes(Request $request, inventory $inventory)
     {
         $result = $inventory->get_taxes();
 
@@ -1521,7 +1514,7 @@ class InventoryController extends Controller
 
     public function get_names(Request $request, inventory $inventory)
     {
-		
+
         $result = $inventory->item_name($request->ids);
         if ($result) {
             return $result;
@@ -1537,200 +1530,199 @@ class InventoryController extends Controller
         $discount = 0;
         $wholesale = 0;
         $online = 0;
-		
-		if($request->departmentId == ""){
 
-        foreach ($request->productid as $productid) {
-            $oldprice = $inventory->getpricebyproduct($productid);
-            if ($request->pricemode == 1) {
-                if ($request->rp != "" && $request->rp != 0) {
-                    $retail = ($oldprice[0]->retail_price * $request->rp) / 100;
-                    $retail = $retail + $oldprice[0]->retail_price;
-                } else {
-                    $retail = $oldprice[0]->retail_price;
-                }
-                if ($request->wp != "" && $request->wp != 0) {
-                    $wholesale = ($oldprice[0]->wholesale_price * $request->wp) / 100;
-                    $wholesale = $wholesale + $oldprice[0]->wholesale_price;
-                } else {
-                    $wholesale = $oldprice[0]->wholesale_price;
-                }
-                if ($request->dp != "" && $request->dp != 0) {
-                    $discount = ($oldprice[0]->discount_price * $request->dp) / 100;
-                    $discount = $discount + $oldprice[0]->discount_price;
-                } else {
-                    $discount = $oldprice[0]->discount_price;
-                }
-                if ($request->op != "" && $request->op != 0) {
-                    $online = ($oldprice[0]->online_price * $request->op) / 100;
-                    $online = $online + $oldprice[0]->online_price;
-                } else {
-                    $online = $oldprice[0]->online_price;
-                }
+        if ($request->departmentId == "") {
 
-                //update change status 2
-                $items = [
-                    'status_id' => 2,
-                ];
-                $price = $inventory->updateprice($oldprice[0]->price_id, $items);
+            foreach ($request->productid as $productid) {
+                $oldprice = $inventory->getpricebyproduct($productid);
+                if ($request->pricemode == 1) {
+                    if ($request->rp != "" && $request->rp != 0) {
+                        $retail = ($oldprice[0]->retail_price * $request->rp) / 100;
+                        $retail = $retail + $oldprice[0]->retail_price;
+                    } else {
+                        $retail = $oldprice[0]->retail_price;
+                    }
+                    if ($request->wp != "" && $request->wp != 0) {
+                        $wholesale = ($oldprice[0]->wholesale_price * $request->wp) / 100;
+                        $wholesale = $wholesale + $oldprice[0]->wholesale_price;
+                    } else {
+                        $wholesale = $oldprice[0]->wholesale_price;
+                    }
+                    if ($request->dp != "" && $request->dp != 0) {
+                        $discount = ($oldprice[0]->discount_price * $request->dp) / 100;
+                        $discount = $discount + $oldprice[0]->discount_price;
+                    } else {
+                        $discount = $oldprice[0]->discount_price;
+                    }
+                    if ($request->op != "" && $request->op != 0) {
+                        $online = ($oldprice[0]->online_price * $request->op) / 100;
+                        $online = $online + $oldprice[0]->online_price;
+                    } else {
+                        $online = $oldprice[0]->online_price;
+                    }
 
-                //insert new prices
-                $items = [
-                    'retail_price' => $retail,
-                    'wholesale_price' => $wholesale,
-                    'online_price' => $online,
-                    'discount_price' => $discount,
-                    'product_id' => $oldprice[0]->product_id,
-                    'status_id' => 1,
-                ];
-                $price = $inventory->insert_pram('inventory_price', $items);
+                    //update change status 2
+                    $items = [
+                        'status_id' => 2,
+                    ];
+                    $price = $inventory->updateprice($oldprice[0]->price_id, $items);
+
+                    //insert new prices
+                    $items = [
+                        'retail_price' => $retail,
+                        'wholesale_price' => $wholesale,
+                        'online_price' => $online,
+                        'discount_price' => $discount,
+                        'product_id' => $oldprice[0]->product_id,
+                        'status_id' => 1,
+                    ];
+                    $price = $inventory->insert_pram('inventory_price', $items);
+                }
+                //end if
+                else {
+                    if ($request->rp != "" && $request->rp != 0) {
+                        $retail = $request->rp + $oldprice[0]->retail_price;
+                    } else {
+                        $retail = $oldprice[0]->retail_price;
+                    }
+                    if ($request->wp != "" && $request->wp != 0) {
+                        $wholesale = $request->wp + $oldprice[0]->wholesale_price;
+                    } else {
+                        $wholesale = $oldprice[0]->wholesale_price;
+                    }
+                    if ($request->dp != "" && $request->dp != 0) {
+                        $discount = $request->dp + $oldprice[0]->discount_price;
+                    } else {
+                        $discount = $oldprice[0]->discount_price;
+                    }
+                    if ($request->op != "" && $request->op != 0) {
+                        $online = $request->op + $oldprice[0]->online_price;
+                    } else {
+                        $online = $oldprice[0]->online_price;
+                    }
+
+                    //update change status 2
+                    $items = [
+                        'status_id' => 2,
+                    ];
+                    $price = $inventory->updateprice($oldprice[0]->price_id, $items);
+
+                    //insert new prices
+                    $items = [
+                        'retail_price' => $retail,
+                        'wholesale_price' => $wholesale,
+                        'online_price' => $online,
+                        'discount_price' => $discount,
+                        'product_id' => $oldprice[0]->product_id,
+                        'status_id' => 1,
+                    ];
+                    $price = $inventory->insert_pram('inventory_price', $items);
+                }
+            } // foreach end
+
+        } else {
+            $products = DB::table("inventory_general")->where("department_id", $request->departmentId)->where("sub_department_id", $request->subDepartmentId)->where("company_id", session("company_id"))->get();
+            foreach ($products as $product) {
+                $oldprice = $inventory->getpricebyproduct($product->id);
+                if ($request->pricemode == 1) {
+                    if ($request->rp != "" && $request->rp != 0) {
+                        $retail = ($oldprice[0]->retail_price * $request->rp) / 100;
+                        $retail = $retail + $oldprice[0]->retail_price;
+                    } else {
+                        $retail = $oldprice[0]->retail_price;
+                    }
+                    if ($request->wp != "" && $request->wp != 0) {
+                        $wholesale = ($oldprice[0]->wholesale_price * $request->wp) / 100;
+                        $wholesale = $wholesale + $oldprice[0]->wholesale_price;
+                    } else {
+                        $wholesale = $oldprice[0]->wholesale_price;
+                    }
+                    if ($request->dp != "" && $request->dp != 0) {
+                        $discount = ($oldprice[0]->discount_price * $request->dp) / 100;
+                        $discount = $discount + $oldprice[0]->discount_price;
+                    } else {
+                        $discount = $oldprice[0]->discount_price;
+                    }
+                    if ($request->op != "" && $request->op != 0) {
+                        $online = ($oldprice[0]->online_price * $request->op) / 100;
+                        $online = $online + $oldprice[0]->online_price;
+                    } else {
+                        $online = $oldprice[0]->online_price;
+                    }
+
+                    //update change status 2
+                    $items = [
+                        'status_id' => 2,
+                    ];
+                    $price = $inventory->updateprice($oldprice[0]->price_id, $items);
+
+                    //insert new prices
+                    $items = [
+                        'retail_price' => $retail,
+                        'wholesale_price' => $wholesale,
+                        'online_price' => $online,
+                        'discount_price' => $discount,
+                        'product_id' => $oldprice[0]->product_id,
+                        'status_id' => 1,
+                    ];
+                    $price = $inventory->insert_pram('inventory_price', $items);
+                }
+                //end if
+                else {
+                    if ($request->rp != "" && $request->rp != 0) {
+                        $retail = $request->rp + $oldprice[0]->retail_price;
+                    } else {
+                        $retail = $oldprice[0]->retail_price;
+                    }
+                    if ($request->wp != "" && $request->wp != 0) {
+                        $wholesale = $request->wp + $oldprice[0]->wholesale_price;
+                    } else {
+                        $wholesale = $oldprice[0]->wholesale_price;
+                    }
+                    if ($request->dp != "" && $request->dp != 0) {
+                        $discount = $request->dp + $oldprice[0]->discount_price;
+                    } else {
+                        $discount = $oldprice[0]->discount_price;
+                    }
+                    if ($request->op != "" && $request->op != 0) {
+                        $online = $request->op + $oldprice[0]->online_price;
+                    } else {
+                        $online = $oldprice[0]->online_price;
+                    }
+
+                    //update change status 2
+                    $items = [
+                        'status_id' => 2,
+                    ];
+                    $price = $inventory->updateprice($oldprice[0]->price_id, $items);
+
+                    //insert new prices
+                    $items = [
+                        'retail_price' => $retail,
+                        'wholesale_price' => $wholesale,
+                        'online_price' => $online,
+                        'discount_price' => $discount,
+                        'product_id' => $oldprice[0]->product_id,
+                        'status_id' => 1,
+                    ];
+                    $price = $inventory->insert_pram('inventory_price', $items);
+                }
             }
-            //end if
-            else {
-                if ($request->rp != "" && $request->rp != 0) {
-                    $retail = $request->rp + $oldprice[0]->retail_price;
-                } else {
-                    $retail = $oldprice[0]->retail_price;
-                }
-                if ($request->wp != "" && $request->wp != 0) {
-                    $wholesale = $request->wp + $oldprice[0]->wholesale_price;
-                } else {
-                    $wholesale = $oldprice[0]->wholesale_price;
-                }
-                if ($request->dp != "" && $request->dp != 0) {
-                    $discount = $request->dp + $oldprice[0]->discount_price;
-                } else {
-                    $discount = $oldprice[0]->discount_price;
-                }
-                if ($request->op != "" && $request->op != 0) {
-                    $online = $request->op + $oldprice[0]->online_price;
-                } else {
-                    $online = $oldprice[0]->online_price;
-                }
+        }
 
-                //update change status 2
-                $items = [
-                    'status_id' => 2,
-                ];
-                $price = $inventory->updateprice($oldprice[0]->price_id, $items);
-
-                //insert new prices
-                $items = [
-                    'retail_price' => $retail,
-                    'wholesale_price' => $wholesale,
-                    'online_price' => $online,
-                    'discount_price' => $discount,
-                    'product_id' => $oldprice[0]->product_id,
-                    'status_id' => 1,
-                ];
-                $price = $inventory->insert_pram('inventory_price', $items);
-            }
-        }// foreach end
-        
-		}else{
-			$products = DB::table("inventory_general")->where("department_id",$request->departmentId)->where("sub_department_id",$request->subDepartmentId)->where("company_id",session("company_id"))->get();
-			foreach($products as $product){
-			 $oldprice = $inventory->getpricebyproduct($product->id);
-            if ($request->pricemode == 1) {
-                if ($request->rp != "" && $request->rp != 0) {
-                    $retail = ($oldprice[0]->retail_price * $request->rp) / 100;
-                    $retail = $retail + $oldprice[0]->retail_price;
-                } else {
-                    $retail = $oldprice[0]->retail_price;
-                }
-                if ($request->wp != "" && $request->wp != 0) {
-                    $wholesale = ($oldprice[0]->wholesale_price * $request->wp) / 100;
-                    $wholesale = $wholesale + $oldprice[0]->wholesale_price;
-                } else {
-                    $wholesale = $oldprice[0]->wholesale_price;
-                }
-                if ($request->dp != "" && $request->dp != 0) {
-                    $discount = ($oldprice[0]->discount_price * $request->dp) / 100;
-                    $discount = $discount + $oldprice[0]->discount_price;
-                } else {
-                    $discount = $oldprice[0]->discount_price;
-                }
-                if ($request->op != "" && $request->op != 0) {
-                    $online = ($oldprice[0]->online_price * $request->op) / 100;
-                    $online = $online + $oldprice[0]->online_price;
-                } else {
-                    $online = $oldprice[0]->online_price;
-                }
-
-                //update change status 2
-                $items = [
-                    'status_id' => 2,
-                ];
-                $price = $inventory->updateprice($oldprice[0]->price_id, $items);
-
-                //insert new prices
-                $items = [
-                    'retail_price' => $retail,
-                    'wholesale_price' => $wholesale,
-                    'online_price' => $online,
-                    'discount_price' => $discount,
-                    'product_id' => $oldprice[0]->product_id,
-                    'status_id' => 1,
-                ];
-                $price = $inventory->insert_pram('inventory_price', $items);
-            }
-            //end if
-            else {
-                if ($request->rp != "" && $request->rp != 0) {
-                    $retail = $request->rp + $oldprice[0]->retail_price;
-                } else {
-                    $retail = $oldprice[0]->retail_price;
-                }
-                if ($request->wp != "" && $request->wp != 0) {
-                    $wholesale = $request->wp + $oldprice[0]->wholesale_price;
-                } else {
-                    $wholesale = $oldprice[0]->wholesale_price;
-                }
-                if ($request->dp != "" && $request->dp != 0) {
-                    $discount = $request->dp + $oldprice[0]->discount_price;
-                } else {
-                    $discount = $oldprice[0]->discount_price;
-                }
-                if ($request->op != "" && $request->op != 0) {
-                    $online = $request->op + $oldprice[0]->online_price;
-                } else {
-                    $online = $oldprice[0]->online_price;
-                }
-
-                //update change status 2
-                $items = [
-                    'status_id' => 2,
-                ];
-                $price = $inventory->updateprice($oldprice[0]->price_id, $items);
-
-                //insert new prices
-                $items = [
-                    'retail_price' => $retail,
-                    'wholesale_price' => $wholesale,
-                    'online_price' => $online,
-                    'discount_price' => $discount,
-                    'product_id' => $oldprice[0]->product_id,
-                    'status_id' => 1,
-                ];
-                $price = $inventory->insert_pram('inventory_price', $items);
-            }
-		
-			}
-		}
-		
-		return 1;
+        return 1;
     }
 
-    public function stockadjustment_show(inventory $inventory, request $request,stock $stock)
+    public function stockadjustment_show(inventory $inventory, request $request, stock $stock)
     {
-		$branches = $stock->getBranches();
+        $branches = $stock->getBranches();
         return view('Inventory.stockadjustment', compact('branches'));
     }
 
     public function getstock_value(inventory $inventory, request $request)
     {
-		$branch = ((session('roleId') == 17 or session('roleId') == 2) ? $request->branch : session('branch'));
-        $stock = $inventory->getstock_value($request->productid,$branch);
+        $branch = ((session('roleId') == 17 or session('roleId') == 2) ? $request->branch : session('branch'));
+        $stock = $inventory->getstock_value($request->productid, $branch);
         return $stock;
     }
 
@@ -1747,7 +1739,7 @@ class InventoryController extends Controller
         $quantity = $request->qty * (-1);
         $newbal = 0;
         $stockid = 0;
-		$productid = 0;
+        $productid = 0;
         foreach ($request->stockid as $value) {
             if ($quantity < 0) {
                 $quantity = $quantity * (-1);
@@ -1762,7 +1754,7 @@ class InventoryController extends Controller
                 ];
                 //update the new balance in inventory stock
                 $updatebalance = $inventory->update_balance_stock($value, $items);
-				$productid = $balance[0]->product_id;
+                $productid = $balance[0]->product_id;
                 $this->stockreport($stockApp, $balance[0]->product_id, $value, $request->qty, $balance[0]->cost_price, $balance[0]->retail_price, $request->narration);
                 // return 1;
             } elseif ($balance[0]->balance == $quantity) {
@@ -1773,7 +1765,7 @@ class InventoryController extends Controller
                     'status_id' => 2,
                 ];
                 //update the new balance in inventory stock
-				$productid = $balance[0]->product_id;
+                $productid = $balance[0]->product_id;
                 $updatebalance = $inventory->update_balance_stock($value, $items);
                 $this->stockreport($stockApp, $balance[0]->product_id, $value, $request->qty, $balance[0]->cost_price, $balance[0]->retail_price, $request->narration);
                 // return 1;
@@ -1785,27 +1777,27 @@ class InventoryController extends Controller
                     'status_id' => 2,
                 ];
                 //update the new balance in inventory stock
-				$productid = $balance[0]->product_id;
+                $productid = $balance[0]->product_id;
                 $updatebalance = $inventory->update_balance_stock($value, $items);
                 $this->stockreport($stockApp, $balance[0]->product_id, $value, $balance[0]->balance, $balance[0]->cost_price, $balance[0]->retail_price, $request->narration);
             }
         }
-		// return $productid;
-		$inventory = DB::table("inventory_general")->where("id",$productid)->get();
-		$terminals = DB::table("terminal_details")->where("branch_id",session("branch"))->where("status_id",1)->get();
-		foreach($terminals as $value){
-			$items = [
-				"branchId" => ((session('roleId') == 17 or session('roleId') == 12) ? $request->branch : session('branch')),
-				"terminalId" => $value->terminal_id,
-				"productId" => $productid,
-				"status" => 1,
-				"date" => date("Y-m-d"),
-				"time" => date("H:i:s"),
-			]; 
-			DB::table("inventory_download_status")->insert($items);
-		}
-		$this->sendPushNotification($inventory[0]->item_code,$inventory[0]->product_name,"update");
-		return 1;
+        // return $productid;
+        $inventory = DB::table("inventory_general")->where("id", $productid)->get();
+        $terminals = DB::table("terminal_details")->where("branch_id", session("branch"))->where("status_id", 1)->get();
+        foreach ($terminals as $value) {
+            $items = [
+                "branchId" => ((session('roleId') == 17 or session('roleId') == 12) ? $request->branch : session('branch')),
+                "terminalId" => $value->terminal_id,
+                "productId" => $productid,
+                "status" => 1,
+                "date" => date("Y-m-d"),
+                "time" => date("H:i:s"),
+            ];
+            DB::table("inventory_download_status")->insert($items);
+        }
+        $this->sendPushNotification($inventory[0]->item_code, $inventory[0]->product_name, "update");
+        return 1;
     }
     function stockreport(stock $stockApp, $productid, $stockid, $qty, $cp, $rp, $narration)
     {
@@ -1823,7 +1815,7 @@ class InventoryController extends Controller
             'stock' => $stk,
             'cost' => $cp,
             'retail' => $rp,
-            'narration' => "(Stock Adjustment) ".$narration,
+            'narration' => "(Stock Adjustment) " . $narration,
             'adjustment_mode' => "0", // 0 for negative
 
         ];
@@ -1889,10 +1881,10 @@ class InventoryController extends Controller
             'status_id' => 1,
             'branch_id' => ((session('roleId') == 17 or session('roleId') == 2) ? $request->branch : session('branch')),
         ];
-		// return $items;
+        // return $items;
         //        //insert stock table
         $stockadd = $inventory->insertgeneral('inventory_stock', $items);
-	
+
         //get last stock from stock report
         $lastStock = $stock->getLastStock($request->productid);
         $stk = empty($lastStock) ? 0 : $lastStock[0]->stock;
@@ -1908,27 +1900,27 @@ class InventoryController extends Controller
             'stock' => $stk,
             'cost' => $request->amount,
             'retail' => "0.00",
-            'narration' => "(Stock Adjustment) ".$request->narration,
+            'narration' => "(Stock Adjustment) " . $request->narration,
             'adjustment_mode' => "1", // 1 for positive
 
         ];
         $result = $inventory->insertgeneral('inventory_stock_report_table', $items);
-		$inventory = DB::table("inventory_general")->where("id",$request->productid)->get();
-		
-		$terminals = DB::table("terminal_details")->where("branch_id",session("branch"))->where("status_id",1)->get();
-		foreach($terminals as $value){
-			$items = [
-				"branchId" => session("branch"),
-				"terminalId" => $value->terminal_id,
-				"productId" => $request->productid,
-				"status" => 1,
-				"date" => date("Y-m-d"),
-				"time" => date("H:i:s"),
-			]; 
-			DB::table("inventory_download_status")->insert($items);
-		}
-		
-		$this->sendPushNotification($inventory[0]->item_code,$inventory[0]->product_name,"update");
+        $inventory = DB::table("inventory_general")->where("id", $request->productid)->get();
+
+        $terminals = DB::table("terminal_details")->where("branch_id", session("branch"))->where("status_id", 1)->get();
+        foreach ($terminals as $value) {
+            $items = [
+                "branchId" => session("branch"),
+                "terminalId" => $value->terminal_id,
+                "productId" => $request->productid,
+                "status" => 1,
+                "date" => date("Y-m-d"),
+                "time" => date("H:i:s"),
+            ];
+            DB::table("inventory_download_status")->insert($items);
+        }
+
+        $this->sendPushNotification($inventory[0]->item_code, $inventory[0]->product_name, "update");
         return 1;
     }
 
@@ -1946,7 +1938,7 @@ class InventoryController extends Controller
             "Expires"             => "0"
         );
 
-        $columns = array('S.No','Name', 'Cost', 'Qty','Item Code');
+        $columns = array('S.No', 'Name', 'Cost', 'Qty', 'Item Code');
 
         $callback = function () use ($tasks, $columns) {
             $file = fopen('php://output', 'w');
@@ -1957,9 +1949,9 @@ class InventoryController extends Controller
                 $row['Name']    = $task->product_name;
                 $row['Cost']  = 0;
                 $row['Qty']  = 0;
-				$row['Item Code']  = $task->item_code;
+                $row['Item Code']  = $task->item_code;
 
-                fputcsv($file, array($row['S.No'], $row['Name'], $row['Cost'], $row['Qty'],$row['Item Code']));
+                fputcsv($file, array($row['S.No'], $row['Name'], $row['Cost'], $row['Qty'], $row['Item Code']));
             }
 
             fclose($file);
@@ -1981,7 +1973,7 @@ class InventoryController extends Controller
             "Expires"             => "0"
         );
 
-        $columns = array('Product Id', 'Product Code', 'Product Name' , 'Actual Price','Tax Rate','Tax Amount','Retail Price','Wholesale Price','Online Price','Discount Price');//, 'Product Description'
+        $columns = array('Product Id', 'Product Code', 'Product Name', 'Actual Price', 'Tax Rate', 'Tax Amount', 'Retail Price', 'Wholesale Price', 'Online Price', 'Discount Price'); //, 'Product Description'
 
         $callback = function () use ($tasks, $columns) {
             $file = fopen('php://output', 'w');
@@ -1999,8 +1991,8 @@ class InventoryController extends Controller
                 $row['wholesale_price']  = $task->wholesale_price;
                 $row['online_price']  = $task->online_price;
                 $row['discount_price']  = $task->discount_price;
-				//, $row['Description']
-                fputcsv($file, array($row['productID'], $row['ItemCode'],$row['Name'] , $row['actual_price'], $row['tax_rate'], $row['tax_amount'], $row['RetailPrice'], $row['wholesale_price'], $row['online_price'], $row['discount_price']));
+                //, $row['Description']
+                fputcsv($file, array($row['productID'], $row['ItemCode'], $row['Name'], $row['actual_price'], $row['tax_rate'], $row['tax_amount'], $row['RetailPrice'], $row['wholesale_price'], $row['online_price'], $row['discount_price']));
             }
 
             fclose($file);
@@ -2008,8 +2000,8 @@ class InventoryController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
-	
-	public function exportSampleInventoryCsv(Request $request, inventory $inventory)
+
+    public function exportSampleInventoryCsv(Request $request, inventory $inventory)
     {
         $fileName = 'sample-inventory-list.csv';
         $tasks = $inventory->getInventoryListForRetailPriceUpdate(session("company_id"));
@@ -2022,13 +2014,13 @@ class InventoryController extends Controller
             "Expires"             => "0"
         );
 
-        $columns = array('Product Code', 'Product Name','Product Description', 'Actual Price','Tax Rate','Tax Amount','Retail Price','Wholesale Price','Online Price','Discount Price','Department','Sub Department','Unit');//, 'Product Description'
+        $columns = array('Product Code', 'Product Name', 'Product Description', 'Actual Price', 'Tax Rate', 'Tax Amount', 'Retail Price', 'Wholesale Price', 'Online Price', 'Discount Price', 'Department', 'Sub Department', 'Unit'); //, 'Product Description'
 
         $callback = function () use ($tasks, $columns) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
 
-            for($i=0; $i<2; $i++){
+            for ($i = 0; $i < 2; $i++) {
                 $row['ItemCode']    = "1001";
                 $row['Name']  = "LCD";
                 $row['Description']  = "This is the uploaded product from csv";
@@ -2042,7 +2034,7 @@ class InventoryController extends Controller
                 $row['department']  = "General";
                 $row['sub_department']  = "General";
                 $row['unit']  = "Unit";
-                fputcsv($file, array( $row['ItemCode'],$row['Name'],$row['Description'] , $row['actual_price'], $row['tax_rate'], $row['tax_amount'], $row['RetailPrice'], $row['wholesale_price'], $row['online_price'], $row['discount_price'], $row['department'], $row['sub_department'], $row['unit']));
+                fputcsv($file, array($row['ItemCode'], $row['Name'], $row['Description'], $row['actual_price'], $row['tax_rate'], $row['tax_amount'], $row['RetailPrice'], $row['wholesale_price'], $row['online_price'], $row['discount_price'], $row['department'], $row['sub_department'], $row['unit']));
             }
 
             fclose($file);
@@ -2196,121 +2188,117 @@ class InventoryController extends Controller
 
     public function test(Request $request, inventory $inventory)
     {
-		$string = "123";
-		if (preg_match('~[0-9]+~',$string)){
-			return 1;
-		}else{
-			return 0;
-		}
+        $string = "123";
+        if (preg_match('~[0-9]+~', $string)) {
+            return 1;
+        } else {
+            return 0;
+        }
         // $result = DB::table("inventory_general")->where("company_id",9)->get();
-		// foreach($result as $value){
-			// $slug = "";
-			// $slug = strtolower(str_replace(' ', '-', $value->product_name)) . "-" . strtolower(Str::random(4));
-			// DB::table("inventory_general")->where("id",$value->id)->update(["slug" => $slug]);
-		// }
+        // foreach($result as $value){
+        // $slug = "";
+        // $slug = strtolower(str_replace(' ', '-', $value->product_name)) . "-" . strtolower(Str::random(4));
+        // DB::table("inventory_general")->where("id",$value->id)->update(["slug" => $slug]);
+        // }
     }
-	
-	public function displayInventory(Request $request, inventory $inventory)
-	{
-		$main = $inventory->displayInventory($request->code,$request->name,$request->depart,$request->sdepart,$request->status);
-		return view('Inventory.inventoryselection',compact('main'));
-	}
-	
-	public function fetch_data(Request $request, inventory $inventory){
-		$main = $inventory->displayInventory($request->code,$request->name,$request->depart,$request->sdepart,$request->status);
-		return view('partials.inventory_table', compact('main'))->render();
-	}
-	
-	public function changeInventoryStatus(Request $request)
-	{
-		if($request->table == "inventory")
-		{
-			$count = DB::table("inventory_general")->where("id",$request->id)->count();
-			if($count == 1)
-			{
-				if($request->columnname == "pos"){
-					DB::table("inventory_general")->where("id",$request->id)->update(["isPos" => $request->value]);
-					return $this->setNotification("inventory",$request->id);
-				}else if($request->columnname == "hide"){
-					DB::table("inventory_general")->where("id",$request->id)->update(["isHide" => $request->value]);
-					return $this->setNotification("inventory",$request->id);
-				}else{
-					DB::table("inventory_general")->where("id",$request->id)->update(["isOnline" => $request->value]);
-					return $this->setNotification("inventory",$request->id);
-				}
-			}else{
-				return 2;
-			}
-		}
-		else
-		{
-			$count = DB::table("pos_products_gen_details")->where("pos_item_id",$request->id)->count();
-			if($count == 1)
-			{
-				if($request->columnname == "pos"){
-					DB::table("pos_products_gen_details")->where("pos_item_id",$request->id)->update(["isPos" => $request->value]);
-					return $this->setNotification("pos",$request->id);
-				}else if($request->columnname == "hide"){
-					DB::table("pos_products_gen_details")->where("pos_item_id",$request->id)->update(["isHide" => $request->value]);
-					return $this->setNotification("pos",$request->id);
-				}else{
-					DB::table("pos_products_gen_details")->where("pos_item_id",$request->id)->update(["isOnline" => $request->value]);
-					return $this->setNotification("pos",$request->id);
-				}
-				
-			}else{
-				return 2;
-			}
-		}
-	}
-	
-	public function setNotification($mode,$id)
-	{
-		if($mode == "pos"){
-			$posData = DB::table("pos_products_gen_details")->where("pos_item_id",$id)->get();
-			$message = "ID".$id.",IP".$posData[0]->isPos.",IO".$posData[0]->isOnline.",H".$posData[0]->isHide;
-			return $this->sendPushNotificationForPermission($posData,"pos",$message);
-		}
-		
-		if($mode == "inventory"){
-			$inventoryData = DB::table("inventory_general")->where("id",$id)->get();
-			$message = "ID".$id.",IP".$inventoryData[0]->isPos.",IO".$inventoryData[0]->isOnline.",H".$inventoryData[0]->isHide;
-			return $this->sendPushNotificationForPermission($inventoryData,"inventory",$message);
-		}
-	}
-	
-	public function sendPushNotificationForPermission($code,$mode,$funMessage){ 
-		
-		$message = $funMessage;
-		$body = "Item ".($mode == "pos" ? $code[0]->item_name : $code[0]->product_name)." ".($code[0]->isPos == 0 ? "Deactivated" : "Activated");
-		$tokens = array();
-		$result = DB::select("SELECT branch_name,b.name as company FROM `branch` INNER Join company b on b.company_id = branch.company_id where branch.company_id = ? and branch_id = ?",[session("company_id"),session("branch")]);
-		$title = "Item On/Off";
-        $firebaseToken = DB::table("terminal_details")->where("branch_id",session("branch"))->whereNotNull("device_token")->get("device_token");//["cZIiT3EPTAKce8s8lPHTkZ:APA91bH0a0zModJDvMjwLmeMIqHNfyLriX1m2EWV9BI157KY6DtxsfWPDo-mYjl-Qh92dyfjU0Q0BM_HeXykZp6xy3LxoOxZmeLIxyBTimnfsCVIOuM0PBE8j53EV-_AWi6CVMOJIDMH"];//User::whereNotNull('device_token')->pluck('device_token')->all();
-		// return $firebaseToken;
-		foreach($firebaseToken as $token){
-			array_push($tokens,$token->device_token);
-		}
-		
 
-		$SERVER_API_KEY = 'AAAATXdhnIk:APA91bHFZZbCubOgnG3dihDVsqFbwGGQaBpC6f7BPFMnvpntpOOY88ysAEVAT2puQvdng3Xkd8j4HNVWFp1FQ2rHEe9g3Cv6nSZ7oeMsQtSh2GrJYNIxGHeogmen7TSPqRWHJxrG4QF_';
+    public function displayInventory(Request $request, inventory $inventory)
+    {
+        $main = $inventory->displayInventory($request->code, $request->name, $request->depart, $request->sdepart, $request->status);
+        return view('Inventory.inventoryselection', compact('main'));
+    }
 
-        $server_api_key_mobile = 'AAAA2dlOr6s:APA91bHGDpYDSZWI0LotnIYZUTpOTA9lLS56jsyB-2hq6Fsq6l0OPBoMYFqePTAbteVFawWzdyZOfMowMf-j8LBL8xJefdnpb_pZRVQHzu5rXykkdLBfPJgcr8gmPhPBDlXMWJy_-uv2';   
-		   
+    public function fetch_data(Request $request, inventory $inventory)
+    {
+        $main = $inventory->displayInventory($request->code, $request->name, $request->depart, $request->sdepart, $request->status);
+        return view('partials.inventory_table', compact('main'))->render();
+    }
+
+    public function changeInventoryStatus(Request $request)
+    {
+        if ($request->table == "inventory") {
+            $count = DB::table("inventory_general")->where("id", $request->id)->count();
+            if ($count == 1) {
+                if ($request->columnname == "pos") {
+                    DB::table("inventory_general")->where("id", $request->id)->update(["isPos" => $request->value]);
+                    return $this->setNotification("inventory", $request->id);
+                } else if ($request->columnname == "hide") {
+                    DB::table("inventory_general")->where("id", $request->id)->update(["isHide" => $request->value]);
+                    return $this->setNotification("inventory", $request->id);
+                } else {
+                    DB::table("inventory_general")->where("id", $request->id)->update(["isOnline" => $request->value]);
+                    return $this->setNotification("inventory", $request->id);
+                }
+            } else {
+                return 2;
+            }
+        } else {
+            $count = DB::table("pos_products_gen_details")->where("pos_item_id", $request->id)->count();
+            if ($count == 1) {
+                if ($request->columnname == "pos") {
+                    DB::table("pos_products_gen_details")->where("pos_item_id", $request->id)->update(["isPos" => $request->value]);
+                    return $this->setNotification("pos", $request->id);
+                } else if ($request->columnname == "hide") {
+                    DB::table("pos_products_gen_details")->where("pos_item_id", $request->id)->update(["isHide" => $request->value]);
+                    return $this->setNotification("pos", $request->id);
+                } else {
+                    DB::table("pos_products_gen_details")->where("pos_item_id", $request->id)->update(["isOnline" => $request->value]);
+                    return $this->setNotification("pos", $request->id);
+                }
+            } else {
+                return 2;
+            }
+        }
+    }
+
+    public function setNotification($mode, $id)
+    {
+        if ($mode == "pos") {
+            $posData = DB::table("pos_products_gen_details")->where("pos_item_id", $id)->get();
+            $message = "ID" . $id . ",IP" . $posData[0]->isPos . ",IO" . $posData[0]->isOnline . ",H" . $posData[0]->isHide;
+            return $this->sendPushNotificationForPermission($posData, "pos", $message);
+        }
+
+        if ($mode == "inventory") {
+            $inventoryData = DB::table("inventory_general")->where("id", $id)->get();
+            $message = "ID" . $id . ",IP" . $inventoryData[0]->isPos . ",IO" . $inventoryData[0]->isOnline . ",H" . $inventoryData[0]->isHide;
+            return $this->sendPushNotificationForPermission($inventoryData, "inventory", $message);
+        }
+    }
+
+    public function sendPushNotificationForPermission($code, $mode, $funMessage)
+    {
+
+        $message = $funMessage;
+        $body = "Item " . ($mode == "pos" ? $code[0]->item_name : $code[0]->product_name) . " " . ($code[0]->isPos == 0 ? "Deactivated" : "Activated");
+        $tokens = array();
+        $result = DB::select("SELECT branch_name,b.name as company FROM `branch` INNER Join company b on b.company_id = branch.company_id where branch.company_id = ? and branch_id = ?", [session("company_id"), session("branch")]);
+        $title = "Item On/Off";
+        $firebaseToken = DB::table("terminal_details")->where("branch_id", session("branch"))->whereNotNull("device_token")->get("device_token"); //["cZIiT3EPTAKce8s8lPHTkZ:APA91bH0a0zModJDvMjwLmeMIqHNfyLriX1m2EWV9BI157KY6DtxsfWPDo-mYjl-Qh92dyfjU0Q0BM_HeXykZp6xy3LxoOxZmeLIxyBTimnfsCVIOuM0PBE8j53EV-_AWi6CVMOJIDMH"];//User::whereNotNull('device_token')->pluck('device_token')->all();
+        // return $firebaseToken;
+        foreach ($firebaseToken as $token) {
+            array_push($tokens, $token->device_token);
+        }
+
+
+        $SERVER_API_KEY = 'AAAATXdhnIk:APA91bHFZZbCubOgnG3dihDVsqFbwGGQaBpC6f7BPFMnvpntpOOY88ysAEVAT2puQvdng3Xkd8j4HNVWFp1FQ2rHEe9g3Cv6nSZ7oeMsQtSh2GrJYNIxGHeogmen7TSPqRWHJxrG4QF_';
+
+        $server_api_key_mobile = 'AAAA2dlOr6s:APA91bHGDpYDSZWI0LotnIYZUTpOTA9lLS56jsyB-2hq6Fsq6l0OPBoMYFqePTAbteVFawWzdyZOfMowMf-j8LBL8xJefdnpb_pZRVQHzu5rXykkdLBfPJgcr8gmPhPBDlXMWJy_-uv2';
+
         $data = [
             "registration_ids" => $tokens,
             "notification" => [
                 "title" => "Item Activated or Deactivated",
                 "body" => $body,
-				"icon" => "https://retail.sabsoft.com.pk/assets/images/Sabify72.png",
+                "icon" => "https://retail.sabsoft.com.pk/assets/images/Sabify72.png",
                 "content_available" => true,
                 "priority" => "high",
-				// "click_action" => ,
+                // "click_action" => ,
             ],
-			"data" => [
-				"par1" => $message,
-			],
-        ]; 
+            "data" => [
+                "par1" => $message,
+            ],
+        ];
         $dataString = json_encode($data);
 
         $headers = [
@@ -2343,39 +2331,40 @@ class InventoryController extends Controller
 
         $responseOne = curl_exec($chs);
         $response = curl_exec($ch);
-		// return json_encode($responseOne).json_encode($response);
-	}
-	
-	public function sendPushNotification($code,$name,$status){ 
-		$statusmessage = ($status == "update" ? "updated" : "added");
-		$message = "Item Code  # ".$code." (".$name.")  has been ".$statusmessage."";
-		$tokens = array();
-		$result = DB::select("SELECT branch_name,b.name as company FROM `branch` INNER Join company b on b.company_id = branch.company_id where branch.company_id = ? and branch_id = ?",[session("company_id"),session("branch")]);
-		$title = ucwords($result[0]->company)." (".ucwords($result[0]->branch_name).")";
-        $firebaseToken = DB::table("terminal_details")->where("branch_id",session("branch"))->whereNotNull("device_token")->get("device_token");//["cZIiT3EPTAKce8s8lPHTkZ:APA91bH0a0zModJDvMjwLmeMIqHNfyLriX1m2EWV9BI157KY6DtxsfWPDo-mYjl-Qh92dyfjU0Q0BM_HeXykZp6xy3LxoOxZmeLIxyBTimnfsCVIOuM0PBE8j53EV-_AWi6CVMOJIDMH"];//User::whereNotNull('device_token')->pluck('device_token')->all();
-		foreach($firebaseToken as $token){
-			array_push($tokens,$token->device_token);
-		}
+        // return json_encode($responseOne).json_encode($response);
+    }
 
-		$SERVER_API_KEY = 'AAAATXdhnIk:APA91bHFZZbCubOgnG3dihDVsqFbwGGQaBpC6f7BPFMnvpntpOOY88ysAEVAT2puQvdng3Xkd8j4HNVWFp1FQ2rHEe9g3Cv6nSZ7oeMsQtSh2GrJYNIxGHeogmen7TSPqRWHJxrG4QF_';
+    public function sendPushNotification($code, $name, $status)
+    {
+        $statusmessage = ($status == "update" ? "updated" : "added");
+        $message = "Item Code  # " . $code . " (" . $name . ")  has been " . $statusmessage . "";
+        $tokens = array();
+        $result = DB::select("SELECT branch_name,b.name as company FROM `branch` INNER Join company b on b.company_id = branch.company_id where branch.company_id = ? and branch_id = ?", [session("company_id"), session("branch")]);
+        $title = ucwords($result[0]->company) . " (" . ucwords($result[0]->branch_name) . ")";
+        $firebaseToken = DB::table("terminal_details")->where("branch_id", session("branch"))->whereNotNull("device_token")->get("device_token"); //["cZIiT3EPTAKce8s8lPHTkZ:APA91bH0a0zModJDvMjwLmeMIqHNfyLriX1m2EWV9BI157KY6DtxsfWPDo-mYjl-Qh92dyfjU0Q0BM_HeXykZp6xy3LxoOxZmeLIxyBTimnfsCVIOuM0PBE8j53EV-_AWi6CVMOJIDMH"];//User::whereNotNull('device_token')->pluck('device_token')->all();
+        foreach ($firebaseToken as $token) {
+            array_push($tokens, $token->device_token);
+        }
 
-        $server_api_key_mobile = 'AAAA2dlOr6s:APA91bHGDpYDSZWI0LotnIYZUTpOTA9lLS56jsyB-2hq6Fsq6l0OPBoMYFqePTAbteVFawWzdyZOfMowMf-j8LBL8xJefdnpb_pZRVQHzu5rXykkdLBfPJgcr8gmPhPBDlXMWJy_-uv2';   
-		   
+        $SERVER_API_KEY = 'AAAATXdhnIk:APA91bHFZZbCubOgnG3dihDVsqFbwGGQaBpC6f7BPFMnvpntpOOY88ysAEVAT2puQvdng3Xkd8j4HNVWFp1FQ2rHEe9g3Cv6nSZ7oeMsQtSh2GrJYNIxGHeogmen7TSPqRWHJxrG4QF_';
+
+        $server_api_key_mobile = 'AAAA2dlOr6s:APA91bHGDpYDSZWI0LotnIYZUTpOTA9lLS56jsyB-2hq6Fsq6l0OPBoMYFqePTAbteVFawWzdyZOfMowMf-j8LBL8xJefdnpb_pZRVQHzu5rXykkdLBfPJgcr8gmPhPBDlXMWJy_-uv2';
+
         $data = [
             "registration_ids" => $tokens,
             "notification" => [
                 "title" => "Inventory Updated",
                 "body" => "New set of Inventory is been updated",
-				"icon" => "https://retail.sabsoft.com.pk/assets/images/Sabify72.png",
+                "icon" => "https://retail.sabsoft.com.pk/assets/images/Sabify72.png",
                 "content_available" => true,
                 "priority" => "high",
-				// "click_action" => ,
+                // "click_action" => ,
             ],
-			// "data" => [
-				// "id" => $code,
-				// "name" => $name,
-			// ],
-        ]; 
+            // "data" => [
+            // "id" => $code,
+            // "name" => $name,
+            // ],
+        ];
         $dataString = json_encode($data);
 
         $headers = [
@@ -2408,856 +2397,880 @@ class InventoryController extends Controller
 
         curl_exec($chs);
         $response = curl_exec($ch);
-		
-		return 1;//json_encode($response);
-	}
-	
-	 public function get_product_names(Request $request, inventory $inventory)
+
+        return 1; //json_encode($response);
+    }
+
+    public function get_product_names(Request $request, inventory $inventory)
     {
 
         $result = $inventory->searchProductByNameAndItemCode($request->q);
 
         if ($result) {
-            return response()->json(array('items'=>$result));
+            return response()->json(array('items' => $result));
         } else {
             return 0;
         }
     }
-	
-	public function assignProductToVendors(Request $request,Vendor $vendor)
-	{
-		
-		foreach($request->vendors as $vendorValue){
-			
-			$check = $vendor->check_product_by_vendor($vendorValue,$request->productId);
-			if($check == 0){
-				$items[] = [
-					'vendor_id' => $vendorValue,
-					'product_id' => $request->productId,
-				];
-			}
-        }
-		
-        $result = (!empty($items) ? $vendor->insert_into_vendor_product($items,1) : 0);
 
-        if ($result == 1){
-            return true;
-        }else{
-			return false;
-		}
-	}
-	
-	public function sunmiCloud(Request $request)
+    public function assignProductToVendors(Request $request, Vendor $vendor)
     {
 
-		$response = Http::asForm()->post('https://sabsoft.com.pk/Retail/webservice/sendinventorytosunmi.php', [
-			'inventory' => implode(',', $request->inventory),
-		]);
-		return $response;
-	}
-	
-	
-// -----------------------------------------------------------------	
-// 	Inventroy variable product 
-// -----------------------------------------------------------------
+        foreach ($request->vendors as $vendorValue) {
 
-    public function createVariableProduct(Request $request,inventory $inventory,posProducts $posProducts){
-        $where = ['id'=>$request->id,'status'=>1];
-        $check_exists =  $inventory->check_exists($where); //DB::table('inventory_general')->where('id',$request->id)->count();
-  
-        if($check_exists == null){
-            Session::flash('error','Product not found');
-            return redirect()->route('invent-list');
-        }
-        
-	$totalvariation      = AddonCategory::where("company_id",session("company_id"))->where("mode","variations")->where('status',1)->get();
-	$inventoryVariations = InventoryVariation::whereIn('inventory_variations.product_id',DB::table('pos_products_gen_details')->where('branch_id',session('branch'))->where('product_id',$request->id)->pluck('pos_item_id'))
-	                                         ->where('inventory_variations.status',1)
-	                                         ->join('addon_categories','addon_categories.id','inventory_variations.variation_id')
-	                                         ->join('pos_products_gen_details','pos_products_gen_details.pos_item_id','inventory_variations.product_id')
-	                                         ->select('inventory_variations.*','addon_categories.name','addon_categories.type','addon_categories.is_required','addon_categories.addon_limit','pos_products_gen_details.item_name','pos_products_gen_details.priority')
-	                                         ->orderBy('pos_products_gen_details.priority','desc')
-	                                         ->get();
-	                                         
-    $variationProductCount = Addon::whereIn('addon_category_id',InventoryVariation::whereIn('product_id',DB::table('pos_products_gen_details')
-                                                                                                                               ->where('branch_id',session('branch'))
-                                                                                                                               ->where('product_id',$request->id)
-                                                                                                                               ->pluck('pos_item_id')
-                                                                                          )
-	                                         ->where('status',1)
-	                                         ->pluck('variation_id')
-	                                     )
-	                                     ->groupBy('addon_category_id')
-	                                     ->select(DB::raw('count(id) as countProduct,addon_category_id'))
-	                                     ->get(); 	                                         
-        
-      return view('Inventory.variable-products',[
-                                           'generalItem'            => $check_exists,
-                                           'uom'                    => $inventory->uom(),
-                                           'posProduct_details'     => $posProducts->getposproducts_filter_by_productId($request->id),
-                                           'department'             => $inventory->department(),
-                                           'totalvariation'         => $totalvariation,
-                                           'inventoryVariations'    => $inventoryVariations,
-                                           'variationProductCount'  => $variationProductCount,
-                                           'addonCategories'        => AddonCategory::with("addons")->whereIn("id",DB::table('inventory_addons')->where(['product_id'=>$request->id,'status'=>1,"inventory_addon_type"=>'general-inventory'])->pluck('addon_id'))->where(["company_id"=>session("company_id"),"mode"=>'addons'])->orderBy('priority','desc')->get(),
-                                           'attributes'=>Attribute::get_attributes(),
-                                        //   'references' => $references,
-               ]);
-    } 
-    
-	public function get_variableProduct(Request $request){
-		return DB::table('pos_products_gen_details')->where('branch_id',session('branch'))->where('product_id',$request->id)->where('status_id',1)->get();
-	}  
-	
-	public function get_generalItem(Request $request){
-		return DB::table('inventory_general')
-		         ->where('company_id',session('company_id'))
-		         ->where('department_id',$request->depart)
-		         ->where('sub_department_id',$request->subDepart)
-		         ->where('status',1)
-		         ->get();
-	} 
-	
-	public function autoGenerateCode_variableProduct(Request $request)
-	{
-		$code = rand(1000000,9999999);
-		
-		$resp = DB::table('pos_products_gen_details')->where(['item_code'=>$code,'product_id'=>$request->product_id])->count();
-	    if($resp > 0){
-	        $code = rand(1000000,9999999);
-	        return $code;
-	    }else{
-	        return $code;
-	    }
-	} 
-	
-    public function storeVariableProduct(Request $request,posProducts $posProducts){
-        $imageName = null;
-        
-        $rules = [
-                   'item_code'  => 'required',
-                   'item_name'  => 'required',
-                   'attribute'  => 'required',
-                   'uom'        => 'required',
-                   'item_price' =>'required',
-                 ];
-        
-        $this->validate($request,$rules);
-        
-     	$exsist = $posProducts->exsist_chk($request->itemName,$request->finishgood);
-     	if ($exsist[0]->counts > 0) {
-     	    
-           return redirect()->route('createVariableProduct',$request->finishgood)->withErrors('variable_product_name_error','This '.$request->item_name.' variable product name is already taken. Try again')->withInputs();
-     	}
-     	
-     	if(!empty($request->productImage)){
-         $request->validate([
-              'image' => 'image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
-          ]);
-
-          $pname = str_replace(' ', '',$request->item_name);
-          $imageName =$pname.'.'.$request->productImage->getClientOriginalExtension();
-          $request->productImage->move(public_path('assets/images/products/'), $imageName);
-         }
-         	$items = [
-         	'item_code' => $request->item_code,
-         	'priority'  => $request->item_priority,
-         	'attribute' => $request->attribute,
-    		'item_name' => $request->item_name,
-    		'product_id' => $request->finishgood,
-			'uom' => $request->uom,
-    		'branch_id' => session("branch"),
-    		'image' => $imageName,
-    		'quantity' => 1,
-    		'status_id' => 1,
-    	 ];
- 			
- 		 $itemid = $posProducts->insert('pos_products_gen_details',$items);
- 			
- 		  if($itemid){	
-     			$items = [
-                    		'online_price' => $request->item_price,
-                    		'retail_price' => $request->item_price,
-                    		'pos_item_id' => $itemid,
-                    		'status_id' => 1,
-                    		'date' => date('Y-m-d'),
-        	    ];
-     			$price = $posProducts->insert('pos_product_price',$items);
-     			
-     			Session::flash('success','Success');
- 		  }else{
- 		        Session::flash('error','Error! Server Issue! Record is not submit.');
- 		  }
-        
-      return redirect()->route('createVariableProduct',$request->finishgood);
-    }
-    
-    public function VariableProduct_set_to_generalProduct(Request $request,posProducts $posProducts){
-         try{
-             
-             $item_code = $request->item_code;
-             foreach($item_code as $val){
-                 DB::beginTransaction();
-                      	$exsist = $posProducts->exsist_chk($request->variableName,$val);
-                    	if ($exsist[0]->counts == 0) {
-                    	     $posItemId = $request->variableId;
-                    	     $genItemId = $request->generalInventoryCode;
-                    	    $getPosProduct =  DB::table('pos_products_gen_details')
-                    	                            ->where('branch_id',session('branch'))
-                    	                            ->where('product_id',$genItemId)
-                    	                            ->where('pos_item_id',$posItemId)
-                    	                            ->where('status_id',1)
-                    	                            ->first();
-                    	                            
-                    	 if($getPosProduct == null){
-                    	     return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-                    	 }                           
-                        	if(!empty($getPosProduct->image)){
-                                  $pname     = strtolower(str_replace(' ', '',$getPosProduct->item_name));
-                                  $imageName = $pname.'-'.$val.'.'.pathinfo($getPosProduct->image,PATHINFO_EXTENSION);
-                                   
-                                 if(File::exists(public_path('assets/images/products').'/'.$getPosProduct->image)){ 
-                                     File::move(public_path('assets/images/products').'/'.$getPosProduct->image,public_path('assets/images/products').'/'.$imageName);
-                                 }
-                            }
-                            
-                                    $request['product_id'] = $getPosProduct->product_id;
-                            
-                                 	$items = [
-                                 	'item_code'   => $this->autoGenerateCode_variableProduct($request),
-                                 	'priority'    => $getPosProduct->priority,
-                            		'item_name'   => $getPosProduct->item_name,
-                            		'product_id'  => $val,
-                        			'uom'         => $getPosProduct->uom,
-                            		'branch_id'   => session("branch"),
-                            		'image'       => $imageName,
-                            		'quantity'    => 1,
-                            		'status_id'   => 1,
-                            	 ];
-                         			
-                         		 $itemid = $posProducts->insert('pos_products_gen_details',$items);
-                         			
-                         		  if($itemid){	
-                         		      $getPosProduct =  DB::table('pos_product_price')
-                            	                            ->where('pos_item_id',$posItemId)
-                            	                            ->where('status_id',1)
-                            	                            ->first();
-                            	                           
-                             			$items = [
-                                            		'online_price' => $getPosProduct->online_price,
-                                            		'retail_price' => $getPosProduct->retail_price,
-                                            		'pos_item_id'  => $itemid,
-                                            		'status_id' => 1,
-                                            		'date' => date('Y-m-d'),
-                                	    ];
-                             			$price = $posProducts->insert('pos_product_price',$items); 
-                         		}
-                    	}
-             }
-             
-	          DB::commit();
-              return response()->json(["status" => 200]);  
-        }catch(Exception $e){
-            DB::rollback();
-            return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-        } 
-        
-    }
-    
-    public function updateVariableProduct(Request $request,posProducts $posProducts){
-        try{
-        $imageName = null; 
-         
-     	$exsist = DB::select('SELECT COUNT(pos_item_id) AS counts FROM pos_products_gen_details WHERE status_id=1 and branch_id = '.session('branch').' and pos_item_id != ? and product_id = ? and item_name = ?',[$request->item_id,$request->finishgood,$request->item_name]);
-     	
-     	if ($exsist[0]->counts > 0) {
-           return response()->json(['status'=>409,'msg'=>'This '.$request->item_name.' variable product name is already taken. Try again','control'=>'item_name']);
-     	}   
-     	
-     	$exist_itemCode = $posProducts->exsist_chk_itemcode_notEqualItemId($request->item_code,$request->item_id);
-     	if($exist_itemCode[0]->counts > 0){
-     	    return response()->json(['status'=>409,'msg'=>'This '.$request->item_code.' variable product code is already taken. Try again','control'=>'item_code']);
-     	}
-        
-        
-		if(!empty($request->item_image)){
-		    
-// 			$request->validate([
-// 			  'image' => 'image|mimes:jpeg,png,jpg|max:2048',
-// 			]);	
-
-             $validator = Validator::make($request->all(), [
-                               'image'=>'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100'
-                           ]);
-             
-            if ($validator->fails()) {
-                return response()->json(['status'=>500,'msg'=>'product image accept only this file format {jpg,pngjpeg} ','control'=>'item_image_vpmd']);
+            $check = $vendor->check_product_by_vendor($vendorValue, $request->productId);
+            if ($check == 0) {
+                $items[] = [
+                    'vendor_id' => $vendorValue,
+                    'product_id' => $request->productId,
+                ];
             }
-		    
-			if($request->prevImageName != ""){
-				$file_path = public_path('assets/images/products/'.$request->prevImageName) ;
-				if(file_exists($file_path)){
-					unlink($file_path);
-				}
-			}
-			
-			$pname = str_replace(' ', '',$request->item_name);
-			$imageName = time().'.'.$request->item_image->getClientOriginalExtension();
-			$request->item_image->move(public_path('assets/images/products/'), $imageName);
         }
 
-		$items = [
-			'item_code' => $request->item_code,
-			'item_name' => $request->item_name,
-			'quantity' => 1,
-			'uom' => $request->uom,
-			'priority' => $request->priority,
-		];
-		
-		if($imageName != null){
-		   $items['image'] =  $imageName;
-		}
- 		
-		$update = $posProducts->update_pos_gendetails($request->item_id,$items);
+        $result = (!empty($items) ? $vendor->insert_into_vendor_product($items, 1) : 0);
 
-		//get id and change status to inactive
-    	$id = $posProducts->getid($request->item_id);
-		$items = [
-			'status_id' => 2, //inactive old price
-			'date' => date('Y-m-d'),
-		];
-		$result = $posProducts->update_pos_price($id[0]->price_id,$items);
-
-		//insert new price in price table and status 1
-    		$items = [
-    			'retail_price' => $request->price,
-    			'online_price' => $request->price,
-    			'pos_item_id' => $request->item_id,
-    			'status_id' => 1,
-    			'date' => date('Y-m-d'),
-    		 ];
-		  $result = $posProducts->insert('pos_product_price',$items);  
-
-		  return response()->json(['status'=>200]);
-        }catch(Exception $e){
-            return response()->json(['status'=>500,'msg'=>$e->getMessage()]);
+        if ($result == 1) {
+            return true;
+        } else {
+            return false;
         }
     }
-    
-    
-    public function deleteVariableProduct(posProducts $posProducts, Request $request){
- 		$items = [
-    		'status_id' => 2,
-    	 ];
- 		
- 		if($posProducts->update_pos_gendetails($request->id,$items)){
- 		    return 1;
- 		}else{
- 		    return 0;
- 		}
- 		
- 	  //return redirect()->route('createVariableProduct',$request->finishgood);
-    }
-    
-    public function reloadVariation_singleProduct(Request $request){
-            $variationHead = InventoryVariation::where('inventory_variations.product_id',$request->id)
-    	                                         ->where('inventory_variations.status',1)
-    	                                         ->join('addon_categories','addon_categories.id','inventory_variations.variation_id')
-    	                                         ->join('pos_products_gen_details','pos_products_gen_details.pos_item_id','inventory_variations.product_id')
-    	                                         ->select('inventory_variations.*','addon_categories.name','addon_categories.type','addon_categories.is_required','addon_categories.addon_limit','pos_products_gen_details.item_name')
-    	                                         ->get();
-    	                                         
-	       $variationProductCount = Addon::whereIn('addon_category_id',InventoryVariation::where('product_id',$request->id)
-                                                                                          ->where('status',1)
-                                                                                          ->pluck('variation_id')
-                                                  )
-                                         ->groupBy('addon_category_id')
-                                         ->select(DB::raw('count(id) as countProduct,addon_category_id'))
-                                         ->get();                                      
-    	                                         
-		return response()->json(['variationHead'=>$variationHead,'variationProductCount'=>$variationProductCount]);	                                         
-    }
-    
-    public function getInventoryVariationProduct_values(Request $request){
 
-        return  Addon::select('addons.id','addons.name','addons.inventory_product_id','addons.price','inventory_department.department_name','inventory_general.department_id','inventory_sub_department.sub_depart_name')
-                      ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
-                      ->join('inventory_department','inventory_department.department_id','inventory_general.department_id')
-                      ->join('inventory_sub_department','inventory_sub_department.sub_department_id','inventory_general.sub_department_id')
-                      ->where('addons.addon_category_id',$request->id)
-                      ->where('addons.status',1)
-                      ->get();        
-        
-        // return InventoryVariationProduct::where('inventory_variation_products.inventory_variation_id',$request->id)
-			     //                                    ->where('inventory_variation_products.status',1)
-			     //                                    ->join('addons','addons.id','inventory_variation_products.product_id')
-			     //                                    ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
-			     //                                    ->join('inventory_department','inventory_department.department_id','inventory_general.department_id')
-			     //                                    ->join('inventory_sub_department','inventory_sub_department.sub_department_id','inventory_general.sub_department_id')
-			     //                                    ->select('inventory_variation_products.*','addons.name','addons.inventory_product_id','addons.price','inventory_department.department_name','inventory_general.department_id','inventory_sub_department.sub_depart_name')
-			     //                                    ->get(); 
-        
-    }
-    
-	public function set_variationAllVariableProduct(Request $request)
-	{
-	   try{ 
-	    $posItemId = $request->itemId;
+    public function sunmiCloud(Request $request)
+    {
 
-		if($posItemId == null && !isset($request->itemId)){
-		    return response()->json('Item not selected!',500);
-		}	    
-		
-		foreach($posItemId as $val_positem){
-		   DB::beginTransaction();
-            $count = AddonCategory::whereIn("id",DB::table('inventory_variations')->where('product_id',$val_positem)->where('status',1)->pluck('variation_id'))->where("status",1)->where("name",AddonCategory::where('id',$request->variationId)->pluck('name'))->count();
-            
-            if($count == 0){
-                $getVariation = AddonCategory::where('id',$request->variationId)->first();
-                
-                if($getVariation == null){
-                    return response()->json('variation not found!',500);
-                }
-                
-			   $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $getVariation->name,
-                                                    "show_website_name"  => $getVariation->name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $getVariation->type,
-                                                    "is_required"        => 1,
-                                					"mode"        		 => 'variations',
-                                					"addon_limit"        => $getVariation->addon_limit,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    $getproducts = Addon::where('addon_category_id',$request->variationId)->where('status',1)->get();
-
-                    foreach($getproducts as $val_prod){
-                              Addon::create([
-                            					"inventory_product_id"   => $val_prod->inventory_product_id,
-                                                "name"                   => $val_prod->name,
-                                                "price"                  => $val_prod->price, 
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryVariation_ID = InventoryVariation::create([
-                                                            'product_id'    => $val_positem,
-                                                            'variation_id'  => $getAddonCategoryId->id,
-                                                            'status'        => 1,
-                                                            'created_at'    => date("Y-m-d H:i:s"),
-                                                            'updated_at'    => date("Y-m-d H:i:s"),
-                                                      ]);                  
-            }		    
-		 }
-	   }
-	          DB::commit();
-              return response()->json(["status" => 200]);  
-        }catch(Exception $e){
-            DB::rollback();
-            return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-        } 	   
-	} 	    
-    
-    // variable product sub variation 
-    public function addVariation(Request $request){
-        // return $request;
-      try{
-        $count = AddonCategory::whereIn("id",DB::table('inventory_variations')->where('product_id',$request->item_id)->where('status',1)->pluck('variation_id'))->where("status",1)->where("name",$request->variation_name)->count();
-        
-        if($count != 0){
-           return response()->json(["status" => 409,"control" => "variation_name","msg"=>"This ".$request->variation_name." group name is already taken from product ".$request->item_name]); 
-        }
-      
-// 			if($count == 0){
-			   $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $request->variation_name,
-                                                    "show_website_name"  => $request->variation_name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $request->variation_type,
-                                                    "is_required"        => 1,
-                                					"mode"        		 => 'variations',
-                                					"addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    $getproducts = $request->products;
-                    $getPrice    = $request->price;
-                    for($i=0;$i< count($getproducts);$i++){
-                        $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                              Addon::create([
-                            					"inventory_product_id"   => $getproducts[$i],
-                                                "name"                   => $getInventoryName->product_name,
-                                                "price"                  => $getPrice[$i], 
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryVariation_ID = InventoryVariation::create([
-                                                            'product_id'    => $request->item_id,
-                                                            'variation_id'  => $getAddonCategoryId->id,
-                                                            'status'        => 1,
-                                                            'created_at'    => date("Y-m-d H:i:s"),
-                                                            'updated_at'    => date("Y-m-d H:i:s"),
-                                                      ]);  
-                                                      
-                    // if($getInventoryVariation_ID){
-                    //       $getVariationGroup_values = Addon::where('addon_category_id',$getAddonCategoryId->id)->get();
-                    //         foreach($getVariationGroup_values  as $prod_val){
-                    //                  InventoryVariationProduct::create([
-                    //                                                     'inventory_variation_id'  => $getInventoryVariation_ID->id,
-                    //                                                     'product_id'              => $prod_val->id,
-                    //                                                     'status'                  => 1,
-                    //                                               ]);                    
-                    //         }   
-                    // }   
-                }
-              return response()->json(["status" => 200]);  
-        }catch(Exception $e){
-            return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-        }        
-        
-        
-    }
-    
-    public function updateVariation(Request $request){
-          try{
-             $count = AddonCategory::whereIn("id",DB::table('inventory_variations')->where('product_id',$request->item_id)->where('variation_id','!=',$request->variation_id)->where('status',1)->pluck('variation_id'))->where("status",1)->where("name",$request->variation_name)->count();
-            
-                if($count != 0){
-                   return response()->json(["status" => 409,"control" => "variation_name","msg"=>"This ".$request->variation_name." group name is already taken from product ".$request->item_name]); 
-                }
-             
-            AddonCategory::where('id',$request->variation_id)->update(['status'=>0]); 
-            Addon::where('addon_category_id',$request->variation_id)->update(['status'=>0]); 
-            
-            $getId_InventoryVariation = InventoryVariation::where('product_id',$request->item_id)->where('variation_id',$request->variation_id)->pluck('id');            
-             InventoryVariation::where('product_id',$request->item_id)->where('variation_id',$request->variation_id)->update(['status'=>0]); 
-             InventoryVariationProduct::where('inventory_variation_id',$getId_InventoryVariation)->update(['status'=>0]); 
-             
-            
-          $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $request->variation_name,
-                                                    "show_website_name"  => $request->variation_name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $request->variation_type,
-                                                    "is_required"        => 1,
-                                					"mode"        		 => 'variations',
-                                					"addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    $getproducts = $request->products;
-                    $getPrice    = $request->price;
-                    for($i=0;$i< count($getproducts);$i++){
-                        $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                              Addon::create([
-                            					"inventory_product_id"   => $getproducts[$i],
-                                                "name"                   => $getInventoryName->product_name,
-                                                "price"                  => $getPrice[$i], 
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryVariation_ID = InventoryVariation::create([
-                                                            'product_id'    => $request->item_id,
-                                                            'variation_id'  => $getAddonCategoryId->id,
-                                                            'status'        => 1,
-                                                            'created_at'    => date("Y-m-d H:i:s"),
-                                                            'updated_at'    => date("Y-m-d H:i:s"),
-                                                      ]);  
-                                                      
-                    // if($getInventoryVariation_ID){
-                    //       $getVariationGroup_values = Addon::where('addon_category_id',$getAddonCategoryId->id)->get();
-                    //         foreach($getVariationGroup_values  as $prod_val){
-                    //                  InventoryVariationProduct::create([
-                    //                                                     'inventory_variation_id'  => $getInventoryVariation_ID->id,
-                    //                                                     'product_id'              => $prod_val->id,
-                    //                                                     'status'                  => 1,
-                    //                                               ]);                    
-                    //         }                        
-                        
-                    // }                                  
-                  
-                    
-                }
-              return response()->json(["status" => 200]);              
-        
-        }catch(Exception $e){
-            return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-        }        
+        $response = Http::asForm()->post('https://sabsoft.com.pk/Retail/webservice/sendinventorytosunmi.php', [
+            'inventory' => implode(',', $request->inventory),
+        ]);
+        return $response;
     }
 
-    public function removeVariation(Request $request){
-       if(AddonCategory::where('id',$request->variation_group_id)->update(['status'=>0])){
-          $getID =  InventoryVariation::where('variation_id',$request->variation_group_id)->where('product_id',$request->item_id)->pluck('id');
-          InventoryVariation::where('variation_id',$request->variation_group_id)->where('product_id',$request->item_id)->update(['status'=>0]);
-          InventoryVariationProduct::where('inventory_variation_id',$getID)->update(['status'=>0]);
-          return response()->json(["status" => 200]); 
-       }else{
-          return response()->json(["status" => 500,"msg"=>'Server issue! record is not removed.']); 
-       }        
-    }
-    
-    
-    // Start Deal Products
-    public function createDealProduct(Request $request,inventory $inventory,posProducts $posProducts){
-        $where = ['id'=>$request->id,'status'=>1];
+
+    // -----------------------------------------------------------------	
+    // 	Inventroy variable product 
+    // -----------------------------------------------------------------
+
+    public function createVariableProduct(Request $request, inventory $inventory, posProducts $posProducts)
+    {
+        $where = ['id' => $request->id, 'status' => 1];
         $check_exists =  $inventory->check_exists($where); //DB::table('inventory_general')->where('id',$request->id)->count();
-  
-        if($check_exists == null){
-            Session::flash('error','Product not found');
+
+        if ($check_exists == null) {
+            Session::flash('error', 'Product not found');
             return redirect()->route('invent-list');
         }
-        
-      return view('Inventory.deal-products',[
-                       'department'        => $inventory->department(), 
-                       'generalItem'       => $check_exists,
-                       'dealHead'          => DB::table('inventory_deal_general')
-                                                ->where('inventory_deal_id',$request->id)
-                                                ->where('status',1)
-                                                // ->join('addon_categories','addon_categories.id','inventory_deal_general.group_id')
-                                                // ->select('inventory_deal_general.*','addon_categories.name','addon_categories.type as group_type','addon_categories.addon_limit as selection_limit')
-                                                 ->orderBy('priority','DESC')
-                                                ->get(),
-                                            
-                        'dealChild'        => DB::table('inventory_deal_details')->whereIn('inventory_general_id',DB::table('inventory_deal_general')
-                                                                            		  ->where('inventory_deal_id',$request->id)
-                                                                            		  ->pluck('id')
-                                                            )
-                                                // ->join('addons','addons.id','inventory_deal_details.sub_group_id') 
-                                                // ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
-                                                ->where('inventory_deal_details.status',1)
-                                                // ->select('inventory_deal_details.*','addons.inventory_product_id','addons.name','addons.quantity','inventory_general.department_id')
-                                                ->select('inventory_deal_details.*')
-                                                ->get(),
-                                                  
-                        'dealprodAddons'   => DB::table('inventory_addons')
-                                                 ->whereIn('product_id',DB::table('inventory_deal_details')
-                                                                           ->whereIn('inventory_general_id',DB::table('inventory_deal_general')
-                                                            		                                              ->where('inventory_deal_id',$request->id)
-                                                            		                                              ->pluck('id')
-                                                                                 )
-                                                                        //   ->join('addons','addons.id','inventory_deal_details.sub_group_id')
-                                                                           ->where('inventory_deal_details.status',1)
-                                                                        //   ->pluck('addons.inventory_product_id')
-                                                                        ->pluck('inventory_deal_details.id')
-                                                          )
-                                                 ->where('inventory_addon_type','deal')
-                                                 ->where('status',1)
-                                                 ->groupBy('product_id')
-                                                 ->select(DB::raw('product_id, count(addon_id) as counts'))
-                                                 ->get(),
-                     ]);
-    }
-    
-    public function reload_dealProducts(Request $request){
-        return response()->json([
-                        'dealChild'        => DB::table('inventory_deal_details')
-                                                ->where('inventory_general_id',$request->id)
-                                                ->where('status',1)
-                                                ->get(),
-                                                  
-                        'dealprodAddons'   => DB::table('inventory_addons')
-                                                 ->whereIn('product_id',DB::table('inventory_deal_details')
-                                                                          ->where('inventory_general_id',$request->id)
-                                                                          ->where('status',1)
-                                                                          ->pluck('id')
-                                                          )
-                                                 ->where('inventory_addon_type','deal')
-                                                 ->where('status',1)
-                                                 ->groupBy('product_id')
-                                                 ->select(DB::raw('product_id, count(addon_id) as counts'))
-                                                 ->get(),              
-            
-                        // 'dealChild'        => DB::table('inventory_deal_details')
-                        //                         ->join('addons','addons.id','inventory_deal_details.sub_group_id') 
-                        //                         ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
-                        //                         ->where('inventory_general_id',$request->id)
-                        //                         ->where('inventory_deal_details.status',1)
-                        //                         ->select('inventory_deal_details.*','addons.inventory_product_id','addons.name','addons.quantity','inventory_general.department_id')
-                        //                         ->get(),
-                                                  
-                        // 'dealprodAddons'   => DB::table('inventory_addons')
-                        //                          ->whereIn('product_id',DB::table('inventory_deal_details')
-                        //                                                   ->where('inventory_general_id',$request->id)
-                        //                                                   ->join('addons','addons.id','inventory_deal_details.sub_group_id')
-                        //                                                   ->where('inventory_deal_details.status',1)
-                        //                                                   ->pluck('addons.inventory_product_id')
-                        //                                   )
-                        //                          ->where('inventory_addon_type','deal')
-                        //                          ->where('status',1)
-                        //                          ->groupBy('product_id')
-                        //                          ->select(DB::raw('product_id, count(addon_id) as counts'))
-                        //                          ->get(),  
-            ]);
-    }
-    
-    public function storeDeal_product(Request $request){
-        try{
 
-             $count = DB::table('inventory_deal_general')->where('inventory_deal_id',$request->finishgood)->where('status',1)->where("name",$request->group_name)->count();        
-        
-             if($count != 0){
-               return response()->json(["status" => 409,"control" => "group_name","msg"=>"This ".$request->group_name." group name is already taken from product ".$request->itemName]); 
-             }
-             
-             $priorityCheck = DB::table('inventory_deal_general')->where('inventory_deal_id',$request->finishgood)->where('status',1)->where("priority",$request->priority)->count();
-                
-             if($priorityCheck != 0 && $count == 0){
-                return response()->json(['status'=>409,'control'=>'priority','msg'=>'This priority number is already taken!']);
-             }             
-      
-                    $getInventoryDealGeneral_ID = InventoryDealGeneral::create([
-                                                            'inventory_deal_id' => $request->finishgood,
-                                                            'group_id'          => 1,
-                                                            'name'              => $request->group_name,
-                                                            'type'              => $request->group_type,
-                                                            'selection_limit'   => ($request->group_type == 'multiple' ? $request->selection_limit : 0),
-                                                            'priority'          => $request->priority,
-                                                            'status'            => 1,
-                                                            'created_at'        => date("Y-m-d H:i:s"),
-                                                            'updated_at'        => date("Y-m-d H:i:s"),
-                                                      ]);  
-                                                      
-                    if($getInventoryDealGeneral_ID){
-                        $getproducts = $request->products;
-                        $getQunatity = $request->product_qty;
-                        for($i=0; $i < count($getproducts); $i++){ 
-                            $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                                InventoryDealDetail::create([
-                                                                'inventory_general_id'  => $getInventoryDealGeneral_ID->id,
-                                                                'product_id'            => $getproducts[$i],
-                                                                'product_name'          => $getInventoryName->product_name,
-                                                                'product_quantity'      => $getQunatity[$i],
-                                                          ]);    
-                        }
-                    }  
-              return response()->json(["status" => 200]); 
-        }catch(Exception $e){
-              return response()->json(["status" => 500,"msg"=>$e->getMessage()]); 
+        $totalvariation      = AddonCategory::where("company_id", session("company_id"))->where("mode", "variations")->where('status', 1)->get();
+        $inventoryVariations = InventoryVariation::whereIn('inventory_variations.product_id', DB::table('pos_products_gen_details')->where('branch_id', session('branch'))->where('product_id', $request->id)->pluck('pos_item_id'))
+            ->where('inventory_variations.status', 1)
+            ->join('addon_categories', 'addon_categories.id', 'inventory_variations.variation_id')
+            ->join('pos_products_gen_details', 'pos_products_gen_details.pos_item_id', 'inventory_variations.product_id')
+            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name', 'pos_products_gen_details.priority')
+            ->orderBy('pos_products_gen_details.priority', 'desc')
+            ->get();
+
+        $variationProductCount = Addon::whereIn(
+            'addon_category_id',
+            InventoryVariation::whereIn(
+                'product_id',
+                DB::table('pos_products_gen_details')
+                    ->where('branch_id', session('branch'))
+                    ->where('product_id', $request->id)
+                    ->pluck('pos_item_id')
+            )
+                ->where('status', 1)
+                ->pluck('variation_id')
+        )
+            ->groupBy('addon_category_id')
+            ->select(DB::raw('count(id) as countProduct,addon_category_id'))
+            ->get();
+
+        return view('Inventory.variable-products', [
+            'generalItem'            => $check_exists,
+            'uom'                    => $inventory->uom(),
+            'posProduct_details'     => $posProducts->getposproducts_filter_by_productId($request->id),
+            'department'             => $inventory->department(),
+            'totalvariation'         => $totalvariation,
+            'inventoryVariations'    => $inventoryVariations,
+            'variationProductCount'  => $variationProductCount,
+            'addonCategories'        => AddonCategory::with("addons")->whereIn("id", DB::table('inventory_addons')->where(['product_id' => $request->id, 'status' => 1, "inventory_addon_type" => 'general-inventory'])->pluck('addon_id'))->where(["company_id" => session("company_id"), "mode" => 'addons'])->orderBy('priority', 'desc')->get(),
+            'attributes' => Attribute::get_attributes(),
+            //   'references' => $references,
+        ]);
+    }
+
+    public function get_variableProduct(Request $request)
+    {
+        return DB::table('pos_products_gen_details')->where('branch_id', session('branch'))->where('product_id', $request->id)->where('status_id', 1)->get();
+    }
+
+    public function get_generalItem(Request $request)
+    {
+        return DB::table('inventory_general')
+            ->where('company_id', session('company_id'))
+            ->where('department_id', $request->depart)
+            ->where('sub_department_id', $request->subDepart)
+            ->where('status', 1)
+            ->get();
+    }
+
+    public function autoGenerateCode_variableProduct(Request $request)
+    {
+        $code = rand(1000000, 9999999);
+
+        $resp = DB::table('pos_products_gen_details')->where(['item_code' => $code, 'product_id' => $request->product_id])->count();
+        if ($resp > 0) {
+            $code = rand(1000000, 9999999);
+            return $code;
+        } else {
+            return $code;
         }
-    }  
-    
-    
-    public function updateDeal_product(Request $request){
-        try{
-             $count = DB::table('inventory_deal_general')->where('inventory_deal_id',$request->finishgood)->where('id','!=',$request->id_editmd)->where('status',1)->where("name",$request->group_name)->count();
-            
-             if($count != 0){
-                 return response()->json(["status" => 409,"control" => "group_name_editmd","msg"=>"This ".$request->group_name." group name is already taken from product ".$request->inventory_name]); 
-             }
-             
-             $priorityCheck = DB::table('inventory_deal_general')->where('inventory_deal_id',$request->finishgood)
-                                 ->where('id','!=',$request->id_editmd)->where('status',1)
-                                 ->where("priority",$request->priority)->count();
-                
-             if($priorityCheck != 0 && $count == 0){
-                return response()->json(['status'=>409,'control'=>'priority_editmd','msg'=>'This priority number is already taken!']);
-             }             
-
-                    $getInventoryDealGeneral_ID = InventoryDealGeneral::create([
-                                                            'inventory_deal_id' => $request->finishgood,
-                                                            'group_id'          => 1,
-                                                            'name'              => $request->group_name,
-                                                            'type'              => $request->group_type,
-                                                            'selection_limit'   => ($request->group_type == 'multiple' ? $request->selection_limit : 0),
-                                                            'priority'          => $request->priority,
-                                                            'status'            => 1,
-                                                            'created_at'        => date("Y-m-d H:i:s"),
-                                                            'updated_at'        => date("Y-m-d H:i:s"),
-                                                      ]);  
-                                                      
-                    if($getInventoryDealGeneral_ID){
-                        InventoryDealGeneral::where('inventory_deal_id',$request->finishgood)->where('id',$request->id_editmd)->update(['status'=>0]);
-                        
-                        $getproducts = $request->products;
-                        $getQunatity = $request->product_qty;
-                        for($i=0; $i < count($getproducts); $i++){ 
-                            $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                            
-                              $getId=InventoryDealDetail::create([
-                                                                'inventory_general_id'  => $getInventoryDealGeneral_ID->id,
-                                                                'product_id'            => $getproducts[$i],
-                                                                'product_name'          => $getInventoryName->product_name,
-                                                                'product_quantity'      => $getQunatity[$i],
-                                                          ]);
-                                                          
-                                $getDeal_Addon = InventoryAddon::whereIn('product_id',InventoryDealDetail::where(['inventory_general_id'=>$request->id_editmd,'status'=>1,'product_id'=>$getproducts[$i]])
-                                                                                                          ->pluck('id'))
-                                                                ->get();
-                                
-                                if($getDeal_Addon){
-                                    foreach($getDeal_Addon as $addon){
-                                        InventoryAddon::create([
-                                                            'product_id'            => $getId->id,
-                                                            'addon_id'              => $addon->addon_id,
-                                                            'status'                => 1,
-                                                            'inventory_addon_type'  => 'deal',
-                                                            'created_at'            => date("Y-m-d H:i:s"),
-                                                            'updated_at'            => date("Y-m-d H:i:s"),
-                                                      ]); 
-                                    }
-                                    
-                                    InventoryAddon::whereIn('product_id',InventoryDealDetail::where(['inventory_general_id'=>$request->id_editmd,'status'=>1,'product_id'=>$getproducts[$i]])->pluck('id'))
-                                                   ->update(['status'=>0]);
-                                    InventoryDealDetail::where(['inventory_general_id'=>$request->id_editmd,'status'=>1,'product_id'=>$getproducts[$i]])
-                                                   ->update(['status'=>0]);               
-                                }
-                                                          
-                        }
-                        
-                       return response()->json(["status" => 200]);
-                    }else{
-                       return response()->json(["status" => 500,"msg"=>"Record is not saved."]); 
-                    }   
-
-                            
-        
-        }catch(Exception $e){
-            return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-        }        
-    } 
-    
-    public function singleDealProduct_store(Request $request){
-        try{
-            
-                $resp = Addon::create([
-        					"inventory_product_id"   => $request->product_id,
-                            "name"                   => $request->product_name,
-                            "quantity"               => $request->quantity,
-        					"addon_category_id"      => $request->id,
-        					"user_id"                => auth()->user()->id,
-        				]);
-        				
-            	if($resp){
-                      InventoryDealDetail::create([
-                                            'inventory_general_id'  => $request->dealRowIdUnq,
-                                            'sub_group_id'          => $resp->id,
-                                            'status'                => 1,
-                                      ]);
-            	}			
-           
-        
-          return  ($resp) ? response()->json(["status" => 200]) : response()->json(["status" => 500,"msg"=>" Record is not save"]);
-        }catch(Exception $e){
-            return response()->json(["status" => 500,"msg"=>$e->getMessage()]);
-        }         
     }
-    
-    public function removeDeal_product(Request $request){
-       if(InventoryDealGeneral::where('id',$request->id)->update(['status'=>0]) && InventoryDealDetail::where('inventory_general_id',$request->id)->update(['status'=>0])){
-          return response()->json(["status" => 200]); 
-       }else{
-          return response()->json(["status" => 500,"msg"=>'Server issue! record is not removed.']); 
-       }
-    }    
+
+    public function storeVariableProduct(Request $request, posProducts $posProducts)
+    {
+        $imageName = null;
+
+        $rules = [
+            'item_code'  => 'required',
+            'item_name'  => 'required',
+            'attribute'  => 'required',
+            'uom'        => 'required',
+            'item_price' => 'required',
+        ];
+
+        $this->validate($request, $rules);
+
+        $exsist = $posProducts->exsist_chk($request->itemName, $request->finishgood);
+        if ($exsist[0]->counts > 0) {
+
+            return redirect()->route('createVariableProduct', $request->finishgood)->withErrors('variable_product_name_error', 'This ' . $request->item_name . ' variable product name is already taken. Try again')->withInputs();
+        }
+
+        if (!empty($request->productImage)) {
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
+            ]);
+
+            $pname = str_replace(' ', '', $request->item_name);
+            $imageName = $pname . '.' . $request->productImage->getClientOriginalExtension();
+            $request->productImage->move(public_path('assets/images/products/'), $imageName);
+        }
+        $items = [
+            'item_code' => $request->item_code,
+            'priority'  => $request->item_priority,
+            'attribute' => $request->attribute,
+            'item_name' => $request->item_name,
+            'product_id' => $request->finishgood,
+            'uom' => $request->uom,
+            'branch_id' => session("branch"),
+            'image' => $imageName,
+            'quantity' => 1,
+            'status_id' => 1,
+        ];
+
+        $itemid = $posProducts->insert('pos_products_gen_details', $items);
+
+        if ($itemid) {
+            $items = [
+                'online_price' => $request->item_price,
+                'retail_price' => $request->item_price,
+                'pos_item_id' => $itemid,
+                'status_id' => 1,
+                'date' => date('Y-m-d'),
+            ];
+            $price = $posProducts->insert('pos_product_price', $items);
+
+            Session::flash('success', 'Success');
+        } else {
+            Session::flash('error', 'Error! Server Issue! Record is not submit.');
+        }
+
+        return redirect()->route('createVariableProduct', $request->finishgood);
+    }
+
+    public function VariableProduct_set_to_generalProduct(Request $request, posProducts $posProducts)
+    {
+        try {
+
+            $item_code = $request->item_code;
+            foreach ($item_code as $val) {
+                DB::beginTransaction();
+                $exsist = $posProducts->exsist_chk($request->variableName, $val);
+                if ($exsist[0]->counts == 0) {
+                    $posItemId = $request->variableId;
+                    $genItemId = $request->generalInventoryCode;
+                    $getPosProduct =  DB::table('pos_products_gen_details')
+                        ->where('branch_id', session('branch'))
+                        ->where('product_id', $genItemId)
+                        ->where('pos_item_id', $posItemId)
+                        ->where('status_id', 1)
+                        ->first();
+
+                    if ($getPosProduct == null) {
+                        return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+                    }
+                    if (!empty($getPosProduct->image)) {
+                        $pname     = strtolower(str_replace(' ', '', $getPosProduct->item_name));
+                        $imageName = $pname . '-' . $val . '.' . pathinfo($getPosProduct->image, PATHINFO_EXTENSION);
+
+                        if (File::exists(public_path('assets/images/products') . '/' . $getPosProduct->image)) {
+                            File::move(public_path('assets/images/products') . '/' . $getPosProduct->image, public_path('assets/images/products') . '/' . $imageName);
+                        }
+                    }
+
+                    $request['product_id'] = $getPosProduct->product_id;
+
+                    $items = [
+                        'item_code'   => $this->autoGenerateCode_variableProduct($request),
+                        'priority'    => $getPosProduct->priority,
+                        'item_name'   => $getPosProduct->item_name,
+                        'product_id'  => $val,
+                        'uom'         => $getPosProduct->uom,
+                        'branch_id'   => session("branch"),
+                        'image'       => $imageName,
+                        'quantity'    => 1,
+                        'status_id'   => 1,
+                    ];
+
+                    $itemid = $posProducts->insert('pos_products_gen_details', $items);
+
+                    if ($itemid) {
+                        $getPosProduct =  DB::table('pos_product_price')
+                            ->where('pos_item_id', $posItemId)
+                            ->where('status_id', 1)
+                            ->first();
+
+                        $items = [
+                            'online_price' => $getPosProduct->online_price,
+                            'retail_price' => $getPosProduct->retail_price,
+                            'pos_item_id'  => $itemid,
+                            'status_id' => 1,
+                            'date' => date('Y-m-d'),
+                        ];
+                        $price = $posProducts->insert('pos_product_price', $items);
+                    }
+                }
+            }
+
+            DB::commit();
+            return response()->json(["status" => 200]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+    }
+
+    public function updateVariableProduct(Request $request, posProducts $posProducts)
+    {
+        try {
+            $imageName = null;
+
+            $exsist = DB::select('SELECT COUNT(pos_item_id) AS counts FROM pos_products_gen_details WHERE status_id=1 and branch_id = ' . session('branch') . ' and pos_item_id != ? and product_id = ? and item_name = ?', [$request->item_id, $request->finishgood, $request->item_name]);
+
+            if ($exsist[0]->counts > 0) {
+                return response()->json(['status' => 409, 'msg' => 'This ' . $request->item_name . ' variable product name is already taken. Try again', 'control' => 'item_name']);
+            }
+
+            $exist_itemCode = $posProducts->exsist_chk_itemcode_notEqualItemId($request->item_code, $request->item_id);
+            if ($exist_itemCode[0]->counts > 0) {
+                return response()->json(['status' => 409, 'msg' => 'This ' . $request->item_code . ' variable product code is already taken. Try again', 'control' => 'item_code']);
+            }
+
+
+            if (!empty($request->item_image)) {
+
+                // 			$request->validate([
+                // 			  'image' => 'image|mimes:jpeg,png,jpg|max:2048',
+                // 			]);	
+
+                $validator = Validator::make($request->all(), [
+                    'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100'
+                ]);
+
+                if ($validator->fails()) {
+                    return response()->json(['status' => 500, 'msg' => 'product image accept only this file format {jpg,pngjpeg} ', 'control' => 'item_image_vpmd']);
+                }
+
+                if ($request->prevImageName != "") {
+                    $file_path = public_path('assets/images/products/' . $request->prevImageName);
+                    if (file_exists($file_path)) {
+                        unlink($file_path);
+                    }
+                }
+
+                $pname = str_replace(' ', '', $request->item_name);
+                $imageName = time() . '.' . $request->item_image->getClientOriginalExtension();
+                $request->item_image->move(public_path('assets/images/products/'), $imageName);
+            }
+
+            $items = [
+                'item_code' => $request->item_code,
+                'item_name' => $request->item_name,
+                'quantity' => 1,
+                'uom' => $request->uom,
+                'priority' => $request->priority,
+            ];
+
+            if ($imageName != null) {
+                $items['image'] =  $imageName;
+            }
+
+            $update = $posProducts->update_pos_gendetails($request->item_id, $items);
+
+            //get id and change status to inactive
+            $id = $posProducts->getid($request->item_id);
+            $items = [
+                'status_id' => 2, //inactive old price
+                'date' => date('Y-m-d'),
+            ];
+            $result = $posProducts->update_pos_price($id[0]->price_id, $items);
+
+            //insert new price in price table and status 1
+            $items = [
+                'retail_price' => $request->price,
+                'online_price' => $request->price,
+                'pos_item_id' => $request->item_id,
+                'status_id' => 1,
+                'date' => date('Y-m-d'),
+            ];
+            $result = $posProducts->insert('pos_product_price', $items);
+
+            return response()->json(['status' => 200]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
+        }
+    }
+
+
+    public function deleteVariableProduct(posProducts $posProducts, Request $request)
+    {
+        $items = [
+            'status_id' => 2,
+        ];
+
+        if ($posProducts->update_pos_gendetails($request->id, $items)) {
+            return 1;
+        } else {
+            return 0;
+        }
+
+        //return redirect()->route('createVariableProduct',$request->finishgood);
+    }
+
+    public function reloadVariation_singleProduct(Request $request)
+    {
+        $variationHead = InventoryVariation::where('inventory_variations.product_id', $request->id)
+            ->where('inventory_variations.status', 1)
+            ->join('addon_categories', 'addon_categories.id', 'inventory_variations.variation_id')
+            ->join('pos_products_gen_details', 'pos_products_gen_details.pos_item_id', 'inventory_variations.product_id')
+            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name')
+            ->get();
+
+        $variationProductCount = Addon::whereIn(
+            'addon_category_id',
+            InventoryVariation::where('product_id', $request->id)
+                ->where('status', 1)
+                ->pluck('variation_id')
+        )
+            ->groupBy('addon_category_id')
+            ->select(DB::raw('count(id) as countProduct,addon_category_id'))
+            ->get();
+
+        return response()->json(['variationHead' => $variationHead, 'variationProductCount' => $variationProductCount]);
+    }
+
+    public function getInventoryVariationProduct_values(Request $request)
+    {
+
+        return  Addon::select('addons.id', 'addons.name', 'addons.inventory_product_id', 'addons.price', 'inventory_department.department_name', 'inventory_general.department_id', 'inventory_sub_department.sub_depart_name')
+            ->join('inventory_general', 'inventory_general.id', 'addons.inventory_product_id')
+            ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
+            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_general.sub_department_id')
+            ->where('addons.addon_category_id', $request->id)
+            ->where('addons.status', 1)
+            ->get();
+
+        // return InventoryVariationProduct::where('inventory_variation_products.inventory_variation_id',$request->id)
+        //                                    ->where('inventory_variation_products.status',1)
+        //                                    ->join('addons','addons.id','inventory_variation_products.product_id')
+        //                                    ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
+        //                                    ->join('inventory_department','inventory_department.department_id','inventory_general.department_id')
+        //                                    ->join('inventory_sub_department','inventory_sub_department.sub_department_id','inventory_general.sub_department_id')
+        //                                    ->select('inventory_variation_products.*','addons.name','addons.inventory_product_id','addons.price','inventory_department.department_name','inventory_general.department_id','inventory_sub_department.sub_depart_name')
+        //                                    ->get(); 
+
+    }
+
+    public function set_variationAllVariableProduct(Request $request)
+    {
+        try {
+            $posItemId = $request->itemId;
+
+            if ($posItemId == null && !isset($request->itemId)) {
+                return response()->json('Item not selected!', 500);
+            }
+
+            foreach ($posItemId as $val_positem) {
+                DB::beginTransaction();
+                $count = AddonCategory::whereIn("id", DB::table('inventory_variations')->where('product_id', $val_positem)->where('status', 1)->pluck('variation_id'))->where("status", 1)->where("name", AddonCategory::where('id', $request->variationId)->pluck('name'))->count();
+
+                if ($count == 0) {
+                    $getVariation = AddonCategory::where('id', $request->variationId)->first();
+
+                    if ($getVariation == null) {
+                        return response()->json('variation not found!', 500);
+                    }
+
+                    $getAddonCategoryId = AddonCategory::create([
+                        "name"               => $getVariation->name,
+                        "show_website_name"  => $getVariation->name,
+                        "user_id"            => auth()->user()->id,
+                        "company_id"         => session("company_id"),
+                        "type"               => $getVariation->type,
+                        "is_required"        => 1,
+                        "mode"                 => 'variations',
+                        "addon_limit"        => $getVariation->addon_limit,
+                    ]);
+
+                    if ($getAddonCategoryId) {
+                        $getproducts = Addon::where('addon_category_id', $request->variationId)->where('status', 1)->get();
+
+                        foreach ($getproducts as $val_prod) {
+                            Addon::create([
+                                "inventory_product_id"   => $val_prod->inventory_product_id,
+                                "name"                   => $val_prod->name,
+                                "price"                  => $val_prod->price,
+                                "addon_category_id"      => $getAddonCategoryId->id,
+                                "user_id"                => auth()->user()->id,
+                            ]);
+                        }
+
+                        $getInventoryVariation_ID = InventoryVariation::create([
+                            'product_id'    => $val_positem,
+                            'variation_id'  => $getAddonCategoryId->id,
+                            'status'        => 1,
+                            'created_at'    => date("Y-m-d H:i:s"),
+                            'updated_at'    => date("Y-m-d H:i:s"),
+                        ]);
+                    }
+                }
+            }
+            DB::commit();
+            return response()->json(["status" => 200]);
+        } catch (Exception $e) {
+            DB::rollback();
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+    }
+
+    // variable product sub variation 
+    public function addVariation(Request $request)
+    {
+        // return $request;
+        try {
+            $count = AddonCategory::whereIn("id", DB::table('inventory_variations')->where('product_id', $request->item_id)->where('status', 1)->pluck('variation_id'))->where("status", 1)->where("name", $request->variation_name)->count();
+
+            if ($count != 0) {
+                return response()->json(["status" => 409, "control" => "variation_name", "msg" => "This " . $request->variation_name . " group name is already taken from product " . $request->item_name]);
+            }
+
+            // 			if($count == 0){
+            $getAddonCategoryId = AddonCategory::create([
+                "name"               => $request->variation_name,
+                "show_website_name"  => $request->variation_name,
+                "user_id"            => auth()->user()->id,
+                "company_id"         => session("company_id"),
+                "type"               => $request->variation_type,
+                "is_required"        => 1,
+                "mode"                 => 'variations',
+                "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
+            ]);
+
+            if ($getAddonCategoryId) {
+                $getproducts = $request->products;
+                $getPrice    = $request->price;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+                    Addon::create([
+                        "inventory_product_id"   => $getproducts[$i],
+                        "name"                   => $getInventoryName->product_name,
+                        "price"                  => $getPrice[$i],
+                        "addon_category_id"      => $getAddonCategoryId->id,
+                        "user_id"                => auth()->user()->id,
+                    ]);
+                }
+
+                $getInventoryVariation_ID = InventoryVariation::create([
+                    'product_id'    => $request->item_id,
+                    'variation_id'  => $getAddonCategoryId->id,
+                    'status'        => 1,
+                    'created_at'    => date("Y-m-d H:i:s"),
+                    'updated_at'    => date("Y-m-d H:i:s"),
+                ]);
+
+                // if($getInventoryVariation_ID){
+                //       $getVariationGroup_values = Addon::where('addon_category_id',$getAddonCategoryId->id)->get();
+                //         foreach($getVariationGroup_values  as $prod_val){
+                //                  InventoryVariationProduct::create([
+                //                                                     'inventory_variation_id'  => $getInventoryVariation_ID->id,
+                //                                                     'product_id'              => $prod_val->id,
+                //                                                     'status'                  => 1,
+                //                                               ]);                    
+                //         }   
+                // }   
+            }
+            return response()->json(["status" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+    }
+
+    public function updateVariation(Request $request)
+    {
+        try {
+            $count = AddonCategory::whereIn("id", DB::table('inventory_variations')->where('product_id', $request->item_id)->where('variation_id', '!=', $request->variation_id)->where('status', 1)->pluck('variation_id'))->where("status", 1)->where("name", $request->variation_name)->count();
+
+            if ($count != 0) {
+                return response()->json(["status" => 409, "control" => "variation_name", "msg" => "This " . $request->variation_name . " group name is already taken from product " . $request->item_name]);
+            }
+
+            AddonCategory::where('id', $request->variation_id)->update(['status' => 0]);
+            Addon::where('addon_category_id', $request->variation_id)->update(['status' => 0]);
+
+            $getId_InventoryVariation = InventoryVariation::where('product_id', $request->item_id)->where('variation_id', $request->variation_id)->pluck('id');
+            InventoryVariation::where('product_id', $request->item_id)->where('variation_id', $request->variation_id)->update(['status' => 0]);
+            InventoryVariationProduct::where('inventory_variation_id', $getId_InventoryVariation)->update(['status' => 0]);
+
+
+            $getAddonCategoryId = AddonCategory::create([
+                "name"               => $request->variation_name,
+                "show_website_name"  => $request->variation_name,
+                "user_id"            => auth()->user()->id,
+                "company_id"         => session("company_id"),
+                "type"               => $request->variation_type,
+                "is_required"        => 1,
+                "mode"                 => 'variations',
+                "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
+            ]);
+
+            if ($getAddonCategoryId) {
+                $getproducts = $request->products;
+                $getPrice    = $request->price;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+                    Addon::create([
+                        "inventory_product_id"   => $getproducts[$i],
+                        "name"                   => $getInventoryName->product_name,
+                        "price"                  => $getPrice[$i],
+                        "addon_category_id"      => $getAddonCategoryId->id,
+                        "user_id"                => auth()->user()->id,
+                    ]);
+                }
+
+                $getInventoryVariation_ID = InventoryVariation::create([
+                    'product_id'    => $request->item_id,
+                    'variation_id'  => $getAddonCategoryId->id,
+                    'status'        => 1,
+                    'created_at'    => date("Y-m-d H:i:s"),
+                    'updated_at'    => date("Y-m-d H:i:s"),
+                ]);
+
+                // if($getInventoryVariation_ID){
+                //       $getVariationGroup_values = Addon::where('addon_category_id',$getAddonCategoryId->id)->get();
+                //         foreach($getVariationGroup_values  as $prod_val){
+                //                  InventoryVariationProduct::create([
+                //                                                     'inventory_variation_id'  => $getInventoryVariation_ID->id,
+                //                                                     'product_id'              => $prod_val->id,
+                //                                                     'status'                  => 1,
+                //                                               ]);                    
+                //         }                        
+
+                // }                                  
+
+
+            }
+            return response()->json(["status" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+    }
+
+    public function removeVariation(Request $request)
+    {
+        if (AddonCategory::where('id', $request->variation_group_id)->update(['status' => 0])) {
+            $getID =  InventoryVariation::where('variation_id', $request->variation_group_id)->where('product_id', $request->item_id)->pluck('id');
+            InventoryVariation::where('variation_id', $request->variation_group_id)->where('product_id', $request->item_id)->update(['status' => 0]);
+            InventoryVariationProduct::where('inventory_variation_id', $getID)->update(['status' => 0]);
+            return response()->json(["status" => 200]);
+        } else {
+            return response()->json(["status" => 500, "msg" => 'Server issue! record is not removed.']);
+        }
+    }
+
+
+    // Start Deal Products
+    public function createDealProduct(Request $request, inventory $inventory, posProducts $posProducts)
+    {
+        $where = ['id' => $request->id, 'status' => 1];
+        $check_exists =  $inventory->check_exists($where); //DB::table('inventory_general')->where('id',$request->id)->count();
+
+        if ($check_exists == null) {
+            Session::flash('error', 'Product not found');
+            return redirect()->route('invent-list');
+        }
+
+        return view('Inventory.deal-products', [
+            'department'        => $inventory->department(),
+            'generalItem'       => $check_exists,
+            'dealHead'          => DB::table('inventory_deal_general')
+                ->where('inventory_deal_id', $request->id)
+                ->where('status', 1)
+                // ->join('addon_categories','addon_categories.id','inventory_deal_general.group_id')
+                // ->select('inventory_deal_general.*','addon_categories.name','addon_categories.type as group_type','addon_categories.addon_limit as selection_limit')
+                ->orderBy('priority', 'DESC')
+                ->get(),
+
+            'dealChild'        => DB::table('inventory_deal_details')->whereIn(
+                'inventory_general_id',
+                DB::table('inventory_deal_general')
+                    ->where('inventory_deal_id', $request->id)
+                    ->pluck('id')
+            )
+                // ->join('addons','addons.id','inventory_deal_details.sub_group_id') 
+                // ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
+                ->where('inventory_deal_details.status', 1)
+                // ->select('inventory_deal_details.*','addons.inventory_product_id','addons.name','addons.quantity','inventory_general.department_id')
+                ->select('inventory_deal_details.*')
+                ->get(),
+
+            'dealprodAddons'   => DB::table('inventory_addons')
+                ->whereIn(
+                    'product_id',
+                    DB::table('inventory_deal_details')
+                        ->whereIn(
+                            'inventory_general_id',
+                            DB::table('inventory_deal_general')
+                                ->where('inventory_deal_id', $request->id)
+                                ->pluck('id')
+                        )
+                        //   ->join('addons','addons.id','inventory_deal_details.sub_group_id')
+                        ->where('inventory_deal_details.status', 1)
+                        //   ->pluck('addons.inventory_product_id')
+                        ->pluck('inventory_deal_details.id')
+                )
+                ->where('inventory_addon_type', 'deal')
+                ->where('status', 1)
+                ->groupBy('product_id')
+                ->select(DB::raw('product_id, count(addon_id) as counts'))
+                ->get(),
+        ]);
+    }
+
+    public function reload_dealProducts(Request $request)
+    {
+        return response()->json([
+            'dealChild'        => DB::table('inventory_deal_details')
+                ->where('inventory_general_id', $request->id)
+                ->where('status', 1)
+                ->get(),
+
+            'dealprodAddons'   => DB::table('inventory_addons')
+                ->whereIn(
+                    'product_id',
+                    DB::table('inventory_deal_details')
+                        ->where('inventory_general_id', $request->id)
+                        ->where('status', 1)
+                        ->pluck('id')
+                )
+                ->where('inventory_addon_type', 'deal')
+                ->where('status', 1)
+                ->groupBy('product_id')
+                ->select(DB::raw('product_id, count(addon_id) as counts'))
+                ->get(),
+
+            // 'dealChild'        => DB::table('inventory_deal_details')
+            //                         ->join('addons','addons.id','inventory_deal_details.sub_group_id') 
+            //                         ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
+            //                         ->where('inventory_general_id',$request->id)
+            //                         ->where('inventory_deal_details.status',1)
+            //                         ->select('inventory_deal_details.*','addons.inventory_product_id','addons.name','addons.quantity','inventory_general.department_id')
+            //                         ->get(),
+
+            // 'dealprodAddons'   => DB::table('inventory_addons')
+            //                          ->whereIn('product_id',DB::table('inventory_deal_details')
+            //                                                   ->where('inventory_general_id',$request->id)
+            //                                                   ->join('addons','addons.id','inventory_deal_details.sub_group_id')
+            //                                                   ->where('inventory_deal_details.status',1)
+            //                                                   ->pluck('addons.inventory_product_id')
+            //                                   )
+            //                          ->where('inventory_addon_type','deal')
+            //                          ->where('status',1)
+            //                          ->groupBy('product_id')
+            //                          ->select(DB::raw('product_id, count(addon_id) as counts'))
+            //                          ->get(),  
+        ]);
+    }
+
+    public function storeDeal_product(Request $request)
+    {
+        try {
+
+            $count = DB::table('inventory_deal_general')->where('inventory_deal_id', $request->finishgood)->where('status', 1)->where("name", $request->group_name)->count();
+
+            if ($count != 0) {
+                return response()->json(["status" => 409, "control" => "group_name", "msg" => "This " . $request->group_name . " group name is already taken from product " . $request->itemName]);
+            }
+
+            $priorityCheck = DB::table('inventory_deal_general')->where('inventory_deal_id', $request->finishgood)->where('status', 1)->where("priority", $request->priority)->count();
+
+            if ($priorityCheck != 0 && $count == 0) {
+                return response()->json(['status' => 409, 'control' => 'priority', 'msg' => 'This priority number is already taken!']);
+            }
+
+            $getInventoryDealGeneral_ID = InventoryDealGeneral::create([
+                'inventory_deal_id' => $request->finishgood,
+                'group_id'          => 1,
+                'name'              => $request->group_name,
+                'type'              => $request->group_type,
+                'selection_limit'   => ($request->group_type == 'multiple' ? $request->selection_limit : 0),
+                'priority'          => $request->priority,
+                'status'            => 1,
+                'created_at'        => date("Y-m-d H:i:s"),
+                'updated_at'        => date("Y-m-d H:i:s"),
+            ]);
+
+            if ($getInventoryDealGeneral_ID) {
+                $getproducts = $request->products;
+                $getQunatity = $request->product_qty;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+                    InventoryDealDetail::create([
+                        'inventory_general_id'  => $getInventoryDealGeneral_ID->id,
+                        'product_id'            => $getproducts[$i],
+                        'product_name'          => $getInventoryName->product_name,
+                        'product_quantity'      => $getQunatity[$i],
+                    ]);
+                }
+            }
+            return response()->json(["status" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+    }
+
+
+    public function updateDeal_product(Request $request)
+    {
+        try {
+            $count = DB::table('inventory_deal_general')->where('inventory_deal_id', $request->finishgood)->where('id', '!=', $request->id_editmd)->where('status', 1)->where("name", $request->group_name)->count();
+
+            if ($count != 0) {
+                return response()->json(["status" => 409, "control" => "group_name_editmd", "msg" => "This " . $request->group_name . " group name is already taken from product " . $request->inventory_name]);
+            }
+
+            $priorityCheck = DB::table('inventory_deal_general')->where('inventory_deal_id', $request->finishgood)
+                ->where('id', '!=', $request->id_editmd)->where('status', 1)
+                ->where("priority", $request->priority)->count();
+
+            if ($priorityCheck != 0 && $count == 0) {
+                return response()->json(['status' => 409, 'control' => 'priority_editmd', 'msg' => 'This priority number is already taken!']);
+            }
+
+            $getInventoryDealGeneral_ID = InventoryDealGeneral::create([
+                'inventory_deal_id' => $request->finishgood,
+                'group_id'          => 1,
+                'name'              => $request->group_name,
+                'type'              => $request->group_type,
+                'selection_limit'   => ($request->group_type == 'multiple' ? $request->selection_limit : 0),
+                'priority'          => $request->priority,
+                'status'            => 1,
+                'created_at'        => date("Y-m-d H:i:s"),
+                'updated_at'        => date("Y-m-d H:i:s"),
+            ]);
+
+            if ($getInventoryDealGeneral_ID) {
+                InventoryDealGeneral::where('inventory_deal_id', $request->finishgood)->where('id', $request->id_editmd)->update(['status' => 0]);
+
+                $getproducts = $request->products;
+                $getQunatity = $request->product_qty;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+
+                    $getId = InventoryDealDetail::create([
+                        'inventory_general_id'  => $getInventoryDealGeneral_ID->id,
+                        'product_id'            => $getproducts[$i],
+                        'product_name'          => $getInventoryName->product_name,
+                        'product_quantity'      => $getQunatity[$i],
+                    ]);
+
+                    $getDeal_Addon = InventoryAddon::whereIn('product_id', InventoryDealDetail::where(['inventory_general_id' => $request->id_editmd, 'status' => 1, 'product_id' => $getproducts[$i]])
+                        ->pluck('id'))
+                        ->get();
+
+                    if ($getDeal_Addon) {
+                        foreach ($getDeal_Addon as $addon) {
+                            InventoryAddon::create([
+                                'product_id'            => $getId->id,
+                                'addon_id'              => $addon->addon_id,
+                                'status'                => 1,
+                                'inventory_addon_type'  => 'deal',
+                                'created_at'            => date("Y-m-d H:i:s"),
+                                'updated_at'            => date("Y-m-d H:i:s"),
+                            ]);
+                        }
+
+                        InventoryAddon::whereIn('product_id', InventoryDealDetail::where(['inventory_general_id' => $request->id_editmd, 'status' => 1, 'product_id' => $getproducts[$i]])->pluck('id'))
+                            ->update(['status' => 0]);
+                        InventoryDealDetail::where(['inventory_general_id' => $request->id_editmd, 'status' => 1, 'product_id' => $getproducts[$i]])
+                            ->update(['status' => 0]);
+                    }
+                }
+
+                return response()->json(["status" => 200]);
+            } else {
+                return response()->json(["status" => 500, "msg" => "Record is not saved."]);
+            }
+        } catch (Exception $e) {
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+    }
+
+    public function singleDealProduct_store(Request $request)
+    {
+        try {
+
+            $resp = Addon::create([
+                "inventory_product_id"   => $request->product_id,
+                "name"                   => $request->product_name,
+                "quantity"               => $request->quantity,
+                "addon_category_id"      => $request->id,
+                "user_id"                => auth()->user()->id,
+            ]);
+
+            if ($resp) {
+                InventoryDealDetail::create([
+                    'inventory_general_id'  => $request->dealRowIdUnq,
+                    'sub_group_id'          => $resp->id,
+                    'status'                => 1,
+                ]);
+            }
+
+
+            return ($resp) ? response()->json(["status" => 200]) : response()->json(["status" => 500, "msg" => " Record is not save"]);
+        } catch (Exception $e) {
+            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+        }
+    }
+
+    public function removeDeal_product(Request $request)
+    {
+        if (InventoryDealGeneral::where('id', $request->id)->update(['status' => 0]) && InventoryDealDetail::where('inventory_general_id', $request->id)->update(['status' => 0])) {
+            return response()->json(["status" => 200]);
+        } else {
+            return response()->json(["status" => 500, "msg" => 'Server issue! record is not removed.']);
+        }
+    }
 
     // public function removeDeal_value(Request $request){
     //   if(InventoryDealDetail::where(['inventory_general_id'=>$request->general_deal_id,''])->update(['status'=>0]) && InventoryAddon::where(['product_id'=>$request->id,'inventory_addon_type'=>'deal'])->update(['status'=>0])){
@@ -3266,27 +3279,28 @@ class InventoryController extends Controller
     //       return response()->json(["status" => 500,"msg"=>'Server issue! record is not removed.']); 
     //   }
     // }      
-        
-    public function get_addons_dealProduct(Request $request){
-        
-      return response()->json([
-          
-            'addonHead'   =>  InventoryAddon::where('inventory_addons.product_id',$request->finishgood)
-                                             ->where('inventory_addons.status',1)
-                                             ->where('inventory_addons.inventory_addon_type','deal')
-                                             ->join('addon_categories','addon_categories.id','inventory_addons.addon_id')
-                                             ->select('addon_categories.*')
-                                             ->get(),
-            'addon_value' =>  InventoryAddon::where('inventory_addons.product_id',$request->finishgood)
-                                             ->where('inventory_addons.status',1)
-                                             ->where('inventory_addons.inventory_addon_type','deal')
-                                             ->where('addons.status',1)
-                                             ->join('addons','addons.addon_category_id','inventory_addons.addon_id')
-                                             ->select('addons.id','addons.addon_category_id','addons.inventory_product_id','addons.name','addons.price')
-                                             ->get()
-                        ]);
+
+    public function get_addons_dealProduct(Request $request)
+    {
+
+        return response()->json([
+
+            'addonHead'   =>  InventoryAddon::where('inventory_addons.product_id', $request->finishgood)
+                ->where('inventory_addons.status', 1)
+                ->where('inventory_addons.inventory_addon_type', 'deal')
+                ->join('addon_categories', 'addon_categories.id', 'inventory_addons.addon_id')
+                ->select('addon_categories.*')
+                ->get(),
+            'addon_value' =>  InventoryAddon::where('inventory_addons.product_id', $request->finishgood)
+                ->where('inventory_addons.status', 1)
+                ->where('inventory_addons.inventory_addon_type', 'deal')
+                ->where('addons.status', 1)
+                ->join('addons', 'addons.addon_category_id', 'inventory_addons.addon_id')
+                ->select('addons.id', 'addons.addon_category_id', 'addons.inventory_product_id', 'addons.name', 'addons.price')
+                ->get()
+        ]);
     }
-    
+
     // public function get_addon_dealProduct_values(Request $request){
     //   return Addon::where('addon_category_id',$request->id)
     //               ->where('addons.status',1)
@@ -3295,304 +3309,314 @@ class InventoryController extends Controller
     //               ->select('addons.*','inventory_department.department_name')
     //               ->get();
     // }
-    
-    public function store_addon_dealProduct(Request $request){
-      try{
-        
-        $count = AddonCategory::whereIn("id",DB::table('inventory_addons')->where('product_id',$request->finishgood)->where('status',1)->where('inventory_addon_type','deal')->pluck('addon_id'))->where("status",1)->where("name",$request->addon_name)->count();
-        
-        if($count != 0){
-            return response()->json(['status'=>409,'control'=>'addon_name','msg'=>'This addon name is already taken this product '.$request->productName]);
-        }
-      
-			   $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $request->addon_name,
-                                                    "show_website_name"  => $request->showebsite_name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $request->addon_type,
-                                                    "is_required"        => isset($request->is_required) ? 1 : 0,
-                                					"mode"        		 => 'addons',
-                                					"addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    $getproducts = $request->products;
-                    $getPrice    = $request->price;
-                    for($i=0;$i < count($getproducts);$i++){
-                        $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                              Addon::create([
-                            					"inventory_product_id"   => $getproducts[$i],
-                                                "name"                   => $getInventoryName->product_name,
-                                                'price'                  => $getPrice[$i],
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryDealGeneral_ID = InventoryAddon::create([
-                                                            'product_id'            => $request->finishgood,
-                                                            'addon_id'              => $getAddonCategoryId->id,
-                                                            'status'                => 1,
-                                                            'inventory_addon_type'  => 'deal',
-                                                            'created_at'            => date("Y-m-d H:i:s"),
-                                                            'updated_at'            => date("Y-m-d H:i:s"),
-                                                      ]); 
-                }
-                
-              return response()->json(['status'=>200]);
-        }catch(Exception $e){
-             return response()->json(['status'=>500,'msg'=>$e->getMessage()]);
-        }
-    }
-    
-    public function store_singleValue_addonDealProduct(Request $request){
-      try{
 
-            $result = Addon::create([
-        					"inventory_product_id"   => $request->product_id,
-                            "name"                   => $request->product_name,
-                            'price'                  => $request->price,
-        					"addon_category_id"      => $request->id,
-        					"user_id"                => auth()->user()->id,
-        				]);                        
-         
-              return ($result) ? response()->json(['status'=>200]) : response()->json(['status'=>500,'msg'=>'Record is not saved!']);
-        }catch(Exception $e){
-             return response()->json(['status'=>500,'msg'=>$e->getMessage()]);
-        }        
-    }
-    
-    public function update_addonDealProduct(Request $request){
-      try{
-        
-        $count = AddonCategory::whereIn("id",DB::table('inventory_addons')->where('product_id',$request->finishgood)->where('inventory_addon_type','deal')->where('addon_id','!=',$request->addonheadId)->where('status',1)->pluck('addon_id'))->where("status",1)->where("name",$request->addon_name)->count();
-        
-        if($count != 0){
-            return response()->json(['status'=>409,'control'=>'addon_name_editmdAddon','msg'=>'This addon name is already taken this product '.$Request->productName]);
-        }
-      
-			   $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $request->addon_name,
-                                                    "show_website_name"  => $request->showebsite_name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $request->addon_type,
-                                                    "is_required"        => isset($request->is_required) ? 1 : 0,
-                                					"mode"        		 => 'addons',
-                                					"addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    $getproducts = $request->products;
-                    $getPrice    = $request->price;
-                    for($i=0;$i < count($getproducts);$i++){
-                        $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                              Addon::create([
-                            					"inventory_product_id"   => $getproducts[$i],
-                                                "name"                   => $getInventoryName->product_name,
-                                                'price'                  => $getPrice[$i],
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryDealGeneral_ID = InventoryAddon::create([
-                                                            'product_id'            => $request->finishgood,
-                                                            'addon_id'              => $getAddonCategoryId->id,
-                                                            'status'                => 1,
-                                                            'inventory_addon_type'  => 'deal',
-                                                            'created_at'            => date("Y-m-d H:i:s"),
-                                                            'updated_at'            => date("Y-m-d H:i:s"),
-                                                      ]); 
-                                                      
-                    AddonCategory::where('id',$request->addonheadId)->update(['status'=>0]); 
-                    Addon::where('addon_category_id',$request->addonheadId)->update(['status'=>0]);
-                    InventoryAddon::where('product_id',$request->finishgood)->where('addon_id',$request->addonheadId)->update(['status'=>0]);
-                }
-                
-              return response()->json(['status'=>200]);
-        }catch(Exception $e){
-             return response()->json(['status'=>500,'msg'=>$e->getMessage()]);
-        }
-    }
-    
-    public function removeAddon_dealProduct(Request $request){
-       if(AddonCategory::where('id',$request->id)->update(['status'=>0])){
-           Addon::where('addon_category_id',$request->id)->update(['status'=>0]);
-           InventoryAddon::where(['product_id'=>$request->product_id,'addon_id'=>$request->id,'inventory_addon_type'=>'deal'])->update(['status'=>0]);
-          return response()->json(["status" => 200]); 
-       }else{
-          return response()->json(["status" => 500,"msg"=>'Server issue! record is not removed.']); 
-       }    
-    }
-    
-    public function removeAddonValue_dealProduct(Request $request){
-       if(Addon::where('id',$request->id)->update(['status'=>0])){
-          return response()->json(["status"=>200]); 
-       }else{
-          return response()->json(["status"=>500,"msg"=>'Server issue! record is not removed.']); 
-       }          
-    }
-    
-    public function loadAddons(Request $request){
-       return AddonCategory::with("addons")->whereIn("id",DB::table('inventory_addons')->where(['product_id'=>$request->id,'status'=>1,"inventory_addon_type"=>'general-inventory'])->pluck('addon_id'))->where(["company_id"=>session("company_id"),"mode"=>'addons'])->orderBy('priority','desc')->get(); 
-    }
-    
-    public function loadAddonValues(Request $request){
-       return Addon::where('addon_category_id',$request->id)
-                   ->where('addons.status',1)
-                   ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
-                   ->join('inventory_department','inventory_department.department_id','inventory_general.department_id')
-                   ->join('inventory_sub_department','inventory_sub_department.sub_department_id','inventory_sub_department.sub_department_id')
-                   ->select('addons.*','inventory_department.department_name','inventory_sub_department.sub_depart_name')
-                   ->get(); 
-    }
-    
-    public function storeAddon(Request $request){
-           
-      try{
-            $count = AddonCategory::whereIn("id",DB::table('inventory_addons')->where('product_id',$request->finishgood)->where('status',1)->where('inventory_addon_type','general-inventory')->pluck('addon_id'))
-                                   ->where("status",1)
-                                   ->where("name",$request->addon_name)
-                                   ->count();
-         
-            if($count != 0){
-                return response()->json(['status'=>409,'control'=>'addon_name','msg'=>'This addon name is already taken']);
+    public function store_addon_dealProduct(Request $request)
+    {
+        try {
+
+            $count = AddonCategory::whereIn("id", DB::table('inventory_addons')->where('product_id', $request->finishgood)->where('status', 1)->where('inventory_addon_type', 'deal')->pluck('addon_id'))->where("status", 1)->where("name", $request->addon_name)->count();
+
+            if ($count != 0) {
+                return response()->json(['status' => 409, 'control' => 'addon_name', 'msg' => 'This addon name is already taken this product ' . $request->productName]);
             }
-      
-			   $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $request->addon_name,
-                                                    "show_website_name"  => $request->showebsite_name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $request->addon_type,
-                                                    "is_required"        => isset($request->is_required) ? 1 : 0,
-                                					"mode"        		 => 'addons',
-                                					"priority"           => $request->priority,
-                                					"addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    
-                    $getproducts = $request->products;
-                    $getPrice    = $request->price;
-                    for($i=0;$i < count($getproducts);$i++){
-                        $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                              Addon::create([
-                            					"inventory_product_id"   => $getproducts[$i],
-                                                "name"                   => $getInventoryName->product_name,
-                                                'price'                  => $getPrice[$i],
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryDealGeneral_ID = InventoryAddon::create([
-                                                            'product_id'            => $request->finishgood,
-                                                            'addon_id'              => $getAddonCategoryId->id,
-                                                            'status'                => 1,
-                                                            'inventory_addon_type'  => 'general-inventory',
-                                                            'created_at'            => date("Y-m-d H:i:s"),
-                                                            'updated_at'            => date("Y-m-d H:i:s"),
-                                                      ]); 
+
+            $getAddonCategoryId = AddonCategory::create([
+                "name"               => $request->addon_name,
+                "show_website_name"  => $request->showebsite_name,
+                "user_id"            => auth()->user()->id,
+                "company_id"         => session("company_id"),
+                "type"               => $request->addon_type,
+                "is_required"        => isset($request->is_required) ? 1 : 0,
+                "mode"                 => 'addons',
+                "addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
+            ]);
+
+            if ($getAddonCategoryId) {
+                $getproducts = $request->products;
+                $getPrice    = $request->price;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+                    Addon::create([
+                        "inventory_product_id"   => $getproducts[$i],
+                        "name"                   => $getInventoryName->product_name,
+                        'price'                  => $getPrice[$i],
+                        "addon_category_id"      => $getAddonCategoryId->id,
+                        "user_id"                => auth()->user()->id,
+                    ]);
                 }
 
-            return response()->json(['status'=>200]);
-        }catch(Exception $e){
-            return response()->json(['status'=>500,'msg'=>$e->getMessage()]);
+                $getInventoryDealGeneral_ID = InventoryAddon::create([
+                    'product_id'            => $request->finishgood,
+                    'addon_id'              => $getAddonCategoryId->id,
+                    'status'                => 1,
+                    'inventory_addon_type'  => 'deal',
+                    'created_at'            => date("Y-m-d H:i:s"),
+                    'updated_at'            => date("Y-m-d H:i:s"),
+                ]);
+            }
+
+            return response()->json(['status' => 200]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
-    
-    public function removeAddon(Request $request){
-       if(AddonCategory::where('id',$request->id)->update(['status'=>0])){
-           Addon::where('addon_category_id',$request->id)->update(['status'=>0]);
-           InventoryAddon::where(['product_id'=>$request->product_id,'addon_id'=>$request->id,'inventory_addon_type'=>'general-inventory'])->update(['status'=>0]);
-          return response()->json(["status" => 200]); 
-       }else{
-          return response()->json(["status" => 500,"msg"=>'Server issue! record is not removed.']); 
-       }    
-    }
-    
-    public function removeAddonValue(Request $request){
-       if(Addon::where('id',$request->id)->update(['status'=>0])){
-          return response()->json(["status"=>200]); 
-       }else{
-          return response()->json(["status"=>500,"msg"=>'Server issue! record is not removed.']); 
-       }          
-    }
-    
-    public function updateAddon(Request $request){
-      try{
-        
-        $count = AddonCategory::whereIn("id",DB::table('inventory_addons')->where('product_id',$request->finishgood)->where('addon_id','!=',$request->addonheadId)->where('inventory_addon_type','general-inventory')->where('status',1)->pluck('addon_id'))->where("status",1)->where("name",$request->addon_name)->count();
-        
-        if($count != 0){
-            return response()->json(['status'=>409,'control'=>'addon_name_editmdAddon','msg'=>'This addon name is already taken this product '.$request->productName]);
-        }
-      
-			   $getAddonCategoryId = AddonCategory::create([
-                                					"name"               => $request->addon_name,
-                                                    "show_website_name"  => $request->showebsite_name,
-                                					"user_id"            => auth()->user()->id,
-                                					"company_id"         => session("company_id"),
-                                					"type"               => $request->addon_type,
-                                                    "is_required"        => isset($request->is_required) ? 1 : 0,
-                                					"mode"        		 => 'addons',
-                                					"priority"           => $request->priority,
-                                					"addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
-                                				]);
-                 
-                if($getAddonCategoryId){
-                    $getproducts = $request->products;
-                    $getPrice    = $request->price;
-                    for($i=0;$i < count($getproducts);$i++){
-                        $getInventoryName = DB::table('inventory_general')->where('id',$getproducts[$i])->first();
-                              Addon::create([
-                            					"inventory_product_id"   => $getproducts[$i],
-                                                "name"                   => $getInventoryName->product_name,
-                                                'price'                  => $getPrice[$i],
-                            					"addon_category_id"      => $getAddonCategoryId->id,
-                            					"user_id"                => auth()->user()->id,
-                            				]);                        
-                    }
-                    
-                    $getInventoryDealGeneral_ID = InventoryAddon::create([
-                                                            'product_id'            => $request->finishgood,
-                                                            'addon_id'              => $getAddonCategoryId->id,
-                                                            'status'                => 1,
-                                                            'inventory_addon_type'  => 'general-inventory',
-                                                            'created_at'            => date("Y-m-d H:i:s"),
-                                                            'updated_at'            => date("Y-m-d H:i:s"),
-                                                      ]); 
-                                                      
-                    AddonCategory::where('id',$request->addonheadId)->update(['status'=>0]); 
-                    Addon::where('addon_category_id',$request->addonheadId)->update(['status'=>0]);
-                    InventoryAddon::where('product_id',$request->finishgood)->where('addon_id',$request->addonheadId)->update(['status'=>0]);
-                }
-                
-              return response()->json(['status'=>200]);
-        }catch(Exception $e){
-             return response()->json(['status'=>500,'msg'=>$e->getMessage()]);
-        }
-    }  
-    
-    public function store_singleValueAddon(Request $request){
-      try{
+
+    public function store_singleValue_addonDealProduct(Request $request)
+    {
+        try {
 
             $result = Addon::create([
-        					"inventory_product_id"   => $request->product_id,
-                            "name"                   => $request->product_name,
-                            'price'                  => $request->price == '' ? 0 : $request->price,
-        					"addon_category_id"      => $request->id,
-        					"user_id"                => auth()->user()->id,
-        				]);                        
-         
-              return ($result) ? response()->json(['status'=>200]) : response()->json(['status'=>500,'msg'=>'Record is not saved!']);
-        }catch(Exception $e){
-             return response()->json(['status'=>500,'msg'=>$e->getMessage()]);
-        }        
-    }    
-    
-    
+                "inventory_product_id"   => $request->product_id,
+                "name"                   => $request->product_name,
+                'price'                  => $request->price,
+                "addon_category_id"      => $request->id,
+                "user_id"                => auth()->user()->id,
+            ]);
+
+            return ($result) ? response()->json(['status' => 200]) : response()->json(['status' => 500, 'msg' => 'Record is not saved!']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function update_addonDealProduct(Request $request)
+    {
+        try {
+
+            $count = AddonCategory::whereIn("id", DB::table('inventory_addons')->where('product_id', $request->finishgood)->where('inventory_addon_type', 'deal')->where('addon_id', '!=', $request->addonheadId)->where('status', 1)->pluck('addon_id'))->where("status", 1)->where("name", $request->addon_name)->count();
+
+            if ($count != 0) {
+                return response()->json(['status' => 409, 'control' => 'addon_name_editmdAddon', 'msg' => 'This addon name is already taken this product ' . $Request->productName]);
+            }
+
+            $getAddonCategoryId = AddonCategory::create([
+                "name"               => $request->addon_name,
+                "show_website_name"  => $request->showebsite_name,
+                "user_id"            => auth()->user()->id,
+                "company_id"         => session("company_id"),
+                "type"               => $request->addon_type,
+                "is_required"        => isset($request->is_required) ? 1 : 0,
+                "mode"                 => 'addons',
+                "addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
+            ]);
+
+            if ($getAddonCategoryId) {
+                $getproducts = $request->products;
+                $getPrice    = $request->price;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+                    Addon::create([
+                        "inventory_product_id"   => $getproducts[$i],
+                        "name"                   => $getInventoryName->product_name,
+                        'price'                  => $getPrice[$i],
+                        "addon_category_id"      => $getAddonCategoryId->id,
+                        "user_id"                => auth()->user()->id,
+                    ]);
+                }
+
+                $getInventoryDealGeneral_ID = InventoryAddon::create([
+                    'product_id'            => $request->finishgood,
+                    'addon_id'              => $getAddonCategoryId->id,
+                    'status'                => 1,
+                    'inventory_addon_type'  => 'deal',
+                    'created_at'            => date("Y-m-d H:i:s"),
+                    'updated_at'            => date("Y-m-d H:i:s"),
+                ]);
+
+                AddonCategory::where('id', $request->addonheadId)->update(['status' => 0]);
+                Addon::where('addon_category_id', $request->addonheadId)->update(['status' => 0]);
+                InventoryAddon::where('product_id', $request->finishgood)->where('addon_id', $request->addonheadId)->update(['status' => 0]);
+            }
+
+            return response()->json(['status' => 200]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function removeAddon_dealProduct(Request $request)
+    {
+        if (AddonCategory::where('id', $request->id)->update(['status' => 0])) {
+            Addon::where('addon_category_id', $request->id)->update(['status' => 0]);
+            InventoryAddon::where(['product_id' => $request->product_id, 'addon_id' => $request->id, 'inventory_addon_type' => 'deal'])->update(['status' => 0]);
+            return response()->json(["status" => 200]);
+        } else {
+            return response()->json(["status" => 500, "msg" => 'Server issue! record is not removed.']);
+        }
+    }
+
+    public function removeAddonValue_dealProduct(Request $request)
+    {
+        if (Addon::where('id', $request->id)->update(['status' => 0])) {
+            return response()->json(["status" => 200]);
+        } else {
+            return response()->json(["status" => 500, "msg" => 'Server issue! record is not removed.']);
+        }
+    }
+
+    public function loadAddons(Request $request)
+    {
+        return AddonCategory::with("addons")->whereIn("id", DB::table('inventory_addons')->where(['product_id' => $request->id, 'status' => 1, "inventory_addon_type" => 'general-inventory'])->pluck('addon_id'))->where(["company_id" => session("company_id"), "mode" => 'addons'])->orderBy('priority', 'desc')->get();
+    }
+
+    public function loadAddonValues(Request $request)
+    {
+        return Addon::where('addon_category_id', $request->id)
+            ->where('addons.status', 1)
+            ->join('inventory_general', 'inventory_general.id', 'addons.inventory_product_id')
+            ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
+            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_sub_department.sub_department_id')
+            ->select('addons.*', 'inventory_department.department_name', 'inventory_sub_department.sub_depart_name')
+            ->get();
+    }
+
+    public function storeAddon(Request $request)
+    {
+
+        try {
+            $count = AddonCategory::whereIn("id", DB::table('inventory_addons')->where('product_id', $request->finishgood)->where('status', 1)->where('inventory_addon_type', 'general-inventory')->pluck('addon_id'))
+                ->where("status", 1)
+                ->where("name", $request->addon_name)
+                ->count();
+
+            if ($count != 0) {
+                return response()->json(['status' => 409, 'control' => 'addon_name', 'msg' => 'This addon name is already taken']);
+            }
+
+            $getAddonCategoryId = AddonCategory::create([
+                "name"               => $request->addon_name,
+                "show_website_name"  => $request->showebsite_name,
+                "user_id"            => auth()->user()->id,
+                "company_id"         => session("company_id"),
+                "type"               => $request->addon_type,
+                "is_required"        => isset($request->is_required) ? 1 : 0,
+                "mode"                 => 'addons',
+                "priority"           => $request->priority,
+                "addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
+            ]);
+
+            if ($getAddonCategoryId) {
+
+                $getproducts = $request->products;
+                $getPrice    = $request->price;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+                    Addon::create([
+                        "inventory_product_id"   => $getproducts[$i],
+                        "name"                   => $getInventoryName->product_name,
+                        'price'                  => $getPrice[$i],
+                        "addon_category_id"      => $getAddonCategoryId->id,
+                        "user_id"                => auth()->user()->id,
+                    ]);
+                }
+
+                $getInventoryDealGeneral_ID = InventoryAddon::create([
+                    'product_id'            => $request->finishgood,
+                    'addon_id'              => $getAddonCategoryId->id,
+                    'status'                => 1,
+                    'inventory_addon_type'  => 'general-inventory',
+                    'created_at'            => date("Y-m-d H:i:s"),
+                    'updated_at'            => date("Y-m-d H:i:s"),
+                ]);
+            }
+
+            return response()->json(['status' => 200]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function removeAddon(Request $request)
+    {
+        if (AddonCategory::where('id', $request->id)->update(['status' => 0])) {
+            Addon::where('addon_category_id', $request->id)->update(['status' => 0]);
+            InventoryAddon::where(['product_id' => $request->product_id, 'addon_id' => $request->id, 'inventory_addon_type' => 'general-inventory'])->update(['status' => 0]);
+            return response()->json(["status" => 200]);
+        } else {
+            return response()->json(["status" => 500, "msg" => 'Server issue! record is not removed.']);
+        }
+    }
+
+    public function removeAddonValue(Request $request)
+    {
+        if (Addon::where('id', $request->id)->update(['status' => 0])) {
+            return response()->json(["status" => 200]);
+        } else {
+            return response()->json(["status" => 500, "msg" => 'Server issue! record is not removed.']);
+        }
+    }
+
+    public function updateAddon(Request $request)
+    {
+        try {
+
+            $count = AddonCategory::whereIn("id", DB::table('inventory_addons')->where('product_id', $request->finishgood)->where('addon_id', '!=', $request->addonheadId)->where('inventory_addon_type', 'general-inventory')->where('status', 1)->pluck('addon_id'))->where("status", 1)->where("name", $request->addon_name)->count();
+
+            if ($count != 0) {
+                return response()->json(['status' => 409, 'control' => 'addon_name_editmdAddon', 'msg' => 'This addon name is already taken this product ' . $request->productName]);
+            }
+
+            $getAddonCategoryId = AddonCategory::create([
+                "name"               => $request->addon_name,
+                "show_website_name"  => $request->showebsite_name,
+                "user_id"            => auth()->user()->id,
+                "company_id"         => session("company_id"),
+                "type"               => $request->addon_type,
+                "is_required"        => isset($request->is_required) ? 1 : 0,
+                "mode"                 => 'addons',
+                "priority"           => $request->priority,
+                "addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
+            ]);
+
+            if ($getAddonCategoryId) {
+                $getproducts = $request->products;
+                $getPrice    = $request->price;
+                for ($i = 0; $i < count($getproducts); $i++) {
+                    $getInventoryName = DB::table('inventory_general')->where('id', $getproducts[$i])->first();
+                    Addon::create([
+                        "inventory_product_id"   => $getproducts[$i],
+                        "name"                   => $getInventoryName->product_name,
+                        'price'                  => $getPrice[$i],
+                        "addon_category_id"      => $getAddonCategoryId->id,
+                        "user_id"                => auth()->user()->id,
+                    ]);
+                }
+
+                $getInventoryDealGeneral_ID = InventoryAddon::create([
+                    'product_id'            => $request->finishgood,
+                    'addon_id'              => $getAddonCategoryId->id,
+                    'status'                => 1,
+                    'inventory_addon_type'  => 'general-inventory',
+                    'created_at'            => date("Y-m-d H:i:s"),
+                    'updated_at'            => date("Y-m-d H:i:s"),
+                ]);
+
+                AddonCategory::where('id', $request->addonheadId)->update(['status' => 0]);
+                Addon::where('addon_category_id', $request->addonheadId)->update(['status' => 0]);
+                InventoryAddon::where('product_id', $request->finishgood)->where('addon_id', $request->addonheadId)->update(['status' => 0]);
+            }
+
+            return response()->json(['status' => 200]);
+        } catch (Exception $e) {
+            return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
+        }
+    }
+
+    public function store_singleValueAddon(Request $request)
+    {
+        try {
+
+            $result = Addon::create([
+                "inventory_product_id"   => $request->product_id,
+                "name"                   => $request->product_name,
+                'price'                  => $request->price == '' ? 0 : $request->price,
+                "addon_category_id"      => $request->id,
+                "user_id"                => auth()->user()->id,
+            ]);
+
+            return ($result) ? response()->json(['status' => 200]) : response()->json(['status' => 500, 'msg' => 'Record is not saved!']);
+        } catch (Exception $e) {
+            return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
+        }
+    }
 }
