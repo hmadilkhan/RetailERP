@@ -221,7 +221,7 @@ class InventoryController extends Controller
                       
                       $slice = Str::afterLast($image, '/');
                       if(isset($transformationArray['width'])){
-                        $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/w_{$width},h_{$height},c_{$crop},f_auto,q_auto/{$folder}/{$slice}";
+                        $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/w_".$transformationArray['width'].",h_".$transformationArray['height'].",c_".$transformationArray['crop'].",f_auto,q_auto/{$folder}/{$slice}";
                       }else{
                         $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/f_auto,q_auto/{$folder}/{$slice}";  
                       }
