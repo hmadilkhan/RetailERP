@@ -84,7 +84,7 @@ Route::get('/', function () {
     }
 });
 
-Route::group(['middleware' => ['auth','roleChecker']], function () {
+Route::group(['middleware' => ['auth', 'roleChecker']], function () {
     Route::get('/impersonate/{userId}', [ImpersonateController::class, 'impersonate'])->name('impersonate');
     Route::get('/impersonate/leave', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
 });
@@ -462,6 +462,17 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/change-order-status/{id}/{status}', [OrderController::class, 'orderStatusChange']);
     Route::get('/sent-to-workshop/{id}/{itemId}', [OrderController::class, 'sentToWorkshop']);
     Route::get('/change-item-status/{id}/{itemId}/{status}', [OrderController::class, 'changeItemStatus']);
+
+    Route::get('/inventory/{id}/variable-products', [InventoryController::class, 'createVariableProduct'])->name('createVariableProduct');
+    Route::post('/inventory/variable-products/get', [InventoryController::class, 'get_variableProduct'])->name('getVariableProduct');
+    Route::post('/inventory/variable-products/get-general-item', [InventoryController::class, 'get_generalItem'])->name('get_generalItem');
+    Route::post('/inventory/variable-products/auto-code-generate', [InventoryController::class, 'autoGenerateCode_variableProduct'])->name('autoGenerateCode_variableProduct');
+    Route::post('/inventory/store-variable-products', [InventoryController::class, 'storeVariableProduct'])->name('storeVariableProduct');
+    Route::post('/inventory/update-variable-products', [InventoryController::class, 'updateVariableProduct'])->name('updateVariableProduct');
+    Route::post('/inventory/remove-variable-products', [InventoryController::class, 'deleteVariableProduct'])->name('removeVariableProduct');
+    Route::post('/inventory/variable-products/copy-variableproduct-set-to-general-inventory', [InventoryController::class, 'VariableProduct_set_to_generalProduct'])->name('VariableProduct_set_to_generalProduct');
+
+    Route::post('/inventory/variable-products/get-variation', [InventoryController::class, 'reloadVariation_singleProduct'])->name('VariableProduct_reloadVariation');
 
     Route::post('/inventory/variable-products/set-variation-all-variable-product', [InventoryController::class, 'set_variationAllVariableProduct'])->name('set_variationAllVariableProduct');
     Route::post('/inventory/variable-products/get-variation-values', [InventoryController::class, 'getInventoryVariationProduct_values'])->name('VariableProduct_VariationValues');
