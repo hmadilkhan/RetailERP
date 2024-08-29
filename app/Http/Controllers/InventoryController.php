@@ -172,7 +172,7 @@ class InventoryController extends Controller
             // return $image->getRealPath();
              $imageName = "";
                      $request->validate([
-                         'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                         'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
                      ]);
 
             // foreach ($request->file('image') as $image) {
