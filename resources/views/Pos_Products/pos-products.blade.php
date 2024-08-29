@@ -120,7 +120,7 @@
 
                         <div class="col-lg-4 col-md-4">
                             <a href="#">
-                                <img id="productimages" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                                <img id="productimages" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                             </a>
                             <div class="form-group{{ $errors->has('productimage') ? 'has-danger' : '' }} ">
                                 <label for="productimage" class="form-control-label">Product Image</label>
@@ -233,7 +233,7 @@
                     @foreach($details as $value)
                         <tr>
                             <td class="text-center">
-                                <img width="42" height="42" src="{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
+                                <img width="42" height="42" src="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
                             </td>
 {{--                            <td >{{$value->branch_name}}</td>--}}
 {{--                            <td >{{$value->department_name}}</td>--}}

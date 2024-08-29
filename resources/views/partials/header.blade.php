@@ -14,7 +14,7 @@
                     <a href="#!" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
                         class="dropdown-toggle drop icon-circle drop-image">
                         <span><img class="img-circle "
-                                src="{{ asset('assets/images/users/' . (session('image') == '' ? 'person-placeholder.png' : session('image'))) }}"
+                                src="{{ asset('storage/images/users/' . (session('image') == '' ? 'person-placeholder.png' : session('image'))) }}"
                                 style="width:40px;" alt="User Image"></span>
                         <span>{{ Auth::check() ? ucfirst(Auth::user()->username) : '' }}<i
                                 class=" icofont icofont-simple-down"></i></span>

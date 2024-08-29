@@ -39,7 +39,7 @@
             @foreach($getusers as $value)
             <tr>
               <td class="text-center">
-                <img width="42" height="42" src="{{ asset('assets/images/users/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                <img width="42" height="42" src="{{ asset('storage/images/users/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
               </td>
               <td>{{$value->fullname}}</td>
               <td>{{$value->username}}</td>

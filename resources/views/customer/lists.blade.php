@@ -111,7 +111,7 @@
                               </div>
                             </td>
                             <td class="text-center">
-                            <img width="42" height="42" src="{{ asset('assets/images/customers/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                            <img width="42" height="42" src="{{ asset('storage/images/customers/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                                 </td>
                              <td>{{$value->name}}</td>
                              <td>{{number_format($value->balance,2)}}</td>
