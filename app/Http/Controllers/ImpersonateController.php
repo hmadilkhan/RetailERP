@@ -10,7 +10,7 @@ class ImpersonateController extends Controller
 {
     public function impersonate($userId)
     {
-        $user = Auth::user();
+        $user = User::findOrFail(auth()->user()->id);
         $userToImpersonate = User::findOrFail($userId);
 
         if ($user->canImpersonate() && $userToImpersonate->canBeImpersonated()) {
