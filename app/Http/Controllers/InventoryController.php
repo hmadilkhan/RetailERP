@@ -169,6 +169,7 @@ class InventoryController extends Controller
         $imageData = '';
         if (!empty($request->image)) {
              $image = $request->image;
+             return $image;
              $imageName = "";
                      $request->validate([
                          'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
