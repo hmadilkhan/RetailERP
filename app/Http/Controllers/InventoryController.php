@@ -28,6 +28,7 @@ use Config;
 use Illuminate\Support\Str;
 use Image, File, Auth;
 use Illuminate\Support\Facades\Http;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 
 class InventoryController extends Controller
@@ -163,35 +164,69 @@ class InventoryController extends Controller
             }
         }
 
-        $imageName = "";
+        
+        
+        $imageData = '';
         if (!empty($request->image)) {
-
+             $image = $request->image;
+             $imageName = "";
             //          $request->validate([
             //              'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             //          ]);
 
-            foreach ($request->file('image') as $image) {
-                $imageName = time() . '-' . $image->getClientOriginalName() . '.' . $image->getClientOriginalExtension();
-
-                if (isset($request->actual_image_size)) {
-                    $res = Image::make($image)
-                        ->save(public_path('assets/images/products/' . $imageName));
-                    //   $image->move(public_path('assets/images/products/'),$imageName)
-                } else {
-                    if ($websiteMode == 1) {
-                        $img = Image::make($image)->resize(250, 344);
-                    } else {
-
-                        $img = Image::make($image)->resize(400, 400);
-                    }
-
-                    $res = $img->save(public_path('assets/images/products/' . $imageName));
+            // foreach ($request->file('image') as $image) {
+                $imageName = time() . '-' . pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
+                
+                $transformationArray = [];
+                
+            //   if(isset($request->actual_image_size)){    
+                //   $res = Image::make($image)
+                //               ->save(public_path('assets/images/products/' . $imageName)); 
+                   //   $image->move(public_path('assets/images/products/'),$imageName)
+            //   }else{
+                if($websiteMode == 1){
+                   if(!isset($request->actual_image_size)){ 
+                    $transformationArray['width']  = 250;
+                    $transformationArray['height'] = 344;
+                    $transformationArray['crop']   = 'scale';
+                   }
+                    // $img = Image::make($image)->resize(250, 344); 
+                }else{
+                   if(!isset($request->actual_image_size)){  
+                        $transformationArray['width']  = 400;
+                        $transformationArray['height'] = 400;
+                        $transformationArray['crop']   = 'scale';                    
+                   }
+                    // $img = Image::make($image)->resize(400, 400);
                 }
+                
+            //     $res = $img->save(public_path('assets/images/products/' . $imageName));                  
+            //   }
 
                 //                $imageName= time().'.'.$image->getClientOriginalName();
                 //                $image->move(public_path('assets/images/products/'), $imageName);
-                $data[] = $imageName;
-            }
+                
+                    $transformationArray['quality']  = 'auto';
+                    $transformationArray['fetch']    = 'auto';
+                    
+                    $company_name = DB::table('company')->where('company_id',session('company_id'))->first();
+                    
+                    $folder = strtolower($company_name->name);
+                    
+                if(Cloudinary::upload($image->getRealPath(), [
+                    'public_id'      => strtolower($imageName),
+                    'folder'         => $folder,
+                    'transformation' => $transformationArray
+                  ])->getSecurePath()){
+                      
+                      $slice = Str::afterLast($image, '/');
+                      if(isset($transformationArray['width'])){
+                        $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/w_{$width},h_{$height},c_{$crop},f_auto,q_auto/{$folder}/{$slice}";
+                      }else{
+                        $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/f_auto,q_auto/{$folder}/{$slice}";  
+                      }
+                  } 
+            // }
         }
 
         $fields = [
@@ -205,7 +240,7 @@ class InventoryController extends Controller
             'item_code' => $request->code,
             'product_name' => $request->name,
             'product_description' => $request->description,
-            'image' => (!empty($request->image) ? $data[0] : ""),
+            'image' => (!empty($request->image) ? $imageData : ""),
             'status' => 1,
             'created_at' => date('Y-m-d H:s:i'),
             'updated_at' => date('Y-m-d H:s:i'),
@@ -220,14 +255,14 @@ class InventoryController extends Controller
         $result = $inventory->ReminderInsert($productid, $request->reminder);
 
         //Inventory Images Here
-        if (!empty($request->image)) {
-            foreach ($data  as $value) {
-                DB::table("inventory_images")->insert([
-                    "item_id" => $productid,
-                    "image" => $value
-                ]);
-            }
-        }
+        // if (!empty($request->image)) {
+        //     foreach ($data  as $value) {
+        //         DB::table("inventory_images")->insert([
+        //             "item_id" => $productid,
+        //             "image" => $value
+        //         ]);
+        //     }
+        // }
 
 
         //Inventory References Here
