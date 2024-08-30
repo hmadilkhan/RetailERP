@@ -165,44 +165,44 @@ class InventoryController extends Controller
         //     }
         // }
 
-        
-        
+
+
         $imageData = '';
         if (!empty($request->image)) {
-             $image = $request->file('image');
+            $image = $request->file('image');
 
-                     $request->validate([
-                         'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
-                     ]);
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            ]);
 
-                $imageName = time().'-'.pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME).'.'.$image->getClientOriginalExtension();
-                
-               if(in_array(session('company_id'),[95,102,104])){ //cloudinary image save fro kashee
-                  $transformationArray = [];
+            $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
 
-                  if(!isset($request->actual_image_size)){  
-                         $transformationArray['width']  = 400;
-                         $transformationArray['height'] = 400;
-                         $transformationArray['crop']   = 'scale'; 
-                  }
-                 $transformationArray['quality']  = 'auto';
-                 $transformationArray['fetch']    = 'auto';
-                 
-                 $company_name = DB::table('company')->where('company_id',session('company_id'))->first();
-                 
-                 $folder = strtolower($company_name->name);
-                 
-                 $imageData = Cloudinary::upload($image->getRealPath(), [
-                                             'public_id'      => strtolower($imageName),
-                                             'folder'         => $folder,
-                                             'transformation' => $transformationArray
-                                         ])->getSecurePath();
-               }else{
-                    if(!isset($request->actual_image_size)){
-                        $path = public_path('storage/images/products/');  
-                          $this->uploads(Image::make($image)->resize(400, 400),$path);               
-                    }                  
-               }
+            if (in_array(session('company_id'), [95, 102, 104])) { //cloudinary image save fro kashee
+                $transformationArray = [];
+
+                if (!isset($request->actual_image_size)) {
+                    $transformationArray['width']  = 400;
+                    $transformationArray['height'] = 400;
+                    $transformationArray['crop']   = 'scale';
+                }
+                $transformationArray['quality']  = 'auto';
+                $transformationArray['fetch']    = 'auto';
+
+                $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
+
+                $folder = strtolower($company_name->name);
+
+                $imageData = Cloudinary::upload($image->getRealPath(), [
+                    'public_id'      => strtolower($imageName),
+                    'folder'         => $folder,
+                    'transformation' => $transformationArray
+                ])->getSecurePath();
+            } else {
+                if (!isset($request->actual_image_size)) {
+                    $path = public_path('storage/images/products/');
+                    $this->uploads($image, $path, "", ['width' => 400, "height" => 400]);
+                }
+            }
         }
 
         $fields = [
