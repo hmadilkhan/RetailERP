@@ -177,7 +177,7 @@ class InventoryController extends Controller
 
             $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
 
-            if (in_array(session('company_id'), [95, 102, 104])) { //cloudinary image save fro kashee
+            if (in_array(session('company_id'), [95, 102, 104]) || Auth::user()->username == 'demoadmin' ) { //cloudinary image save fro kashee
                 $transformationArray = [];
 
                 if (!isset($request->actual_image_size)) {
