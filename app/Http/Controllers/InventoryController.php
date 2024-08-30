@@ -33,7 +33,7 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class InventoryController extends Controller
 {
-    // use MediaTrait;
+    use MediaTrait;
     // $this->uploads($request->file,"images/company",);
     public function __construct()
     {
