@@ -11,6 +11,7 @@
     @include('partials.html-libs')
     @yield('css_code')
     @yield('scriptcode_one')
+
 </head>
 
 @yield('scriptcode_two')

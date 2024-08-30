@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\adminCompany;
 use App\branch;
+use App\Traits\MediaTrait;
 use Illuminate\Http\Request;
 use Image;
 use Illuminate\Support\Facades\DB;
@@ -11,6 +12,7 @@ use \stdClass;
 
 class AdminCompanyController extends Controller
 {
+    use MediaTrait;
     /**
      * Display a listing of the resource.
      *
@@ -19,16 +21,16 @@ class AdminCompanyController extends Controller
 
     public function __construct()
     {
-      $this->middleware('auth');
+        $this->middleware('auth');
     }
 
-    
+
     public function index()
     {
 
 
         $company = adminCompany::get_company();
-        return view('Admin.Company.list', compact('company'));   
+        return view('Admin.Company.list', compact('company'));
     }
 
     /**
@@ -40,9 +42,9 @@ class AdminCompanyController extends Controller
     {
         $country = adminCompany::getcountry();
         $city = adminCompany::getcity();
-		$currencies = DB::table('currencies')->get();
-		$packages = DB::table('packages')->get();
-        return view('Admin.Company.create', compact('country','city','currencies','packages')); 
+        $currencies = DB::table('currencies')->get();
+        $packages = DB::table('packages')->get();
+        return view('Admin.Company.create', compact('country', 'city', 'currencies', 'packages'));
     }
 
     /**
@@ -51,9 +53,9 @@ class AdminCompanyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request,adminCompany $adminCompany,branch $branch)
+    public function store(Request $request, adminCompany $adminCompany, branch $branch)
     {
-	    $imageName= "";
+        $imageName = "";
         $posbg = "";
         $rules = [
             'companyname' => 'required',
@@ -65,38 +67,40 @@ class AdminCompanyController extends Controller
             'company_address' => 'required',
             'vdimg' => 'required',
         ];
-         $this->validate($request, $rules);
+        $this->validate($request, $rules);
 
 
-        if(!empty($request->vdimg)){
-             $request->validate([
-                  'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-              ]);
-                $imageName = time().'.'.$request->vdimg->getClientOriginalExtension();
-                $img = Image::make($request->vdimg)->resize(200, 200);
-                $res = $img->save(public_path('assets/images/company/'.$imageName), 75);
-                $res = $img->save(public_path('assets/images/branch/'.$imageName), 75);
-
-//              $imageName = time().'.'.$request->vdimg->getClientOriginalExtension();
-//              $imageName = trim($imageName," "); //Removes white spaces from the string
-//              $request->vdimg->move(public_path('assets/images/company/'), $imageName);
-        }
-
-        if(!empty($request->posbgimg)){
+        if (!empty($request->vdimg)) {
             $request->validate([
-                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             ]);
-            $posbg = time().'.'.$request->posbgimg->getClientOriginalExtension();
-            $img = Image::make($request->posbgimg)->resize(800, 600);
-            $res = $img->save(public_path('assets/images/pos-background/'.$posbg), 100);
+            // $imageName = time().'.'.$request->vdimg->getClientOriginalExtension();
+            // $img = Image::make($request->vdimg)->resize(200, 200);
+            // $res = $img->save(public_path('assets/images/company/'.$imageName), 75);
+            // $res = $img->save(public_path('assets/images/branch/'.$imageName), 75);
+            $this->uploads($request->vdimg, "images/company/");
+            //              $imageName = time().'.'.$request->vdimg->getClientOriginalExtension();
+            //              $imageName = trim($imageName," "); //Removes white spaces from the string
+            //              $request->vdimg->move(public_path('assets/images/company/'), $imageName);
+        }
 
-//            $posbg = time().'.'.$request->posbgimg->getClientOriginalExtension();
-//            $posbg = trim($posbg," "); //Removes white spaces from the string
-//            $request->posbgimg->move(public_path('assets/images/pos-background/'), $posbg);
+        if (!empty($request->posbgimg)) {
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            ]);
+            // $posbg = time().'.'.$request->posbgimg->getClientOriginalExtension();
+            // $img = Image::make($request->posbgimg)->resize(800, 600);
+            // $res = $img->save(public_path('assets/images/pos-background/'.$posbg), 100);
+
+            $this->uploads($request->posbgimg, "images/pos-background/");
+
+            //            $posbg = time().'.'.$request->posbgimg->getClientOriginalExtension();
+            //            $posbg = trim($posbg," "); //Removes white spaces from the string
+            //            $request->posbgimg->move(public_path('assets/images/pos-background/'), $posbg);
         }
 
 
-        $items =[
+        $items = [
             'status_id' => 1,
             'country_id' => $request->country,
             'city_id' => $request->city,
@@ -111,44 +115,44 @@ class AdminCompanyController extends Controller
             'pos_background' => $posbg,
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
-			'package_id' => $request->package,
+            'package_id' => $request->package,
         ];
 
         $result =  $adminCompany->insert($items);
-		
-		if($request->currency != ""){
-			$myObj = new stdClass();
-			$myObj->currency = $request->currency;
-			$myJSON = json_encode($myObj);
-			
-			DB::table("settings")->insert([
-				"company_id" =>  $result,
-				"data" =>  $myJSON,
-			]);
-		}
-		
-		$items = 
-		[
-			'company_id' =>  $result,
-			'country_id' => $request->country,
-			'city_id' => $request->city,
-			'status_id' => 1,
-			'branch_name' => "Head Office -" .$request->companyname,
-			'branch_address' => $request->company_address,
-			'branch_latitude' => null,
-			'branch_longitude' => null,
-			'branch_ptcl' => $request->company_ptcl,
-			'branch_mobile' => $request->company_mobile,
-			'branch_email' => $request->company_email,
-			'branch_logo' => $imageName,
-			'modify_by' => session('userid'),
-			'modify_date' => date('Y-m-d'),
-			'modify_time' => date('H:i:s'),
-			'date' => date('Y-m-d'),
-			'time' => date('H:i:s'),
-        ];
-                
-		$branch = $branch->insert_branch($items);
+
+        if ($request->currency != "") {
+            $myObj = new stdClass();
+            $myObj->currency = $request->currency;
+            $myJSON = json_encode($myObj);
+
+            DB::table("settings")->insert([
+                "company_id" =>  $result,
+                "data" =>  $myJSON,
+            ]);
+        }
+
+        $items =
+            [
+                'company_id' =>  $result,
+                'country_id' => $request->country,
+                'city_id' => $request->city,
+                'status_id' => 1,
+                'branch_name' => "Head Office -" . $request->companyname,
+                'branch_address' => $request->company_address,
+                'branch_latitude' => null,
+                'branch_longitude' => null,
+                'branch_ptcl' => $request->company_ptcl,
+                'branch_mobile' => $request->company_mobile,
+                'branch_email' => $request->company_email,
+                'branch_logo' => $imageName,
+                'modify_by' => session('userid'),
+                'modify_date' => date('Y-m-d'),
+                'modify_time' => date('H:i:s'),
+                'date' => date('Y-m-d'),
+                'time' => date('H:i:s'),
+            ];
+
+        $branch = $branch->insert_branch($items);
 
         return $this->index();
     }
@@ -159,10 +163,7 @@ class AdminCompanyController extends Controller
      * @param  \App\adminCompany  $adminCompany
      * @return \Illuminate\Http\Response
      */
-    public function show(adminCompany $adminCompany)
-    {
-        
-    }
+    public function show(adminCompany $adminCompany) {}
 
     /**
      * Show the form for editing the specified resource.
@@ -170,17 +171,17 @@ class AdminCompanyController extends Controller
      * @param  \App\adminCompany  $adminCompany
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request,adminCompany $adminCompany)
+    public function edit(Request $request, adminCompany $adminCompany)
     {
         $country = adminCompany::getcountry();
         $city = adminCompany::getcity();
         $company = $adminCompany->getCompanyById($request->id);
-		$currencies = DB::table('currencies')->get();
-		$setting = DB::table('settings')->where("company_id",$request->id)->get();
-		$setting = json_decode($setting[0]->data,true);
-		$currencyname = $setting["currency"];
-		$packages = DB::table('packages')->get();
-        return view('Admin.Company.edit', compact('country','city','company','currencies','currencyname','packages')); 
+        $currencies = DB::table('currencies')->get();
+        $setting = DB::table('settings')->where("company_id", $request->id)->get();
+        $setting = json_decode($setting[0]->data, true);
+        $currencyname = $setting["currency"];
+        $packages = DB::table('packages')->get();
+        return view('Admin.Company.edit', compact('country', 'city', 'company', 'currencies', 'currencyname', 'packages'));
     }
 
     /**
@@ -192,50 +193,24 @@ class AdminCompanyController extends Controller
      */
     public function update(Request $request, adminCompany $adminCompany)
     {
-        $imageName= "";
+        $imageName = "";
         $posbg = "";
 
-
-        if(!empty($request->posbgimg)){
-            $image_path = public_path('assets/images/pos-background/'.$request->pos_bg_logo);  // Value is not URL but directory file path
-            if($request->pos_bg_logo != "") {
-                unlink($image_path);
-            }
-
+        if (!empty($request->posbgimg)) {
             $request->validate([
                 'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
-
-            $posbg = time().'.'.$request->posbgimg->getClientOriginalExtension();
-            $img = Image::make($request->posbgimg)->resize(800, 600);
-            $res = $img->save(public_path('assets/images/pos-background/'.$posbg), 100);
-
-//            $posbg = time().'.'.$request->posbgimg->getClientOriginalExtension();
-//            $posbg = trim($posbg," "); //Removes white spaces from the string
-//            $request->posbgimg->move(public_path('assets/images/pos-background/'), $posbg);
+            $bgFile = $this->uploads($request->posbgimg, "images/pos-background/", $request->pos_bg_logo);
         }
 
-		
-
-        if(!empty($request->vdimg)){
-                $image_path = public_path('assets/images/company/'.$request->prev_logo);  // Value is not URL but directory file path
-                if($request->prev_image != "") {
-                    unlink($image_path);
-                }
-                 $request->validate([
-                      'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-                  ]);
-                $imageName = time().'.'.$request->vdimg->getClientOriginalExtension();
-                $img = Image::make($request->vdimg)->resize(200, 200);
-                $res = $img->save(public_path('assets/images/company/'.$imageName), 75);
-
-//              $imageName = $request->companyname.'.'.$request->vdimg->getClientOriginalExtension();
-//              $imageName = trim($imageName," "); //Removes white spaces from the string
-//              $request->vdimg->move(public_path('assets/images/company/'), $imageName);
+        if (!empty($request->vdimg)) {
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+            $file = $this->uploads($request->vdimg, "images/pos-background/", $request->prev_logo);
         }
 
-
-        $items =[
+        $items = [
             'status_id' => 1,
             'country_id' => $request->country,
             'city_id' => $request->city,
@@ -244,27 +219,25 @@ class AdminCompanyController extends Controller
             'email' => $request->company_email,
             'ptcl_contact' => $request->company_ptcl,
             'mobile_contact' => $request->company_mobile,
-            'logo' =>  ($imageName == "" ? $request->prev_logo : $imageName),
-            'pos_background' => ($posbg == "" ? $request->pos_bg_logo : $posbg),
+            'logo' => (!empty($request->vdimg) ? $request->prev_logo : $file["fileName"]),
+            'pos_background' => (!empty($request->posbgimg) ? $request->pos_bg_logo :  $bgFile["fileName"]),
             'updated_at' => date('Y-m-d H:i:s'),
-			'package_id' => $request->package,
+            'package_id' => $request->package,
         ];
 
-        $result =  $adminCompany->updateCompany($items,$request->company_id);
-		
-		if($request->currency != ""){
-			$myObj = new stdClass();
-			$myObj->currency = $request->currency;
-			$myJSON = json_encode($myObj);
-			
-			DB::table("settings")->where("company_id",$request->company_id)->update([
-				"data" =>  $myJSON,
-			]);
-		}
-		
-        return redirect()->route('company.index');
+        $result =  $adminCompany->updateCompany($items, $request->company_id);
 
-        
+        if ($request->currency != "") {
+            $myObj = new stdClass();
+            $myObj->currency = $request->currency;
+            $myJSON = json_encode($myObj);
+
+            DB::table("settings")->where("company_id", $request->company_id)->update([
+                "data" =>  $myJSON,
+            ]);
+        }
+
+        return redirect()->route('company.index');
     }
 
     /**
@@ -273,17 +246,17 @@ class AdminCompanyController extends Controller
      * @param  \App\adminCompany  $adminCompany
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request,adminCompany $adminCompany)
+    public function destroy(Request $request, adminCompany $adminCompany)
     {
         $details = $adminCompany->getCompanyById($request->id);
-        $image_path = public_path('assets/images/company/'.$details[0]->logo);  // Value is not URL but directory file path
-            if($details[0]->logo != "") {
-                unlink($image_path);
-            }
         $result =  $adminCompany->deleteCompany($request->id);
+        if ($result) {
+            $this->removeImage("images/company/", $details[0]->logo);
+        }
+        // $image_path = public_path('assets/images/company/' . $details[0]->logo);  // Value is not URL but directory file path
+        // if ($details[0]->logo != "") {
+        //     unlink($image_path);
+        // }
         return $result;
     }
 }
-
-
-

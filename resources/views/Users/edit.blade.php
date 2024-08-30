@@ -23,6 +23,7 @@
                         @csrf
                         <h5>User Authorization</h5>
                          <input type="hidden" name="id" id="id" class="form-control"  value="{{$userdetails[0]->id}}"/>
+                         <input type="hidden" name="prevImg"  class="form-control"  value="{{$userdetails[0]->image}}"/>
                          <div class="row">
                           <div class="col-md-4">
                             <div class="form-group {{ $errors->has('company') ? 'has-danger' : '' }}">

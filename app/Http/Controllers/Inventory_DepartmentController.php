@@ -1,19 +1,18 @@
 <?php
-
 namespace App\Http\Controllers;
-
 use App\inventory_department;
 use Illuminate\Http\Request;
 use Image;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\custom_helper;
+use App\Traits\MediaTrait;
 use File;
 
 class Inventory_DepartmentController extends Controller
 {
- 
-    public function __construct(){
+    use MediaTrait;
 
+    public function __construct(){
        $this->middleware('auth');
     }
     /**
@@ -24,13 +23,9 @@ class Inventory_DepartmentController extends Controller
     public function index()
     {
 	  $depart = inventory_department::getdepartment('');
-
 	  $sdepart = inventory_department::get_subdepart('');
-
       return view('Invent_Department.lists',compact('depart','sdepart'));
     }
-
-
     /**
      * Show the form for creating a new resource.
      *
@@ -38,30 +33,28 @@ class Inventory_DepartmentController extends Controller
      */
     public function create()
     {
-
         
     }
-
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-
     public function store(Request $request,inventory_department $invent_department,custom_helper $helper)
     {
-
 		$imageName = ""; 
+        
 		
 		if(!empty($request->post('parent'))){
             $exsist = $invent_department->subdepart_exists($request->deptname,$request->post('parent'));
     
             if ($exsist[0]->counter == 0) {
-
         	    if(!empty($request->file('departImage'))){
-        	        $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
-        	        $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+        	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
+        	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+                    $file = $this->uploads($request->file('departImage'),"images/department");
+                    $imageName = !empty($file) ? $file["fileName"] : "";
         	    }                
                 
                 $items = [
@@ -82,7 +75,6 @@ class Inventory_DepartmentController extends Controller
 		}else{    
 		
         // return $invent_department->check_dept($request->get('deptname'),$request->get('code'));
-
         if($invent_department->check_depart_code($request->get('code'))){
              return response()->json(array("state"=>1,"msg"=>'This department code already exists.',"contrl"=>'deptname'));
         }
@@ -92,10 +84,11 @@ class Inventory_DepartmentController extends Controller
 		// else {
 		
     	    if(!empty($request->file('departImage'))){
-    	        $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
-    	        $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+    	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
+    	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+                $file = $this->uploads($request->file('departImage'),"images/department");
+                $imageName = !empty($file) ? $file["fileName"] : "";
     	    }		
-
 			 $data = [
                 'company_id'               => session('company_id'),
                 'code'                     => $request->get('code'),
@@ -130,16 +123,13 @@ class Inventory_DepartmentController extends Controller
 				// $msg = "ID # ".$result.", Name : ".$request->get('deptname');
 				// $helper->sendPushNotification("New Department Added",$msg); 
                return response()->json(array("state"=>0,"msg"=>'',"contrl"=>''));
-
              }else{
                return response()->json(array("state"=>1,"msg"=>'Not saved :(',"contrl"=>''));
              } 
         // }
 		}
     }
-
     public function depart_update(Request $request,inventory_department $invent_department,custom_helper $helper){
-
          if($invent_department->check_edit_depart_name($request->get('id'),$request->get('depart'))){
             return response()->json(array("state"=>1,"msg"=>'This department already exists.',"contrl"=>'udeptname'));
          }else {
@@ -153,11 +143,8 @@ class Inventory_DepartmentController extends Controller
                 }else {
                   return response()->json(array('state'=>1,'msg'=>'Oops! not saved changes :('));
                 }
-
          }
     }
-
-
    public function sb_depart_update(Request $request,inventory_department $invent_department){
 		
 		$imageName = null;
@@ -178,16 +165,20 @@ class Inventory_DepartmentController extends Controller
          
          
 	    if(!empty($request->file('subdepartImage'))){
-	        $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('sdepart'))).time().'.'.strtolower($request->file('subdepartImage')->getClientOriginalExtension()); 
+	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('sdepart'))).time().'.'.strtolower($request->file('subdepartImage')->getClientOriginalExtension()); 
 	        
-	        $getFormFile = $request->file('subdepartImage');
-	        $getFormFile->move(public_path('assets/images/department'),$imageName);
+	        // $getFormFile = $request->file('subdepartImage');
+	        // $getFormFile->move(public_path('assets/images/department'),$imageName);
+
+            $file = $this->uploads($request->file('subdepartImage'),"images/department");
+            $imageName = !empty($file) ? $file["fileName"] : "";
 	      
 	       $get = DB::table('inventory_sub_department')->where('sub_department_id',$request->id)->first();
 	        if($get){
-	            if(File::exists(public_path('assets/images/department/').$get->image)){
-	                File::delete(public_path('assets/images/department/').$get->image);
-	            }
+                $this->removeImage("images/department/",$get->image);
+	            // if(File::exists(public_path('assets/images/department/').$get->image)){
+	            //     File::delete(public_path('assets/images/department/').$get->image);
+	            // }
 	        }
 	    } 
 	    
@@ -206,10 +197,8 @@ class Inventory_DepartmentController extends Controller
             }else {
                 return response()->json(array('state'=>1,'msg'=>'Oops! not saved changes :('));
             }
-
          // }
     }
-
     /**
      * Display the specified resource.
      *
@@ -220,9 +209,6 @@ class Inventory_DepartmentController extends Controller
     {
         //
     }
-
-
-
     /**
      * Show the form for editing the specified resource.
      *
@@ -239,7 +225,6 @@ class Inventory_DepartmentController extends Controller
                 return response()->json(0);
              }
     }
-
     /**
      * Update the specified resource in storage.
      *
@@ -247,9 +232,7 @@ class Inventory_DepartmentController extends Controller
      * @param  \App\inventory  $inventory
      * @return \Illuminate\Http\Response
      */
-
    
-
     public function update(Request $request,inventory_department $invent_department)
     {
               /*$result = $invent_department->modify(['department_name'=>$request->deptname],$request->hidd_id);
@@ -257,9 +240,7 @@ class Inventory_DepartmentController extends Controller
                 if($invent_department->check_sdept($request->hidd_id)){
                    $invent_department->remove_sbdept($request->hidd_id);
                  }
-
                  $subdpt_value = explode(",",$request->subdpt);
-
                 for($i=0;$i<count($subdpt_value);$i++){
                     
                     $result = $invent_department->insert_sdept(['department_id'=>$request->hidd_id,'sub_depart_name'=>$subdpt_value[$i]]);
@@ -272,7 +253,6 @@ class Inventory_DepartmentController extends Controller
                  return response()->json(array('state'=>0,'msg'=>'Oops! not saved changes :('.$request->subdpt));
                }      
     }
-
     /**
      * Remove the specified resource from storage.
      *
@@ -301,12 +281,9 @@ class Inventory_DepartmentController extends Controller
 			return response()->json(["status" => 500,"message" => "Error: ".$e->getMessage()]);
 		}
 	}
-
-
     public function adddepartment(inventory_department $in_depart, Request $request)
     {
         $exsist = $in_depart->depart_exists($request->departname);
-
         if ($exsist[0]->counter == 0) {
             $items = [
                 'company_id' => session('company_id'),
@@ -322,21 +299,19 @@ class Inventory_DepartmentController extends Controller
         else{
             return 0;   
         }
-
     }
-
      public function addsubdepartment(inventory_department $in_depart, Request $request)
     {
         $imageName = null;
         
         $exsist = $in_depart->subdepart_exists($request->subdepart,$request->departid);
-
         if ($exsist[0]->counter == 0) {
             
         	    if(!empty($request->file('subdepartImage'))){
         	        $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('subdepart'))).time().'.'.strtolower($request->file('subdepartImage')->getClientOriginalExtension()); 
         	        $getFormFile = $request->file('subdepartImage'); 
         	        $getFormFile->move(public_path('assets/images/department'),$imageName);
+                    
         	    }              
             
             $items = [
@@ -354,10 +329,7 @@ class Inventory_DepartmentController extends Controller
         else{
             return 0;   
         }
-
     }
-
-
     public function updatedepart(inventory_department $in_depart, Request $request)
     {
         $imageName = null;
@@ -400,16 +372,10 @@ class Inventory_DepartmentController extends Controller
 	
 		$result = $in_depart->update_depart($request->departid, $items);
 		return response()->json(array("state"=>0,"msg"=>'Department edit successfully.',"contrl"=>'deptname'));;
-
     }
-
   public function getsubdepart(inventory_department $in_depart, Request $request)
     {
         $getsubdepart = $in_depart->get_subdepartments($request->departid);
             return $getsubdepart;
     }
-
-
-
-
 }

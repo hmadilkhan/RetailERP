@@ -111,6 +111,7 @@
         </a>
     </div>
 </div>
+@section('scriptcode_three')
 <script>
     var rem_id = [];
 
@@ -516,3 +517,4 @@
         } //else end
     });
 </script>
+@endsection
