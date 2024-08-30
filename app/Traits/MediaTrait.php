@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 
 trait MediaTrait
+
 {
     public function uploads($file, $path, $previousImage = "")
     {

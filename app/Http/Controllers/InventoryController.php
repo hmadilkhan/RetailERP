@@ -137,7 +137,7 @@ class InventoryController extends Controller
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
 
-        $websiteMode = null; // website mode "retail" and "restaurent" use of purpose image size 
+        //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size 
 
         $rules = [
             'code'          => 'required',
@@ -157,100 +157,75 @@ class InventoryController extends Controller
 
         $this->validate($request, $rules);
 
-        if (!empty($request->website)) {
-            $result =  WebsiteDetail::where('company_id', session('company_id'))->where('id', $request->website)->first();
-            if (isset($result->type) && $result->type == 'boutique') {
-                $websiteMode = 1;
-            }
-        }
+        // if (!empty($request->website)) {
+        //     $result =  WebsiteDetail::where('company_id', session('company_id'))->where('id', $request->website)->first();
+        //     if (isset($result->type) && $result->type == 'restaurant') {
+        //         $websiteMode = 0;
+        //     }
+        // }
 
         
         
         $imageData = '';
         if (!empty($request->image)) {
              $image = $request->file('image');
-            // return $image->getRealPath();
-            //  $imageName = "";
+
                      $request->validate([
                          'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
                      ]);
 
-            // foreach ($request->file('image') as $image) {
                 $imageName = time().'-'.pathinfo($image->getClientOriginalName(),PATHINFO_FILENAME).'.'.$image->getClientOriginalExtension();
                 
-                $transformationArray = [];
-                
-            //   if(isset($request->actual_image_size)){    
-                //   $res = Image::make($image)
-                //               ->save(public_path('assets/images/products/' . $imageName)); 
-                   //   $image->move(public_path('assets/images/products/'),$imageName)
-            //   }else{
-                if($websiteMode == 1){
-                   if(!isset($request->actual_image_size)){ 
-                    $transformationArray['width']  = 250;
-                    $transformationArray['height'] = 344;
-                    $transformationArray['crop']   = 'scale';
-                   }
-                    // $img = Image::make($image)->resize(250, 344); 
-                }else{
-                   if(!isset($request->actual_image_size)){  
-                        $transformationArray['width']  = 400;
-                        $transformationArray['height'] = 400;
-                        $transformationArray['crop']   = 'scale';                    
-                   }
-                    // $img = Image::make($image)->resize(400, 400);
-                }
-                
-            //     $res = $img->save(public_path('assets/images/products/' . $imageName));                  
-            //   }
+               if(in_array(session('company_id'),[95,102,104])){ //cloudinary image save fro kashee
+                  $transformationArray = [];
 
-                //                $imageName= time().'.'.$image->getClientOriginalName();
-                //                $image->move(public_path('assets/images/products/'), $imageName);
-                
-                    $transformationArray['quality']  = 'auto';
-                    $transformationArray['fetch']    = 'auto';
-                    
-                    $company_name = DB::table('company')->where('company_id',session('company_id'))->first();
-                    
-                    $folder = strtolower($company_name->name);
-                    
-                    $imageData = Cloudinary::upload($image->getRealPath(), [
-                                                'public_id'      => strtolower($imageName),
-                                                'folder'         => $folder,
-                                                'transformation' => $transformationArray
-                                            ])->getSecurePath();
-                      
-                    //   $slice = Str::afterLast($image, '/');
-                    //   if(isset($transformationArray['width'])){
-                    //     $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/w_".$transformationArray['width'].",h_".$transformationArray['height'].",c_".$transformationArray['crop'].",f_auto,q_auto/{$folder}/{$slice}";
-                    //   }else{
-                    //     $imageData = "https://res.cloudinary.com/dl2e24m08/image/upload/f_auto,q_auto/{$folder}/{$slice}";  
-                    //   }
-                  //} 
-            // }
+                  if(!isset($request->actual_image_size)){  
+                         $transformationArray['width']  = 400;
+                         $transformationArray['height'] = 400;
+                         $transformationArray['crop']   = 'scale'; 
+                  }
+                 $transformationArray['quality']  = 'auto';
+                 $transformationArray['fetch']    = 'auto';
+                 
+                 $company_name = DB::table('company')->where('company_id',session('company_id'))->first();
+                 
+                 $folder = strtolower($company_name->name);
+                 
+                 $imageData = Cloudinary::upload($image->getRealPath(), [
+                                             'public_id'      => strtolower($imageName),
+                                             'folder'         => $folder,
+                                             'transformation' => $transformationArray
+                                         ])->getSecurePath();
+               }else{
+                    if(!isset($request->actual_image_size)){
+                        $path = public_path('storage/images/products/');  
+                          $this->uploads(Image::make($image)->resize(400, 400),$path);               
+                    }                  
+               }
         }
 
         $fields = [
-            'company_id' => session('company_id'),
-            'department_id' => $request->depart,
-            'sub_department_id' => $request->subDepart,
-            'uom_id' => $request->uom,
-            'cuom' => $request->cuom,
-            'product_mode' => $request->product_mode,
-            'priority' => $request->priority,
-            'item_code' => $request->code,
-            'product_name' => $request->name,
+            'company_id'          => session('company_id'),
+            'department_id'       => $request->depart,
+            'sub_department_id'   => $request->subDepart,
+            'uom_id'              => $request->uom,
+            'cuom'                => $request->cuom,
+            'product_mode'        => $request->product_mode,
+            'priority'            => $request->priority,
+            'item_code'           => $request->code,
+            'product_name'        => $request->name,
             'product_description' => $request->description,
-            'image' => (!empty($request->image) ? $imageData : ""),
-            'status' => 1,
-            'created_at' => date('Y-m-d H:s:i'),
-            'updated_at' => date('Y-m-d H:s:i'),
-            'weight_qty' => $request->weight,
-            'slug' => strtolower(str_replace(' ', '-', $request->name)) . "-" . strtolower(Str::random(4)),
-            'is_deal' => (isset($request->is_deal) ? 1 : 0),
-            'short_description' => $request->sdescription,
-            'details' => $request->details,
-            'brand_id' => $request->brand,
+            'image'               => $imageName,
+            'url'                 => isset($imageData) ? $imageData : null,
+            'status'              => 1,
+            'created_at'          => date('Y-m-d H:s:i'),
+            'updated_at'          => date('Y-m-d H:s:i'),
+            'weight_qty'          => $request->weight,
+            'slug'                => strtolower(str_replace(' ', '-', $request->name)) . "-" . strtolower(Str::random(4)),
+            'is_deal'             => (isset($request->is_deal) ? 1 : 0),
+            'short_description'   => $request->sdescription,
+            'details'             => $request->details,
+            'brand_id'            => $request->brand,
         ];
         $productid = $inventory->insert($fields);
         $result = $inventory->ReminderInsert($productid, $request->reminder);
