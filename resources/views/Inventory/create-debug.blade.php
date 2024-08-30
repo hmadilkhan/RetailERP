@@ -518,7 +518,7 @@
               <div class="form-group">
                <label for="image" class="form-control-label">Product Image</label>
                        <a href="<javascript:void(0)">
-                        <img id="simg" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img">
+                        <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img">
                         </a>
 
                     <div class="form-group {{ $errors->has('image') ? 'has-danger' : '' }} m-t-10">
