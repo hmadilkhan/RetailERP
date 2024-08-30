@@ -152,7 +152,7 @@ class InventoryController extends Controller
             'ap'            => 'required',
             'product_mode'  => 'required',
             // 'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:1024',
 
         ];
 
@@ -253,16 +253,16 @@ class InventoryController extends Controller
 
         //inventory price insert here
         $items = [
-            'cost_price' => $request->cost_price,
-            'actual_price' => $request->ap,
-            'tax_rate' => $request->taxrate,
-            'tax_amount' => $request->taxamount,
-            'retail_price' => $request->rp,
+            'cost_price'      => $request->cost_price,
+            'actual_price'    => $request->ap,
+            'tax_rate'        => $request->taxrate,
+            'tax_amount'      => $request->taxamount,
+            'retail_price'    => $request->rp,
             'wholesale_price' => $request->wp,
-            'online_price' => $request->op,
-            'discount_price' => $request->dp,
-            'product_id' => $productid,
-            'status_id' => 1,
+            'online_price'    => $request->op,
+            'discount_price'  => $request->dp,
+            'product_id'      => $productid,
+            'status_id'       => 1,
         ];
         $price = $inventory->insertgeneral('inventory_price', $items);
 
