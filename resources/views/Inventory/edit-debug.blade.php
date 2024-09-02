@@ -555,6 +555,19 @@
           $("#description").val('{{ $data[0]->product_description }}');   
        @endif
 
+    $("#website").on('change',function(){
+      if($(this).val() != ''){    
+        if($("#prodAdvans_Media").hasClass('d-none')){
+            $("#prodAdvans_Media").removeClass('d-none')
+        }
+      }else{
+        if(!$("#prodAdvans_Media").hasClass('d-none')){
+            $("#prodAdvans_Media").addClass('d-none')
+        }
+      }
+    });   
+
+
       CKEDITOR.replace( 'summary-ckeditor' );
 	  var rem_id = [];
 	  
