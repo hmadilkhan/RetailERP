@@ -393,14 +393,16 @@
          </div>  
 
          </div>
-      </div>
-
-      <div class="row m-t-30">
-              <div class="col-lg-12 col-md-12 ">
+         <div class="row m-t-30">
+              <div class="col-lg-12 col-md-12 text-center">
                   <button class="btn btn-md btn-circle btn-primary m-b-10 f-right" type="submit"><i class="icofont icofont-ui-edit"></i>Update</button>
              </div>
            </div>
 </form>
+
+      </div>
+
+
    
             
                   </div>
