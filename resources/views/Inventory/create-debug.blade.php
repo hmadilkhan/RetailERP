@@ -515,8 +515,8 @@
 
                   </div>
                   <div class="card-block p-1">
+                  <h3 for="image">Product Image</h3>
               <div class="form-group">
-               <label for="image" class="form-control-label">Product Image</label>
                        <a href="<javascript:void(0)">
                         <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img">
                         </a>
