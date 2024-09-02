@@ -555,6 +555,35 @@
           $("#description").val('{{ $data[0]->product_description }}');   
        @endif
 
+       @if(count($selectedWebsites->toArray()) > 0)
+       $("#showProductWebsite").trigger('click');
+       @endif
+
+$("#showProductWebsite").on('click',function(){
+    
+    if($(this).is(':checked')==true){
+        if($("#website-module").hasClass('d-none')){
+            $("#website-module").removeClass('d-none');
+        }
+        
+        
+        if($("#prodAdvans_Media").hasClass('d-none')){
+            $("#prodAdvans_Media").removeClass('d-none');
+        }        
+    }
+    
+    if($(this).is(':checked')==false){
+        if(!$("#website-module").hasClass('d-none')){
+            $("#website-module").addClass('d-none');
+        }
+        
+        if(!$("#prodAdvans_Media").hasClass('d-none')){
+            $("#prodAdvans_Media").addClass('d-none');
+        }         
+    }    
+})
+
+
     $("#website").on('change',function(){
       if($(this).val() != ''){    
         if($("#prodAdvans_Media").hasClass('d-none')){
