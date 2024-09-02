@@ -33,7 +33,7 @@
                 <div class="card-header">
                   <h4 class="">Product Detail</h4>
                   </div>
-                <div class="card-block p-1 p-t-0">
+                <div class="card-block p-2 p-t-0">
                   <div class="row"> 
                   <div class="col-md-6">
             <div class="form-group {{ $errors->has('depart') ? 'has-danger' : '' }}">
@@ -304,7 +304,10 @@
               </div> <!-- card div close -->
               
               <div class="card">
-                  <div class="card-block p-1">
+                 <div class="card-header">
+                     <h4>Product Price</h4>
+                </div>
+                  <div class="card-block p-2">
         <div class="row">
 			<div class="col-md-3 col-lg-3">
                 <div class="form-group {{ $errors->has('cost_price') ? 'has-danger' : '' }}">
