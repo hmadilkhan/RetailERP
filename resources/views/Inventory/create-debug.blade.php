@@ -322,6 +322,9 @@
               </div> <!-- card div close -->
               
               <div class="card">
+                <div class="card-header">
+                    <h4>Product Price</h4>
+                </div>
                   <div class="card-block p-1">
         <div class="row">
 			<div class="col-md-3 col-lg-3">
