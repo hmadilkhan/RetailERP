@@ -512,10 +512,9 @@
           <div class="col-md-3">
               <div class="card">
                   <div class="card-header">
-
+                  <h4 for="image">Product Image</h4>
                   </div>
                   <div class="card-block p-1">
-                  <h3 for="image">Product Image</h3>
               <div class="form-group">
                        <a href="<javascript:void(0)">
                         <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img">
