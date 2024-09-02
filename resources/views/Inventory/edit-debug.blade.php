@@ -713,8 +713,8 @@
 
 
      $("#image").change(function() {
-         // readURL(this,'simg');
-         imagesPreview(this, 'div.gallery');
+         readURL(this,'simg');
+        //  imagesPreview(this, 'div.gallery');
      });
 
      var imagesPreview = function(input, placeToInsertImagePreview) {
