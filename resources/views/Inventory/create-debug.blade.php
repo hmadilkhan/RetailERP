@@ -24,16 +24,13 @@
     <form method="POST" class="form-horizontal m-t-3" enctype="multipart/form-data" action="{{route('insert')}}" >
       @csrf
 
-
-
-                
       <div class="row">
           <div class="col-md-9">
               <div class="card b-radius">
                   <div class="card-header">
-
+                    <h4 class="">Product Detail</h4>
                   </div>
-                  <div class="card-block p-1">
+                  <div class="card-block p-1 p-t-0">
                   <div class="row">
 <div class="col-md-6">
             <div class="form-group {{ $errors->has('depart') ? 'has-danger' : '' }}">
@@ -531,7 +528,7 @@
                                       <label class="pointer"><input type="checkbox" name="actual_image_size" class=""> You want to actual image size</label>
                                     </div>         
                                 @if ($errors->has('image'))
-                                    <div class="form-control-feedback">{{ $errors->first('image') }}</div>
+                                    <span class="form-control-feedback">{{ $errors->first('image') }}</span>
                                 @endif
                               </div> 
                 
