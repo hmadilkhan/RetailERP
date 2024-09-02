@@ -511,7 +511,7 @@
                   <div class="card-header">
                   <h4 for="image">Product Image</h4>
                   </div>
-                  <div class="card-block p-1 p-t-0">
+                  <div class="card-block p-2 p-t-0">
               <div class="form-group">
                        <a href="<javascript:void(0)">
                         <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img">
@@ -533,27 +533,38 @@
                               </div> 
                 
               </div> 
-              
-         
+              </div>    
+              </div> 
         @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
         
            <div class="d-none" id="prodAdvans_Media">
- 
+           <div class="card">
+                  <div class="card-header">
+                  <h4 >Product Gallery</h4>
+                  </div>
+                  <div class="card-block p-2 p-t-0">
                    <div class="form-group">
-                       <label class="form-control-label">Product Gallery</label>
                        <br/>
                         <label for="prodgallery" class="custom-file">
                             <input type="file" name="prodgallery[]" id="prodgallery" class="custom-file-input" multiple>
                             <span class="custom-file-control"></span>
                         </label>
                    </div>
+                   </div>
+                   </div>
+                   <div class="card">
+                  <div class="card-header">
+                  <h4 >Product Video</h4>
+                  </div>
+                  <div class="card-block p-2 p-t-0">                  
                    <div class="form-group">
-                       <label class="form-control-label">Product Video</label>
                        <br/>
                         <label for="prodvideo" class="custom-file">
                             <input type="file" name="prodvideo" id="prodvideo" class="custom-file-input">
                             <span class="custom-file-control"></span>
                         </label>
+                   </div>
+                   </div>
                    </div>
                
            </div>
