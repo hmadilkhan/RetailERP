@@ -294,15 +294,10 @@
           </div>
          </div> 
        @endif    
-
-
-                  
-               
-            </div> 
+   </div> 
             
             </div>    <!--card block-->  
               </div> <!-- card div close -->
-              
               <div class="card">
                  <div class="card-header">
                      <h4>Product Price</h4>
@@ -356,7 +351,7 @@
             <div class="col-md-3 col-lg-3">
                 <div class="form-group">
                     <label class="form-control-label">Discount Price:</label>
-                    <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="dp" id="dp" value=" old('dp') ? old('dp') : $prices[0]->discount_price"/>
+                    <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="dp" id="dp" value="{{ old('dp') ? old('dp') : $prices[0]->discount_price }}"/>
                 </div>
             </div>
 
@@ -367,7 +362,8 @@
                 </div>
             </div>
           </div>    <!--card block-->  
-        </div> <!-- card div close -->
+        </div> <!-- card div close -->             
+          
        </div>
      </div>
 
