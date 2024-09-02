@@ -296,7 +296,7 @@
        @endif    
    </div> 
             
-            </div>    <!--card block-->  
+
               </div> <!-- card div close -->
               <div class="card">
                  <div class="card-header">
