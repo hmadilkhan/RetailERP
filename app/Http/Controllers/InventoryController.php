@@ -152,7 +152,7 @@ class InventoryController extends Controller
             'ap'            => 'required',
             'product_mode'  => 'required',
             // 'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:1024',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
 
         ];
 
@@ -172,7 +172,7 @@ class InventoryController extends Controller
             if (!in_array(session('company_id'), [95, 102, 104]) || Auth::user()->username != 'demoadmin') {
 
                     $request->validate([
-                        'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+                        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|max:1024',
                     ]);
             }
 
