@@ -909,10 +909,10 @@ class InventoryController extends Controller
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
 
-            if (!in_array(session('company_id'), [95, 102, 104]) || Auth::user()->username != 'demoadmin') {
+            if (!in_array(session('company_id'),[95, 102, 104]) || Auth::user()->username != 'demoadmin') {
 
                     $request->validate([
-                        'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+                        'image' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
                     ]);
             }
 
