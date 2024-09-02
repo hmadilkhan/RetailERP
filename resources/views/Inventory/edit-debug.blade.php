@@ -223,13 +223,13 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="showProductWebsite">
-                        <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
+                        <input type="checkbox" id="showProductWebsite" name="showProductWebsite" {{ count($selectedWebsites->toArray()) > 0 ? 'checked' : ''}}>
                         Show Product on Website
                     </label>
                 </div>
             </div>
         </div>
-      <div class="d-none" id="website-module">    
+      <div class="{{ count($selectedWebsites->toArray()) > 0 ? '' : 'd-none' }}" id="website-module">    
         <div class="row">    
             <div class="col-md-5">
 				<div class="form-group {{ $errors->has('website') ? 'has-danger' : '' }}">
@@ -553,10 +553,6 @@
           $("#description").val("{{ old('description') }}")
        @else
           $("#description").val('{{ $data[0]->product_description }}');   
-       @endif
-
-       @if(count($selectedWebsites->toArray()) > 0)
-       $("#showProductWebsite").trigger('click');
        @endif
 
 $("#showProductWebsite").on('click',function(){
