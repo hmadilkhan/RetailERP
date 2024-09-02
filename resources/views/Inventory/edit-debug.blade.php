@@ -390,6 +390,39 @@
                         </div>
                 </div> 
             </div>
+
+    @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
+        
+        <div class="d-none" id="prodAdvans_Media">
+        <div class="card">
+                  <div class="card-header">
+                  <h4 for="image">Product Gallery</h4>
+                  </div>
+                  <div class="card-block p-1 p-t-0">
+                <div class="form-group">
+                     <label for="prodgallery" class="custom-file">
+                         <input type="file" name="prodgallery[]" id="prodgallery" class="custom-file-input" multiple>
+                         <span class="custom-file-control"></span>
+                     </label>
+                </div>
+             </div>
+            </div>
+            <div class="card">
+                  <div class="card-header">
+                  <h4 for="image">Product Video</h4>
+                  </div>
+                  <div class="card-block p-1 p-t-0">                  
+                <div class="form-group">
+                     <label for="prodvideo" class="custom-file">
+                         <input type="file" name="prodvideo" id="prodvideo" class="custom-file-input">
+                         <span class="custom-file-control"></span>
+                     </label>
+                </div>
+            </div>
+         </div>   
+            
+        </div>
+     @endif                           
          </div>  
 
          </div>
