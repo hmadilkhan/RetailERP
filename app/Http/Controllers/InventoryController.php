@@ -168,7 +168,7 @@ class InventoryController extends Controller
 
 
         $imageData = '';
-        if (!empty($request->image)) {
+        if (!empty($request->file('image'))) {
             $image = $request->file('image');
 
             $request->validate([
@@ -193,10 +193,10 @@ class InventoryController extends Controller
                 $folder = strtolower($company_name->name);
 
                 $imageData = Cloudinary::upload($image->getRealPath(), [
-                    'public_id'      => strtolower($imageName),
-                    'folder'         => $folder,
-                    'transformation' => $transformationArray
-                ])->getSecurePath();
+                                        'public_id'      => strtolower($imageName),
+                                        'folder'         => $folder,
+                                        'transformation' => $transformationArray
+                                    ])->getSecurePath();
             } else {
                 if (!isset($request->actual_image_size)) {
                     $path = public_path('storage/images/products/');
