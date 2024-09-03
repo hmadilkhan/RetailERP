@@ -961,10 +961,12 @@
 				}
 
                 if($.inArray(value.company_id,[95, 102, 104]) || $.inArray(GlobalUsername,['demoadmin','fnkhan'])){
-                    imageUrl = value.url;
+                    if(value.product_image_url != ''){
+                        imageUrl = value.product_image_url;
+                    }
                 }else{
                     if(value.product_image != ''){
-                     imageUrl = "storage/images/products/"+value.product_image;
+                        imageUrl = "storage/images/products/"+value.product_image;
                     }
                 }
 				
