@@ -962,7 +962,7 @@
                     imageUrl = value.url;
                 }else{
                     if(value.product_image != ''){
-                     imageUrl = "{{ asset('storage/images/products/"+value.product_image+"') }}";
+                     imageUrl = "storage/images/products/"+value.product_image;
                     }
                 }
 				
