@@ -375,7 +375,7 @@
                   <div class="card-block p-1 p-t-0">
                     <div class="form-group">
                         @php $imageUrl = asset('storage/images/placeholder.jpg') @endphp
-                        @if(in_array(session('company_id'), [95, 102, 104]) || Auth::user()->username == 'demoadmin')
+                        @if(in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan']))
                                @if(!empty($data[0]->url))
                                   @php $imageUrl = $data[0]->url @endphp
                                @endif
