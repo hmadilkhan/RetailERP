@@ -863,6 +863,8 @@
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
 	<script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
+
+        let GlobalUsername = '{{ strtolower(Auth::user()->username) }}';
         // $('#loader-modal').modal("show");
         $(".select2").select2();
         var departments = "";
@@ -958,7 +960,7 @@
 				   columnDeal_btn = "<a href='/inventory/"+value.id+"/variable-products' class='m-r-1' title='Create Variable & Addon Product'><i class='icofont icofont-plus text-success'></i></a>"; 
 				}
 
-                if($.inArray(value.company_id,[95, 102, 104])){
+                if($.inArray(value.company_id,[95, 102, 104]) || $.inArray(GlobalUsername,['demoadmin','fnkhan'])){
                     imageUrl = value.url;
                 }else{
                     if(value.product_image != ''){
