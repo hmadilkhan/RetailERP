@@ -393,7 +393,7 @@
                                             <span class="custom-file-control"></span>
                                         </label>
                                 <div>       
-                                    <label class="pointer"><input type="checkbox" name="actual_image_size" class=""> You want to actual image size</label>
+                                    <label class="pointer"><input type="checkbox" name="actual_image_size" class="" {{ $data[0]->actual_image_size == 1 ? 'checked' : ''}}> You want to actual image size</label>
                                 </div>         
                             @if ($errors->has('image'))
                                 <span class="form-control-feedback">{{ $errors->first('image') }}</span>
