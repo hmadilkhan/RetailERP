@@ -1108,10 +1108,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
