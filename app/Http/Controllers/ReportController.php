@@ -38,8 +38,7 @@ use App\Exports\StockReportExport;
 use Mail;
 use \Illuminate\Support\Arr;
 use App\stock;
-
-
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
@@ -1091,7 +1090,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
