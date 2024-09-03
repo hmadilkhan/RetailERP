@@ -959,8 +959,8 @@
 				}else{
 				   columnDeal_btn = "<a href='/inventory/"+value.id+"/variable-products' class='m-r-1' title='Create Variable & Addon Product'><i class='icofont icofont-plus text-success'></i></a>"; 
 				}
-
-                if($.inArray(value.company_id,[95, 102, 104]) || $.inArray(GlobalUsername,['demoadmin','fnkhan'])){
+                alert(GlobalUsername)
+                if($.inArray(value.company_id,[95, 102, 104,7]) || $.inArray(GlobalUsername,['demoadmin','fnkhan'])){
                     if(value.product_image_url != ''){
                         imageUrl = value.product_image_url;
                     }
