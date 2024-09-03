@@ -387,6 +387,7 @@
                             <a href="{{ $imageUrl }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
                                 <img id="simg" src="{{ $imageUrl }}" class="thumb-img img-fluid width-100" alt="img">
                                 </a>
+                                <br/>
                                 <label for="image" class="custom-file">
                                             <input type="file" name="image" id="image" class="custom-file-input">
                                             <span class="custom-file-control"></span>
