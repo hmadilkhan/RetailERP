@@ -294,7 +294,8 @@ WHERE a.DC_id = ?',[$dcid]);
 		INNER JOIN branch b ON b.branch_id = a.branch_to
 		INNER JOIN transfer_status c ON c.status_id = a.status_id
 		INNER JOIN user_details d ON d.id = a.user_id
-		');
+		where a.branch_from IN (Select branch_id from branch where company_id = ?)
+		',[session('company_id')]);
         return $result;
 	}
 
