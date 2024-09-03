@@ -439,7 +439,7 @@
          </div>
          <div class="row m-t-30">
               <div class="col-lg-12 col-md-12 text-center">
-                  <button class="btn btn-lg btn-circle btn-primary m-b-10" type="submit"><i class="icofont icofont-ui-edit"></i>Update</button>
+                  <button class="btn btn-lg btn-circle btn-primary m-b-10" type="submit">Save Changes</button>
              </div>
            </div>
 </form>
