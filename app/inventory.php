@@ -239,10 +239,10 @@ public function updateProductName($id,$name)
 			if($nonstock == 0){
 				 $query->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id');
 				 $query->where('inventory_stock.branch_id',session('branch'));
-				 $query->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image',DB::raw('SUM(inventory_stock.balance) As stock'));
+				 $query->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'));
 			}
 			if($nonstock == 1){
-				$query->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image');
+				$query->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url');
 			}
 			if($nonstock == 0){
 				$query->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id');
@@ -280,7 +280,7 @@ public function updateProductName($id,$name)
 				 
 			}
 		})
-		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image',DB::raw('SUM(inventory_stock.balance) As stock'))
+		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'))
 		->where('invent.company_id',session('company_id'))
 		->where('invent.status',$status)
 		->where('inventory_price.status_id',1)
