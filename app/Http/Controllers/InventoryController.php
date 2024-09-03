@@ -229,6 +229,7 @@ class InventoryController extends Controller
             'short_description'   => $request->sdescription,
             'details'             => $request->details,
             'brand_id'            => $request->brand,
+            'actual_image_size'   => isset($request->actual_image_size) ? 1 : 0,
         ];
         $productid = $inventory->insert($fields);
         $result = $inventory->ReminderInsert($productid, $request->reminder);
@@ -900,7 +901,8 @@ class InventoryController extends Controller
             'weight_qty'           => $request->weight,
             'short_description'    => $request->sdescription,
             'details'              => $request->details,
-            'brand_id'             => $request->brand
+            'brand_id'             => $request->brand,
+            'actual_image_size'    => isset($request->actual_image_size) ? 1 : 0,
         ];
 
 
