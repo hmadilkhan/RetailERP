@@ -376,7 +376,7 @@
                     <div class="form-group">
                         @php $imageUrl = asset('storage/images/placeholder.jpg') @endphp
                         @if(in_array(session('company_id'), [95, 102, 104]) || Auth::user()->username == 'demoadmin')
-                               @if(file_exists($data[0]->url))
+                               @if(!empty($data[0]->url))
                                   @php $imageUrl = $data[0]->url @endphp
                                @endif
                         @else
