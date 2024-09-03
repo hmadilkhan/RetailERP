@@ -978,7 +978,7 @@
 					"</td>"+
 					"<td>" +
 					"<a href='"+imageUrl+"' data-toggle='lightbox'  data-footer=''>"+
-					"<img width='12' height='12' data-modal='modal-12' src='{{ asset('assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' class='d-inline-block img-circle ' alt=''>"+
+					"<img width='12' height='12' data-modal='modal-12' src='"+imageUrl+"' class='d-inline-block img-circle ' alt=''>"+
 					"</a>"+
 					"</td>"+
 					"<td>"+value.item_code  +"</td>"+
