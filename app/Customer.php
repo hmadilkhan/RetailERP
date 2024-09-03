@@ -8,7 +8,16 @@ use Illuminate\Support\Facades\DB;
 class Customer extends Model
 {
     protected $fillable = [
-        'user_id', 'country_id', 'city_id', 'name', 'mobile', 'dob', 'phone', 'nic', 'address', 'image'
+        'user_id',
+        'country_id',
+        'city_id',
+        'name',
+        'mobile',
+        'dob',
+        'phone',
+        'nic',
+        'address',
+        'image'
     ];
 
     public function insert_customer($items)
@@ -33,15 +42,15 @@ class Customer extends Model
         $webfilter = "";
         if (session("roleId") == 2) {
             $filter .= " and a.user_id IN(SELECT user_id FROM user_authorization where company_id = " . session("company_id") . ")";
-            $webfilter .= " and a.company_id = ".session("company_id");
+            $webfilter .= " and a.company_id = " . session("company_id");
         } else {
             $filter .= " and a.user_id IN(SELECT user_id FROM user_authorization where branch_id = " . session("branch") . ")";
-            $webfilter .= " and a.branch_id = ".session("branch");
+            $webfilter .= " and a.branch_id = " . session("branch");
         }
-		
-		if($id != ""){
-			$filter .= " and a.id = ".$id." ";        
-		}
+
+        if ($id != "") {
+            $filter .= " and a.id = " . $id . " ";
+        }
 
         $customers = DB::select('SELECT (SELECT
   ABS(IFNULL(SUM(total_amount - credit ),0) + 
@@ -72,11 +81,11 @@ FROM
 WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_name, a.name,a.is_mobile_app_user, a.mobile, a.nic, a.credit_limit,a.status_id, b.status_name,a.slug  FROM customers a
             INNER JOIN accessibility_mode b ON b.status_id = a.status_id
             INNER JOIN branch d ON d.branch_id = a.branch_id
-            WHERE a.status_id IN(1,2) ' . $webfilter );
+            WHERE a.status_id IN(1,2) ' . $webfilter);
         return $customers;
     }
-	
-	public function getcustomersForReceipt($id = "",$company,$branch)
+
+    public function getcustomersForReceipt($id = "", $company, $branch)
     {
         $filter = "";
         if (session("roleId") == 2) {
@@ -84,10 +93,10 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
         } else {
             $filter .= " and a.user_id IN(SELECT user_id FROM user_authorization where branch_id = " . $branch . ")";
         }
-		
-		if($id != ""){
-			$filter .= " and a.id = ".$id." ";
-		}
+
+        if ($id != "") {
+            $filter .= " and a.id = " . $id . " ";
+        }
 
         $customers = DB::select('SELECT (SELECT
   ABS(IFNULL(SUM(total_amount - credit ),0) + 
@@ -107,8 +116,8 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             WHERE a.status_id IN(1,2) ' . $filter . 'order by a.id,balance DESC');
         return $customers;
     }
-	
-	public function getcustomerBalances()
+
+    public function getcustomerBalances()
     {
         $filter = "";
         if (session("roleId") == 2) {
@@ -173,19 +182,30 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             SELECT '',a.id as cust_id,'','',0,0, amount as credit,0,b.timestamp,c.receipt_no,'','Sales Return'  FROM  customers a INNER JOIN sales_receipts c  ON c.customer_id = a.id INNER JOIN `sales_return` b  ON b.receipt_id = c.id  WHERE a.slug = '" . $id . "' ");
         return $result;
     }
-	
-	public function LedgerDetailsPDFShow($id,$from,$to)
+
+    public function LedgerDetailsShowInOrderDetails($custId, $receiptId)
     {
-		$filter = "";
-		if($from != "" && $to != "")
-		{
-			$filter = " and DATE(a.created_at) between '$from' and '$to'";
-		}
+        $result = DB::select("SELECT payment_mode,cust_id,a.cust_account_id,b.name,a.total_amount,a.debit,a.credit,a.balance,a.created_at,c.receipt_no,a.received, a.narration FROM customer_account a
+            INNER JOIN customers b on b.id = a.cust_id
+            LEFT JOIN sales_receipts c on c.id = a.receipt_no
+            LEFT JOIN `sales_payment` ON sales_payment.`payment_id` = a.payment_mode_id  
+            where b.id = ? and c.id = ?
+            UNION
+            SELECT '',a.id as cust_id,'','',0,0, amount as credit,0,b.timestamp,c.receipt_no,'','Sales Return'  FROM  customers a INNER JOIN sales_receipts c  ON c.customer_id = a.id INNER JOIN `sales_return` b  ON b.receipt_id = c.id  WHERE a.id = ?", [$custId, $receiptId, $custId]);
+        return $result;
+    }
+
+    public function LedgerDetailsPDFShow($id, $from, $to)
+    {
+        $filter = "";
+        if ($from != "" && $to != "") {
+            $filter = " and DATE(a.created_at) between '$from' and '$to'";
+        }
         $result = DB::select("SELECT payment_mode,cust_id,a.cust_account_id,b.name,a.total_amount,a.debit,a.credit,a.balance,a.created_at,c.receipt_no,a.received, a.narration FROM customer_account a
             INNER JOIN customers b on b.id = a.cust_id
             LEFT JOIN sales_receipts c on c.id = a.receipt_no
             LEFT JOIN `sales_payment` ON sales_payment.`payment_id` = c.`payment_id` 
-            where b.slug = '" . $id . "' ". $filter."
+            where b.slug = '" . $id . "' " . $filter . "
             UNION
             SELECT '',a.id as cust_id,'','',0,0, amount as credit,0,b.timestamp,c.receipt_no,'','Sales Return'  FROM  customers a INNER JOIN sales_receipts c  ON c.customer_id = a.id INNER JOIN `sales_return` b  ON b.receipt_id = c.id  WHERE a.slug = '" . $id . "' ");
         return $result;
@@ -380,9 +400,9 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             $filter .= " a.id";
         }
         // if ($first != "") {
-            // $filter .= " and date(created_at) BETWEEN '" . $first . "' and '" . $second . "'";
+        // $filter .= " and date(created_at) BETWEEN '" . $first . "' and '" . $second . "'";
         // }
-		if ($paymentType != "") {
+        if ($paymentType != "") {
             $mainFilter .= " and a.payment_type = '" . $paymentType . "'";
         }
 
@@ -391,7 +411,7 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
     IFNULL(SUM(total_amount - credit), 0) +
     (SELECT SUM(debit) FROM customer_account
     WHERE cust_id = " . $filter . " AND receipt_no = 0) - (SELECT SUM(credit) FROM customer_account WHERE cust_id = " . $filter . " AND receipt_no = 0)) FROM customer_account WHERE cust_id = " . $filter . "
-  AND receipt_no != 0) as balance FROM customers a WHERE user_id IN (SELECT user_id FROM user_authorization WHERE company_id = " . session('company_id') . ") " . $mainFilter. " order by balance desc");
+  AND receipt_no != 0) as balance FROM customers a WHERE user_id IN (SELECT user_id FROM user_authorization WHERE company_id = " . session('company_id') . ") " . $mainFilter . " order by balance desc");
         return $result;
     }
 
@@ -727,15 +747,15 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
         $result = DB::select('SELECT * FROM customer_supplier_detail WHERE customer_id = ? ', [$cust_id]);
         return $result;
     }
-	
-	public function getcustomerList()
-	{
-		// return session("branch");
+
+    public function getcustomerList()
+    {
+        // return session("branch");
         $result = DB::table('customers')
-				->join('country', 'country.country_id', '=', 'customers.country_id')
-				->join('city', 'city.city_id', '=', 'customers.city_id')
-				->where('branch_id', session("branch"))
-				->paginate(20);
+            ->join('country', 'country.country_id', '=', 'customers.country_id')
+            ->join('city', 'city.city_id', '=', 'customers.city_id')
+            ->where('branch_id', session("branch"))
+            ->paginate(20);
         return $result;
-	}
+    }
 }

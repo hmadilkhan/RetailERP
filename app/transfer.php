@@ -257,7 +257,7 @@ WHERE a.DC_id = ?',[$dcid]);
 
 	public function trf_details($trfid)
 	{
-		$result = DB::select('SELECT a.transfer_item_id, a.product_id, b.image, b.product_name, a.qty AS Transfer_Qty,(SELECT MAX(cost_price) FROM inventory_stock WHERE branch_id = ? AND status_id = 1 AND product_id = a.product_id) AS cp FROM transfer_item_details a
+		$result = DB::select('SELECT a.transfer_item_id, a.product_id, b.image, b.product_name,b.uom_id, a.qty AS Transfer_Qty,(SELECT MAX(cost_price) FROM inventory_stock WHERE branch_id = ? AND status_id = 1 AND product_id = a.product_id) AS cp FROM transfer_item_details a
 			INNER JOIN inventory_general b ON b.id = a.product_id
 			WHERE a.transfer_id = ?',[session('branch'),$trfid]);
         	return $result;
@@ -290,9 +290,11 @@ WHERE a.DC_id = ?',[$dcid]);
 
 	public function get_trf_orders_without_demand()
 	{
-		$result = DB::select('SELECT a.transfer_id, a.transfer_No, a.date, b.branch_name, c.status_name as name FROM transfer_without_demand a
+		$result = DB::select('SELECT a.transfer_id, a.transfer_No, a.date, b.branch_name, c.status_name as name,d.fullname FROM transfer_without_demand a
 		INNER JOIN branch b ON b.branch_id = a.branch_to
-		INNER JOIN transfer_status c ON c.status_id = a.status_id');
+		INNER JOIN transfer_status c ON c.status_id = a.status_id
+		INNER JOIN user_details d ON d.id = a.user_id
+		');
         return $result;
 	}
 

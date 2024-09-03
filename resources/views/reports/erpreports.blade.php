@@ -738,7 +738,7 @@
 		
 		$('#dvshowreport').on('click', function () {
 			handleButtonClick('#dvshowreport', 'Stock Report', [
-				{ field: '#txtstockreport', value: 1, showDateFilter: true,showDepartments:true,showsubdepartments:true }
+				{ field: '#txtstockreport', value: 1, showDateFilter: true,showDepartments:true,showsubdepartments:true,showBranch:true }
 			]);
 		});
 
@@ -803,7 +803,7 @@
 		
 		$('#dvsalesinvoicereport').on('click', function (){
 			handleButtonClick('#dvsalesinvoicereport', 'Sales Invoices', [
-				{ field: '#txtsalesinvoicesreport', value: 1, showDateFilter: true, showType:true, showTerminal:true }
+				{ field: '#txtsalesinvoicesreport', value: 1, showDateFilter: true, showBranch:true , showType:true, showTerminal:true }
 			]);
 		});
 		
@@ -814,7 +814,7 @@
 		});
 		
 		$('#dvbookingorderreport').on('click', function (){
-			handleButtonClick('#dvbookingorderreport', 'Inventory Details with Images', [
+			handleButtonClick('#dvbookingorderreport', 'Booking Order Report', [
 				{ field: '#txtbookingorderreport', value: 1, showDateFilter: true, showPaymentMode:true}
 			]);
 		});
@@ -928,21 +928,23 @@
         }
 		
 		function showterminal() {
-            if($('#txtsaledec').val() == 1 || $('#txtitemsale').val() == 1 || $('#txtsalereturn').val() == 1){
-                $('#dvterminal').css("display", "block");
-            }
-            else{
-                $('#dvterminal').css("display", "none");
-            }
+			$('#dvterminal').css("display", "block");
+            // if($('#txtsaledec').val() == 1 || $('#txtitemsale').val() == 1 || $('#txtsalereturn').val() == 1 || $('#txtsalesinvoicesreport').val() == 1){
+                // $('#dvterminal').css("display", "block");
+            // }
+            // else{
+                // $('#dvterminal').css("display", "none");
+            // }
         }
 		
 		function showbranch() {
-		if($('#txtprofitstandard').val() == 1 || $('#txtprofitdetails').val() == 1 || $('#txtinventory').val() == 1 || $('#txtstockreport').val() == 1 || $('#txtstockadjustment').val() == 1){
-                $('#dvbranch').css("display", "block");
-            }
-            else{
-                $('#dvbranch').css("display", "none");
-            }
+			$('#dvbranch').css("display", "block");
+		// if($('#txtprofitstandard').val() == 1 || $('#txtprofitdetails').val() == 1 || $('#txtinventory').val() == 1 || $('#txtstockreport').val() == 1 || $('#txtstockadjustment').val() == 1 || $('#txtsalesinvoicesreport').val() == 1){
+                // $('#dvbranch').css("display", "block");
+            // }
+            // else{
+                // $('#dvbranch').css("display", "none");
+            // }
         }
 		showdepartments();
 		function showdepartments() {
@@ -1002,8 +1004,5 @@
                 }
             });
         }
-
-
-
     </script>
 @endsection

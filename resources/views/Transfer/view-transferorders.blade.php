@@ -27,6 +27,7 @@
                <th>Transfer From Branch</th>
                <th>Destination To Branch</th>
                <th>Generation Date</th>
+               <th>Created By</th>
                <th>Status</th>
                <th>Action</th>
             </tr>
@@ -38,6 +39,7 @@
                    <td>Head Office</td>
                    <td >{{$value->branch_name}}</td>
                    <td >{{$value->date}}</td>
+                   <td >{{$value->fullname}}</td>
                    <td >
                     @if($value->name == "Draft")
                     <span class="tag tag-default">  {{$value->name }}</span>
@@ -88,7 +90,7 @@
         info: false,
         language: {
           search:'', 
-          searchPlaceholder: 'Search Category',
+          searchPlaceholder: 'Search Transfer Order',
           lengthMenu: '<span></span> _MENU_'
    
         },
@@ -100,7 +102,8 @@
     	}
 
       function view(id){
-        window.location= "/erp/get_trf_details/"+id;
+        // window.location= "/erp/get_trf_details/"+id;
+		window.location="{{url('/get_trf_details')}}/"+id;
       }
 
       function reject(id){

@@ -79,7 +79,7 @@
                             <div class="col-md-4">
                             <div class="form-group">
                               <label class="form-control-label">Enter Transfer Quantity</label>
-                              <input class="form-control" type="number" min="1" name="qty" id="qty" value="0" onchange="add_product()" />
+                              <input class="form-control" type="number" min="1" name="qty" id="qty" value="0"  />
                               <div class="form-control-feedback">
                                 <p>Hit Enter to add products</p>
                               </div>
@@ -188,6 +188,12 @@
         
  
     });
+	
+	$("#qty").keyup(function(event) {
+		if (event.keyCode === 13) {
+			add_product()
+		}
+	});
 
      function getstock(){
        $.ajax({
@@ -440,40 +446,41 @@
           });  
       }
 
-      function shipment(){
-        swal({
-          title: "Confirmation Message?",
-          text: "Do You want to Include Shipment Charges!",
-          type: "warning",
-          showCancelButton: true,
-          confirmButtonClass: "btn-info",
-          confirmButtonText: "Yes plx!",
-          cancelButtonText: "Cancel plx!",
-          closeOnConfirm: false,
-          closeOnCancel: false
-        },
-        function(isConfirm){
-          if(isConfirm){
-
-              swal({
-      title: "Shipment Amount!",
-      text: "Enter Shipment Amount!:",
-      type: "input",
-      showCancelButton: true,
-      closeOnConfirm: false,
-      inputPlaceholder: "Should be greater than 0"
-    }, function (inputValue) {
-      if(inputValue > 0){
-        create_dc(inputValue);
-
-      }
-      else{
-        create_dc(inputValue = 0);
-      }
-    });
-          }
-        });
-      }
+		function shipment(){
+			swal({
+				title: "Confirmation Message?",
+				text: "Do You want to Include Shipment Charges!",
+				type: "warning",
+				showCancelButton: true,
+				confirmButtonClass: "btn-info",
+				confirmButtonText: "Yes plx!",
+				cancelButtonText: "No Thanks!",
+				closeOnConfirm: false,
+				closeOnCancel: false
+			},
+			function(isConfirm){
+				if(isConfirm){
+						swal({
+							title: "Shipment Amount!",
+							text: "Enter Shipment Amount!:",
+							type: "input",
+							showCancelButton: true,
+							closeOnConfirm: false,
+							inputPlaceholder: "Should be greater than 0"
+						}, function (inputValue) {
+						if(inputValue > 0){
+							create_dc(inputValue);
+						}
+						else{
+							create_dc(inputValue = 0);
+						}
+					});
+				}else{
+					console.log("Else calling")
+					create_dc(inputValue = 0);
+				}
+			});
+		}
 
 
       function create_dc(shipmentamt){
@@ -489,7 +496,7 @@
                 if(resp){
                    window.location="{{ url('/trf_list') }}";
                 }
-                                 }
+            }
         });
 
       }

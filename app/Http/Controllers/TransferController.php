@@ -172,7 +172,7 @@ class TransferController extends Controller
     public function challanlist(request $request , transfer $transfer){
 
     	$challans = $transfer->get_challanlist();
-    	 return view('Received-Demands.view-deliveryChallans', compact('challans'));
+    	return view('Received-Demands.view-deliveryChallans', compact('challans'));
     }
 
     public function challandetails(request $request, transfer $transfer){
@@ -516,40 +516,75 @@ class TransferController extends Controller
         ];
 
         $deliverychallan = $transfer->insert_deliverychallan('deliverychallan_general_details',$items);
+		
+		// CREATE GRN FOR RECEIVING STOCK
+		$grncount = $transfer->get_count_GRN();
+        $grncount = $grncount + 1;
+        $items=[
+        	'GRN' => 'GIN-'.$grncount,
+        	'user_id' => session('userid'),
+        	'created_at' => date('Y-m-d'),
+        	'updated_at' => date('Y-m-d'),
+        ];
+
+        $grn_general = $transfer->insert_GRN('purchase_rec_gen',$items);
+		
+		
 
         //get details for loop
           $trfdetails = $transfer->trf_details($request->transferid);
           $count = sizeof($trfdetails);
 
-          for ($i=0; $i < sizeof($trfdetails); $i++) { 
+        for ($i=0; $i < sizeof($trfdetails); $i++) { 
+		
+			//calculation of shipment charges
+			$totalcp = 0;
+			$totalcp =  $totalcp + ($trfdetails[$i]->cp * $trfdetails[$i]->Transfer_Qty);
 
-          
-          
-        
+			$amount = $trfdetails[$i]->cp * $trfdetails[$i]->Transfer_Qty;
+			$amount = ($amount / $totalcp) * 100;
+			$unitcp = ($amount * $request->shipmentamt) / 100;
+			$unitcp = ($unitcp / $trfdetails[$i]->Transfer_Qty);
 
-             //calculation of shipment charges
-
-              $totalcp = 0;
-              $totalcp =  $totalcp + ($trfdetails[$i]->cp * $trfdetails[$i]->Transfer_Qty);
-
-             $amount = $trfdetails[$i]->cp * $trfdetails[$i]->Transfer_Qty;
-             $amount = ($amount / $totalcp) * 100;
-             $unitcp = ($amount * $request->shipmentamt) / 100;
-             $unitcp = ($unitcp / $trfdetails[$i]->Transfer_Qty);
-
-         $items=[
-          'DC_Id' => $deliverychallan,
-          'product_id' =>$trfdetails[$i]->product_id,
-          'deliverd_qty' =>$trfdetails[$i]->Transfer_Qty,
-          'cost_price' => $trfdetails[$i]->cp,
-          'shipment_charges' => $unitcp,
-          ];
-
-
-         $deliveryitems = $transfer->insert_deliverychallan('deliverychallan_item_details',$items);
-          
-        $stockresult =  $this->stock_dedcution($transfer,$trfdetails[$i]->product_id,$trfdetails[$i]->Transfer_Qty);
-          }
+			$items=[
+			  'DC_Id' => $deliverychallan,
+			  'product_id' =>$trfdetails[$i]->product_id,
+			  'deliverd_qty' =>$trfdetails[$i]->Transfer_Qty,
+			  'cost_price' => $trfdetails[$i]->cp,
+			  'shipment_charges' => $unitcp,
+			];
+			  
+			$deliveryitems = $transfer->insert_deliverychallan('deliverychallan_item_details',$items);
+			 
+			$items=[
+				'GRN' => $grn_general,
+				'dc_item_id' => $deliveryitems,
+				'item_id' => $trfdetails[$i]->product_id,
+				'qty_rec' => $trfdetails[$i]->Transfer_Qty,
+				'status_id' => 3,
+				'DC_id' => $deliverychallan,
+			];
+			$grn_items = $transfer->insert_GRN('purchase_rec_dc_details',$items);
+			  
+			$stockresult =  $this->stock_dedcution($transfer,$trfdetails[$i]->product_id,$trfdetails[$i]->Transfer_Qty);
+			
+			$items =[
+				'grn_id' =>$grn_general,
+				'product_id' =>$trfdetails[$i]->product_id,
+				'uom' =>$trfdetails[$i]->uom_id,
+				'cost_price' =>$trfdetails[$i]->cp,
+				'retail_price' =>$trfdetails[$i]->cp,
+				'wholesale_price' =>0,
+				'discount_price' =>0,
+				'qty' => $trfdetails[$i]->Transfer_Qty,
+				'balance' => $trfdetails[$i]->Transfer_Qty,
+				'status_id' =>1,
+				'branch_id' => $request->branchto,
+				'date' => date('Y-m-d'),
+			];
+			$stock = $transfer->insert_stock($items);
+		 
+        }
       return $deliverychallan;
      
     }
@@ -817,17 +852,9 @@ class TransferController extends Controller
             $pdf->Cell(40,7,number_format($value->shipment_charges,2),0,0,'L',1);
             $pdf->Cell(25,7,number_format($value->shipment_charges + $value->cost_price,2),0,1,'L',1);
         }
-
-
         //save file
         $pdf->Output('Delivery Challan'.$details[0]->DC_No.'.pdf', 'I');
 
-
     }
-
-
-
-
-
 }
  
