@@ -804,7 +804,7 @@ class InventoryController extends Controller
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
         $totaladdons = AddonCategory::where("company_id", session("company_id"))->where("mode", "addons")->get();
         $selectedAddons = InventoryAddon::where("product_id", $data[0]->id)->pluck("addon_id");
-        $selectedWebsites = WebsiteProduct::where("inventory_id", $data[0]->id)->pluck("website_id");
+        $selectedWebsites = WebsiteProduct::where("inventory_id", $data[0]->id)->where("status",1)->pluck("website_id");
         $extras = DB::table("extra_products")->whereNull("parent")->get();
         $selectedExtras = DB::table("inventory_extra_products")->where("product_id", $data[0]->id)->pluck("extra_product_id");
 
