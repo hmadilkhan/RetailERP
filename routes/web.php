@@ -459,6 +459,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::get('/get-pos-orders', [OrderController::class, 'getPOSOrders']);
     Route::get('/get-pos-filter-orders', [OrderController::class, 'getPOSFilterOrders']);
+    Route::get('/order-detail/{id}', [OrderController::class, 'orderdetails'])->name("order.details");
     Route::get('/change-order-status/{id}/{status}', [OrderController::class, 'orderStatusChange']);
     Route::get('/sent-to-workshop/{id}/{itemId}', [OrderController::class, 'sentToWorkshop']);
     Route::get('/change-item-status/{id}/{itemId}/{status}', [OrderController::class, 'changeItemStatus']);
