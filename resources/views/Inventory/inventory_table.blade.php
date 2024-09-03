@@ -28,6 +28,19 @@
         </thead>
         <tbody>
             @foreach ($inventories as $inventory)
+              @php
+                  $imageUrl = asset('storage/images/no-image.png');
+
+                  if(in_array(session('company_id'),[95,102,104])){
+                    if(!empty($inventory->product_image_url)){
+                        $imageUrl = $inventory->product_image_url;
+                    }
+                  }else{
+                     if(!empty($inventory->product_image)){
+                        $imageUrl = asset('storage/images/products/'.$inventory->product_image);
+                     }
+                  }
+              @endphp
                 <tr>
                     <td>
                         <div class='rkmd-checkbox checkbox-rotate'>
@@ -40,10 +53,10 @@
                         </div>
                     </td>
                     <td>
-                        <a href="{{ asset('storage/images/products/' . ($inventory->product_image == '' ? '/placeholder.jpg' : $inventory->product_image)) }}"
+                        <a href="{{ $imageUrl }}"
                             data-toggle="lightbox" data-footer=''>
                             <img width="12" height="12" data-modal="modal-12"
-                                src="{{ asset('storage/images/products/' . ($inventory->product_image == '' ? '/placeholder.jpg' : $inventory->product_image)) }}"
+                                src="{{ $imageUrl }}"
                                 class='d-inline-block img-circle ' alt=''>
                         </a>
                     </td>
