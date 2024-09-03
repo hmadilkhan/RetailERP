@@ -957,7 +957,7 @@
 				   columnDeal_btn = "<a href='/inventory/"+value.id+"/variable-products' class='m-r-1' title='Create Variable & Addon Product'><i class='icofont icofont-plus text-success'></i></a>"; 
 				}
 
-                if($.inArray(value.company_id,[95, 102, 104]) || )
+              
 				
 				$("#inventtbl tbody").append(
 					"<tr>"+
