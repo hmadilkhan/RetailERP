@@ -961,7 +961,7 @@
 				}
                 
                 if($.inArray(value.company_id,[95, 102, 104,7]) || $.inArray(GlobalUsername,['demoadmin','fnkhan'])){
-                    alert(GlobalUsername)
+                    
                     if(value.product_image_url != ''){
                         imageUrl = value.product_image_url;
                     }
