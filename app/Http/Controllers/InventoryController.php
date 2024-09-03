@@ -191,7 +191,7 @@ class InventoryController extends Controller
 
                 $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
 
-                $folder = strtolower($company_name->name);
+                $folder = strtolower(str_replace(' ','',$company_name->name));
 
                 $imageData = Cloudinary::upload($image->getRealPath(), [
                                         'public_id'      => strtolower($imageName),
@@ -933,7 +933,7 @@ class InventoryController extends Controller
 
                 $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
 
-                $folder = strtolower($company_name->name);
+                $folder = strtolower(str_replace(' ','',$company_name->name));
 
                 $imageData = Cloudinary::upload($image->getRealPath(), [
                                         'public_id'      => strtolower($imageName),
