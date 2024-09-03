@@ -996,7 +996,7 @@ class InventoryController extends Controller
             DB::table("inventory_download_status")->insert($items);
         }
 
-        WebsiteProduct::where("inventory_id", $request->id)->delete();
+        WebsiteProduct::where("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
         if (!empty($request->website)) {
             foreach ($request->website as $website) {
                 WebsiteProduct::create([
