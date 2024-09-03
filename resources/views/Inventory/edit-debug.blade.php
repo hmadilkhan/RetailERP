@@ -17,7 +17,6 @@
              Back to list</i>
      </a>
   </div>
-<?php print_r(Session::all()) ; ?>
 <section class="panels-wells">
   <form id="inventoryupdate" method="post" class="form-horizontal" enctype="multipart/form-data" action="{{ route('update') }}">
       @method('POST')

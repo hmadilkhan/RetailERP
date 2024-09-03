@@ -950,6 +950,7 @@
 				stock = (stock == "NaN" ? 0.00 : stock);
 				
 				var columnDeal_btn = "";
+                var imageUrl = "{{ asset('storage/images/placeholder.jpg') }}";
 		
 				if(value.is_deal == 1){
 				   columnDeal_btn = "<a href='/inventory/"+value.id+"/deal-products' class='m-r-1' title='Create Deal Product'><i class='icofont icofont-plus text-success'></i></a>";
@@ -957,7 +958,13 @@
 				   columnDeal_btn = "<a href='/inventory/"+value.id+"/variable-products' class='m-r-1' title='Create Variable & Addon Product'><i class='icofont icofont-plus text-success'></i></a>"; 
 				}
 
-              
+                if($.inArray(value.company_id,[95, 102, 104]) || $.inArray(strtolowercas(Auth::user()->username,['demoadmin','fnkhan']))){
+                    imageUrl = value.url;
+                }else{
+                    if(value.product_image != ''){
+                     imageUrl = "{{ asset('storage/images/products/"+value.product_image+"') }}";
+                    }
+                }
 				
 				$("#inventtbl tbody").append(
 					"<tr>"+
@@ -970,7 +977,7 @@
 					"<div class='captions'></div>"+
 					"</td>"+
 					"<td>" +
-					"<a href='{{ asset('assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' data-toggle='lightbox'  data-footer=''>"+
+					"<a href='"+imageUrl+"' data-toggle='lightbox'  data-footer=''>"+
 					"<img width='12' height='12' data-modal='modal-12' src='{{ asset('assets/images/products/')}}"+(value.product_image == "" ? "/placeholder.jpg" : "/"+value.product_image)+"' class='d-inline-block img-circle ' alt=''>"+
 					"</a>"+
 					"</td>"+
