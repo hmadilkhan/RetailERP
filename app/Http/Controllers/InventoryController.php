@@ -780,11 +780,11 @@ class InventoryController extends Controller
         $totaladdons = AddonCategory::where("company_id", session("company_id"))->where("mode", "addons")->where('status', 1)->get();
         // 		$extras = DB::table("extra_products")->whereNull("parent")->get();
 
-        if (Auth::user()->username == 'demoadmin') {
+        // if (Auth::user()->username == 'demoadmin') {
             return view('Inventory.create-debug', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList', 'attributes'));
-        } else {
-            return view('Inventory.create', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList'));
-        }
+        // } else {
+        //     return view('Inventory.create', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList'));
+        // }
     }
 
     /**
@@ -840,12 +840,12 @@ class InventoryController extends Controller
             $references = "";
         }
             
-        if(Auth::user()->username == 'demoadmin'){
+        // if(Auth::user()->username == 'demoadmin'){
             return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
         
-        }else{
-         return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
-        }
+        // }else{
+        //  return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
+        // }
     }
 
 
