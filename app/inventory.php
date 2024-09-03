@@ -869,5 +869,13 @@ public function updateProductName($id,$name)
 		return $main;
 		
 	}
+
+    public function getPreviousImage($id){
+        $result = DB::table('inventory_general')
+                    ->where('company_id',session('company_id'))
+                    ->where('id',$id)
+                    ->first();
+        return $result != null ? $result->image : null;            
+    }
 	
 }

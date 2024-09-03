@@ -915,6 +915,13 @@ class InventoryController extends Controller
 
                 $folder = strtolower(str_replace(' ','',$company_name->name));
 
+                // previous image remove
+                $getPreviousImage = $invent->getPreviousImage($request->id);
+                if($getPreviousImage != null){
+                      Cloudinary::destroy($getPreviousImage);
+                }
+
+
                 $imageData = Cloudinary::upload($image->getRealPath(), [
                                         'public_id'      => strtolower($imageName),
                                         'folder'         => $folder,
