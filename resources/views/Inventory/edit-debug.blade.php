@@ -374,8 +374,18 @@
                   </div>
                   <div class="card-block p-1 p-t-0">
                     <div class="form-group">
-                            <a href="{{ asset('assets/images/'.(empty($data[0]->image) ? 'placeholder.jpg' : 'products/'.$data[0]->image).'') }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
-                                <img id="simg" src="{{ asset('storage/images/'.(empty($data[0]->image) ? 'placeholder.jpg' : 'products/'.$data[0]->image).'') }}" class="thumb-img img-fluid width-100" alt="img">
+                        @php $imageUrl = asset('storage/images/placeholder.jpg') @endphp
+                        @if(in_array(session('company_id'), [95, 102, 104]) || Auth::user()->username == 'demoadmin')
+                               @if(file_exists($data[0]->url))
+                                  @php $imageUrl = $data[0]->url @endphp
+                               @endif
+                        @else
+                               @if(file_exists(public_path('storage/images/products/').$data[0]->image))
+                                  @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
+                               @endif
+                        @endif
+                            <a href="{{ $imageUrl }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
+                                <img id="simg" src="{{ $imageUrl }}" class="thumb-img img-fluid width-100" alt="img">
                                 </a>
                                 <label for="image" class="custom-file">
                                             <input type="file" name="image" id="image" class="custom-file-input">
