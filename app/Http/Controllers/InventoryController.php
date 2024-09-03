@@ -410,7 +410,7 @@ class InventoryController extends Controller
                 $prodGallery = $val;
                 $imageName   = $productid . time() . '-' . $count . '.' . $prodGallery->getClientOriginalExtension();
                 $response    = Image::make($image)
-                    ->save(public_path('assets/images/products/' . $imageName));
+                    ->save(public_path('storage/images/products/' . $imageName));
                 if ($response) {
                     DB::table('inventory_images')->insert([
                         "item_id" => $productid,
@@ -428,7 +428,7 @@ class InventoryController extends Controller
 
             $prodVideoName = $productid . time() . '.' . $prodVideo->getClientOriginalExtension();
 
-            if ($prodVideo->move(public_path('assets/video/products/'), $prodVideoName)) {
+            if ($prodVideo->move(public_path('storage/video/products/'), $prodVideoName)) {
 
                 DB::table('inventory_video')->insert([
                     "inventory_id" => $productid,
@@ -438,26 +438,6 @@ class InventoryController extends Controller
             }
         }
 
-
-        // 		if(!empty($request->addons))
-        // 		{
-        // 			foreach($request->addons as $singleAddon){
-        // 				InventoryAddon::create([
-        // 					"addon_id" => $singleAddon,
-        // 					"product_id" => $productid,
-        // 				]);
-        // 			}
-        // 		}
-
-        // 		if(!empty($request->extraproducts))
-        // 		{
-        // 			foreach($request->extraproducts as $extra){
-        // 				DB::table("inventory_extra_products")->insert([
-        // 					"extra_product_id" => $extra,
-        // 					"product_id" => $productid,
-        // 				]);
-        // 			}
-        // 		}
         $this->sendPushNotification($request->code, $request->name, "store");
         return  redirect()->back();
     }

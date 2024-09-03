@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\File;
 use App\Models\Branch;
 
 class inventory extends Model
@@ -616,6 +617,47 @@ public function updateProductName($id,$name)
 		DB::table('inventory_qty_reminders')->whereIn('inventory_id', $inventid)->delete();
 	   	DB::table('inventory_price')->whereIn('product_id', $inventid)->delete();
 	   	DB::table('website_products')->whereIn('inventory_id', $inventid)->delete();
+           
+        $getImageName = DB::table('inventory_general')->whereIn('id', $inventid)->pluck('image');
+
+        if($getImageName != null){
+            foreach($getImageName as $val){
+                if(in_array(session('company_id'),[95, 102, 104])){
+                       Cloudinary::destroy($val);
+                }else{
+                    if(File::exists(public_path('storage/images/products/').$val)){
+                        File::delete(public_path('storage/images/products/').$val);
+                    }
+                }
+            }
+        }
+
+        $getImageGallery = DB::table('inventory_images')->whereIn('item_id', $inventid)->pluck('image');
+        if($getImageGallery != null){
+            foreach($getImageGallery as $val){
+                if(in_array(session('company_id'),[95, 102, 104])){
+                       Cloudinary::destroy($val);
+                }else{
+                    if(File::exists(public_path('storage/images/products/').$val)){
+                        File::delete(public_path('storage/images/products/').$val);
+                    }
+                }
+            }
+        }
+
+        $getVideo = DB::table('inventory_video')->whereIn('inventory_id', $inventid)->pluck('file');
+        if($getImageGallery != null){
+            foreach($getImageGallery as $val){
+                if(in_array(session('company_id'),[95, 102, 104])){
+                       Cloudinary::destroy($val);
+                }else{
+                    if(File::exists(public_path('storage/video/products/').$val)){
+                        File::delete(public_path('storage/video/products/').$val);
+                    }
+                }
+            }
+        }
+
 	    $result = DB::table('inventory_general')->whereIn('id', $inventid)->delete();
         return $result;
     }
