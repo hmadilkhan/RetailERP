@@ -169,7 +169,7 @@ class InventoryController extends Controller
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
 
-            if (!in_array(session('company_id'), [95, 102, 104])) {
+            if (!in_array(session('company_id'), [95, 102, 104]) && !in_array(Auth::user()->username,['demoadmin','fnkhan'])) {
 
                     $request->validate([
                         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|max:1024',
@@ -178,7 +178,7 @@ class InventoryController extends Controller
 
             $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
 
-            if (in_array(session('company_id'), [95, 102, 104]) || Auth::user()->username == 'demoadmin' ) { //cloudinary image save fro kashee
+            if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
                 $transformationArray = [];
 
                 if (!isset($request->actual_image_size)) {
@@ -891,7 +891,7 @@ class InventoryController extends Controller
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
 
-            if (!in_array(session('company_id'),[95, 102, 104]) || Auth::user()->username != 'demoadmin') {
+            if (!in_array(session('company_id'),[95, 102, 104]) && !in_array(Auth::user()->username,['demoadmin','fnkhan'])) {
 
                     $request->validate([
                         'image' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
@@ -900,7 +900,7 @@ class InventoryController extends Controller
 
             $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
 
-            if (in_array(session('company_id'), [95, 102, 104]) || Auth::user()->username == 'demoadmin' ) { //cloudinary image save fro kashee
+            if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
                 $transformationArray = [];
 
                 if (!isset($request->actual_image_size)) {
