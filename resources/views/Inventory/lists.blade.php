@@ -958,7 +958,7 @@
 				   columnDeal_btn = "<a href='/inventory/"+value.id+"/variable-products' class='m-r-1' title='Create Variable & Addon Product'><i class='icofont icofont-plus text-success'></i></a>"; 
 				}
 
-                if($.inArray(value.company_id,[95, 102, 104]) || $.inArray(strtolower(Auth::user()->username,['demoadmin','fnkhan']))){
+                if($.inArray(value.company_id,[95, 102, 104]) || $.inArray(strtolower(Auth::user()->username),['demoadmin','fnkhan'])){
                     imageUrl = value.url;
                 }else{
                     if(value.product_image != ''){
