@@ -105,7 +105,7 @@
     </table>
     <br>
     <div class="button-group ">
-        <div class="f-left">{!! $inventories->links() !!}</div>
+        <div class="f-left">{!! $inventories->links('pagination::bootstrap-4') !!}</div>
         <div class="text-center f-center ">
             <p class="f-center text-md f-18 mt-3">
                 {!! __('Showing') !!}
