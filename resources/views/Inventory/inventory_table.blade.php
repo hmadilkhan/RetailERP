@@ -34,6 +34,10 @@
                   if(in_array(session('company_id'),[95,102,104])){
                     if(!empty($inventory->product_image_url)){
                         $imageUrl = $inventory->product_image_url;
+                    }else{
+                       if(!empty($inventory->product_image)){
+                        $imageUrl = asset('storage/images/products/'.$inventory->product_image);
+                       }
                     }
                   }else{
                      if(!empty($inventory->product_image)){
