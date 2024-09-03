@@ -1324,7 +1324,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -1341,10 +1341,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -1688,7 +1688,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -1706,10 +1706,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -1790,7 +1790,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -1808,10 +1808,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -1946,7 +1946,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -1964,10 +1964,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -2095,7 +2095,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         //first row
@@ -2107,10 +2107,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -2202,7 +2202,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         //first row
@@ -2214,10 +2214,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -2310,7 +2310,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         //first row
@@ -2322,7 +2322,7 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(135,0,"",0,1,'R');
         $pdf->Image(public_path('storage/images/company/qrcode.png'),260,10,-200);
@@ -2621,7 +2621,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 		
 		 $pdf = new pdfClass();
@@ -2638,10 +2638,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -2801,7 +2801,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
 			->format('png')
-			->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+			->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 		
 		 $pdf = new pdfClass();
@@ -2821,7 +2821,7 @@ class ReportController extends Controller
         $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),10,10,-200);
         $pdf->Cell(90,10,$company[0]->name,0,0,'L');
         $pdf->Cell(75,10,"(".$company[0]->ntn.")",0,1,'L');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -3042,7 +3042,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
 			->format('png')
-			->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+			->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 		
 		$pdf = new pdfClass();
@@ -3061,7 +3061,7 @@ class ReportController extends Controller
         $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),10,10,-200);
         $pdf->Cell(90,10,$company[0]->name,0,0,'L');
         $pdf->Cell(75,10,"(".$company[0]->ntn.")",0,1,'L');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -3345,7 +3345,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -3362,10 +3362,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -3548,7 +3548,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -3565,10 +3565,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -3707,7 +3707,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -3724,10 +3724,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -3837,7 +3837,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -3855,10 +3855,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -3959,7 +3959,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -3977,10 +3977,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -4094,7 +4094,7 @@ class ReportController extends Controller
             $qrcodetext = $report->company_name." | ".$report->ptcl_contact." | ".$report->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 		
 		$pdf = new pdfClass();
@@ -4114,7 +4114,7 @@ class ReportController extends Controller
         $pdf->Image(public_path('storage/images/company/'.$report->logo),12,10,-200);
         $pdf->Cell(105,12,$report->reportname,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
@@ -4503,7 +4503,7 @@ class ReportController extends Controller
 		// Second row
 		$pdf->SetFont('Arial','B',14);
 		$pdf->Cell(35,0,'',0,0);
-		$pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+		$pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
 		$pdf->Cell(110,12,$orders->branchrelation->branch_name,0,0,'L');
 		$pdf->Cell(50,12,$orders->customer->name,0,0,'L');
 		$pdf->Cell(50,0,"",0,1,'R');
@@ -4627,7 +4627,7 @@ class ReportController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('storage/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/","qrcode.png"));
         }
 
         $pdf = new pdfClass();
@@ -4644,10 +4644,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('storage/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
