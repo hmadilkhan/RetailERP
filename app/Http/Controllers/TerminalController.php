@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
-use App\terminal;
+use App\Terminal;
 use App\terminal_print_details;
 use App\userDetails;
 
