@@ -45,7 +45,7 @@
             <div class="media d-flex">
               <div class="media-left media-middle">
                <a href="#">
-                <img class="media-object img-circle" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
+                <img class="media-object img-circle" src="{{ asset('storage/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
               </a>
             </div>
             <div class="media-body p-t-10">
@@ -75,7 +75,7 @@
             <div class="media d-flex">
               <div class="media-left media-middle">
                <a href="#">
-                <img class="media-object img-circle" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
+                <img class="media-object img-circle" src="{{ asset('storage/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
               </a>
             </div>
             <div class="media-body p-t-10">
