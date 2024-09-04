@@ -44,13 +44,16 @@
         .card-resize {
             height: 469px;
         }
+        #projectedSales a:hover {background: #198754;
+               color: #ffffff;
+}
     </style>
 
     <br /><br />
 
     @if ($permission)
         <div class="row">
-            <div class="col-lg-6 col-md-6" style="cursor:pointer;">
+            <div id="projectedSales" class="col-lg-6 col-md-6" style="cursor:pointer;">
                 <div class="card widget-flat">
                     <div class="card-body">
                         <div class="float-end">
