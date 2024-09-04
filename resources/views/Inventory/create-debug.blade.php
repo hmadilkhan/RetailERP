@@ -944,7 +944,7 @@
     if (input.files && input.files.length) {
         // Get the container element where images will be appended
         var container = document.getElementById(containerId);
-        
+
         // Clear any existing images
         container.innerHTML = '';
 
@@ -965,19 +965,20 @@
                 img.src = e.target.result;
                 img.style.maxWidth = '200px'; // Adjust as needed
                 img.style.maxHeight = '200px'; // Adjust as needed
+                img.style.objectFit = 'cover'; // Ensures images fit well
 
                 // Create a remove button
                 var removeButton = document.createElement('button');
                 removeButton.innerHTML = '✖'; // Cross symbol
                 removeButton.style.position = 'absolute';
-                removeButton.style.top = '0';
-                removeButton.style.right = '0';
+                removeButton.style.top = '5px';
+                removeButton.style.right = '5px';
                 removeButton.style.backgroundColor = 'red';
                 removeButton.style.color = 'white';
                 removeButton.style.border = 'none';
                 removeButton.style.borderRadius = '50%';
                 removeButton.style.cursor = 'pointer';
-                removeButton.style.padding = '5px 10px';
+                removeButton.style.padding = '5px 8px';
                 removeButton.style.fontSize = '14px';
 
                 // Add event listener to remove button
@@ -991,10 +992,12 @@
                 container.appendChild(imageContainer);
             }
 
+            // Read the file as a Data URL
             reader.readAsDataURL(file);
         }
     }
 }
+
 
 
 $("#image").change(function() {
