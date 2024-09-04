@@ -239,7 +239,8 @@ WHERE a.DC_id = ?',[$dcid]);
     }
 
   public function get_count_trf(){
-    	$result = DB::select('SELECT COUNT(transfer_id) AS counter FROM transfer_without_demand');
+    	// $result = DB::select('SELECT COUNT(transfer_id) AS counter FROM transfer_without_demand');
+    	$result = DB::select('SELECT MAX(transfer_No) AS counter FROM transfer_without_demand;');
         return $result;
     }
 
