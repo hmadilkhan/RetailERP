@@ -50,7 +50,7 @@
 
     @if ($permission)
         <div class="row">
-            <div class="col-lg-6 col-md-6">
+            <div class="col-lg-6 col-md-6" style="cursor:pointer;">
                 <div class="card widget-flat">
                     <div class="card-body">
                         <div class="float-end">
@@ -66,7 +66,7 @@
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6" onclick="getdetails()">
+            <div class="col-lg-6 col-md-6" onclick="getdetails()" style="cursor:pointer;">
                 <div class="card widget-flat bg-success">
                     <div class="card-body">
                         <div class="float-end">
