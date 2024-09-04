@@ -550,7 +550,7 @@
                    <div class="form-group">
                        <br/>
                         <label for="prodgallery" class="custom-file">
-                            <input type="file" name="prodgallery[]" id="prodgallery" onchange="readURL_multiple(this,'')" class="custom-file-input" multiple>
+                            <input type="file" name="prodgallery[]" id="prodgallery" onchange="readURL_multiple(this,'imgGalleryBox')" class="custom-file-input" multiple>
                             <span class="custom-file-control"></span>
                         </label>
                    </div>
