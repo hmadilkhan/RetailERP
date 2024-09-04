@@ -54,7 +54,7 @@
                 <div class="card widget-flat">
                     <div class="card-body">
                         <div class="float-end">
-                            <i class="mdi mdi-poll-box widget-icon bg-danger rounded-circle text-white"></i>
+                            <i class="mdi mdi-poll widget-icon bg-danger rounded-circle text-white"></i>
                         </div>
                         <h5 class="text-muted fw-normal mt-0" title="Revenue">Projected Sales</h5>
                         <h3 class="mt-3 mb-3">{{ empty($projected) ? 0 : number_format($projected[0]->sales, 2) }}</h3>
