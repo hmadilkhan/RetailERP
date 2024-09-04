@@ -217,10 +217,9 @@ WHERE a.DC_id = ?',[$dcid]);
 
      public function getproducts($branchid)
     {
-        $result = DB::select('SELECT a.id, a.product_name FROM inventory_general a
+        $result = DB::select('SELECT a.id, a.product_name,a.item_code FROM inventory_general a
 		INNER JOIN inventory_stock b ON b.product_id = a.id
 		WHERE b.branch_id = ?
-		GROUP BY a.product_name
 		ORDER BY a.id ASC',[$branchid]);
         return $result;
     }

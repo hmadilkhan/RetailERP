@@ -491,6 +491,10 @@
                                             <td>Payment Method :</td>
                                             <td class="text-end">{{ $orders->payment->payment_mode }}</td>
                                         </tr>
+                                        <tr>
+                                            <td>Sales Person :</td>
+                                            <td class="text-end">{{ (!empty($provider) ? $provider->serviceprovider->provider_name : '-') }}</td>
+                                        </tr>
 
                                     </tbody>
                                 </table>
