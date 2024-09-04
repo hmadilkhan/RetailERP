@@ -81,10 +81,10 @@
                         <div class="float-end">
                             <i class="mdi mdi-currency-usd widget-icon  rounded-circle "></i>
                         </div>
-                        <h5 class="text-light fw-normal mt-0" title="Revenue">All Closed Sales</h5>
-                        <h3 class="mt-3 mb-3 text-white">
+                        <h5 class=" fw-normal mt-0" title="Revenue">All Closed Sales</h5>
+                        <h3 class="mt-3 mb-3">
                             {{ empty($totalSales) ? 0 : number_format($totalSales[0]->TotalSales, 2) }}</h3>
-                        <p class="mb-0 text-light">
+                        <p class="mb-0 ">
                             <span class="badge badge-warning mr-1">
                                 <i class="mdi mdi-arrow-up-bold"></i> Total Sales</span>
                             <span class="text-nowrap">Since last month</span>
