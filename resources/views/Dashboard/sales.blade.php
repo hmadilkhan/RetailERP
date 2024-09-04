@@ -8,12 +8,6 @@
 
 @section('content')
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
-        integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <a href="{{ route('home') }}" class="btn btn-success text-white"><i class="icofont icofont-arrow-left"></i>Back</a>
 
     <div class="row">
@@ -25,13 +19,6 @@
                     <div class="wrapper">
                         <div id="draggablePanelList ">
                             <!-- All Ative and Closed Sales -->
-                            <nav>
-                              <div class="nav nav-tabs mb-4" id="nav-tab" role="tablist">
-                                  <a class="nav-item nav-link active" id="nav-home-tab" data-bs-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true">Home</a>
-                                  <a class="nav-item nav-link" id="nav-profile-tab" data-bs-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false">Profile</a>
-                                  <a class="nav-item nav-link" id="nav-contact-tab" data-bs-toggle="tab" href="#nav-contact" role="tab" aria-controls="nav-contact" aria-selected="false">Contact</a>
-                              </div>
-                          </nav>
                             <div class="row ml-row">
                                 <div class="col-md-12">
                                     <ul class="nav nav-tabs " role="tablist">
