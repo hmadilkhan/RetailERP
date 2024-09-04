@@ -397,6 +397,7 @@
 
 
                     for (var count = 0; count < result.data.length; count++) {
+                        let imageSrc = 
                         $("#tblstock tbody").append(
                             "<tr>" +
                             // if (result.data[count].url != "")) {
@@ -404,8 +405,7 @@
                             // }else{
                             // }
                             "<td class='pro-name' > "+(result.data[count].url != "" ? "<img src="+result.data[count].url+" class='img-fluid d-inline-block' />" : " <img src='{{ asset('storage/images/products/') }}" + (
-                                result.data[count].image == "" ? "/placeholder.jpg" : "/" + result.data[
-                                    count].image) )+ "' class='img-fluid d-inline-block'></td>" +
+                                result.data[count].image == "" ? "/placeholder.jpg" : "/" + result.data[count].image) )+ "' class='img-fluid d-inline-block'></td>" +
                             "<td>" + result.data[count].item_code + "</td>" +
                             "<td><h6>" + result.data[count].product_name +
                             "</h6><span class='text-success f-16'>" + result.data[count].branch_name +
