@@ -546,10 +546,11 @@
                   <h4 >Product Gallery</h4>
                   </div>
                   <div class="card-block p-2 p-t-0">
+                  <div id="imgGalleryBox"></div>
                    <div class="form-group">
                        <br/>
                         <label for="prodgallery" class="custom-file">
-                            <input type="file" name="prodgallery[]" id="prodgallery" class="custom-file-input" multiple>
+                            <input type="file" name="prodgallery[]" id="prodgallery" onchange="readURL_multiple(this,'imgGalleryBox')" class="custom-file-input" multiple>
                             <span class="custom-file-control"></span>
                         </label>
                    </div>
@@ -924,7 +925,7 @@
    };
 
 
-    function readURL(input,id) {
+  function readURL(input,id) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
@@ -935,7 +936,66 @@
 
             reader.readAsDataURL(input.files[0]);
         }
+  }
+
+
+  function readURL(input, containerId) {
+    // Ensure the input element allows multiple files
+    if (input.files && input.files.length) {
+        // Get the container element where images will be appended
+        var container = document.getElementById(containerId);
+        
+        // Clear any existing images
+        container.innerHTML = '';
+
+        // Loop through each selected file
+        for (var i = 0; i < input.files.length; i++) {
+            var file = input.files[i];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                // Create a container for each image and remove button
+                var imageContainer = document.createElement('div');
+                imageContainer.style.position = 'relative';
+                imageContainer.style.display = 'inline-block';
+                imageContainer.style.margin = '10px';
+
+                // Create a new image element
+                var img = document.createElement('img');
+                img.src = e.target.result;
+                img.style.maxWidth = '200px'; // Adjust as needed
+                img.style.maxHeight = '200px'; // Adjust as needed
+
+                // Create a remove button
+                var removeButton = document.createElement('button');
+                removeButton.innerHTML = '✖'; // Cross symbol
+                removeButton.style.position = 'absolute';
+                removeButton.style.top = '0';
+                removeButton.style.right = '0';
+                removeButton.style.backgroundColor = 'red';
+                removeButton.style.color = 'white';
+                removeButton.style.border = 'none';
+                removeButton.style.borderRadius = '50%';
+                removeButton.style.cursor = 'pointer';
+                removeButton.style.padding = '5px 10px';
+                removeButton.style.fontSize = '14px';
+
+                // Add event listener to remove button
+                removeButton.addEventListener('click', function() {
+                    container.removeChild(imageContainer);
+                });
+
+                // Append image and button to the container
+                imageContainer.appendChild(img);
+                imageContainer.appendChild(removeButton);
+                container.appendChild(imageContainer);
+            }
+
+            reader.readAsDataURL(file);
+        }
     }
+}
+
 
 $("#image").change(function() {
   readURL(this,'simg');
