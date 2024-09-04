@@ -87,7 +87,7 @@
                             <div id="tab-closed" style="display:none">
                                 @foreach ($branchesClosedSales as $value)
                                     <div class="col-xl-3 col-lg-3 col-md-3 inner" style="cursor: pointer;"
-                                        onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','open')">
+                                        onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','close')">
                                         <div class="card">
                                             <div class="card-block">
                                                 <div class="media d-flex">
@@ -131,10 +131,12 @@
 
                             </ul>
                         </div>
+
                     </div>
                     <div class=" card-body">
-                        <div class="col-md-12 m-t-4">
-                            <ul class="nav nav-tabs " role="tablist" id="declartionTab">
+                        <div class="col-md-12 overflow-x-auto mt-2" style="overflow-y:hidden;">
+                            <ul class="list-group list-group-horizontal flex-nowrap" id="declartionTab">
+
                             </ul>
                         </div>
                         <div id="div_details"></div>
@@ -212,7 +214,7 @@
                         let terminalDiv = '<li id=' + value.terminal_id + ' onclick="getPartial(' +
                             value.terminal_id +
                             ', 1)" class="list-group-item"> <button id="active" class="btn btn-outline-success" type="button">' +
-                            value.terminal_name + '</button></li>'
+                            value.terminal_name + '</button></li>';
                         $('#terminalTab').append(terminalDiv);
                     });
                 }
@@ -241,19 +243,26 @@
                             terminal_name = value.terminal_name;
                             $('#terminalName').html(value.terminal_name);
                         }
-                        $('#terminalTab').append(
-                            "<li id=" + value.terminal_id + " onclick='getDeclarations(" + value
-                            .terminal_id + ")' class='nav-item m-t-5 f-24'><a id=" + value
-                            .terminal_id + " class='nav-link " + (index == 0 ? "active" : "") +
-                            "'  data-toggle='tab' href='#tab-home' role='tab'>" + value
-                            .terminal_name + "</a></li>"
-                        );
+                        let terminalDiv = '<li id=' + value.terminal_id + ' onclick="getDeclarations(' +
+                            value.terminal_id +
+                            ')" class="list-group-item"> <button id="active" class="btn btn-outline-success" type="button">' +
+                            value.terminal_name + '</button></li>';
+                        $('#terminalTab').append(terminalDiv);
+                        // $('#terminalTab').append(
+                        //     "<li id=" + value.terminal_id + " onclick='getDeclarations(" + value
+                        //     .terminal_id + ")' class='nav-item m-t-5 f-24'><a id=" + value
+                        //     .terminal_id + " class='nav-link " + (index == 0 ? "active" : "") +
+                        //     "'  data-toggle='tab' href='#tab-home' role='tab'>" + value
+                        //     .terminal_name + "</a></li>"
+                        // );
                     });
                 }
             });
         }
 
         function getDeclarations(terminalId) {
+            console.log("declarations");
+
             let date = $("#dateselection").val();
             if (date == "") {
                 alert("Please select date")
