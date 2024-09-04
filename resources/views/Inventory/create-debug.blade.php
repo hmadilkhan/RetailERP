@@ -822,6 +822,55 @@
     -ms-transition: all 0.3s 0s;
     transition: all 0.3s 0s;
 }
+
+
+        /* Product Gallery */
+/* ----------------------------------------- */
+        .image-container {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        .image-container img {
+            max-width: 50px; /* Adjust as needed */
+            max-height: 50px; /* Adjust as needed */
+            object-fit: cover;
+        }
+        .remove-button {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        /* Product Video */
+/* ----------------------------------------- */
+        .video-container {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+        .video-container video {
+            max-width: 300px; /* Adjust as needed */
+            max-height: 300px; /* Adjust as needed */
+            object-fit: cover;
+        }
+        .remove-button {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 5px;
+        }
         
     </style>
   
@@ -1035,22 +1084,24 @@ function updateFileInput() {
 function handleVideo(input, containerId) {
             if (input.files && input.files[0]) {
                 const file = input.files[0];
+                const container = document.getElementById(containerId);
+
+                // Check if the file is an MP4 video
                 if (file.type !== 'video/mp4') {
                     alert('Please select an MP4 video file.');
                     input.value = ''; // Clear the input if the file is not MP4
                     return;
                 }
 
-                const container = document.getElementById(containerId);
-                
                 // Clear previous content
                 container.innerHTML = '';
 
-                const video = document.createElement('productvideo');
+                const video = document.createElement('video');
                 video.src = URL.createObjectURL(file);
                 video.controls = true;
-                video.style.maxWidth = '300px'; // Adjust as needed
-                video.style.maxHeight = '300px'; // Adjust as needed
+                video.autoplay = false; // Prevent autoplay if you want to control playback
+                video.style.maxWidth = '200px'; // Adjust as needed
+                video.style.maxHeight = '150px'; // Adjust as needed
 
                 // Create a remove button
                 const removeButton = document.createElement('button');
@@ -1068,7 +1119,6 @@ function handleVideo(input, containerId) {
                 container.appendChild(removeButton);
             }
         }
-
 
 //   function readURL_multiple(input, containerId) {
 //     // Ensure the input element allows multiple files
