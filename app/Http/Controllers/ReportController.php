@@ -4704,7 +4704,7 @@ class ReportController extends Controller
                 $pdf->AddPage(); // Add a new page
             }
             $imagePath = ($item->url != null ? $item->url : asset('storage/images/products/' . $item->image));
-			return $item->url;
+
             if (file_exists($imagePath) && $item->image != "") {
                 $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1); // Image inside the cell
             } else {
