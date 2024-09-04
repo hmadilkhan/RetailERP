@@ -487,6 +487,10 @@
                                             <td>Contact Number :</td>
                                             <td class="text-end">{{ $orders->customer->mobile }}</td>
                                         </tr>
+                                        <tr>
+                                            <td>Payment Method :</td>
+                                            <td class="text-end">{{ $orders->payment->payment_mode }}</td>
+                                        </tr>
 
                                     </tbody>
                                 </table>
