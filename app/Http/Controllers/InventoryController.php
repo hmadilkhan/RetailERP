@@ -164,8 +164,8 @@ class InventoryController extends Controller
         //         $websiteMode = 0;
         //     }
         // }
-
-        $imageData = '';
+        $imageName = NULL;   
+        $imageData = NULL;
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
 
@@ -219,7 +219,7 @@ class InventoryController extends Controller
             'product_name'        => $request->name,
             'product_description' => $request->description,
             'image'               => $imageName,
-            'url'                 => isset($imageData) ? $imageData : null,
+            'url'                 => $imageData,
             'status'              => 1,
             'created_at'          => date('Y-m-d H:s:i'),
             'updated_at'          => date('Y-m-d H:s:i'),
