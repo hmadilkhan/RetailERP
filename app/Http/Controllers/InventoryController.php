@@ -404,9 +404,9 @@ class InventoryController extends Controller
         }
 
         //Product Gallery		
-        if (!empty($request->prodgallery)) {
+        if (!empty($request->file('prodgallery'))) {
             $count = 1;
-            foreach ($request->prodgallery as $val) {
+            foreach ($request->file('prodgallery') as $val) {
                 $prodGallery = $val;
                 $imageName   = $productid . time() . '-' . $count . '.' . $prodGallery->getClientOriginalExtension();
                 $response    = Image::make($image)
@@ -423,8 +423,8 @@ class InventoryController extends Controller
         }
 
         //Product video
-        if (!empty($request->prodvideo)) {
-            $prodVideo = $request->prodvideo;
+        if (!empty($request->file('prodvideo'))) {
+            $prodVideo = $request->file('prodvideo');
 
             $prodVideoName = $productid . time() . '.' . $prodVideo->getClientOriginalExtension();
 
