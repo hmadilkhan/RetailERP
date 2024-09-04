@@ -33,7 +33,7 @@ class PrintController extends Controller
         PDF::AddPage('P',array(80,200));
         // PDF::setRTL(true);
         // set font
-        // echo public_path('/');exit;
+        // echo asset('/');exit;
         PDF::SetFont('dejavusans', '', 18);
         PDF::writeHTML($returnHTML, true, false, true, false, '');
 
@@ -62,7 +62,7 @@ class PrintController extends Controller
         $pdf->SetFont('Arial','B',10);
 		$pdf->SetTitle($general[0]->receipt_no);
 		
-        $pdf->Image(public_path('assets/images/company/'.$company[0]->logo),28,4,-200);
+        $pdf->Image(asset('storage/images/company/'.$company[0]->logo),28,4,-200);
         $pdf->ln(23);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(80,0,$company[0]->name,0,1,'C');
@@ -251,11 +251,11 @@ class PrintController extends Controller
         $pdf->SetMargins(3, 0,[0,3]);
         $pdf->SetFont('Arial', 'B', 25);
 		
-        $pdf->Cell(90, 0, $pdf->Image(public_path('assets/images/company/'.$company[0]->logo),40,2,-200), 0, 0, 'C');
+        $pdf->Cell(90, 0, $pdf->Image(asset('storage/images/company/'.$company[0]->logo),40,2,-200), 0, 0, 'C');
         $pdf->Cell(2, 0, "", 0, 0, 'C');
-        $pdf->Cell(95, 0, $pdf->Image(public_path('assets/images/company/'.$company[0]->logo),135,2,-200), 0, 0, 'C');
+        $pdf->Cell(95, 0, $pdf->Image(asset('storage/images/company/'.$company[0]->logo),135,2,-200), 0, 0, 'C');
         $pdf->Cell(2, 0, "", 0, 0, 'C');
-        $pdf->Cell(95, 0, $pdf->Image(public_path('assets/images/company/'.$company[0]->logo),226 ,2,-200), 0, 1, 'C');
+        $pdf->Cell(95, 0, $pdf->Image(asset('storage/images/company/'.$company[0]->logo),226 ,2,-200), 0, 1, 'C');
         $pdf->SetFont('Arial', '', 10);
         $pdf->ln(18);
 
