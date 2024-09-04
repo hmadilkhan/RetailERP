@@ -9,7 +9,7 @@ $closingBalance = round($heads[0]->closingBal);
 //$heads[0]->CashReturn + $heads[0]->CardReturn + $heads[0]->ChequeReturn
 ?>
 @if (count($heads) > 0)
-    <div class="col-md-12">
+    <div class="col-md-12 mt-2">
         <div class="text-center text-primary">
             <span class="tag tag-success f-left f-24 m-20" style="margin-left:20px;cursor:pointer;"
                 onclick="cashDetails('{{ Crypt::encrypt(isset($heads[0]->opening_id) ? $heads[0]->opening_id : '') }}','{{ Crypt::encrypt(isset($heads[0]->terminal_id) ? $heads[0]->terminal_id : '') }}','isdb')">Item

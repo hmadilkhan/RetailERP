@@ -131,14 +131,13 @@
 
                             </ul>
                         </div>
-
-                    </div>
-                    <div class=" card-body">
                         <div class="col-md-12 overflow-x-auto mt-2" style="overflow-y:hidden;">
                             <ul class="list-group list-group-horizontal flex-nowrap" id="declartionTab">
 
                             </ul>
                         </div>
+                    </div>
+                    <div class=" card-body">
                         <div id="div_details"></div>
                     </div>
                 </div>
@@ -280,14 +279,19 @@
                         $('#declartionTab').html('');
                         $('#div_details').html('');
                         $.each(result, function(index, value) {
-                            $('#declartionTab').append(
-                                "<li id=" + value.opening_id + " onclick='getLastDayPartial(" +
-                                terminalId + "," + value.opening_id +
-                                ")' class='nav-item m-t-5 f-24'><a id=" + value.opening_id +
-                                " class='nav-link " + (index == 0 ? "active" : "") +
-                                "'  data-toggle='tab' href='#tab-home' role='tab'>D#" + value
-                                .opening_id + "</a></li>"
-                            );
+                            let DeclarationDiv = '<li id=' + value.opening_id + ' onclick="getLastDayPartial(' +
+                            terminalId + "," + value.opening_id +
+                            ')" class="list-group-item"> <button id="active" class="btn btn-outline-success" type="button">' +
+                            "D#"+value.opening_id + '</button></li>';
+                            $('#declartionTab').append(DeclarationDiv);
+                            // $('#declartionTab').append(
+                            //     "<li id=" + value.opening_id + " onclick='getLastDayPartial(" +
+                            //     terminalId + "," + value.opening_id +
+                            //     ")' class='nav-item m-t-5 f-24'><a id=" + value.opening_id +
+                            //     " class='nav-link " + (index == 0 ? "active" : "") +
+                            //     "'  data-toggle='tab' href='#tab-home' role='tab'>D#" + value
+                            //     .opening_id + "</a></li>"
+                            // );
                         });
                     }
                 });

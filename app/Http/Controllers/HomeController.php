@@ -173,7 +173,8 @@ class HomeController extends Controller
         $terminal_name = $users->getTerminalName($request->terminal);
         $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->openingId);
         // return response()->json(["heads" => $heads]);
-        return view('Users.partial', compact('heads', 'terminal_name', 'result'));
+        // return view('Users.partial', compact('heads', 'terminal_name', 'result'));
+        return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));
     }
 
     public function cheques_notify(dashboard $dash)
