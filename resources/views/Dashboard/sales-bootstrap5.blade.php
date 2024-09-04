@@ -43,8 +43,6 @@
                         </div>
                     </div>
                 </div>
-                {{-- </section>
-            <section class="mt-n2"> --}}
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Branches</h5>
@@ -120,8 +118,6 @@
                         </div>
                     </div>
                 </div>
-                {{-- </section>
-            <section> --}}
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Terminals</h5>
@@ -187,7 +183,7 @@
         getTerminals('{{ $branches[0]->branch_id }}');
 
         function getTerminals(branch, status) {
-
+            showLoader("terminalTab");
             $.ajax({
                 url: "{{ url('/getTerminals') }}",
                 type: "POST",
@@ -199,9 +195,7 @@
                 dataType: 'json',
                 async: false,
                 success: function(result) {
-                    $('#terminalTab').html('');
-
-
+                    $('#terminalTab').empty();
                     $.each(result, function(index, value) {
                         if (index == 0) {
                             $('#terminalName').html(value.terminal_name);
@@ -221,7 +215,7 @@
         }
 
         function getCloseTerminals(branch, status) {
-
+            showLoader("terminalTab");
             $.ajax({
                 url: "{{ url('/getTerminals') }}",
                 type: "POST",
@@ -233,9 +227,8 @@
                 dataType: 'json',
                 async: false,
                 success: function(result) {
-                    $('#terminalTab').html('');
+                    $('#terminalTab').empty();
                     $.each(result, function(index, value) {
-
                         if (index == 0) {
                             $('#terminalName').html(value.terminal_name);
                             terminal = value.terminal_id;
@@ -247,21 +240,13 @@
                             ')" class="list-group-item"> <button id="active" class="btn btn-outline-success" type="button">' +
                             value.terminal_name + '</button></li>';
                         $('#terminalTab').append(terminalDiv);
-                        // $('#terminalTab').append(
-                        //     "<li id=" + value.terminal_id + " onclick='getDeclarations(" + value
-                        //     .terminal_id + ")' class='nav-item m-t-5 f-24'><a id=" + value
-                        //     .terminal_id + " class='nav-link " + (index == 0 ? "active" : "") +
-                        //     "'  data-toggle='tab' href='#tab-home' role='tab'>" + value
-                        //     .terminal_name + "</a></li>"
-                        // );
                     });
                 }
             });
         }
 
         function getDeclarations(terminalId) {
-            console.log("declarations");
-
+            showLoader("declartionTab");
             let date = $("#dateselection").val();
             if (date == "") {
                 alert("Please select date")
@@ -276,22 +261,15 @@
                     },
                     dataType: 'json',
                     success: function(result) {
-                        $('#declartionTab').html('');
-                        $('#div_details').html('');
+                        $('#declartionTab').empty();
+                        $('#div_details').empty();
                         $.each(result, function(index, value) {
-                            let DeclarationDiv = '<li id=' + value.opening_id + ' onclick="getLastDayPartial(' +
-                            terminalId + "," + value.opening_id +
-                            ')" class="list-group-item"> <button id="active" class="btn btn-outline-success" type="button">' +
-                            "D#"+value.opening_id + '</button></li>';
+                            let DeclarationDiv = '<li id=' + value.opening_id +
+                                ' onclick="getLastDayPartial(' +
+                                terminalId + "," + value.opening_id +
+                                ')" class="list-group-item"> <button id="active" class="btn btn-outline-success" type="button">' +
+                                "D#" + value.opening_id + '</button></li>';
                             $('#declartionTab').append(DeclarationDiv);
-                            // $('#declartionTab').append(
-                            //     "<li id=" + value.opening_id + " onclick='getLastDayPartial(" +
-                            //     terminalId + "," + value.opening_id +
-                            //     ")' class='nav-item m-t-5 f-24'><a id=" + value.opening_id +
-                            //     " class='nav-link " + (index == 0 ? "active" : "") +
-                            //     "'  data-toggle='tab' href='#tab-home' role='tab'>D#" + value
-                            //     .opening_id + "</a></li>"
-                            // );
                         });
                     }
                 });
@@ -405,12 +383,7 @@
         }
 
         function getPartial(terminal) {
-            $('#div_details').empty();
-            $('#div_details').append(
-                "<div class='position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
-                "<div class='spinner-grow text-success' role='status'>" +
-                "<span class='visually-hidden'>Loading...</span></div></div>"
-            )
+            showLoader("div_details");
             $.ajax({
                 url: "{{ url('/heads') }}",
                 type: "POST",
@@ -430,12 +403,7 @@
         }
 
         function getLastDayPartial(terminal, openingId) {
-            $('#div_details').empty();
-            $('#div_details').append(
-                "<div class='position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
-                "<div class='spinner-grow text-success' role='status'>" +
-                "<span class='visually-hidden'>Loading...</span></div></div>"
-            )
+            showLoader("div_details");
             $.ajax({
                 url: "{{ url('/last-day-heads') }}",
                 type: "POST",
@@ -452,6 +420,15 @@
                     $('#div_details').empty();
                 }
             });
+        }
+
+        function showLoader(divName) {
+            $('#' + divName).empty();
+            $('#' + divName).append(
+                "<div class='position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
+                "<div class='spinner-grow text-success' role='status'>" +
+                "<span class='visually-hidden'>Loading...</span></div></div>"
+            )
         }
     </script>
 @endsection
