@@ -971,15 +971,15 @@
                 var removeButton = document.createElement('button');
                 removeButton.innerHTML = '✖'; // Cross symbol
                 removeButton.style.position = 'absolute';
-                removeButton.style.top = '5px';
-                removeButton.style.right = '5px';
+                removeButton.style.top = '-6px';
+                removeButton.style.right = '-6px';
                 removeButton.style.backgroundColor = 'red';
                 removeButton.style.color = 'white';
                 removeButton.style.border = 'none';
                 removeButton.style.borderRadius = '50%';
                 removeButton.style.cursor = 'pointer';
-                removeButton.style.padding = '5px 8px';
-                removeButton.style.fontSize = '14px';
+                // removeButton.style.padding = '5px 8px';
+                removeButton.style.fontSize = '12px';
 
                 // Add event listener to remove button
                 removeButton.addEventListener('click', function() {
