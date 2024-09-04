@@ -398,7 +398,7 @@
                     
 
                     for (var count = 0; count < result.data.length; count++) {
-                        let imageSrc = result.data[count].url != "" ? result.data[count].url : ( result.data[count].image == "" ? "{{ asset('storage/images/products/') }}/placeholder.jpg" : "/" + "{{ asset('storage/images/products/') }}"+result.data[count].image)
+                        let imageSrc = result.data[count].url != null ? result.data[count].url : ( result.data[count].image == "" ? "{{ asset('storage/images/products/') }}/placeholder.jpg" : "/" + "{{ asset('storage/images/products/') }}"+result.data[count].image)
                         console.log(imageSrc);
                         
                         $("#tblstock tbody").append(
