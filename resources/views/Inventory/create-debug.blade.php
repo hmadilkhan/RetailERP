@@ -564,7 +564,7 @@
                   <div id="videoPreviewBox"></div>                 
                    <div class="form-group">
                        <br/>
-                        <label for="prodvideo" class="custom-file">
+                        <label for="productvideo" class="custom-file">
                             <input type="file" name="prodvideo" id="productvideo" onchange="handleVideo(this,'videoPreviewBox')" class="custom-file-input">
                             <span class="custom-file-control"></span>
                         </label>
