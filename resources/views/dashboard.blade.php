@@ -54,7 +54,7 @@
                 <div class="card widget-flat">
                     <div class="card-body">
                         <div class="float-end">
-                            <i class="mdi mdi-currency-btc widget-icon bg-danger rounded-circle text-white"></i>
+                            <i class="mdi mdi-poll-box widget-icon bg-danger rounded-circle text-white"></i>
                         </div>
                         <h5 class="text-muted fw-normal mt-0" title="Revenue">Projected Sales</h5>
                         <h3 class="mt-3 mb-3">{{ empty($projected) ? 0 : number_format($projected[0]->sales, 2) }}</h3>
@@ -76,7 +76,7 @@
                         <h3 class="mt-3 mb-3 text-white">
                             {{ empty($totalSales) ? 0 : number_format($totalSales[0]->TotalSales, 2) }}</h3>
                         <p class="mb-0 text-light">
-                            <span class="badge badge-info mr-1">
+                            <span class="badge badge-warning mr-1">
                                 <i class="mdi mdi-arrow-up-bold"></i> Total Sales</span>
                             <span class="text-nowrap">Since last month</span>
                         </p>
