@@ -61,7 +61,7 @@
                             data-toggle="lightbox" data-footer=''>
                             <img width="12" height="12" data-modal="modal-12"
                                 src="{{ Custom_Helper::getProductImageUrl($inventory) }}"
-                                class='d-inline-block img-circle ' alt=''>
+                                class='d-inline-block img-circle ' alt='' loading="lazy">
                         </a>
                     </td>
                     <td>{{ $inventory->item_code }}</td>
