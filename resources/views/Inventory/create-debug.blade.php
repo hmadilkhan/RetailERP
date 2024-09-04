@@ -950,13 +950,13 @@
 
         // Loop through each selected file
         for (var i = 0; i < input.files.length; i++) {
-          $("#imgGalleryBox").append('<img src="" id="img'+i+'">');
+          //$("#imgGalleryBox").append('<img src="" id="img'+i+'">');
             var file = input.files[i];
             var reader = new FileReader();
 
             reader.onload = function(e) {
                 // Create a new image element for each file
-                var img = document.createElement('img'+i);
+                var img = document.createElement('img');
                 img.src = e.target.result;
                 img.style.maxWidth = '200px'; // Adjust as needed
                 img.style.margin = '10px';    // Adjust as needed
