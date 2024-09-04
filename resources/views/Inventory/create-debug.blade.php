@@ -73,7 +73,7 @@
                       <label class="form-control-label"><i class="icofont icofont-barcode"></i>&nbsp;Product Code <span class="text-danger">*</span></label>
                       <i id="btngen" class="f-right text-primary" data-toggle="tooltip" data-placement="top" title="Auto Generate"> Auto Generate</i>
                       <input class="form-control" type="text"
-                       name="code" id="code" value="{{ old('code') }}" placeholder="Enter Product Code" onchang="samecode()"/>
+                       name="code" id="code" value="{{ old('code') }}" placeholder="Enter Product Code" onchange="samecode()"/>
                         @if ($errors->has('code'))
                           <div class="form-control-feedback">Required field can not be blank.</div>
                         @endif
