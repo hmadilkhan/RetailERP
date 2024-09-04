@@ -546,10 +546,11 @@
                   <h4 >Product Gallery</h4>
                   </div>
                   <div class="card-block p-2 p-t-0">
+                  <div id="imgGalleryBox"></div>
                    <div class="form-group">
                        <br/>
                         <label for="prodgallery" class="custom-file">
-                            <input type="file" name="prodgallery[]" id="prodgallery" class="custom-file-input" multiple>
+                            <input type="file" name="prodgallery[]" id="prodgallery" onchange="readURL_multiple(this,'')" class="custom-file-input" multiple>
                             <span class="custom-file-control"></span>
                         </label>
                    </div>
@@ -924,7 +925,7 @@
    };
 
 
-    function readURL(input,id) {
+  function readURL(input,id) {
         if (input.files && input.files[0]) {
             var reader = new FileReader();
 
@@ -935,7 +936,39 @@
 
             reader.readAsDataURL(input.files[0]);
         }
+  }
+
+
+  function readURL_multiple(input, containerId) {
+    // Ensure the input element allows multiple files
+    if (input.files && input.files.length) {
+        // Get the container element where images will be appended
+        var container = document.getElementById(containerId);
+        
+        // Clear any existing images
+        container.innerHTML = '';
+
+        // Loop through each selected file
+        for (var i = 0; i < input.files.length; i++) {
+          $("#imgGalleryBox").append('<img src="" id="img'+i+'">');
+            var file = input.files[i];
+            var reader = new FileReader();
+
+            reader.onload = function(e) {
+                // Create a new image element for each file
+                var img = document.createElement('img'+i);
+                img.src = e.target.result;
+                img.style.maxWidth = '200px'; // Adjust as needed
+                img.style.margin = '10px';    // Adjust as needed
+                
+                // Append the image to the container
+                container.appendChild(img);
+            }
+
+            reader.readAsDataURL(file);
+        }
     }
+}
 
 $("#image").change(function() {
   readURL(this,'simg');
