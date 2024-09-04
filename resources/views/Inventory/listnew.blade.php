@@ -98,9 +98,9 @@
                                     data-toggle="modal" data-target="#website-detail-modal"><i
                                         class="icofont icofont-company"></i>&nbsp;Link Website</a>
                                 <div class="dropdown-divider"></div>
-                                <a class="dropdown-item waves-light waves-effect" id="btn_change_brand"
-                                    data-toggle="modal" data-target="#brand-detail-modal"><i
-                                        class="icofont icofont-company"></i>&nbsp;Link Brand</a>
+                                <a class="dropdown-item waves-light waves-effect" id="btn_change_brand" data-toggle="modal"
+                                    data-target="#brand-detail-modal"><i class="icofont icofont-company"></i>&nbsp;Link
+                                    Brand</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item waves-light waves-effect" id="btn_change_tags"
                                     data-toggle="modal" data-target="#tags-detail-modal"><i
@@ -242,7 +242,35 @@
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
-        // $('#loader-modal').modal("show");
+        function initializeLazyLoading() {
+            let lazyImages = [].slice.call(document.querySelectorAll("img.lazy-load"));
+
+            if ("IntersectionObserver" in window) {
+                let lazyImageObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            let lazyImage = entry.target;
+                            lazyImage.src = lazyImage.dataset.src;
+                            lazyImage.classList.remove("lazy-load");
+                            lazyImageObserver.unobserve(lazyImage);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(function(lazyImage) {
+                    lazyImageObserver.observe(lazyImage);
+                });
+            } else {
+                // Fallback for older browsers
+                lazyImages.forEach(function(lazyImage) {
+                    lazyImage.src = lazyImage.dataset.src;
+                });
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener("DOMContentLoaded", initializeLazyLoading);
+
         $(".select2").select2();
         var departments = "";
         var rem_id = [];
@@ -269,6 +297,7 @@
                 type: "GET",
                 success: function(data) {
                     $('#table_data').html(data);
+                    initializeLazyLoading();
                 }
             });
         }
