@@ -235,7 +235,7 @@
                  $("#product").append("<option value=''>Select Product</option>");
                      for(var count=0; count < resp.length; count++){
                       $("#product").append(
-                      "<option value='"+resp[count].id+"'>"+resp[count].product_name+"</option>");
+                      "<option value='"+resp[count].id+"'>"+resp[count].item_code+" | "+resp[count].product_name+"</option>");
                      }
                     }
            }

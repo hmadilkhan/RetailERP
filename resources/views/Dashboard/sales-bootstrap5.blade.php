@@ -43,8 +43,8 @@
                         </div>
                     </div>
                 </div>
-            </section>
-            <section class="mt-n2">
+            {{-- </section>
+            <section class="mt-n2"> --}}
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Branches</h5>
@@ -120,8 +120,8 @@
                         </div>
                     </div>
                 </div>
-            </section>
-            <section>
+            {{-- </section>
+            <section> --}}
                 <div class="card">
                     <div class="card-header">
                         <h5 class="card-title">Terminals</h5>
