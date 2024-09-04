@@ -411,8 +411,8 @@
                     status: activeStatus
                 },
                 beforeSend: function(xhr) {
-                    $('#div_details').append(
-                        "<center><div class='col-xl-2 col-md-4 col-sm-6'>" +
+                  $('#div_details').append(
+                  "<center><div class='col-xl-2 col-md-4 col-sm-6'>" +
                         "<h6 class='sub-title'>Large</h6>" +
                         "<div class='preloader3 loader-block'>" +
                         "<div class='circ1 bg-success loader-lg'></div>" +

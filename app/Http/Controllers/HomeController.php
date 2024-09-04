@@ -151,7 +151,7 @@ class HomeController extends Controller
         $result = $users->getPermission($request->terminal);
         $terminal_name = $users->getTerminalName($request->terminal);
         $heads = $dash->headsDetails($request->terminal);
-        // print_r($heads);exit;
+
         if (session("userid") == 710) {
             if (!empty($heads)) {
                 return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));

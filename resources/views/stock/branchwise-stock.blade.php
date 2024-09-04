@@ -316,7 +316,7 @@
                                     }, function(isConfirm) {
                                         if (isConfirm) {
                                             window.location =
-                                            "{{ url('inventory-list') }}";
+                                                "{{ url('inventory-list') }}";
                                         }
                                     });
                                 }
@@ -395,13 +395,23 @@
                 success: function(result) {
                     $("#headername").html(branchname);
 
+                    if ($.inArray(value.company_id, [95, 102, 104]) != -1 || $.inArray(GlobalUsername, [
+                            'demoadmin', 'fnkhan'
+                        ]) != -1) {
+
+                        if (value.product_image_url != '') {
+                            imageUrl = value.product_image_url;
+                        }
+                    } else {
+                        if (value.product_image != '') {
+                            imageUrl = "storage/images/products/" + value.product_image;
+                        }
+                    }
 
                     for (var count = 0; count < result.data.length; count++) {
                         $("#tblstock tbody").append(
                             "<tr>" +
-                            "<td class='pro-name' > <img src='{{ asset('storage/images/products/') }}" + (
-                                result.data[count].image == "" ? "/placeholder.jpg" : "/" + result.data[
-                                    count].image) + "' class='img-fluid d-inline-block'></td>" +
+                            "<td class='pro-name' > <img src='"+imageUrl+"' class='img-fluid d-inline-block'></td>" +
                             "<td>" + result.data[count].item_code + "</td>" +
                             "<td><h6>" + result.data[count].product_name +
                             "</h6><span class='text-success f-16'>" + result.data[count].branch_name +

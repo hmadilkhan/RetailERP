@@ -43,7 +43,7 @@
                         </div>
                     </div>
                 </div>
-            {{-- </section>
+                {{-- </section>
             <section class="mt-n2"> --}}
                 <div class="card">
                     <div class="card-header">
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                 </div>
-            {{-- </section>
+                {{-- </section>
             <section> --}}
                 <div class="card">
                     <div class="card-header">
@@ -392,6 +392,12 @@
         }
 
         function getPartial(terminal) {
+            $('#div_details').empty();
+            $('#div_details').append(
+                "<div class='position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
+                "<div class='spinner-grow text-success' role='status'>" +
+                "<span class='visually-hidden'>Loading...</span></div></div>"
+            )
             $.ajax({
                 url: "{{ url('/heads') }}",
                 type: "POST",
@@ -400,21 +406,8 @@
                     terminal: terminal,
                     status: activeStatus
                 },
-                beforeSend: function(xhr) {
-                    $('#div_details').append(
-                        "<center><div class='col-xl-2 col-md-4 col-sm-6'>" +
-                        "<h6 class='sub-title'>Large</h6>" +
-                        "<div class='preloader3 loader-block'>" +
-                        "<div class='circ1 bg-success loader-lg'></div>" +
-                        "<div class='circ2 bg-success loader-lg'></div>" +
-                        "<div class='circ3 bg-success loader-lg'></div>" +
-                        "<div class='circ4 bg-success loader-lg'></div>" +
-                        "</div>" +
-                        "</div></center>"
-                    )
-                },
                 success: function(result) {
-                    $('#div_details').html();
+                    $('#div_details').empty();
                     $('#div_details').html(result);
                 },
                 error: function(request, error) {
@@ -424,6 +417,12 @@
         }
 
         function getLastDayPartial(terminal, openingId) {
+            $('#div_details').empty();
+            $('#div_details').append(
+                "<div class='position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
+                "<div class='spinner-grow text-success' role='status'>" +
+                "<span class='visually-hidden'>Loading...</span></div></div>"
+            )
             $.ajax({
                 url: "{{ url('/last-day-heads') }}",
                 type: "POST",
@@ -432,21 +431,8 @@
                     terminal: terminal,
                     openingId: openingId
                 },
-                beforeSend: function(xhr) {
-                    $('#div_details').append(
-                        "<center><div class='col-xl-2 col-md-4 col-sm-6'>" +
-                        "<h6 class='sub-title'>Large</h6>" +
-                        "<div class='preloader3 loader-block'>" +
-                        "<div class='circ1 bg-success loader-lg'></div>" +
-                        "<div class='circ2 bg-success loader-lg'></div>" +
-                        "<div class='circ3 bg-success loader-lg'></div>" +
-                        "<div class='circ4 bg-success loader-lg'></div>" +
-                        "</div>" +
-                        "</div></center>"
-                    )
-                },
                 success: function(result) {
-                    $('#div_details').html();
+                    $('#div_details').empty();
                     $('#div_details').html(result);
                 },
                 error: function(request, error) {

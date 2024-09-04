@@ -32,10 +32,7 @@ $closingBalance = round($heads[0]->closingBal);
             @endif
             <h1 id="terminalName">{{ isset($terminal_name[0]->terminal_name) ? $terminal_name[0]->terminal_name : '' }}
             </h1>
-
-
         </div>
-
     </div>
 
     <div class=" col-xl-12 dashboard-header m-l-10 ">
@@ -73,50 +70,6 @@ $closingBalance = round($heads[0]->closingBal);
                 </div>
             </div>
         </div>
-        {{-- <div class="col-lg-4 col-md-4">
-            <div class="card dashboard-product">
-                <div class="d-flex justify-content-center">
-                    <div id="odate" class="text-primary f-18 f-w-300">
-                        {{ date('d M Y', strtotime($heads[0]->date)) . ' ' . date('h:i A', strtotime($heads[0]->time)) }}
-                    </div>
-                    <div class="label label-info float-start">OPENING {{ $negative }}</div>
-                </div>
-                <h2 id="ob" class="dashboard-total-products">{{ session('currency') }}
-                    {{ number_format(isset($heads[0]->bal) ? $heads[0]->bal : 0, 0) }}</h2>
-                <div class="side-box">
-
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-4">
-            <div class="card dashboard-product">
-                <!-- <span>TOTAL SALES</span> -->
-                <span class="label label-warning">TOTAL SALES</span>
-                <h2 id="totalSales" class="dashboard-total-products">{{ session('currency') }}
-                    {{ number_format($heads[0]->TotalSales + $heads[0]->credit_card_transaction, 0) }}</h2>
-
-                <div class="side-box">
-                    <i class="icon-handbag text-warning-color"></i>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-4">
-            <div class="card dashboard-product" style="border-color: #CD5C5C;">
-                <!--   <span>CLOSING</span> -->
-                <div class="d-flex justify-content-center">
-                    <div id="cdate" class="text-primary f-right f-18 f-w-300">
-                        {{ $heads[0]->closingBal > 0 ? date('d M Y', strtotime($heads[0]->closingDate)) . ' ' . date('h:i A', strtotime($heads[0]->closingTime)) : '' }}
-                    </div>
-                    <div class="label label-danger">CLOSING</div>
-                </div>
-                <h2 id="cb" class="dashboard-total-products">{{ session('currency') }}
-                    {{ number_format($heads[0]->closingBal, 0) }}</h2>
-
-                <div class="side-box">
-                    <!--     <i class="icon-vector text-danger-color"></i> -->
-                </div>
-            </div>
-        </div> --}}
     </div>
 
     <div class=" col-md-12 m-l-10 dashboard-header m-t-5">
@@ -190,7 +143,7 @@ $closingBalance = round($heads[0]->closingBal);
     </div>
 
     <div class="col-md-12">
-        <table class="table table-responsive nowrap m-l-25">
+        <table class="table table-responsive nowrap table-bordered table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
             @if (isset($result[0]->ob) && $result[0]->ob == 1)
                 <tr id="ob">
                     <td style="width:500px">Opening Balance</td>
