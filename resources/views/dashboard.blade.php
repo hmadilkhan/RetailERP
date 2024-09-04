@@ -44,7 +44,7 @@
         .card-resize {
             height: 469px;
         }
-        #projectedSales a:hover {background: #198754;
+        #projectedSales div:hover {background: #198754;
                color: #ffffff;
 }
     </style>
