@@ -271,7 +271,7 @@
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')"> --}}
                                         <img id="myImg{{ $key }}"
-                                            src="{{ getProductImageUrl($item->inventory) }}"
+                                            src="{{ Custom_Helper::getProductImageUrl($item->inventory) }}"
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')">
