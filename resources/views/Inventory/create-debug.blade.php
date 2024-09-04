@@ -561,11 +561,7 @@
                   <h4 >Product Video</h4>
                   </div>
                   <div class="card-block p-2 p-t-0"> 
-                  <div id="videoPreviewBox">
-                        <video controls> 
-                           <source src="video.mp4" type="video/mp4">
-                        </video>            
-                  </div>                 
+                  <div id="videoPreviewBox"></div>                 
                    <div class="form-group">
                        <br/>
                         <label for="productvideo" class="custom-file">
