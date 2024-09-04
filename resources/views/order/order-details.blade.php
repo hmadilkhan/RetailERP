@@ -265,8 +265,13 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-start border-bottom pb-3">
                                     <div class="me-4">
-                                        <img id="myImg{{ $key }}"
+                                        {{-- <img id="myImg{{ $key }}"
                                             src="{{ asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg')) }}"
+                                            alt="{{ $item->note }}"
+                                            class="avatar-lg rounded productImage{{ $key }} "
+                                            style="cursor:pointer;" onclick="showImage('{{ $key }}')"> --}}
+                                        <img id="myImg{{ $key }}"
+                                            src="{{ getProductImageUrl($item->inventory) }}"
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')">

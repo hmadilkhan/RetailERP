@@ -28,7 +28,7 @@
         </thead>
         <tbody>
             @foreach ($inventories as $inventory)
-              @php
+              {{-- @php
                   $imageUrl = asset('storage/images/no-image.png');
 
                   if(in_array(session('company_id'),[95,102,104])){
@@ -44,7 +44,7 @@
                         $imageUrl = asset('storage/images/products/'.$inventory->product_image);
                      }
                   }
-              @endphp
+              @endphp --}}
                 <tr>
                     <td>
                         <div class='rkmd-checkbox checkbox-rotate'>
@@ -57,10 +57,10 @@
                         </div>
                     </td>
                     <td>
-                        <a href="{{ $imageUrl }}"
+                        <a href="{{ getProductImageUrl($inventory) }}"
                             data-toggle="lightbox" data-footer=''>
                             <img width="12" height="12" data-modal="modal-12"
-                                src="{{ $imageUrl }}"
+                                src="{{ getProductImageUrl($inventory) }}"
                                 class='d-inline-block img-circle ' alt=''>
                         </a>
                     </td>
