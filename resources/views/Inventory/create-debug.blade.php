@@ -560,11 +560,12 @@
                   <div class="card-header">
                   <h4 >Product Video</h4>
                   </div>
-                  <div class="card-block p-2 p-t-0">                  
+                  <div class="card-block p-2 p-t-0"> 
+                  <div id="videoPreviewBox"></div>                 
                    <div class="form-group">
                        <br/>
                         <label for="prodvideo" class="custom-file">
-                            <input type="file" name="prodvideo" id="prodvideo" class="custom-file-input">
+                            <input type="file" name="prodvideo" id="productvideo" onchange="handleVideo(this,'videoPreviewBox')" class="custom-file-input">
                             <span class="custom-file-control"></span>
                         </label>
                    </div>
@@ -939,64 +940,190 @@
   }
 
 
-  function readURL_multiple(input, containerId) {
-    // Ensure the input element allows multiple files
+  let filesArray = []; // Array to keep track of the files
+
+function readURL_multiple(input, containerId) {
     if (input.files && input.files.length) {
         // Get the container element where images will be appended
-        var container = document.getElementById(containerId);
+        const container = document.getElementById(containerId);
 
-        // Clear any existing images
-        container.innerHTML = '';
+        // Update the filesArray with new files
+        for (let i = 0; i < input.files.length; i++) {
+            filesArray.push(input.files[i]);
+        }
 
-        // Loop through each selected file
-        for (var i = 0; i < input.files.length; i++) {
-            var file = input.files[i];
-            var reader = new FileReader();
+        // Loop through the filesArray and display images
+        updateImageContainer(container);
+        
+        // Reset the file input to allow selecting the same files again
+        input.value = '';
+    }
+}
 
-            reader.onload = function(e) {
-                // Create a container for each image and remove button
-                var imageContainer = document.createElement('div');
-                imageContainer.style.position = 'relative';
-                imageContainer.style.display = 'inline-block';
-                imageContainer.style.margin = '10px';
+function updateImageContainer(container) {
+    // Clear the container
+    container.innerHTML = '';
 
-                // Create a new image element
-                var img = document.createElement('img');
-                img.src = e.target.result;
-                img.style.maxWidth = '50px'; // Adjust as needed
-                img.style.maxHeight = '50px'; // Adjust as needed
-                img.style.objectFit = 'cover'; // Ensures images fit well
+    filesArray.forEach((file, index) => {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // Create a container for each image and remove button
+            const imageContainer = document.createElement('div');
+            imageContainer.style.position = 'relative';
+            imageContainer.style.display = 'inline-block';
+            imageContainer.style.margin = '10px';
+
+            // Create a new image element
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxWidth = '50px'; // Adjust as needed
+            img.style.maxHeight = '50px'; // Adjust as needed
+            img.style.objectFit = 'cover'; // Ensures images fit well
+
+            // Create a remove button
+            const removeButton = document.createElement('button');
+            removeButton.innerHTML = '✖'; // Cross symbol
+            removeButton.style.position = 'absolute';
+            removeButton.style.top = '-6px';
+            removeButton.style.right = '-6px';
+            removeButton.style.backgroundColor = 'red';
+            removeButton.style.color = 'white';
+            removeButton.style.border = 'none';
+            removeButton.style.borderRadius = '50%';
+            removeButton.style.cursor = 'pointer';
+            removeButton.style.fontSize = '12px';
+
+            // Add event listener to remove button
+            removeButton.addEventListener('click', function() {
+                // Remove the file from filesArray
+                filesArray.splice(index, 1);
+                // Remove the image from the container
+                container.removeChild(imageContainer);
+                // Update the file input to reflect changes
+                updateFileInput();
+            });
+
+            // Append image and button to the container
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(removeButton);
+            container.appendChild(imageContainer);
+        }
+
+        // Read the file as a Data URL
+        reader.readAsDataURL(file);
+    });
+}
+
+function updateFileInput() {
+    // Get the file input element
+    const fileInput = document.getElementById('prodgallery');
+    // Create a new DataTransfer object
+    const dataTransfer = new DataTransfer();
+    
+    // Add files to the DataTransfer object
+    filesArray.forEach(file => dataTransfer.items.add(file));
+
+    // Update the file input's files property
+    fileInput.files = dataTransfer.files;
+}  
+
+function handleVideo(input, containerId) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                if (file.type !== 'video/mp4') {
+                    alert('Please select an MP4 video file.');
+                    input.value = ''; // Clear the input if the file is not MP4
+                    return;
+                }
+
+                const container = document.getElementById(containerId);
+                
+                // Clear previous content
+                container.innerHTML = '';
+
+                const video = document.createElement('productvideo');
+                video.src = URL.createObjectURL(file);
+                video.controls = true;
+                video.style.maxWidth = '300px'; // Adjust as needed
+                video.style.maxHeight = '300px'; // Adjust as needed
 
                 // Create a remove button
-                var removeButton = document.createElement('button');
+                const removeButton = document.createElement('button');
                 removeButton.innerHTML = '✖'; // Cross symbol
-                removeButton.style.position = 'absolute';
-                removeButton.style.top = '-6px';
-                removeButton.style.right = '-6px';
-                removeButton.style.backgroundColor = 'red';
-                removeButton.style.color = 'white';
-                removeButton.style.border = 'none';
-                removeButton.style.borderRadius = '50%';
-                removeButton.style.cursor = 'pointer';
-                // removeButton.style.padding = '5px 8px';
-                removeButton.style.fontSize = '12px';
+                removeButton.classList.add('remove-button');
 
                 // Add event listener to remove button
                 removeButton.addEventListener('click', function() {
-                    container.removeChild(imageContainer);
+                    container.innerHTML = ''; // Clear the container
+                    input.value = ''; // Clear the file input
                 });
 
-                // Append image and button to the container
-                imageContainer.appendChild(img);
-                imageContainer.appendChild(removeButton);
-                container.appendChild(imageContainer);
+                // Append video and button to the container
+                container.appendChild(video);
+                container.appendChild(removeButton);
             }
-
-            // Read the file as a Data URL
-            reader.readAsDataURL(file);
         }
-    }
-}
+
+
+//   function readURL_multiple(input, containerId) {
+//     // Ensure the input element allows multiple files
+//     if (input.files && input.files.length) {
+//         // Get the container element where images will be appended
+//         var container = document.getElementById(containerId);
+
+//         // Clear any existing images
+//         container.innerHTML = '';
+
+//         // Loop through each selected file
+//         for (var i = 0; i < input.files.length; i++) {
+//             var file = input.files[i];
+//             var reader = new FileReader();
+
+//             reader.onload = function(e) {
+//                 // Create a container for each image and remove button
+//                 var imageContainer = document.createElement('div');
+//                 imageContainer.style.position = 'relative';
+//                 imageContainer.style.display = 'inline-block';
+//                 imageContainer.style.margin = '10px';
+
+//                 // Create a new image element
+//                 var img = document.createElement('img');
+//                 img.src = e.target.result;
+//                 img.style.maxWidth = '50px'; // Adjust as needed
+//                 img.style.maxHeight = '50px'; // Adjust as needed
+//                 img.style.objectFit = 'cover'; // Ensures images fit well
+
+//                 // Create a remove button
+//                 var removeButton = document.createElement('button');
+//                 removeButton.innerHTML = '✖'; // Cross symbol
+//                 removeButton.style.position = 'absolute';
+//                 removeButton.style.top = '-6px';
+//                 removeButton.style.right = '-6px';
+//                 removeButton.style.backgroundColor = 'red';
+//                 removeButton.style.color = 'white';
+//                 removeButton.style.border = 'none';
+//                 removeButton.style.borderRadius = '50%';
+//                 removeButton.style.cursor = 'pointer';
+//                 // removeButton.style.padding = '5px 8px';
+//                 removeButton.style.fontSize = '12px';
+
+//                 // Add event listener to remove button
+//                 removeButton.addEventListener('click', function() {
+//                     container.removeChild(imageContainer);
+//                 });
+
+//                 // Append image and button to the container
+//                 imageContainer.appendChild(img);
+//                 imageContainer.appendChild(removeButton);
+//                 container.appendChild(imageContainer);
+//             }
+
+//             // Read the file as a Data URL
+//             reader.readAsDataURL(file);
+//         }
+//     }
+// }
 
 
 
