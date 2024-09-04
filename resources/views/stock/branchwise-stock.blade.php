@@ -40,7 +40,7 @@
                                              <div class="media d-flex">
                                                              <div class="media-left media-middle">
                                                    <a >
-                                                      <img class="media-object img-circle" src="{{ asset('assets/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
+                                                      <img class="media-object img-circle" src="{{ asset('storage/images/branch/'.(!empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg').'') }}" width="50" height="50">
                                                    </a>
                                                 </div>
                                                 <div class="media-body">
@@ -364,7 +364,7 @@
                           for(var count =0;count < result.data.length; count++){
                             $("#tblstock tbody").append(
                               "<tr>" +
-                                "<td class='pro-name' > <img src='{{ asset('assets/images/products/')}}"+(result.data[count].image == "" ? "/placeholder.jpg" : "/"+result.data[count].image)+"' class='img-fluid d-inline-block'></td>" +
+                                "<td class='pro-name' > <img src='{{ asset('storage/images/products/')}}"+(result.data[count].image == "" ? "/placeholder.jpg" : "/"+result.data[count].image)+"' class='img-fluid d-inline-block'></td>" +
                                 "<td>"+result.data[count].item_code+"</td>" +
                                 "<td><h6>"+result.data[count].product_name+"</h6><span class='text-success f-16'>"+result.data[count].branch_name+"</span></td>" +
                                
