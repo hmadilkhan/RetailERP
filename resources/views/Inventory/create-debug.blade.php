@@ -963,8 +963,8 @@
                 // Create a new image element
                 var img = document.createElement('img');
                 img.src = e.target.result;
-                img.style.maxWidth = '200px'; // Adjust as needed
-                img.style.maxHeight = '200px'; // Adjust as needed
+                img.style.maxWidth = '50px'; // Adjust as needed
+                img.style.maxHeight = '50px'; // Adjust as needed
                 img.style.objectFit = 'cover'; // Ensures images fit well
 
                 // Create a remove button
