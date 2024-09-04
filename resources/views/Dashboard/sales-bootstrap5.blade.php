@@ -43,7 +43,7 @@
                         </div>
                     </div>
                 </div>
-            {{-- </section>
+                {{-- </section>
             <section class="mt-n2"> --}}
                 <div class="card">
                     <div class="card-header">
@@ -87,7 +87,7 @@
                             <div id="tab-closed" style="display:none">
                                 @foreach ($branchesClosedSales as $value)
                                     <div class="col-xl-3 col-lg-3 col-md-3 inner" style="cursor: pointer;"
-                                        onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','open')">
+                                        onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','close')">
                                         <div class="card">
                                             <div class="card-block">
                                                 <div class="media d-flex">
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                 </div>
-            {{-- </section>
+                {{-- </section>
             <section> --}}
                 <div class="card">
                     <div class="card-header">
@@ -131,10 +131,12 @@
 
                             </ul>
                         </div>
+
                     </div>
                     <div class=" card-body">
-                        <div class="col-md-12 m-t-4">
-                            <ul class="nav nav-tabs " role="tablist" id="declartionTab">
+                        <div class="col-md-12 overflow-x-auto mt-2" style="overflow-y:hidden;">
+                            <ul class="list-group list-group-horizontal flex-nowrap" id="declartionTab">
+
                             </ul>
                         </div>
                         <div id="div_details"></div>
@@ -212,7 +214,7 @@
                         let terminalDiv = '<li id=' + value.terminal_id + ' onclick="getPartial(' +
                             value.terminal_id +
                             ', 1)" class="list-group-item"> <button id="active" class="btn btn-outline-success" type="button">' +
-                            value.terminal_name + '</button></li>'
+                            value.terminal_name + '</button></li>';
                         $('#terminalTab').append(terminalDiv);
                     });
                 }
@@ -241,19 +243,26 @@
                             terminal_name = value.terminal_name;
                             $('#terminalName').html(value.terminal_name);
                         }
-                        $('#terminalTab').append(
-                            "<li id=" + value.terminal_id + " onclick='getDeclarations(" + value
-                            .terminal_id + ")' class='nav-item m-t-5 f-24'><a id=" + value
-                            .terminal_id + " class='nav-link " + (index == 0 ? "active" : "") +
-                            "'  data-toggle='tab' href='#tab-home' role='tab'>" + value
-                            .terminal_name + "</a></li>"
-                        );
+                        let terminalDiv = '<li id=' + value.terminal_id + ' onclick="getDeclarations(' +
+                            value.terminal_id +
+                            ')" class="list-group-item"> <button id="active" class="btn btn-outline-success" type="button">' +
+                            value.terminal_name + '</button></li>';
+                        $('#terminalTab').append(terminalDiv);
+                        // $('#terminalTab').append(
+                        //     "<li id=" + value.terminal_id + " onclick='getDeclarations(" + value
+                        //     .terminal_id + ")' class='nav-item m-t-5 f-24'><a id=" + value
+                        //     .terminal_id + " class='nav-link " + (index == 0 ? "active" : "") +
+                        //     "'  data-toggle='tab' href='#tab-home' role='tab'>" + value
+                        //     .terminal_name + "</a></li>"
+                        // );
                     });
                 }
             });
         }
 
         function getDeclarations(terminalId) {
+            console.log("declarations");
+
             let date = $("#dateselection").val();
             if (date == "") {
                 alert("Please select date")
@@ -392,6 +401,12 @@
         }
 
         function getPartial(terminal) {
+            $('#div_details').empty();
+            $('#div_details').append(
+                "<div class='position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
+                "<div class='spinner-grow text-success' role='status'>" +
+                "<span class='visually-hidden'>Loading...</span></div></div>"
+            )
             $.ajax({
                 url: "{{ url('/heads') }}",
                 type: "POST",
@@ -400,21 +415,8 @@
                     terminal: terminal,
                     status: activeStatus
                 },
-                beforeSend: function(xhr) {
-                    $('#div_details').append(
-                        "<center><div class='col-xl-2 col-md-4 col-sm-6'>" +
-                        "<h6 class='sub-title'>Large</h6>" +
-                        "<div class='preloader3 loader-block'>" +
-                        "<div class='circ1 bg-success loader-lg'></div>" +
-                        "<div class='circ2 bg-success loader-lg'></div>" +
-                        "<div class='circ3 bg-success loader-lg'></div>" +
-                        "<div class='circ4 bg-success loader-lg'></div>" +
-                        "</div>" +
-                        "</div></center>"
-                    )
-                },
                 success: function(result) {
-                    $('#div_details').html();
+                    $('#div_details').empty();
                     $('#div_details').html(result);
                 },
                 error: function(request, error) {
@@ -424,6 +426,12 @@
         }
 
         function getLastDayPartial(terminal, openingId) {
+            $('#div_details').empty();
+            $('#div_details').append(
+                "<div class='position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
+                "<div class='spinner-grow text-success' role='status'>" +
+                "<span class='visually-hidden'>Loading...</span></div></div>"
+            )
             $.ajax({
                 url: "{{ url('/last-day-heads') }}",
                 type: "POST",
@@ -432,21 +440,8 @@
                     terminal: terminal,
                     openingId: openingId
                 },
-                beforeSend: function(xhr) {
-                    $('#div_details').append(
-                        "<center><div class='col-xl-2 col-md-4 col-sm-6'>" +
-                        "<h6 class='sub-title'>Large</h6>" +
-                        "<div class='preloader3 loader-block'>" +
-                        "<div class='circ1 bg-success loader-lg'></div>" +
-                        "<div class='circ2 bg-success loader-lg'></div>" +
-                        "<div class='circ3 bg-success loader-lg'></div>" +
-                        "<div class='circ4 bg-success loader-lg'></div>" +
-                        "</div>" +
-                        "</div></center>"
-                    )
-                },
                 success: function(result) {
-                    $('#div_details').html();
+                    $('#div_details').empty();
                     $('#div_details').html(result);
                 },
                 error: function(request, error) {

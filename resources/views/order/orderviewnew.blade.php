@@ -14,16 +14,6 @@
 		<div class="card-header">
          <h3 class="">Order Details</h3>
 		 <hr/>
-     
-			<!--<div id="customernumber" class="col-md-2">
-              <div class="rkmd-checkbox checkbox-rotate checkbox-ripple">
-                  <label class="input-checkbox checkbox-primary">
-                  <input type="checkbox" id="checkbox">
-                  <span class="checkbox"></span>
-				  </label>
-                  <div class="captions">Search Delivery Orders </div>
-              </div>
-              </div>-->
 			<div class="checkbox">
 				<label><input type="checkbox" id="checkbox"> Search Delivery Orders</label>
 			</div>

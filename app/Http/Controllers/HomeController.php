@@ -102,11 +102,8 @@ class HomeController extends Controller
         $branchesClosedSales = $dash->branchesForClosedSales();
         // $permission = $user->getPermission(1);
         $permission = [];
-
-        if (session("userid") == 710) {
-            return view('Dashboard.sales-bootstrap5', compact('branches', 'permission', 'branchesClosedSales'));
-        }
-        return view('Dashboard.sales', compact('branches', 'permission', 'branchesClosedSales'));
+        // return view('Dashboard.sales', compact('branches', 'permission', 'branchesClosedSales')); // Previous Code
+        return view('Dashboard.sales-bootstrap5', compact('branches', 'permission', 'branchesClosedSales'));
     }
 
     public function salesHead(Request $request, dashboard $dash)
@@ -151,22 +148,22 @@ class HomeController extends Controller
         $result = $users->getPermission($request->terminal);
         $terminal_name = $users->getTerminalName($request->terminal);
         $heads = $dash->headsDetails($request->terminal);
-        // print_r($heads);exit;
-        if (session("userid") == 710) {
-            if (!empty($heads)) {
-                return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));
-            } else {
-                $heads = $dash->lastDayDetails($request->terminal);
-                return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));
-            }
+
+        // if (session("userid") == 710) {
+        if (!empty($heads)) {
+            return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));
         } else {
-            if (!empty($heads)) {
-                return view('Users.partial', compact('heads', 'terminal_name', 'result'));
-            } else {
-                $heads = $dash->lastDayDetails($request->terminal);
-                return view('Users.partial', compact('heads', 'terminal_name', 'result'));
-            }
+            $heads = $dash->lastDayDetails($request->terminal);
+            return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));
         }
+        // } else {
+        //     if (!empty($heads)) {
+        //         return view('Users.partial', compact('heads', 'terminal_name', 'result'));
+        //     } else {
+        //         $heads = $dash->lastDayDetails($request->terminal);
+        //         return view('Users.partial', compact('heads', 'terminal_name', 'result'));
+        //     }
+        // }
     }
 
     public function lastDayHeads(Request $request, dashboard $dash, userDetails $users)
