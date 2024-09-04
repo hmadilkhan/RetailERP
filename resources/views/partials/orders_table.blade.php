@@ -97,7 +97,7 @@
             @endif
          </tbody>
      </table>
-     {{$orders->links()}}
+     {{$orders->links('pagination::bootstrap-4')}}
 </div>
 <script type="text/javascript">
 // var orders_total = "{{--$totalorders[0]->totalorders--}}";
