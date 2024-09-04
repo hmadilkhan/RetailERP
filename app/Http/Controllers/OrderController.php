@@ -76,9 +76,10 @@ class OrderController extends Controller
         $received = CustomerAccount::where("receipt_no", $request->id)->sum('received');
         $statuses = OrderStatus::all();
         $ledgerDetails = $customer->LedgerDetailsShowInOrderDetails($orders->customer->id, $request->id);
+        $provider = ServiceProviderOrders::with("serviceprovider")->where("receipt_id",$orders->id)->first();
         // return $ledgerDetails;
         // return $orders;
-        return view("order.order-details", compact("orders", "received", "statuses", "ledgerDetails"));
+        return view("order.order-details", compact("orders", "received", "statuses", "ledgerDetails","provider"));
     }
 
     public function orderStatusChange(Request $request, order $order)
