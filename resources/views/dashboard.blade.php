@@ -47,33 +47,38 @@
     </style>
 
     <br /><br />
-    <div class="card widget-flat">
-        <div class="card-body">
-            <div class="float-end">
-                <i class="mdi mdi-currency-btc widget-icon bg-danger rounded-circle text-white"></i>
+    <div class="row">
+        <div class="col-lg-6 col-md-6">
+            <div class="card widget-flat">
+                <div class="card-body">
+                    <div class="float-end">
+                        <i class="mdi mdi-currency-btc widget-icon bg-danger rounded-circle text-white"></i>
+                    </div>
+                    <h5 class="text-muted fw-normal mt-0" title="Revenue">Revenue</h5>
+                    <h3 class="mt-3 mb-3">$6,254</h3>
+                    <p class="mb-0 text-muted">
+                        <span class="badge badge-info mr-1">
+                            <i class="mdi mdi-arrow-down-bold"></i> 7.00%</span>
+                        <span class="text-nowrap">Since last month</span>
+                    </p>
+                </div>
             </div>
-            <h5 class="text-muted fw-normal mt-0" title="Revenue">Revenue</h5>
-            <h3 class="mt-3 mb-3">$6,254</h3>
-            <p class="mb-0 text-muted">
-                <span class="badge badge-info mr-1">
-                    <i class="mdi mdi-arrow-down-bold"></i> 7.00%</span>
-                <span class="text-nowrap">Since last month</span>
-            </p>
         </div>
-    </div>
-
-    <div class="card widget-flat bg-primary">
-        <div class="card-body">
-            <div class="float-end">
-                <i class="mdi mdi-currency-usd widget-icon bg-primary-lighten rounded-circle text-primary"></i>
+        <div class="col-lg-6 col-md-6">
+            <div class="card widget-flat bg-primary">
+                <div class="card-body">
+                    <div class="float-end">
+                        <i class="mdi mdi-currency-usd widget-icon bg-primary-lighten rounded-circle text-primary"></i>
+                    </div>
+                    <h5 class="text-light fw-normal mt-0" title="Revenue">Revenue</h5>
+                    <h3 class="mt-3 mb-3 text-white">$10,245</h3>
+                    <p class="mb-0 text-light">
+                        <span class="badge badge-info mr-1">
+                            <i class="mdi mdi-arrow-up-bold"></i> 17.26%</span>
+                        <span class="text-nowrap">Since last month</span>
+                    </p>
+                </div>
             </div>
-            <h5 class="text-light fw-normal mt-0" title="Revenue">Revenue</h5>
-            <h3 class="mt-3 mb-3 text-white">$10,245</h3>
-            <p class="mb-0 text-light">
-                <span class="badge badge-info mr-1">
-                    <i class="mdi mdi-arrow-up-bold"></i> 17.26%</span>
-                <span class="text-nowrap">Since last month</span>
-            </p>
         </div>
     </div>
     @if ($permission)
