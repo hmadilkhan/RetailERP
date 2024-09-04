@@ -4726,7 +4726,7 @@ class ReportController extends Controller
             // Line break after each row
             $pdf->Ln();
         }
-		$pdf->Output('Item_Sale_Database.pdf', 'I');
+		$pdf->Output('Inventory Details Report.pdf', 'I');
 	}
 
 }
