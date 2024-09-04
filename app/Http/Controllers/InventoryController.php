@@ -61,7 +61,7 @@ class InventoryController extends Controller
         $tagsList   = Tag::getTags();
 
         //if(session("company_id") == 7 or session("company_id") ==  102 && Auth::user()->username != 'demoadmin'){ //or session("company_id") ==  102 session("company_id") == 7 or
-        if (in_array(session("company_id"), [7, 102]) && !in_array(Auth::user()->username, ['demoadmin', 'fnkhan'])) {
+        if (in_array(session("company_id"), [7, 102]) && !in_array(Auth::user()->username, ['demoadmin'])) {
             $inventories = $inventory->getInventoryForPagewiseByFilters();
             $inventory = '';
             if (in_array(Auth::user()->username, ['fn1009'])) {
