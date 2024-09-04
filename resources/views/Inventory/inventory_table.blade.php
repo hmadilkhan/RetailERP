@@ -57,7 +57,7 @@
                         </div>
                     </td>
                     <td>
-                        <a href="{{ getProductImageUrl($inventory) }}"
+                        <a href="{{ Custom_Helper::getProductImageUrl($inventory) }}"
                             data-toggle="lightbox" data-footer=''>
                             <img width="12" height="12" data-modal="modal-12"
                                 src="{{ getProductImageUrl($inventory) }}"

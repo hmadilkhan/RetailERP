@@ -200,7 +200,7 @@ class custom_helper
         }
     }
 
-    function getProductImageUrl($inventory)
+    public static function getProductImageUrl($inventory)
     {
         $imageUrl = asset('storage/images/no-image.png');
 
