@@ -939,7 +939,7 @@
   }
 
 
-  function readURL_multiple(input, containerId) {
+  function readURL(input, containerId) {
     // Ensure the input element allows multiple files
     if (input.files && input.files.length) {
         // Get the container element where images will be appended
@@ -950,25 +950,52 @@
 
         // Loop through each selected file
         for (var i = 0; i < input.files.length; i++) {
-          //$("#imgGalleryBox").append('<img src="" id="img'+i+'">');
             var file = input.files[i];
             var reader = new FileReader();
 
             reader.onload = function(e) {
-                // Create a new image element for each file
+                // Create a container for each image and remove button
+                var imageContainer = document.createElement('div');
+                imageContainer.style.position = 'relative';
+                imageContainer.style.display = 'inline-block';
+                imageContainer.style.margin = '10px';
+
+                // Create a new image element
                 var img = document.createElement('img');
                 img.src = e.target.result;
                 img.style.maxWidth = '200px'; // Adjust as needed
-                img.style.margin = '10px';    // Adjust as needed
-                
-                // Append the image to the container
-                container.appendChild(img);
+                img.style.maxHeight = '200px'; // Adjust as needed
+
+                // Create a remove button
+                var removeButton = document.createElement('button');
+                removeButton.innerHTML = '✖'; // Cross symbol
+                removeButton.style.position = 'absolute';
+                removeButton.style.top = '0';
+                removeButton.style.right = '0';
+                removeButton.style.backgroundColor = 'red';
+                removeButton.style.color = 'white';
+                removeButton.style.border = 'none';
+                removeButton.style.borderRadius = '50%';
+                removeButton.style.cursor = 'pointer';
+                removeButton.style.padding = '5px 10px';
+                removeButton.style.fontSize = '14px';
+
+                // Add event listener to remove button
+                removeButton.addEventListener('click', function() {
+                    container.removeChild(imageContainer);
+                });
+
+                // Append image and button to the container
+                imageContainer.appendChild(img);
+                imageContainer.appendChild(removeButton);
+                container.appendChild(imageContainer);
             }
 
             reader.readAsDataURL(file);
         }
     }
 }
+
 
 $("#image").change(function() {
   readURL(this,'simg');
