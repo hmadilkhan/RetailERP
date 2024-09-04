@@ -4703,8 +4703,8 @@ class ReportController extends Controller
 			 if ($pdf->GetY() + 40 > 270) { // 40 for the height of the image and row, 270 is a margin (adjust as needed)
                 $pdf->AddPage(); // Add a new page
             }
-            $imagePath = asset('storage/images/products/' . $item->image);
-			
+            $imagePath = ($item->url != null ? $item->url : asset('storage/images/products/' . $item->image));
+
             if (file_exists($imagePath) && $item->image != "") {
                 $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1); // Image inside the cell
             } else {
@@ -4726,7 +4726,7 @@ class ReportController extends Controller
             // Line break after each row
             $pdf->Ln();
         }
-		$pdf->Output('Item_Sale_Database.pdf', 'I');
+		$pdf->Output('Inventory Details Report.pdf', 'I');
 	}
 
 }

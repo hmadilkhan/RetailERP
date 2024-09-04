@@ -213,7 +213,7 @@ class report extends Model
 		if($subdepartment != ""){
 			$filter = " and a.sub_department_id = ".$subdepartment;
 		}
-        $result = DB::select('SELECT a.id, a.product_name, a.item_code,b.department_name,c.sub_depart_name ,a.image  FROM inventory_general a  INNER JOIN inventory_department b ON b.department_id = a.department_id INNER JOIN inventory_sub_department c ON c.sub_department_id = a.sub_department_id WHERE a.status = 1 AND a.company_id = ? and a.department_id = ? '.$filter.' GROUP BY a.id',[session("company_id"),$department]);
+        $result = DB::select('SELECT a.id, a.product_name, a.item_code,b.department_name,c.sub_depart_name ,a.image,a.url  FROM inventory_general a  INNER JOIN inventory_department b ON b.department_id = a.department_id INNER JOIN inventory_sub_department c ON c.sub_department_id = a.sub_department_id WHERE a.status = 1 AND a.company_id = ? and a.department_id = ? '.$filter.' GROUP BY a.id',[session("company_id"),$department]);
         return $result;
     }
 
