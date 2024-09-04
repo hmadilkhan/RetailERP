@@ -102,6 +102,10 @@ class HomeController extends Controller
         $branchesClosedSales = $dash->branchesForClosedSales();
         // $permission = $user->getPermission(1);
         $permission = [];
+
+        if (session("userid") == 710) {
+            return view('Dashboard.sales-bootstrap5',compact('branches','permission','branchesClosedSales'));
+        }
         return view('Dashboard.sales',compact('branches','permission','branchesClosedSales'));
     }
 
