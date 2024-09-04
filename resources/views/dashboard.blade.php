@@ -54,27 +54,27 @@
                     <div class="float-end">
                         <i class="mdi mdi-currency-btc widget-icon bg-danger rounded-circle text-white"></i>
                     </div>
-                    <h5 class="text-muted fw-normal mt-0" title="Revenue">Revenue</h5>
-                    <h3 class="mt-3 mb-3">$6,254</h3>
+                    <h5 class="text-muted fw-normal mt-0" title="Revenue">Projected Sales</h5>
+                    <h3 class="mt-3 mb-3">{{ empty($projected) ? 0 : number_format($projected[0]->sales, 2) }}</h3>
                     <p class="mb-0 text-muted">
                         <span class="badge badge-info mr-1">
-                            <i class="mdi mdi-arrow-down-bold"></i> 7.00%</span>
+                            <i class="mdi mdi-arrow-down-bold"></i> Projected Sales</span>
                         <span class="text-nowrap">Since last month</span>
                     </p>
                 </div>
             </div>
         </div>
         <div class="col-lg-6 col-md-6">
-            <div class="card widget-flat bg-primary">
+            <div class="card widget-flat bg-success">
                 <div class="card-body">
                     <div class="float-end">
-                        <i class="mdi mdi-currency-usd widget-icon bg-primary-lighten rounded-circle text-primary"></i>
+                        <i class="mdi mdi-currency-usd widget-icon bg-success-lighten rounded-circle text-success"></i>
                     </div>
-                    <h5 class="text-light fw-normal mt-0" title="Revenue">Revenue</h5>
-                    <h3 class="mt-3 mb-3 text-white">$10,245</h3>
+                    <h5 class="text-light fw-normal mt-0" title="Revenue">All Closed Sales</h5>
+                    <h3 class="mt-3 mb-3 text-white">{{ empty($totalSales) ? 0 : number_format($totalSales[0]->TotalSales, 2) }}</h3>
                     <p class="mb-0 text-light">
                         <span class="badge badge-info mr-1">
-                            <i class="mdi mdi-arrow-up-bold"></i> 17.26%</span>
+                            <i class="mdi mdi-arrow-up-bold"></i> Total Sales</span>
                         <span class="text-nowrap">Since last month</span>
                     </p>
                 </div>
