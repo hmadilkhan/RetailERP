@@ -939,7 +939,7 @@
   }
 
 
-  function readURL(input, containerId) {
+  function readURL_multiple(input, containerId) {
     // Ensure the input element allows multiple files
     if (input.files && input.files.length) {
         // Get the container element where images will be appended
