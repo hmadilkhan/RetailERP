@@ -220,7 +220,7 @@ class AdminCompanyController extends Controller
             'ptcl_contact' => $request->company_ptcl,
             'mobile_contact' => $request->company_mobile,
             'logo' => (!empty($request->vdimg) ? $request->prev_logo : $file["fileName"]),
-            'pos_background' => (!empty($request->posbgimg) ? $request->pos_bg_logo :  $bgFile["fileName"]),
+            'pos_background' => (!empty($request->posbgimg) ? $bgFile["fileName"] : $request->pos_bg_logo),
             'updated_at' => date('Y-m-d H:i:s'),
             'package_id' => $request->package,
         ];

@@ -160,7 +160,7 @@
               </div>
                       <div class="col-md-4" >
                             <a href="#">
-                                <img id="vdpimg" src="{{ asset('assets/images/company/'.$company[0]->logo) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                                <img id="vdpimg" src="{{ asset('storage/images/company/'.$company[0]->logo) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                                 </a>
                              <div class="form-group {{ $errors->has('vdimg') ? 'has-danger' : '' }} ">
 
@@ -178,7 +178,7 @@
 
                           <div class="col-md-4" >
                               <a href="#">
-                                  <img id="posbimg" src="{{ asset('assets/images/pos-background/'.$company[0]->pos_background) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                                  <img id="posbimg" src="{{ asset('storage/images/pos-background/'.$company[0]->pos_background) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                               </a>
                               <div class="form-group {{ $errors->has('posbgimg') ? 'has-danger' : '' }} ">
                                   <label for="posbgimg" class="form-control-label">POS Background</label>
