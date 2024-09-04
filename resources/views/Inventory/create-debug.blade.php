@@ -826,15 +826,15 @@
 
         /* Product Gallery */
 /* ----------------------------------------- */
-        .image-container {
+        /* .image-container {
             position: relative;
             display: inline-block;
             margin: 10px;
         }
         .image-container img {
             max-width: 50px; /* Adjust as needed */
-            max-height: 50px; /* Adjust as needed */
-            object-fit: cover;
+       /*     max-height: 50px; /* Adjust as needed */
+       /*     object-fit: cover;
         }
         .remove-button {
             position: absolute;
@@ -846,18 +846,18 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: 12px;
-        }
+        } */
         /* Product Video */
 /* ----------------------------------------- */
-        .video-container {
+        /*.video-container {
             position: relative;
             display: inline-block;
             margin: 10px;
         }
         .video-container video {
             max-width: 300px; /* Adjust as needed */
-            max-height: 300px; /* Adjust as needed */
-            object-fit: cover;
+       /*     max-height: 300px; /* Adjust as needed */
+       /*     object-fit: cover;
         }
         .remove-button {
             position: absolute;
@@ -871,7 +871,7 @@
             font-size: 12px;
             padding: 5px;
         }
-        
+        */
     </style>
   
   @endif
@@ -1100,8 +1100,8 @@ function handleVideo(input, containerId) {
                 video.src = URL.createObjectURL(file);
                 video.controls = true;
                 video.autoplay = false; // Prevent autoplay if you want to control playback
-                video.style.maxWidth = '200px'; // Adjust as needed
-                video.style.maxHeight = '150px'; // Adjust as needed
+                video.style.maxWidth =  '300px'; // Adjust as needed
+                video.style.maxHeight = '300px'; // Adjust as needed
 
                 // Create a remove button
                 const removeButton = document.createElement('button');
