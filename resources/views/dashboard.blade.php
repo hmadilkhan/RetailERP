@@ -47,42 +47,44 @@
     </style>
 
     <br /><br />
-    <div class="row">
-        <div class="col-lg-6 col-md-6">
-            <div class="card widget-flat">
-                <div class="card-body">
-                    <div class="float-end">
-                        <i class="mdi mdi-currency-btc widget-icon bg-danger rounded-circle text-white"></i>
-                    </div>
-                    <h5 class="text-muted fw-normal mt-0" title="Revenue">Projected Sales</h5>
-                    <h3 class="mt-3 mb-3">{{ empty($projected) ? 0 : number_format($projected[0]->sales, 2) }}</h3>
-                    <p class="mb-0 text-muted">
-                        <span class="badge badge-info mr-1">
-                            <i class="mdi mdi-arrow-down-bold"></i> Projected Sales</span>
-                        <span class="text-nowrap">Since last month</span>
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 col-md-6">
-            <div class="card widget-flat bg-success">
-                <div class="card-body">
-                    <div class="float-end">
-                        <i class="mdi mdi-currency-usd widget-icon bg-success-lighten rounded-circle text-success"></i>
-                    </div>
-                    <h5 class="text-light fw-normal mt-0" title="Revenue">All Closed Sales</h5>
-                    <h3 class="mt-3 mb-3 text-white">{{ empty($totalSales) ? 0 : number_format($totalSales[0]->TotalSales, 2) }}</h3>
-                    <p class="mb-0 text-light">
-                        <span class="badge badge-info mr-1">
-                            <i class="mdi mdi-arrow-up-bold"></i> Total Sales</span>
-                        <span class="text-nowrap">Since last month</span>
-                    </p>
-                </div>
-            </div>
-        </div>
-    </div>
+
     @if ($permission)
-        <div class="row dashboard-header mt-15">
+        <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="card widget-flat">
+                    <div class="card-body">
+                        <div class="float-end">
+                            <i class="mdi mdi-currency-btc widget-icon bg-danger rounded-circle text-white"></i>
+                        </div>
+                        <h5 class="text-muted fw-normal mt-0" title="Revenue">Projected Sales</h5>
+                        <h3 class="mt-3 mb-3">{{ empty($projected) ? 0 : number_format($projected[0]->sales, 2) }}</h3>
+                        <p class="mb-0 text-muted">
+                            <span class="badge badge-info mr-1">
+                                <i class="mdi mdi-arrow-down-bold"></i> Projected Sales</span>
+                            <span class="text-nowrap">Since last month</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6" onclick="getdetails()">
+                <div class="card widget-flat bg-success">
+                    <div class="card-body">
+                        <div class="float-end">
+                            <i class="mdi mdi-currency-usd widget-icon bg-success-lighten rounded-circle text-success"></i>
+                        </div>
+                        <h5 class="text-light fw-normal mt-0" title="Revenue">All Closed Sales</h5>
+                        <h3 class="mt-3 mb-3 text-white">
+                            {{ empty($totalSales) ? 0 : number_format($totalSales[0]->TotalSales, 2) }}</h3>
+                        <p class="mb-0 text-light">
+                            <span class="badge badge-info mr-1">
+                                <i class="mdi mdi-arrow-up-bold"></i> Total Sales</span>
+                            <span class="text-nowrap">Since last month</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- <div class="row dashboard-header mt-15">
             <div class="col-lg-6 col-md-6" onclick="" style="cursor:pointer;">
                 <div class="card dashboard-product">
                     <span class="f-20">Projected Sales</span>
@@ -107,7 +109,7 @@
                 </div>
             </div>
 
-        </div>
+        </div> --}}
 
         <script type="text/javascript">
             var data1 = [
