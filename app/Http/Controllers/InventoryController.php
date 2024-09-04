@@ -428,7 +428,7 @@ class InventoryController extends Controller
 
             $prodVideoName = $productid . time() . '.' . $prodVideo->getClientOriginalExtension();
 
-            if ($prodVideo->move(public_path('storage/video/products/'), $prodVideoName)) {
+            if ($prodVideo->move(public_path('storage/video/products'), $prodVideoName)) {
 
                 DB::table('inventory_video')->insert([
                     "inventory_id" => $productid,
