@@ -99,7 +99,7 @@
                   <div class="card-block p-2 p-t-0">
               <div class="form-group">
                        <a href="<javascript:void(0)">
-                        <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img">
+                        <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" height="200px" class="thumb-img img-fluid width-100" alt="img">
                         </a>
 
                     <div class="form-group {{ $errors->has('departImage') ? 'has-danger' : '' }} m-t-10">
