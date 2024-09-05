@@ -273,7 +273,7 @@
                                 }
                             } else {
                                 if (result[count].product_image != '') {
-                                    imageUrl = "storage/images/products/" + result[count].product_image;
+                                    imageUrl = "{{ asset('storage/images/products/')}}" + result[count].product_image;
                                 }
                             }
 
