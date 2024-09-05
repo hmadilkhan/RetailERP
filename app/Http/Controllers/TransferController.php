@@ -947,9 +947,11 @@ class TransferController extends Controller
       $pdf->Cell(45, 7, $value->item_status, 0, 1, 'L', 1);
     }
 
-    $pdf->ln(6);
+    
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(150, 7, "Receiving Signature", 0, 0, 'L', 1);
+    $pdf->Cell(190, 7, "", 'B', 0, 'R', 1);
+    $pdf->ln(30);
+    $pdf->Cell(150, 7, "", 0, 0, 'L', 1);
     $pdf->Cell(40, 7, "Receiving Signature", 'B', 0, 'R', 1);
 
     //save file
