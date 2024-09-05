@@ -596,7 +596,7 @@ class TransferController extends Controller
     $company = $vendor->company(session('company_id'));
 
     //queries
-    $details = $transfer->tranferOrder_details($request->id);
+    $details = $transfer->directTransferOrderReport($request->id);
 
     if (!file_exists(asset('storage/images/company/qrcode.png'))) {
       $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
