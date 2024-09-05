@@ -94,12 +94,12 @@
      <div class="col-md-4">
      <div class="card">
                   <div class="card-header">
-                  <h4 for="image">Product Image</h4>
+                  <h4 for="departImage">Image</h4>
                   </div>
                   <div class="card-block p-2 p-t-0">
               <div class="form-group">
                        <a href="<javascript:void(0)">
-                        <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" height="200px" class="thumb-img img-fluid width-100" alt="img">
+                        <img id="previewDepartImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" width="180px" class="thumb-img" alt="img">
                         </a>
 
                     <div class="form-group {{ $errors->has('departImage') ? 'has-danger' : '' }} m-t-10">
@@ -108,10 +108,7 @@
                                     <label for="departImage" class="custom-file">
                                                 <input type="file" name="departImage" id="departImage" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
-                                            </label>
-                                    <div>       
-                                      <label class="pointer"><input type="checkbox" name="actual_image_size" class=""> You want to actual image size</label>
-                                    </div>         
+                                            </label>         
                                 @if ($errors->has('departImage'))
                                     <span class="form-control-feedback">{{ $errors->first('departImage') }}</span>
                                 @endif
@@ -121,7 +118,29 @@
               </div>    
               </div> 
         @if($websites)    
-        
+        <div class="card">
+                  <div class="card-header">
+                     <h4 for="bannerImage">Banner</h4>
+                  </div>
+                  <div class="card-block p-2 p-t-0">
+                    <div class="form-group">
+                       <a href="<javascript:void(0)">
+                        <img id="previewDepartBannerImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
+                        </a>
+
+                    <div class="form-group {{ $errors->has('bannerImage') ? 'has-danger' : '' }} m-t-10">
+                                    <label for="bannerImage" class="custom-file">
+                                                <input type="file" name="bannerImage" id="bannerImage" class="custom-file-input">
+                                                <span class="custom-file-control"></span>
+                                            </label>         
+                                @if ($errors->has('bannerImage'))
+                                    <span class="form-control-feedback">{{ $errors->first('bannerImage') }}</span>
+                                @endif
+                              </div> 
+                
+              </div> 
+            </div>    
+          </div> 
         @endif
      </div> <!-- col-md-4 close image portion -->
    </div>
@@ -415,8 +434,12 @@
 		}
 	}
 
-	$("#image").change(function() {
-	  readURL(this,'simg');
+	$("#departImage").change(function() {
+	   readURL(this,'previewDepartImage');
+	});
+
+  $("#bannerImage").change(function() {
+	   readURL(this,'previewDepartBannerImage');
 	});
 
 	$("#departImage_md").change(function() {
