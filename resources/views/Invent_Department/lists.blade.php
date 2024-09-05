@@ -28,7 +28,7 @@
                   <div class="form-group">
                       <label class="form-control-label">Department Code:</label>
                       <input class="form-control" type="text" name="code" id="code" placeholder='Department Code'/>
-                      <div class="form-control-feedback text-danger" id="dptcode_alert"></div>
+                      <span class="form-control-feedback text-danger" id="dptcode_alert"></span>
                   </div>
                 </div>
             
@@ -37,7 +37,7 @@
                       <label class="form-control-label">Department Name</label>
                       <input class="form-control" type="text"
                        name="deptname" id="deptname" placeholder='Department Name'/>
-                       <div class="form-control-feedback text-danger" id="deptname_alert"></div>
+                       <span class="form-control-feedback text-danger" id="deptname_alert"></span>
                   </div>
                 </div>   
                 
@@ -59,22 +59,40 @@
               </div>
            </div>   
            @if($websites)
+            <hr/>
+
             <div class="form-group">
                 <label for="showProductWebsite">
                     <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
                     Show Product on Website
                 </label>
             </div>
-
-    		    <div class="col-lg-3 col-md-3">
+           <div class="row">  
+    		       <div class="col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Show website department name</label>
                       <input class="form-control" type="text"
                        name="webdeptname" id="webdeptname" placeholder='Show website department name'/>
-                       <div class="form-control-feedback text-danger" id="webdeptname_alert"></div>
+                       <span class="form-control-feedback text-danger" id="webdeptname_alert"></span>
                   </div>
                 </div>  
-
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label class="form-control-label">Meta Title</label>
+                      <input class="form-control" type="text"
+                       name="metatitle" id="metatitle" placeholder='Meta Title'/>
+                       <span class="form-control-feedback text-danger" id="metatitle_alert"></span>
+                  </div>
+                </div> 
+                <div class="col-md-4">
+                  <div class="form-group">
+                      <label class="form-control-label">Meta Description</label>
+                      <textarea class="form-control" rows="5"
+                       name="metadescript" id="metadescript" placeholder='Meta Description'></textarea>
+                       <span class="form-control-feedback text-danger" id="metadescript_alert"></span>
+                  </div>
+                </div>                                   
+            </div> 
            @endif
          </div>
        </div>
@@ -838,6 +856,29 @@ function insertsubdepart(){
 
 }
 
+$("#showProductWebsite").on('click',function(){
+    
+    if($(this).is(':checked')==true){
+        if($("#website-module").hasClass('d-none')){
+            $("#website-module").removeClass('d-none');
+        }
+        
+        
+        if($("#banner-image").hasClass('d-none')){
+            $("#banner-image").removeClass('d-none');
+        }        
+    }
+    
+    if($(this).is(':checked')==false){
+        if(!$("#website-module").hasClass('d-none')){
+            $("#website-module").addClass('d-none');
+        }
+        
+        if(!$("#banner-image").hasClass('d-none')){
+            $("#banner-image").addClass('d-none');
+        }         
+    }    
+})
 
 </script>
 
