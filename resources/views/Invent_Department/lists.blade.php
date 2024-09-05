@@ -813,11 +813,6 @@ function updatedepart(){
 	    cache:false,
 	    contentType: false,
 	    processData: false,
-// 		data:{_token:"{{-- csrf_token() --}}",
-// 		departid:$('#departid').val(),
-// 		departname: $('#depart').val(),
-// 		code: $('#editcode').val(),
-// 	  },
 	  success:function(resp){
 			if(resp.state == 1){
 			  swal_alert('Alert!',resp.msg,'error',false); 

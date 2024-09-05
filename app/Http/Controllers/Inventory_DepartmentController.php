@@ -368,7 +368,7 @@ class Inventory_DepartmentController extends Controller
 
 	       $get = DB::table('inventory_department')->where('company_id',session('company_id'))->where('department_id',$request->departid)->first();
            
-           $file = $this->uploads($request->file('departImage'),"images/department",($get != null ? $get->image : null));
+           $file = $this->uploads($request->file('departImage'),"images/department/",($get != null ? $get->image : ''));
            $imageName = !empty($file) ? $file["fileName"] : "";  	        
            // if($get){
 	        //     if(File::exists(public_path('assets/images/department/').$get->image)){
@@ -385,8 +385,12 @@ class Inventory_DepartmentController extends Controller
             // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
             $get = DB::table('inventory_department')->where('company_id',session('company_id'))->where('department_id',$request->departid)->first();
            
-            $file = $this->uploads($request->file('bannerImage'),"images/department",($get != null ? $get->banner : null));
+            $file = $this->uploads($request->file('bannerImage'),"images/department/");
             $bannerImageName = !empty($file) ? $file["fileName"] : "";
+
+            if($get != null){
+                $this->removeImage("images/department/",$get->banner);
+            }
         }           
 
 		
