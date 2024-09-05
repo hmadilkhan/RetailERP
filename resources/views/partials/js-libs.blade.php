@@ -1,5 +1,5 @@
    <!-- Required Jqurey -->
-   {{-- <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script> --}}
+   <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
    <script src="{{ asset('components/jquery-ui/jquery-ui.min.js') }}"></script>
    <script src="{{ asset('components/tether/dist/js/tether.min.js') }}"></script>
 
