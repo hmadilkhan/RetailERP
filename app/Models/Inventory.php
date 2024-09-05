@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\InventoryAddon;
+use App\InventoryDealGeneral;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -38,7 +40,7 @@ class Inventory extends Model
 	
 	public function deals()
 	{
-		return $this->hasMany("App\InventoryDealGeneral","inventory_deal_id","id")->where("status",1);
+		return $this->hasMany(InventoryDealGeneral::class,"inventory_deal_id","id")->where("status",1);
 	}
 	
 }

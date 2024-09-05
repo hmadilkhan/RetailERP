@@ -270,8 +270,9 @@
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')"> --}}
+                                           
                                         <img id="myImg{{ $key }}"
-                                            src="{{ Custom_Helper::getProductImageUrl($item->inventory) }}"
+                                            src="{{ Custom_Helper::getProductImage($item->inventory->url,$item->inventory->image) }}"
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')">
@@ -362,7 +363,7 @@
                                 <div class="d-flex align-items-start border-bottom pb-3">
                                     <div class="me-4">
                                         <img id="myImg{{ $key }}"
-                                            src="{{ asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg')) }}"
+                                            src="{{ Custom_Helper::getProductImage($item->inventory->url,$item->inventory->image) }}"
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')">
@@ -373,7 +374,7 @@
                                             <h5 class="text-truncate font-size-18"><a href="#"
                                                     class="code{{ $key }} text-dark fw-bold">({{ $item->inventory->item_code }})
                                                 </a> <a href="#"
-                                                    class="name{{ $key }} text-dark">{{ $item->item_name }} </a>
+                                                    class="name{{ $key }} text-dark">{{ $item->item_name }}  </a>
                                             </h5>
                                             <p class="mb-0 mt-1  fs-5"><span class="fw-bold">Comments : </span><span
                                                     class="comments{{ $key }} fs-5">{{ $item->note }}</span>

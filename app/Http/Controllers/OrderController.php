@@ -78,7 +78,6 @@ class OrderController extends Controller
         $ledgerDetails = $customer->LedgerDetailsShowInOrderDetails($orders->customer->id, $request->id);
         $provider = ServiceProviderOrders::with("serviceprovider")->where("receipt_id",$orders->id)->first();
         // return $ledgerDetails;
-        // return $orders;
         return view("order.order-details", compact("orders", "received", "statuses", "ledgerDetails","provider"));
     }
 
