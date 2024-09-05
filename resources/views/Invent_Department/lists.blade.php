@@ -980,7 +980,7 @@ $("#showProductWebsite").on('click',function(){
             $("#banner-imageBox").addClass('d-none');
         }         
     }    
-})
+});
 
 $("#showProductWebsite_md").on('click',function(){
     
@@ -1005,7 +1005,7 @@ $("#showProductWebsite_md").on('click',function(){
             $("#banner-imageBox_md").addClass('d-none');
         }         
     }    
-})
+});
 
 
 @if(old('metadescript'))
