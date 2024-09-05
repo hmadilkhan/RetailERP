@@ -314,9 +314,9 @@
                         <img id="previewDepartBannerImage_md" src="{{ asset('storage/images/no-image.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
                         </a>
 
-                    <div class="form-group {{ $errors->has('bannerImage_md') ? 'has-danger' : '' }} m-t-10">
-                                    <label for="bannerImage" class="custom-file">
-                                                <input type="file" name="bannerImage_md" id="bannerImage_md" class="custom-file-input">
+                    <div class="form-group m-t-10">
+                                    <label for="bannerImage_md" class="custom-file">
+                                                <input type="file" name="bannerImage" id="bannerImage_md" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
                                             </label>         
                               </div> 
