@@ -505,10 +505,8 @@
 
 
 $("#btn_clear").on('click',function(){
-
     $("#deptform")[0].reset();
     $("#subdpt").tagsinput('removeAll');
-
 });
 
 
