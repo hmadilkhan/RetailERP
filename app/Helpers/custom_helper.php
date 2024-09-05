@@ -202,11 +202,12 @@ class custom_helper
 
     public static function getOrderStatus($statusName, $isSaleReturn)
     {
-        if ($statusName == "Void" && $isSaleReturn == 1) {
-            return "Sale Return";
-        } else {
-            return $statusName;
-        }
+        return $statusName;
+        // if ($statusName == "Void" && $isSaleReturn == 1) {
+        //     return "Sale Return";
+        // } else {
+        //     return $statusName;
+        // }
     }
 
     public static function getProductImageUrl($inventory)
