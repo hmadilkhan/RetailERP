@@ -20,7 +20,7 @@
                     List
                 </a>
                 <div class="f-right">
-                    <a href="{{url('direct-transfer-report',$getdetails[0]->transfer_id)}}" class="btn btn-primary btn-print-invoice waves-effect waves-light ">Print
+                    <a target="_blank" href="{{url('direct-transfer-report',$getdetails[0]->transfer_id)}}" class="btn btn-primary btn-print-invoice waves-effect waves-light ">Print
                     </a>
                     {{-- <button type="button" class="btn btn-danger waves-effect waves-light">Export Pdf
                     </button> --}}
