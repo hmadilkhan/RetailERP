@@ -265,8 +265,6 @@
                     if (result) {
                         $("#trftable tbody").empty();
                         for (var count = 0; count < result.length; count++) {
-                          console.log("URL : ",result[count].product_image_url);
-                          
                             if ($.inArray({{session('company_id')}}, [95, 102, 104]) != -1 ) {
 
                                 if (result[count].product_image_url != '') {
@@ -282,7 +280,7 @@
                             $("#trftable tbody").append(
                                 "<tr>" +
                                 "<td class='pro-name' >" + result[count].transfer_item_id + "</td>" +
-                                "<td class='text-center'><img width='42' height='42' src='" + imageUrl +
+                                "<td ><img width='42' height='42' src='" + imageUrl +
                                 "' alt='" + result[count].image + "'/></td>" +
                                 "<td>" + result[count].product_name + "</td>" +
                                 "<td>" + result[count].Transfer_Qty + "</td>" +

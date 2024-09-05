@@ -324,13 +324,10 @@
                         $("#trftable tbody").empty();
                         for (var count = 0; count < result.length; count++) {
 
-                            if ($.inArray("{{ session('company_id') }}", [95, 102, 104]) != -1 || $.inArray(
-                                    GlobalUsername, [
-                                        'demoadmin', 'fnkhan'
-                                    ]) != -1) {
-
+                            if ($.inArray({{ session('company_id') }}, [95, 102, 104]) != -1) {
                                 if (result[count].product_image_url != '') {
                                     imageUrl = result[count].product_image_url;
+                                    console.log("IF : ", imageUrl);
                                 }
                             } else {
                                 if (result[count].product_image != '') {
@@ -341,7 +338,7 @@
                             $("#trftable tbody").append(
                                 "<tr>" +
                                 "<td class='pro-name' >" + result[count].transfer_item_id + "</td>" +
-                                "<td class='text-center'><img width='42' height='42' src='" + imageUrl +
+                                "<td ><img width='42' height='42' src='" + imageUrl +
                                 "' alt='" + result[count].image + "'/></td>" +
                                 "<td>" + result[count].product_name + "</td>" +
                                 "<td>" + result[count].Transfer_Qty + "</td>" +
