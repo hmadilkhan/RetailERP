@@ -328,7 +328,6 @@
 
                                 if (result[count].product_image_url != null) {
                                     imageUrl = result[count].product_image_url;
-                                    console.log("IF : ", imageUrl);
                                 }
                             } else {
                                 if (result[count].product_image != '') {

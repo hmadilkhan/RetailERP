@@ -362,6 +362,7 @@ class TransferController extends Controller
       'status_id' => 1,
       'date' => date('Y-m-d'),
       'time' => date('H:s:i'),
+      'company_id' => session('company_id'),
       'branch_from' => session('branch'),
       'branch_to' => 1,
     ];
@@ -396,6 +397,7 @@ class TransferController extends Controller
         'status_id' => 1,
         'date' => $request->trfdate,
         'time' => date('H:s:i'),
+        'company_id' => session('company_id'),
         'branch_from' => $request->branchfrom,
         'branch_to' => $request->branchto,
       ];
