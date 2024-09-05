@@ -830,4 +830,122 @@ class TransferController extends Controller
     //save file
     $pdf->Output('Delivery Challan' . $details[0]->DC_No . '.pdf', 'I');
   }
+
+  //transfer report
+  public function directTransferReport(Request $request, Vendor $vendor, transfer $transfer)
+  {
+    $company = $vendor->company(session('company_id'));
+
+    //queries
+    $details = $transfer->get_trf_details($request->id);
+
+    if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+      $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+      \QrCode::size(200)
+        ->format('png')
+        ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+    }
+
+    $pdf = new pdfClass();
+
+    $pdf->AliasNbPages();
+    $pdf->AddPage();
+
+    //first row
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->Cell(35, 0, '', 0, 0);
+    $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+    $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+    //second row
+    $pdf->SetFont('Arial', 'B', 14);
+    $pdf->Cell(35, 0, '', 0, 0);
+    $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+    $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+    $pdf->Cell(50, 0, "", 0, 1, 'R');
+    $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+
+    //third row
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->Cell(35, 25, '', 0, 0);
+    $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+    $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+    //forth row
+    $pdf->SetFont('Arial', 'B', 14);
+    $pdf->Cell(35, -15, '', 0, 0);
+    $pdf->Cell(105, -15, $company[0]->ptcl_contact, 0, 0, 'L');
+    $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+    //fifth row
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->Cell(35, 28, '', 0, 0);
+    $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+    $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+    //sixth row
+    $pdf->SetFont('Arial', 'B', 9);
+    $pdf->Cell(35, -18, '', 0, 0);
+    $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+    //report name
+    $pdf->ln(15);
+    $pdf->SetFont('Arial', 'B', 18);
+    $pdf->SetTextColor(0, 0, 0);
+    $pdf->Cell(190, 10, 'Transfer Order', 'B,T', 1, 'L');
+    $pdf->ln(1);
+
+    //details start here
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->Cell(70, 6, 'FROM :', 0, 0);
+    $pdf->Cell(60, 6, 'TO:', 0, 0);
+    $pdf->Cell(40, 6, 'TRANSFER ORDER | ', 0, 0);
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->Cell(20, 6, $details[0]->transfer_No, 0, 1, 'L');
+
+    $pdf->SetFont('Arial', '', 11);
+    $pdf->Cell(70, 6, 'BRANCH MANAGER:', 0, 0);
+    $pdf->Cell(60, 6, 'ADMINISTRATOR:', 0, 0);
+    $pdf->Cell(30, 6, 'CREATED ON: ', 0, 0);
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->Cell(30, 6, date('d-m-Y', strtotime($details[0]->date)), 0, 1, 'L');
+
+    $pdf->SetFont('Arial', '', 11);
+    $pdf->Cell(70, 6, $details[0]->branch_from, 0, 0);
+    $pdf->Cell(60, 6, $details[0]->branch_to, 0, 0);
+    $pdf->Cell(30, 6, 'STATUS: ', 0, 0);
+    $pdf->SetFont('Arial', 'B', 11);
+    $pdf->Cell(30, 6, $details[0]->to_status, 0, 1, 'L');
+
+    $pdf->SetFont('Arial', '', 9);
+    $pdf->Cell(70, 4, $details[0]->br_fr_address, 0, 0);
+    $pdf->Cell(50, 4, $details[0]->br_to_address, 0, 0);
+    $pdf->Cell(40, 4, '', 0, 0);
+    $pdf->Cell(30, 4, '', 0, 1, 'L');
+
+    $pdf->ln(2);
+
+
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->setFillColor(0, 0, 0);
+    $pdf->SetTextColor(255, 255, 255);
+    $pdf->Cell(100, 7, 'Poduct Name', 'B', 0, 'L', 1);
+    $pdf->Cell(45, 7, 'Quantity', 'B', 0, 'L', 1);
+    $pdf->Cell(45, 7, 'Status', 'B', 1, 'L', 1);
+
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->setFillColor(255, 255, 255);
+    $pdf->SetTextColor(0, 0, 0);
+    foreach ($details as $value) {
+      $pdf->Cell(100, 7, $value->product_name, 0, 0, 'L', 1);
+      $pdf->Cell(45, 7, number_format($value->qty, 2), 0, 0, 'L', 1);
+      $pdf->Cell(45, 7, $value->item_status, 0, 1, 'L', 1);
+    }
+
+
+    //save file
+    $pdf->Output('Transfer Order' . $details[0]->transfer_No . '.pdf', 'I');
+  }
 }
