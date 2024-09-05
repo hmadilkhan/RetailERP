@@ -74,8 +74,11 @@
                                         data-original-title="{{ $value->name == 'Delivered' ? 'Disabled' : 'Delete' }}"><i
                                             class="icofont icofont-ui-delete text-{{ $value->name == 'Delivered' ? 'muted' : 'danger' }} f-18"
                                             <?php echo $value->name == 'Delivered' ? '' : ' onclick="reject(' . $value->transfer_id . ')" '; ?>></i></a>
-                                    @if($value->name == 'Delivered')
-                                      <a href="{{url('direct-transfer-report',$value->transfer_id)}}" class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="View"><i class="icofont icofont-printer"></i></a>
+                                    @if ($value->name == 'Delivered')
+                                        <a target="_blank" href="{{ url('direct-transfer-report', $value->transfer_id) }}"
+                                            class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top"
+                                            title="" data-original-title="View"><i
+                                                class="icofont icofont-printer"></i></a>
                                     @endif
 
                                 </td>
