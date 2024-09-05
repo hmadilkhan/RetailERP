@@ -10,56 +10,19 @@
 
 <section class="panels-wells">
 
-               <div class="card">
+<form method="POST" id="deptform" class="form-horizontal" enctype="multipart/form-data">
+   @csrf
+   <div class="row">
+     <div class="col-md-8">
+     <div class="card">
                   <div class="card-header">
                      <h5 class="card-header-text" id="title-hcard"> Create Department</h5>
                   </div>
                   <div class="card-block">
 
-    <form method="POST" id="deptform" class="form-horizontal" enctype="multipart/form-data">
-      @csrf
-       
-     
-      <!--    <div class="row">  -->
-      <!--      <div class="col-lg-3 col-md-3">-->
-      <!--        <div class="form-group">-->
-      <!--            <label class="form-control-label">Department Code:</label>-->
-      <!--            <input class="form-control" type="text" name="code" id="code" />-->
-      <!--            <div class="form-control-feedback text-danger" id="dptcode_alert"></div>-->
-      <!--        </div>-->
-      <!--      </div>-->
-		    <!--<div class="col-lg-3 col-md-3">-->
-      <!--        <div class="form-group">-->
-      <!--            <label class="form-control-label">Department Name</label>-->
-      <!--            <input class="form-control" type="text"-->
-      <!--             name="deptname" id="deptname" />-->
-      <!--             <div class="form-control-feedback text-danger" id="deptname_alert"></div>-->
-      <!--        </div>-->
-      <!--      </div>            -->
-            
-            
-      <!--           <div class="col-lg-3 col-md-3">-->
-      <!--            <div class="form-group">-->
-      <!--                <label class="form-control-label">Sub Department</label>-->
-      <!--                 <div class="tags_add">-->
-      <!--                    <input class="form-control" id="subdpt" name="subdpt" type="text"  />-->
-      <!--                  </div>-->
-      <!--                 <span class="form-control-feedback text-danger" id="subdpt_alert"></span>-->
-      <!--            </div>-->
-      <!--          </div>-->
-            
-      <!--          <div class="col-lg-3 col-md-3">-->
-      <!--            <div class="form-group row">-->
-      <!--              <button class="btn btn-circle btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" -->
-      <!--                ></i>&nbsp; Save</button>.-->
-      <!--                  <button class="btn btn-circle btn-danger f-left m-t-30 m-l-10" id="btn_clear" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" -->
-      <!--                ></i> Clear</button>-->
-      <!--            </div>-->
-      <!--          </div>-->
-      <!--      </div>-->
-           
-			
 
+       
+    
             <div class="row">    
                 <div class="col-lg-3 col-md-3">
                   <div class="form-group">
@@ -111,26 +74,33 @@
                  </div>
                </div>
             
-            
-           </div>    
-    
-        
-            
-            
-          
-              <div class="form-group row">
-                <button class="btn btn-circle btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
-                  ></i>&nbsp; Save</button>.
-                    <button class="btn btn-circle btn-danger f-left m-t-30 m-l-10" id="btn_clear" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" 
-                  ></i> Clear</button>
-              </div>
-           
-            
-         </form>
-            
-                  </div>
-               </div>
-            </section>    
+               
+
+           </div>   
+           @if($websites)
+            <div class="form-group">
+                <label for="showProductWebsite">
+                    <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
+                    Show Product on Website
+                </label>
+            </div>
+           @endif
+         </div>
+       </div>
+     </div> <!-- field portion-->
+     <div class="col-md-4">
+
+     </div> <!-- col-md-4 close image portion -->
+   </div>
+
+      <div class="form-group row">
+          <button class="btn btn-circle btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
+            ></i>&nbsp; Save</button>.
+              <button class="btn btn-circle btn-danger f-left m-t-30 m-l-10" id="btn_clear" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" 
+            ></i> Clear</button>
+       </div>
+   </form>
+</section>    
 
  <section class="panels-wells">
   <div class="row">

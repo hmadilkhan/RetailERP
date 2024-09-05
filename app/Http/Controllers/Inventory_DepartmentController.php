@@ -24,7 +24,9 @@ class Inventory_DepartmentController extends Controller
     {
 	  $depart = inventory_department::getdepartment('');
 	  $sdepart = inventory_department::get_subdepart('');
-      return view('Invent_Department.lists',compact('depart','sdepart'));
+      $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
+
+      return view('Invent_Department.lists',compact('depart','sdepart','websites'));
     }
     /**
      * Show the form for creating a new resource.
