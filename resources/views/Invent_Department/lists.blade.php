@@ -186,16 +186,16 @@
                 @for($d=0;$d < sizeof($depart);$d++)
                        <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}')">{{ $depart[$d]->code }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}')">
-                             @if(!empty($depart[$d]->image) && file_exists(public_path('assets/images/department/').$depart[$d]->image))
-                                <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('assets/images/department/'.$depart[$d]->image) }}" alt="{{ $depart[$d]->image }}" height="64" width="64"/>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}')">{{ $depart[$d]->code }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}')">
+                             @if(!empty($depart[$d]->image) && file_exists(public_path('storage/images/department/').$depart[$d]->image))
+                                <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/department/'.$depart[$d]->image) }}" alt="{{ $depart[$d]->image }}" height="64" width="64"/>
                              @else
-                                <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('assets/images/no-image.jpg') }}" alt="no-image.jpg" height="64" width="64" />
+                                <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/no-image.jpg') }}" alt="no-image.jpg" height="64" width="64" />
                              @endif
                          </td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}')">{{ $depart[$d]->department_name }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}')">{{ $depart[$d]->website_department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}')">{{ $depart[$d]->department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}')">{{ $depart[$d]->website_department_name }}</td>
                          <td class="pointer" onclick="editsubdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_id}}','{{ addslashes($depart[$d]->department_name) }}')" >
                             @if($depart)
                               @for($sd=0;$sd < sizeof($sdepart);$sd++)
@@ -263,9 +263,20 @@
                       </div>
                     </div>                        
                       
+        @if($websites)
+            <hr/>
+          <div class="col-md-12"> 
+            <div class="form-group">
+                <label for="showProductWebsite_md">
+                    <input type="checkbox" id="showProductWebsite_md" name="showProductWebsite_md">
+                    Show Product on Website
+                </label>
+            </div>
+          </div>
+        @endif
                       <div class="col-md-12">
                           <div class="form-group">
-                                 <img src="../../assets/images/no-image.jpg" alt="placeholder.jpg" width="128" height="128" id="previewImg"/></br>
+                                 <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg" width="128" height="128" id="previewImg"/></br>
                               <label for="departImage_md" class="form-control-label">Department Image</label></br>
                     
                               <label for="departImage_md" class="custom-file">
@@ -274,6 +285,23 @@
                               </label>
                           </div>
                       </div>
+
+                    @if($websites)
+                     <div class="col-md-12 d-none" id="banner-imageBox_md">
+                     <div class="form-group">
+                       <a href="javascript:void(0)">
+                        <img id="previewDepartBannerImage_md" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
+                        </a>
+
+                    <div class="form-group {{ $errors->has('bannerImage_md') ? 'has-danger' : '' }} m-t-10">
+                                    <label for="bannerImage" class="custom-file">
+                                                <input type="file" name="bannerImage_md" id="bannerImage_md" class="custom-file-input">
+                                                <span class="custom-file-control"></span>
+                                            </label>         
+                              </div> 
+
+                     </div>
+                    @endif
                   </div>  
                   </form>
              </div>
@@ -659,16 +687,21 @@ $("#btn_update").on('click',function(){
 }
 
 
-function editdepart(code,depart,webDepart,departid){
+function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage){
   $("#depart-modal").modal("show");
   $('#depart').val(depart);
   $('#departid').val(departid);
   $('#editcode').val(code);
-  $('#webdeptname_md').val(webDepart)
+  $('#webdeptname_md').val(webDepart);
+
+  if(websiteMode == 1){
+       $("#showProductWebsite_md").trigger('click');
+  }
    //alert($("#img-tble-"+code).attr('src'))
 //   if($("#img-tble-"+departid).attr('src') != ''){
   
          $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
+         $("#previewDepartBannerImage_md").attr('src','storage/images/department/'+( bannerImage != '' ? bannerImage : 'no-image.jpg'));
 //   }else{
 //          $("#previewImg").attr('src','{{-- asset("assets/images/department/no-image.jpg") --}}');
 //   }
@@ -921,6 +954,31 @@ $("#showProductWebsite").on('click',function(){
         
         if(!$("#banner-imageBox").hasClass('d-none')){
             $("#banner-imageBox").addClass('d-none');
+        }         
+    }    
+})
+
+$("#showProductWebsite_md").on('click',function(){
+    
+    if($(this).is(':checked')==true){
+      $("#parent").val('').change();
+        if($("#website-module_md").hasClass('d-none')){
+            $("#website-module_md").removeClass('d-none');
+        }
+        
+        
+        if($("#banner-imageBox_md").hasClass('d-none')){
+            $("#banner-imageBox_md").removeClass('d-none');
+        }        
+    }
+    
+    if($(this).is(':checked')==false){
+        if(!$("#website-module_md").hasClass('d-none')){
+            $("#website-module_md").addClass('d-none');
+        }
+        
+        if(!$("#banner-imageBox_md").hasClass('d-none')){
+            $("#banner-imageBox_md").addClass('d-none');
         }         
     }    
 })

@@ -349,6 +349,7 @@ class Inventory_DepartmentController extends Controller
     public function updatedepart(inventory_department $in_depart, Request $request)
     {
         $imageName = null;
+        $bannerImageName = null;
         
 		if($in_depart->check_edit_depart_code($request->departid,$request->editcode))
 		{
@@ -361,16 +362,32 @@ class Inventory_DepartmentController extends Controller
 		}
 		
 	    if(!empty($request->file('departImage'))){
-	        $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('departname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
-	        $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
-	        
+	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('departname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
+	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+
 	       $get = DB::table('inventory_department')->where('company_id',session('company_id'))->where('department_id',$request->departid)->first();
-	        if($get){
-	            if(File::exists(public_path('assets/images/department/').$get->image)){
-	                File::delete(public_path('assets/images/department/').$get->image);
-	            }
-	        }
-	    } 		
+           
+           $file = $this->uploads($request->file('departImage'),"images/department",($get != null ? $get->image : null));
+           $imageName = !empty($file) ? $file["fileName"] : "";  	        
+           // if($get){
+	        //     if(File::exists(public_path('assets/images/department/').$get->image)){
+	        //         File::delete(public_path('assets/images/department/').$get->image);
+	        //     }
+	        // }
+	    }
+        
+        if(!empty($request->file('bannerImage'))){
+            // $request->validate([
+            //     'bannerImage' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
+            // ]);
+            // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
+            // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+            $get = DB::table('inventory_department')->where('company_id',session('company_id'))->where('department_id',$request->departid)->first();
+           
+            $file = $this->uploads($request->file('bannerImage'),"images/department",($get != null ? $get->banner : null));
+            $bannerImageName = !empty($file) ? $file["fileName"] : "";
+        }           
+
 		
 		$items = [
 			'company_id'               => session('company_id'),
@@ -385,6 +402,10 @@ class Inventory_DepartmentController extends Controller
 		if($imageName != null){
 		    $items['image']=$imageName;
 		}
+
+		if($bannerImageName != null){
+		    $items['banner']=$bannerImageName;
+		}        
 	
 		$result = $in_depart->update_depart($request->departid, $items);
 		return response()->json(array("state"=>0,"msg"=>'Department edit successfully.',"contrl"=>'deptname'));;
