@@ -892,9 +892,18 @@ function insertsubdepart(){
 
 }
 
+$("#parent").on('change',function(){
+  
+  if($(this).val() != ''){
+    $("#showProductWebsite").triiger();
+  }
+
+});
+
 $("#showProductWebsite").on('click',function(){
     
     if($(this).is(':checked')==true){
+      $("#parent").val('').change();
         if($("#website-module").hasClass('d-none')){
             $("#website-module").removeClass('d-none');
         }
