@@ -236,7 +236,7 @@ WHERE a.DC_id = ?', [$dcid]);
 
 	public function getbranches()
 	{
-		$branch = DB::table('branch')->where('company_id', session('company_id'))->whereNotIN('branch_id', [session('branch')])->get();
+		$branch = DB::table('branch')->where('company_id', session('company_id'))->get();
 		return $branch;
 	}
 
