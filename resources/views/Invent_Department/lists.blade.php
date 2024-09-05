@@ -925,6 +925,10 @@ $("#showProductWebsite").on('click',function(){
     }    
 })
 
+
+@if(old('metadescript'))
+   $("#metadescript").val('{{ old("metadescript") }}');
+@endif
 </script>
 
 @endsection
