@@ -101,6 +101,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Product Image</th>
+                                        <th>Item Code</th>
                                         <th>Product Name</th>
                                         <th>Transfer Quantity</th>
                                         <th>Action</th>
@@ -265,7 +266,7 @@
                             $("#branchto").empty();
                             $("#branchto").append("<option value=''>Select Branch</option>");
                             for (var count = 0; count < resp.length; count++) {
-                                $("#product").append(
+                                $("#branchto").append(
                                     "<option value='" + resp[count].branch_id + "'>" + resp[count]
                                     .branch_name + "</option>");
                             }
@@ -361,6 +362,7 @@
                                 "<td class='pro-name' >" + result[count].transfer_item_id + "</td>" +
                                 "<td ><img width='42' height='42' src='" + imageUrl +
                                 "' alt='" + result[count].image + "'/></td>" +
+                                "<td>" + result[count].item_code + "</td>" +
                                 "<td>" + result[count].product_name + "</td>" +
                                 "<td>" + result[count].Transfer_Qty + "</td>" +
                                 "<td class='action-icon'><i onclick='changeqty(" + result[count]
