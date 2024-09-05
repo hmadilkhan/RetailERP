@@ -312,7 +312,7 @@
                      <div class="col-md-12 d-none" id="banner-imageBox_md">
                      <div class="form-group">
                        <a href="javascript:void(0)">
-                        <img id="previewDepartBannerImage_md" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
+                        <img id="previewDepartBannerImage_md" src="{{ asset('storage/images/no-image.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
                         </a>
 
                     <div class="form-group {{ $errors->has('bannerImage_md') ? 'has-danger' : '' }} m-t-10">
@@ -723,7 +723,7 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage){
 //   if($("#img-tble-"+departid).attr('src') != ''){
   
          $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
-         $("#previewDepartBannerImage_md").attr('src','storage/images/department/'+( bannerImage != '' ? bannerImage : 'no-image.jpg'));
+         $("#previewDepartBannerImage_md").attr('src','storage/images/'+( bannerImage != '' ? 'department/'+bannerImage : 'no-image.jpg'));
 //   }else{
 //          $("#previewImg").attr('src','{{-- asset("assets/images/department/no-image.jpg") --}}');
 //   }
