@@ -717,22 +717,16 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage){
   $('#depart').val(depart);
   $('#departid').val(departid);
   $('#editcode').val(code);
-  
+  $('#webdeptname_md').val(webDepart);
 
   if(websiteMode == 1){
-       $("#showWebsite_md").trigger('click');
-       $('#webdeptname_md').val(webDepart);
+       $("#showWebsite_md").trigger('click');      
   }
-   //alert($("#img-tble-"+code).attr('src'))
-//   if($("#img-tble-"+departid).attr('src') != ''){
-  
-         $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
-        if(bannerImage != ''){ 
-         $("#previewDepartBannerImage_md").attr('src','storage/images/department/'+bannerImage);
-        }
-//   }else{
-//          $("#previewImg").attr('src','{{-- asset("assets/images/department/no-image.jpg") --}}');
-//   }
+
+  $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
+  if(bannerImage != ''){ 
+    $("#previewDepartBannerImage_md").attr('src','storage/images/department/'+bannerImage);
+  } 
 }
 function editsubdepart(departcode,departid,departname){
     //alert()
