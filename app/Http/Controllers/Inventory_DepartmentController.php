@@ -76,9 +76,10 @@ class Inventory_DepartmentController extends Controller
                     'code' => $request->code,
                     'department_id'    => $request->post('parent'),
                     'sub_depart_name'  => $request->deptname,
-                    'slug'  => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
-                    'image' =>$imageName,
-                    'banner'=>$bannerImageName,
+                    'slug'         => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
+                    'image'        =>$imageName,
+                    'banner'       =>$bannerImageName,
+                    'website_mode' =>isset($request->showWebsite) ? 1 : 0
                 ];
                 $result = $invent_department->insert_sdept($items);
                 $getsubdepart = $invent_department->get_subdepartments($request->post('parent'));
@@ -395,6 +396,7 @@ class Inventory_DepartmentController extends Controller
 			'department_name'          => $request->departname,
 			'website_department_name'  => (empty($request->webdeptname) ?  $request->departname : $request->webdeptname),
 			'slug'                     => preg_replace("/[\s_]/", "-",strtolower($request->departname)),
+            'website_mode'             => (isset($request->showWebsite) ? 1 : 0),
 			'date'                     => date('Y-m-d'),
 			'time'                     => date('H:i:s'),
 		];

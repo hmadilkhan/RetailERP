@@ -56,8 +56,8 @@
            @if($websites)
             <hr/>
             <div class="form-group">
-                <label for="showProductWebsite">
-                    <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
+                <label for="showWebsite">
+                    <input type="checkbox" id="showWebsite" name="showWebsite">
                     Show Product on Website
                 </label>
             </div>
@@ -259,8 +259,8 @@
             <hr/>
           <div class="col-md-12"> 
             <div class="form-group">
-                <label for="showProductWebsite_md">
-                    <input type="checkbox" id="showProductWebsite_md" name="showProductWebsite_md">
+                <label for="showWebsite_md">
+                    <input type="checkbox" id="showWebsite_md" name="showWebsite">
                     Show Product on Website
                 </label>
             </div>
@@ -717,7 +717,7 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage){
   
 
   if(websiteMode == 1){
-       $("#showProductWebsite_md").trigger('click');
+       $("#showWebsite_md").trigger('click');
        $('#webdeptname_md').val(webDepart);
   }
    //alert($("#img-tble-"+code).attr('src'))
@@ -953,12 +953,12 @@ function insertsubdepart(){
 $("#parent").on('change',function(){
   
   if($(this).val() != ''){
-    $("#showProductWebsite").trigger('click');
+    $("#showWebsite").trigger('click');
   }
 
 });
 
-$("#showProductWebsite").on('click',function(){
+$("#showWebsite").on('click',function(){
     
     if($(this).is(':checked')==true){
       $("#parent").val('').change();
@@ -983,10 +983,9 @@ $("#showProductWebsite").on('click',function(){
     }    
 });
 
-$("#showProductWebsite_md").on('click',function(){
+$("#showWebsite_md").on('click',function(){
     
     if($(this).is(':checked')==true){
-      $("#parent").val('').change();
         if($("#website-module_md").hasClass('d-none')){
             $("#website-module_md").removeClass('d-none');
         }
