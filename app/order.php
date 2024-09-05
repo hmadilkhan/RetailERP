@@ -155,6 +155,8 @@ class order extends Model
 			->join("sales_order_mode", "sales_order_mode.order_mode_id", "=", "sales_receipts.order_mode_id")
 			->join("sales_order_status", "sales_order_status.order_status_id", "=", "sales_receipts.status")
 			->join("sales_payment", "sales_payment.payment_id", "=", "sales_receipts.payment_id")
+			->leftJoin("service_provider_orders", "service_provider_orders.receipt_id", "=", "sales_receipts.id")
+			->leftJoin("service_provider_details", "service_provider_details.id", "=", "service_provider_orders.service_provider_id")
 			->where("sales_receipts.web", "=", 0)
 
 			->when($request->first != "" && $request->second != "" && $request->type == "declaration", function ($query) use ($request, $openingIds) {
@@ -210,7 +212,7 @@ class order extends Model
 				$query->where("sales_receipts.fbrInvNumber", '!=', "");
 			})
 
-			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"))
+			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode","service_provider_details.provider_name", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"))
 			->orderBy("sales_receipts.id", "desc")
 			// ->toSql();
 			->paginate(100);

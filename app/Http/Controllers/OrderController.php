@@ -17,6 +17,7 @@ use App\Http\Resources\onlineSalesResource\salesReceiptResource;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
+use App\Services\OrderService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
 
@@ -109,7 +110,7 @@ class OrderController extends Controller
         return redirect()->route("getWebsiteSaleReceiptDetails", $request->ordercode);
     }
 
-    public function ordersviewnew(Request $request, order $order, Customer $customer)
+    public function ordersviewnew(Request $request, order $order, Customer $customer, OrderService $orderService)
     {
         $request->type = "declaration";
         DB::table("sales_receipts")->where("is_notify", 1)->update(["is_notify" => 0]);
@@ -118,12 +119,9 @@ class OrderController extends Controller
         $paymentMode = $order->paymentMode();
         $mode = $order->ordersMode();
         $branch = $order->getBranch();
-        $serviceproviders = ServiceProvider::where("branch_id", session("branch"))->where("status_id", 1)->select(["id", "provider_name"])->get();
-        $orders = ""; //$order->getNewPOSOrdersQuery($request);
-        // return $orders;
+        $serviceproviders = $orderService->getServiceProviders();
+        $orders = "";
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
-        // return $totalorders;
-        // $totalNumberOfOrders = $order->getTotalNofOrdersByStatusQuery($request);
         return view('order.orderviewnew', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'orders', 'serviceproviders', 'totalorders', 'statuses'));
     }
 

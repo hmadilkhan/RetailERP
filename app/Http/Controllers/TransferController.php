@@ -854,7 +854,6 @@ class TransferController extends Controller
         }
         //save file
         $pdf->Output('Delivery Challan'.$details[0]->DC_No.'.pdf', 'I');
-
     }
 }
  
