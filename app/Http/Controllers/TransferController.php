@@ -894,7 +894,7 @@ class TransferController extends Controller
     $pdf->ln(15);
     $pdf->SetFont('Arial', 'B', 18);
     $pdf->SetTextColor(0, 0, 0);
-    $pdf->Cell(190, 10, 'Transfer Order', 'B,T', 1, 'L');
+    $pdf->Cell(190, 10, 'Direct Transfer Order', 'B,T', 1, 'L');
     $pdf->ln(1);
 
     //details start here
@@ -931,7 +931,8 @@ class TransferController extends Controller
     $pdf->SetFont('Arial', 'B', 10);
     $pdf->setFillColor(0, 0, 0);
     $pdf->SetTextColor(255, 255, 255);
-    $pdf->Cell(100, 7, 'Poduct Name', 'B', 0, 'L', 1);
+    $pdf->Cell(50, 7, 'Item Code', 'B', 0, 'L', 1);
+    $pdf->Cell(50, 7, 'Product Name', 'B', 0, 'L', 1);
     $pdf->Cell(45, 7, 'Quantity', 'B', 0, 'L', 1);
     $pdf->Cell(45, 7, 'Status', 'B', 1, 'L', 1);
 
@@ -939,13 +940,13 @@ class TransferController extends Controller
     $pdf->setFillColor(255, 255, 255);
     $pdf->SetTextColor(0, 0, 0);
     foreach ($details as $value) {
-      $pdf->Cell(100, 7, $value->product_name, 0, 0, 'L', 1);
+      $pdf->Cell(50, 7, $value->item_code, 0, 0, 'L', 1);
+      $pdf->Cell(50, 7, $value->product_name, 0, 0, 'L', 1);
       $pdf->Cell(45, 7, number_format($value->qty, 2), 0, 0, 'L', 1);
       $pdf->Cell(45, 7, $value->item_status, 0, 1, 'L', 1);
     }
 
-
     //save file
-    $pdf->Output('Transfer Order' . $details[0]->transfer_No . '.pdf', 'I');
+    $pdf->Output('Direct_Transfer_Order_' . $details[0]->transfer_No . '.pdf', 'I');
   }
 }
