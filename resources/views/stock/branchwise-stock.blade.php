@@ -399,12 +399,12 @@
                             'demoadmin', 'fnkhan'
                         ]) != -1) {
 
-                        if (result.data[count].product_image_url != '') {
-                            imageUrl = result.data[count].product_image_url;
+                        if (result.data[count].url != '') {
+                            imageUrl = result.data[count].url;
                         }
                     } else {
-                        if (result.data[count].product_image != '') {
-                            imageUrl = "storage/images/products/" + result.data[count].product_image;
+                        if (result.data[count].image != '') {
+                            imageUrl = "storage/images/products/" + result.data[count].image;
                         }
                     }
 
