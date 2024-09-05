@@ -233,11 +233,17 @@ WHERE a.DC_id = ?', [$dcid]);
 		return $result;
 	}
 
-
 	public function getbranches()
 	{
-		$branch = DB::table('branch')->where('company_id', session('company_id'))->get();
-		return $branch;
+		$branches = DB::table('branch')->where('company_id', session('company_id'))->get();
+		return $branches;
+	}
+
+	/* THIS IS USED TO LOAD WHERET THE STOCK WILL BE TRANSFER SO THE BRANCH IN FROM DROPDOWN SHOULD NOT SHOW UP HERE*/
+	public function getTobranches($branch)
+	{
+		$branches = DB::table('branch')->where('company_id', session('company_id'))->whereNot('branch_id', [$branch])->get();
+		return $branches;
 	}
 
 	public function getproducts($branchid)

@@ -32,7 +32,8 @@
                                 <option value="">Select Branch</option>
                                 @if ($headoffice)
                                     @foreach ($branches as $value)
-                                        <option @selected( $value->branch_id == $getdetails[0]->branch_from) value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
+                                        <option @selected($value->branch_id == $getdetails[0]->branch_from) value="{{ $value->branch_id }}">
+                                            {{ $value->branch_name }}</option>
                                     @endforeach
                                 @endif
                             </select>
@@ -226,8 +227,8 @@
             });
         }
 
-
         function get_products() {
+            getToBranches($('#branchfrm').val());
             $.ajax({
                 url: "{{ url('/get_products') }}",
                 type: 'POST',
@@ -241,17 +242,44 @@
                         $("#product").append("<option value=''>Select Product</option>");
                         for (var count = 0; count < resp.length; count++) {
                             $("#product").append(
-                                "<option value='" + resp[count].id + "'>" + resp[count].item_code + " | " + resp[count].product_name +
+                                "<option value='" + resp[count].id + "'>" + resp[count].item_code + " | " +
+                                resp[count].product_name +
                                 "</option>");
                         }
                     }
                 }
             });
         }
+        getToBranches($('#branchfrm').val());
+
+        function getToBranches() {
+            if ($('#branchfrm').val() != "") {
+                $.ajax({
+                    url: "{{ url('/get-to-branches') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        branch: $('#branchfrm').val(),
+                    },
+                    success: function(resp) {
+                        if (resp) {
+                            $("#branchto").empty();
+                            $("#branchto").append("<option value=''>Select Branch</option>");
+                            for (var count = 0; count < resp.length; count++) {
+                                $("#product").append(
+                                    "<option  value='" + resp[count].branch_id + "'>" + resp[count]
+                                    .branch_name + "</option>");
+                            }
+                        }
+                    }
+                });
+            }
+        }
 
         trf_details();
         var imageUrl = "{{ asset('storage/images/placeholder.jpg') }}";
         var GlobalUsername = '{{ strtolower(Auth::user()->username) }}';
+
         function trf_details() {
             $.ajax({
                 url: "{{ url('/trf_details') }}",
@@ -265,15 +293,16 @@
                     if (result) {
                         $("#trftable tbody").empty();
                         for (var count = 0; count < result.length; count++) {
-                            if ($.inArray({{session('company_id')}}, [95, 102, 104]) != -1 ) {
+                            if ($.inArray({{ session('company_id') }}, [95, 102, 104]) != -1) {
 
                                 if (result[count].product_image_url != null) {
                                     imageUrl = result[count].product_image_url;
-                                    console.log("IF : ",imageUrl);
+                                    console.log("IF : ", imageUrl);
                                 }
                             } else {
                                 if (result[count].product_image != '') {
-                                    imageUrl = "{{ asset('storage/images/products/')}}" + result[count].product_image;
+                                    imageUrl = "{{ asset('storage/images/products/') }}" + result[count]
+                                        .product_image;
                                 }
                             }
 
