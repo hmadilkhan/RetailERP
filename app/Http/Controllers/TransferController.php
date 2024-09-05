@@ -9,6 +9,7 @@ use App\demand;
 use App\pdfClass;
 use App\Vendor;
 use Crabbly\Fpdf\Fpdf;
+use Illuminate\Support\Facades\Storage;
 
 class TransferController extends Controller
 {
