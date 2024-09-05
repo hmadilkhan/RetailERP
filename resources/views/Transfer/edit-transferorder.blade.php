@@ -267,7 +267,7 @@
                             $("#branchto").append("<option value=''>Select Branch</option>");
                             for (var count = 0; count < resp.length; count++) {
                                 $("#branchto").append(
-                                    "<option  value='" + resp[count].branch_id + "'>" + resp[count]
+                                    "<option "+({{$getdetails[0]->branch_to}} == resp[count].branch_id ? 'selected' : '')+" value='" + resp[count].branch_id + "'>" + resp[count]
                                     .branch_name + "</option>");
                             }
                         }
