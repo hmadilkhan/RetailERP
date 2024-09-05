@@ -395,16 +395,16 @@
                 success: function(result) {
                     $("#headername").html(branchname);
 
-                    if ($.inArray(value.company_id, [95, 102, 104]) != -1 || $.inArray(GlobalUsername, [
+                    if ($.inArray({{session('company_id')}}, [95, 102, 104]) != -1 || $.inArray(GlobalUsername, [
                             'demoadmin', 'fnkhan'
                         ]) != -1) {
 
-                        if (value.product_image_url != '') {
-                            imageUrl = value.product_image_url;
+                        if (result.data[count].product_image_url != '') {
+                            imageUrl = result.data[count].product_image_url;
                         }
                     } else {
-                        if (value.product_image != '') {
-                            imageUrl = "storage/images/products/" + value.product_image;
+                        if (result.data[count].product_image != '') {
+                            imageUrl = "storage/images/products/" + result.data[count].product_image;
                         }
                     }
 
