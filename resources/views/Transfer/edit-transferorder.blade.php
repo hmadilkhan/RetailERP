@@ -267,7 +267,7 @@
                         for (var count = 0; count < result.length; count++) {
                             if ($.inArray({{session('company_id')}}, [95, 102, 104]) != -1 ) {
 
-                                if (result[count].product_image_url != '') {
+                                if (result[count].product_image_url != null) {
                                     imageUrl = result[count].product_image_url;
                                     console.log("IF : ",imageUrl);
                                 }
