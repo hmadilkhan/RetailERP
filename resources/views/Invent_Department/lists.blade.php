@@ -92,15 +92,34 @@
        </div>
      </div> <!-- field portion-->
      <div class="col-md-4">
-     <div class="row">
-               <div class="col-lg-3 col-md-2">
-                 <div class="form-group">
-                  <label class="form-control-label">Department Image</label>
-                      <input class="form-control" id="departImage" name="departImage" type="file" />
-                   <span class="form-control-feedback text-danger" id="departImage_alert"></span>
-                 </div>
-               </div>
+     <div class="card">
+                  <div class="card-header">
+                  <h4 for="image">Product Image</h4>
+                  </div>
+                  <div class="card-block p-2 p-t-0">
+              <div class="form-group">
+                       <a href="<javascript:void(0)">
+                        <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img">
+                        </a>
 
+                    <div class="form-group {{ $errors->has('departImage') ? 'has-danger' : '' }} m-t-10">
+                                
+
+                                    <label for="departImage" class="custom-file">
+                                                <input type="file" name="departImage" id="departImage" class="custom-file-input">
+                                                <span class="custom-file-control"></span>
+                                            </label>
+                                    <div>       
+                                      <label class="pointer"><input type="checkbox" name="actual_image_size" class=""> You want to actual image size</label>
+                                    </div>         
+                                @if ($errors->has('departImage'))
+                                    <span class="form-control-feedback">{{ $errors->first('departImage') }}</span>
+                                @endif
+                              </div> 
+                
+              </div> 
+              </div>    
+              </div> 
         @if($websites)    
         
         @endif
