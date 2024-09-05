@@ -723,7 +723,9 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage){
 //   if($("#img-tble-"+departid).attr('src') != ''){
   
          $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
-         $("#previewDepartBannerImage_md").attr('src','storage/images/'+( bannerImage != '' ? 'department/'+bannerImage : 'no-image.jpg'));
+        if(bannerImage != ''){ 
+         $("#previewDepartBannerImage_md").attr('src','storage/images/department/'+bannerImage);
+        }
 //   }else{
 //          $("#previewImg").attr('src','{{-- asset("assets/images/department/no-image.jpg") --}}');
 //   }
