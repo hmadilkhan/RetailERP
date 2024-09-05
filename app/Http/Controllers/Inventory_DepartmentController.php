@@ -45,26 +45,40 @@ class Inventory_DepartmentController extends Controller
      */
     public function store(Request $request,inventory_department $invent_department,custom_helper $helper)
     {
-		$imageName = ""; 
-        
+		$imageName       = ""; 
+        $bannerImageName = "";
 		
 		if(!empty($request->post('parent'))){
             $exsist = $invent_department->subdepart_exists($request->deptname,$request->post('parent'));
     
             if ($exsist[0]->counter == 0) {
         	    if(!empty($request->file('departImage'))){
+                    $request->validate([
+                        'departImage' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
+                    ]);
         	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
         	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
                     $file = $this->uploads($request->file('departImage'),"images/department");
                     $imageName = !empty($file) ? $file["fileName"] : "";
-        	    }                
+        	    }    
+                
+        	    if(!empty($request->file('bannerImage'))){
+                    $request->validate([
+                        'bannerImage' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
+                    ]);
+        	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
+        	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+                    $file = $this->uploads($request->file('bannerImage'),"images/department");
+                    $bannerImageName = !empty($file) ? $file["fileName"] : "";
+        	    }                 
                 
                 $items = [
                     'code' => $request->code,
-                    'department_id' => $request->post('parent'),
-                    'sub_depart_name' => $request->deptname,
-                    'slug'=> preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
-                    'image'=>$imageName,
+                    'department_id'    => $request->post('parent'),
+                    'sub_depart_name'  => $request->deptname,
+                    'slug'  => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
+                    'image' =>$imageName,
+                    'banner'=>$bannerImageName,
                 ];
                 $result = $invent_department->insert_sdept($items);
                 $getsubdepart = $invent_department->get_subdepartments($request->post('parent'));

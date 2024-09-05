@@ -22,7 +22,7 @@
             <div class="row">    
                 <div class="col-lg-4 col-md-4">
                   <div class="form-group">
-                      <label class="form-control-label">Department Code:</label>
+                      <label class="form-control-label">Department Code <span class="text-danger">*</span></label>
                       <input class="form-control" type="text" name="code" id="code" placeholder='Department Code'/>
                       <span class="form-control-feedback text-danger" id="dptcode_alert"></span>
                   </div>
@@ -30,7 +30,7 @@
             
     		    <div class="col-lg-4 col-md-4">
                   <div class="form-group">
-                      <label class="form-control-label">Department Name</label>
+                      <label class="form-control-label">Department Name <span class="text-danger">*</span></label>
                       <input class="form-control" type="text"
                        name="deptname" id="deptname" placeholder='Department Name'/>
                        <span class="form-control-feedback text-danger" id="deptname_alert"></span>
@@ -105,7 +105,7 @@
                   </div>
                   <div class="card-block p-2 p-t-0">
               <div class="form-group">
-                       <a href="<javascript:void(0)">
+                       <a href="javascript:void(0)">
                         <img id="previewDepartImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" width="180px" class="thumb-img" alt="img">
                         </a>
 
@@ -131,7 +131,7 @@
                   </div>
                   <div class="card-block p-2 p-t-0">
                     <div class="form-group">
-                       <a href="<javascript:void(0)">
+                       <a href="javascript:void(0)">
                         <img id="previewDepartBannerImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
                         </a>
 
@@ -925,6 +925,10 @@ $("#showProductWebsite").on('click',function(){
     }    
 })
 
+
+@if(old('metadescript'))
+   $("#metadescript").val('{{ old("metadescript") }}');
+@endif
 </script>
 
 @endsection
