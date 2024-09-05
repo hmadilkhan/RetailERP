@@ -921,8 +921,8 @@ class TransferController extends Controller
 
     $pdf->SetFont('Arial', '', 11);
     $pdf->Cell(70, 4, '', 0, 0);//$details[0]->br_fr_address
-    $pdf->Cell(50, 4, '', 0, 0);//$details[0]->br_to_address
-    $pdf->Cell(40, 4, 'Created By', 0, 0);
+    $pdf->Cell(60, 4, '', 0, 0);//$details[0]->br_to_address
+    $pdf->Cell(30, 4, 'Created By :', 0, 0);
     $pdf->SetFont('Arial', 'B', 11);
     $pdf->Cell(30, 4, $details[0]->username, 0, 1, 'L');
 
