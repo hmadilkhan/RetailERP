@@ -14,7 +14,9 @@
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
+    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script> --}}
 @endsection
 
 @section('content')
@@ -185,16 +187,6 @@
                             </select>
                         </div>
                     @endif
-                    {{-- @if (session('roleId') == 20 or session('roleId') == 19)
-				 <div class="col-md-2" style="margin-top: 20px;" >
-					 <label class="form-control-label">Select Type</label>
-					 <select id="type" name="type" data-placeholder="Select Type" disabled class="f-right select2">
-						 <option value="declaration">Declaration</option>
-						 <option selected value="datewise">Datewise</option>
-					 </select>
-				 </div>
-			 @endif --}}
-
                 </div>
 
                 <div class="row">
@@ -222,12 +214,8 @@
                         </button>
                     </div>
                 </div>
-
-
             </div>
             <hr />
-            {{-- @if (session('roleId') != 17) --}}
-
             <div class="row m-l-2">
                 <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
@@ -289,26 +277,11 @@
                         </div>
                     </div>
                 </div>
-                {{--
-               <div class="col-lg-3 col-md-6">
-                  <div class="card dashboard-product">
-                     <span>Total Sales</span>
-                     <h2 class="dashboard-total-products">{{session("currency")}} <span id="totalamount">{{number_format($totalorders[0]->totalamount,2)}}</span></h2>
-                     <span class="label label-success">Sales</span>
-                     <div class="side-box">
-                        <i class="ti-direction-alt text-success-color"></i>
-                     </div>
-                  </div>
-               </div>
-            </div> --}}
-                {{--  @endif --}}
-
                 <div class="card-block">
                     <div id="table_data" class="overflow-x-auto" style="overflow-y:hidden;">
                         {{-- @include('partials.orders_table') --}}
                     </div>
                 </div>
-
             </div>
             <div class="modal fade modal-flex" id="sp-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-md" role="document">
@@ -411,8 +384,9 @@
                     </div>
                 </div>
             </div>
-
-            <div class="modal fade modal-flex" id="delivered-modal" tabindex="-1" role="dialog">
+            {{-- <div class="modal fade modal-flex" id="delivered-modal" tabindex="-1" role="dialog"> --}}
+            <div class="modal fade modal-flex" id="delivered-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
                 <div class="modal-dialog modal-md" role="document">
                     <input type="hidden" name="orderId" id="orderId" class="form-control" />
                     <div class="modal-content">
@@ -442,7 +416,6 @@
                 </div>
             </div>
     </section>
-
 @endsection
 
 @section('scriptcode_three')
