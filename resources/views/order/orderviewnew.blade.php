@@ -8,18 +8,27 @@
 @section('navorder', 'active')
 
 @section('css_code')
+    {{-- <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+        integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script> --}}
+@endsection
+
+@section('content')
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
         integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    {{-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    </script> --}}
-@endsection
-
-@section('content')
+    </script>
     {{-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"> --}}
     <section class="panels-wells">
         <div class="card">
@@ -217,7 +226,7 @@
             </div>
             <hr />
             <div class="row m-l-2">
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Total Orders</span>
                         <h2 class="dashboard-total-products" id="totalorders"></h2>
@@ -227,7 +236,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Pending Orders</span>
                         <h2 class="dashboard-total-products" id="pendingorders"></h2>
@@ -237,7 +246,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Processing Orders</span>
                         <h2 class="dashboard-total-products" id="processingorders"></h2>
@@ -247,7 +256,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Void Orders</span>
                         <h2 class="dashboard-total-products" id="voidorders"></h2>
@@ -257,7 +266,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Dispatch Orders</span>
                         <h2 class="dashboard-total-products" id="dispatchorders">0</h2>
@@ -267,7 +276,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Delivered Orders</span>
                         <h2 class="dashboard-total-products" id="deliveredorders"></h2>
@@ -283,7 +292,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade modal-flex" id="sp-modal" tabindex="-1" role="dialog">
+            <div class="modal fade modal-flex in" id="sp-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-md" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -318,7 +327,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade modal-flex" id="assign-modal" tabindex="-1" role="dialog">
+            <div class="modal fade modal-flex in" id="assign-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-md" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
@@ -356,7 +365,7 @@
                     </div>
                 </div>
             </div>
-            <div class="modal fade modal-flex" id="void-modal" tabindex="-1" role="dialog">
+            <div class="modal fade modal-flex in" id="void-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-md" role="document">
                     <input type="hidden" name="voidId" id="voidId" class="form-control" />
                     <div class="modal-content">
@@ -384,9 +393,7 @@
                     </div>
                 </div>
             </div>
-            {{-- <div class="modal fade modal-flex" id="delivered-modal" tabindex="-1" role="dialog"> --}}
-            <div class="modal fade modal-flex" id="delivered-modal" tabindex="-1" aria-labelledby="exampleModalLabel"
-                aria-hidden="true">
+            <div class="modal fade modal-flex in" id="delivered-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-md" role="document">
                     <input type="hidden" name="orderId" id="orderId" class="form-control" />
                     <div class="modal-content">
@@ -415,6 +422,7 @@
                     </div>
                 </div>
             </div>
+        </div>
     </section>
 @endsection
 
@@ -526,6 +534,7 @@
         }
 
         function assignToServiceProviderModal(receiptId) {
+            $("#branchmodal").select2();
             $('#sp-modal').modal("show");
             $("#orderidforsp").val(receiptId);
         }

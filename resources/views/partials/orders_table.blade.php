@@ -1,40 +1,3 @@
-<style>
-    .table .collapse-content>td {
-        padding: 0 .75rem;
-    }
-
-    .collapse-content>td>div {
-        height: 0;
-        opacity: 0;
-    }
-
-    .table .collapse-content.show>td {
-        padding: .75rem;
-    }
-
-    .collapse-content.show>td>div {
-        height: 100px;
-        opacity: 1;
-    }
-
-    .collapse-content>td,
-    .collapse-content>td>div {
-        -webkit-transition: all 1s ease;
-        -moz-transition: all ease-in-out;
-        transition: all 1s ease-in-out;
-    }
-
-    .collapse-content.show>td,
-    .collapse-content.show>td>div {
-        -webkit-transition: all 1s ease;
-        -moz-transition: all 1s ease;
-        transition: all 1s ease;
-    }
-
-    .table-responsive {
-        display: table;
-    }
-</style>
 <div class="col-md-12 table-responsive" >
     <table id="order_table" class="table table-striped table-responsive table-bordered nowrap flex-nowrap col-md-12 col-sm-12" width="100%">
         <thead>
@@ -131,10 +94,6 @@
     {{ $orders->links('pagination::bootstrap-4') }}
 </div>
 <script type="text/javascript">
-
-    // var orders_total = "{{-- $totalorders[0]->totalorders --}}";
-    // var amount_total = "{{-- number_format($totalorders[0]->totalamount,2) --}}";
-    // console.log(orders_total,amount_total);
     $(function() {
         $('.collapse-item').click(function(e) {
             e.preventDefault();
@@ -149,17 +108,6 @@
         });
     });
 
-    // function showContent(key){
-    // e.preventDefault();
-
-    // const target = $("#game-"+key).data('target');
-    // console.log("#game-"+key)
-    // if (!$(target).hasClass('show')) {
-    // $('.collapse-content').removeClass('show');
-    // }
-
-    // $(target).toggleClass('show');
-    // }
     @php
         $collection = collect($totalorders);
         $pending = $collection->filter(fn($item) => $item->order_status_name == 'Pending')->values()->all();
@@ -176,15 +124,4 @@
     $("#totalorders").html(
         "{{ (count($processing) > 0 ? $processing[0]->totalorders : 0) + (count($voidOrders) > 0 ? $voidOrders[0]->totalorders : 0) + (count($deliveredOrders) > 0 ? $deliveredOrders[0]->totalorders : 0) + (count($pending) > 0 ? $pending[0]->totalorders : 0) }}"
     );
-    <?php // + (count($pendingorders) > 0 ? $pendingorders[0]->totalorders : 0) ;
-    ?>
-    // $("#totalorders").html("{{-- $totalorders[0]->totalorders --}}");
-    // $("#totalamount").html("{{-- number_format($totalorders[0]->totalamount,2) --}}");
-    // $(document).on("click", "a", function(){
-    // $(this).text("It works!");
-    // });
-
-    function showDates() {
-        // alert();
-    }
 </script>
