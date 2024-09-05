@@ -105,7 +105,7 @@
                   </div>
                   <div class="card-block p-2 p-t-0">
               <div class="form-group">
-                       <a href="<javascript:void(0)">
+                       <a href="javascript:void(0)">
                         <img id="previewDepartImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" width="180px" class="thumb-img" alt="img">
                         </a>
 
@@ -131,7 +131,7 @@
                   </div>
                   <div class="card-block p-2 p-t-0">
                     <div class="form-group">
-                       <a href="<javascript:void(0)">
+                       <a href="javascript:void(0)">
                         <img id="previewDepartBannerImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
                         </a>
 
