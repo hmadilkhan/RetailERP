@@ -255,7 +255,46 @@
                       </div>
 
                        
-                      
+        @if($websites)
+            <hr/>
+          <div class="col-md-12"> 
+            <div class="form-group">
+                <label for="showProductWebsite_md">
+                    <input type="checkbox" id="showProductWebsite_md" name="showProductWebsite_md">
+                    Show Product on Website
+                </label>
+            </div>
+          </div>
+
+          <div class="d-none" id="website-module_md">
+               <div class="col-md-12">
+                  <div class="form-group">
+                      <label class="form-control-label">Show website department name</label>
+                      <input class="form-control" type="text"
+                        name="webdeptname" id="webdeptname_md" />
+                        <div class="form-control-feedback text-danger" id="webdeptname_md_alert"></div>
+                  </div>
+                </div>
+                
+                <div class="col-md-12">
+                  <div class="form-group">
+                      <label class="form-control-label">Meta Title</label>
+                      <input class="form-control" type="text"
+                        name="metatitle" id="metatitle_md" placeholder="Meta Title"/>
+                        <div class="form-control-feedback text-danger" id="metatitle_md_alert"></div>
+                  </div>
+                </div>  
+                
+                <div class="col-md-12">
+                  <div class="form-group">
+                      <label class="form-control-label">Meta Description</label>
+                      <textarea class="form-control" 
+                        name="metadescript" id="metadescript_md" placeholder="Meta Description"/>
+                        <div class="form-control-feedback text-danger" id="metadescript_md_md_alert"></div>
+                  </div>
+                </div>                 
+          </div>
+        @endif                      
 
                       <div class="col-md-12">
                           <div class="form-group">
@@ -675,10 +714,11 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage){
   $('#depart').val(depart);
   $('#departid').val(departid);
   $('#editcode').val(code);
-  $('#webdeptname_md').val(webDepart);
+  
 
   if(websiteMode == 1){
        $("#showProductWebsite_md").trigger('click');
+       $('#webdeptname_md').val(webDepart);
   }
    //alert($("#img-tble-"+code).attr('src'))
 //   if($("#img-tble-"+departid).attr('src') != ''){
