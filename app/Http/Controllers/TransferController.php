@@ -922,7 +922,7 @@ class TransferController extends Controller
     $pdf->SetFont('Arial', '', 9);
     $pdf->Cell(70, 4, $details[0]->br_fr_address, 0, 0);
     $pdf->Cell(50, 4, $details[0]->br_to_address, 0, 0);
-    $pdf->Cell(40, 4, '', 0, 0);
+    $pdf->Cell(40, 4, $details[0]->username, 0, 0);
     $pdf->Cell(30, 4, '', 0, 1, 'L');
 
     $pdf->ln(2);
