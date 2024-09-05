@@ -408,13 +408,38 @@ class InventoryController extends Controller
             $count = 1;
             foreach ($request->file('prodgallery') as $val) {
                 $prodGallery = $val;
-                $imageName   = $productid . time() . '-' . $count . '.' . $prodGallery->getClientOriginalExtension();
-                $response    = Image::make($image)
-                    ->save(public_path('storage/images/products/' . $imageName));
-                if ($response) {
+                $imageName   = null;
+                // $response    = Image::make($image)
+                //     ->save(public_path('storage/images/products/' . $imageName));
+
+                if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
+                    $transformationArray = [];
+                    $transformationArray['quality']  = 'auto';
+                    $transformationArray['fetch']    = 'auto';
+    
+                    $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
+    
+                    $folder = strtolower(str_replace(' ','',$company_name->name));
+
+                    $imageName   = $productid.time().'-'.$count.'.'.$prodGallery->getClientOriginalExtension();
+    
+                    $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
+                                            'public_id'      => strtolower($imageName),
+                                            'folder'         => $folder,
+                                            'transformation' => $transformationArray
+                                        ])->getSecurePath();
+                         
+                }else{
+                    $path = public_path('storage/images/products/');
+                    $returnImageValue = $this->uploads($prodGallery, $path,);
+                    $imageName = $returnImageValue['fileName']; 
+                }
+
+                if ($imageName != null) {
                     DB::table('inventory_images')->insert([
                         "item_id" => $productid,
                         "image"   => $imageName,
+                        "url"     => isset($imageData) ? $imageData : null,
                     ]);
 
                     $count++;
