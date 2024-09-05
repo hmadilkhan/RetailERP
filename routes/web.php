@@ -754,6 +754,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/gettransferorders', [TransferController::class, 'gettransferorders']);
     Route::put('/removetransferorder', [TransferController::class, 'removetransferorder']);
     Route::get('/transferReport/{id}', [TransferController::class, 'transferReport']);
+    Route::get('/direct-transfer-report/{id}', [TransferController::class, 'directTransferReport']);
     Route::get('/dcreport/{id}', [TransferController::class, 'dcreport']);
 
 
