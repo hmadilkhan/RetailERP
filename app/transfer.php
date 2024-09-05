@@ -292,7 +292,7 @@ WHERE a.DC_id = ?', [$dcid]);
 
 	public function trf_details($trfid)
 	{
-		$result = DB::select('SELECT a.transfer_item_id, a.product_id, b.image as product_image,b.url as product_image_url, b.product_name,b.uom_id, a.qty AS Transfer_Qty,(SELECT MAX(cost_price) FROM inventory_stock WHERE branch_id = ? AND status_id = 1 AND product_id = a.product_id) AS cp FROM transfer_item_details a
+		$result = DB::select('SELECT a.transfer_item_id, a.product_id,b.item_code, b.image as product_image,b.url as product_image_url, b.product_name,b.uom_id, a.qty AS Transfer_Qty,(SELECT MAX(cost_price) FROM inventory_stock WHERE branch_id = ? AND status_id = 1 AND product_id = a.product_id) AS cp FROM transfer_item_details a
 			INNER JOIN inventory_general b ON b.id = a.product_id
 			WHERE a.transfer_id = ?', [session('branch'), $trfid]);
 		return $result;
