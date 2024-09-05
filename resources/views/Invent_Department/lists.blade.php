@@ -56,8 +56,8 @@
            @if($websites)
             <hr/>
             <div class="form-group">
-                <label for="showProductWebsite">
-                    <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
+                <label for="showWebsite">
+                    <input type="checkbox" id="showWebsite" name="showWebsite">
                     Show Product on Website
                 </label>
             </div>
@@ -186,16 +186,16 @@
                 @for($d=0;$d < sizeof($depart);$d++)
                        <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}')">{{ $depart[$d]->code }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}')">
-                             @if(!empty($depart[$d]->image) && file_exists(public_path('assets/images/department/').$depart[$d]->image))
-                                <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('assets/images/department/'.$depart[$d]->image) }}" alt="{{ $depart[$d]->image }}" height="64" width="64"/>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}')">{{ $depart[$d]->code }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}')">
+                             @if(!empty($depart[$d]->image) && file_exists(public_path('storage/images/department/').$depart[$d]->image))
+                                <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/department/'.$depart[$d]->image) }}" alt="{{ $depart[$d]->image }}" height="64" width="64"/>
                              @else
-                                <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('assets/images/no-image.jpg') }}" alt="no-image.jpg" height="64" width="64" />
+                                <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/no-image.jpg') }}" alt="no-image.jpg" height="64" width="64" />
                              @endif
                          </td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}')">{{ $depart[$d]->department_name }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}')">{{ $depart[$d]->website_department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}')">{{ $depart[$d]->department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}')">{{ $depart[$d]->website_department_name }}</td>
                          <td class="pointer" onclick="editsubdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_id}}','{{ addslashes($depart[$d]->department_name) }}')" >
                             @if($depart)
                               @for($sd=0;$sd < sizeof($sdepart);$sd++)
@@ -254,18 +254,50 @@
                         </div>
                       </div>
 
-        		    <div class="col-md-12">
-                      <div class="form-group">
-                          <label class="form-control-label">Show website department name</label>
-                          <input class="form-control" type="text"
-                           name="webdeptname" id="webdeptname_md" />
-                           <div class="form-control-feedback text-danger" id="webdeptname_md_alert"></div>
-                      </div>
-                    </div>                        
-                      
+                       
+        @if($websites)
+            <hr/>
+          <div class="col-md-12"> 
+            <div class="form-group">
+                <label for="showWebsite_md">
+                    <input type="checkbox" id="showWebsite_md" name="showWebsite">
+                    Show Product on Website
+                </label>
+            </div>
+          </div>
+
+          <div class="d-none" id="website-module_md">
+               <div class="col-md-12">
+                  <div class="form-group">
+                      <label class="form-control-label">Show website department name</label>
+                      <input class="form-control" type="text"
+                        name="webdeptname" id="webdeptname_md" />
+                        <span class="form-control-feedback text-danger" id="webdeptname_md_alert"></span>
+                  </div>
+                </div>
+                
+                <div class="col-md-12">
+                  <div class="form-group">
+                      <label class="form-control-label">Meta Title</label>
+                      <input class="form-control" type="text"
+                        name="metatitle" id="metatitle_md" placeholder="Meta Title"/>
+                        <span class="form-control-feedback text-danger" id="metatitle_md_alert"></span>
+                  </div>
+                </div>  
+                
+                <div class="col-md-12">
+                  <div class="form-group">
+                      <label class="form-control-label">Meta Description</label>
+                      <textarea class="form-control" rows="5" name="metadescript" id="metadescript_md" placeholder="Meta Description"></textarea>
+                        <span class="form-control-feedback text-danger" id="metadescript_md_md_alert"></span>
+                  </div>
+                </div>                 
+          </div>
+        @endif                      
+
                       <div class="col-md-12">
                           <div class="form-group">
-                                 <img src="../../assets/images/no-image.jpg" alt="placeholder.jpg" width="128" height="128" id="previewImg"/></br>
+                                 <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg" width="128" height="128" id="previewImg"/></br>
                               <label for="departImage_md" class="form-control-label">Department Image</label></br>
                     
                               <label for="departImage_md" class="custom-file">
@@ -274,6 +306,24 @@
                               </label>
                           </div>
                       </div>
+
+                    @if($websites)
+                     <div class="col-md-12 d-none" id="banner-imageBox_md">
+                     <div class="form-group">
+                       <a href="javascript:void(0)">
+                        <img id="previewDepartBannerImage_md" src="{{ asset('storage/images/no-image.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
+                        </a>
+
+                    <div class="form-group m-t-10">
+                                    <label for="bannerImage_md" class="custom-file">
+                                                <input type="file" name="bannerImage" id="bannerImage_md" class="custom-file-input">
+                                                <span class="custom-file-control"></span>
+                                            </label>         
+                              </div> 
+
+                     </div>
+                     </div>
+                    @endif
                   </div>  
                   </form>
              </div>
@@ -442,6 +492,10 @@
 	   readURL(this,'previewDepartBannerImage');
 	});
 
+  $("#bannerImage_md").change(function() {
+	   readURL(this,'previewDepartBannerImage_md');
+	});
+  
 	$("#departImage_md").change(function() {
 	  readURL(this,'previewImg');
 	});
@@ -452,10 +506,8 @@
 
 
 $("#btn_clear").on('click',function(){
-
     $("#deptform")[0].reset();
     $("#subdpt").tagsinput('removeAll');
-
 });
 
 
@@ -659,19 +711,21 @@ $("#btn_update").on('click',function(){
 }
 
 
-function editdepart(code,depart,webDepart,departid){
+function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage){
   $("#depart-modal").modal("show");
   $('#depart').val(depart);
   $('#departid').val(departid);
   $('#editcode').val(code);
-  $('#webdeptname_md').val(webDepart)
-   //alert($("#img-tble-"+code).attr('src'))
-//   if($("#img-tble-"+departid).attr('src') != ''){
-  
-         $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
-//   }else{
-//          $("#previewImg").attr('src','{{-- asset("assets/images/department/no-image.jpg") --}}');
-//   }
+  $('#webdeptname_md').val(webDepart);
+
+  if(websiteMode == 1){
+       $("#showWebsite_md").trigger('click');      
+  }
+
+  $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
+  if(bannerImage != ''){ 
+    $("#previewDepartBannerImage_md").attr('src','storage/images/department/'+bannerImage);
+  } 
 }
 function editsubdepart(departcode,departid,departname){
     //alert()
@@ -895,12 +949,12 @@ function insertsubdepart(){
 $("#parent").on('change',function(){
   
   if($(this).val() != ''){
-    $("#showProductWebsite").trigger('click');
+    $("#showWebsite").trigger('click');
   }
 
 });
 
-$("#showProductWebsite").on('click',function(){
+$("#showWebsite").on('click',function(){
     
     if($(this).is(':checked')==true){
       $("#parent").val('').change();
@@ -923,7 +977,31 @@ $("#showProductWebsite").on('click',function(){
             $("#banner-imageBox").addClass('d-none');
         }         
     }    
-})
+});
+
+$("#showWebsite_md").on('click',function(){
+    
+    if($(this).is(':checked')==true){
+        if($("#website-module_md").hasClass('d-none')){
+            $("#website-module_md").removeClass('d-none');
+        }
+        
+        
+        if($("#banner-imageBox_md").hasClass('d-none')){
+            $("#banner-imageBox_md").removeClass('d-none');
+        }        
+    }
+    
+    if($(this).is(':checked')==false){
+        if(!$("#website-module_md").hasClass('d-none')){
+            $("#website-module_md").addClass('d-none');
+        }
+        
+        if(!$("#banner-imageBox_md").hasClass('d-none')){
+            $("#banner-imageBox_md").addClass('d-none');
+        }         
+    }    
+});
 
 
 @if(old('metadescript'))

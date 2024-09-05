@@ -76,9 +76,10 @@ class Inventory_DepartmentController extends Controller
                     'code' => $request->code,
                     'department_id'    => $request->post('parent'),
                     'sub_depart_name'  => $request->deptname,
-                    'slug'  => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
-                    'image' =>$imageName,
-                    'banner'=>$bannerImageName,
+                    'slug'         => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
+                    'image'        =>$imageName,
+                    'banner'       =>$bannerImageName,
+                    'website_mode' =>isset($request->showWebsite) ? 1 : 0
                 ];
                 $result = $invent_department->insert_sdept($items);
                 $getsubdepart = $invent_department->get_subdepartments($request->post('parent'));
@@ -349,6 +350,7 @@ class Inventory_DepartmentController extends Controller
     public function updatedepart(inventory_department $in_depart, Request $request)
     {
         $imageName = null;
+        $bannerImageName = null;
         
 		if($in_depart->check_edit_depart_code($request->departid,$request->editcode))
 		{
@@ -361,16 +363,32 @@ class Inventory_DepartmentController extends Controller
 		}
 		
 	    if(!empty($request->file('departImage'))){
-	        $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('departname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
-	        $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
-	        
+	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('departname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
+	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+
 	       $get = DB::table('inventory_department')->where('company_id',session('company_id'))->where('department_id',$request->departid)->first();
-	        if($get){
-	            if(File::exists(public_path('assets/images/department/').$get->image)){
-	                File::delete(public_path('assets/images/department/').$get->image);
-	            }
-	        }
-	    } 		
+           
+           $file = $this->uploads($request->file('departImage'),"images/department",($get != null ? $get->image : null));
+           $imageName = !empty($file) ? $file["fileName"] : "";  	        
+           // if($get){
+	        //     if(File::exists(public_path('assets/images/department/').$get->image)){
+	        //         File::delete(public_path('assets/images/department/').$get->image);
+	        //     }
+	        // }
+	    }
+        
+        if(!empty($request->file('bannerImage'))){
+            // $request->validate([
+            //     'bannerImage' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
+            // ]);
+            // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
+            // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
+            $get = DB::table('inventory_department')->where('company_id',session('company_id'))->where('department_id',$request->departid)->first();
+           
+            $file = $this->uploads($request->file('bannerImage'),"images/department",($get != null ? $get->banner : null));
+            $bannerImageName = !empty($file) ? $file["fileName"] : "";
+        }           
+
 		
 		$items = [
 			'company_id'               => session('company_id'),
@@ -378,6 +396,7 @@ class Inventory_DepartmentController extends Controller
 			'department_name'          => $request->departname,
 			'website_department_name'  => (empty($request->webdeptname) ?  $request->departname : $request->webdeptname),
 			'slug'                     => preg_replace("/[\s_]/", "-",strtolower($request->departname)),
+            'website_mode'             => (isset($request->showWebsite) ? 1 : 0),
 			'date'                     => date('Y-m-d'),
 			'time'                     => date('H:i:s'),
 		];
@@ -385,6 +404,10 @@ class Inventory_DepartmentController extends Controller
 		if($imageName != null){
 		    $items['image']=$imageName;
 		}
+
+		if($bannerImageName != null){
+		    $items['banner']=$bannerImageName;
+		}        
 	
 		$result = $in_depart->update_depart($request->departid, $items);
 		return response()->json(array("state"=>0,"msg"=>'Department edit successfully.',"contrl"=>'deptname'));;

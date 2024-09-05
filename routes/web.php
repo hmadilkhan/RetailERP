@@ -605,7 +605,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/adddepartment', [Inventory_DepartmentController::class, 'adddepartment']);
     Route::post('/deletedepartment', [Inventory_DepartmentController::class, 'deleteDepartment']);
     Route::post('/addsubdepart', [Inventory_DepartmentController::class, 'addsubdepartment']);
-    Route::put('/updatedepart', [Inventory_DepartmentController::class, 'updatedepart']);
+    Route::post('/updatedepart', [Inventory_DepartmentController::class, 'updatedepart']);
     Route::get('/getsubdepart', [Inventory_DepartmentController::class, 'getsubdepart']);
 
     //Inventory Stock
