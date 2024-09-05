@@ -347,7 +347,11 @@ class TransferController extends Controller
     return 1;
   }
 
-
+  public function getToBranches(Request $request, transfer $transfer)
+  {
+      $branches = $transfer->getTobranches($request->branch);
+      return $branches;
+  }
 
   public function create_transferorder(Request $request, transfer $transfer)
   {

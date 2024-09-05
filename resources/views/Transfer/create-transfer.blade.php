@@ -45,11 +45,6 @@
                             <select name="branchto" id="branchto" class="form-control select2"
                                 data-placeholder="Select Branch">
                                 <option value="">Select Branch</option>
-                                @if ($branches)
-                                    @foreach ($branches as $value)
-                                        <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
-                                    @endforeach
-                                @endif
                             </select>
                             <div class="form-control-feedback"></div>
                         </div>
@@ -234,6 +229,7 @@
 
 
         function get_products() {
+            getToBranches();
             $.ajax({
                 url: "{{ url('/get_products') }}",
                 type: 'POST',
@@ -253,6 +249,30 @@
                     }
                 }
             });
+        }
+
+        function getToBranches() {
+            if ($('#branchfrm').val() != "") {
+                $.ajax({
+                    url: "{{ url('/get-to-branches') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        branch: $('#branchfrm').val(),
+                    },
+                    success: function(resp) {
+                        if (resp) {
+                            $("#branchto").empty();
+                            $("#branchto").append("<option value=''>Select Branch</option>");
+                            for (var count = 0; count < resp.length; count++) {
+                                $("#product").append(
+                                    "<option value='" + resp[count].branch_id + "'>" + resp[count]
+                                    .branch_name + "</option>");
+                            }
+                        }
+                    }
+                });
+            }
         }
 
         function add_product() {

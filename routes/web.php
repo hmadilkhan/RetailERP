@@ -772,6 +772,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::put('/qty_update', [TransferController::class, 'qty_update_trf']);
     Route::post('/insert_direct_chalan', [TransferController::class, 'insert_direct_chalan']);
     Route::get('/edit_trf_details/{id}', [TransferController::class, 'edit_trf_details']);
+    Route::post('/get-to-branches', [TransferController::class, 'getToBranches']);
 
     Route::get('/insert-po/{id}', [TransferController::class, 'getdetails_po']);
     Route::post('/submitpo', [TransferController::class, 'purchaseorder_insert']);
