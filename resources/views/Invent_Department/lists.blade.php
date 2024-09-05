@@ -14,15 +14,11 @@
    @csrf
    <div class="row">
      <div class="col-md-8">
-     <div class="card">
-                  <div class="card-header">
-                     <h5 class="card-header-text" id="title-hcard"> Create Department</h5>
-                  </div>
-                  <div class="card-block">
-
-
-       
-    
+        <div class="card">
+             <div class="card-header">
+                <h5 class="card-header-text" id="title-hcard"> Create Department</h5>
+              </div>
+              <div class="card-block"> 
             <div class="row">    
                 <div class="col-lg-4 col-md-4">
                   <div class="form-group">
@@ -56,11 +52,9 @@
                   </div>
                 </div>                
                 
-              </div>
-           </div>   
+            </div>  
            @if($websites)
             <hr/>
-
             <div class="form-group">
                 <label for="showProductWebsite">
                     <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
