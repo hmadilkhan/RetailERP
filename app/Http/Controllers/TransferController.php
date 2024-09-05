@@ -920,11 +920,11 @@ class TransferController extends Controller
     $pdf->Cell(30, 6, $details[0]->to_status, 0, 1, 'L');
 
     $pdf->SetFont('Arial', '', 11);
-    $pdf->Cell(70, 4, '', 0, 0);//$details[0]->br_fr_address
-    $pdf->Cell(60, 4, '', 0, 0);//$details[0]->br_to_address
-    $pdf->Cell(30, 4, 'Created By :', 0, 0);
+    $pdf->Cell(70, 6, '', 0, 0);//$details[0]->br_fr_address
+    $pdf->Cell(60, 6, '', 0, 0);//$details[0]->br_to_address
+    $pdf->Cell(30, 6, 'Created By :', 0, 0);
     $pdf->SetFont('Arial', 'B', 11);
-    $pdf->Cell(30, 4, $details[0]->username, 0, 1, 'L');
+    $pdf->Cell(30, 6, $details[0]->username, 0, 1, 'L');
 
     $pdf->ln(2);
 
