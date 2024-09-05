@@ -394,5 +394,6 @@ WHERE a.DC_id = ?', [$dcid]);
 	public function directTransferOrderReport($transferId)
 	{
 		$result = DB::select("SELECT a.transfer_id, a.transfer_No, a.date, e.branch_name as branch_from, e.branch_address as br_fr_address, f.branch_name as branch_to, f.branch_address as br_to_address, c.status_name as to_status, d.item_code, d.product_name, b.qty, g.cost_price, c.status_name as item_status, d.id as product_id, b.transfer_item_id as id FROM transfer_without_demand a INNER JOIN transfer_item_details b ON b.transfer_id = a.transfer_id INNER JOIN transfer_status c ON c.status_id = a.status_id INNER JOIN inventory_general d ON d.id = b.product_id INNER JOIN branch e ON e.branch_id = a.branch_from INNER JOIN branch f ON f.branch_id = a.branch_to INNER JOIN deliverychallan_general_details h ON h.Transfer_id = a.transfer_id INNER JOIN deliverychallan_item_details g ON g.DC_Id = h.DC_id WHERE a.transfer_id = ?", [$transferId]);
+		return $result;
 	}
 }
