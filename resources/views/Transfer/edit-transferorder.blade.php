@@ -251,7 +251,7 @@
 
         trf_details();
         var imageUrl = "{{ asset('storage/images/placeholder.jpg') }}";
-
+        var GlobalUsername = '{{ strtolower(Auth::user()->username) }}';
         function trf_details() {
             $.ajax({
                 url: "{{ url('/trf_details') }}",
