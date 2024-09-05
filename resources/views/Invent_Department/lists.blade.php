@@ -491,6 +491,10 @@
 	   readURL(this,'previewDepartBannerImage');
 	});
 
+  $("#bannerImage_md").change(function() {
+	   readURL(this,'previewDepartBannerImage_md');
+	});
+  
 	$("#departImage_md").change(function() {
 	  readURL(this,'previewImg');
 	});
