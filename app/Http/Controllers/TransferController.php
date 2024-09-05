@@ -949,7 +949,8 @@ class TransferController extends Controller
 
     $pdf->ln(6);
     $pdf->SetFont('Arial', '', 12);
-    $pdf->Cell(50, 7, "Receiving Signature", 0, 0, 'L', 1);
+    $pdf->Cell(150, 7, "Receiving Signature", 0, 0, 'L', 1);
+    $pdf->Cell(40, 7, "Receiving Signature", 'B', 0, 'R', 1);
 
     //save file
     $pdf->Output('Direct_Transfer_Order_' . $details[0]->transfer_No . '.pdf', 'I');
