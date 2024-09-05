@@ -194,8 +194,8 @@
                                 <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/no-image.jpg') }}" alt="no-image.jpg" height="64" width="64" />
                              @endif
                          </td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}')">{{ $depart[$d]->department_name }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}')">{{ $depart[$d]->website_department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}')">{{ $depart[$d]->department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}')">{{ $depart[$d]->website_department_name }}</td>
                          <td class="pointer" onclick="editsubdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_id}}','{{ addslashes($depart[$d]->department_name) }}')" >
                             @if($depart)
                               @for($sd=0;$sd < sizeof($sdepart);$sd++)
@@ -256,46 +256,7 @@
 
                        
                       
-        @if($websites)
-            <hr/>
-          <div class="col-md-12"> 
-            <div class="form-group">
-                <label for="showProductWebsite_md">
-                    <input type="checkbox" id="showProductWebsite_md" name="showProductWebsite_md">
-                    Show Product on Website
-                </label>
-            </div>
-          </div>
 
-          <div class="d-none" id="website-module_md">
-               <div class="col-md-12">
-                  <div class="form-group">
-                      <label class="form-control-label">Show website department name</label>
-                      <input class="form-control" type="text"
-                        name="webdeptname" id="webdeptname_md" />
-                        <div class="form-control-feedback text-danger" id="webdeptname_md_alert"></div>
-                  </div>
-                </div>
-                
-                <div class="col-md-12">
-                  <div class="form-group">
-                      <label class="form-control-label">Meta Title</label>
-                      <input class="form-control" type="text"
-                        name="metatitle" id="metatitle_md" placeholder="Meta Title"/>
-                        <div class="form-control-feedback text-danger" id="metatitle_md_alert"></div>
-                  </div>
-                </div>  
-                
-                <div class="col-md-12">
-                  <div class="form-group">
-                      <label class="form-control-label">Meta Description</label>
-                      <textarea class="form-control" 
-                        name="metadescript" id="metadescript_md" placeholder="Meta Description"/>
-                        <div class="form-control-feedback text-danger" id="metadescript_md_md_alert"></div>
-                  </div>
-                </div>                 
-          </div>
-        @endif
                       <div class="col-md-12">
                           <div class="form-group">
                                  <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg" width="128" height="128" id="previewImg"/></br>
