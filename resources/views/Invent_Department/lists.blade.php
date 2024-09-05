@@ -13,7 +13,7 @@
 <form method="POST" id="deptform" class="form-horizontal" enctype="multipart/form-data">
    @csrf
    <div class="row">
-     <div class="col-md-8">
+     <div class="col-md-8 p-1">
         <div class="card">
              <div class="card-header">
                 <h5 class="card-header-text" id="title-hcard"> Create Department</h5>
@@ -61,7 +61,7 @@
                     Show Product on Website
                 </label>
             </div>
-           <div class="row">  
+           <div class="row d-none" id="website-module">  
     		       <div class="col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Show website department name</label>
@@ -91,7 +91,14 @@
          </div>
        </div>
      </div> <!-- field portion-->
-     <div class="col-md-4">
+     <div class="col-md-4 p-1">
+       <div class="form-group row">
+          <button class="btn btn-circle btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
+            ></i>&nbsp; Save</button>.
+              <button class="btn btn-circle btn-danger f-left m-t-30 m-l-10" id="btn_clear" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" 
+            ></i> Clear</button>
+       </div>
+
      <div class="card">
                   <div class="card-header">
                   <h4 for="departImage">Image</h4>
@@ -118,7 +125,7 @@
               </div>    
               </div> 
         @if($websites)    
-        <div class="card">
+        <div class="card d-none" id="banner-imageBox">
                   <div class="card-header">
                      <h4 for="bannerImage">Banner</h4>
                   </div>
@@ -144,13 +151,6 @@
         @endif
      </div> <!-- col-md-4 close image portion -->
    </div>
-
-      <div class="form-group row">
-          <button class="btn btn-circle btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
-            ></i>&nbsp; Save</button>.
-              <button class="btn btn-circle btn-danger f-left m-t-30 m-l-10" id="btn_clear" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" 
-            ></i> Clear</button>
-       </div>
    </form>
 </section>    
 
@@ -900,8 +900,8 @@ $("#showProductWebsite").on('click',function(){
         }
         
         
-        if($("#banner-image").hasClass('d-none')){
-            $("#banner-image").removeClass('d-none');
+        if($("#banner-imageBox").hasClass('d-none')){
+            $("#banner-imageBox").removeClass('d-none');
         }        
     }
     
@@ -910,8 +910,8 @@ $("#showProductWebsite").on('click',function(){
             $("#website-module").addClass('d-none');
         }
         
-        if(!$("#banner-image").hasClass('d-none')){
-            $("#banner-image").addClass('d-none');
+        if(!$("#banner-imageBox").hasClass('d-none')){
+            $("#banner-imageBox").addClass('d-none');
         }         
     }    
 })
