@@ -24,7 +24,7 @@
        
     
             <div class="row">    
-                <div class="col-lg-3 col-md-3">
+                <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Department Code:</label>
                       <input class="form-control" type="text" name="code" id="code" placeholder='Department Code'/>
@@ -32,7 +32,7 @@
                   </div>
                 </div>
             
-    		    <div class="col-lg-3 col-md-3">
+    		    <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Department Name</label>
                       <input class="form-control" type="text"
@@ -41,16 +41,9 @@
                   </div>
                 </div>   
                 
-    		    <div class="col-lg-3 col-md-3">
-                  <div class="form-group">
-                      <label class="form-control-label">Show website department name</label>
-                      <input class="form-control" type="text"
-                       name="webdeptname" id="webdeptname" placeholder='Show website department name'/>
-                       <div class="form-control-feedback text-danger" id="webdeptname_alert"></div>
-                  </div>
-                </div>  
+
                 
-                <div class="col-lg-3 col-md-3">
+                <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Parent</label>
                       <select name="parent" id="parent" class="select2">
@@ -64,18 +57,6 @@
                 </div>                
                 
               </div>
-              
-              <div class="row">
-               <div class="col-lg-3 col-md-2">
-                 <div class="form-group">
-                  <label class="form-control-label">Department Image</label>
-                      <input class="form-control" id="departImage" name="departImage" type="file" />
-                   <span class="form-control-feedback text-danger" id="departImage_alert"></span>
-                 </div>
-               </div>
-            
-               
-
            </div>   
            @if($websites)
             <div class="form-group">
@@ -84,12 +65,33 @@
                     Show Product on Website
                 </label>
             </div>
+
+    		    <div class="col-lg-3 col-md-3">
+                  <div class="form-group">
+                      <label class="form-control-label">Show website department name</label>
+                      <input class="form-control" type="text"
+                       name="webdeptname" id="webdeptname" placeholder='Show website department name'/>
+                       <div class="form-control-feedback text-danger" id="webdeptname_alert"></div>
+                  </div>
+                </div>  
+
            @endif
          </div>
        </div>
      </div> <!-- field portion-->
      <div class="col-md-4">
+     <div class="row">
+               <div class="col-lg-3 col-md-2">
+                 <div class="form-group">
+                  <label class="form-control-label">Department Image</label>
+                      <input class="form-control" id="departImage" name="departImage" type="file" />
+                   <span class="form-control-feedback text-danger" id="departImage_alert"></span>
+                 </div>
+               </div>
 
+        @if($websites)    
+        
+        @endif
      </div> <!-- col-md-4 close image portion -->
    </div>
 
