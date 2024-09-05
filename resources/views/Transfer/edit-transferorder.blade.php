@@ -266,16 +266,16 @@
                         $("#trftable tbody").empty();
                         for (var count = 0; count < result.length; count++) {
 
-                            if ($.inArray(value.company_id, [95, 102, 104]) != -1 || $.inArray(GlobalUsername, [
+                            if ($.inArray("{{session('company_id')}}", [95, 102, 104]) != -1 || $.inArray(GlobalUsername, [
                                     'demoadmin', 'fnkhan'
                                 ]) != -1) {
 
-                                if (value.product_image_url != '') {
-                                    imageUrl = value.product_image_url;
+                                if (result[count].product_image_url != '') {
+                                    imageUrl = result[count].product_image_url;
                                 }
                             } else {
-                                if (value.product_image != '') {
-                                    imageUrl = "storage/images/products/" + value.product_image;
+                                if (result[count].product_image != '') {
+                                    imageUrl = "storage/images/products/" + result[count].product_image;
                                 }
                             }
 
