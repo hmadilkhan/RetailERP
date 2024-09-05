@@ -265,7 +265,7 @@
                             $("#branchto").empty();
                             $("#branchto").append("<option value=''>Select Branch</option>");
                             for (var count = 0; count < resp.length; count++) {
-                                $("#product").append(
+                                $("#branchto").append(
                                     "<option value='" + resp[count].branch_id + "'>" + resp[count]
                                     .branch_name + "</option>");
                             }
