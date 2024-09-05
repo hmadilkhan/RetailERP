@@ -399,7 +399,7 @@
                             'demoadmin', 'fnkhan'
                         ]) != -1) {
 
-                        if (result.data[count].url != '') {
+                        if (result.data[count].url != null) {
                             imageUrl = result.data[count].url;
                         }
                     } else {
