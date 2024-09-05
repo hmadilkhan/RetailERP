@@ -895,7 +895,7 @@ function insertsubdepart(){
 $("#parent").on('change',function(){
   
   if($(this).val() != ''){
-    $("#showProductWebsite").triiger();
+    $("#showProductWebsite").trigger('click');
   }
 
 });
