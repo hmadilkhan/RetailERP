@@ -577,6 +577,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/get-master-pending-orders', [OrderController::class, 'GetMastersPendingOrders']);
     Route::get('/orders-report', [OrderController::class, 'exportPDF']);
     Route::post('/change-order-branch', [OrderController::class, 'changeOrderBranch']);
+    Route::post('/change-order-status-with-logs', [OrderController::class, 'changeOrderStatuswithLogs']);
     Route::post('/change-order-status', [OrderController::class, 'changeOrderStatus']);
     Route::post('/order-change-status', [OrderController::class, 'changeOrderStatuswithLogs']);
     Route::post('/order-seen', [OrderController::class, 'orderSeen']);
