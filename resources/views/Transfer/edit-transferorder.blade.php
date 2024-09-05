@@ -265,13 +265,13 @@
                     if (result) {
                         $("#trftable tbody").empty();
                         for (var count = 0; count < result.length; count++) {
-
-                            if ($.inArray("{{session('company_id')}}", [95, 102, 104]) != -1 || $.inArray(GlobalUsername, [
-                                    'demoadmin', 'fnkhan'
-                                ]) != -1) {
+                          console.log("URL : ",result[count].product_image_url);
+                          
+                            if ($.inArray("{{session('company_id')}}", [95, 102, 104]) != -1 ) {
 
                                 if (result[count].product_image_url != '') {
                                     imageUrl = result[count].product_image_url;
+                                    console.log("IF : ",imageUrl);
                                 }
                             } else {
                                 if (result[count].product_image != '') {
