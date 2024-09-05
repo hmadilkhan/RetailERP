@@ -31,7 +31,7 @@
                                 data-placeholder="Select Branch">
                                 <option value="">Select Branch</option>
                                 @if ($headoffice)
-                                    @foreach ($headoffice as $value)
+                                    @foreach ($branches as $value)
                                         <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                                     @endforeach
                                 @endif
