@@ -137,7 +137,9 @@ class InventoryController extends Controller
 
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
-
+        if(Auth::user()->username == 'demoadmin'){
+              return $request->file('prodgallery');
+        }
         //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size 
 
         $rules = [
@@ -404,64 +406,64 @@ class InventoryController extends Controller
         }
 
         //Product Gallery		
-        // if (!empty($request->file('prodgallery'))) {
-        //     $count = 1;
-        //     foreach ($request->file('prodgallery') as $val) {
-        //         $prodGallery = $val;
-        //         $imageName   = null;
-        //         // $response    = Image::make($image)
-        //         //     ->save(public_path('storage/images/products/' . $imageName));
+        if (!empty($request->file('prodgallery'))) {
+            $count = 1;
+            foreach ($request->file('prodgallery') as $val) {
+                $prodGallery = $val;
+                $imageName   = null;
+                // $response    = Image::make($image)
+                //     ->save(public_path('storage/images/products/' . $imageName));
 
-        //         if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
-        //             $transformationArray = [];
-        //             $transformationArray['quality']  = 'auto';
-        //             $transformationArray['fetch']    = 'auto';
+                if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
+                    $transformationArray = [];
+                    $transformationArray['quality']  = 'auto';
+                    $transformationArray['fetch']    = 'auto';
     
-        //             $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
+                    $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
     
-        //             $folder = strtolower(str_replace(' ','',$company_name->name));
+                    $folder = strtolower(str_replace(' ','',$company_name->name));
 
-        //             $imageName   = $productid.time().'-'.$count.'.'.$prodGallery->getClientOriginalExtension();
+                    $imageName   = $productid.time().'-'.$count.'.'.$prodGallery->getClientOriginalExtension();
     
-        //             $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
-        //                                     'public_id'      => strtolower($imageName),
-        //                                     'folder'         => $folder,
-        //                                     'transformation' => $transformationArray
-        //                                 ])->getSecurePath();
+                    $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
+                                            'public_id'      => strtolower($imageName),
+                                            'folder'         => $folder,
+                                            'transformation' => $transformationArray
+                                        ])->getSecurePath();
                          
-        //         }else{
-        //             $path = public_path('storage/images/products/');
-        //             $returnImageValue = $this->uploads($prodGallery, $path,);
-        //             $imageName = $returnImageValue['fileName']; 
-        //         }
+                }else{
+                    $path = public_path('storage/images/products/');
+                    $returnImageValue = $this->uploads($prodGallery, $path);
+                    $imageName = $returnImageValue['fileName']; 
+                }
 
-        //         if ($imageName != null) {
-        //             DB::table('inventory_images')->insert([
-        //                 "item_id" => $productid,
-        //                 "image"   => $imageName,
-        //                 "url"     => isset($imageData) ? $imageData : null,
-        //             ]);
+                if ($imageName != null) {
+                    DB::table('inventory_images')->insert([
+                        "item_id" => $productid,
+                        "image"   => $imageName,
+                        "url"     => isset($imageData) ? $imageData : null,
+                    ]);
 
-        //             $count++;
-        //         }
-        //     }
-        // }
+                    $count++;
+                }
+            }
+        }
 
-        // //Product video
-        // if (!empty($request->file('prodvideo'))) {
-        //     $prodVideo = $request->file('prodvideo');
+        //Product video
+        if (!empty($request->file('prodvideo'))) {
+            $prodVideo     = $request->file('prodvideo');
+            $path          = public_path('storage/video/products/');
+            $prodVideoName = $this->uploads($prodVideo, $path);
 
-        //     $prodVideoName = $productid . time() . '.' . $prodVideo->getClientOriginalExtension();
+            if (isset($prodVideoName['filename'])) {
 
-        //     if ($prodVideo->move(public_path('storage/video/products'), $prodVideoName)) {
-
-        //         DB::table('inventory_video')->insert([
-        //             "inventory_id" => $productid,
-        //             "file"         => $prodVideoName,
-        //             'created_at'   => date("Y-m-d H:i:s")
-        //         ]);
-        //     }
-        // }
+                DB::table('inventory_video')->insert([
+                    "inventory_id" => $productid,
+                    "file"         => $$prodVideoName['filename'],
+                    'created_at'   => date("Y-m-d H:i:s")
+                ]);
+            }
+        }
 
         $this->sendPushNotification($request->code, $request->name, "store");
         return  redirect()->back();
