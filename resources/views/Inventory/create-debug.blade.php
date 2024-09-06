@@ -988,20 +988,52 @@
         }
   }
 
-
   let filesArray = []; // Array to keep track of the files
+
+// Define supported file extensions
+const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif'];
 
 function readURL_multiple(input, containerId) {
     if (input.files && input.files.length) {
         // Get the container element where images will be appended
         const container = document.getElementById(containerId);
 
-        // Update the filesArray with new files
+        // Clear existing files
+        const newFiles = [];
+        let hasError = false;
+
+        // Check each file's size and extension
         for (let i = 0; i < input.files.length; i++) {
-            filesArray.push(input.files[i]);
+            const file = input.files[i];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            // Validate file size (1MB = 1,024 * 1,024 bytes)
+            if (file.size > 1 * 1024 * 1024) {
+                hasError = true;
+                swal('Error! File Format','The file '+{file.name+' exceeds the 1MB size limit.','error');
+                continue;
+            }
+
+            // Validate file extension
+            if (!SUPPORTED_EXTENSIONS.includes(fileExtension)) {
+                hasError = true;
+                swal('Error! File Format','The file '+file.name+' has an unsupported file type.','error');
+                continue;
+            }
+
+            // Add valid file to newFiles array
+            newFiles.push(file);
         }
 
-        // Loop through the filesArray and display images
+        if (!hasError) {
+            // Only proceed with valid files
+            filesArray = [...filesArray, ...input.files];
+        } else {
+            // Only add valid files to filesArray
+            filesArray = [...filesArray, ...newFiles];
+        }
+
+        // Update the image container
         updateImageContainer(container);
         
         // Reset the file input to allow selecting the same files again
@@ -1075,9 +1107,98 @@ function updateFileInput() {
 
     // Update the file input's files property
     fileInput.files = dataTransfer.files;
+}
 
-    // console.log($("#prodgallery").get)
-}  
+
+//   let filesArray = []; // Array to keep track of the files
+
+// function readURL_multiple(input, containerId) {
+//     if (input.files && input.files.length) {
+//         // Get the container element where images will be appended
+//         const container = document.getElementById(containerId);
+
+//         // Update the filesArray with new files
+//         for (let i = 0; i < input.files.length; i++) {
+//             filesArray.push(input.files[i]);
+//         }
+
+//         // Loop through the filesArray and display images
+//         updateImageContainer(container);
+        
+//         // Reset the file input to allow selecting the same files again
+//         // input.value = '';
+//     }
+// }
+
+// function updateImageContainer(container) {
+//     // Clear the container
+//     container.innerHTML = '';
+
+//     filesArray.forEach((file, index) => {
+//         const reader = new FileReader();
+
+//         reader.onload = function(e) {
+//             // Create a container for each image and remove button
+//             const imageContainer = document.createElement('div');
+//             imageContainer.style.position = 'relative';
+//             imageContainer.style.display = 'inline-block';
+//             imageContainer.style.margin = '10px';
+
+//             // Create a new image element
+//             const img = document.createElement('img');
+//             img.src = e.target.result;
+//             img.style.maxWidth = '75px'; // Adjust as needed
+//             img.style.maxHeight = '75px'; // Adjust as needed
+//             img.style.objectFit = 'cover'; // Ensures images fit well
+
+//             // Create a remove button
+//             const removeButton = document.createElement('button');
+//             removeButton.innerHTML = '✖'; // Cross symbol
+//             removeButton.style.position = 'absolute';
+//             removeButton.style.top = '-6px';
+//             removeButton.style.right = '-6px';
+//             removeButton.style.backgroundColor = 'red';
+//             removeButton.style.color = 'white';
+//             removeButton.style.border = 'none';
+//             removeButton.style.borderRadius = '50%';
+//             removeButton.style.cursor = 'pointer';
+//             removeButton.style.fontSize = '12px';
+
+//             // Add event listener to remove button
+//             removeButton.addEventListener('click', function() {
+//                 // Remove the file from filesArray
+//                 filesArray.splice(index, 1);
+//                 // Remove the image from the container
+//                 container.removeChild(imageContainer);
+//                 // Update the file input to reflect changes
+//                 updateFileInput();
+//             });
+
+//             // Append image and button to the container
+//             imageContainer.appendChild(img);
+//             imageContainer.appendChild(removeButton);
+//             container.appendChild(imageContainer);
+//         }
+
+//         // Read the file as a Data URL
+//         reader.readAsDataURL(file);
+//     });
+// }
+
+// function updateFileInput() {
+//     // Get the file input element
+//     const fileInput = document.getElementById('prodgallery');
+//     // Create a new DataTransfer object
+//     const dataTransfer = new DataTransfer();
+    
+//     // Add files to the DataTransfer object
+//     filesArray.forEach(file => dataTransfer.items.add(file));
+
+//     // Update the file input's files property
+//     fileInput.files = dataTransfer.files;
+
+//     // console.log($("#prodgallery").get)
+// }  
 
 function handleVideo(input, containerId) {
             if (input.files && input.files[0]) {
