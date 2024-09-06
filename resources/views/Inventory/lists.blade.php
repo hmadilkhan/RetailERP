@@ -7,7 +7,7 @@
 @section('navinventorys','active')
 
 @section('content')
-    <section class="panels-wells">
+    <section class="panels-wells pt-30">
   
         <div class="card">
             <div class="card-header">
