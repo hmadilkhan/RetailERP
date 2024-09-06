@@ -15,11 +15,11 @@
     <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Sub Department List</h5>
+         <a href="{{ route('departmentCreate') }}" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Create Department" class="btn btn-success waves-effect waves-light f-right d-inline-block m-r-10">
+         <i class="icofont icofont-plus m-r-5"></i> Create Department</a>          
            <button type="button" id="btn_removeall"  class="btn btn-danger f-right m-r-10 invisible"><i class="icofont icofont-ui-delete f-18 "></i>&nbsp;Remove</button>
 
-             <a target="_blank" href="{{ route('departmentCreate') }}" class="btn btn-md btn-success waves-effect waves-light f-right" ><i class="fa fa-plus"> </i>
-                 Create Department
-              </a>
+             
           </div>      
        <div class="card-block">
        
