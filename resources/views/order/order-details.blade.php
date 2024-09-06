@@ -347,7 +347,7 @@
                                         <div class="col-md-3">
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Total</p>
-                                                <h5>{{ session('currency') . ' ' . number_format($item->item_price * $item->total_qty, 0) }}
+                                                <h5>{{ session('currency') . ' ' . number_format(($item->item_price != "" ? $item->item_price : 1) * $item->total_qty, 0) }}
                                                 </h5>
                                             </div>
                                         </div>
@@ -402,7 +402,7 @@
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Price</p>
                                                 <h5 class="mb-0 mt-2">
-                                                    {{ session('currency') . ' ' . number_format($item->item_price, 0) }}</h5>
+                                                    {{ session('currency') . ' ' . ($item->item_price != "" ? number_format($item->item_price, 0) : 0) }}</h5>
                                             </div>
                                         </div>
                                         <div class="col-md-5">
@@ -419,7 +419,7 @@
                                         <div class="col-md-3">
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Total</p>
-                                                <h5>{{ session('currency') . ' ' . number_format($item->item_price * $item->total_qty, 0) }}
+                                                <h5>{{ session('currency') . ' ' .  number_format(($item->item_price != "" ? $item->item_price : 1) * $item->total_qty, 0) }}
                                                 </h5>
                                             </div>
                                         </div>

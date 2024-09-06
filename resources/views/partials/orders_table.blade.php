@@ -1,5 +1,5 @@
 <div class="col-md-12 table-responsive" >
-    <table id="order_table" class="table table-striped table-responsive table-bordered nowrap flex-nowrap col-md-12 col-sm-12" width="100%">
+    <table id="order_table" class="table table-striped table-bordered  nowrap flex-nowrap col-md-12 col-sm-12" width="100%">
         <thead>
             <tr>
                 <th>Machine#</th>
