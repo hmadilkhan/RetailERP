@@ -1335,7 +1335,8 @@ class InventoryController extends Controller
             }
 
             // Redirect to index
-            return redirect()->action('InventoryController@index');
+            // return redirect()->action('InventoryController@index');
+            return redirect()->route('invent-list');
         }
     }
 

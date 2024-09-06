@@ -388,7 +388,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light"
-                                onClick="saveVoid()">Save Department</button>
+                                onClick="saveVoid()">Submit</button>
                         </div>
                     </div>
                 </div>
