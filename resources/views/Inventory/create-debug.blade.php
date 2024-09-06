@@ -1085,8 +1085,8 @@ function handleVideo(input, containerId) {
                 const container = document.getElementById(containerId);
 
                 // Check if the file is an MP4 video
-                if (file.type !== 'video/mp4') {
-                    alert('Please select an MP4 video file.');
+                if ($.inArray(file.type,['video/mp4','video/webm','video/ogg']) == -1) {
+                    swal('Error!','Please select an mp4,webm,ogg video file.','error');
                     input.value = ''; // Clear the input if the file is not MP4
                     return;
                 }
