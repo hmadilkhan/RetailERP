@@ -600,6 +600,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     // inventory department module //
     Route::resource('invent_dept', Inventory_DepartmentController::class);
+    Route::get('/create-department', [Inventory_DepartmentController::class, 'create']);
     Route::put('/invent-depart-modify', [Inventory_DepartmentController::class, 'depart_update'])->name('invent_deptup');
     Route::put('/invent-sbdepart-modify', [Inventory_DepartmentController::class, 'sb_depart_update'])->name('invent_sb_deptup');
     Route::post('/adddepartment', [Inventory_DepartmentController::class, 'adddepartment']);

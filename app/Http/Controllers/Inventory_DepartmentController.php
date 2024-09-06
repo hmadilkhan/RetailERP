@@ -35,7 +35,10 @@ class Inventory_DepartmentController extends Controller
      */
     public function create()
     {
-        
+        $depart = inventory_department::getdepartment('');
+        // $sdepart = inventory_department::get_subdepart('');
+        $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();       
+        return view('Invent_Department.create',compact('depart','websites'));
     }
     /**
      * Store a newly created resource in storage.
