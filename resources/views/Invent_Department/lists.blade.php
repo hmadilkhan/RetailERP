@@ -7,7 +7,7 @@
 @section('navinvent_depart','active')
 
 @section('content')
- <section class="panels-wells">
+ <section class="panels-wells m-t-30">
   <div class="row">
 
            <div class="col-lg-12 col-md-12">
