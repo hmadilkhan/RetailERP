@@ -137,9 +137,9 @@ class InventoryController extends Controller
 
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
-        if(Auth::user()->username == 'demoadmin'){
-              return empty($request->file('productvideo')) ? 1 : 0;
-        }
+        // if(Auth::user()->username == 'demoadmin'){
+        //       return empty($request->file('productvideo')) ? 1 : 0;
+        // }
         //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size 
 
         $rules = [
@@ -379,12 +379,12 @@ class InventoryController extends Controller
         }
 
         if (!empty($request->website)) {
-            foreach ($request->website as $website) {
+            // foreach ($request->website as $website) {
                 WebsiteProduct::create([
                     "website_id" => $website,
                     "inventory_id" => $productid,
                 ]);
-            }
+            // }
         }
 
         // 		if(!empty($request->brand)){
@@ -1025,12 +1025,12 @@ class InventoryController extends Controller
 
         WebsiteProduct::where("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
         if (!empty($request->website)) {
-            foreach ($request->website as $website) {
+            // foreach ($request->website as $website) {
                 WebsiteProduct::create([
                     "website_id"   => $website,
                     "inventory_id" => $request->id,
                 ]);
-            }
+            // }
         }
 
         DB::table('inventory_tags')->where("inventory_id", $request->id)->delete();

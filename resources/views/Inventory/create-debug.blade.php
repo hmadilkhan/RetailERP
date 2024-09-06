@@ -257,7 +257,7 @@
             <div class="col-md-5">
 				<div class="form-group {{ $errors->has('website') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Select Website (Select on where product to show)</label>
-                    <select class="form-control  select2" data-placeholder="Select Website" id="website" name="website[]" multiple>
+                    <select class="form-control  select2" data-placeholder="Select Website" id="website" name="website">
                        <option value="">Websites</option>
                        @if($websites)
 						  @foreach($websites as $website)
