@@ -1005,7 +1005,7 @@ function readURL_multiple(input, containerId) {
         updateImageContainer(container);
         
         // Reset the file input to allow selecting the same files again
-        input.value = '';
+        // input.value = '';
     }
 }
 
@@ -1075,6 +1075,8 @@ function updateFileInput() {
 
     // Update the file input's files property
     fileInput.files = dataTransfer.files;
+
+    // console.log($("#prodgallery").get)
 }  
 
 function handleVideo(input, containerId) {
