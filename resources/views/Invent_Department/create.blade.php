@@ -88,14 +88,15 @@
            @endif
          </div>
        </div>
-     </div> <!-- field portion-->
-     <div class="col-md-4 p-1">
        <div class="form-group row">
           <button class="btn btn-circle btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
             ></i>&nbsp; Save</button>.
               <button class="btn btn-circle btn-danger f-left m-t-30 m-l-10" id="btn_clear" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" 
             ></i> Clear</button>
-       </div>
+       </div>      
+     </div> <!-- field portion-->
+     <div class="col-md-4 p-1">
+
 
      <div class="card">
                   <div class="card-header">
