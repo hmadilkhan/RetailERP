@@ -138,7 +138,7 @@ class InventoryController extends Controller
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
         if(Auth::user()->username == 'demoadmin'){
-              return empty($request->file('prodgallery')) ? 1 : 0;
+              return empty($request->file('productvideo')) ? 1 : 0;
         }
         //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size 
 
