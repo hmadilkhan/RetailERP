@@ -381,7 +381,7 @@ class InventoryController extends Controller
         if (!empty($request->website)) {
             // foreach ($request->website as $website) {
                 WebsiteProduct::create([
-                    "website_id" => $website,
+                    "website_id" => $request->website,
                     "inventory_id" => $productid,
                 ]);
             // }
@@ -1027,7 +1027,7 @@ class InventoryController extends Controller
         if (!empty($request->website)) {
             // foreach ($request->website as $website) {
                 WebsiteProduct::create([
-                    "website_id"   => $website,
+                    "website_id"   => $request->website,
                     "inventory_id" => $request->id,
                 ]);
             // }
