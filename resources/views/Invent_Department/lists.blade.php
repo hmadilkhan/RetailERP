@@ -17,7 +17,7 @@
          <h5 class="card-header-text">Sub Department List</h5>
            <button type="button" id="btn_removeall"  class="btn btn-danger f-right m-r-10 invisible"><i class="icofont icofont-ui-delete f-18 "></i>&nbsp;Remove</button>
            <div class="button-group ">
-                        <a target="_blank" href="{{ route('') }}" class="btn btn-md btn-success waves-effect waves-light f-right" ><i class="fa fa-plus"> </i>
+                        <a target="_blank" href="{{ route('departmentCreate') }}" class="btn btn-md btn-success waves-effect waves-light f-right" ><i class="fa fa-plus"> </i>
                           Create Department
                       </a>
                   </div>
