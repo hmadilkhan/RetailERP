@@ -384,7 +384,7 @@
                                @endif
                         @endif
                             <a href="{{ $imageUrl }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
-                                <img id="simg" src="{{ $imageUrl }}" class="thumb-img width-100" height="550px" alt="img">
+                                <img id="simg" src="{{ $imageUrl }}" class="thumb-img width-100" height="512px" alt="img">
                                 </a>
                                 <br/>
                                 <label for="image" class="custom-file">
