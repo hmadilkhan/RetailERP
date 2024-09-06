@@ -7,7 +7,7 @@
 @section('navinventorys', 'active')
 
 @section('content')
-    <section class="panels-wells">
+    <section class="panels-wells p-t-30">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">Upload Inventory</h5>
