@@ -18,7 +18,7 @@
      </a>
   </div>
 
-  <section class="panels-wells">
+  <section class="panels-wells p-t-0">
    
 
     <form method="POST" class="form-horizontal m-t-3" enctype="multipart/form-data" action="{{route('insert')}}" >
