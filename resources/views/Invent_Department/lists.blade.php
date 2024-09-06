@@ -362,51 +362,13 @@
 	});
 
 
-$("#btn_clear").on('click',function(){
-    $("#deptform")[0].reset();
-    $("#subdpt").tagsinput('removeAll');
-});
+// $("#btn_clear").on('click',function(){
+//     $("#deptform")[0].reset();
+//     $("#subdpt").tagsinput('removeAll');
+// });
 
 
 //  $("#btn_save").on('click',function(event){
-  $("#deptform").on('submit',function(event){
-      event.preventDefault();
-      
-      var formData = new FormData(this);
-
-    if($("#deptname").val() == ""){
-         $("#deptname").focus();
-         $("#deptname_alert").html('Department name is required.');
-         swal('Cancel!','Department name is required.','error',false);
-    }else{
-        
-               $.ajax({
-                url:'{{ route("invent_dept.store") }}',
-                type:"POST",
-                data:formData,
-                dataType:"json",
-    		    cache:false,
-    		    contentType: false,
-    		    processData: false,
-                success:function(r){
-    		// 		console.log(r)
-                  if(r.state == 1){
-                      if(r.contrl != ""){
-                        $("#"+r.contrl).focus();
-                        $("#"+r.contrl+"_alert").html(r.msg);
-                      }
-                      swal_alert('Alert!',r.msg,'error',false); 
-    
-                  }else {
-                     $("#deptname_alert").html('');
-                    swal_alert('Successfully!',r.msg,'success',true);
-                     $("#subdpt").tagsinput('removeAll');
-                  }
-                }
-              });
-    }
-  });
-
 
 
 $("#btn_update").on('click',function(){

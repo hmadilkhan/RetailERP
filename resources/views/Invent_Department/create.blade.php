@@ -89,9 +89,9 @@
          </div>
        </div>
        <div class="form-group row justify-content-center">
-          <button class="btn btn-circle btn-lg btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
+          <button class="btn  btn-lg btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
             ></i>&nbsp; Save</button>.
-              <a class="btn btn-circle btn-lg btn-danger f-left m-t-30 m-l-10" href="{{ route('invent_dept.index') }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" 
+              <a class="btn btn-lg btn-danger f-left m-t-30 m-l-10" href="{{ route('invent_dept.index') }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" 
             ></i> Clear</a>
        </div>      
      </div> <!-- field portion-->
@@ -160,9 +160,12 @@
 @section('scriptcode_three')
 
 <script type="text/javascript">
+$(".select2").select2();
 
+@if(old('metadescript'))
+   $("#metadescript").val('{{ old("metadescript") }}');
+@endif
 
-   $(".select2").select2();
 $("#parent").on('change',function(){
   if($(this).val() != ''){
     $("#showWebsite").trigger('click');
@@ -195,9 +198,44 @@ $("#showWebsite").on('click',function(){
 });
 
 
-@if(old('metadescript'))
-   $("#metadescript").val('{{ old("metadescript") }}');
-@endif
+
+$("#deptform").on('submit',function(event){
+      event.preventDefault();
+      
+      var formData = new FormData(this);
+
+    if($("#deptname").val() == ""){
+         $("#deptname").focus();
+         $("#deptname_alert").html('Department name is required.');
+         swal('Cancel!','Department name is required.','error',false);
+    }else{
+        
+               $.ajax({
+                url:'{{ route("invent_dept.store") }}',
+                type:"POST",
+                data:formData,
+                dataType:"json",
+    		    cache:false,
+    		    contentType: false,
+    		    processData: false,
+                success:function(r){
+    		// 		console.log(r)
+                  if(r.state == 1){
+                      if(r.contrl != ""){
+                        $("#"+r.contrl).focus();
+                        $("#"+r.contrl+"_alert").html(r.msg);
+                      }
+                      swal_alert('Alert!',r.msg,'error',false); 
+    
+                  }else {
+                     $("#deptname_alert").html('');
+                    swal_alert('Successfully!',r.msg,'success',true);
+                     $("#subdpt").tagsinput('removeAll');
+                  }
+                }
+              });
+    }
+  });
 </script>
 
 @endsection
