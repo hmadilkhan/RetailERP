@@ -86,32 +86,33 @@ class dashboard extends Model
     public function branches()
     {
         if (session("roleId") == 2) {
-            $result = DB::select("SELECT c.*,(SELECT COALESCE(SUM(a.total_amount),0) AS sales   from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where user_id = c.branch_id and status = 1)) as sales,'branch' as identify from branch c where c.company_id = ? and c.status_id = 1", [session("company_id")]);
+            $result = DB::select("SELECT c.*,(SELECT COALESCE(SUM(a.total_amount),0) AS sales   from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where user_id = c.branch_id and status = 1) and a.status !=12) as sales,'branch' as identify from branch c where c.company_id = ? and c.status_id = 1", [session("company_id")]);
             return $result;
         } else {
-            $result = DB::select("SELECT c.*,b.*,(SELECT  COALESCE(SUM(a.total_amount),0) AS sales  from sales_receipts a where opening_id IN (Select opening_id as opening_id from sales_opening a where user_id = c.branch_id and status = 1)   and a.terminal_id = b.terminal_id) as sales,'terminal' as identify from branch c  INNER JOIN terminal_details b
+            $result = DB::select("SELECT c.*,b.*,(SELECT  COALESCE(SUM(a.total_amount),0) AS sales  from sales_receipts a where opening_id IN (Select opening_id as opening_id from sales_opening a where user_id = c.branch_id and status = 1) and a.status !=12   and a.terminal_id = b.terminal_id) as sales,'terminal' as identify from branch c  INNER JOIN terminal_details b
     ON b.branch_id = c.branch_id  where c.branch_id = ? and c.status_id = 1 and b.status_id = 1", [session("branch")]);
             return $result;
         }
         // $result = DB::table("branch")->where("company_id",session("company_id"))->get();
 
     }
-	
-	public function getDeclarationsNumber($date,$terminal)
-	{
-		$declarations =  DB::select("SELECT * FROM `sales_opening` where date = ? and terminal_id = ? and status = 2",[$date,$terminal]);
-		return $declarations;
-	}
 
-    public function branchesForClosedSales(){
-      if (session("roleId") == 2) {
-            $result = DB::select("SELECT c.*,(SELECT COALESCE(SUM(a.total_amount),0) AS sales   from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where `date` = '".date('Y-m-d',strtotime('-1 days'))."' AND user_id = c.branch_id and status = 2)) as sales,'branch' as identify from branch c where c.company_id = ? and c.status_id = 1", [session("company_id")]);
+    public function getDeclarationsNumber($date, $terminal)
+    {
+        $declarations =  DB::select("SELECT * FROM `sales_opening` where date = ? and terminal_id = ? and status = 2", [$date, $terminal]);
+        return $declarations;
+    }
+
+    public function branchesForClosedSales()
+    {
+        if (session("roleId") == 2) {
+            $result = DB::select("SELECT c.*,(SELECT COALESCE(SUM(a.total_amount),0) AS sales   from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where `date` = '" . date('Y-m-d', strtotime('-1 days')) . "' AND user_id = c.branch_id and status = 2) and a.status != 12) as sales,'branch' as identify from branch c where c.company_id = ? and c.status_id = 1", [session("company_id")]);
             return $result;
         } else {
-            $result = DB::select("SELECT c.*,b.*,(SELECT  COALESCE(SUM(a.total_amount),0) AS sales  from sales_receipts a where opening_id IN (Select opening_id as opening_id from sales_opening a where `date` = '".date('Y-m-d',strtotime('-1 days'))."' AND user_id = c.branch_id and status = 2)   and a.terminal_id = b.terminal_id) as sales,'terminal' as identify from branch c INNER JOIN terminal_details b
+            $result = DB::select("SELECT c.*,b.*,(SELECT  COALESCE(SUM(a.total_amount),0) AS sales  from sales_receipts a where opening_id IN (Select opening_id as opening_id from sales_opening a where `date` = '" . date('Y-m-d', strtotime('-1 days')) . "' AND user_id = c.branch_id and status = 2)   and a.terminal_id = b.terminal_id) as sales,'terminal' as identify from branch c INNER JOIN terminal_details b
 			ON b.branch_id = c.branch_id where c.branch_id = ? and c.status_id = 1 and b.status_id = 1", [session("branch")]);
             return $result;
-        }  
+        }
     }
 
     public function sales()
@@ -133,16 +134,16 @@ class dashboard extends Model
         return $result;
     }
 
-    public function getTerminalsByBranch($branch,$status = "")
+    public function getTerminalsByBranch($branch, $status = "")
     {
-		if($status == "branch"){
-			$result = DB::table("terminal_details")->where("branch_id", $branch)->where("status_id", 1)->get();
-		}else if($status == "terminal"){
-			$result = DB::table("terminal_details")->where("terminal_id", $branch)->where("status_id", 1)->get();
-		}else{
-			$result = DB::table("terminal_details")->where("branch_id", $branch)->where("status_id", 1)->get();
-		}
-        
+        if ($status == "branch") {
+            $result = DB::table("terminal_details")->where("branch_id", $branch)->where("status_id", 1)->get();
+        } else if ($status == "terminal") {
+            $result = DB::table("terminal_details")->where("terminal_id", $branch)->where("status_id", 1)->get();
+        } else {
+            $result = DB::table("terminal_details")->where("branch_id", $branch)->where("status_id", 1)->get();
+        }
+
         return $result;
     }
 
@@ -161,8 +162,8 @@ class dashboard extends Model
       WHERE opening_id = a.opening_id
         AND b.void_receipt = 1),0) as VoidReceipts,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1),0) as Cash,
 IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2) + (Select SUM(credit_card_transaction) from sales_account_subdetails where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2)),0) as CreditCard,
-IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3),0)  as CustomerCredit,
-(SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id and void_receipt = 0)),0) as Discount,IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 1),0) as CardReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 4 and received = 1),0) as ChequeReturn,IFNULL((Select SUM(receive_amount) from sales_account_general where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3)),0) as paidByCustomer,(SELECT SUM(b.discount_amount) FROM sales_receipts c inner join sales_account_subdetails b on b.receipt_id = c.id where c.opening_id = a.opening_id and c.payment_id IN(2,3)) as CardCustomerDiscount, (SELECT
+IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id ),0)  as CustomerCredit,
+(SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id and void_receipt = 0)),0) as Discount,IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 1),0) as CardReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 4 and received = 1),0) as ChequeReturn,IFNULL((Select SUM(receive_amount) from sales_account_general where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3 and b.payment_id = 3 and b.status != 12 and b.is_sale_return = 0)),0) as paidByCustomer,(SELECT SUM(b.discount_amount) FROM sales_receipts c inner join sales_account_subdetails b on b.receipt_id = c.id where c.opening_id = a.opening_id and c.payment_id IN(2,3)) as CardCustomerDiscount, (SELECT
     SUM(b.credit_card_transaction)
   FROM
     sales_receipts c
@@ -174,10 +175,10 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
 
         return $result;
     }
-	
-	public function getheadsDetailsFromOpeningIdForClosing($openingId)
+
+    public function getheadsDetailsFromOpeningIdForClosing($openingId)
     {
-        $result = DB::select("SELECT a.opening_id,a.status,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
+        $result = DB::select("SELECT a.opening_id,a.status,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.status != 12 ),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
         SUM(b.actual_amount) AS sales
       FROM
         sales_receipts b
@@ -190,7 +191,7 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         AND b.void_receipt = 1),0) as VoidReceipts,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1),0) as Cash,
 IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2) + (Select SUM(credit_card_transaction) from sales_account_subdetails where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2)),0) as CreditCard,
 IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3),0)  as CustomerCredit,
-(SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id and void_receipt = 0)),0) as Discount,IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 1),0) as CardReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 4 and received = 1),0) as ChequeReturn,IFNULL((Select SUM(receive_amount) from sales_account_general where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3)),0) as paidByCustomer,(SELECT SUM(b.discount_amount) FROM sales_receipts c inner join sales_account_subdetails b on b.receipt_id = c.id where c.opening_id = a.opening_id and c.payment_id IN(2,3)) as CardCustomerDiscount, (SELECT
+(SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id and void_receipt = 0)),0) as Discount,IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 1),0) as CardReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 4 and received = 1),0) as ChequeReturn,IFNULL((Select SUM(receive_amount) from sales_account_general where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3 and b.status != 12 and b.is_sale_return = 0)),0) as paidByCustomer,(SELECT SUM(b.discount_amount) FROM sales_receipts c inner join sales_account_subdetails b on b.receipt_id = c.id where c.opening_id = a.opening_id and c.payment_id IN(2,3)) as CardCustomerDiscount, (SELECT
     SUM(b.credit_card_transaction)
   FROM
     sales_receipts c
@@ -205,7 +206,7 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
 
     public function lastDayDetails($terminal)
     {
-        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
+        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.status != 12),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
         SUM(b.total_amount) AS sales
       FROM
         sales_receipts b
@@ -226,7 +227,7 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
           FROM
             sales_receipts b
           WHERE b.opening_id = a.opening_id
-            AND b.payment_id = 2)) ,0) as CreditCard,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3),0) as CustomerCredit,(SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id)),0) as Discount,IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 1),0) as CardReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 4 and received = 1),0) as ChequeReturn,IFNULL((Select SUM(receive_amount) from sales_account_general where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3)),0) as paidByCustomer,(SELECT SUM(b.discount_amount) FROM sales_receipts c inner join sales_account_subdetails b on b.receipt_id = c.id where c.opening_id = a.opening_id and c.payment_id IN(2,3)) as CardCustomerDiscount, (SELECT
+            AND b.payment_id = 2)) ,0) as CreditCard,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3),0) as CustomerCredit,(SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id)),0) as Discount,IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 1),0) as CardReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 4 and received = 1),0) as ChequeReturn,IFNULL((Select SUM(receive_amount) from sales_account_general where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3 and b.status != 12 and b.is_sale_return = 0)),0) as paidByCustomer,(SELECT SUM(b.discount_amount) FROM sales_receipts c inner join sales_account_subdetails b on b.receipt_id = c.id where c.opening_id = a.opening_id and c.payment_id IN(2,3)) as CardCustomerDiscount, (SELECT
     SUM(b.credit_card_transaction)
   FROM
     sales_receipts c
@@ -263,9 +264,9 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
     {
         //$result = DB::select("SELECT SUM(a.total_amount) as TotalSales FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id  where b.date = CURDATE() and b.branch = ?",[session("branch")]);
         if (session("roleId") == 2) {
-            $result = DB::select("SELECT SUM((SELECT SUM(a.total_amount)  as sales from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where  user_id = a.branch_id and status = 1))) as TotalSales  from branch a where a.company_id = ? and a.status_id = 1", [session("company_id")]);
+            $result = DB::select("SELECT SUM((SELECT SUM(a.total_amount)  as sales from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where  user_id = a.branch_id and status = 1) and a.status != 12)) as TotalSales  from branch a where a.company_id = ? and a.status_id = 1", [session("company_id")]);
         } else {
-            $result = DB::select("SELECT SUM((SELECT SUM(a.total_amount)  as sales from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where  user_id = a.branch_id and status = 1))) as TotalSales  from branch a where a.branch_id = ? and a.status_id = 1", [session("branch")]);
+            $result = DB::select("SELECT SUM((SELECT SUM(a.total_amount)  as sales from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where  user_id = a.branch_id and status = 1) and a.status != 12)) as TotalSales  from branch a where a.branch_id = ? and a.status_id = 1", [session("branch")]);
         }
 
         return $result;
@@ -338,8 +339,8 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         $result = DB::select("SELECT c.receipt_no,b.product_name,a.qty,a.amount,a.timestamp FROM sales_return a INNER JOIN inventory_general b on b.id = a.item_id LEFT JOIN sales_receipts c on c.id = a.receipt_id where a.opening_id = ?", [$opening]);
         return $result;
     }
-	
-	public function expenses($opening)
+
+    public function expenses($opening)
     {
         $result = DB::select("SELECT * FROM expenses a INNER JOIN expense_categories b on b.exp_cat_id = a.exp_cat_id where a.opening_id = ?", [$opening]);
         return $result;
@@ -350,10 +351,10 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         $result = DB::select("SELECT a.terminal_name,b.branch_name FROM terminal_details a INNER JOIN branch b on b.branch_id = a.branch_id where a.terminal_id = $terminal");
         return $result;
     }
-	
-	public function getProjectedSales()
-	{
-		$result = DB::select("SELECT AVG(total_amount) AS sales FROM `sales_receipts` where branch = ? and date IN (SELECT  * 
+
+    public function getProjectedSales()
+    {
+        $result = DB::select("SELECT AVG(total_amount) AS sales FROM `sales_receipts` where branch = ? and date IN (SELECT  * 
    FROM (
         SELECT  date_format(DATE_ADD((select date_format(DATE_ADD(CURRENT_DATE, INTERVAL -120 DAY),'%Y-%m-%d')), 
             INTERVAL n4.num*1000+n3.num*100+n2.num*10+n1.num DAY ),'%Y-%m-%d') AS DATE 
@@ -408,8 +409,8 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
     ) AS a
 WHERE DATE >=  (select date_format(DATE_ADD(CURRENT_DATE, INTERVAL -120 DAY),'%Y-%m-%d')) AND DATE < NOW()
   AND WEEKDAY(DATE) = (SELECT WEEKDAY(CURDATE()))
-ORDER BY DATE)",[session("branch")]);
+ORDER BY DATE)", [session("branch")]);
 
-return $result;
-	}
+        return $result;
+    }
 }
