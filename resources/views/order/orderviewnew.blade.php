@@ -224,9 +224,10 @@
                     </div>
                 </div>
             </div>
-            <hr />
-            <div class="row m-l-2">
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+        </div>
+        <div class="card">
+            <div class="card-header p-2 ">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 mt-1">
                     <div class="card dashboard-product">
                         <span>Total Orders</span>
                         <h2 class="dashboard-total-products" id="totalorders"></h2>
@@ -286,12 +287,17 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="row">
                 <div class="card-block">
                     <div id="table_data" class="overflow-x-auto" style="overflow-y:hidden;">
                         {{-- @include('partials.orders_table') --}}
                     </div>
                 </div>
             </div>
+
             <div class="modal fade modal-flex in" id="sp-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-md" role="document">
                     <div class="modal-content">
@@ -387,7 +393,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light"
+                            <button type="button" class="btn btn-success waves-effect waves-light"
                                 onClick="saveVoid()">Submit</button>
                         </div>
                     </div>
@@ -748,9 +754,12 @@
                                     // window.location="{{ route('vendors.index') }}";
                                     $("#reason_mesasge").html("");
                                     $("#void-modal").modal("hide");
-                                    $("#voidId").val("")
+                                    $("#voidId").val("");
+                                    $("#reason").val("")
                                 }
                             });
+                            $("#voidId").val("");
+                            $("#reason").val("")
                         }
                     }
 

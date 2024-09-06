@@ -11,7 +11,6 @@
     @include('partials.html-libs')
     @yield('css_code')
     @yield('scriptcode_one')
-
 </head>
 
 @yield('scriptcode_two')
@@ -24,20 +23,23 @@
     <div id="cover-spin"></div>
     <!--wrapper-->
     <div class="wrapper">
+
         <!-- Navbar header-->
         @include('partials.header')
         <!-- end Navbar header -->
+
         <!-- Side-Nav-->
-        {{--			  @include('partials.side-bar-nav') --}}
         <x-sidebar />
         <!-- end Side-Nav -->
         <div class="content-wrapper">
             <!-- Container-fluid starts -->
             <!-- Main content starts -->
-            <div class="container-fluid" @hasSection('dashboardInlineCSS')
+            <div class="container-fluid p-4" 
+            {{-- @hasSection('dashboardInlineCSS')
             @else
                 style="padding-top:3.9rem;"
-                @endif>
+                @endif --}}
+            >
 
                 <!-- start contect-->
 
