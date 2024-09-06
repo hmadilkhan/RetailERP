@@ -8,7 +8,7 @@
 
 @section('content')
 
- <div class="main-header m-t-0">
+ <div class="main-header">
      <h4> Create Inventory</h4>
      <br/>
      <a href="{{ route('invent-list') }}">
@@ -18,10 +18,10 @@
      </a>
   </div>
 
-  <section class="panels-wells p-t-0">
+  <section class="panels-wells">
    
 
-    <form method="POST" class="form-horizontal m-t-3" enctype="multipart/form-data" action="{{route('insert')}}" >
+    <form method="POST" class="form-horizontal" enctype="multipart/form-data" action="{{route('insert')}}" >
       @csrf
 
       <div class="row">
