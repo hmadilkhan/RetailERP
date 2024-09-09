@@ -4,6 +4,9 @@ $CashInHand = $positive - $negative + (isset($heads[0]->CardCustomerDiscount) ? 
 if (isset($result[0]->expenses) && $result[0]->expenses == 1) {
     $CashInHand = $CashInHand - $heads[0]->expenses;
 }
+if (session("company_id") == 102) {
+    $CashInHand = $CashInHand - (isset($heads[0]->bal) ? $heads[0]->bal : 0);
+}
 $CashInHand = round($CashInHand);
 $closingBalance = round($heads[0]->closingBal);
 //$heads[0]->CashReturn + $heads[0]->CardReturn + $heads[0]->ChequeReturn
