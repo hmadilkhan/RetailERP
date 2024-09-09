@@ -38,7 +38,7 @@
 		<tbody>
               @foreach($websites as $value)
 				<tr>
-				  <td class="text-center"><img width="42" height="42" src="{{ asset('assets/images/website/'.(!empty($value->logo) ? $value->logo : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
+				  <td class="text-center"><img width="42" height="42" src="{{ asset('storage/images/website/'.(!empty($value->logo) ? $value->logo : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
 				  <td>{{$value->company->name}}</td>
 				  <td>{{$value->name}}</td>
 				  <td><a href="{{$value->url}}" target="_blank" class="btn btn-link"><i class="icofont icofont-link"></i> Go to Website</a></td>
