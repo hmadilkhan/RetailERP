@@ -738,7 +738,7 @@
 		
 		$('#dvshowreport').on('click', function () {
 			handleButtonClick('#dvshowreport', 'Stock Report', [
-				{ field: '#txtstockreport', value: 1, showDateFilter: true,showDepartments:true,showsubdepartments:true,showBranch:true }
+				{ field: '#txtstockreport', value: 1, showDateFilter: false,showDepartments:true,showsubdepartments:true,showBranch:true }
 			]);
 		});
 

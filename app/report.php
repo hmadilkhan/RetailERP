@@ -235,10 +235,10 @@ class report extends Model
 		if($subdepartment != ""){
 			$filter .= " and a.sub_department_id = ".$subdepartment;
 		}
-		if($branch != ""){
-			$filter .= " and id IN (SELECT product_id FROM `inventory_stock` where branch_id = ".$branch." )";
+		if($branch != "all"){
+			$filter .= " and id IN (SELECT product_id FROM `inventory_stock` where branch_id = $branch )";
 		}
-        $result = DB::select("SELECT * FROM inventory_general a WHERE a.company_id = ? AND a.status = 1 ".$filter."",[session("company_id")]);
+        $result = DB::select("SELECT * FROM inventory_general a WHERE a.company_id = ? AND a.status = 1 ".$filter,[session("company_id")]);
         return $result;
     }
 
