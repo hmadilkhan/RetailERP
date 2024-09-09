@@ -4647,7 +4647,7 @@ class ReportController extends Controller
             $localImagePath = 'storage/images/products/' . $item->image;
 
             // Determine image path
-            if (filter_var($imageUrl, FILTER_VALIDATE_URL) && isImageUrlAccessible($imageUrl)) {
+            if (filter_var($imageUrl, FILTER_VALIDATE_URL) && $this->isImageUrlAccessible($imageUrl)) {
                 // Use the URL if it's valid and accessible
                 $pdf->Cell(50, 50, $pdf->Image($imageUrl, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
             } else {
