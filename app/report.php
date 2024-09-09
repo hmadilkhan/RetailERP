@@ -250,7 +250,7 @@ class report extends Model
 		if($branch != ""){
 			$filter .= " and a.branch_id = ".$branch;
 		}
-        $result = DB::select("SELECT * FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id WHERE a.product_id = ? AND DATE(a.date) BETWEEN ? AND ? ".$filter."");
+        $result = DB::select("SELECT * FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id WHERE a.product_id = ? AND DATE(a.date) BETWEEN ? AND ? ".$filter,[$productid,$fromdate,$todate]);
         return $result;
     }
 
