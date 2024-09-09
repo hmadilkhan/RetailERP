@@ -70,7 +70,7 @@
 
 				<div class="form-group @error('logo') 'has-danger' @enderror ">
 				<a href="#">
-					<img id="preview" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+					<img id="preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 				</a>					
 					<label for="logo" class="form-control-label">Logo</label></br>
 
@@ -85,7 +85,7 @@
 
 				<div class="form-group @error('favicon') 'has-danger' @enderror ">
 				<a href="#">
-					<img id="fpreview" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+					<img id="fpreview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 				</a>					
 					<label for="favicon" class="form-control-label">Favicon</label></br>
 
@@ -204,6 +204,6 @@
 
 
 @section('css_code')
-   <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/wizardform.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('storage/css/wizardform.css') }}">
    
 @endsection

@@ -167,6 +167,6 @@
 
 
 @section('css_code')
-   <link rel="stylesheet" type="text/css" href="{{ asset('public/assets/css/wizardform.css') }}">
+   <link rel="stylesheet" type="text/css" href="{{ asset('storage/css/wizardform.css') }}">
    
 @endsection

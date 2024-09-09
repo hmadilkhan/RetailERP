@@ -61,7 +61,7 @@
 				<div class="form-group @error('logo') 'has-danger' @enderror ">
 				<a href="javascript:void(0)">
 					@php $logo = $website->logo != "" ? 'website/'.$website->logo : 'placeholder.jpg' @endphp
-					<img id="preview" src="{{ asset('assets/images/'.$logo) }}" class="thumb-img img-fluid width-100" alt="{{ $website->logo == '' ? $website->logo : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
+					<img id="preview" src="{{ asset('storage/images/'.$logo) }}" class="thumb-img img-fluid width-100" alt="{{ $website->logo == '' ? $website->logo : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
 				</a>					
 					<label for="logo" class="form-control-label">Logo</label></br>
 
@@ -77,7 +77,7 @@
 				<div class="form-group @error('favicon') 'has-danger' @enderror ">
 				<a href="javascript:void(0)">
 					@php $favicon = $website->favicon != "" ? 'website/'.$website->favicon : 'placeholder.jpg' @endphp
-					<img id="fpreview" src="{{ asset('assets/images/'.$favicon) }}" class="thumb-img img-fluid width-100" alt="{{ $website->favicon == '' ? $website->favicon : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
+					<img id="fpreview" src="{{ asset('storage/images/'.$favicon) }}" class="thumb-img img-fluid width-100" alt="{{ $website->favicon == '' ? $website->favicon : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
 				</a>					
 					<label for="favicon" class="form-control-label">Favicon</label></br>
 

@@ -73,9 +73,9 @@ class WebsiteController extends Controller
 
                 $imageLogo = $websiteName . '-logo.' . $request->file('logo')->getClientOriginalExtension();
                 // $imglogo = Image::make($request->logo)->resize(150, 70);
-                // $res = $imglogo->save(public_path('assets/images/website/' . $imageLogo), 75);
+                // $res = $imglogo->save(public_path('storage/images/website/' . $imageLogo), 75);
                 $getLogo = $request->file('logo');
-                $getLogo->move(public_path('assets/images/website/'), $imageLogo);
+                $getLogo->move(public_path('storage/images/website/'), $imageLogo);
             }
 
             if (!empty($request->favicon)) {
@@ -85,7 +85,7 @@ class WebsiteController extends Controller
 
                 $imageFavicon = $websiteName . '-favicon.' . $request->favicon->getClientOriginalExtension();
                 $imgfavicon = Image::make($request->favicon)->resize(150, 70);
-                $res = $imgfavicon->save(public_path('assets/images/website/' . $imageFavicon), 90);
+                $res = $imgfavicon->save(public_path('storage/images/website/' . $imageFavicon), 90);
             }
 
 
@@ -97,14 +97,14 @@ class WebsiteController extends Controller
 
             if (!isset($website->id)) {
                 if ($imageFavicon) {
-                    if (\File::exists(public_path('assets/images/website/' . $imageFavicon))) {
-                        \File::delete(public_path('assets/images/website/' . $imageFavicon));
+                    if (\File::exists(public_path('storage/images/website/' . $imageFavicon))) {
+                        \File::delete(public_path('storage/images/website/' . $imageFavicon));
                     }
                 }
 
                 if ($imageLogo) {
-                    if (\File::exists(public_path('assets/images/website/' . $imageLogo))) {
-                        \File::delete(public_path('assets/images/website/' . $imageLogo));
+                    if (\File::exists(public_path('storage/images/website/' . $imageLogo))) {
+                        \File::delete(public_path('storage/images/website/' . $imageLogo));
                     }
                 }
                 Session::flash('error', 'Server issue');
@@ -177,13 +177,13 @@ class WebsiteController extends Controller
                 ]);
 
 
-                if (\File::exists(public_path('assets/images/website/' . $website_detail->favicon))) {
-                    \File::delete(public_path('assets/images/website/' . $website_detail->favicon));
+                if (\File::exists(public_path('storage/images/website/' . $website_detail->favicon))) {
+                    \File::delete(public_path('storage/images/website/' . $website_detail->favicon));
                 }
 
                 $imageFavicon = $websiteName . '-favicon.' . $request->file('favicon')->getClientOriginalExtension();
                 $img = Image::make($request->file('favicon'))->resize(64, 64);
-                $res0 = $img->save(public_path('assets/images/website/' . $imageFavicon), 90);
+                $res0 = $img->save(public_path('storage/images/website/' . $imageFavicon), 90);
             }
 
             if (!empty($request->logo)) {
@@ -193,16 +193,16 @@ class WebsiteController extends Controller
                 ]);
 
 
-                if (\File::exists(public_path('assets/images/website/' . $website_detail->logo))) {
-                    \File::delete(public_path('assets/images/website/' . $website_detail->logo));
+                if (\File::exists(public_path('storage/images/website/' . $website_detail->logo))) {
+                    \File::delete(public_path('storage/images/website/' . $website_detail->logo));
                 }
 
                 $imageLogo = $websiteName . '-logo.' . $request->file('logo')->getClientOriginalExtension();
                 // $img = Image::make($request->file('logo'))->resize(200, 200);
-                // $res1 = $img->save(public_path('assets/images/website/' . $imageLogo), 75);
+                // $res1 = $img->save(public_path('storage/images/website/' . $imageLogo), 75);
 
                 $getLogo = $request->file('logo');
-                $getLogo->move(public_path('assets/images/website/'), $imageLogo);
+                $getLogo->move(public_path('storage/images/website/'), $imageLogo);
             }
 
 
@@ -431,8 +431,8 @@ class WebsiteController extends Controller
                 return redirect()->route('sliderLists');
             }
 
-            if (\File::exists(public_path('assets/images/website/sliders') . session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
-                \File::delete(public_path('assets/images/website/sliders') . session('company_id') . '/' . $request->webId . '/' . $get->slide);
+            if (\File::exists(public_path('storage/images/website/sliders') . session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
+                \File::delete(public_path('storage/images/website/sliders') . session('company_id') . '/' . $request->webId . '/' . $get->slide);
             }
             $columnArray['slide'] = $imageName;
         }
@@ -474,7 +474,7 @@ class WebsiteController extends Controller
 
     public function create_folder($comFOldName, $webFoldName)
     {
-        $path   = public_path('assets/images/website/') . $comFOldName . '/' . $webFoldName;
+        $path   = public_path('storage/images/website/') . $comFOldName . '/' . $webFoldName;
         $result = true;
         if (!File::isDirectory($path)) {
             $result = File::makeDirectory($path, 0777, true, true);
@@ -498,8 +498,8 @@ class WebsiteController extends Controller
 
             if ($get != null) {
                 foreach ($get as $val) {
-                    if (\File::exists(public_path('assets/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $val->slide)) {
-                        \File::delete(public_path('assets/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $val->slide);
+                    if (\File::exists(public_path('storage/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $val->slide)) {
+                        \File::delete(public_path('storage/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $val->slide);
                     }
                 }
 
@@ -509,8 +509,8 @@ class WebsiteController extends Controller
             $get = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->first();
             if ($get != null) {
 
-                if (\File::exists(public_path('assets/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $get->slide)) {
-                    \File::delete(public_path('assets/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $get->slide);
+                if (\File::exists(public_path('storage/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $get->slide)) {
+                    \File::delete(public_path('storage/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $get->slide);
                 }
 
                 $process = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->delete();
@@ -676,8 +676,8 @@ class WebsiteController extends Controller
                 return redirect()->route('AdvertisementLists');
             }
 
-            if (\File::exists(public_path('assets/images/website/advertisement') . session('company_id') . '/' . $request->webId . '/' . $get->image)) {
-                \File::delete(public_path('assets/images/website/advertisement') . session('company_id') . '/' . $request->webId . '/' . $get->image);
+            if (\File::exists(public_path('storage/images/website/advertisement') . session('company_id') . '/' . $request->webId . '/' . $get->image)) {
+                \File::delete(public_path('storage/images/website/advertisement') . session('company_id') . '/' . $request->webId . '/' . $get->image);
             }
             $columnArray['image'] = $imageName;
         }
@@ -732,8 +732,8 @@ class WebsiteController extends Controller
 
         if ($get != null) {
             foreach ($get as $val) {
-                if (\File::exists(public_path('assets/images/website/advertisements/') . session('company_id') . '/' . $request->website . '/' . $val->image)) {
-                    \File::delete(public_path('assets/images/website/advertisements/') . session('company_id') . '/' . $request->website . '/' . $val->image);
+                if (\File::exists(public_path('storage/images/website/advertisements/') . session('company_id') . '/' . $request->website . '/' . $val->image)) {
+                    \File::delete(public_path('storage/images/website/advertisements/') . session('company_id') . '/' . $request->website . '/' . $val->image);
                 }
             }
 
@@ -744,8 +744,8 @@ class WebsiteController extends Controller
         //     $get = DB::table('website_advertisement_notifications')->where('id','=',$request->post('mode'.$id))->first();
         //     if($get != null){
 
-        //       if(\File::exists(public_path('assets/images/website/advertisements/').session('company_id').'/'.$id.'/'.$get->image)){
-        //           \File::delete(public_path('assets/images/website/advertisements/').session('company_id').'/'.$id.'/'.$get->image);
+        //       if(\File::exists(public_path('storage/images/website/advertisements/').session('company_id').'/'.$id.'/'.$get->image)){
+        //           \File::delete(public_path('storage/images/website/advertisements/').session('company_id').'/'.$id.'/'.$get->image);
         //       }
 
         //       $process = DB::table('website_advertisement_notifications')->where('id','=',$request->post('mode'.$id))->delete();
@@ -1495,7 +1495,7 @@ class WebsiteController extends Controller
                 $imageName = $websiteName . '-' . $request->col . '.' . $image->getClientOriginalExtension();
 
                 // $imglogo = Image::make($request->value)->resize(150, 70);
-                $image->move(public_path('assets/images/website'), $imageName);
+                $image->move(public_path('storage/images/website'), $imageName);
 
                 $value = $imageName;
             } else {

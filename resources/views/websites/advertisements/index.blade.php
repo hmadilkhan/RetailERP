@@ -114,7 +114,7 @@
            </div>  
          <div class="card-block">
              <div class="form-group @error('image') 'has-danger' @enderror m-r-2"> 
-                <img src="../../assets/images/placeholder.jpg" alt="placeholder.jpg" width="128" height="128" id="previewImg"/></br>
+                <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="128" height="128" id="previewImg"/></br>
               <label for="image" class="form-control-label"></label></br>
     
               <label for="image" class="custom-file">
@@ -168,7 +168,7 @@
 				  <td class="d-none">{{ $value->id }}</td>
 				  <td>{{ $value->name }}</td>
 				  <td>
-                      <img src="{{ asset('assets/images/website/advertisements/'.session('company_id').'/'.$value->website_id.'/'.$value->image) }}" alt=" {{ $value->image }}" width="128" height="64" id="slide{{ $value->id }}"/>
+                      <img src="{{ asset('storage/images/website/advertisements/'.session('company_id').'/'.$value->website_id.'/'.$value->image) }}" alt=" {{ $value->image }}" width="128" height="64" id="slide{{ $value->id }}"/>
                   </td>
 				  
 				  <td class="action-icon">
