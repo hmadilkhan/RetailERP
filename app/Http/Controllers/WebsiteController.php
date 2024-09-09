@@ -1503,7 +1503,7 @@ class WebsiteController extends Controller
                 //$value = (array) $request->val;
                 $arrayValue = [];
                 array_push($arrayValue,$request->val);
-                $value = $arrayValue;
+                $value = json_encode($arrayValue);
 
             } else {
 
