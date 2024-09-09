@@ -4621,12 +4621,13 @@ class ReportController extends Controller
             if ($pdf->GetY() + 40 > 270) { // 40 for the height of the image and row, 270 is a margin (adjust as needed)
                 $pdf->AddPage(); // Add a new page
             }
+
             $imagePath = ($item->url != null ? $item->url : asset('storage/images/products/' . $item->image));
 
             if (file_exists($imagePath) && $item->image != "") {
                 $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1); // Image inside the cell
             } else {
-                $pdf->Cell(50, 50, 'No Image', 1, 0, 'C'); // Fallback if no image found
+                $pdf->Cell(50, 50, 'No Image'.$item->url, 1, 0, 'C'); // Fallback if no image found
             }
 
             // Add item code
