@@ -4536,6 +4536,18 @@ class ReportController extends Controller
         $pdf->Output('Item_Sale_Database.pdf', 'I');
     }
 
+
+    // Function to check if URL is accessible and returns valid image data
+    function isImageUrlAccessible($url)
+    {
+        try {
+            $response = Http::get($url);
+            return $response->ok() && strpos($response->header('Content-Type'), 'image/') === 0;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     public function inventoryImageReport(Request $request, Vendor $vendor, Report $report)
     {
 
@@ -4633,17 +4645,6 @@ class ReportController extends Controller
 
             $imageUrl = $item->url;
             $localImagePath = 'storage/images/products/' . $item->image;
-
-            // Function to check if URL is accessible and returns valid image data
-            function isImageUrlAccessible($url)
-            {
-                try {
-                    $response = Http::get($url);
-                    return $response->ok() && strpos($response->header('Content-Type'), 'image/') === 0;
-                } catch (\Exception $e) {
-                    return false;
-                }
-            }
 
             // Determine image path
             if (filter_var($imageUrl, FILTER_VALIDATE_URL) && isImageUrlAccessible($imageUrl)) {
