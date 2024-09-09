@@ -1500,7 +1500,8 @@ class WebsiteController extends Controller
                 $value = $imageName;
             }else if($request->col == 'topbar_slide_msg'){
 
-                $value = (array) $request->val;
+                //$value = (array) $request->val;
+                $value = explode(',',$request->val);
 
             } else {
 
