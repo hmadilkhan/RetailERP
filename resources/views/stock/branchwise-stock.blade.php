@@ -394,7 +394,7 @@
                 dataType: 'json',
                 success: function(result) {
                     $("#headername").html(branchname);
-
+                    var imageUrl = "{{ asset('storage/images/placeholder.jpg') }}";
 
                     for (var count = 0; count < result.data.length; count++) {
                         if ($.inArray({{ session('company_id') }}, [95, 102, 104]) != -1 || $.inArray(
@@ -410,6 +410,7 @@
                                 imageUrl = "storage/images/products/" + result.data[count].image;
                             }
                         }
+                       
                         $("#tblstock tbody").append(
                             "<tr>" +
                             "<td class='pro-name' > <img src='" + imageUrl +
