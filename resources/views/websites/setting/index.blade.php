@@ -154,7 +154,7 @@
 
  <div class="tab-pane" id="header" role="tabpanel">
 
-    <div class="form-group">
+    <div class="form-group mt-3">
         <label class="form-control-label">TopBar Header Message</label>
         <br/>
           <label>
