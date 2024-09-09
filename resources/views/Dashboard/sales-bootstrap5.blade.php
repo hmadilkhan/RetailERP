@@ -425,7 +425,7 @@
         function showLoader(divName) {
             $('#' + divName).empty();
             $('#' + divName).append(
-                "<div class='position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
+                "<div class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
                 "<div class='spinner-grow text-success' role='status'>" +
                 "<span class='visually-hidden'>Loading...</span></div></div>"
             )
