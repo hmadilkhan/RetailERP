@@ -516,8 +516,8 @@
                   </div>
                   <div class="card-block p-2 p-t-0">
               <div class="form-group">
-                       <a href="<javascript:void(0)">
-                        <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img width-100" height="512px" alt="img">
+                       <a href="javascript:void(0)">
+                        <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img width-100" height="256px" alt="img">
                         </a>
 
                     <div class="form-group {{ $errors->has('image') ? 'has-danger' : '' }} m-t-10">
