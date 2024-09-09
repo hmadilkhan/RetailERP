@@ -4614,7 +4614,7 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
-        $inventory = $report->get_inventory_details_with_image($request->department, $request->subdepartment);
+        $inventory = $report->get_inventory_details_with_image($request->department,$request->subdepartment, $request->branch);
 
         foreach ($inventory as $item) {
             // Add image cell (adjust x, y as needed)

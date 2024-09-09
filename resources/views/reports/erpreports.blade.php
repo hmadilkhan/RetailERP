@@ -809,7 +809,7 @@
 		
 		$('#dvinventorygeneral').on('click', function (){
 			handleButtonClick('#dvinventorygeneral', 'Inventory Details with Images', [
-				{ field: '#txtinventorygeneralreport', value: 1, showDateFilter: false, showDepartments:true, showsubdepartments:true }
+				{ field: '#txtinventorygeneralreport', value: 1, showBranch: true, showDepartments:true, showsubdepartments:true }
 			]);
 		});
 		
@@ -884,7 +884,7 @@
                 window.location = "{{url('inventoryReport')}}?branch="+branch+"&department="+department+"&subdepartment="+subdepartment;
             }
 			if ($('#txtinventorygeneralreport').val() == 1){
-                window.location = "{{url('inventory-image-report')}}?department="+department+"&subdepartment="+subdepartment;
+                window.location = "{{url('inventory-image-report')}}?department="+department+"&subdepartment="+subdepartment+"&branch="+branch;
             }
 			if ($('#txtbookingorderreport').val() == 1){
                 window.location = "{{url('order-booking-report')}}?fromdate="+date+"&todate="+todate+"&paymentmethod="+paymentmethod;

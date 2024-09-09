@@ -211,12 +211,28 @@ class report extends Model
         return $result;
     }
 	
-	public  function get_inventory_details_with_image($department,$subdepartment){
-		$filter = "";
-		if($subdepartment != ""){
-			$filter = " and a.sub_department_id = ".$subdepartment;
+	public  function get_inventory_details_with_image($department,$subdepartment,$branch){
+		// $filter = "";
+        // DB::enableQueryLog();
+		// if($subdepartment != ""){
+		// 	$filter = " and a.sub_department_id = ".$subdepartment;
+		// }
+        // $result = DB::select('SELECT a.id, a.product_name, a.item_code,b.department_name,c.sub_depart_name ,a.image,a.url  FROM inventory_general a  INNER JOIN inventory_department b ON b.department_id = a.department_id INNER JOIN inventory_sub_department c ON c.sub_department_id = a.sub_department_id WHERE a.status = 1 AND a.company_id = ? and a.department_id = ? '.$filter.' GROUP BY a.id',[session("company_id"),$department]);
+        // return $result;
+        $filter = "";
+        if ($department != "") {
+            $filter .= " and b.department_id = ".$department;
+        }
+        if($subdepartment != ""){
+			$filter .= " and b.sub_department_id = ".$subdepartment;
 		}
-        $result = DB::select('SELECT a.id, a.product_name, a.item_code,b.department_name,c.sub_depart_name ,a.image,a.url  FROM inventory_general a  INNER JOIN inventory_department b ON b.department_id = a.department_id INNER JOIN inventory_sub_department c ON c.sub_department_id = a.sub_department_id WHERE a.status = 1 AND a.company_id = ? and a.department_id = ? '.$filter.' GROUP BY a.id',[session("company_id"),$department]);
+
+        if($branch !=  "all"){
+            $filter .= " and a.branch_id = ".$branch;
+        }
+
+        $result = DB::select('SELECT b.id, b.product_name, b.item_code,c.department_name,d.sub_depart_name ,b.image,b.url FROM inventory_stock a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_department c ON c.department_id = b.department_id INNER JOIN inventory_sub_department d ON d.sub_department_id = b.sub_department_id where b.company_id = ? '.$filter,[session("company_id")]);
+        // dd(DB::getQueryLog());
         return $result;
     }
 
