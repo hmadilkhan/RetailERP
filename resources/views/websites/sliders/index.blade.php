@@ -106,7 +106,7 @@
       </div>      
 
         <div class="form-group @error('image') 'has-danger' @enderror m-r-2"> 
-            <img src="../../assets/images/placeholder.jpg" alt="placeholder.jpg" width="328" height="128" id="previewImg"/></br>
+            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="328" height="128" id="previewImg"/></br>
           <label for="image" class="form-control-label">Slide</label></br>
 
           <label for="image" class="custom-file">
@@ -163,7 +163,7 @@
            @foreach($websiteSliderList as $val)
               @if($val->website_id == $value->id )
                 <!--<input type="hidden" value="{{-- route('updateSliderImage',$val->id) --}}" id="updateUrlslideImg{{-- $val->id --}}">-->
-                <img src="{{ asset('assets/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="128" height="64" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}')" class="pointer"/>
+                <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="128" height="64" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}')" class="pointer"/>
               @endif        
            @endforeach
           </td>
