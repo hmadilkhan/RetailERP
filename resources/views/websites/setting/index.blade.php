@@ -474,7 +474,7 @@
 
   $(".select2").select2();
 
-  $("#topbar-slide-msg").tagsinput({
+  $("#topbar_slide_msg").tagsinput({
      maxTags: 10
   });
   
