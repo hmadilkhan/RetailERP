@@ -153,8 +153,8 @@
     </div>
 
  <div class="tab-pane" id="header" role="tabpanel">
-
-    <div class="form-group mt-3">
+   <div class="col-md-6 m-t-3">
+    <div class="form-group">
         <label class="form-control-label">TopBar Header Message</label>
         <br/>
           <label>
@@ -163,8 +163,9 @@
               @endphp 
             <input type="checkbox" id="topbar_mode" onchange="changeCheckbox('topbar_mode',{{ $GetWebsite->id }},'website')"  value="{{ !empty($topbar_mode) ? 1 : 0 }}" {{ !empty($topbar_mode) ? 'checked' : '' }} data-toggle="toggle">
           </label>
-        
-    </div>                                  
+       </div>  
+    
+    
     <div class="form-group {{ !empty($topbar_mode) ? '' : 'd-none' }}" id="topbarInput">
         <div class="input-group">
           <input type="text" class="form-control" placeholder="TopBar Message" aria-describedby="btn-topbar" data-id="website" value="{{ $GetWebsite->topbar }}" id="topbar" name="topbar">
@@ -173,14 +174,19 @@
       <span id="topbar_alert"></span>
     </div>
 
+
     <div class="form-group" id="topbarSlideMsgInput">
       <label class="form-controler-label">TopBar Slide Message</label>
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="TopBar Slide Message" aria-describedby="btn-topbar" data-id="website" value="{{ $GetWebsite->topbar_slide_msg }}" id="topbar-slide-msg" name="topbar-slide-msg">
-          <span class="input-group-btn" id="btn-topbar-slide-msg"><button type="button"  class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
+          @php $topbarSlideValue = !empty($GetWebsite->topbar_slide_msg) ? json_decode($GetWebsite->topbar_slide_msg) : null; @endphp
+
+          <input type="text" class="form-control" placeholder="TopBar Slide Message" aria-describedby="btn_topbar_slide_msg" data-id="website" value="" id="topbar_slide_msg" name="topbar_slide_msg">
+          <span class="input-group-btn" id="btn_topbar_slide_msg"><button type="button" onclick="btn_update('topbar_slide_msg')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
         </div>                                
-      <span id="topbar-slide-msg_alert"></span>
+      <span id="topbar_slide_msg_alert"></span>
     </div>
+   
+</div>  
     <!-- <div class="col-md-6 m-t-3">     
      <div class="form-group">
          <label>JS Script</label>
@@ -467,6 +473,10 @@
 <script>
 
   $(".select2").select2();
+
+  $("#topbar_slide_msg").tagsinput({
+     maxTags: 10
+  });
   
   var is_openBranch = 0;
   
