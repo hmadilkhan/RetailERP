@@ -195,6 +195,8 @@ class custom_helper
             return "label-primary";
         } else if ($status == "Void") {
             return "label-danger";
+        } else if ($status == "Sales Return") {
+            return "label-danger";
         } else {
             return "label-success";
         }
