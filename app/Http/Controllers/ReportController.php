@@ -2476,7 +2476,9 @@ class ReportController extends Controller
                 $pdf->Cell(24, 7, number_format($totalsales, 2), 'B,T', 0, 'L');
                 $pdf->Cell(24, 7, number_format($totaldiscount, 2), 'B,T', 0, 'L');
                 $pdf->Cell(22.5, 7, number_format($totalcashin, 2) . "/" . number_format($totalcashout, 2), 'B,T', 0, 'L');
+                if (session("company_id") != 102) {
                 $pdf->Cell(22.5, 7, number_format($totaldelivery, 2), 'B,T', 0, 'L');
+                }
                 $pdf->Cell(22.5, 7, number_format($totalexpenses, 2), 'B,T', 0, 'L');
                 $pdf->Cell(22.5, 7, number_format($totalhand, 2), 'B,T', 0, 'L');
                 if (session("company_id") != 102) {
