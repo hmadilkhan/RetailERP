@@ -540,7 +540,7 @@
         }
 
         function assignToServiceProviderModal(receiptId) {
-            $("#branchmodal").select2();
+            // $("#branchmodal").select2();
             $('#sp-modal').modal("show");
             $("#orderidforsp").val(receiptId);
         }
