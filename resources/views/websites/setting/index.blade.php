@@ -154,7 +154,7 @@
 
  <div class="tab-pane" id="header" role="tabpanel">
 
-    <div class="form-group mt-3">
+    <div class="form-group m-t-3">
         <label class="form-control-label">TopBar Header Message</label>
         <br/>
           <label>
@@ -173,6 +173,15 @@
       <span id="topbar_alert"></span>
     </div>
 
+    <div class="row g-3">
+  <div class="col-auto">
+    <label for="staticEmail2" class="visually-hidden">Email</label>
+    <input type="text" readonly class="form-control-plaintext" id="staticEmail2" value="email@example.com">
+  </div>
+  <div class="col-auto">
+    <button type="submit" class="btn btn-primary mb-3">Confirm identity</button>
+  </div>
+</div>  
     <div class="form-group" id="topbarSlideMsgInput">
       <label class="form-controler-label">TopBar Slide Message</label>
         <div class="input-group">
