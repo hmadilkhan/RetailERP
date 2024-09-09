@@ -1501,7 +1501,9 @@ class WebsiteController extends Controller
             }else if($request->col == 'topbar_slide_msg'){
 
                 //$value = (array) $request->val;
-                $value = explode(',',$request->val);
+                $arrayValue = [];
+                array_push($arrayValue,$request->val);
+                $value = json_decode($arrayValue);
 
             } else {
 
