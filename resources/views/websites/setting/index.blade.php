@@ -153,15 +153,43 @@
     </div>
 
  <div class="tab-pane" id="header" role="tabpanel">
-    <div class="col-md-6 m-t-3">     
+
+    <div class="form-group">
+        <label class="form-control-label">TopBar Header Message</label>
+        <br/>
+          <label>
+              @php 
+                  $topbar_mode = $GetWebsite->topbar;
+              @endphp 
+            <input type="checkbox" id="topbar_mode" onchange="changeCheckbox('topbar_mode',{{ $GetWebsite->id }},'website')"  value="{{ !empty($topbar_mode) ? 1 : 0 }}" {{ !empty($topbar_mode) ? 'checked' : '' }} data-toggle="toggle">
+          </label>
+        
+    </div>                                  
+    <div class="form-group {{ !empty($topbar_mode) ? '' : 'd-none' }}" id="topbarInput">
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="TopBar Message" aria-describedby="btn-topbar" data-id="website" value="{{ $GetWebsite->topbar }}" id="topbar" name="topbar">
+          <span class="input-group-btn" id="btn-topbar"><button type="button" onclick="btn_update('topbar')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
+        </div>                                
+      <span id="topbar_alert"></span>
+    </div>
+
+    <div class="form-group" id="topbarSlideMsgInput">
+      <label class="form-controler-label">TopBar Slide Message</label>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="TopBar Slide Message" aria-describedby="btn-topbar" data-id="website" value="{{ $GetWebsite->topbar_slide_msg }}" id="topbar-slide-msg" name="topbar-slide-msg">
+          <span class="input-group-btn" id="btn-topbar-slide-msg"><button type="button"  class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
+        </div>                                
+      <span id="topbar-slide-msg_alert"></span>
+    </div>
+    <!-- <div class="col-md-6 m-t-3">     
      <div class="form-group">
          <label>JS Script</label>
-         <textarea rows="5" class="form-control" name="js_script" data-id="theme" id="js_script"><?= !empty($GetWebsite->js_script) ? str_replace('\n','',htmlspecialchars_decode($GetWebsite->js_script, ENT_QUOTES)) : null ?></textarea>
+         <textarea rows="5" class="form-control" name="js_script" data-id="theme" id="js_script"><//?= !empty($GetWebsite->js_script) ? str_replace('\n','',htmlspecialchars_decode($GetWebsite->js_script, ENT_QUOTES)) : null ?></textarea>
          <button type="button" onclick="btn_update('js_script')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light m-t-1">Update!</button> 
          <span id="script_value_alert"></span>         
          
      </div>     
-    </div>
+    </div> -->
  </div>    
     
  <div class="tab-pane" id="contact" role="tabpanel">
@@ -377,24 +405,7 @@
                                         <input type="checkbox" id="advertisement" onchange="changeCheckbox('advertisement',{{ $GetWebsite->id }},'theme')"  value="{{ !empty($advertisement_mode) ? 1 : 0 }}" {{ !empty($advertisement_mode) ? 'checked' : '' }} data-toggle="toggle">
                                       </label>
                                 </div>
-                                <div class="form-group">
-                                    <label class="form-control-label">TopBar Header Message</label>
-                                    <br/>
-                                      <label>
-                                          @php 
-                                             $topbar_mode = $GetWebsite->topbar;
-                                          @endphp 
-                                        <input type="checkbox" id="topbar_mode" onchange="changeCheckbox('topbar_mode',{{ $GetWebsite->id }},'website')"  value="{{ !empty($topbar_mode) ? 1 : 0 }}" {{ !empty($topbar_mode) ? 'checked' : '' }} data-toggle="toggle">
-                                      </label>
-                                    
-                                </div>                                  
-                                <div class="form-group {{ !empty($topbar_mode) ? '' : 'd-none' }}" id="topbarInput">
-                                   <div class="input-group">
-                                      <input type="text" class="form-control" placeholder="TopBar Message" aria-describedby="btn-topbar" data-id="website" value="{{ $GetWebsite->topbar }}" id="topbar" name="topbar">
-                                      <span class="input-group-btn" id="btn-topbar"><button type="button" onclick="btn_update('topbar')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
-                                   </div>                                
-                                 <span id="topbar_alert"></span>
-                                </div>
+              
                                 <div class="form-group">  
                                   <label class="form-control-label">Order Estimate Time</label>
                                    <div class="input-group">
