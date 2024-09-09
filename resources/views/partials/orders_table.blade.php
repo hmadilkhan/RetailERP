@@ -1,5 +1,6 @@
-<div class="col-md-12 table-responsive" >
-    <table id="order_table" class="table table-striped table-bordered  nowrap flex-nowrap col-md-12 col-sm-12" width="100%">
+<div class="col-md-12 table-responsive">
+    <table id="order_table" class="table table-striped table-bordered  nowrap flex-nowrap col-md-12 col-sm-12"
+        width="100%">
         <thead>
             <tr>
                 <th>Machine#</th>
@@ -22,11 +23,11 @@
         <tbody>
             @if ($orders)
                 @foreach ($orders as $key => $order)
-                    <tr class="{{ $order->is_sale_return == 1 ? 'table-danger' : ''}}">
+                    <tr class="{{ $order->is_sale_return == 1 ? 'table-danger' : '' }}">
                         <td>{{ $order->machine_terminal_count }}</td>
                         <td>{{ $order->id }}</td>
                         <td>
-                            <div class="dropup">
+                            {{-- <div class="dropup">
                                 <button class="btn btn-default dropdown-toggle" type="button"
                                     data-toggle="dropdown">{{ date('d M Y ', strtotime($order->date)) }}
                                 </button>
@@ -40,6 +41,22 @@
                                             href="#">{{ $order->order_delivery_date != '' ? date('d M Y ', strtotime($order->order_delivery_date)) : '' }}</a>
                                     </li>
                                 </ul>
+                            </div> --}}
+                            <!-- Example single danger button -->
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"
+                                    aria-expanded="false">
+                                    {{ date('d M Y ', strtotime($order->date)) }}
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Stamp Date</a></li>
+                                    <li><a class="dropdown-item" href="#">{{ date('d M Y ', strtotime($order->delivery_date)) }}</a></li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li><a href="#"><strong>Order Delivery Date</strong></a></li>
+                                    <li><a class="dropdown-item" href="#">{{ $order->order_delivery_date != '' ? date('d M Y ', strtotime($order->order_delivery_date)) : '' }}</a></li>
+                                </ul>
                             </div>
                         </td>
                         <td>{{ date('h:i a', strtotime($order->time)) }}</td>
@@ -50,7 +67,7 @@
                         <td>{{ $order->order_mode }}</td>
                         <td>{{ $order->payment_mode }}</td>
                         <td><label
-                                class="label {{ Custom_Helper::getColorName($order->order_status_name) }}">{{ Custom_Helper::getOrderStatus($order->order_status_name,$order->is_sale_return)  }}</label>
+                                class="label {{ Custom_Helper::getColorName($order->order_status_name) }}">{{ Custom_Helper::getOrderStatus($order->order_status_name, $order->is_sale_return) }}</label>
                         </td>
                         <td>{{ $order->total_amount }}</td>
                         <td>{{ $order->itemcount }}/{{ $order->itemstotalqty }}</td>
