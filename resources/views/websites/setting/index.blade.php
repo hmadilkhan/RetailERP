@@ -239,7 +239,7 @@
               @php
                 $lightLogo = !empty($GetWebsite->logo) ? 'website/'.$GetWebsite->logo : 'placeholder.jpg';
               @endphp
-             <img id="logoimages" src="{{ asset('assets/images/'.$lightLogo) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+             <img id="logoimages" src="{{ asset('storage/images/'.$lightLogo) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
             <br/>
             <label for="logo" class="custom-file">
                 <input type="file" name="logo" id="logo" onchange="readURL(this,'logoimages')" class="custom-file-input">
@@ -252,7 +252,7 @@
                   @php
                     $darkLogo = !empty($GetWebsite->dark_logo) ? 'website/'.$GetWebsite->dark_logo : 'placeholder.jpg';
                   @endphp
-                 <img id="dark_logoimages" src="{{ asset('assets/images/'.$darkLogo) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                 <img id="dark_logoimages" src="{{ asset('storage/images/'.$darkLogo) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
                 <br/>
                 <label for="dark_logo" class="custom-file">
                     <input type="file" name="dark_logo" id="dark_logo" onchange="readURL(this,'dark_logoimages')" class="custom-file-input">
@@ -265,7 +265,7 @@
               @php
                 $favicon = !empty($GetWebsite->favicon) ? 'website/'.$GetWebsite->favicon : 'placeholder.jpg';
               @endphp
-             <img id="faviconimages" src="{{ asset('assets/images/'.$favicon) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+             <img id="faviconimages" src="{{ asset('storage/images/'.$favicon) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
             <br/>
             <label for="favicon" class="custom-file">
                 <input type="file" name="favicon" id="favicon" onchange="readURL(this,'faviconimages')" class="custom-file-input">
