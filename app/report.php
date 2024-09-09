@@ -227,7 +227,7 @@ class report extends Model
 			$filter .= " and b.sub_department_id = ".$subdepartment;
 		}
 
-        if($branch !=  ""){
+        if($branch !=  "all"){
             $filter .= " and a.branch_id = ".$branch;
         }
 
