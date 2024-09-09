@@ -1443,7 +1443,7 @@ class WebsiteController extends Controller
             return response()->json('Invalid fields');
         }
 
-        $columnNames_array = ['is_open', 'maintenance_mode', 'logo', 'favicon', 'fontstyle', 'checkout_otp', 'topbar', 'advertisement'];
+        $columnNames_array = ['is_open', 'maintenance_mode', 'logo', 'favicon', 'fontstyle', 'checkout_otp', 'topbar', 'topbar_slide_msg', 'advertisement'];
         $websiteId  = $request->id;
         $companyId  = Auth::user()->company_id;
         $value = $request->val;
@@ -1458,20 +1458,20 @@ class WebsiteController extends Controller
         if ($request->mode == 'theme') {
             $getRecord_webTheme = (array) $getRecord_webTheme;
 
-            if ($request->col == 'js_script') {
-                //  $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-                $value = $value;
-                if (htmlspecialchars($getRecord_webTheme[$request->col], ENT_QUOTES) == htmlspecialchars($value, ENT_QUOTES)) {
-                    return response()->json('success');
-                }
-            } else {
+            // if ($request->col == 'js_script') {
+            //     //  $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+            //     $value = $value;
+            //     if (htmlspecialchars($getRecord_webTheme[$request->col], ENT_QUOTES) == htmlspecialchars($value, ENT_QUOTES)) {
+            //         return response()->json('success');
+            //     }
+            // } else {
 
                 if ($getRecord_webTheme[$request->col] == $value) {
                     return response()->json('success');
                 }
 
                 $value = addslashes($value);
-            }
+            // }
 
             if (DB::table('website_theme')->where('website_id', '=', $websiteId)->update([$request->col => $value])) {
 
@@ -1498,6 +1498,10 @@ class WebsiteController extends Controller
                 $image->move(public_path('storage/images/website'), $imageName);
 
                 $value = $imageName;
+            }else if($request->col == 'topbar_slide_msg'){
+
+                $value = json_encode($request->val);
+
             } else {
 
                 if ($getRecord_webDetail[$request->col] == $request->val) {

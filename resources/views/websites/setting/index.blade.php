@@ -178,10 +178,12 @@
     <div class="form-group" id="topbarSlideMsgInput">
       <label class="form-controler-label">TopBar Slide Message</label>
         <div class="input-group">
-          <input type="text" class="form-control" placeholder="TopBar Slide Message" aria-describedby="btn-topbar" data-id="website" value="{{ $GetWebsite->topbar_slide_msg }}" id="topbar-slide-msg" name="topbar-slide-msg">
-          <span class="input-group-btn" id="btn-topbar-slide-msg"><button type="button" class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
+          @php $topbarSlideValue = !empty($GetWebsite->topbar_slide_msg) ? json_decode($GetWebsite->topbar_slide_msg) : null; @endphp
+
+          <input type="text" class="form-control" placeholder="TopBar Slide Message" aria-describedby="btn_topbar_slide_msg" data-id="website" value="" id="topbar_slide_msg" name="topbar_slide_msg">
+          <span class="input-group-btn" id="btn_topbar_slide_msg"><button type="button" onclick="btn_update('topbtopbar_slide_msgar')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
         </div>                                
-      <span id="topbar-slide-msg_alert"></span>
+      <span id="topbar_slide_msg_alert"></span>
     </div>
    
 </div>  
