@@ -475,7 +475,17 @@
 
         });
 
+        function showLoader(divName) {
+            $('#' + divName).empty();
+            $('#' + divName).append(
+                "<div class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
+                "<div class='spinner-border text-dark' role='status'>" +
+                "<span class='visually-hidden'>Loading...</span></div></div>"
+            )
+        }
+
         function fetch_data(page) {
+            showLoader("table_data")
             $.ajax({
                 url: "{{ url('get-pos-orders-new') }}" + "?page=" + page,
                 type: 'GET',
@@ -498,6 +508,7 @@
                     type: $('#type').val(),
                 },
                 success: function(data) {
+                    $('#table_data').empty();
                     $('#table_data').html(data);
                 }
             });
