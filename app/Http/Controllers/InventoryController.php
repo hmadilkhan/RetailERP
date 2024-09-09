@@ -379,6 +379,14 @@ class InventoryController extends Controller
         }
 
         if (!empty($request->website)) {
+
+            WebsiteProduct::where('website_id','!=',$request->website)
+                            ->where('inventory_id',$productid)
+                            ->update([
+                                "status" => 0,
+                                "updated_at" => date("Y-m-d H:i:s"),
+                            ]);
+
             // foreach ($request->website as $website) {
                 WebsiteProduct::create([
                     "website_id" => $request->website,
@@ -386,14 +394,6 @@ class InventoryController extends Controller
                 ]);
             // }
         }
-
-        // 		if(!empty($request->brand)){
-        // 				DB::table('inventory_brands')->insert([
-        // 					"inventory_id" => $productid,
-        // 					"brand_id"     => $request->brand,
-        // 					'created_at'   => date("Y-m-d H:i:s")
-        // 				]);
-        // 		}
 
         if (!empty($request->tags)) {
             foreach ($request->tags as $val) {
@@ -526,7 +526,7 @@ class InventoryController extends Controller
                         "website_id" => $request->website,
                         "inventory_id" => $productid,
                     ]);
-                    
+
                     WebsiteProduct::where('website_id','!=',$request->website)
                                    ->where('inventory_id',$productid)
                                    ->where('status',1)
