@@ -2986,7 +2986,7 @@ class ReportController extends Controller
             $pdf->Cell(20, 6, '0', 0, 1, 'R', 1);
         }
         //save file
-        $pdf->Output('FBR_Report.pdf', 'I');
+        $pdf->Output('Invoice_Detail_Report.pdf', 'I');
     }
 
     public function salesInvoicesReport(Request $request, Vendor $vendor, Report $report)

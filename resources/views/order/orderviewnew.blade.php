@@ -348,7 +348,7 @@
                                 <div class="col-md-12">
                                     <label class="form-control-label">Select Branch</label>
                                     <select id="branchmodal" name="branchmodal" data-placeholder="Select Branch"
-                                        class="f-right select2">
+                                        class="f-right">
                                         @foreach ($branch as $value)
                                             <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                                         @endforeach
