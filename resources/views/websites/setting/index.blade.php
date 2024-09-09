@@ -181,7 +181,7 @@
           @php $topbarSlideValue = !empty($GetWebsite->topbar_slide_msg) ? json_decode($GetWebsite->topbar_slide_msg) : null; @endphp
 
           <input type="text" class="form-control" placeholder="TopBar Slide Message" aria-describedby="btn_topbar_slide_msg" data-id="website" value="" id="topbar_slide_msg" name="topbar_slide_msg">
-          <span class="input-group-btn" id="btn_topbar_slide_msg"><button type="button" onclick="btn_update('topbtopbar_slide_msgar')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
+          <span class="input-group-btn" id="btn_topbar_slide_msg"><button type="button" onclick="btn_update('topbar_slide_msg')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
         </div>                                
       <span id="topbar_slide_msg_alert"></span>
     </div>
