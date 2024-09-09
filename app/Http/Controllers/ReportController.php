@@ -39,6 +39,7 @@ use Mail;
 use \Illuminate\Support\Arr;
 use App\stock;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class ReportController extends Controller
 {
@@ -2477,7 +2478,7 @@ class ReportController extends Controller
                 $pdf->Cell(24, 7, number_format($totaldiscount, 2), 'B,T', 0, 'L');
                 $pdf->Cell(22.5, 7, number_format($totalcashin, 2) . "/" . number_format($totalcashout, 2), 'B,T', 0, 'L');
                 if (session("company_id") != 102) {
-                $pdf->Cell(22.5, 7, number_format($totaldelivery, 2), 'B,T', 0, 'L');
+                    $pdf->Cell(22.5, 7, number_format($totaldelivery, 2), 'B,T', 0, 'L');
                 }
                 $pdf->Cell(22.5, 7, number_format($totalexpenses, 2), 'B,T', 0, 'L');
                 $pdf->Cell(22.5, 7, number_format($totalhand, 2), 'B,T', 0, 'L');
@@ -4614,7 +4615,7 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
-        $inventory = $report->get_inventory_details_with_image($request->department,$request->subdepartment, $request->branch);
+        $inventory = $report->get_inventory_details_with_image($request->department, $request->subdepartment, $request->branch);
 
         foreach ($inventory as $item) {
             // Add image cell (adjust x, y as needed)
@@ -4622,12 +4623,37 @@ class ReportController extends Controller
                 $pdf->AddPage(); // Add a new page
             }
 
-            $imagePath = ($item->url != null ? $item->url : asset('storage/images/products/' . $item->image));
+            // $imagePath = ($item->url != null ? $item->url : asset('storage/images/products/' . $item->image));
 
-            if (file_exists($imagePath) && $item->image != "") {
-                $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1); // Image inside the cell
+            // if (file_exists($imagePath) && $item->image != "") {
+            //     $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1); // Image inside the cell
+            // } else {
+            //     $pdf->Cell(50, 50, 'No Image'.$item->url, 1, 0, 'C'); // Fallback if no image found
+            // }
+
+            // Determine the image path
+            $imagePath = $item->url ?? asset('storage/images/products/' . $item->image);
+
+            // Check if the image is from a URL or a local file
+            if (filter_var($item->url, FILTER_VALIDATE_URL)) {
+                // Check if the URL is accessible
+                $response = Http::head($item->url);
+                if ($response->ok()) {
+                    // URL is accessible, use the URL
+                    $pdf->Cell(50, 50, $pdf->Image($item->url, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
+                } else {
+                    // URL is not accessible, fallback to local storage
+                    $imagePath = asset('storage/images/products/' . $item->image);
+                    $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
+                }
             } else {
-                $pdf->Cell(50, 50, 'No Image'.$item->url, 1, 0, 'C'); // Fallback if no image found
+                // Check if the local file exists
+                if (Storage::exists('public/images/products/' . $item->image)) {
+                    $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
+                } else {
+                    // Fallback message if no image found
+                    $pdf->Cell(50, 50, 'No Image' . $item->url, 1, 0, 'C');
+                }
             }
 
             // Add item code
