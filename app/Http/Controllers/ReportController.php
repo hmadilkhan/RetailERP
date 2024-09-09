@@ -4536,6 +4536,18 @@ class ReportController extends Controller
         $pdf->Output('Item_Sale_Database.pdf', 'I');
     }
 
+
+    // Function to check if URL is accessible and returns valid image data
+    function isImageUrlAccessible($url)
+    {
+        try {
+            $response = Http::get($url);
+            return $response->ok() && strpos($response->header('Content-Type'), 'image/') === 0;
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     public function inventoryImageReport(Request $request, Vendor $vendor, Report $report)
     {
 
@@ -4631,28 +4643,20 @@ class ReportController extends Controller
             //     $pdf->Cell(50, 50, 'No Image'.$item->url, 1, 0, 'C'); // Fallback if no image found
             // }
 
-            // Determine the image path
-            $imagePath = $item->url ?? asset('storage/images/products/' . $item->image);
+            $imageUrl = $item->url;
+            $localImagePath = 'storage/images/products/' . $item->image;
 
-            // Check if the image is from a URL or a local file
-            if (filter_var($item->url, FILTER_VALIDATE_URL)) {
-                // Check if the URL is accessible
-                $response = Http::head($item->url);
-                if ($response->ok()) {
-                    // URL is accessible, use the URL
-                    $pdf->Cell(50, 50, $pdf->Image($item->url, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
-                } else {
-                    // URL is not accessible, fallback to local storage
-                    $imagePath = asset('storage/images/products/' . $item->image);
-                    $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
-                }
+            // Determine image path
+            if (filter_var($imageUrl, FILTER_VALIDATE_URL) && $this->isImageUrlAccessible($imageUrl)) {
+                // Use the URL if it's valid and accessible
+                $pdf->Cell(50, 50, $pdf->Image($imageUrl, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
             } else {
-                // Check if the local file exists
-                if (Storage::exists('public/images/products/' . $item->image)) {
-                    $pdf->Cell(50, 50, $pdf->Image($imagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
+                // Fallback to local storage if URL is not accessible or invalid
+                if (Storage::exists($localImagePath)) {
+                    $pdf->Cell(50, 50, $pdf->Image(asset($localImagePath), $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
                 } else {
                     // Fallback message if no image found
-                    $pdf->Cell(50, 50, 'No Image' . $item->url, 1, 0, 'C');
+                    $pdf->Cell(50, 50, 'No Image', 1, 0, 'C');
                 }
             }
 
