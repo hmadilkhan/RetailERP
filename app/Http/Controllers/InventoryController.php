@@ -526,6 +526,12 @@ class InventoryController extends Controller
                         "website_id" => $request->website,
                         "inventory_id" => $productid,
                     ]);
+                    
+                    WebsiteProduct::where('website_id','!=',$request->website)
+                                   ->where('inventory_id',$productid)
+                                   ->where('status',1)
+                                   ->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
+
                 }
             }
             return response()->json('success', 200);
