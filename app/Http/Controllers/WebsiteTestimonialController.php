@@ -10,7 +10,7 @@ use App\Traits\MediaTrait;
 use Illuminate\Support\Facades\DB;
 use Session, Image, Auth, Validator, File;
 
-class WebsiteController extends Controller
+class WebsiteTestimonialController extends Controller
 {
      use MediaTrait;
     public function __construct()
@@ -23,7 +23,11 @@ class WebsiteController extends Controller
         $data = [];
 
         if(isset($request->id)){
-            $data["websites"] =Testimonial::where('website_id',$request->id)->get();
+            $data["testimonials"] =Testimonial::join('website_details','website_details.id','website_testimonials.website_id')
+                                              ->where('website_id',$request->id)
+                                              ->groupBy('website_testimonials.website_id')
+                                              ->select('website_testimonials.*','website_details.name as website_name')
+                                              ->get();
         }
 
         return view("websites.testimonial.index",$data);
