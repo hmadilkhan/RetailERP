@@ -2,13 +2,13 @@
 namespace App\Http\Resources\onlineSalesResource;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Http\Resources\onlineSalesResource\ProductAddonValuesResource;
+use App\Http\Resources\onlineSalesResource\ProductDealAddonValuesResource;
 use Illuminate\Support\Facades\DB;
 
-class ProductAddonResource extends JsonResource
+class ProductDealAddonHeadResource extends JsonResource
 {
 
-    protected $receipt_id,$item_code;
+    protected $receipt_id,$receipt_detail_id;
 
     public function __construct($resource,$receipt_id,$receipt_detail_id) {
         // Ensure we call the parent constructor
@@ -16,9 +16,10 @@ class ProductAddonResource extends JsonResource
         $this->resource = $resource;
         //json_encode(DB::table('test')->insert(['data'=>json_encode($resource)]));
         // $explodeValue = explode(',',$data);
-        $this->receipt_id = $receipt_id; // $receipt_id param passed
+        $this->receipt_id         = $receipt_id; // $receipt_id param passed
+        $this->receipt_detail_id  = $receipt_detail_id;
+        // $this->mode               = $data['mode'];
         // $this->item_code  = $item_code;
-        $this->receipt_detail_id = $receipt_detail_id;
     }
 
 
@@ -37,14 +38,14 @@ class ProductAddonResource extends JsonResource
                 $item = [
                             "id"     => $value->id,
                             "name"   => $value->name,
-                            "values" => ProductAddonValuesResource::collection(DB::table('addons')->whereIn('id',DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'addon'])->pluck('addon_variation_id'))->where('addon_category_id',$value->id)->get()),
-                                ];
+                            "values" => ProductDealAddonValuesResource::collection(DB::table('addons')->whereIn('id',DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'deal-addon'])->pluck('addon_variation_id'))->where('addon_category_id',$value->id)->get())
+                        ];
 
                 array_push($items,$item);
             }
             return collect($items);
 
-        // DB::table('addons')->join('sales_receipt_addons','sales_receipt_addons.addon_id','addons.id')->where(['addons.addon_category_id'=>$value->id,'sales_receipt_addons.receipt_id'=>$this->receipt_id,'sales_receipt_addons.product_id'=>$this->item_code])->select('sales_receipt_addons.name','sales_receipt_addons.price')->get()
+        
 
 
   //       return [
