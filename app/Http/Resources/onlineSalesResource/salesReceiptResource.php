@@ -26,7 +26,7 @@ class salesReceiptResource extends JsonResource
 									->get();
 
 	    if($serviceProviderSql != null){						
-		    $serviceProviders= ServiceProviderOrderResource::collection($serviceProviderSql);
+		   // $serviceProviders= ServiceProviderOrderResource::collection($serviceProviderSql);
 		}
 
         return [
