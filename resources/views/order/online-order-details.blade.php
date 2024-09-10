@@ -10,7 +10,7 @@
 @section('content')
   <?php ?>
 
-<div class="" style="padding-top:-3.9rem;">
+<div class="p-t-3">
     <div class="row bg-transparent m-2 p-2" style="padding-top:-3.9rem;">
 		<div class="col-xl-12">
 		<div class="card border shadow-none">
