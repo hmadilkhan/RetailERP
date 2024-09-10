@@ -8,7 +8,7 @@ use App\Http\Resources\onlineSalesResource\ServiceProviderOrderResource;
 use Illuminate\Support\Facades\DB;
 // use App\Models\InventoryPos;
 
-class salesReceiptResource extends JsonResource
+class salesReceiptResourc extends JsonResource
 {
     /**
      * Transform the resource into an array.
