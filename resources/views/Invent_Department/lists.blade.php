@@ -282,7 +282,7 @@
                         </div>                        
                         <div class="col-md-12">
                           <div class="form-group">
-                                 <img src="../../assets/images/no-image.jpg" alt="placeholder.jpg" width="128" height="128" id="previewImg_sbmd"/></br>
+                                 <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg" width="128" height="128" id="previewImg_sbmd"/></br>
                               <label for="subdepartImage_add" class="form-control-label">Sub Department Image</label></br>
                     
                               <label for="subdepartImage_add" class="custom-file">
@@ -567,7 +567,7 @@ function editsubdepart(departcode,departid,departname){
                         var imageColumn = "<td id='imgCell_md"+r[s].sub_department_id+"'><div><input type='file' name='sdbptImg' class='d-none' id='sdbptImg"+r[s].sub_department_id+"'> <i id='btn_selectImg"+r[s].sub_department_id+"' class='icofont icofont-upload text-success icofont-3x' onclick='selectImg("+r[s].sub_department_id+")'></i></div></td>";
                         
                         if(r[s].image != null && r[s].image != ''){
-                            imageColumn ="<td id='imgCell_md"+r[s].sub_department_id+"'><div><img src='"+location.origin+"/assets/images/department/"+r[s].image+"' width='64' height='64'/><i class='icofont icofont-close text-danger' onclick='removeImgCell("+r[s].sub_department_id+")'></i></div></td>";
+                            imageColumn ="<td id='imgCell_md"+r[s].sub_department_id+"'><div><img src='"+location.origin+"/storage/images/department/"+r[s].image+"' width='64' height='64'/><i class='icofont icofont-close text-danger' onclick='removeImgCell("+r[s].sub_department_id+")'></i></div></td>";
                         }
                         
                     
