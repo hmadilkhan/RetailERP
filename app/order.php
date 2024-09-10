@@ -717,7 +717,7 @@ class order extends Model
 			->join('website_details', 'website_details.id', 'sales_receipts.website_id')
 			->select('sales_receipts.*', 'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'branch.branch_name')
 			->whereRaw('sales_receipts.url_orderid = "'.$id.'" '.$filter)
-			->first();
+			->get();
 	}
 
 	public function orderStatus()
