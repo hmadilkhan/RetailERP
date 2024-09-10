@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\WebsiteTestimonialController;
 
 
 Route::middleware(['statusCheck'])->group(function () {
