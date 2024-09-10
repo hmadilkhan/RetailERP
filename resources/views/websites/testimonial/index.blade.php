@@ -24,7 +24,7 @@
          <a href="{{route('testimonials.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Testimonial</a>
          </div>
        <div class="card-block">
-           <div class="col-md-6">
+           <div class="col-md-4">
              <div class="form-group">
                 <label class="form-control-label">Website</label>
                 <select name="website" id="website" class="select2" data-placeholder="Select">
