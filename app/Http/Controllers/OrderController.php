@@ -13,7 +13,7 @@ use App\Models\Order as OrderModel;
 use App\Models\Terminal;
 use App\Models\OrderStatus;
 use App\Models\CustomerAccount;
-use App\Http\Resources\onlineSalesResource\salesReceiptResource;
+use App\Http\Resources\onlineSalesResource\SalesReceiptsResource;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
@@ -237,7 +237,7 @@ class OrderController extends Controller
             return redirect('web-orders-view');
         }
 
-        $orders = new salesReceiptResource($record);
+        $orders = new SalesReceiptsResource($record);
 
         if ($orders != null) {
             $orders = json_encode($orders);
