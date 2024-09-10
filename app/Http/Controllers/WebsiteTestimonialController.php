@@ -43,11 +43,11 @@ class WebsiteTestimonialController extends Controller
     {
         // |regex:/^[a-zA-Z]+$/u
         $this->validate($request, [
-            "website_id"  => "required",
-            "name"        => "required|max:255|unique:website_testimonials",
-            "rating"      => "",
-            "content"     => "required",
-            "image"       => "required",
+            "website_id"     => "required",
+            "customer_name"  => "required|max:255|unique:website_testimonials",
+            "rating"         => "required",
+            "content"        => "required",
+            "image"          => "required",
         ]);
 
         try {
