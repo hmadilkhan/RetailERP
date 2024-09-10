@@ -101,6 +101,12 @@
         }
 
     });
+
+    $("#website").on('change',function(){
+        if($(this).val() != ''){
+             window.location = location.origin+'/website/testimonials/'+$(this).val()+'/filter';
+        }
+    });
     
     function remove(webId,webName){
             swal({
