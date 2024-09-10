@@ -19,7 +19,7 @@
 				<label class="form-control-label">Website</label>
 				<select name="website_id" id="website_id" data-placeholder="Select Company" class="form-control select2" >
 					<option value="">Select Company</option>
-					@if($companies)
+					@if($websites)
 					   @php $oldwebsite = old('website_id');
 						@foreach($websites as $website)
 							<option {{ $oldwebsite == $website->id ? 'selected' : '' }} value="{{ $website->id }}">{{ $website->name }}</option>
