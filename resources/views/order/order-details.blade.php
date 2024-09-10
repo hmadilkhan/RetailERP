@@ -181,8 +181,8 @@
             }
         }
     </style>
-    <div class="" style="padding-top:-3.9rem;">
-        <div class="row bg-transparent m-2 p-2" style="padding-top:-3.9rem;">
+    <div class="">
+        <div class="row bg-transparent m-2 p-2">
             <div class="col-xl-12">
                 <div class="card border shadow-none">
                     <div class="card-body">
