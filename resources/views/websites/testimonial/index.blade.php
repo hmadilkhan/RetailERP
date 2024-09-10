@@ -21,7 +21,7 @@
     <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Filter</h5>
-         <a href="{{route('testimonial.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Testimonial</a>
+         <a href="{{route('testimonials.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Testimonial</a>
          </div>
        <div class="card-block">
            <div class="col-md-6">
@@ -67,9 +67,9 @@
 				  <td>{{$value->rating}}</td>
 				  <td>{{ $value->content }}</td>
 				  <td class="action-icon">
-					<a href="{{ route('testimonial.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+					<a href="{{ route('testimonials.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
 					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ addslashes($value->company->name) }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
-					<form action="{{ route('testimonial.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
+					<form action="{{ route('testimonials.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
 					    @csrf
 					    @method('DELETE')
                         
