@@ -74,7 +74,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-start border-bottom pb-3">
                         <div class="me-4">
-                            <img src="{{ asset('assets/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
+                            <img src="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
                         </div>
                         <div class="flex-grow-1 align-self-center overflow-hidden">
                             <div>
