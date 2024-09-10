@@ -234,7 +234,7 @@ class OrderController extends Controller
 
         if ($record == null) {
             Session::flash('error', 'Error! order detail not found.');
-            return redirect()->url('web-orders-view');
+            return redirect('web-orders-view');
         }
 
         $orders = new salesReceiptResource($record);
