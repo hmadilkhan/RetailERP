@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 class ProductAddonResource extends JsonResource
 {
-// 
+
     protected $receipt_id,$item_code;
 
     public function __construct($resource,$receipt_id,$receipt_detail_id) {

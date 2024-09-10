@@ -237,7 +237,7 @@ class OrderController extends Controller
             return redirect('web-orders-view');
         }
 
-        $orders = new SalesReceiptResource($record);
+        $orders = new salesReceiptResource($record);
 
         if ($orders != null) {
             $orders = json_encode($orders);
