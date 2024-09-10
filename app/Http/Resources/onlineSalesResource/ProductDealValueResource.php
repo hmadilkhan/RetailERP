@@ -8,7 +8,7 @@ use App\Http\Resources\onlineSalesResource\ProductDealAddonHeadResource;
 class ProductDealValueResource extends JsonResource
 {
 
-    /**
+    /***
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request

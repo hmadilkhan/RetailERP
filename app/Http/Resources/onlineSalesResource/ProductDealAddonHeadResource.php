@@ -48,7 +48,7 @@ class ProductDealAddonHeadResource extends JsonResource
         
 
 
-  //       return [
+  //*       return [
 		// 	"id"     => $this->id,
   //           "name"   => $this->name,
   //           "values" => new ProductAddonValuesResource(DB::table('addon_categories')->whereIn('id',DB::table('addons')->whereIn('id',DB::table('sales_receipt_addons')->where(['receipt_id'=>$this->receipt_id,'product_id'=>$this->item_code])->pluck('addon_id'))->groupBy('addon_category_id')->pluck('addon_category_id'))->get(),$this->receipt_id),

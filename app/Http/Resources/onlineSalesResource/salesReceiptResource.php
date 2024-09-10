@@ -18,17 +18,6 @@ class salesReceiptResource extends JsonResource
      */
     public function toArray($request)
     {
-
-		$serviceProviderSql = DB::table('service_provider_orders')
-									->join('service_provider_details','service_provider_details.id','service_provider_orders.service_provider_id')
-									->select('service_provider_details.provider_name','service_provider_details.contact')
-									->where('service_provider_orders.receipt_id',$this->id)
-									->get();
-
-	    if($serviceProviderSql != null){						
-		   // $serviceProviders= ServiceProviderOrderResource::collection($serviceProviderSql);
-		}
-
         return [
         	"id"                        =>$this->id, 
         	"receipt_no"                =>$this->receipt_no,
@@ -48,7 +37,11 @@ class salesReceiptResource extends JsonResource
 			"delivery_instructions"     =>$this->delivery_instructions,
 			"dateTime"                  =>date('M d, Y h:i:s', strtotime($this->date." ".$this->time)), //date("M ,d Y H:i:s",strtotime($this->date." ".$this->time)),
 			"deliveryDate"              =>$this->delivery_date,
-			"Rider"                     =>isset($serviceProviders) ?? null,
+			"Rider"                     =>ServiceProviderOrderResource::collection(DB::table('service_provider_orders')
+			                                                                          ->join('service_provider_details','service_provider_details.id','service_provider_orders.service_provider_id')
+			                                                                          ->select('service_provider_details.provider_name','service_provider_details.contact')
+			                                                                          ->where('service_provider_orders.receipt_id',$this->id)
+			                                                                          ->get()),
 			"customer"                  =>new CustomerResource(DB::table('customers')->join('customer_addresses','customer_addresses.customer_id','customers.id')->where(['customers.id'=>$this->customer_id,'customer_addresses.id'=>$this->cust_location_id])->select('customers.name','customers.mobile','customer_addresses.address','customer_addresses.landmark')->first()),
 			"products"                  =>ProductResource::collection(DB::table('inventory_general')->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')->where('sales_receipt_details.receipt_id',$this->id)->where('sales_receipt_details.mode','inventory-general')->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code','sales_receipt_details.item_name','sales_receipt_details.total_qty','sales_receipt_details.item_price','sales_receipt_details.total_amount','sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id','sales_receipt_details.discount_value','sales_receipt_details.discount_code','sales_receipt_details.group_id','sales_receipt_details.actual_price','inventory_general.image')->get()),
 			
