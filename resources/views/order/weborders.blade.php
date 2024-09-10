@@ -9,7 +9,7 @@
 
 @section('content')
     <?php $id = ""; $t = ""; ?>
-    <section class="panels-wells">
+    <section class="panels-wells p-t-3">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">Order Details</h5>
