@@ -20,7 +20,7 @@
 				<select name="website_id" id="website_id" data-placeholder="Select Company" class="form-control select2" >
 					<option value="">Select Company</option>
 					@if($websites)
-					   @php $oldwebsite = old('website_id');
+					   @php $oldwebsite = old('website_id') @endphp
 						@foreach($websites as $website)
 							<option {{ $oldwebsite == $website->id ? 'selected' : '' }} value="{{ $website->id }}">{{ $website->name }}</option>
 						@endforeach
