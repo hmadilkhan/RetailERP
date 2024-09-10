@@ -4,8 +4,8 @@
 @section('navwebsite','active')
 @section('content')
 
-<section class="panels-wells">
-<div class="card">
+<section class="panels-wells p-t-3">
+<div class="card ">
 	<div class="card-header">
 		<h5 class="card-header-text">Create Website Testimonial</h5>
 	</div>      
