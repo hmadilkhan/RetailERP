@@ -35,10 +35,10 @@
             <!-- Container-fluid starts -->
             <!-- Main content starts -->
             <div class="container-fluid p-4" 
-            {{-- @hasSection('dashboardInlineCSS')
+            @hasSection('dashboardInlineCSS')
             @else
                 style="padding-top:3.9rem;"
-                @endif --}}
+                @endif
             >
 
                 <!-- start contect-->
