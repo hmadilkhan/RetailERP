@@ -54,7 +54,6 @@
                <th>Customer</th>
                <th>Rating</th>
                <th>Content</th>
-               <th>Domain</th>
                <th>Action</th>
             </tr>
 		</thead>
