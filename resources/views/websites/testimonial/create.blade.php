@@ -16,7 +16,7 @@
 		@csrf 
 
 			<div class="form-group">
-				<label class="form-control-label">Website</label>
+				<label class="form-control-label">Website <span class="text-danger">*</span></label>
 				<select name="website_id" id="website_id" data-placeholder="Select Company" class="form-control select2" >
 					<option value="">Select Company</option>
 					@if($websites)
@@ -31,7 +31,7 @@
 				@enderror
 			 </div>
                 <div class="form-group">
-                    <label class="control-label">Customer Name</label>
+                    <label class="control-label">Customer Name <span class="text-danger">*</span></label>
                     <input name="customer_name" type="text" class="form-control" placeholder="Customer Name" value="{{ old('customer_name') }}" />
                     @error('customer_name')
                      <span class="form-control-feedback text-danger">{{ $message }}</span>
@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="control-label">Rating</label>
+                    <label class="control-label">Rating <span class="text-danger">*</span></label>
                     <input type="text" class="form-control" name="rating" placeholder="Rating" value="{{ old('rating') }}"/>
                     @error('rating')
                      <span class="form-control-feedback text-danger">{{ $message }}</span>
@@ -47,7 +47,7 @@
                 </div>                
 
                 <div class="form-group">
-                    <label class="control-label">Content</label>
+                    <label class="control-label">Content <span class="text-danger">*</span></label>
                     <textarea class="form-control" name="content" id="content" placeholder="Content" rows="5"></textarea>
                     @error('rating')
                      <span class="form-control-feedback text-danger">{{ $message }}</span>
@@ -58,7 +58,7 @@
 				<a href="#">
 					<img id="preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 				</a>					
-					<label for="image" class="form-control-label">Customer Image</label></br>
+					<label for="image" class="form-control-label">Customer Image <span class="text-danger">*</span></label></br>
 
 					<label for="image" class="custom-file">
 					<input type="file" name="image" id="image" class="custom-file-input">
