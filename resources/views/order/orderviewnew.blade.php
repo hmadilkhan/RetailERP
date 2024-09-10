@@ -134,7 +134,7 @@
                         </select>
                     </div>
 
-                    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="margin-top: 20px;">
+                    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
                         <label class="form-control-label">Select Terminal</label>
                         <select id="terminal" name="terminal" data-placeholder="Select Terminal"
                             class="f-right select2">
@@ -142,7 +142,7 @@
                         </select>
                     </div>
                     @if (session('roleId') != 20 && session('roleId') != 19)
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="margin-top: 20px;">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
                             <label class="form-control-label">Select Customer</label>
                             <select id="customer" name="customer" data-placeholder="Select Customer"
                                 class="f-right select2">
