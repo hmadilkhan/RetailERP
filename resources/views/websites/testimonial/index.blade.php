@@ -17,8 +17,49 @@
          <div class="alert alert-success">{{ Session::get('success') }}</div>
     @endif
 
-    
+    <div class="card">
+     <div class="card-header">
+         <h5 class="card-header-text">Websites</h5>
+         <a href="{{route('website.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Website</a>
+         </div>
+       <div class="card-block">
 
+     <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
+         <thead>
+            <tr>
+               <th class="d-none"></th>
+               <th>Image</th>
+               <th>Customer</th>
+               <th>Rating</th>
+               <th>Content</th>
+               <th>Domain</th>
+               <th>Action</th>
+            </tr>
+		</thead>
+		<tbody>
+              @foreach($testimonials as $value)
+				<tr>
+                  <td class="d-none">{{ $value->id }}</td>  
+				  <td class="text-center"><img width="42" height="42" src="{{ asset('storage/images/testimonials/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
+				  <td>{{$value->customer_name}}</td>
+				  <td>{{$value->rating}}</td>
+				  <td>{{ $value->content }}</td>
+				  <td class="action-icon">
+					<a href="{{ route('testimonial.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }})" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
+					<form action="{{ route('testimonial.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
+					    @csrf
+					    @method('DELETE')
+
+
+					</form>
+				  </td>
+				</tr>
+             @endforeach
+         </tbody>
+     </table>
+  </div>
+</div>
 </section>
 @endsection
 

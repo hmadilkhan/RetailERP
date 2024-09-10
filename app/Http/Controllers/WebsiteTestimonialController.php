@@ -24,13 +24,11 @@ class WebsiteTestimonialController extends Controller
         $data = [];
 
         if(isset($request->id)){
-            $data["testimonials"] = Testimonial::join('website_details','website_details.id','website_testimonials.website_id')
-                                              ->where('website_id',$request->id)
-                                              ->groupBy('website_testimonials.website_id')
-                                              ->select('website_testimonials.*','website_details.name as website_name')
-                                              ->get();
+            $data["testimonials"] = Testimonial::where('website_id',$request->id)->get();
         }
-
+            
+        $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
+        
         return view("websites.testimonial.index",$data);
     }
 
