@@ -231,7 +231,7 @@ class OrderController extends Controller
         // DB::table('inventory_general')->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')->where('sales_receipt_details.receipt_id',$request->id)->where('sales_receipt_details.mode','inventory-general')->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code','sales_receipt_details.item_name','sales_receipt_details.total_qty','sales_receipt_details.total_amount','sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id','sales_receipt_details.discount_value','sales_receipt_details.discount_code','sales_receipt_details.actual_price')->get()
 
         $record = $order->web_onlineOrderDetails($request->id);
-
+          return $record;
         if ($record == null) {
             Session::flash('error', 'Error! order detail not found.');
             return redirect('web-orders-view');
