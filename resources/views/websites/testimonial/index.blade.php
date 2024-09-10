@@ -37,7 +37,7 @@
             </tr>
 		</thead>
 		<tbody>
-              @foreach($testimonials as $value)
+              @foreach($data["testimonials"] as $value)
 				<tr>
                   <td class="d-none">{{ $value->id }}</td>  
 				  <td class="text-center"><img width="42" height="42" src="{{ asset('storage/images/testimonials/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
