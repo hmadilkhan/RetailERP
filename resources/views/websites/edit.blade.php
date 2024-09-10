@@ -1,7 +1,7 @@
 @extends('layouts.master-layout')
 @section('title','Edit Website')
 @section('breadcrumtitle','Edit Website')
-@section('navcompany','active')
+@section('navwebsite','active')
 @section('content')
 <section class="panels-wells">
 <div class="card">
@@ -9,7 +9,7 @@
 		<h5 class="card-header-text">Edit Website</h5>
 	</div>      
     <div class="card-block">
-    <form method="POST" action="{{route('testimonials.update',$testimonial->id)}}" enctype="multipart/form-data">
+    <form method="POST" action="{{route('website.update',$website->id)}}" enctype="multipart/form-data">
 		@csrf  
 		@method("PUT")	
 
@@ -34,46 +34,62 @@
 			
 
                 <div class="form-group">
-                    <label class="control-label">Customer Name</label>
-                    <input name="customer_name" type="text" class="form-control" placeholder="Customer Name" value="{{ old('customer_name') ? old('customer_name') : $testimonial->customer_name }}" />
-                    @error('customer_name')
-                     <span class="form-control-feedback text-dange">{{ $message }}</span>
+                    <label class="control-label">Website Name</label>
+                    <input name="name" type="text" class="form-control" placeholder="Website Name" value="{{ old('name') ? old('name') : $website->name }}" />
+                    @error('name')
+                     <div class="form-control-feedback text-dange">{{ $message }}</div>
                     @enderror
                 </div>
                 <div class="form-group">
-                    <label class="control-label">Rating</label>
-                    <input name="rating" type="text" class="form-control" placeholder="Rating" value="{{ old('rating') ? old('rating') : $testimonial->rating }}"/>
-					@error('rating')
-                     <span class="form-control-feedback text-dange">{{ $message }}</span>
-                    @enderror               
-				</div>
+                    <label class="control-label">Domain Name</label>
+                    <input name="url" type="text" class="form-control" placeholder="Domain Name" value="{{ old('url') ? old('url') : $website->url }}"/>
+                </div>
+                <!--<div class="form-group">-->
+                <!--    <label class="control-label">TopBar</label>-->
+                <!--    <input type="text" class="form-control" name="topbar" placeholder="TopBar Message" value="{{-- old('topbar') ? old('topbar') : $website->topbar --}}" />-->
+                <!--</div>-->
 
                 <div class="form-group">
-                    <label class="control-label">Content <span class="text-danger">*</span></label>
-                    <textarea class="form-control" name="content" id="content" placeholder="Content" rows="5"></textarea>
-                    @error('rating')
-                     <span class="form-control-feedback text-danger">{{ $message }}</span>
-                    @enderror                
-                </div>         
+                    <label class="control-label">UAN Number</label>
+                    <input name="uan_number" type="text" class="form-control" placeholder="UAN Number" value="{{ old('uan_number') ? old('uan_number') : $website->uan_number }}" />
+                </div>
+                <div class="form-group">
+                    <label class="control-label">WhatsApp</label>
+                    <input type="text" class="form-control" name="whatsapp" placeholder="WhatsApp Number" value="{{ old('whatsapp') ? old('whatsapp') : $website->whatsapp }}"/>
+                </div>                
 
-				<div class="form-group @error('image') 'has-danger' @enderror ">
+				<div class="form-group @error('logo') 'has-danger' @enderror ">
 				<a href="javascript:void(0)">
-					@php $image = $testimonial->image != "" ? 'testimonials/'.$testimonial->image : 'placeholder.jpg' @endphp
-					<img id="preview" src="{{ asset('storage/images/'.$image) }}" class="thumb-img img-fluid width-100" alt="{{ $testimonial->image == '' ? $testimonial->image : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
+					@php $logo = $website->logo != "" ? 'website/'.$website->logo : 'placeholder.jpg' @endphp
+					<img id="preview" src="{{ asset('storage/images/'.$logo) }}" class="thumb-img img-fluid width-100" alt="{{ $website->logo == '' ? $website->logo : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
 				</a>					
-					<label for="image" class="form-control-label">Customer Image</label></br>
+					<label for="logo" class="form-control-label">Logo</label></br>
 
-					<label for="image" class="custom-file">
-					<input type="file" name="image" id="image" class="custom-file-input">
+					<label for="logo" class="custom-file">
+					<input type="file" name="logo" id="logo" class="custom-file-input">
 					<span class="custom-file-control"></span>
 					</label>
-					@error('image')
+					@error('logo')
 						<div class="form-control-feedback text-danger">{{ $message }}</div>
 					@enderror
 				</div> 
 
-				
-				<a class="btn btn-danger m-r-2" href="{{ route('testimonials.index') }}">Cancel</a>	
+				<div class="form-group @error('favicon') 'has-danger' @enderror ">
+				<a href="javascript:void(0)">
+					@php $favicon = $website->favicon != "" ? 'website/'.$website->favicon : 'placeholder.jpg' @endphp
+					<img id="fpreview" src="{{ asset('storage/images/'.$favicon) }}" class="thumb-img img-fluid width-100" alt="{{ $website->favicon == '' ? $website->favicon : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
+				</a>					
+					<label for="favicon" class="form-control-label">Favicon</label></br>
+
+					<label for="favicon" class="custom-file">
+					<input type="file" name="favicon" id="favicon" class="custom-file-input">
+					<span class="custom-file-control"></span>
+					</label>
+					@error('favicon')
+						<div class="form-control-feedback text-danger">{{ $message }}</div>
+					@enderror
+				</div> 	
+				<a class="btn btn-danger m-r-2" href="{{ route('website.index') }}">Cancel</a>	
 
 		       <button type="submit" class="btn btn-md btn-primary waves-effect waves-light f-right" > Update Website </button>       
 	</form>
@@ -84,13 +100,6 @@
 
 @section('scriptcode_three')
 <script type="text/javascript">
-
-@if(old('content'))
-     $("#content").val('{{ old("content")}}');
-@else
-$("#content").val('{{ $testimonial->content }}'); 
-@endif
-
 	$(".select2").select2();
 	
 	function readURL(input,id) {
@@ -105,9 +114,12 @@ $("#content").val('{{ $testimonial->content }}');
 	  }
 	}
 
-	$("#iamge").change(function() {
+	$("#logo").change(function() {
 	  readURL(this,'preview');
 	});
 
+	$("#favicon").change(function() {
+	  readURL(this,'fpreview');
+	});
 </script>
 @endsection

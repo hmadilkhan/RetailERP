@@ -100,20 +100,17 @@ class WebsiteTestimonialController extends Controller
     public function edit(Request $request, $id)
     {
 
-        $website_detail = WebsiteDetail::where('website_details.id', $id)
-            ->join('company', 'company.company_id', 'website_details.company_id')
-            ->select('website_details.*', 'company.name as company_name')
-            ->first();
-        if ($website_detail == null) {
+        $testimonial = Testimonial::where('id',$id)->first();
+        if ($testimonial == null) {
 
             Session::flash('error', 'Record not found!');
-            return redirect()->route('website.index');
+            return redirect()->route('website.testimonial.index');
         }
 
 
-        return view("websites.edit", [
-            "website" => $website_detail,
-            // "companies" => Company::all()
+        return view("websites.testimonial.edit", [
+            "testimonial" => $testimonial,
+            "websites"    => WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get()
         ]);
     }
 
