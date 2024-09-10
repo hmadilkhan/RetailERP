@@ -10,6 +10,10 @@
 @section('content')
     <?php $id = ""; $t = ""; ?>
     <section class="panels-wells p-t-3">
+
+    @if(Session::has('error'))
+      <div class="alert alert-danger">{{ Session::get('error') }}</div>
+    @endif
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">Order Details</h5>
