@@ -47,8 +47,8 @@
                 </div>                
 
                 <div class="form-group">
-                    <label class="control-label">Rating</label>
-                    <input type="text" class="form-control" name="rating" placeholder="Rating" value="{{ old('rating') }}"/>
+                    <label class="control-label">Content</label>
+                    <textarea class="form-control" name="content" id="content" placeholder="Content" rows="5"></textarea>
                     @error('rating')
                      <span class="form-control-feedback text-danger">{{ $message }}</span>
                     @enderror                
@@ -84,6 +84,10 @@
 @section('scriptcode_three')
 
 <script type="text/javascript">
+
+    @if(old('content'))
+     $("#content").val('{{ old("content")}}');
+    @endif
 
 	$(".select2").select2();
 	var count = 0;
