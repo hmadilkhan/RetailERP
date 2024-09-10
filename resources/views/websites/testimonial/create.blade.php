@@ -12,7 +12,7 @@
     <div class="card-block">
 
 
-    <form role="form" method="POST" action="{{ route('testimonial.store') }}" enctype="multipart/form-data">
+    <form role="form" method="POST" action="{{ route('testimonials.store') }}" enctype="multipart/form-data">
 		@csrf 
 
 			<div class="form-group">
@@ -70,7 +70,7 @@
 				</div> 
 
 
-				<a class="btn btn-danger m-r-2" href="{{ route('testimonial.index') }}">Cancel</a>			               
+				<a class="btn btn-danger m-r-2" href="{{ route('testimonials.index') }}">Cancel</a>			               
                 <button class="btn btn-primary position-right" type="submit">Submit</button>
               </form> 
 
