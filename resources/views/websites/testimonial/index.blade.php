@@ -17,11 +17,33 @@
          <div class="alert alert-success">{{ Session::get('success') }}</div>
     @endif
 
+
     <div class="card">
      <div class="card-header">
-         <h5 class="card-header-text">Websites</h5>
-         <a href="{{route('website.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Website</a>
+         <h5 class="card-header-text">Filter</h5>
+         <a href="{{route('testimonial.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Testimonial</a>
          </div>
+       <div class="card-block">
+           <div class="col-md-6">
+             <div class="form-group">
+                <label class="form-control-label">Website</label>
+                <select name="website" id="website" class="select2" data-placeholder="Select">
+                    <option value="">Select</option>
+                    @php $websiteValue = Request::has('id') ? Request::get('id') : old('websites') @endphp
+                    @foreach($websites as $value) 
+                    <option {{ $websiteValue == $value->id ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
+                    @endforeach
+                </select>
+             </div>
+           </div>
+       </div>
+    </div>  
+
+    @if(isset($testimonials))
+    <div class="card">
+     <div class="card-header">
+         <h5 class="card-header-text">Lists</h5>
+          </div>
        <div class="card-block">
 
      <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
@@ -37,7 +59,7 @@
             </tr>
 		</thead>
 		<tbody>
-              @foreach($data["testimonials"] as $value)
+              @foreach($testimonials as $value)
 				<tr>
                   <td class="d-none">{{ $value->id }}</td>  
 				  <td class="text-center"><img width="42" height="42" src="{{ asset('storage/images/testimonials/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
@@ -46,12 +68,11 @@
 				  <td>{{ $value->content }}</td>
 				  <td class="action-icon">
 					<a href="{{ route('testimonial.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
-					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }})" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
+					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ addslashes($value->company->name) }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
 					<form action="{{ route('testimonial.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
 					    @csrf
 					    @method('DELETE')
-
-
+                        
 					</form>
 				  </td>
 				</tr>
@@ -60,6 +81,7 @@
      </table>
   </div>
 </div>
+@endif
 </section>
 @endsection
 
