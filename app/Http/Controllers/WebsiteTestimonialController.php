@@ -13,6 +13,7 @@ use Session, Image, Auth, Validator, File;
 class WebsiteTestimonialController extends Controller
 {
      use MediaTrait;
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -23,7 +24,7 @@ class WebsiteTestimonialController extends Controller
         $data = [];
 
         if(isset($request->id)){
-            $data["testimonials"] =Testimonial::join('website_details','website_details.id','website_testimonials.website_id')
+            $data["testimonials"] = Testimonial::join('website_details','website_details.id','website_testimonials.website_id')
                                               ->where('website_id',$request->id)
                                               ->groupBy('website_testimonials.website_id')
                                               ->select('website_testimonials.*','website_details.name as website_name')
