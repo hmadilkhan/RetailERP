@@ -174,8 +174,8 @@
                 @foreach($terminals as $value)
                     <tr>
                         <td class="text-center">
-                            <a href="{{ asset('assets/images/receipt/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" data-toggle="lightbox" data-title="Article : {{$value->id.' '.$value->terminal_name}}" data-footer="{{$value->header}}">
-                                <img width="32" height="32" data-modal="modal-12" src="{{ asset('assets/images/receipt/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                            <a href="{{ asset('storage/images/receipt/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" data-toggle="lightbox" data-title="Article : {{$value->id.' '.$value->terminal_name}}" data-footer="{{$value->header}}">
+                                <img width="32" height="32" data-modal="modal-12" src="{{ asset('storage/images/receipt/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                             </a>
                         </td>
                         <td >{{$value->terminal_name}}</td>
