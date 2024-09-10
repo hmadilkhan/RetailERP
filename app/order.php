@@ -704,11 +704,11 @@ class order extends Model
 	public function web_onlineOrderDetails($id)
 	{
 
-		if (session('roleId') == 2) {
+		//if (session('roleId') == 2) {
 			$filter = " and sales_receipts.branch IN (SELECT branch_id FROM branch where company_id = " . session("company_id") . " )";
-		} else {
-			$filter = " and sales_receipts.branch = " . session("branch") . " ";
-		}
+		// } else {
+		// 	$filter = " and sales_receipts.branch = " . session("branch") . " ";
+		// }
 
 		return DB::table('sales_receipts')
 			->join('sales_account_subdetails', 'sales_account_subdetails.receipt_id', 'sales_receipts.id')
