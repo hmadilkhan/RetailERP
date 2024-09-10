@@ -98,17 +98,20 @@
                                     Actions
                                 </button>
                                 <ul class="dropdown-menu px-2">
-                                    <li><a class="dropdown-item"><i onclick='showOrderDetails("{{ $order->id }}")'
+                                    <li onclick='showOrderDetails("{{ $order->id }}")'><a class="dropdown-item"><i
+                                                onclick='showOrderDetails("{{ $order->id }}")'
                                                 class='icofont icofont icofont-eye-alt icofont-1x text-info mx-2'
                                                 data-toggle='tooltip' data-placement='top' title=''
                                                 data-original-title='Show Order Details'></i>Show Order Details</a></li>
                                     @if (session('roleId') != 20 && session('roleId') != 19)
-                                        <li><a class="dropdown-item"><i
+                                        <li onclick='showReceipt("{{ $order->receipt_no }}")'><a
+                                                class="dropdown-item"><i
                                                     onclick='showReceipt("{{ $order->receipt_no }}")'
                                                     class='icofont icofont icofont-printer text-success mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
                                                     data-original-title='Show Receipt'></i>Show Receipt </a></li>
-                                        <li><a class="dropdown-item"><i
+                                        <li onclick='assignToServiceProviderModal("{{ $order->id }}")'><a
+                                                class="dropdown-item"><i
                                                     onclick='assignToServiceProviderModal("{{ $order->id }}")'
                                                     class='icofont icofont icofont-business-man mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
@@ -117,13 +120,15 @@
                                                 Provider </a></li>
                                     @endif
                                     @if ($order->status != 12 && (session('roleId') != 20 && session('roleId') != 19))
-                                        <li><a class="dropdown-item"><i onclick='voidReceipt("{{ $order->id }}")'
+                                        <li onclick='voidReceipt("{{ $order->id }}")'><a class="dropdown-item"><i
+                                                    onclick='voidReceipt("{{ $order->id }}")'
                                                     class='alert-confirm text-danger icofont icofont icofont-delete-alt mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
                                                     data-original-title='Mark as Void'></i>Mark as Void</a></li>
                                     @endif
                                     @if ($order->status != 4 && session('roleId') != 20 && session('roleId') != 19)
-                                        <li><a class="dropdown-item"><i
+                                        <li onclick='deliveredReceipt("{{ $order->id }}")'><a
+                                                class="dropdown-item"><i
                                                     onclick='deliveredReceipt("{{ $order->id }}")'
                                                     class='alert-confirm text-success icofont icofont icofont-tick-mark mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
@@ -131,7 +136,8 @@
                                         </li>
                                     @endif
                                     @if (session('roleId') == 20 && $order->status == 6)
-                                        <li><a class="dropdown-item"><i
+                                        <li onclick='assignToBranchModal("{{ $order->id }}")'><a
+                                                class="dropdown-item"><i
                                                     onclick='assignToBranchModal("{{ $order->id }}")'
                                                     class='icofont icofont icofont-business-man mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
