@@ -11,7 +11,7 @@
 	</div>      
     <div class="card-block">
 
-
+   <div class="col-md-6">
     <form role="form" method="POST" action="{{ route('testimonials.store') }}" enctype="multipart/form-data">
 		@csrf 
 
@@ -73,8 +73,7 @@
 				<a class="btn btn-danger m-r-2" href="{{ route('testimonials.index') }}">Cancel</a>			               
                 <button class="btn btn-primary position-right" type="submit">Submit</button>
               </form> 
-
-
+        </div>   
     </div>
   </div>  
 	
