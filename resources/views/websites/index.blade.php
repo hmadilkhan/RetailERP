@@ -4,7 +4,7 @@
 
 @section('breadcrumtitle','Website Details')
 
-@section('navcompany','active')
+@section('navwebsite','active')
 
 @section('content')
 <section class="panels-wells">

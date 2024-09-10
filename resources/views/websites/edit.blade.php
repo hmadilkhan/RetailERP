@@ -1,7 +1,7 @@
 @extends('layouts.master-layout')
 @section('title','Edit Website')
 @section('breadcrumtitle','Edit Website')
-@section('navcompany','active')
+@section('navwebsite','active')
 @section('content')
 <section class="panels-wells">
 <div class="card">
