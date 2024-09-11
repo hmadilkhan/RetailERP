@@ -991,7 +991,7 @@
   let filesArray = []; // Array to keep track of the files
 
 // Define supported file extensions
-const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif'];
+const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
 
 function readURL_multiple(input, containerId) {
     if (input.files && input.files.length) {
