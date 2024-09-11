@@ -41,7 +41,7 @@ class Inventory_DepartmentController extends Controller
 
         $sections = Section::getSection();
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();       
-        return view('Invent_Department.create',compact('depart','websites'));
+        return view('Invent_Department.create',compact('depart','websites','sections'));
     }
     /**
      * Store a newly created resource in storage.
