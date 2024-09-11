@@ -56,7 +56,7 @@
             <div class="form-group">
                 <label for="showWebsite">
                     <input type="checkbox" id="showWebsite" name="showWebsite">
-                    Show Product on Website
+                    Show on Website
                 </label>
             </div>
            <div class="d-none" id="website-module">  
