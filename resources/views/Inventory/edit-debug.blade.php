@@ -379,9 +379,9 @@
                                   @php $imageUrl = $data[0]->url @endphp
                                @endif
                         @else
-                               @if(File::exists(asset('storage/images/products/').$data[0]->image))
+                               {{-- @if(File::exists(asset('storage/images/products/').$data[0]->image)) --}}
                                   @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
-                               @endif
+                               {{-- @endif --}}
                         @endif
                             <a href="{{ $imageUrl }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
                                 <img id="simg" src="{{ $imageUrl }}" class="thumb-img width-100" height="512px" alt="{{$data[0]->image}}">
