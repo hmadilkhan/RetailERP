@@ -966,7 +966,7 @@ class InventoryController extends Controller
 
             } else {
                 $transFormation = [];
-                if (isset($request->actual_image_size)) {
+                if (!isset($request->actual_image_size)) {
                     $transFormation = ['width' => 400, "height" => 400];
                 }
 
