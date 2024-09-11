@@ -272,6 +272,22 @@ $("#deptform").on('submit',function(event){
   $("#bannerImage").change(function() {
 	   readURL(this,'previewDepartBannerImage');
 	}); 
+
+
+  function swal_alert(title,msg,type,mode){
+    
+    swal({
+          title: title,
+          text: msg,
+          type: type
+       },function(isConfirm){
+       if(isConfirm){
+          if(mode==true){
+            window.location="{{ route('invent_dept.index') }}";
+          }
+        }
+    });
+}
 </script>
 
 @endsection
