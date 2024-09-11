@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\inventory_department;
+use App\Section;
 use Illuminate\Http\Request;
 use Image;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,8 @@ class Inventory_DepartmentController extends Controller
     {
         $depart = inventory_department::getdepartment('');
         // $sdepart = inventory_department::get_subdepart('');
+
+        $sections = Section::getSection();
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();       
         return view('Invent_Department.create',compact('depart','websites'));
     }
@@ -57,7 +60,7 @@ class Inventory_DepartmentController extends Controller
             if ($exsist[0]->counter == 0) {
         	    if(!empty($request->file('departImage'))){
                     $request->validate([
-                        'departImage' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
+                        'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
                     ]);
         	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
         	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
@@ -67,7 +70,7 @@ class Inventory_DepartmentController extends Controller
                 
         	    if(!empty($request->file('bannerImage'))){
                     $request->validate([
-                        'bannerImage' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
+                        'bannerImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
                     ]);
         	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
         	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
@@ -76,7 +79,7 @@ class Inventory_DepartmentController extends Controller
         	    }                 
                 
                 $items = [
-                    'code' => $request->code,
+                    'code'             => $request->code,
                     'department_id'    => $request->post('parent'),
                     'sub_depart_name'  => $request->deptname,
                     'slug'         => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
@@ -85,6 +88,8 @@ class Inventory_DepartmentController extends Controller
                     'website_mode' =>isset($request->showWebsite) ? 1 : 0
                 ];
                 $result = $invent_department->insert_sdept($items);
+
+
                 $getsubdepart = $invent_department->get_subdepartments($request->post('parent'));
                 return 1;
             }

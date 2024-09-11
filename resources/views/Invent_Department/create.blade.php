@@ -59,7 +59,22 @@
                     Show Product on Website
                 </label>
             </div>
-           <div class="row d-none" id="website-module">  
+           <div class="d-none" id="website-module">  
+              <div class="row">
+              <div class="col-md-4">
+                  <div class="form-group">
+                      <label class="form-control-label">Section</label>
+                      <select class="select2" name="section[]" id="section" placeholder='Select' multiple>
+                        <option value="">Select</option>
+                        @foreach($sections as $val)
+                         <option {{ old('section') ? 'select' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
+                        @endif
+                      </select> 
+                       <span class="form-control-feedback text-danger" id="webdeptname_alert"></span>
+                  </div>
+                </div> 
+              </div>
+              <div class="row">
     		       <div class="col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Show website department name</label>
@@ -83,7 +98,8 @@
                        name="metadescript" id="metadescript" placeholder='Meta Description'></textarea>
                        <span class="form-control-feedback text-danger" id="metadescript_alert"></span>
                   </div>
-                </div>                                   
+                </div>    
+              </div>                                  
             </div> 
            @endif
          </div>
