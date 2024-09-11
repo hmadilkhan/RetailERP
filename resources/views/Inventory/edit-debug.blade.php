@@ -380,7 +380,7 @@
                                @endif
                         @else
                         {{-- Storage::disk('public')->exists('images/products/' . $data[0]->image) --}}
-                               @if(File::exists(asset('storage/images/products/'.$data[0]->image)) == true) 
+                               @if(File::exists(public_path('storage/images/products/'.$data[0]->image)) == true) 
                                   @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
                                @endif
                         @endif
