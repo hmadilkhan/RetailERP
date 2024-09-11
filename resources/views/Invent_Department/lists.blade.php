@@ -122,7 +122,7 @@
             <div class="form-group">
                 <label for="showWebsite_md">
                     <input type="checkbox" id="showWebsite_md" name="showWebsite">
-                    Show Product on Website
+                    Show on Website
                 </label>
             </div>
           </div>
