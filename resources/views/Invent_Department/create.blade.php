@@ -184,7 +184,7 @@ $(".select2").select2();
 
 $("#parent").on('change',function(){
   if($(this).val() == ''){
-    $("#showWebsite").trigger('click');
+    $("#showWebsite").attr('checked',true).change();
   }
 });
 
