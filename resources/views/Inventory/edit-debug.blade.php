@@ -379,7 +379,8 @@
                                   @php $imageUrl = $data[0]->url @endphp
                                @endif
                         @else
-                               @if(Storage::disk('public')->exists('images/products/' . $data[0]->image))
+                        {{-- Storage::disk('public')->exists('images/products/' . $data[0]->image) --}}
+                               @if(file_exists(asset('storage/images/products/'.$data[0]->image))) 
                                   @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
                                @endif
                         @endif
