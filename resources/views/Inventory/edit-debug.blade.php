@@ -374,13 +374,13 @@
                   <div class="card-block p-1 p-t-0">
                     <div class="form-group">
                         @php $imageUrl = asset('storage/images/placeholder.jpg') @endphp
-                        @if(in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['fnkhan']))
+                        @if(in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan']))
                                @if(!empty($data[0]->url))
                                   @php $imageUrl = $data[0]->url @endphp
                                @endif
                         @else
                         {{-- Storage::disk('public')->exists('images/products/' . $data[0]->image) --}}
-                               @if(File::exists(public_path('storage/images/products/'.$data[0]->image)) == true) 
+                               @if(File::exists('storage/images/products/'.$data[0]->image) == true) 
                                   @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
                                @endif
                         @endif
