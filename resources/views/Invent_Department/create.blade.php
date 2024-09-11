@@ -183,7 +183,7 @@ $(".select2").select2();
 @endif
 
 $("#parent").on('change',function(){
-  if($(this).val() != '' && $(this).is(':checked')==true){
+  if($(this).val() != '' && $(#showWebsite).is(':checked')==true){
     $("#showWebsite").trigger('click');
   }
 });
