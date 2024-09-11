@@ -68,7 +68,7 @@
                         <option value="">Select</option>
                         @foreach($sections as $val)
                          <option {{ old('section') ? 'select' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
-                        @endif
+                        @endforeach
                       </select> 
                        <span class="form-control-feedback text-danger" id="webdeptname_alert"></span>
                   </div>
