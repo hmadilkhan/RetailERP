@@ -971,7 +971,7 @@ class InventoryController extends Controller
                 }
 
                 $path             = public_path('storage/images/products/');
-                $returnImageValue = $this->uploads($image, $path, "", $transFormation);
+                $returnImageValue = $this->uploads($image, $path);
                 $fields['image']  = $returnImageValue['fileName'];                
             }
         }
