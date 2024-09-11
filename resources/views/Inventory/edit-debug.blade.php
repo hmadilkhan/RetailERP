@@ -385,7 +385,7 @@
                                @endif
                         @endif
                             <a href="{{ $imageUrl }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
-                                <img id="simg" src="{{ $imageUrl }}" class="thumb-img width-100" height="512px" alt="{{asset('storage/images/products/'.$data[0]->image)}}">
+                                <img id="simg" src="{{ $imageUrl }}" class="thumb-img width-100" height="512px" alt="{{ file_exists(asset('storage/images/products/'.$data[0]->image)) ? 1 : 0}}">
                                 </a>
                                 <br/>
                                 <label for="image" class="custom-file">
