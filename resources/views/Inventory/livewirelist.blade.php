@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.master-layout')
 
 @section('title', 'Inventory')
 
@@ -34,11 +34,11 @@
         </div>
         <div class="card">
             <div class="card-header">
-                {{-- @livewire('Inventory.inventory-filter') --}}
+                @livewire('Inventory.inventory-filter')
             </div>
             <div id="table_data" class="card-block">
                 {{-- @include('Inventory.inventory_table') --}}
-                {{-- @livewire('Inventory.inventory-list') --}}
+                @livewire('Inventory.inventory-list')
             </div>
         </div>
 

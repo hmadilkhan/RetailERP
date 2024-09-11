@@ -103,7 +103,7 @@
 
     </div>
     <div class="button-group ">
-        <div class="f-left">{{ $inventories->links('Vendor.livewire.bootstrap') }}</div>
+        <div class="f-left">{{ $inventories->links('pagination::bootstrap-4') }}</div>
 
         <a style="color:white;" target="_blank" href="{{ URL::to('get-export-csv-for-retail-price') }}"
             class="btn btn-md btn-success waves-effect waves-light f-right"><i class="icofont icofont-file-excel"> </i>

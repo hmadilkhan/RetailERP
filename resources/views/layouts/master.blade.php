@@ -12,29 +12,9 @@
 
     <title>@yield('title')</title>
 
-    <!-- themify -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/themify-icons/themify-icons.css') }}">
-
-    <!-- iconfont -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
-
-    <!-- simple line icon -->
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('assets/icon/simple-line-icons/css/simple-line-icons.css') }}">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-
-    <!-- Style.css -->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/main.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/menu.css') }}">
-
-    <!-- Responsive.css-->
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/responsive.css') }}">
-
-    <!-- Select 2 css -->
-    <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />
-    <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/select2/css/s2-docs.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T38786oPV3D1w+6Q01dK4U+K4j8c+SHJ3U+IgrRt528E1NWP+61/V72/6961d0/A63/4O2RuXmuTwfh2v7R7u7v65X74"
+        crossorigin="anonymous">
     {{-- @include('partials.html-libs') --}}
     @yield('css_code')
     @yield('scriptcode_one')
@@ -42,9 +22,70 @@
 
 <body class="sidebar-mini fixed">
     <div class="wrapper">
-        {{-- @include('partials.header') --}}
+        <nav id="sidebar" class="sidebar collapse d-lg-block bg-dark text-white">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Dashboard</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Profile</a>
+
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Settings</a>
+                </li>
+            </ul>
+        </nav>
         {{-- <x-sidebar /> --}}
         <div class="content-wrapper">
+            <nav id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Bootstrap Sidebar</h3>
+                </div>
+
+                <ul class="list-unstyled components">
+                    <p>Dummy Heading</p>
+                    <li class="active">
+                        <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false"
+                            class="dropdown-toggle">Home</a>
+                        <ul class="collapse list-unstyled" id="homeSubmenu">
+                            <li>
+                                <a href="#">Home 1</a>
+                            </li>
+                            <li>
+                                <a href="#">Home 2</a>
+                            </li>
+                            <li>
+                                <a href="#">Home 3</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">About</a>
+                    </li>
+                    <li>
+                        <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false"
+                            class="dropdown-toggle">Pages</a>
+                        <ul class="collapse list-unstyled" id="pageSubmenu">
+                            <li>
+                                <a href="#">Page 1</a>
+                            </li>
+                            <li>
+                                <a href="#">Page 2</a>
+                            </li>
+                            <li>
+                                <a href="#">Page 3</a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Portfolio</a>
+                    </li>
+                    <li>
+                        <a href="#">Contact</a>
+                    </li>
+                </ul>
+            </nav>
             <div class="container-fluid">
                 @yield('content')
             </div>
@@ -53,13 +94,12 @@
     <!-- Option 1: Bootstrap Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-    <script src = "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
-    <script type="text/javascript">
-       
+        < script src = "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" >
     </script>
+    <script type="text/javascript"></script>
     @include('partials.js-libs')
     @yield('scriptcode_three')
-    
+
 </body>
 
 </html>
