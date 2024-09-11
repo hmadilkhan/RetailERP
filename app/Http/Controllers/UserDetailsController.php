@@ -66,7 +66,7 @@ class UserDetailsController extends Controller
     public function store(Request $request, userDetails $users)
     {
         // $imageName = "";
-        $file = "";
+        $file = [];
         $rules = [
             'branch' => 'required',
             'company' => 'required',
@@ -102,7 +102,7 @@ class UserDetailsController extends Controller
                 'country_id' => $request->country,
                 'city_id' => $request->city,
                 'address' => $request->address,
-                'image' => $file["fileName"],
+                'image' => !empty($request->vdimg) ? $file["fileName"] :  "",
                 'remember_token' => null,
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
@@ -187,7 +187,7 @@ class UserDetailsController extends Controller
                 'country_id' => $request->country,
                 'city_id' => $request->city,
                 'address' => $request->address,
-                'image' => $file["fileName"],
+                'image' => !empty($request->vdimg) ? $file["fileName"] :  $request->prevImg,
                 // 'remember_token' => null,
                 // 'created_at' => $request->createdat,
                 'updated_at' => date('Y-m-d H:i:s'),

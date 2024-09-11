@@ -176,9 +176,9 @@
 
             <div class="col-md-4">
                <label for="image" class="form-control-label">Image</label>
-             <a href="{{ asset('assets/images/products/'.(empty($data[0]->image) ? 'placeholder.jpg' : $data[0]->image).'') }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}" data-footer="{{$data[0]->product_description}}">
+             <a href="{{ asset('storage/images/products/'.(empty($data[0]->image) ? 'placeholder.jpg' : $data[0]->image).'') }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}" data-footer="{{$data[0]->product_description}}">
 
-                        <img id="simg" src="{{ asset('assets/images/products/'.(empty($data[0]->image) ? 'placeholder.jpg' : $data[0]->image).'') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
+                        <img id="simg" src="{{ asset('storage/images/products/'.(empty($data[0]->image) ? 'placeholder.jpg' : $data[0]->image).'') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
                         </a>
 
                     <div class="form-group {{ $errors->has('image') ? 'has-danger' : '' }} m-t-10">

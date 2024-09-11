@@ -202,8 +202,7 @@ class InventoryController extends Controller
                                     ])->getSecurePath();
             } else {
                 if (!isset($request->actual_image_size)) {
-                    $path = public_path('storage/images/products/');
-                    $returnImageValue = $this->uploads($image, $path, "", ['width' => 400, "height" => 400]);
+                    $returnImageValue = $this->uploads($image, "images/products/", "", ['width' => 400, "height" => 400]);
                     $imageName = $returnImageValue['fileName']; 
                 }
             }
@@ -919,7 +918,7 @@ class InventoryController extends Controller
         ];
 
 
-           return empty($request->file('image')) ? 1 : 0;
+        //    return empty($request->file('image')) ? 1 : 0;
 
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
@@ -970,8 +969,7 @@ class InventoryController extends Controller
                     $transFormation = ['width' => 400, "height" => 400];
                 }
 
-                $path             = public_path('storage/images/products/');
-                $returnImageValue = $this->uploads($image, $path);
+                $returnImageValue = $this->uploads($image, "images/products/","",$transFormation);
                 $fields['image']  = $returnImageValue['fileName'];                
             }
         }

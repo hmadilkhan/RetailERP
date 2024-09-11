@@ -51,9 +51,10 @@
                         <div class="row">
                             <div id="tab-active" class="mt-1">
                                 @foreach ($branches as $value)
-                                    <div class="col-xl-3 col-lg-3 col-md-3 inner" style="cursor: pointer;"
+                                    <div class="col-xl-4 col-lg-4 col-md-4 inner" style="cursor: pointer;"
                                         onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','open')">
                                         <div class="card">
+                                            <div class="card-header"> {{ session('roleId') == 2 ? $value->branch_name : $value->terminal_name }}</div>
                                             <div class="card-block">
                                                 <div class="media d-flex">
                                                     <div class="media-left media-middle">
@@ -64,13 +65,13 @@
                                                         </a>
                                                     </div>
                                                     <div class="media-body p-t-10">
-                                                        <span class="counter-txt f-w-600 f-20">
+                                                        <span class="f-w-600 f-18">
                                                             <span class="text-primary"> {{ session('currency') }}
                                                                 {{ number_format($value->sales, 0) }} /=</span>
                                                         </span>
-                                                        <h6 class="f-w-300 m-t-1">
+                                                        {{-- <h6 class="f-w-300 m-t-1">
                                                             {{ session('roleId') == 2 ? $value->branch_name : $value->terminal_name }}
-                                                        </h6>
+                                                        </h6> --}}
                                                     </div>
                                                 </div>
                                                 <ul>
@@ -84,7 +85,7 @@
                             </div>
                             <div id="tab-closed" style="display:none">
                                 @foreach ($branchesClosedSales as $value)
-                                    <div class="col-xl-3 col-lg-3 col-md-3 inner" style="cursor: pointer;"
+                                    <div class="col-xl-4 col-lg-4 col-md-4 inner" style="cursor: pointer;"
                                         onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','close')">
                                         <div class="card">
                                             <div class="card-block">
