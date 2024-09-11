@@ -402,35 +402,39 @@
                 </div> 
             </div>
 
-    @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
+            @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
         
         <div class="d-none" id="prodAdvans_Media">
         <div class="card">
-                  <div class="card-header">
-                  <h4 for="image">Product Gallery</h4>
-                  </div>
-                  <div class="card-block p-1 p-t-0">
+               <div class="card-header">
+               <h4 >Product Gallery</h4>
+               </div>
+               <div class="card-block p-2 p-t-0">
+               <div id="imgGalleryBox"></div>
                 <div class="form-group">
+                    <br/>
                      <label for="prodgallery" class="custom-file">
-                         <input type="file" name="prodgallery[]" id="prodgallery" class="custom-file-input" multiple>
+                         <input type="file" name="prodgallery[]" id="prodgallery" onchange="readURL_multiple(this,'imgGalleryBox')" class="custom-file-input" multiple>
                          <span class="custom-file-control"></span>
                      </label>
                 </div>
-             </div>
-            </div>
-            <div class="card">
-                  <div class="card-header">
-                  <h4 for="image">Product Video</h4>
-                  </div>
-                  <div class="card-block p-1 p-t-0">                  
+                </div>
+                </div>
+                <div class="card">
+               <div class="card-header">
+               <h4 >Product Video</h4>
+               </div>
+               <div class="card-block p-2 p-t-0"> 
+               <div id="videoPreviewBox"></div>                 
                 <div class="form-group">
-                     <label for="prodvideo" class="custom-file">
-                         <input type="file" name="prodvideo" id="prodvideo" class="custom-file-input">
+                    <br/>
+                     <label for="productvideo" class="custom-file">
+                         <input type="file" name="prodvideo" id="productvideo" onchange="handleVideo(this,'videoPreviewBox')" class="custom-file-input">
                          <span class="custom-file-control"></span>
                      </label>
                 </div>
-            </div>
-         </div>   
+                </div>
+                </div>
             
         </div>
      @endif                           
@@ -1068,7 +1072,165 @@ function myfunction(e) {
   return e.charCode === 0 || ((e.charCode >= 48 && e.charCode <= 57) || (e.charCode == 46 && document.getElementById("test").value.indexOf('.') < 0));
 }
 
+let filesArray = []; // Array to keep track of the files
 
+// Define supported file extensions
+const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif'];
+
+function readURL_multiple(input, containerId) {
+    if (input.files && input.files.length) {
+        // Get the container element where images will be appended
+        const container = document.getElementById(containerId);
+
+        // Clear existing files
+        const newFiles = [];
+        let hasError = false;
+
+        // Check each file's size and extension
+        for (let i = 0; i < input.files.length; i++) {
+            const file = input.files[i];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            // Validate file size (1MB = 1,024 * 1,024 bytes)
+            if (file.size > 1 * 1024 * 1024) {
+                hasError = true;
+                swal('Error! File Format','The file '+file.name+' exceeds the 1MB size limit.','error');
+                continue;
+            }
+
+            // Validate file extension
+            if (!SUPPORTED_EXTENSIONS.includes(fileExtension)) {
+                hasError = true;
+                swal('Error! File Format','The file '+file.name+' has an unsupported file type.','error');
+                continue;
+            }
+
+            // Add valid file to newFiles array
+            newFiles.push(file);
+        }
+
+        if (!hasError) {
+            // Only proceed with valid files
+            filesArray = [...filesArray, ...input.files];
+        } else {
+            // Only add valid files to filesArray
+            filesArray = [...filesArray, ...newFiles];
+        }
+
+        // Update the image container
+        updateImageContainer(container);
+        
+        // Reset the file input to allow selecting the same files again
+        // input.value = '';
+    }
+}
+
+function updateImageContainer(container) {
+    // Clear the container
+    container.innerHTML = '';
+
+    filesArray.forEach((file, index) => {
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            // Create a container for each image and remove button
+            const imageContainer = document.createElement('div');
+            imageContainer.style.position = 'relative';
+            imageContainer.style.display = 'inline-block';
+            imageContainer.style.margin = '10px';
+
+            // Create a new image element
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxWidth = '75px'; // Adjust as needed
+            img.style.maxHeight = '75px'; // Adjust as needed
+            img.style.objectFit = 'cover'; // Ensures images fit well
+
+            // Create a remove button
+            const removeButton = document.createElement('button');
+            removeButton.innerHTML = '✖'; // Cross symbol
+            removeButton.style.position = 'absolute';
+            removeButton.style.top = '-6px';
+            removeButton.style.right = '-6px';
+            removeButton.style.backgroundColor = 'red';
+            removeButton.style.color = 'white';
+            removeButton.style.border = 'none';
+            removeButton.style.borderRadius = '50%';
+            removeButton.style.cursor = 'pointer';
+            removeButton.style.fontSize = '12px';
+
+            // Add event listener to remove button
+            removeButton.addEventListener('click', function() {
+                // Remove the file from filesArray
+                filesArray.splice(index, 1);
+                // Remove the image from the container
+                container.removeChild(imageContainer);
+                // Update the file input to reflect changes
+                updateFileInput();
+            });
+
+            // Append image and button to the container
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(removeButton);
+            container.appendChild(imageContainer);
+        }
+
+        // Read the file as a Data URL
+        reader.readAsDataURL(file);
+    });
+}
+
+function updateFileInput() {
+    // Get the file input element
+    const fileInput = document.getElementById('prodgallery');
+    // Create a new DataTransfer object
+    const dataTransfer = new DataTransfer();
+    
+    // Add files to the DataTransfer object
+    filesArray.forEach(file => dataTransfer.items.add(file));
+
+    // Update the file input's files property
+    fileInput.files = dataTransfer.files;
+}
+
+function handleVideo(input, containerId) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+                const container = document.getElementById(containerId);
+
+                // Check if the file is an MP4 video
+                if ($.inArray(file.type,['video/mp4','video/webm','video/ogg']) == -1) {
+                    swal('Error!','Please select an mp4,webm,ogg video file.','error');
+                    input.value = ''; // Clear the input if the file is not MP4
+                    return;
+                }
+
+                // Clear previous content
+                container.innerHTML = '';
+
+                const video = document.createElement('video');
+                video.src = URL.createObjectURL(file);
+                video.controls = true;
+                video.autoplay = false; // Prevent autoplay if you want to control playback
+                video.style.maxWidth =  '300px'; // Adjust as needed
+                video.style.maxHeight = '300px'; // Adjust as needed
+
+                // Create a remove button
+                const removeButton = document.createElement('button');
+                removeButton.innerHTML = '✖'; // Cross symbol
+                removeButton.classList.add('remove-button');
+
+                // Add event listener to remove button
+                removeButton.addEventListener('click', function() {
+                    container.innerHTML = ''; // Clear the container
+                    input.value = ''; // Clear the file input
+                });
+
+                // Append video and button to the container
+                container.appendChild(video);
+                container.appendChild(removeButton);
+            }
+        }
   </script>
 
   <script>
