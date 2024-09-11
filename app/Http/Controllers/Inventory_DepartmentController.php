@@ -91,7 +91,7 @@ class Inventory_DepartmentController extends Controller
 		
         // return $invent_department->check_dept($request->get('deptname'),$request->get('code'));
         if($invent_department->check_depart_code($request->get('code'))){
-             return response()->json(array("state"=>1,"msg"=>'This department code already exists.',"contrl"=>'deptname'));
+             return response()->json(array("state"=>1,"msg"=>'This department code already exists.',"contrl"=>'code'));
         }
 		if($invent_department->check_dept($request->get('deptname'))){
              return response()->json(array("state"=>1,"msg"=>'This department name already exists.',"contrl"=>'deptname'));
