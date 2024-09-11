@@ -547,7 +547,7 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage){
 
   $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
   if(bannerImage != ''){ 
-    $("#previewDepartBannerImage_md").attr('src','storage/images/department/'+bannerImage);
+    $("#previewDepartBannerImage_md").attr('src',location.origin+'/storage/images/department/'+bannerImage);
   } 
 }
 function editsubdepart(departcode,departid,departname){
