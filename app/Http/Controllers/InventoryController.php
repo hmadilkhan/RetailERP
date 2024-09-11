@@ -919,7 +919,7 @@ class InventoryController extends Controller
         ];
 
 
-
+           return empty($request->file('image')) ? 1 : 0;
 
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
