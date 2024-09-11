@@ -75,8 +75,8 @@ class Inventory_DepartmentController extends Controller
                     'sub_depart_name'  => $request->deptname,
                     'slug'         => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
                     'image'        =>$imageName,
-                    'website_mode' =>isset($request->showWebsite) ? 1 : 0
                 ];
+
                 $result = $invent_department->insert_sdept($items);
 
 
@@ -91,10 +91,11 @@ class Inventory_DepartmentController extends Controller
 		
         // return $invent_department->check_dept($request->get('deptname'),$request->get('code'));
         if(!empty($request->get('code'))){
-        if($invent_department->check_depart_code($request->get('code'))){
-             return response()->json(array("state"=>1,"msg"=>'This department code already exists.',"contrl"=>'code'));
+            if($invent_department->check_depart_code($request->get('code'))){
+                return response()->json(array("state"=>1,"msg"=>'This department code already exists.',"contrl"=>'code'));
+            }
         }
-    }
+
 		if($invent_department->check_dept($request->get('deptname'))){
              return response()->json(array("state"=>1,"msg"=>'This department name already exists.',"contrl"=>'deptname'));
         }
@@ -128,6 +129,9 @@ class Inventory_DepartmentController extends Controller
                 'slug'                     => preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))),
 				"image"                    => $imageName,
                 "banner"                   => $bannerImageName,
+                "meta_title"               => $$request->metatitle,
+                "meta_description"         => $$request->metadescript,
+                'website_mode'             =>isset($request->showWebsite) ? 1 : 0
              ];
 				
             $result = $invent_department->insert_dept($data);
