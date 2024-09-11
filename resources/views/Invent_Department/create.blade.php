@@ -183,7 +183,7 @@ $(".select2").select2();
 @endif
 
 $("#parent").on('change',function(){
-  if($(this).val() != ''){
+  if($(this).val() == ''){
     $("#showWebsite").trigger('click');
   }
 });
