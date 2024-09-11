@@ -67,16 +67,7 @@ class Inventory_DepartmentController extends Controller
                     $file = $this->uploads($request->file('departImage'),"images/department");
                     $imageName = !empty($file) ? $file["fileName"] : "";
         	    }    
-                
-        	    if(!empty($request->file('bannerImage'))){
-                    $request->validate([
-                        'bannerImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                    ]);
-        	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
-        	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
-                    $file = $this->uploads($request->file('bannerImage'),"images/department");
-                    $bannerImageName = !empty($file) ? $file["fileName"] : "";
-        	    }                 
+                             
                 
                 $items = [
                     'code'             => $request->code,
@@ -84,7 +75,6 @@ class Inventory_DepartmentController extends Controller
                     'sub_depart_name'  => $request->deptname,
                     'slug'         => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
                     'image'        =>$imageName,
-                    'banner'       =>$bannerImageName,
                     'website_mode' =>isset($request->showWebsite) ? 1 : 0
                 ];
                 $result = $invent_department->insert_sdept($items);
@@ -109,11 +99,23 @@ class Inventory_DepartmentController extends Controller
 		// else {
 		
     	    if(!empty($request->file('departImage'))){
+                $request->validate([
+                    'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                ]);                
     	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
     	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
                 $file = $this->uploads($request->file('departImage'),"images/department");
                 $imageName = !empty($file) ? $file["fileName"] : "";
-    	    }		
+    	    }	
+ 
+            if(!empty($request->file('bannerImage'))){
+                $request->validate([
+                    'bannerImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                ]);
+                $file = $this->uploads($request->file('bannerImage'),"images/department");
+                $bannerImageName = !empty($file) ? $file["fileName"] : "";
+            }   
+            
 			 $data = [
                 'company_id'               => session('company_id'),
                 'code'                     => $request->get('code'),
@@ -123,6 +125,7 @@ class Inventory_DepartmentController extends Controller
                 'time'                     => date('H:i:s'),
                 'slug'                     => preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))),
 				"image"                    => $imageName,
+                "banner"                   => $bannerImageName,
              ];
 				
             $result = $invent_department->insert_dept($data);
