@@ -65,6 +65,10 @@
                          <td class="action-icon">
                              <i onclick="addsubdepart('{{$depart[$d]->department_id}}')" class="text-success text-center icofont icofont-plus" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Sub-Department"></i>
                              <i onclick="deletedepart('{{$depart[$d]->department_id}}')" class="text-danger text-center icofont icofont-ui-delete" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete Department"></i>
+
+                             @if($websites)
+                               <a href="javascript:void(0)"><i onclick="" class="text-danger text-center icofont icofont-ui-link" data-toggle="tooltip" data-placement="top" title="" data-original-title="Link Website"></i></a>
+                             @endif
                        </td>            
                      </tr>
                @endfor
