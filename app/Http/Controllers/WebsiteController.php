@@ -9,11 +9,14 @@ use App\Models\InventoryDepartment;
 use App\Models\Company;
 use App\branch;
 use App\terminal;
+use App\Traits\MediaTrait;
+
 use Illuminate\Support\Facades\DB;
 use Session, Image, Auth, Validator, File;
 
 class WebsiteController extends Controller
 {
+    use MediaTrait;
 
     public function __construct()
     {
@@ -68,45 +71,34 @@ class WebsiteController extends Controller
 
             if (!empty($request->logo)) {
                 $request->validate([
-                    'logo' => 'mimes:jpeg,png,jpg,gif,svg,webp|min:10|max:100',
+                    'logo' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
-
-                $imageLogo = $websiteName . '-logo.' . $request->file('logo')->getClientOriginalExtension();
-                // $imglogo = Image::make($request->logo)->resize(150, 70);
-                // $res = $imglogo->save(public_path('storage/images/website/' . $imageLogo), 75);
-                $getLogo = $request->file('logo');
-                $getLogo->move(public_path('storage/images/website/'), $imageLogo);
+                $getLogo = $this->uploads($request->file('logo'),'images/website/');
             }
 
             if (!empty($request->favicon)) {
                 $request->validate([
-                    'favicon' => 'mimes:jpeg,png,jpg,gif,svg,webp|min:10|max:100',
+                    'favicon' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
-
-                $imageFavicon = $websiteName . '-favicon.' . $request->favicon->getClientOriginalExtension();
-                $imgfavicon = Image::make($request->favicon)->resize(150, 70);
-                $res = $imgfavicon->save(public_path('storage/images/website/' . $imageFavicon), 90);
+                $imageFavicon = $this->uploads($request->file('favicon'),'images/website/');
             }
 
 
             $website = WebsiteDetail::create(array_merge(
                 $request->except(["_token", "step", "logo", "favicon"]),
-                ['logo' => $imageLogo, 'favicon' => $imageFavicon, 'is_open' => 1]
+                ['logo' => (!empty($imageLogo) ? $imageLogo['fileName'] : ''), 'favicon' => (!empty($imageFavicon) ? $imageFavicon['fileName'] : ''), 'is_open' => 1]
             ));
 
 
             if (!isset($website->id)) {
-                if ($imageFavicon) {
-                    if (\File::exists(public_path('storage/images/website/' . $imageFavicon))) {
-                        \File::delete(public_path('storage/images/website/' . $imageFavicon));
-                    }
+                if (!empty($imageFavicon)) {
+                    $this->removeImage("images/website/",$imageFavicon['fileName']);
                 }
 
-                if ($imageLogo) {
-                    if (\File::exists(public_path('storage/images/website/' . $imageLogo))) {
-                        \File::delete(public_path('storage/images/website/' . $imageLogo));
-                    }
+                if (!empty($imageLogo)) {
+                    $this->removeImage("images/website/",$imageLogo['fileName']);
                 }
+
                 Session::flash('error', 'Server issue');
                 return redirect()->route("website.create");
             }
@@ -173,36 +165,19 @@ class WebsiteController extends Controller
 
             if (!empty($request->favicon)) {
                 $request->validate([
-                    'favicon' => 'mimes:jpeg,png,jpg,gif,svg,webp|min:10|max:100',
+                    'favicon' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-
-                if (\File::exists(public_path('storage/images/website/' . $website_detail->favicon))) {
-                    \File::delete(public_path('storage/images/website/' . $website_detail->favicon));
-                }
-
-                $imageFavicon = $websiteName . '-favicon.' . $request->file('favicon')->getClientOriginalExtension();
-                $img = Image::make($request->file('favicon'))->resize(64, 64);
-                $res0 = $img->save(public_path('storage/images/website/' . $imageFavicon), 90);
+                $this->uploads($request->file('favicon'),'images/website/',$website_detail->favicon);
             }
 
             if (!empty($request->logo)) {
 
                 $request->validate([
-                    'logo' => 'mimes:jpeg,png,jpg,gif,svg,webp|min:10|max:100',
+                    'logo' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-
-                if (\File::exists(public_path('storage/images/website/' . $website_detail->logo))) {
-                    \File::delete(public_path('storage/images/website/' . $website_detail->logo));
-                }
-
-                $imageLogo = $websiteName . '-logo.' . $request->file('logo')->getClientOriginalExtension();
-                // $img = Image::make($request->file('logo'))->resize(200, 200);
-                // $res1 = $img->save(public_path('storage/images/website/' . $imageLogo), 75);
-
-                $getLogo = $request->file('logo');
-                $getLogo->move(public_path('storage/images/website/'), $imageLogo);
+                $this->uploads($request->file('favicon'),'images/website/',$website_detail->logo); 
             }
 
 
@@ -1445,7 +1420,7 @@ class WebsiteController extends Controller
 
         $columnNames_array = ['is_open', 'maintenance_mode', 'logo', 'favicon', 'fontstyle', 'checkout_otp', 'topbar', 'topbar_slide_msg', 'advertisement'];
         $websiteId  = $request->id;
-        $companyId  = Auth::user()->company_id;
+        $companyId  = session('company_id');
         $value = $request->val;
 
         $getRecord_webTheme  = DB::table('website_theme')->where('website_id', '=', $websiteId)->first();
@@ -1484,20 +1459,30 @@ class WebsiteController extends Controller
 
             if (in_array($request->col, ['logo', 'favicon', 'dark_logo'])) {
 
-                // $request->validate([
-                //     'logo' => 'mimes:jpeg,png,jpg,gif,svg,webp|max:100',
-                // ]);
+                $rules = ['logo' => 'mimes:jpeg,png,jpg,webp|max:1024'];
+                // Create the validator instance
+                $validator = Validator::make($request->all(), $rules);
+        
+                // Check if validation fails
+                if ($validator->fails()) {
+                    // Redirect back with input and errors
+                    return response()->json('error'.$validator);
+                }
 
-                $websiteName  = strtolower(str_replace(array(" ", "'"), '-', $getRecord_webDetail['name']));
+                // $websiteName  = strtolower(str_replace(array(" ", "'"), '-', $getRecord_webDetail['name']));
 
-                $image = $request->file('value');
+                // $image = $request->file('value');
 
-                $imageName = $websiteName . '-' . $request->col . '.' . $image->getClientOriginalExtension();
+                // $imageName = $websiteName . '-' . $request->col . '.' . $image->getClientOriginalExtension();
 
                 // $imglogo = Image::make($request->value)->resize(150, 70);
-                $image->move(public_path('storage/images/website'), $imageName);
+                // $image->move(public_path('storage/images/website'), $imageName);
 
-                $value = $imageName;
+                $getFile = $this->uploads($request->file('value'),'images/website/',$getRecord_webDetail->$request->col); 
+
+                $value = !empty($getFile) ? $getFile['fileName'] : '';
+
+                // $value = $imageName;
             }else if($request->col == 'topbar_slide_msg'){
 
                 //$value = (array) $request->val;
