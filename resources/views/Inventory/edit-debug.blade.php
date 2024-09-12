@@ -257,7 +257,7 @@
 				<div class="form-group {{ $errors->has('tags') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Tags</label>
                   <i data-toggle="modal" data-target="#createtag-modal" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
-                    <select class="form-control  select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
+                    <select class="select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
                        <option value="">Select</option>
                             @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray() @endphp 
                               @foreach($tagsList as $val)
@@ -597,6 +597,16 @@
           $("#description").val('{{ $data[0]->product_description }}');   
        @endif
 
+       $(".select2").select2();
+
+//light box
+$(document).on('click', '[data-toggle="lightbox"]', function(event) {
+ event.preventDefault();
+ $(this).ekkoLightbox();
+});
+
+
+
 $("#showProductWebsite").on('click',function(){
     
     if($(this).is(':checked')==true){
@@ -769,13 +779,6 @@ $("#showProductWebsite").on('click',function(){
               }
           });
       }
-     $(".select2").select2();
-
-     //light box
-    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
-      event.preventDefault();
-      $(this).ekkoLightbox();
-    });
 
 
 
