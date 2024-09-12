@@ -125,7 +125,7 @@
                     <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="">
                         <label class="form-control-label">Select Branch</label>
                         <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2">
-                            @if (session('roleId') == 2 or session('roleId') == 17)
+                            @if (session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19)
                                 <option value="all">All</option>
                             @endif
                             @foreach ($branch as $value)
