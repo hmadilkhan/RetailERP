@@ -31,10 +31,17 @@ class Inventory_DepartmentController extends Controller
         // if(Auth::user()->username == 'demoadmin'){
         //     return inventory_department::with('inventoryDepartmentSection')->get();
         // }
-        // return Inventory::where("department_id",1229)->where("status",1)->count();
+
         $depart = inventory_department::with(['inventoryDepartmentSection:id,department_id,section_id'])
             ->where('status', 1)
             ->where('company_id', session('company_id'))
+            ->withCount([
+                'inventoryProducts as product_count' => function($query) {
+                    WebsiteProduct::whereIn('inventory_id', Inventory::where('department_id', "inventory_department.department_id")
+                                                            ->where('status', 1)
+                                                            ->pluck('id'));
+                }
+            ])
             ->orderBy('department_id', 'DESC')->get(); //inventory_department::getdepartment('');
         $sdepart = inventory_department::get_subdepart('');
         $sections = Section::getSection();
