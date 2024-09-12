@@ -406,8 +406,8 @@ class WebsiteController extends Controller
                 return redirect()->route('sliderLists');
             }
 
-            if (\File::exists(public_path('storage/images/website/sliders') . session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
-                \File::delete(public_path('storage/images/website/sliders') . session('company_id') . '/' . $request->webId . '/' . $get->slide);
+            if (\File::exists('storage/images/website/sliders'. session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
+                \File::delete('storage/images/website/sliders'. session('company_id') . '/' . $request->webId . '/' . $get->slide);
             }
             $columnArray['slide'] = $imageName;
         }
@@ -449,7 +449,7 @@ class WebsiteController extends Controller
 
     public function create_folder($comFOldName, $webFoldName)
     {
-        $path   = public_path('storage/images/website/') . $comFOldName . '/' . $webFoldName;
+        $path   = 'storage/images/website/'. $comFOldName . '/' . $webFoldName;
         $result = true;
         if (!File::isDirectory($path)) {
             $result = File::makeDirectory($path, 0777, true, true);
@@ -473,8 +473,8 @@ class WebsiteController extends Controller
 
             if ($get != null) {
                 foreach ($get as $val) {
-                    if (\File::exists(public_path('storage/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $val->slide)) {
-                        \File::delete(public_path('storage/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $val->slide);
+                    if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide)) {
+                        \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide);
                     }
                 }
 
@@ -484,8 +484,8 @@ class WebsiteController extends Controller
             $get = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->first();
             if ($get != null) {
 
-                if (\File::exists(public_path('storage/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $get->slide)) {
-                    \File::delete(public_path('storage/images/website/sliders/') . session('company_id') . '/' . $id . '/' . $get->slide);
+                if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide)) {
+                    \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide);
                 }
 
                 $process = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->delete();
@@ -651,8 +651,8 @@ class WebsiteController extends Controller
                 return redirect()->route('AdvertisementLists');
             }
 
-            if (\File::exists(public_path('storage/images/website/advertisement') . session('company_id') . '/' . $request->webId . '/' . $get->image)) {
-                \File::delete(public_path('storage/images/website/advertisement') . session('company_id') . '/' . $request->webId . '/' . $get->image);
+            if (\File::exists('storage/images/website/advertisement'. session('company_id') . '/' . $request->webId . '/' . $get->image)) {
+                \File::delete('storage/images/website/advertisement'. session('company_id') . '/' . $request->webId . '/' . $get->image);
             }
             $columnArray['image'] = $imageName;
         }
@@ -707,8 +707,8 @@ class WebsiteController extends Controller
 
         if ($get != null) {
             foreach ($get as $val) {
-                if (\File::exists(public_path('storage/images/website/advertisements/') . session('company_id') . '/' . $request->website . '/' . $val->image)) {
-                    \File::delete(public_path('storage/images/website/advertisements/') . session('company_id') . '/' . $request->website . '/' . $val->image);
+                if (\File::exists('storage/images/website/advertisements/'. session('company_id') . '/' . $request->website . '/' . $val->image)) {
+                    \File::delete('storage/images/website/advertisements/'. session('company_id') . '/' . $request->website . '/' . $val->image);
                 }
             }
 
