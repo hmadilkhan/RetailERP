@@ -257,7 +257,7 @@
 				<div class="form-group {{ $errors->has('tags') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Tags</label>
                   <i data-toggle="modal" data-target="#createtag-modal" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
-                    <select class="form-control  select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
+                    <select class="select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
                        <option value="">Select</option>
                             @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray() @endphp 
                               @foreach($tagsList as $val)
@@ -597,6 +597,16 @@
           $("#description").val('{{ $data[0]->product_description }}');   
        @endif
 
+       $(".select2").select2();
+
+//light box
+$(document).on('click', '[data-toggle="lightbox"]', function(event) {
+ event.preventDefault();
+ $(this).ekkoLightbox();
+});
+
+
+
 $("#showProductWebsite").on('click',function(){
     
     if($(this).is(':checked')==true){
@@ -769,13 +779,6 @@ $("#showProductWebsite").on('click',function(){
               }
           });
       }
-     $(".select2").select2();
-
-     //light box
-    $(document).on('click', '[data-toggle="lightbox"]', function(event) {
-      event.preventDefault();
-      $(this).ekkoLightbox();
-    });
 
 
 
@@ -1258,11 +1261,37 @@ function handleVideo(input, containerId) {
                 container.appendChild(removeButton);
             }
         }
-  </script>
 
-  <script>
+        function insertProduct_attribute(id){
+           if($('#'+id+'_md').val() == "") {
+             swal({
+                    title: "Error Message",
+                    text: "Required Field can not be blank!",
+                    type: "warning"
+               });
 
-
+          }else{
+             $.ajax({
+                    url: "{{route('insertProduct_attribute')}}",
+                    type: 'POST',
+                    data:{_token:"{{ csrf_token() }}",
+                       value:$('#'+id+'_md').val(),
+                       control:id,
+                    },success:function(resp,textStatus, getStatus){
+                        if(getStatus.status == 200){
+                               swal('Success!','','success');
+                               getProduct_attribute(id);
+                               $('#'+id+'_md').val(null);
+                               $("#create"+id+"-modal").modal('hide');
+                        }else{
+                            swal('Error!',resp,'error'); 
+                        }
+                    },error:function(errorResp){
+                        swal('Error!',errorResp,'error');
+                    }
+                  });
+            }
+     }            
   </script>
 
   @endsection
