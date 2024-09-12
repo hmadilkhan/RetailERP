@@ -48,12 +48,12 @@ class InventoryController extends Controller
      */
     public function index(inventory $inventory, Brand $brand)
     {
-        $department = $inventory->department();
+        $department    = $inventory->department();
         $subdepartment = ''; //$inventory->subDepartment();
-        $uom = $inventory->uom();
-        $branch = $inventory->branch();
+        $uom        = $inventory->uom();
+        $branch     = $inventory->branch();
         // $inventory = ''; //$inventory->getData();
-        $vendors = DB::table("vendors")->where("status_id", 1)->where("user_id", session("company_id"))->get();
+        $vendors    = DB::table("vendors")->where("status_id", 1)->where("user_id", session("company_id"))->get();
         $references = DB::select("SELECT * FROM `inventory_reference` where product_id IN (Select id from inventory_general where company_id = ?) and refrerence != '' GROUP by refrerence", [session('company_id')]);
 
         $websites   = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
