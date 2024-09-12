@@ -22,7 +22,7 @@
             <div class="row">    
                 <div class="col-lg-4 col-md-4">
                   <div class="form-group">
-                      <label class="form-control-label">Department Code <span class="text-danger">*</span></label>
+                      <label class="form-control-label">Department Code <span class="text-muted">(Optional)</span></label>
                       <input class="form-control" type="text" name="code" id="code" placeholder='Department Code'/>
                       <span class="form-control-feedback text-danger" id="dptcode_alert"></span>
                   </div>
