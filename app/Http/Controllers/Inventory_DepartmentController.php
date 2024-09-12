@@ -7,7 +7,7 @@ use Image;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\custom_helper;
 use App\Traits\MediaTrait;
-use File;
+use File,Auth;
 
 class Inventory_DepartmentController extends Controller
 {
