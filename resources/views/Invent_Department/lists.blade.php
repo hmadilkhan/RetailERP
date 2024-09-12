@@ -22,11 +22,6 @@
              
           </div>      
        <div class="card-block">
-       
-        @if(Auth::user()->username == 'demoadmin')
-        {{ $depart }}
-       @endif   
-    
            <div class="project-table">
      <table id="mainTable" class="table table-striped full-width">
          <thead>
@@ -44,8 +39,7 @@
               @if($depart)
                 @for($d=0;$d < sizeof($depart);$d++)
                  @if(Auth::user()->username == 'demoadmin')
-                  @php $sectionValue = !empty($depart[$d]->inventory_department_section) ? $depart[$d]->inventory_department_section->pluck('section_id') : '' @endphp
-                   {{ $depart[$d]->inventoryDepartmentSection }}
+                  @php $sectionValue = !empty($depart[$d]->inventoryDepartmentSection) ? $depart[$d]->inventoryDepartmentSection->pluck('section_id') : '' @endphp
                  @endif      
                   <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
