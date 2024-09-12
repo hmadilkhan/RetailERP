@@ -558,6 +558,10 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage,secti
        $("#showWebsite_md").trigger('click');      
   }
 
+  if(sectionArray != ''){
+    $("#sections_md").val(sectionArray).change();
+  }
+
   $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
   if(bannerImage != ''){ 
     $("#previewDepartBannerImage_md").attr('src',location.origin+'/storage/images/department/'+bannerImage);
