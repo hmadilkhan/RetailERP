@@ -693,6 +693,8 @@
 			
 			fields.forEach(field => {
 				$(field).val(0);
+                console.log(field);
+                
 			});
 			
 			const filters = ['#dvbranch','#dvdepartments','#dvsubdepartments','#dvterminal','#dvtype','#dvitemcode','#dvpaymentmodes'];
@@ -815,7 +817,7 @@
 		
 		$('#dvbookingorderreport').on('click', function (){
 			handleButtonClick('#dvbookingorderreport', 'Booking Order Report', [
-				{ field: '#txtbookingorderreport', value: 1, showDateFilter: true, showPaymentMode:true}
+				{ field: '#txtbookingorderreport', value: 1, showDateFilter: true, showPaymentMode:true,showBranch: true}
 			]);
 		});
 
@@ -887,7 +889,7 @@
                 window.location = "{{url('inventory-image-report')}}?department="+department+"&subdepartment="+subdepartment+"&branch="+branch;
             }
 			if ($('#txtbookingorderreport').val() == 1){
-                window.location = "{{url('order-booking-report')}}?fromdate="+date+"&todate="+todate+"&paymentmethod="+paymentmethod;
+                window.location = "{{url('order-booking-report')}}?fromdate="+date+"&todate="+todate+"&paymentmethod="+paymentmethod+"&branch="+branch;
             }
         }
 		
