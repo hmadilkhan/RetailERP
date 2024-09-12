@@ -61,6 +61,7 @@ class InventoryController extends Controller
                                          ->whereIn('website_id',WebsiteDetail::where("company_id", session("company_id"))
                                                                       ->where("status", 1)->pluck('id')
                                                   )
+                                         ->select('id','website_id','inventory_id')         
                                          ->where('status',1)         
                                          ->get();         
         $brandList  = $brand->getBrand();
