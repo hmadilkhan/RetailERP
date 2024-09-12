@@ -91,7 +91,7 @@ class WebsiteTestimonialController extends Controller
             }
 
             Session::flash('success', 'Success!');
-            return redirect()->route("testimonials.index");
+            return redirect()->route("filterTestimonial",$request->website_id);
         } catch (Exception $e) {
             Session::flash('error', $e->getMessage());
             return redirect()->route("testimonials.create");
@@ -165,7 +165,7 @@ class WebsiteTestimonialController extends Controller
             $testimonial->save();
 
 
-            return redirect()->route("testimonials.index");
+            return redirect()->route("filterTestimonial",$request->website_id);
         } catch (Exception $e) {
             return redirect()->route("testimonials.edit", $testimonial->id);
         }
@@ -178,7 +178,7 @@ class WebsiteTestimonialController extends Controller
 
         if ($getRecord == null) {
             Session::flash('error', 'Error! record not found! Server Issue!');
-            return redirect()->route("testimonials.index");
+            return redirect()->route("filterTestimonial",$websiteId);
         }
 
         if (Testimonial::where('id',$id)->where('website_id',$websiteId)->delete()) {
@@ -187,7 +187,7 @@ class WebsiteTestimonialController extends Controller
         } else {
             Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' testimonial is not removed for this '.$request->website.' !');
         }
-        return redirect()->route("testimonials.index");
+        return redirect()->route("filterTestimonial",$websiteId);
     }
 
 
