@@ -130,9 +130,9 @@ class inventory_department extends Model
     }  
     
     // remove sections
-    public function remove_section($data){
+    public function remove_section($id){
 
-      return DB::table("inventory_department_sections")->where($data)->where('company_id',session('company_id'))->delete();
+      return DB::table("inventory_department_sections")->where('department_id',$id)->delete();
     }  
     
     public function inventoryDepartmentSection()
