@@ -109,8 +109,8 @@
     
     function remove(webId,webName){
             swal({
-                title: 'Remove Website',
-                text:  'Are you sure remove slider from '+webName+' website?',
+                title: 'Remove Testimonial',
+                text:  'Are you sure remove testimonial from '+webName+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
