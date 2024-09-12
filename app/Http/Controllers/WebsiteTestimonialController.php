@@ -86,14 +86,14 @@ class WebsiteTestimonialController extends Controller
                     $this->removeImage($path,$imageName);
                 }
                 Session::flash('error', 'Server issue');
-                return redirect()->route("testimonial.create");
+                return redirect()->route("testimonials.create");
             }
 
             Session::flash('success', 'Success!');
-            return redirect()->route("testimonial.index");
+            return redirect()->route("testimonials.index");
         } catch (Exception $e) {
             Session::flash('error', $e->getMessage());
-            return redirect()->route("testimonial.create");
+            return redirect()->route("testimonials.create");
         }
     }
 
@@ -104,7 +104,7 @@ class WebsiteTestimonialController extends Controller
         if ($testimonial == null) {
 
             Session::flash('error', 'Record not found!');
-            return redirect()->route('testimonial.index');
+            return redirect()->route('testimonials.index');
         }
 
 
@@ -164,9 +164,9 @@ class WebsiteTestimonialController extends Controller
             $testimonial->save();
 
 
-            return redirect()->route("testimonial.index");
+            return redirect()->route("testimonials.index");
         } catch (Exception $e) {
-            return redirect()->route("testimonial.edit", $testimonial->id);
+            return redirect()->route("testimonials.edit", $testimonial->id);
         }
     }
 
@@ -176,7 +176,7 @@ class WebsiteTestimonialController extends Controller
 
         if ($getRecord == null) {
             Session::flash('error', 'Error! record not found! Server Issue!');
-            return redirect()->route("testimonial.index");
+            return redirect()->route("testimonials.index");
         }
 
         if (Testimonial::where('id',$id)->where('website_id',$request->webid)->delete()) {
@@ -185,7 +185,7 @@ class WebsiteTestimonialController extends Controller
         } else {
             Session::flash('error', 'Error! this ' . $getRecord->name . ' testimonial is not removed for this '.$request->website.' !');
         }
-        return redirect()->route("testimonial.index");
+        return redirect()->route("testimonials.index");
     }
 
 
