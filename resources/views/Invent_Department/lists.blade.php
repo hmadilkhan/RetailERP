@@ -44,21 +44,21 @@
               @if($depart)
                 @for($d=0;$d < sizeof($depart);$d++)
                  @if(Auth::user()->username == 'demoadmin')
-                  {{-- @php $sectionValue = !empty($depart[$d]->inventory_department_section) ? $depart[$d]->inventory_department_section[0]->section_id : '' @endphp --}}
+                  @php $sectionValue = !empty($depart[$d]->inventory_department_section) ? $depart[$d]->inventory_department_section->pluck('section_id') : '' @endphp
                    {{ $depart[$d]->inventory_department_section }}
                  @endif      
                   <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','')">{{ $depart[$d]->code }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','')">
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $sectionValue}}')">{{ $depart[$d]->code }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $sectionValue}}')">
                              @if(!empty($depart[$d]->image) && File::exists('storage/images/department/'.$depart[$d]->image))
                                 <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/department/'.$depart[$d]->image) }}" alt="{{ $depart[$d]->image }}" height="64" width="64"/>
                              @else
                                 <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/no-image.jpg') }}" alt="{{ $depart[$d]->image }}" height="64" width="64" />
                              @endif
                          </td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','')">{{ $depart[$d]->department_name }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','')">{{ $depart[$d]->website_department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{$sectionValue}}')">{{ $depart[$d]->department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{$sectionValue}}')">{{ $depart[$d]->website_department_name }}</td>
                          <td class="pointer" onclick="editsubdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_id}}','{{ addslashes($depart[$d]->department_name) }}')" >
                             @if($depart)
                               @for($sd=0;$sd < sizeof($sdepart);$sd++)
