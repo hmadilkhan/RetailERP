@@ -64,10 +64,11 @@
               <div class="col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Section</label>
-                      <select class="select2" name="section[]" id="section" placeholder='Select' multiple>
+                      <select class="select2" name="sections[]" id="sections" placeholder='Select' multiple>
                         <option value="">Select</option>
+                        @php $oldSection = (array) old('sections') @endphp
                         @foreach($sections as $val)
-                         <option {{ old('section') ? 'select' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
+                         <option {{ in_array($val->id,$oldSection) ? 'select' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
                         @endforeach
                       </select> 
                        <span class="form-control-feedback text-danger" id="webdeptname_alert"></span>

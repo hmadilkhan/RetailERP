@@ -62,8 +62,6 @@ class Inventory_DepartmentController extends Controller
                     $request->validate([
                         'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
                     ]);
-        	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
-        	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
                     $file = $this->uploads($request->file('departImage'),"images/department");
                     $imageName = !empty($file) ? $file["fileName"] : "";
         	    }    
@@ -73,8 +71,8 @@ class Inventory_DepartmentController extends Controller
                     'code'             => $request->code,
                     'department_id'    => $request->post('parent'),
                     'sub_depart_name'  => $request->deptname,
-                    'slug'         => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
-                    'image'        =>$imageName,
+                    'slug'             => preg_replace("/[\s_]/", "-",strtolower($request->deptname)),
+                    'image'            => $imageName,
                 ];
 
                 $result = $invent_department->insert_sdept($items);
@@ -136,24 +134,29 @@ class Inventory_DepartmentController extends Controller
 				
             $result = $invent_department->insert_dept($data);
             if($result){
-                   
-                 $subdpt_value = $request->subdpt;
+
+                   if(!empty($request->sections)){
+                       foreach($request->sections as $value){
+                         $invent_department->insert_section(['department_id'=>$result,'section_id'=>$value,'created_at'=>date('Y-m-d H:i:s')]);    
+                       }
+                    }
+                //  $subdpt_value = $request->subdpt;
              
-                 $subdpt_value = explode(",",$subdpt_value);
+                //  $subdpt_value = explode(",",$subdpt_value);
 				 
-				 $code = $request->get('code');
+				//  $code = $request->get('code');
         
             
-                for($i=0;$i < count($subdpt_value);$i++){
+                // for($i=0;$i < count($subdpt_value);$i++){
                     
-                     $invent_department->insert_sdept([
-						'code'=>++$code,
-						'department_id'=>$result,
-						'sub_depart_name'=>$subdpt_value[$i],
-						'slug'=> preg_replace("/[\s_]/", "-",strtolower($subdpt_value[$i])),
-					]);
+                //      $invent_department->insert_sdept([
+				// 		'code'=>++$code,
+				// 		'department_id'=>$result,
+				// 		'sub_depart_name'=>$subdpt_value[$i],
+				// 		'slug'=> preg_replace("/[\s_]/", "-",strtolower($subdpt_value[$i])),
+				// 	]);
  
-                }
+                // }
 				// $msg = "ID # ".$result.", Name : ".$request->get('deptname');
 				// $helper->sendPushNotification("New Department Added",$msg); 
                return response()->json(array("state"=>0,"msg"=>'',"contrl"=>''));
