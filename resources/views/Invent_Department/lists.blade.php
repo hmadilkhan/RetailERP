@@ -41,8 +41,11 @@
          <tbody>
               @if($depart)
                 @for($d=0;$d < sizeof($depart);$d++)
-                  @php $sectionValue = !empty($depart[$d]->inventory_department_section) ? $depart[$d]->inventory_department_section[0]->section_id : '' @endphp
-                       <tr>
+                 @if(Auth::user()->username == 'demoadmin')
+                  {{-- @php $sectionValue = !empty($depart[$d]->inventory_department_section) ? $depart[$d]->inventory_department_section[0]->section_id : '' @endphp --}}
+                   {{ $depart[$d]->inventory_department_section }}
+                 @endif      
+                  <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
                          <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $sectionValue }}')">{{ $depart[$d]->code }}</td>
                          <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $sectionValue }}')">
