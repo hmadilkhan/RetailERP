@@ -15,6 +15,6 @@ class WebsiteProduct extends Model
     // }
 
      public function websiteDetails(){
-        return $this->belongsTo(websiteDetails::class, 'id', 'website_id')->where('status',1);
+        return $this->belongsTo(WebsiteDetail::class, 'id', 'website_id')->where('status',1);
      } 
 }
