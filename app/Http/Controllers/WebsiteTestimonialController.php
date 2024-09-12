@@ -75,7 +75,7 @@ class WebsiteTestimonialController extends Controller
 
             $website = Testimonial::create(array_merge(
                 $request->except(["_token","image"]),
-                ['logo' => $imageName]
+                ['image' => $imageName]
             ));
 
 
