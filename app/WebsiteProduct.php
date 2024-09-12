@@ -6,7 +6,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class WebsiteProduct extends Model
 {
-	protected $table = "website_products";
+    protected $table = "website_products";
     protected $guarded = [];
 
+    // public function inventoryGeneral()
+    // {
+    //     return $this->belongsTo(Inventory::class,"id","inventory_id");
+    // }
+
+    
 }
