@@ -38,9 +38,7 @@
          <tbody>
               @if($depart)
                 @for($d=0;$d < sizeof($depart);$d++)
-                 @if(Auth::user()->username == 'demoadmin')
-                  @php $sectionValue = !empty($depart[$d]->inventoryDepartmentSection) ? $depart[$d]->inventoryDepartmentSection->pluck('section_id') : '' @endphp
-                 @endif      
+                  @php $sectionValue = !empty($depart[$d]->inventoryDepartmentSection) ? $depart[$d]->inventoryDepartmentSection->pluck('section_id') : '' @endphp   
                   <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
                          <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}',{{ $sectionValue}})">{{ $depart[$d]->code }}</td>
