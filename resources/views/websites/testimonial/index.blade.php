@@ -71,7 +71,7 @@
 					<form action="{{ route('testimonials.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
 					    @csrf
 					    @method('DELETE')
-                        
+                        <input type="hidden" name="websiteId" value="{{ Crypt::encrypt($value->website_id) }}">
 					</form>
 				  </td>
 				</tr>
