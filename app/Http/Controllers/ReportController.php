@@ -4512,10 +4512,27 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 12);
             $pdf->Cell(190, 10, "Item Code: " . $item->item_code, 0, 1, 'C');
 
+            // $imageUrl = $item->url;
+            // $imagePath = 'storage/images/products/' . $item->image;
+
+            // // Determine image path
+            // if (filter_var($imageUrl, FILTER_VALIDATE_URL) && $this->isImageUrlAccessible($imageUrl)) {
+            //     // Use the URL if it's valid and accessible
+            //     $pdf->Cell(50, 50, $pdf->Image($imageUrl, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
+            // } else {
+            //     // Fallback to local storage if URL is not accessible or invalid
+            //     if (Storage::exists($imagePath)) {
+            //         $pdf->Cell(50, 50, $pdf->Image(asset($imagePath), $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
+            //     } else {
+            //         // Fallback message if no image found
+            //         $pdf->Cell(50, 50, 'No Image', 1, 0, 'C');
+            //     }
+            // }
+
             $imagePath = asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg'));
 
             // Set up image path (replace with your actual image path)
-            list($width, $height) = getimagesize($imagePath);
+            // list($width, $height) = getimagesize($imagePath);
 
             // Add image centered on the page
             if ($key == 0) {
@@ -4533,7 +4550,7 @@ class ReportController extends Controller
         }
 
         // Save file
-        $pdf->Output('Item_Sale_Database.pdf', 'I');
+        $pdf->Output('Factory_Operation_Report.pdf', 'I');
     }
 
 

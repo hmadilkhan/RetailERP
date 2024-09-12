@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Image;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\custom_helper;
+use App\Models\Inventory;
 use App\Traits\MediaTrait;
+use App\WebsiteProduct;
 use File, Auth;
 
 class Inventory_DepartmentController extends Controller
@@ -29,6 +31,7 @@ class Inventory_DepartmentController extends Controller
         // if(Auth::user()->username == 'demoadmin'){
         //     return inventory_department::with('inventoryDepartmentSection')->get();
         // }
+        // return Inventory::where("department_id",1229)->where("status",1)->count();
         $depart = inventory_department::with(['inventoryDepartmentSection:id,department_id,section_id'])
             ->where('status', 1)
             ->where('company_id', session('company_id'))
