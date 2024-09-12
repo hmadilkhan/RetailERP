@@ -137,7 +137,7 @@ class inventory_department extends Model
     
     public function inventoryDepartmentSection()
     {
-      return $this->hasMany("App\InventoryDepartmentSection","department_id","department_id")->pluck('section_id');
+      return $this->hasMany("App\InventoryDepartmentSection","department_id","department_id");
     }   
 
 }
