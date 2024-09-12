@@ -8,6 +8,7 @@ use App\WebsiteDetail;
 use App\Testimonial;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 use Session, Image, Auth, Validator, File;
 
 class WebsiteTestimonialController extends Controller
@@ -172,18 +173,19 @@ class WebsiteTestimonialController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $getRecord = Testimonial::where('id',$id)->where('website_id',$request->webid)->first();
+        $websiteId = Crypt::decrypt($request->websiteId);
+        $getRecord = Testimonial::where('id',$id)->where('website_id',$websiteId)->first();
 
         if ($getRecord == null) {
             Session::flash('error', 'Error! record not found! Server Issue!');
             return redirect()->route("testimonials.index");
         }
 
-        if (Testimonial::where('id',$id)->where('website_id',$request->webid)->delete()) {
+        if (Testimonial::where('id',$id)->where('website_id',$websiteId)->delete()) {
             $this->removeImage('/images/testimonials/',$getRecord->image);
             Session::flash('success', 'Success!');
         } else {
-            Session::flash('error', 'Error! this ' . $getRecord->name . ' testimonial is not removed for this '.$request->website.' !');
+            Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' testimonial is not removed for this '.$request->website.' !');
         }
         return redirect()->route("testimonials.index");
     }
