@@ -73,27 +73,27 @@ class WebsiteTestimonialController extends Controller
             }
 
 
-            $website = Testimonial::create(array_merge(
+            $testimonial = Testimonial::create(array_merge(
                 $request->except(["_token","image"]),
                 ['image' => $imageName]
             ));
 
 
-            if (!isset($website->id)) {
+            if (!isset($testimonial->id)) {
 
-                if ($imageLogo) {
-                    $path = public_path('storage/images/testimonials/');
+                if ($imageName) {
+                    $path = 'images/testimonials/';
                     $this->removeImage($path,$imageName);
                 }
                 Session::flash('error', 'Server issue');
-                return redirect()->route("website.create");
+                return redirect()->route("testimonial.create");
             }
 
             Session::flash('success', 'Success!');
-            return redirect()->route("website.testimonial.index");
+            return redirect()->route("testimonial.index");
         } catch (Exception $e) {
             Session::flash('error', $e->getMessage());
-            return redirect()->route("website.testimonial.create");
+            return redirect()->route("testimonial.create");
         }
     }
 
@@ -104,11 +104,11 @@ class WebsiteTestimonialController extends Controller
         if ($testimonial == null) {
 
             Session::flash('error', 'Record not found!');
-            return redirect()->route('website.testimonial.index');
+            return redirect()->route('testimonial.index');
         }
 
 
-        return view("websites.testimonial.edit", [
+        return view("testimonial.edit", [
             "testimonial" => $testimonial,
             "websites"    => WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get()
         ]);
@@ -117,11 +117,11 @@ class WebsiteTestimonialController extends Controller
     public function update(Request $request, $id)
     {
 
-        $website_detail = WebsiteDetail::find($id);
+        $testimonial = Testimonial::find($id);
 
         $this->validate($request, [
             // "company_id"  => "required",
-            "type"        => "required",
+            "customer"        => "required",
             // "theme"       => "required",
             "url"         => "required",
         ]);
@@ -129,69 +129,44 @@ class WebsiteTestimonialController extends Controller
         try {
 
 
-            $websiteName  = strtolower(str_replace(array(" ", "'"), '-', $request->post('name')));
-
-            if (!empty($request->favicon)) {
+            if (!empty($request->file('image'))){
+                $image = $request->file('image');
                 $request->validate([
-                    'favicon' => 'mimes:jpeg,png,jpg,gif,svg,webp|min:10|max:100',
+                    'image' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-
-                if (\File::exists(public_path('storage/images/website/' . $website_detail->favicon))) {
-                    \File::delete(public_path('storage/images/website/' . $website_detail->favicon));
-                }
-
-                $imageFavicon = $websiteName . '-favicon.' . $request->file('favicon')->getClientOriginalExtension();
-                $img = Image::make($request->file('favicon'))->resize(64, 64);
-                $res0 = $img->save(public_path('storage/images/website/' . $imageFavicon), 90);
-            }
-
-            if (!empty($request->logo)) {
-
-                $request->validate([
-                    'logo' => 'mimes:jpeg,png,jpg,gif,svg,webp|min:10|max:100',
-                ]);
-
-
-                if (\File::exists(public_path('storage/images/website/' . $website_detail->logo))) {
-                    \File::delete(public_path('storage/images/website/' . $website_detail->logo));
-                }
-
-                $imageLogo = $websiteName . '-logo.' . $request->file('logo')->getClientOriginalExtension();
-                // $img = Image::make($request->file('logo'))->resize(200, 200);
-                // $res1 = $img->save(public_path('storage/images/website/' . $imageLogo), 75);
-
-                $getLogo = $request->file('logo');
-                $getLogo->move(public_path('storage/images/website/'), $imageLogo);
+                $path = '/images/testimonials/';
+                $returnImageValue = $this->uploads($image, $path,$testimonial->image);
+                $imageName = !empty($returnImageValue['fileName']) ? $returnImageValue['fileName'] : null; 
             }
 
 
-            if ($website_detail->name  != $request->name) {
+
+            if ($testimonial->customer_name  != $request->customer_name) {
                 // regex:/^[a-zA-Z]+$/u
                 $rule = [
-                    "name" => "required|max:255|unique:website_details",
+                    "customer_name" => "required|max:255|unique:website_testimonials",
                 ];
                 $this->validate($request, $rule);
             }
 
-            $website_detail->type        = $request->type;
-            $website_detail->name        = $request->name;
-            $website_detail->url         = $request->url;
-            $website_detail->whatsapp    = $request->whatsapp;
-            $website_detail->uan_number  = $request->uan_number;
+            $testimonial->website_id      = $request->website_id; 
+            $testimonial->customer_name   = $request->customer_name;
+            $testimonial->rating          = $request->rating;
+            $testimonial->content         = $request->content;
 
-            if (isset($imageLogo)) {
-                $website_detail->logo   = $imageLogo;
+            if (isset($imageName)) {
+                $testimonial->image   = $imageName;
             }
 
 
 
-            $website_detail->save();
+            $testimonial->save();
 
 
-            return redirect()->route("website.testimonial.index");
+            return redirect()->route("testimonial.index");
         } catch (Exception $e) {
-            return redirect()->route("website.testimonial.edit", $website_detail->id);
+            return redirect()->route("testimonial.edit", $testimonial->id);
         }
     }
 
@@ -201,15 +176,16 @@ class WebsiteTestimonialController extends Controller
 
         if ($getRecord == null) {
             Session::flash('error', 'Error! record not found! Server Issue!');
-            return redirect()->route("website.testimonial.index");
+            return redirect()->route("testimonial.index");
         }
 
         if (Testimonial::where('id',$id)->where('website_id',$request->webid)->delete()) {
+            $this->removeImage('/images/testimonials/',$getRecord->image);
             Session::flash('success', 'Success!');
         } else {
             Session::flash('error', 'Error! this ' . $getRecord->name . ' testimonial is not removed for this '.$request->website.' !');
         }
-        return redirect()->route("website.testimonial.index");
+        return redirect()->route("testimonial.index");
     }
 
 
