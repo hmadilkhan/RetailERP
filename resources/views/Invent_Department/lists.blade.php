@@ -553,13 +553,13 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage,secti
   $('#departid').val(departid);
   $('#editcode').val(code);
   $('#webdeptname_md').val(webDepart);
-  console.log(sectionArray);
+  console.log(sectionArray[0]);
   if(websiteMode == 1){
        $("#showWebsite_md").trigger('click');      
   }
 
   if(sectionArray != ''){
-    $("#sections_md").val(sectionArray).trigger('change');
+    $("#sections_md").val(sectionArray).trigger('onchange');
   }
 
   $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
