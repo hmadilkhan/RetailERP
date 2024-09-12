@@ -136,6 +136,19 @@
                         <span class="form-control-feedback text-danger" id="webdeptname_md_alert"></span>
                   </div>
                 </div>
+
+                <div class="col-md-12">
+                  <div class="form-group">
+                      <label class="form-control-label">Section</label>
+                      <select class="select2" name="sections[]" id="sections_md" data-placeholder="Select" multiple>
+                        <option value="">Select</option>
+                        @foreach($sections as $val)
+                         <option value="{{ $val->id }}">{{ $val->name }}</option>
+                        @endforeach                    
+                      </select>  
+                        <span class="form-control-feedback text-danger" id="sections_md_alert"></span>
+                  </div>
+                </div>                  
                 
                 <div class="col-md-12">
                   <div class="form-group">
