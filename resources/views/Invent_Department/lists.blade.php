@@ -559,7 +559,7 @@ function editdepart(code,depart,webDepart,departid,websiteMode,bannerImage,secti
   }
 
   if(sectionArray != ''){
-    $("#sections_md").val(sectionArray).trigger('onchange');
+    $("#sections_md").val(sectionArray).trigger('change');
   }
 
   $("#previewImg").attr('src',$("#img-tble-"+departid).attr('src'));
