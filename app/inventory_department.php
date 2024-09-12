@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\DB;
 
 class inventory_department extends Model
 {
+
+    protected $table = "inventory_department";
+
     // save record department //
     public function insert_dept($data){
 
@@ -130,6 +133,11 @@ class inventory_department extends Model
     public function remove_section($data){
 
       return DB::table("inventory_department_sections")->where($data)->where('company_id',session('company_id'))->delete();
+    }  
+    
+    public function inventoryDepartmentSection()
+    {
+      return $this->hasMany("App\InventoryDepartmentSection","department_id","department_id");
     }   
 
 }

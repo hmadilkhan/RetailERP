@@ -23,6 +23,9 @@ class Inventory_DepartmentController extends Controller
      */
     public function index()
     {
+        if(Auth::user()->username == 'demoadmin'){
+            return inventory_department::with('inventoryDepartmentSection')->get();
+        }
 	  $depart = inventory_department::getdepartment('');
 	  $sdepart = inventory_department::get_subdepart('');
       $sections = Section::getSection();
