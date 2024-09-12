@@ -45,7 +45,7 @@
                 @for($d=0;$d < sizeof($depart);$d++)
                  @if(Auth::user()->username == 'demoadmin')
                   @php $sectionValue = !empty($depart[$d]->inventory_department_section) ? $depart[$d]->inventory_department_section->pluck('section_id') : '' @endphp
-                   {{ $depart[$d]->inventory_department_section }}
+                   {{ $depart[$d]->inventoryDepartmentSection }}
                  @endif      
                   <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
