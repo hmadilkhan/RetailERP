@@ -14,12 +14,6 @@ class inventory_department extends Model
 
     }
 
-    // save record insert_section //
-    public function insert_section($data){
-
-      return DB::table("inventory_department_sections")->insert($data);
-    }    
-
      // save record sub-department //
     public function insert_sdept($data){
 
@@ -126,6 +120,16 @@ class inventory_department extends Model
     }
 
 
+    // save record insert_sections //
+    public function insert_section($data){
 
+      return DB::table("inventory_department_sections")->insert($data);
+    }  
+    
+    // remove sections
+    public function remove_section($data){
+
+      return DB::table("inventory_department_sections")->where($data)->where('company_id',session('company_id'))->delete();
+    }   
 
 }

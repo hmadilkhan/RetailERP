@@ -173,6 +173,13 @@ class Inventory_DepartmentController extends Controller
                 
                 if($invent_department->modify("inventory_department",['department_name'=>$request->get('depart'),'slug'=> preg_replace("/[\s_]/", "-",strtolower(get('depart')))],['department_id'=>$request->get('id')])){
                     
+                    if(!empty($request->sections)){
+                        $invent_department->remove_section(['department_id'=>$request->get('id')]);
+                        foreach($request->sections as $value){
+                          $invent_department->insert_section(['department_id'=>$result,'section_id'=>$value,'created_at'=>date('Y-m-d H:i:s')]);    
+                        }
+                     }
+
                     //   return response()->json(['department_name'=>$request->get('depart'),'slug'=> preg_replace("/[\s_]/", "-",strtolower($request->get('depart')))]);
 					$msg = "ID # ".$request->get('id').", Name : ".$request->get('depart');
 					$helper->sendPushNotification("Department Updated",$msg);
