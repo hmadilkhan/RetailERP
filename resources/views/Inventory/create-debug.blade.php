@@ -538,7 +538,7 @@
               </div> 
               </div>    
               </div> 
-        @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
+        {{-- @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs'])) --}}
         
            <div class="d-none" id="prodAdvans_Media">
            <div class="card">
@@ -573,7 +573,7 @@
                    </div>
                
            </div>
-        @endif                  
+        {{-- @endif                   --}}
               
                   </div>      
               </div>
