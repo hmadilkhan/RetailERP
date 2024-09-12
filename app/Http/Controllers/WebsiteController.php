@@ -1478,7 +1478,7 @@ class WebsiteController extends Controller
                 // $imglogo = Image::make($request->value)->resize(150, 70);
                 // $image->move(public_path('storage/images/website'), $imageName);
 
-                $getFile = $this->uploads($request->file('value'),'images/website/',$getRecord_webDetail->$request->col); 
+                $getFile = $this->uploads($request->file('value'),'images/website/',$getRecord_webDetail[$request->col]); 
 
                 $value = !empty($getFile) ? $getFile['fileName'] : '';
 
