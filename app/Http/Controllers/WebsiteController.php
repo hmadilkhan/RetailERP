@@ -73,7 +73,7 @@ class WebsiteController extends Controller
                 $request->validate([
                     'logo' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
-                $getLogo = $this->uploads($request->file('logo'),'images/website/');
+               $imageLogo = $this->uploads($request->file('logo'),'images/website/');
             }
 
             if (!empty($request->favicon)) {
@@ -159,8 +159,8 @@ class WebsiteController extends Controller
         ]);
 
         try {
-
-
+            $imageLogo    = null;
+            $imageFavicon = null;
             $websiteName  = strtolower(str_replace(array(" ", "'"), '-', $request->post('name')));
 
             if (!empty($request->favicon)) {
@@ -168,7 +168,7 @@ class WebsiteController extends Controller
                     'favicon' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-                $this->uploads($request->file('favicon'),'images/website/',$website_detail->favicon);
+                $imageFavicon = $this->uploads($request->file('favicon'),'images/website/',$website_detail->favicon);
             }
 
             if (!empty($request->logo)) {
@@ -177,7 +177,7 @@ class WebsiteController extends Controller
                     'logo' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-                $this->uploads($request->file('favicon'),'images/website/',$website_detail->logo); 
+                $imageLogo =$this->uploads($request->file('logo'),'images/website/',$website_detail->logo); 
             }
 
 
@@ -195,12 +195,12 @@ class WebsiteController extends Controller
             $website_detail->whatsapp    = $request->whatsapp;
             $website_detail->uan_number  = $request->uan_number;
 
-            if (isset($imageLogo)) {
-                $website_detail->logo   = $imageLogo;
+            if (!empty($imageLogo)) {
+                $website_detail->logo   = $imageLogo['fileName'];
             }
 
-            if (isset($imageFavicon)) {
-                $website_detail->favicon  = $imageFavicon;
+            if (!empty($imageFavicon)) {
+                $website_detail->favicon  = $imageFavicon['fileName'];
             }
 
             $website_detail->save();
