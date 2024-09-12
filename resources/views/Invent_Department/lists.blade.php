@@ -41,7 +41,7 @@
          <tbody>
               @if($depart)
                 @for($d=0;$d < sizeof($depart);$d++)
-                  @php $sectionValue = count($depart[$d]->inventory_department_section) >= 0 ? $depart[$d]->inventory_department_section->pluck("section_id")->implode(",") : '' @endphp
+                  @php $sectionValue = !empty($depart[$d]->inventory_department_section) >= 0 ? $depart[$d]->inventory_department_section->pluck("section_id")->implode(",") : '' @endphp
                        <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
                          <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $sectionValue }}')">{{ $depart[$d]->code }}</td>
