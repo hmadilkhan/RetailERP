@@ -4529,10 +4529,10 @@ class ReportController extends Controller
             //     }
             // }
 
-            $imagePath = ($item->url != "" ? $item->url : asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg')));
+            $imagePath = ($item->url != "" ? $item->url : (asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg'))));
 
             // Set up image path (replace with your actual image path)
-            // list($width, $height) = getimagesize($imagePath);
+            list($width, $height) = getimagesize($imagePath);
 
             // Add image centered on the page
             if ($key == 0) {
