@@ -377,19 +377,11 @@ class InventoryController extends Controller
             }
         }
 
-        if (!empty($request->website)) {
-
-            WebsiteProduct::where('website_id','!=',$request->website)
-                            ->where('inventory_id',$productid)
-                            ->update([
-                                "status" => 0,
-                                "updated_at" => date("Y-m-d H:i:s"),
-                            ]);
-
+        if (!empty($request->website) && isset($request->showProductWebsite)) {
             // foreach ($request->website as $website) {
                 WebsiteProduct::create([
-                    "website_id" => $request->website,
-                    "inventory_id" => $productid,
+                    "website_id"    => $request->website,
+                    "inventory_id"  => $productid,
                 ]);
             // }
         }
@@ -1029,15 +1021,17 @@ class InventoryController extends Controller
             ];
             DB::table("inventory_download_status")->insert($items);
         }
-
-        WebsiteProduct::where("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
-        if (!empty($request->website)) {
+       
+        if (!empty($request->website) && isset($request->showProductWebsite)) {
+            WebsiteProduct::where("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
             // foreach ($request->website as $website) {
                 WebsiteProduct::create([
                     "website_id"   => $request->website,
                     "inventory_id" => $request->id,
                 ]);
             // }
+        }else{
+            WebsiteProduct::where("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]); 
         }
 
         DB::table('inventory_tags')->where("inventory_id", $request->id)->delete();
@@ -1056,7 +1050,11 @@ class InventoryController extends Controller
         //   return redirect()->back();
         return  1;
     }
+    
 
+    public function unLink_websiteProduct(Reqeust $request){
+        return  WebsiteProduct::whereIn("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
+    }
 
 
 
