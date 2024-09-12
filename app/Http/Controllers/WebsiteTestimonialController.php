@@ -173,7 +173,7 @@ class WebsiteTestimonialController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $websiteId = Crypt::decrypt($request->webid);
+        $websiteId = Crypt::decrypt($request->websiteId);
         $getRecord = Testimonial::where('id',$id)->where('website_id',$websiteId)->first();
 
         if ($getRecord == null) {
