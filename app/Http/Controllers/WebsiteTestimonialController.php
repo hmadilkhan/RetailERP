@@ -67,13 +67,13 @@ class WebsiteTestimonialController extends Controller
                     'image' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-                $path = public_path('storage/images/testimonials/');
+                $path = '/images/testimonials/';
                 $returnImageValue = $this->uploads($image, $path);
                 $imageName = $returnImageValue['fileName']; 
             }
 
 
-            $website = WebsiteDetail::create(array_merge(
+            $website = Testimonial::create(array_merge(
                 $request->except(["_token","image"]),
                 ['logo' => $imageName]
             ));
