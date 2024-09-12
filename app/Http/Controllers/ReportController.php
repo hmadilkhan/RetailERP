@@ -3725,7 +3725,7 @@ class ReportController extends Controller
         $totalreceiveamount = 0;
         $totalbalanceamount = 0;
 
-        $orders = $report->orderBookingQuery($request->fromdate, $request->todate, $request->paymentmethod);
+        $orders = $report->orderBookingQuery($request->fromdate, $request->todate, $request->paymentmethod,$request->branch);
 
         foreach ($orders as $values) {
             $totalamount += $values->total_amount;

@@ -429,12 +429,15 @@ class report extends Model
     }
 	
 	// 
-	public  function  orderBookingQuery($fromdate,$todate,$paymentmethod){
+	public  function  orderBookingQuery($fromdate,$todate,$paymentmethod,$branch){
 		$filter = "";
 		if($paymentmethod != ""){
 			$filter .= " and a.payment_mode_id  = ".$paymentmethod;
 		}
-        $result = DB::select('SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2 and b.branch = ? '.$filter ,[$fromdate,$todate,session('branch')]);
+        if($branch != ""){
+			$filter .= " and b.branch = ".$branch;
+		}
+        $result = DB::select('SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2  '.$filter ,[$fromdate,$todate]);
         return $result;
     }
 
