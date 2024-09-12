@@ -43,16 +43,16 @@
                 @for($d=0;$d < sizeof($depart);$d++)
                        <tr>
 	                     <td class="d-none">{{ $depart[$d]->department_id }}</td>    
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $depart[$d]->inventory_department_section->toArray()}}')">{{ $depart[$d]->code }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $depart[$d]->inventory_department_section->toArray()}}')">
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $depart[$d]->inventory_department_section->pluck("department_id")->implode(",")}}')">{{ $depart[$d]->code }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode}},'{{ $depart[$d]->banner}}','{{ $depart[$d]->inventory_department_section->pluck("department_id")->implode(",")}}')">
                              @if(!empty($depart[$d]->image) && File::exists('storage/images/department/'.$depart[$d]->image))
                                 <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/department/'.$depart[$d]->image) }}" alt="{{ $depart[$d]->image }}" height="64" width="64"/>
                              @else
                                 <img id="img-tble-{{ $depart[$d]->department_id }}" src="{{ asset('storage/images/no-image.jpg') }}" alt="{{ $depart[$d]->image }}" height="64" width="64" />
                              @endif
                          </td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->inventory_department_section->toArray()}}')">{{ $depart[$d]->department_name }}</td>
-                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->inventory_department_section->toArray()}}')">{{ $depart[$d]->website_department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->inventory_department_section->pluck("department_id")->implode(",")}}')">{{ $depart[$d]->department_name }}</td>
+                         <td class="pointer" onclick="editdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_name}}','{{ $depart[$d]->website_department_name }}','{{$depart[$d]->department_id}}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->inventory_department_section->pluck("department_id")->implode(",")}}')">{{ $depart[$d]->website_department_name }}</td>
                          <td class="pointer" onclick="editsubdepart('{{ $depart[$d]->code }}','{{$depart[$d]->department_id}}','{{ addslashes($depart[$d]->department_name) }}')" >
                             @if($depart)
                               @for($sd=0;$sd < sizeof($sdepart);$sd++)
