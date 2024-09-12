@@ -57,9 +57,17 @@ class InventoryController extends Controller
         $references = DB::select("SELECT * FROM `inventory_reference` where product_id IN (Select id from inventory_general where company_id = ?) and refrerence != '' GROUP by refrerence", [session('company_id')]);
 
         $websites   = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
+        $websiteProducts = WebsiteProduct::with('websiteDetails')
+                                         ->whereIn('website_id',WebsiteDetail::where("company_id", session("company_id"))
+                                                                      ->where("status", 1)->pluck('id')
+                                                  )
+                                         ->where('status',1)         
+                                         ->get();         
         $brandList  = $brand->getBrand();
         $tagsList   = Tag::getTags();
-
+               if(Auth::user()->username == 'demoadmin'){
+                return $websiteProducts;
+               }
         //if(session("company_id") == 7 or session("company_id") ==  102 && Auth::user()->username != 'demoadmin'){ //or session("company_id") ==  102 session("company_id") == 7 or
         // if (in_array(session("company_id"), [7, 102]) && !in_array(Auth::user()->username, ['demoadmin'])) {
             $inventories = $inventory->getInventoryForPagewiseByFilters();
