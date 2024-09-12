@@ -69,7 +69,7 @@ class Inventory_DepartmentController extends Controller
                     $request->validate([
                         'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
                     ]);
-                    $file = $this->uploads($request->file('departImage'),"images/department");
+                    $file = $this->uploads($request->file('departImage'),"images/department/");
                     $imageName = !empty($file) ? $file["fileName"] : "";
         	    }    
                              
@@ -112,7 +112,7 @@ class Inventory_DepartmentController extends Controller
                 ]);                
     	        // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
     	        // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
-                $file = $this->uploads($request->file('departImage'),"images/department");
+                $file = $this->uploads($request->file('departImage'),"images/department/");
                 $imageName = !empty($file) ? $file["fileName"] : "";
     	    }	
  
@@ -120,7 +120,7 @@ class Inventory_DepartmentController extends Controller
                 $request->validate([
                     'bannerImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
-                $file = $this->uploads($request->file('bannerImage'),"images/department");
+                $file = $this->uploads($request->file('bannerImage'),"images/department/");
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";
             }   
             
