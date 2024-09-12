@@ -4528,7 +4528,7 @@ class ReportController extends Controller
             //         $pdf->Cell(50, 50, 'No Image', 1, 0, 'C');
             //     }
             // }
-            echo $item->url ;
+           print_r($item);
             exit();
             $imagePath = ($item->url != "" ? $item->url : (asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg'))));
 
