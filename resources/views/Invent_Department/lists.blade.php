@@ -23,7 +23,9 @@
           </div>      
        <div class="card-block">
        
-
+        @if(Auth::user()->username == 'demoadmin')
+        {{ $depart }}
+       @endif   
     
            <div class="project-table">
      <table id="mainTable" class="table table-striped full-width">
