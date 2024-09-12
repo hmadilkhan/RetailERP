@@ -378,11 +378,12 @@ class Inventory_DepartmentController extends Controller
     {
         $imageName = null;
         $bannerImageName = null;
-        
+       if(!empty($request->editcode)){ 
 		if($in_depart->check_edit_depart_code($request->departid,$request->editcode))
 		{
 			return response()->json(array("state"=>1,"msg"=>'This department code already exists.',"contrl"=>'codeid'));
 		}
+       }
 		
 		if($in_depart->check_edit_depart_name($request->departid,$request->departname))
 		{
