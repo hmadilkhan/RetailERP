@@ -505,7 +505,6 @@ class Inventory_DepartmentController extends Controller
         if($statusCode == 'link'){
            $inventories = Inventory::where('department_id',$department)->where('status',1)->pluck('id');
            if($inventories != null){
-            return response()->json($inventories,500);
               foreach($inventories as $value){
                 if(WebsiteProduct::where('website_id',$website_id)
                                   ->where('inventory_id',$value->id)
@@ -522,7 +521,7 @@ class Inventory_DepartmentController extends Controller
         }
 
         if($statusCode == 'unlink'){
-            $inventories = WebsiteProduct::whereIn('inventory_id',Inventory::whereIn('department_id',$department)
+            $inventories = WebsiteProduct::whereIn('inventory_id',Inventory::where('department_id',$department)
                                                                           ->where('status',1)->pluck('id')
                                                  )
                                           ->where('status',1)
