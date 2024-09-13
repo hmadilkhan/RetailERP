@@ -352,7 +352,7 @@ class Inventory_DepartmentController extends Controller
                     ->join('inventory_general', 'website_products.inventory_id', '=', 'inventory_general.id')
                     ->where('inventory_general.department_id', $request->id)
                     ->where('inventory_general.status', 2)
-                    ->update(['website_products.status' => 0]);
+                    ->update(['website_products.status' => 0,'website_products.updated_at' => date("Y-m-d H:i:s")]);
                 DB::commit();
                 return response()->json(["status" => 200, "message" => "Department Deleted successfully."]);
             }
