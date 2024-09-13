@@ -373,21 +373,25 @@ $("#department-website-connect-modal").modal('show');
 }
 
 function unLinkWebsite(departId){
-             swal({
-                     title: "Are you sure?",
-                     text: "This department unlink from website?",
-                     type: "warning",
-                     showCancelButton: true,
-                     confirmButtonClass: "btn-danger",
-                     confirmButtonText: "Active it!",
-                     cancelButtonText: "cancel plx!",
-                     closeOnConfirm: false,
-                     closeOnCancel: false
-                   },function(isConfirm){
-                  if(isConfirm){
-                      websiteConnection(departId,'','unlink');
-                  }
-              });
+  swal({
+		title: "Are you sure?",
+		text: "This department unlink from website?",
+		type: "warning",
+		showCancelButton: true,
+		confirmButtonClass: "btn-danger",
+		confirmButtonText: "Active it!",
+		cancelButtonText: "cancel plx!",
+		closeOnConfirm: false,
+		closeOnCancel: false
+	},
+	function(isConfirm){
+		if(isConfirm){
+        websiteConnection(departId,'','unlink');
+		}else {
+			swal("Cancelled", "Your Item is safe :)", "error");
+		}
+	});
+
 }
 
 function websiteConnection(departId,website,stcode){
