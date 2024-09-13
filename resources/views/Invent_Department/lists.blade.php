@@ -424,7 +424,6 @@ $("#btn_update").on('click',function(){
                          if(r.state == 1){
                             if(r.contrl != ""){
                              $("#"+r.contrl).focus();
-                            
                             }
                              
                              swal_alert('Alert!',r.msg,'error',false);
