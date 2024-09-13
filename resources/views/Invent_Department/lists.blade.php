@@ -378,14 +378,6 @@
 	// 	}
 	// }
 
-	$("#departImage").change(function() {
-	   readURL(this,'previewDepartImage');
-	});
-
-  $("#bannerImage").change(function() {
-	   readURL(this,'previewDepartBannerImage');
-	});
-
   $("#bannerImage_md").change(function() {
 	   readURL(this,'previewDepartBannerImage_md');
 	});
@@ -411,6 +403,8 @@
 $("#btn_update").on('click',function(){
 
       if($("#udeptname").val() == ""){
+          $("#udeptname_alert").html('Department name is required.').addClass('text-danger');
+      }if($("#udeptname").val() == ""){
           $("#udeptname_alert").html('Department name is required.').addClass('text-danger');
       }else {
           $("#udeptname_alert").html('').removeClass('text-danger');
