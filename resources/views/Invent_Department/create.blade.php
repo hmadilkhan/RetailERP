@@ -187,6 +187,10 @@ $(".select2").select2();
    $("#metadescript").val('{{ old("metadescript") }}');
 @endif
 
+@if(old('showWebsite'))
+$("#showWebsite").trigger('click');
+@endif
+
 // $("#parent").on('change',function(){
 //   if($(this).val() != '' && $("#showWebsite").is(':checked')==true){
 //     $("#showWebsite").trigger('click');
