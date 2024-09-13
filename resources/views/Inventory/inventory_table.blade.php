@@ -99,7 +99,9 @@
                             data-placement='top' title='' data-original-title='Assign To Vendors'></i>
 
                             @if ($inventory->website_id != '')
-                                 <a href="javascript:void(0)" class="text-info" onclick="unLink({{$inventory->website_id}})"><i class="iconfont iconfont-link"></i></a>
+                                 <a href="javascript:void(0)" class="text-info" onclick="unLink({{$inventory->website_id}})"
+                                    data-toggle='tooltip' data-placement='top' title='' data-original-title='Unlink for {{$inventory->website_name }} website'>
+                                    <i class="icofont icofont-link"></i></a>
                             @endif
 
                     </td>
