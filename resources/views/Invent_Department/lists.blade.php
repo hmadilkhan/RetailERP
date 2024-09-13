@@ -65,8 +65,7 @@
                              <i onclick="deletedepart('{{$depart[$d]->department_id}}')" class="text-danger text-center icofont icofont-ui-delete" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete Department"></i>
 
                              @if($websites)
-                             {{$depart[$d]}}
-                              @if(!empty($depart[$d]->website_products))
+                              @if(!empty($depart[$d]->websiteProducts))
                                 <i class="icofont icofont-link text-info pointer" data-toggle="tooltip" data-placement="top" 
                                 title="" data-original-title="Unlink Website" 
                                 onclick="unLinkWebsite({{$depart[$d]->department_id}})"></i>
