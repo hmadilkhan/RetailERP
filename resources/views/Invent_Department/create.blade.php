@@ -187,16 +187,16 @@ $(".select2").select2();
    $("#metadescript").val('{{ old("metadescript") }}');
 @endif
 
-$("#parent").on('change',function(){
-  if($(this).val() != '' && $("#showWebsite").is(':checked')==true){
-    $("#showWebsite").trigger('click');
-  }
-});
+// $("#parent").on('change',function(){
+//   if($(this).val() != '' && $("#showWebsite").is(':checked')==true){
+//     $("#showWebsite").trigger('click');
+//   }
+// });
 
 $("#showWebsite").on('click',function(){
     
     if($(this).is(':checked')==true){
-      $("#parent").val('').change();
+      // $("#parent").val('').change();
         if($("#website-module").hasClass('d-none')){
             $("#website-module").removeClass('d-none');
         }
@@ -301,11 +301,11 @@ $("#showWebsite").on('click',function(){
 		}
 	}
 
-	$("#departImage").change(function() {
+	$("#department_image").change(function() {
 	   readURL(this,'previewDepartImage');
 	});
 
-  $("#bannerImage").change(function() {
+  $("#banner_image").change(function() {
 	   readURL(this,'previewDepartBannerImage');
 	}); 
 
