@@ -83,6 +83,18 @@ class Inventory_DepartmentController extends Controller
                     $request->validate([
                         'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
                     ]);
+
+                    // $rules =[
+                    //     'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                    // ];
+
+                    // $validation = \Validator::make($request->all(),$rules);
+
+                    // if($validation->fail() > 0){
+                    //     return response()->json(['error'=>$validation,'control'=>'departImage'],500);
+                    // }
+
+
                     $file = $this->uploads($request->file('departImage'), "images/department/");
                     $imageName = !empty($file) ? $file["fileName"] : "";
                 }
