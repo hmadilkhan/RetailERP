@@ -503,15 +503,15 @@ class Inventory_DepartmentController extends Controller
         }
      
         if($statusCode == 'link'){
-           $inventories = Inventory::whereIn('department_id',$department)->where('status',1)->pluck('id');
+           $inventories = Inventory::where('department_id',$department)->where('status',1)->pluck('id');
            if($inventories != null){
               foreach($inventories as $value){
                 if(WebsiteProduct::where('website_id',$website_id)
-                                  ->where('inventory_id',$value->id)
+                                  ->where('inventory_id',$value)
                                    ->where('status',1)->count() == 0){
                     WebsiteProduct::create([
                                        'website_id'   =>$website_id,
-                                       'inventory_id' =>$value->id,
+                                       'inventory_id' =>$value,
                                        'created_at'   =>date("Y-m-d H:i:s")
                       ]);
                 }
