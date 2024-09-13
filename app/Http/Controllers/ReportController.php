@@ -2342,10 +2342,10 @@ class ReportController extends Controller
         $pdf->Cell(14, 7, 'Date', 'B', 0, 'C', 1);
         $pdf->Cell(14, 7, 'Time', 'B', 0, 'C', 1);
         $pdf->Cell(20, 7, 'Opening', 'B', 0, 'L', 1);
-        $pdf->Cell(25, 7, 'Cash Sales', 'B', 0, 'L', 1);
-        $pdf->Cell(25, 7, 'Card Sales', 'B', 0, 'L', 1);
-        $pdf->Cell(25, 7, 'Credit Sales', 'B', 0, 'L', 1);
-        $pdf->Cell(24, 7, 'Total Sales', 'B', 0, 'L', 1);
+        $pdf->Cell(25, 7, 'Cash', 'B', 0, 'L', 1);
+        $pdf->Cell(25, 7, 'Card', 'B', 0, 'L', 1);
+        $pdf->Cell(25, 7, 'Credit', 'B', 0, 'L', 1);
+        $pdf->Cell(24, 7, 'Total', 'B', 0, 'L', 1);
         $pdf->Cell(24, 7, 'Discount', 'B', 0, 'L', 1);
         $pdf->Cell(22.5, 7, 'Cash ', 'B', 0, 'L', 1); //In
         if (session("company_id") != 102) {
@@ -2365,10 +2365,10 @@ class ReportController extends Controller
         $pdf->Cell(14, 4, '', 'B', 0, 'L', 1);
         $pdf->Cell(14, 4, '', 'B', 0, 'L', 1);
         $pdf->Cell(20, 4, 'Amount', 'B', 0, 'L', 1);
-        $pdf->Cell(25, 4, '', 'B', 0, 'L', 1);
-        $pdf->Cell(25, 4, '', 'B', 0, 'L', 1);
-        $pdf->Cell(25, 4, '', 'B', 0, 'L', 1);
-        $pdf->Cell(24, 4, '', 'B', 0, 'L', 1);
+        $pdf->Cell(25, 4, 'Sales', 'B', 0, 'L', 1);
+        $pdf->Cell(25, 4, 'Sales', 'B', 0, 'L', 1);
+        $pdf->Cell(25, 4, 'Sales', 'B', 0, 'L', 1);
+        $pdf->Cell(24, 4, 'Sales', 'B', 0, 'L', 1);
         $pdf->Cell(24, 4, '', 'B', 0, 'L', 1);
         $pdf->Cell(22.5, 4, 'In/Out', 'B', 0, 'L', 1); //In/Out
         if (session("company_id") != 102) {
