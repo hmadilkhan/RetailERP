@@ -67,10 +67,12 @@
                              @if($websites)
                               @if(!empty($depart[$d]->website_products))
                                 <a href="javascript:void(0)" class="text-info" data-toggle="tooltip" data-placement="top" 
-                                title="" data-original-title="Unlink Website" onclick="unLinkWebsite({{$depart[$d]->department_id}})"><i class="icofont icofont-link m-r-1"></i></a>
+                                title="" data-original-title="Unlink Website" onclick="unLinkWebsite({{$depart[$d]->department_id}})">
+                                <i class="icofont icofont-link "></i></a>
                               @else 
                                 <a href="javascript:void(0)" class="text-muted" data-toggle="tooltip" data-placement="top" 
-                                title="" data-original-title="Link Website" onclick="linkWebsite({{$depart[$d]->department_id}})"><i class="icofont icofont-unlink m-r-1"></i></a>                         
+                                title="" data-original-title="Link Website" onclick="linkWebsite({{$depart[$d]->department_id}})">
+                                <i class="icofont icofont-unlink"></i></a>                         
                               @endif
                              @endif 
                        </td>            
