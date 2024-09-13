@@ -2379,8 +2379,8 @@ class ReportController extends Controller
         if (session("company_id") != 102) {
             $pdf->Cell(22, 4, 'Amount', 'B', 1, 'L', 1); // Amount
         } else {
-            $pdf->Cell(22, 4, 'Amount', 'B', 1, 'L', 1);
-            // $pdf->Cell(22, 4, 'Amount', 'B', 1, 'L', 1);
+            $pdf->Cell(22, 4, 'Amount', 'B', 0, 'L', 1);
+            $pdf->Cell(22, 4, '', 'B', 1, 'L', 1);
         }
 
 
