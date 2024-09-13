@@ -36,6 +36,9 @@ class Inventory_DepartmentController extends Controller
         $depart = inventory_department::with(['inventoryDepartmentSection:id,department_id,section_id'])
             ->where('status', 1)
             ->where('company_id', session('company_id'))
+            ->with(['websiteProducts' => function ($query) {
+                $query->select('website_id','inventory_id')->groupBy("laravel_through_key"); // Select website_id and any other necessary fields
+            }])
             ->withCount([
                 'inventoryProducts as product_count' => function($query) {
                     WebsiteProduct::whereIn('inventory_id', Inventory::where('department_id', "inventory_department.department_id")
