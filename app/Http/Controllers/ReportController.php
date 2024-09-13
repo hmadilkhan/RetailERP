@@ -2358,7 +2358,7 @@ class ReportController extends Controller
             $pdf->Cell(22, 7, 'Closing', 'B', 1, 'L', 1); // Amount
         } else {
             $pdf->Cell(22, 7, 'Closing', 'B', 0, 'L', 1);
-            $pdf->Cell(2205, 7, 'Difference', 'B', 1, 'L', 1);
+            $pdf->Cell(22, 7, 'Difference', 'B', 1, 'L', 1);
         }
 
         //second row
@@ -2380,7 +2380,7 @@ class ReportController extends Controller
             $pdf->Cell(22, 4, 'Amount', 'B', 1, 'L', 1); // Amount
         } else {
             $pdf->Cell(22, 4, 'Amount', 'B', 0, 'L', 1);
-            $pdf->Cell(2205, 4, 'Amount', 'B', 1, 'L', 1);
+            // $pdf->Cell(22, 4, 'Amount', 'B', 1, 'L', 1);
         }
 
 
@@ -2417,7 +2417,10 @@ class ReportController extends Controller
                 $details = $report->sales_details($values->terminal_id, $request->fromdate, $request->todate);
 
                 foreach ($details as $value) {
-                    $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->paidByCustomer) - ($value->cashOut + $value->Expenses + $value->Discount); //- $value->Discount - $value->promo - $value->coupon
+                    $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->paidByCustomer) - ($value->cashOut + $value->Expenses + $value->Discount + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
+                    if (session("company_id") == 102) {
+                        $cashinhand = $cashinhand - $value->bal;
+                    }
                     $balance = $value->closingBal - $cashinhand;
                     //total calculation
                     $totalop = $totalop + $value->bal;
@@ -3725,7 +3728,7 @@ class ReportController extends Controller
         $totalreceiveamount = 0;
         $totalbalanceamount = 0;
 
-        $orders = $report->orderBookingQuery($request->fromdate, $request->todate, $request->paymentmethod,$request->branch);
+        $orders = $report->orderBookingQuery($request->fromdate, $request->todate, $request->paymentmethod, $request->branch);
 
         foreach ($orders as $values) {
             $totalamount += $values->total_amount;
@@ -4528,8 +4531,8 @@ class ReportController extends Controller
             //         $pdf->Cell(50, 50, 'No Image', 1, 0, 'C');
             //     }
             // }
-        //    print_r(json_encode($item));
-        //     exit();
+            //    print_r(json_encode($item));
+            //     exit();
             $imagePath = ($item->inventory->url != "" ? $item->inventory->url : (asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg'))));
 
             // Set up image path (replace with your actual image path)

@@ -363,7 +363,7 @@ class report extends Model
 		IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id)),0) as Discount,
 		IFNULL((SELECT SUM(delivery_charges) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id)),0) as Delivery,
 		IFNULL((SELECT SUM(net_amount) FROM `expenses` where opening_id = a.opening_id),0) as Expenses,
-		IFNULL((SELECT amount FROM sales_return where opening_id = 1),0) as SalesReturn,
+		IFNULL((SELECT amount FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,
 		IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,
 		IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,
 		IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,
