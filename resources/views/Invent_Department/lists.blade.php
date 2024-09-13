@@ -386,7 +386,7 @@
         // Check if the file size is greater than 1MB (1,048,576 bytes)
         if (file.size > 1048576) {
             swal('Error! File Size','File size must be less than 1MB.','error');
-            input.value = ''; // Clear the input
+            // input.value = ''; // Clear the input
             // $('#' + id).attr('src', ''); // Clear the image preview if any
             $("#"+input.id).focus();
             $("#"+input.id+'_alert').text('File size must be less than 1MB.');
