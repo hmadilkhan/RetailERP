@@ -178,8 +178,8 @@
                     
                               <label for="departImage_md" class="custom-file">
                               <input type="file" name="departImage" id="departImage_md" class="custom-file-input">
-                               <span class="custom-file-control text-danger" id="departImage_md_alert"></span>
                               </label>
+                              <span class="custom-file-control text-danger" id="departImage_md_alert"></span>
                           </div>
                       </div>
 
@@ -193,8 +193,8 @@
                     <div class="form-group m-t-10">
                                     <label for="bannerImage_md" class="custom-file">
                                                 <input type="file" name="bannerImage" id="bannerImage_md" class="custom-file-input">
-                                                <span class="custom-file-control text-danger" id="bannerImage_md_alert"></span>
-                                            </label>         
+                                    </label> 
+                                    <span class="custom-file-control text-danger" id="bannerImage_md_alert"></span>        
                               </div> 
 
                      </div>
@@ -386,7 +386,7 @@
         if (file.size > 1048576) {
             swal('Error! File Size','File size must be less than 1MB.','error');
             input.value = ''; // Clear the input
-            $('#' + id).attr('src', ''); // Clear the image preview if any
+            // $('#' + id).attr('src', ''); // Clear the image preview if any
             $("#"+input.id).focus();
             $("#"+input.id+'_alert').text('File size must be less than 1MB.');
             return; // Exit the function
@@ -694,23 +694,26 @@ function updatedepart(){
     var formData = new FormData(form); 
     var maxSize = 1048576; 
     var process = true;
+    var departImage = $("#departImage_md")[0]; 
+    var bannerImage_md = $("#bannerImage_md")[0]; 
 
       if($("#udeptname").val() == ""){
           $("#udeptname_alert").html('Department name is required.').addClass('text-danger');
           process = false;
       }
       
-      if($("#departImage_md")[0].files.size >= maxSize){
+      if(departImage.files.length > 0 && departImage.files[0].size >= maxSize){
           swal('Error! File Size','File size must be less than or equal to 1MB.','error');
           $("#departImage_md_alert").html('Department name is required.').addClass('text-danger');
           process = false;
       }
 
-      if($("#bannerImage_md")[0].files.size >= maxSize){
+      if(bannerImage_md.files.length > 0 && bannerImage_md.files[0].size >= maxSize){
           swal('Error! File Size','File size must be less than or equal to 1MB.','error');
           $("#bannerImage_md_alert").html('Department name is required.').addClass('text-danger');
           process = false;
       } 
+
       if(process){  
  $.ajax({
 		url: "{{url('/updatedepart')}}",
