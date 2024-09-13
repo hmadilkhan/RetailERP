@@ -93,12 +93,10 @@ class Inventory_DepartmentController extends Controller
                         // Redirect back with errors and old input
                         return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
                     }
-
-
+                    
                     $file = $this->uploads($request->file('departImage'), "images/department/");
                     $imageName = !empty($file) ? $file["fileName"] : "";
                 }
-
 
                 $items = [
                     'code'             => $request->code,
