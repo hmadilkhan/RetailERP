@@ -51,7 +51,7 @@
                         <div class="row">
                             <div id="tab-active" class="mt-1">
                                 @foreach ($branches as $value)
-                                    <div class="col-xl-4 col-lg-4 col-md-4 inner" style="cursor: pointer;"
+                                    <div class="col-xl-3 col-lg-4 col-md-4 inner" style="cursor: pointer;"
                                         onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','open')">
                                         <div class="card">
                                             <div class="card-header"> {{ session('roleId') == 2 ? $value->branch_name : $value->terminal_name }}</div>
@@ -85,7 +85,7 @@
                             </div>
                             <div id="tab-closed" style="display:none">
                                 @foreach ($branchesClosedSales as $value)
-                                    <div class="col-xl-4 col-lg-4 col-md-4 inner" style="cursor: pointer;"
+                                    <div class="col-xl-3 col-lg-4 col-md-4 inner" style="cursor: pointer;"
                                         onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','close')">
                                         <div class="card">
                                             <div class="card-block">
