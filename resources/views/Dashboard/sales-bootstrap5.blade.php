@@ -88,6 +88,7 @@
                                     <div class="col-xl-3 col-lg-4 col-md-4 inner" style="cursor: pointer;"
                                         onclick="getdetails('{{ session('roleId') == 2 ? $value->branch_id : $value->terminal_id }}','{{ $value->identify }}','close')">
                                         <div class="card">
+                                            <div class="card-header"> {{ session('roleId') == 2 ? $value->branch_name : $value->terminal_name }}</div>
                                             <div class="card-block">
                                                 <div class="media d-flex">
                                                     <div class="media-left media-middle">
@@ -102,9 +103,9 @@
                                                             <span class="text-primary"> {{ session('currency') }}
                                                                 {{ number_format($value->sales, 0) }} /=</span>
                                                         </span>
-                                                        <h6 class="f-w-300 m-t-1">
+                                                        {{-- <h6 class="f-w-300 m-t-1">
                                                             {{ session('roleId') == 2 ? $value->branch_name : $value->terminal_name }}
-                                                        </h6>
+                                                        </h6> --}}
                                                     </div>
                                                 </div>
                                                 <ul>
