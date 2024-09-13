@@ -140,7 +140,7 @@ class Inventory_DepartmentController extends Controller
                 }
             }
 
-            if ($invent_department->check_dept($request->get('deptname'))) {
+            if ($invent_department->check_dept($request->get('department_name'))) {
                 $rules = [
                     'department_name'=>'required',
                  ];
