@@ -344,17 +344,39 @@
  
     } );
 	
-	function readURL(input,id) {
-		  if (input.files && input.files[0]) {
-			var reader = new FileReader();
+    function readURL(input, id) {
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
+        
+        // Check if the file size is greater than 1MB (1,048,576 bytes)
+        if (file.size > 1048576) {
+            swal('Error! File Size','File size must be less than 1MB.','error');
+            $("#"+input.attr('id')).focus();
+            input.value = ''; // Clear the input
+            $('#' + id).attr('src', ''); // Clear the image preview if any
+            return; // Exit the function
+        }
+
+        var reader = new FileReader();
+        
+        reader.onload = function(e) {
+            $('#' + id).attr('src', e.target.result);
+        }
+        
+        reader.readAsDataURL(file);
+    }
+}    
+	// function readURL(input,id) {
+	// 	  if (input.files && input.files[0]) {
+	// 		var reader = new FileReader();
 			
-			reader.onload = function(e) {
-			  $('#'+id).attr('src', e.target.result);
-			}
+	// 		reader.onload = function(e) {
+	// 		  $('#'+id).attr('src', e.target.result);
+	// 		}
 			
-			reader.readAsDataURL(input.files[0]);
-		}
-	}
+	// 		reader.readAsDataURL(input.files[0]);
+	// 	}
+	// }
 
 	$("#departImage").change(function() {
 	   readURL(this,'previewDepartImage');
