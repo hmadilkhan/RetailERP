@@ -112,7 +112,7 @@
        <div class="form-group row justify-content-center">
           <button class="btn  btn-lg btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
             ></i>&nbsp; Save</button>.
-              <a class="btn btn-lg btn-danger f-left m-t-30 m-l-10" href="{{ route('invent_dept.index') }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error" 
+              <a class="btn btn-lg btn-danger f-left m-t-30 m-l-10" href="{{ route('invent_dept.index') }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Discard"><i class="icofont icofont-error" 
             ></i> Discard</a>
        </div>      
      </div> <!-- field portion-->
