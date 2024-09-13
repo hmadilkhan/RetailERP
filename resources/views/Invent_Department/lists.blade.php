@@ -519,15 +519,9 @@ $("#btn_update").on('click',function(){
 	  formData.append('code',$("#code_"+id).val());
 	  formData.append('id',id);
 
-	if($('#sdbptImg'+id)[0].files.length != 0  && $('#sdbptImg'+id)[0].files.size > 1048576){  
-	   swal('Error! File Size','File size must be less than or equal to 1MB.','error')
-    process = false;
-	}
-
 	if($('#sdbptImg'+id)[0].files.length != 0  && $('#sdbptImg'+id)[0].files.size <= 1048576){  
 	  formData.append('subdepartImage', $('#sdbptImg'+id)[0].files[0]);
 	}
-
 
   if(process){
 		$.ajax({
