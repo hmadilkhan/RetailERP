@@ -420,7 +420,7 @@ function unLinkWebsite(departId){
 }
 
 function websiteConnection(departId,website,stcode){
-  alet(departId+website+stcode)
+  alert(departId+website+stcode)
  $.ajax({ 
           url:'{{ route("department_website_connect") }}',
           type:'POST',
