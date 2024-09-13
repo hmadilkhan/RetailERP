@@ -524,7 +524,6 @@ class Inventory_DepartmentController extends Controller
             $inventories = WebsiteProduct::whereIn('inventory_id',Inventory::where('department_id',$department)
                                                                           ->where('status',1)->pluck('id')
                                                  )
-                                          ->where('status',1)
                                           ->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
             if($inventories){
                 return response()->json('Success!',200);
