@@ -66,9 +66,11 @@
 
                              @if($websites)
                               @if(!empty($depart[$d]->website_products))
-                                <a href="javascript:void(0)" class="text-info" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unlink Website"><i class="icofont icofont-link m-r-1" data-toggle="modal" data-target="#department-online-link-modal"></i></a>
-                              @else
-                                <a href="javascript:void(0)" class="text-muted" data-toggle="tooltip" data-placement="top" title="" data-original-title="Link Website"><i class="icofont icofont-unlink m-r-1" data-toggle="modal" data-target="#department-online-link-modal"></i></a>                         
+                                <a href="javascript:void(0)" class="text-info" data-toggle="tooltip" data-placement="top" 
+                                title="" data-original-title="Unlink Website" onclick="unLinkWebsite({{$depart[$d]->department_id}})"><i class="icofont icofont-link m-r-1"></i></a>
+                              @else 
+                                <a href="javascript:void(0)" class="text-muted" data-toggle="tooltip" data-placement="top" 
+                                title="" data-original-title="Link Website" onclick="linkWebsite({{$depart[$d]->department_id}})"><i class="icofont icofont-unlink m-r-1"></i></a>                         
                               @endif
                              @endif 
                        </td>            
@@ -321,7 +323,7 @@
       </div> 
    
 
-      <div class="modal fade modal-flex" id="department-online-link-modal" tabindex="-1" role="dialog">
+      <div class="modal fade modal-flex" id="department-website-connect-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-md" role="document">
            <div class="modal-content">
               <div class="modal-header">
@@ -345,7 +347,7 @@
   
               </div>
               <div class="modal-footer">
-                 <button type="button" class="btn btn-success waves-effect waves-light" onclick="">Save Changes</button>
+                 <button type="button" class="btn btn-success waves-effect waves-light" id="btn_website_connect_md">Save Changes</button>
               </div>
            </div>
         </div>
@@ -899,10 +901,66 @@ $("#showWebsite_md").on('click',function(){
     }    
 });
 
+$("#btn_website_connect_md").on('click',function(){
+   if($(this).val() == ''){
+     swal('Error!','Select website name field is requried.','error');
+   }else{
+     websiteConnection($("#depart_webconn_md").val(),$(this).val(),'link');
+   }
+});
+
+function linkWebsite(departId){
+ $("#department-website-connect-modal").modal('show');
+  $("#website_md").val('').change();
+  $("#depart_webconn_md").val(departId);
+}
+
+function unLinkWebsite(departId){
+              swal({
+                      title: "Are you sure?",
+                      text: "This department unlink from website?",
+                      type: "warning"
+                      showCancelButton: true,
+                      confirmButtonClass: "btn-danger",
+                      confirmButtonText: "Active it!",
+                      cancelButtonText: "cancel plx!",
+                      closeOnConfirm: false,
+                      closeOnCancel: false
+                    },function(isConfirm){
+                   if(isConfirm){
+                       websiteConnection(departId,'','unlink');
+                   }
+               });
+}
+
+function websiteConnection(departId,website,stcode){
+  $.ajax({ 
+           url:'{{ route("department_website_connect") }}',
+           type:'POST',
+           data:{_token:'{{ csrf_token() }}',department:departId,website_id:website,status_code:stcode},
+           dataType:'json',
+           success:function(resp,textStatus,jqXHR){
+                if(jqXHR.status == 200){
+                  swal({
+                        title: "Operation Performed",
+                        text: "Successfully!",
+                        type: "success"},
+                        function(isConfirm){
+                          if(isConfirm){
+                            $("#department-website-connect-modal").modal("hide");
+                            window.location= "{{ url('/invent_dept') }}";
+                          }
+                        });
+                }
+           }
+          
+  })
+}
 
 @if(old('metadescript'))
    $("#metadescript").val('{{ old("metadescript") }}');
 @endif
+
 </script>
 
 @endsection
