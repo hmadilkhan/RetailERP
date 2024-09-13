@@ -68,10 +68,10 @@
                               @if(!empty($depart[$d]->websiteProducts))
                                 <i class="icofont icofont-link text-info pointer" data-toggle="tooltip" data-placement="top" 
                                 title="" data-original-title="Unlink Website" 
-                                onclick="unLinkWebsite({{$depart[$d]->department_id}})"></i>
+                                onclick="unLinkWebsite('{{$depart[$d]->department_id}}')"></i>
                               @else 
                                 <i class="icofont icofont-unlink text-muted pointer" data-toggle="tooltip" data-placement="top" 
-                                title="" data-original-title="Link Website" onclick="linkWebsite({{$depart[$d]->department_id}})"></i>                         
+                                title="" data-original-title="Link Website" onclick="linkWebsite('{{$depart[$d]->department_id}}'')"></i>                         
                               @endif
                              @endif 
                        </td>            
