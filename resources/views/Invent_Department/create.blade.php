@@ -59,7 +59,7 @@
             <hr/>
             <div class="form-group">
                 <label for="showWebsite">
-                    <input type="checkbox" id="showWebsite" name="showWebsite">
+                    <input type="checkbox" id="showWebsite" name="showWebsite" {{ old('showWebsite') ? 'checked' : ''}}>
                     Show on Website
                 </label>
             </div>
@@ -190,7 +190,7 @@ $(".select2").select2();
 @endif
 
 @if(old('showWebsite'))
-$("#showWebsite").attr('checked',true).trigger('click');
+$("#showWebsite").trigger('click');
 @endif
 
 // $("#parent").on('change',function(){
