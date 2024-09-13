@@ -494,17 +494,7 @@ class Inventory_DepartmentController extends Controller
 
     public function department_website_connect(Request $request){
           
-        $statusCode = $request->status_id;
-        $department = $request->department;
-        $website_id = $request->website_id;
 
-        if(empty($request->department) && empty($request->website_id) && empty($request->status_id)){
-             return response()->json('Server Issue! parameter not found!',500);
-        }
-     
-        if($statusCode == 'link'){
-            Inventory::whereIn('department_id',$department)->where('status',1)->pluck('id');
-        }
         
     }
 }
