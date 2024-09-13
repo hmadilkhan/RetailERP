@@ -420,7 +420,6 @@ function unLinkWebsite(departId){
 }
 
 function websiteConnection(departId,website,stcode){
-  alert(departId+website+stcode)
  $.ajax({ 
           url:'{{ route("department_website_connect") }}',
           type:'POST',
@@ -428,18 +427,18 @@ function websiteConnection(departId,website,stcode){
           dataType:'json',
           success:function(resp,textStatus,jqXHR){
                if(jqXHR.status == 200){
-                 swal({
-                       title: "Operation Performed",
-                       text: "Successfully!",
-                       type: "success"},
-                       function(isConfirm){
-                         if(isConfirm){
-                          if(website != ''){
-                             $("#department-website-connect-modal").modal("hide");
-                          }
+                //  swal({
+                //        title: "Operation Performed",
+                //        text: "Successfully!",
+                //        type: "success"},
+                //        function(isConfirm){
+                //          if(isConfirm){
+                //           if(website != ''){
+                //              $("#department-website-connect-modal").modal("hide");
+                //           }
                            window.location= "{{ url('/invent_dept') }}";
-                         }
-                       });
+                      //    }
+                      //  });
                }
           }
          

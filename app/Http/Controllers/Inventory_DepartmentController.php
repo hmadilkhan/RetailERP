@@ -494,7 +494,7 @@ class Inventory_DepartmentController extends Controller
 
     public function department_website_connect(Request $request){
           
-        $statusCode = $request->status_id;
+        $statusCode = $request->status_code;
         $department = $request->department;
         $website_id = $request->website_id;
 
