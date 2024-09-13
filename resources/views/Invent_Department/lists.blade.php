@@ -434,7 +434,9 @@ function websiteConnection(departId,website,stcode){
                        type: "success"},
                        function(isConfirm){
                          if(isConfirm){
-                           $("#department-website-connect-modal").modal("hide");
+                          if(website != ''){
+                             $("#department-website-connect-modal").modal("hide");
+                          }
                            window.location= "{{ url('/invent_dept') }}";
                          }
                        });
