@@ -66,13 +66,14 @@
 
                              @if($websites)
                               @if(count($depart[$d]->websiteProducts) > 0)
-                                 {{ $depart[$d]->websiteProducts->pluck('website_id')}}
-                                <i class="icofont icofont-link text-info pointer" data-toggle="tooltip" data-placement="top" 
-                                title="" data-original-title="Unlink Website" 
-                                onclick="unLinkWebsite({{$depart[$d]->department_id}})"></i>
-                              @else 
-                                <i class="icofont icofont-unlink text-muted pointer" data-toggle="tooltip" data-placement="top" 
-                                title="" data-original-title="Link Website" onclick="linkWebsite({{$depart[$d]->department_id}})"></i>                         
+                                   @if(count($depart[$d]->websiteProducts->pluck('website_id')) > 0)
+                                    <i class="icofont icofont-link text-info pointer" data-toggle="tooltip" data-placement="top" 
+                                    title="" data-original-title="Unlink Website" 
+                                    onclick="unLinkWebsite({{$depart[$d]->department_id}})"></i>
+                                  @else 
+                                    <i class="icofont icofont-unlink text-muted pointer" data-toggle="tooltip" data-placement="top" 
+                                    title="" data-original-title="Link Website" onclick="linkWebsite({{$depart[$d]->department_id}})"></i>                         
+                                  @endif
                               @endif
                              @endif 
                        </td>            
