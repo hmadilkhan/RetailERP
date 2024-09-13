@@ -2345,9 +2345,9 @@ class ReportController extends Controller
         $pdf->Cell(20, 7, 'Cash', 'B', 0, 'L', 1);
         $pdf->Cell(20, 7, 'Card', 'B', 0, 'L', 1);
         $pdf->Cell(20, 7, 'Credit', 'B', 0, 'L', 1);
-        $pdf->Cell(15, 7, 'Sales', 'B', 0, 'L', 1);
         $pdf->Cell(24, 7, 'Total', 'B', 0, 'L', 1);
-        $pdf->Cell(24, 7, 'Discount', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Discount', 'B', 0, 'L', 1);
+        $pdf->Cell(19, 7, 'Sales', 'B', 0, 'L', 1);
         $pdf->Cell(22.5, 7, 'Cash ', 'B', 0, 'L', 1); //In
         if (session("company_id") != 102) {
             $pdf->Cell(22.5, 7, 'Delivery', 'B', 0, 'L', 1); //out
@@ -2369,9 +2369,9 @@ class ReportController extends Controller
         $pdf->Cell(20, 4, 'Sales', 'B', 0, 'L', 1);
         $pdf->Cell(20, 4, 'Sales', 'B', 0, 'L', 1);
         $pdf->Cell(20, 4, 'Sales', 'B', 0, 'L', 1);
-        $pdf->Cell(15, 4, 'Return', 'B', 0, 'L', 1);
         $pdf->Cell(24, 4, 'Sales', 'B', 0, 'L', 1);
-        $pdf->Cell(24, 4, '', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 4, '', 'B', 0, 'L', 1);
+        $pdf->Cell(19, 4, 'Return', 'B', 0, 'L', 1);
         $pdf->Cell(22.5, 4, 'In/Out', 'B', 0, 'L', 1); //In/Out
         if (session("company_id") != 102) {
             $pdf->Cell(22.5, 4, '', 'B', 0, 'L', 1); //Delivery
@@ -2457,9 +2457,9 @@ class ReportController extends Controller
                     $pdf->Cell(20, 7, number_format($value->Cash, 2), 0, 0, 'L', 1);
                     $pdf->Cell(20, 7, number_format($value->CreditCard, 2), 0, 0, 'L', 1);
                     $pdf->Cell(20, 7, number_format($value->CustomerCredit, 2), 0, 0, 'L', 1);
-                    $pdf->Cell(15, 7, number_format($value->SalesReturn, 2), 0, 0, 'L', 1);
                     $pdf->Cell(24, 7, number_format($value->TotalSales, 2), 0, 0, 'L', 1);
-                    $pdf->Cell(24, 7, number_format($value->Discount, 2), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, number_format($value->Discount, 2), 0, 0, 'L', 1);
+                    $pdf->Cell(19, 7, number_format($value->SalesReturn, 2), 0, 0, 'L', 1);
                     $pdf->Cell(22.5, 7, number_format($value->cashIn, 2) . "/" . number_format($value->cashOut, 2), 0, 0, 'L', 1);
                     if (session("company_id") != 102) {
                         $pdf->Cell(22.5, 7, number_format($value->Delivery, 2), 0, 0, 'L', 1);
@@ -2482,9 +2482,9 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, number_format($totalcash, 2), 'B,T', 0, 'L');
                 $pdf->Cell(20, 7, number_format($totalcard, 2), 'B,T', 0, 'L');
                 $pdf->Cell(20, 7, number_format($totalcredit, 2), 'B,T', 0, 'L');
-                $pdf->Cell(15, 7, number_format($totalsalesreturn, 2), 'B,T', 0, 'L');
                 $pdf->Cell(24, 7, number_format($totalsales, 2), 'B,T', 0, 'L');
-                $pdf->Cell(24, 7, number_format($totaldiscount, 2), 'B,T', 0, 'L');
+                $pdf->Cell(20, 7, number_format($totaldiscount, 2), 'B,T', 0, 'L');
+                $pdf->Cell(19, 7, number_format($totalsalesreturn, 2), 'B,T', 0, 'L');
                 $pdf->Cell(22.5, 7, number_format($totalcashin, 2) . "/" . number_format($totalcashout, 2), 'B,T', 0, 'L');
                 if (session("company_id") != 102) {
                     $pdf->Cell(22.5, 7, number_format($totaldelivery, 2), 'B,T', 0, 'L');
@@ -2542,9 +2542,9 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, number_format($value->Cash, 2), 0, 0, 'L', 1);
                 $pdf->Cell(20, 7, number_format($value->CreditCard, 2), 0, 0, 'L', 1);
                 $pdf->Cell(20, 7, number_format($value->CustomerCredit, 2), 0, 0, 'L', 1);
-                $pdf->Cell(15, 7, number_format($value->SalesReturn, 2), 0, 0, 'L', 1);
                 $pdf->Cell(24, 7, number_format($value->TotalSales, 2), 0, 0, 'L', 1);
-                $pdf->Cell(24, 7, number_format($value->Discount, 2), 0, 0, 'L', 1);;
+                $pdf->Cell(20, 7, number_format($value->Discount, 2), 0, 0, 'L', 1);;
+                $pdf->Cell(19, 7, number_format($value->SalesReturn, 2), 0, 0, 'L', 1);
                 $pdf->Cell(22.5, 7, number_format($value->cashIn, 2) . "/" . number_format($value->cashOut, 2), 0, 0, 'L', 1);
                 if (session("company_id") != 102) {
                     $pdf->Cell(22.5, 7, number_format($value->Delivery, 2), 0, 0, 'L', 1);
@@ -2567,9 +2567,9 @@ class ReportController extends Controller
             $pdf->Cell(20, 7, number_format($totalcash, 2), 'B,T', 0, 'L');
             $pdf->Cell(20, 7, number_format($totalcard, 2), 'B,T', 0, 'L');
             $pdf->Cell(20, 7, number_format($totalcredit, 2), 'B,T', 0, 'L');
-            $pdf->Cell(15, 7, number_format($totalsalesreturn, 2), 'B,T', 0, 'L');
             $pdf->Cell(24, 7, number_format($totalsales, 2), 'B,T', 0, 'L');
-            $pdf->Cell(24, 7, number_format($totaldiscount, 2), 'B,T', 0, 'L');
+            $pdf->Cell(20, 7, number_format($totaldiscount, 2), 'B,T', 0, 'L');
+            $pdf->Cell(19, 7, number_format($totalsalesreturn, 2), 'B,T', 0, 'L');
             $pdf->Cell(22.5, 7, number_format($totalcashin, 2) . "/" . number_format($totalcashout, 2), 'B,T', 0, 'L');
             if (session("company_id") != 102) {
                 $pdf->Cell(22.5, 7, number_format($totaldelivery, 2), 'B,T', 0, 'L');
