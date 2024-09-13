@@ -179,8 +179,8 @@
                               <label for="departImage_md" class="custom-file">
                               <input type="file" name="departImage" id="departImage_md" class="custom-file-input">
                               </label>
-                              <span class="custom-file-control text-danger" id="departImage_md_alert"></span>
                           </div>
+                          <span class="custom-file-control text-danger" id="departImage_md_alert"></span>
                       </div>
 
                     @if($websites)
@@ -190,13 +190,12 @@
                         <img id="previewDepartBannerImage_md" src="{{ asset('storage/images/no-image.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
                         </a>
 
-                    <div class="form-group m-t-10">
+                              <div class="form-group m-t-10">
                                     <label for="bannerImage_md" class="custom-file">
                                                 <input type="file" name="bannerImage" id="bannerImage_md" class="custom-file-input">
-                                    </label> 
-                                    <span class="custom-file-control text-danger" id="bannerImage_md_alert"></span>        
+                                    </label>  
                               </div> 
-
+                              <span class="custom-file-control text-danger" id="bannerImage_md_alert"></span>
                      </div>
                      </div>
                     @endif
