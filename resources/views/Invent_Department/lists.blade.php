@@ -384,10 +384,10 @@
     } );
 
 $("#btn_website_connect_md").on('click',function(){
-  if($(this).val() == ''){
+  if($("#website_md").val() == ''){
     swal('Error!','Select website name field is requried.','error');
   }else{
-    websiteConnection($("#depart_webconn_md").val(),$(this).val(),'link');
+    websiteConnection($("#depart_webconn_md").val(),$("#website_md").val(),'link');
   }
 });
 
