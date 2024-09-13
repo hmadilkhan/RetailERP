@@ -48,8 +48,8 @@ class Inventory_DepartmentController extends Controller
             ])
             ->orderBy('department_id', 'DESC')->get(); //inventory_department::getdepartment('');
 
-
-        return $depart;
+            
+        // return $depart;
         $sdepart = inventory_department::get_subdepart('');
         $sections = Section::getSection();
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
