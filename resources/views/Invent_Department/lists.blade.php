@@ -356,8 +356,33 @@
 </section>
 @endsection
 
-@section('scriptcode_one')
+
+@section('scriptcode_three')
+
 <script type="text/javascript">
+
+
+   $(".select2").select2();
+
+   $("#subdpt").tagsinput({
+     maxTags: 10
+    });
+      $('#mainTable').DataTable( {
+
+        bLengthChange: true,
+        displayLength: 50,
+        info: false,
+        order: [[0, 'desc']],
+        language: {
+          search:'', 
+          searchPlaceholder: 'Search Department',
+          lengthMenu: '<span></span> _MENU_'
+   
+        }
+        
+ 
+    } );
+
 $("#btn_website_connect_md").on('click',function(){
   if($(this).val() == ''){
     swal('Error!','Select website name field is requried.','error');
@@ -417,35 +442,6 @@ function websiteConnection(departId,website,stcode){
          
  })
 }
-</script>
-@endsection
-
-@section('scriptcode_three')
-
-<script type="text/javascript">
-
-
-   $(".select2").select2();
-
-   $("#subdpt").tagsinput({
-     maxTags: 10
-    });
-      $('#mainTable').DataTable( {
-
-        bLengthChange: true,
-        displayLength: 50,
-        info: false,
-        order: [[0, 'desc']],
-        language: {
-          search:'', 
-          searchPlaceholder: 'Search Department',
-          lengthMenu: '<span></span> _MENU_'
-   
-        }
-        
- 
-    } );
-
     function readURL(input, id) {
     if (input.files && input.files[0]) {
         var file = input.files[0];
