@@ -66,9 +66,9 @@
 
                              @if($websites)
                               @if(!empty($depart[$d]->website_products))
-                                <a href="javascript:void(0)"><i class="text-info icofont icofont-link m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unlink Website"></i></a>
+                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unlink Website"><i class="text-info icofont icofont-link m-r-1" data-target="#department-online-link-modal" data-toggle="modal"></i></a>
                               @else
-                                <a href="javascript:void(0)"><i class="text-muted icofont icofont-unlink m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Link Website"></i></a>                         
+                                <a href="javascript:void(0)" data-toggle="tooltip" data-placement="top" title="" data-original-title="Link Website"><i class="text-muted icofont icofont-unlink m-r-1" data-target="#department-online-link-modal" data-toggle="modal"></i></a>                         
                               @endif
                              @endif 
                        </td>            
