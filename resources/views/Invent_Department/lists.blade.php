@@ -376,7 +376,7 @@ function unLinkWebsite(departId){
              swal({
                      title: "Are you sure?",
                      text: "This department unlink from website?",
-                     type: "warning"
+                     type: "warning",
                      showCancelButton: true,
                      confirmButtonClass: "btn-danger",
                      confirmButtonText: "Active it!",
