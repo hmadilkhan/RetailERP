@@ -822,7 +822,7 @@
                         if (jqXHR.status == 200) {
                             window.location = "{{ url('inventory-list') }}"
                         } else {
-                            swal("Cancelled", "Cannot change brand. An error occured :)", "error");
+                            swal("Cancelled", "Cannot change tags. An error occured :)", "error");
                         }
                     }
                 }); //ajax end

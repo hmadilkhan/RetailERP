@@ -413,36 +413,7 @@
             }); //ajax end
         } //else end
     });
-    $('#btntagSave').click(function() {
-        if ($('#tags_md').val() == "") {
-            swal("Cancelled", "Please select brand :)", "error");
-        } else {
-            $(".chkbx").each(function(index) {
-                if ($(this).is(":checked")) {
-                    if (jQuery.inArray($(this).data('id'), rem_id) == -1) {
-                        rem_id.push($(this).data('id'));
-                    }
-                }
-            });
-            $.ajax({
-                url: "{{ route('setProductAttribute_update') }}",
-                type: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    inventid: rem_id,
-                    tags: $('#tags_md').val()
-                },
-                success: function(resp, textStatus, jqXHR) {
-                    // console.log(jqXHR);
-                    if (jqXHR.status == 200) {
-                        window.location = "{{ url('inventory-list') }}"
-                    } else {
-                        swal("Cancelled", "Cannot change brand. An error occured :)", "error");
-                    }
-                }
-            }); //ajax end
-        } //else end
-    });
+
     $('#btnDptSave').click(function() {
         if ($('#ddldepartment').val() == "") {
             swal("Cancelled", "Please Select Department :)", "error");
