@@ -408,10 +408,10 @@ $("#btn_update").on('click',function(){
   var maxSize = 1048576; 
       if($("#udeptname").val() == ""){
           $("#udeptname_alert").html('Department name is required.').addClass('text-danger');
-      }else if($("#departImage_md")[0].files.size >= maxSize){
+      }else if($("#departImage_md")[0].get().files.size >= maxSize){
           swal('Error! File Size','File size must be less than or equal to 1MB.','error');
           $("#departImage_md_alert").html('Department name is required.').addClass('text-danger');
-      }else if($("#bannerImage_md")[0].files.size >= maxSize){
+      }else if($("#bannerImage_md")[0].get().files.size >= maxSize){
           swal('Error! File Size','File size must be less than or equal to 1MB.','error');
           $("#bannerImage_md_alert").html('Department name is required.').addClass('text-danger');
       }else {
