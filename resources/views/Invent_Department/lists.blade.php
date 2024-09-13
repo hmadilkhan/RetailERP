@@ -178,9 +178,10 @@
                     
                               <label for="departImage_md" class="custom-file">
                               <input type="file" name="departImage" id="departImage_md" class="custom-file-input">
+                              <span class="custom-file-control"></span>
                               </label>
                           </div>
-                          <span class="custom-file-control text-danger" id="departImage_md_alert"></span>
+                          <span class="text-danger" id="departImage_md_alert"></span>
                       </div>
 
                     @if($websites)
@@ -192,10 +193,11 @@
 
                               <div class="form-group m-t-10">
                                     <label for="bannerImage_md" class="custom-file">
-                                                <input type="file" name="bannerImage" id="bannerImage_md" class="custom-file-input">
+                                          <input type="file" name="bannerImage" id="bannerImage_md" class="custom-file-input">
+                                          <span class="custom-file-control"></span>
                                     </label>  
                               </div> 
-                              <span class="custom-file-control text-danger" id="bannerImage_md_alert"></span>
+                              <span class="text-danger" id="bannerImage_md_alert"></span>
                      </div>
                      </div>
                     @endif
