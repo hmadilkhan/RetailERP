@@ -98,9 +98,9 @@
                             onclick='assignToVendorModal("{{ $inventory->id }}") class="icofont icofont icofont-business-man #3A6EFF" data-toggle='tooltip'
                             data-placement='top' title='' data-original-title='Assign To Vendors'></i>
 
-                            {{-- @if ($inventory->website_id == '')
-                                 <i class="iconfont iconfont-link"></i>
-                            @endif --}}
+                            @if ($inventory->website_id != '')
+                                 <i class="iconfont iconfont-link">{{$inventory->website_id}}</i>
+                            @endif
 
                     </td>
                 </tr>

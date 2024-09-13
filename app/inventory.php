@@ -231,8 +231,8 @@ public function updateProductName($id,$name)
 		->join('inventory_sub_department as sdept','sdept.sub_department_id','=','invent.sub_department_id')
 		->join('inventory_product_mode','inventory_product_mode.product_mode_id','=','invent.product_mode')
 		->join('inventory_price','inventory_price.product_id','=','invent.id')
-        // ->leftJoin("website_products",'website_products.inventory_id','invent.id')
-        // ->leftJoin("website_details",'website_details.id','website_products.website_id')
+        ->leftJoin("website_products",'website_products.inventory_id','invent.id',"website_products.status","=",1)
+        ->leftJoin("website_details",'website_details.id','website_products.website_id')
 		->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id')
 		
 		
@@ -282,7 +282,7 @@ public function updateProductName($id,$name)
 				 
 			}
 		})
-		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'))
+		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name')
 		->where('invent.company_id',session('company_id'))
         // ->where('website_products.status',1)
         // ,'website_details.id as website_id','website_details.name as website_name'

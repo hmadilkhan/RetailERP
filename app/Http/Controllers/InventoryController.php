@@ -20,7 +20,6 @@ use App\InventoryVariationProduct;
 use App\WebsiteDetail;
 use App\WebsiteProduct;
 use Session;
-use Illuminate\Session\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -48,6 +47,7 @@ class InventoryController extends Controller
      */
     public function index(inventory $inventory, Brand $brand)
     {
+        // return  InventoryDepartment::whereIn("department_id",ModelsInventory::whereIn("id",WebsiteProduct::where("website_id",41)->pluck("inventory_id"))->pluck("department_id"))->where('status',1)->select("code","department_id","department_name","website_department_name","slug","image","banner")->orderBy('priority','desc')->get();
         $department    = $inventory->department();
         $subdepartment = ''; //$inventory->subDepartment();
         $uom        = $inventory->uom();
