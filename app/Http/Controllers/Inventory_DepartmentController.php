@@ -120,55 +120,39 @@ class Inventory_DepartmentController extends Controller
         // } else {
 
             // return $invent_department->check_dept($request->get('deptname'),$request->get('code'));
-
+            $messages = []; 
             $rules = [
                         'department_name'=>'required',
                      ];
-            $this->validate($request,$rules);         
-
+             
             if (!empty($request->get('department_code'))) {
                 if ($invent_department->check_depart_code($request->get('department_code'))) {
 
-                    $rules = [
-                        'department_code'=>'required',
-                     ];
-                     $messages = [
-                        'department_code.required' => 'This department code already exists.',
-                    ];
-
-                    $this->validate($request,$rules,$messages);    
+                    $rules['department_code']='required';
+                    $messages['department_code.required']='This department code already exists.';
                 }
             }
 
             if ($invent_department->check_dept($request->get('department_name'))) {
-                $rules = [
-                    'department_name'=>'required',
-                 ];
-                 $messages = [
-                    'department_name.required' => 'This department name already exists.',
-                ];
-
+                $rules['department_name']='required';
+                $messages['department_name.required']='This department name already exists.';
                 $this->validate($request,$rules,$messages);    
             }
             // else {
 
             if (!empty($request->file('department_image'))) {
-                $rules=[
-                        'department_image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                      ];
-                $this->validate($request,$rules); 
+                $rules['department_image']='image|mimes:jpeg,png,jpg,webp|max:1024';
                 $file = $this->uploads($request->file('department_image'), "images/department/");
                 $imageName = !empty($file) ? $file["fileName"] : "";
             }
 
             if (!empty($request->file('banner_image'))) {
-                    $rules=[
-                        'banner_image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                      ];
-                $this->validate($request,$rules); 
+                    $rules['banner_image']='image|mimes:jpeg,png,jpg,webp|max:1024';
                 $file = $this->uploads($request->file('banner_image'), "images/department/");
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";
             }
+
+            $this->validate($request,$rules); 
 
             $data = [
                 'company_id'               => session('company_id'),
