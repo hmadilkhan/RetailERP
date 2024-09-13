@@ -76,84 +76,105 @@ class Inventory_DepartmentController extends Controller
         $imageName       = "";
         $bannerImageName = "";
 
-        if (!empty($request->post('parent'))) {
-            $exsist = $invent_department->subdepart_exists($request->deptname, $request->post('parent'));
+        // if (!empty($request->post('parent'))) {
+        //     $exsist = $invent_department->subdepart_exists($request->deptname, $request->post('parent'));
 
-            if ($exsist[0]->counter == 0) {
-                if (!empty($request->file('departImage'))) {
+        //     if ($exsist[0]->counter == 0) {
+        //         if (!empty($request->file('departImage'))) {
 
-                     $rules = [
-                                'departImage'=>'image|mimes:jpeg,png,jpg,webp|max:1024'
-                              ];
+        //              $rules = [
+        //                         'departImage'=>'image|mimes:jpeg,png,jpg,webp|max:1024'
+        //                       ];
 
-                     $validator = Validator::make($request->all(), $rules);
+        //              $validator = Validator::make($request->all(), $rules);
 
-                    // Check if validation fails
-                    if ($validator->fails()) {
-                        // Redirect back with errors and old input
-                        return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
-                    }
-                    
-                    $file = $this->uploads($request->file('departImage'), "images/department/");
-                    $imageName = !empty($file) ? $file["fileName"] : "";
-                }
+        //             // Check if validation fails
+        //             if ($validator->fails()) {
+        //                 // Redirect back with errors and old input
+        //                 return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
+        //             }
 
-                $items = [
-                    'code'             => $request->code,
-                    'department_id'    => $request->post('parent'),
-                    'sub_depart_name'  => $request->deptname,
-                    'slug'             => preg_replace("/[\s_]/", "-", strtolower($request->deptname)),
-                    'image'            => $imageName,
-                ];
+        //             $file = $this->uploads($request->file('departImage'), "images/department/");
+        //             $imageName = !empty($file) ? $file["fileName"] : "";
+        //         }
 
-                $result = $invent_department->insert_sdept($items);
+        //         $items = [
+        //             'code'             => $request->code,
+        //             'department_id'    => $request->post('parent'),
+        //             'sub_depart_name'  => $request->deptname,
+        //             'slug'             => preg_replace("/[\s_]/", "-", strtolower($request->deptname)),
+        //             'image'            => $imageName,
+        //         ];
+
+        //         $result = $invent_department->insert_sdept($items);
 
 
-                $getsubdepart = $invent_department->get_subdepartments($request->post('parent'));
-                return 1;
-            } else {
-                return 0;
-            }
-        } else {
+        //         $getsubdepart = $invent_department->get_subdepartments($request->post('parent'));
+        //         return 1;
+        //     } else {
+        //         return 0;
+        //     }
+        // } else {
 
             // return $invent_department->check_dept($request->get('deptname'),$request->get('code'));
-            if (!empty($request->get('code'))) {
-                if ($invent_department->check_depart_code($request->get('code'))) {
-                    return response()->json(array("state" => 1, "msg" => 'This department code already exists.', "contrl" => 'code'));
+
+            $rules = [
+                        'department_name'=>'required',
+                     ];
+            $this->validation($request,$rules);         
+
+            if (!empty($request->get('department_code'))) {
+                if ($invent_department->check_depart_code($request->get('department_code'))) {
+
+                    $rules = [
+                        'department_code'=>'required',
+                     ];
+                     $messages = [
+                        'department_code.required' => 'This department code already exists.',
+                    ];
+
+                    $this->validation($request,$rules,$messages);    
                 }
             }
 
             if ($invent_department->check_dept($request->get('deptname'))) {
-                return response()->json(array("state" => 1, "msg" => 'This department name already exists.', "contrl" => 'deptname'));
+                $rules = [
+                    'department_name'=>'required',
+                 ];
+                 $messages = [
+                    'department_name.required' => 'This department name already exists.',
+                ];
+
+                $this->validation($request,$rules,$messages);    
             }
             // else {
 
-            if (!empty($request->file('departImage'))) {
-                $request->validate([
-                    'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                ]);
-                // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('deptname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
-                // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
-                $file = $this->uploads($request->file('departImage'), "images/department/");
+            if (!empty($request->file('department_image'))) {
+                $rules=[
+                        'department_image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                      ];
+                $this->validation($request,$rules); 
+                $file = $this->uploads($request->file('department_image'), "images/department/");
                 $imageName = !empty($file) ? $file["fileName"] : "";
             }
 
-            if (!empty($request->file('bannerImage'))) {
-                $request->validate([
-                    'bannerImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                ]);
-                $file = $this->uploads($request->file('bannerImage'), "images/department/");
+            if (!empty($request->file('banner_image'))) {
+                    $rules=[
+                        'banner_image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                      ];
+                $this->validation($request,$rules); 
+                $file = $this->uploads($request->file('banner_image'), "images/department/");
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";
             }
 
             $data = [
                 'company_id'               => session('company_id'),
-                'code'                     => $request->get('code'),
-                'department_name'          => $request->get('deptname'),
-                'website_department_name'  => (empty($request->webdeptname) ?  $request->get('deptname') : $request->webdeptname),
+                'code'                     => $request->get('department_code'),
+                'department_name'          => $request->get('department_iname'),
+                'website_department_name'  => (empty($request->website_department_name) ?  $request->get('department_iname') : $request->website_department_name),
                 'date'                     => date('Y-m-d'),
                 'time'                     => date('H:i:s'),
-                'slug'                     => preg_replace("/[\s_]/", "-", strtolower($request->get('deptname'))),
+                'slug'                     => preg_replace("/[\s_]/", "-", strtolower($request->get('department_iname'))),
                 "image"                    => $imageName,
                 "banner"                   => $bannerImageName,
                 "meta_title"               => $request->metatitle,
@@ -193,7 +214,7 @@ class Inventory_DepartmentController extends Controller
                 return response()->json(array("state" => 1, "msg" => 'Not saved :(', "contrl" => ''));
             }
             // }
-        }
+        // }
     }
     public function depart_update(Request $request, inventory_department $invent_department, custom_helper $helper)
     {

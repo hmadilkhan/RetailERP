@@ -23,8 +23,10 @@
                 <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Department Code <span class="text-muted">(Optional)</span></label>
-                      <input class="form-control" type="text" name="code" id="code" placeholder='Department Code'/>
-                      <span class="form-control-feedback text-danger" id="dptcode_alert"></span>
+                      <input class="form-control" type="text" name="department_code" id="department_code" value="{{ old('department_code') }}" placeholder='Department Code'/>
+                      @error('department_code')
+                      <span class="form-control-feedback text-danger" id="department_code_alert">{{ $message }}</span>
+                      @enderror
                   </div>
                 </div>
             
@@ -32,12 +34,14 @@
                   <div class="form-group">
                       <label class="form-control-label">Department Name <span class="text-danger">*</span></label>
                       <input class="form-control" type="text"
-                       name="deptname" id="deptname" placeholder='Department Name'/>
-                       <span class="form-control-feedback text-danger" id="deptname_alert"></span>
+                       name="department_name" id="department_name" placeholder='Department Name' value="{{ old('department_name') }}"/>
+                       @error('department_name')
+                       <span class="form-control-feedback text-danger" id="department_name_alert">{{ $message }}</span>
+                       @enderror
                   </div>
                 </div>   
                 
-                <div class="col-lg-4 col-md-4">
+                {{-- <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Parent</label>
                       <select name="parent" id="parent" class="select2">
@@ -48,7 +52,7 @@
                       </select>    
                       <span class="form-control-feedback text-danger" id="parent_alert"></span>
                   </div>
-                </div>                
+                </div>                 --}}
                 
             </div>  
            @if($websites)
@@ -80,16 +84,17 @@
                   <div class="form-group">
                       <label class="form-control-label">Show website department name</label>
                       <input class="form-control" type="text"
-                       name="webdeptname" id="webdeptname" placeholder='Show website department name'/>
-                       <span class="form-control-feedback text-danger" id="webdeptname_alert"></span>
+                       name="website_department_name" id="website_department_name" placeholder='Show website department name' value="{{ old('website_department_name') }}"/>
+                       @error('website_department_name')
+                        <span class="form-control-feedback text-danger" id="website_department_name_alert"></span>
+                       @enderror
                   </div>
                 </div>  
                 <div class="col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Meta Title</label>
                       <input class="form-control" type="text"
-                       name="metatitle" id="metatitle" placeholder='Meta Title'/>
-                       <span class="form-control-feedback text-danger" id="metatitle_alert"></span>
+                       name="metatitle" id="metatitle" placeholder='Meta Title' value="{{ old('metatitle') }}"/>
                   </div>
                 </div> 
                 <div class="col-md-4">
@@ -97,7 +102,6 @@
                       <label class="form-control-label">Meta Description</label>
                       <textarea class="form-control" rows="5"
                        name="metadescript" id="metadescript" placeholder='Meta Description'></textarea>
-                       <span class="form-control-feedback text-danger" id="metadescript_alert"></span>
                   </div>
                 </div>    
               </div>                                  
@@ -117,7 +121,7 @@
 
      <div class="card">
                   <div class="card-header">
-                  <h4 for="departImage">Image</h4>
+                  <h4 for="department_image">Image</h4>
                   </div>
                   <div class="card-block p-2 p-t-0">
               <div class="form-group">
@@ -125,16 +129,16 @@
                         <img id="previewDepartImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" width="180px" class="thumb-img" alt="img">
                         </a>
 
-                    <div class="form-group {{ $errors->has('departImage') ? 'has-danger' : '' }} m-t-10">
+                    <div class="form-group {{ $errors->has('department_image') ? 'has-danger' : '' }} m-t-10">
                                 
 
-                                    <label for="departImage" class="custom-file">
-                                                <input type="file" name="departImage" id="departImage" class="custom-file-input">
+                                    <label for="department_image" class="custom-file">
+                                                <input type="file" name="department_image" id="department_image" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
                                             </label>         
-                                @if ($errors->has('departImage'))
-                                    <span class="form-control-feedback">{{ $errors->first('departImage') }}</span>
-                                @endif
+                                        @errors('department_image')
+                                            <span class="form-control-feedback">{{ $message }}</span>
+                                        @errors
                               </div> 
                 
               </div> 
@@ -151,14 +155,14 @@
                         <img id="previewDepartBannerImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
                         </a>
 
-                    <div class="form-group {{ $errors->has('bannerImage') ? 'has-danger' : '' }} m-t-10">
-                                    <label for="bannerImage" class="custom-file">
-                                                <input type="file" name="bannerImage" id="bannerImage" class="custom-file-input">
+                    <div class="form-group {{ $errors->has('banner_image') ? 'has-danger' : '' }} m-t-10">
+                                    <label for="banner_image" class="custom-file">
+                                                <input type="file" name="banner_image" id="banner_image" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
                                             </label>         
-                                @if ($errors->has('bannerImage'))
-                                    <span class="form-control-feedback">{{ $errors->first('bannerImage') }}</span>
-                                @endif
+                                @errors('banner_image')
+                                    <span class="form-control-feedback">{{ $message }}</span>
+                                @errors
                               </div> 
                 
               </div> 
@@ -216,48 +220,48 @@ $("#showWebsite").on('click',function(){
 
 
 
-$("#deptform").on('submit',function(event){
-      event.preventDefault();
+// $("#deptform").on('submit',function(event){
+//       event.preventDefault();
       
-      var formData = new FormData(this);
+//       var formData = new FormData(this);
 
-    if($("#deptname").val() == ""){
-         $("#deptname").focus();
-         $("#deptname_alert").html('Department name is required.');
-         swal('Cancel!','Department name is required.','error',false);
-    }else{
-      $('#uploadForm').on('submit', function(event) {
-    event.preventDefault(); // Prevent the default form submission
+//     if($("#deptname").val() == ""){
+//          $("#deptname").focus();
+//          $("#deptname_alert").html('Department name is required.');
+//          swal('Cancel!','Department name is required.','error',false);
+//     }else{
+//       $('#uploadForm').on('submit', function(event) {
+//     event.preventDefault(); // Prevent the default form submission
 
-    var formData = new FormData(this); // Create FormData object directly from form element
+//     var formData = new FormData(this); // Create FormData object directly from form element
 
-    $.ajax({
-        url: '{{ route("invent_dept.store") }}',
-        type: 'POST',
-        data: formData,
-        dataType: 'json',
-        cache: false,
-        contentType: false,
-        processData: false,
-        success: function(r, textStatus, jqXHR) {
-            var statusCode = jqXHR.status;
-            if (statusCode == 500) {
-                if (r.contrl != "") {
-                    $("#" + r.contrl).focus();
-                    $("#" + r.contrl + "_alert").html(r.msg);
-                }
-                swal_alert('Alert!', r.msg, 'error', false);
-            } else {
-                $("#deptname_alert").html('');
-                swal_alert('Successfully!', r.msg, 'success', true);
-                $("#subdpt").tagsinput('removeAll');
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            swal_alert('Alert!', errorThrown, 'error', false);
-        }
-    });
-});        
+//     $.ajax({
+//         url: '{{ route("invent_dept.store") }}',
+//         type: 'POST',
+//         data: formData,
+//         dataType: 'json',
+//         cache: false,
+//         contentType: false,
+//         processData: false,
+//         success: function(r, textStatus, jqXHR) {
+//             var statusCode = jqXHR.status;
+//             if (statusCode == 500) {
+//                 if (r.contrl != "") {
+//                     $("#" + r.contrl).focus();
+//                     $("#" + r.contrl + "_alert").html(r.msg);
+//                 }
+//                 swal_alert('Alert!', r.msg, 'error', false);
+//             } else {
+//                 $("#deptname_alert").html('');
+//                 swal_alert('Successfully!', r.msg, 'success', true);
+//                 $("#subdpt").tagsinput('removeAll');
+//             }
+//         },
+//         error: function(jqXHR, textStatus, errorThrown) {
+//             swal_alert('Alert!', errorThrown, 'error', false);
+//         }
+//     });
+// });        
         //        $.ajax({
         //         url:'{{ route("invent_dept.store") }}',
         //         type:"POST",
