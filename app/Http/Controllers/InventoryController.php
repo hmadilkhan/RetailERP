@@ -549,7 +549,7 @@ class InventoryController extends Controller
                     if ($existsProduct == null) {
                         DB::table('inventory_tags')->insert([
                             "inventory_id" => $productid,
-                            "tag_id"     => $val,
+                            "tag_id"       => $val,
                             'created_at'   => date("Y-m-d H:i:s")
                         ]);
                     }
