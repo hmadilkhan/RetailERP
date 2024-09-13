@@ -66,7 +66,7 @@
 
                              @if($websites)
                               @if(count($depart[$d]->websiteProducts) > 0)
-                              {{$depart[$d]->websiteProducts->pluck('website_id')}}
+                              {{-- {{$depart[$d]->websiteProducts->pluck('website_id')}} --}}
                                    @if(count($depart[$d]->websiteProducts->pluck('website_id')) > 0)
                                     <i class="icofont icofont-link text-info pointer" data-toggle="tooltip" data-placement="top" 
                                     title="" data-original-title="Unlink Website" 
