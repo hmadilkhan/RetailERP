@@ -425,9 +425,18 @@ class Inventory_DepartmentController extends Controller
         }
 
         if (!empty($request->file('bannerImage'))) {
-            // $request->validate([
-            //     'bannerImage' => 'image|mimes:jpeg,png,jpg,gif,webp,svg|max:1024',
-            // ]);
+                    //  $rules = [
+                    //             'bannerImage'=>'image|mimes:jpeg,png,jpg,webp|max:1024'
+                    //           ];
+
+                    //  $validator = Validator::make($request->all(), $rules);
+
+                    // // Check if validation fails
+                    // if ($validator->fails()) {
+                    //     // Redirect back with errors and old input
+                    //     return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
+                    // }
+
             $get = DB::table('inventory_department')->where('company_id', session('company_id'))->where('department_id', $request->departid)->first();
 
             $file = $this->uploads($request->file('bannerImage'), "images/department/");
