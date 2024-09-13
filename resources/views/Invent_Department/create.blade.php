@@ -135,7 +135,8 @@
                                     <label for="department_image" class="custom-file">
                                                 <input type="file" name="department_image" id="department_image" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
-                                            </label>         
+                                            </label> 
+                                            <br/>        
                                         @error('department_image')
                                             <span class="form-control-feedback">{{ $message }}</span>
                                         @enderror
@@ -159,7 +160,8 @@
                                     <label for="banner_image" class="custom-file">
                                                 <input type="file" name="banner_image" id="banner_image" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
-                                            </label>         
+                                            </label>   
+                                            <br/>        
                                 @error('banner_image')
                                     <span class="form-control-feedback">{{ $message }}</span>
                                 @enderror
@@ -188,7 +190,7 @@ $(".select2").select2();
 @endif
 
 @if(old('showWebsite'))
-$("#showWebsite").trigger('click');
+$("#showWebsite").attr('checked',true).trigger('click');
 @endif
 
 // $("#parent").on('change',function(){
