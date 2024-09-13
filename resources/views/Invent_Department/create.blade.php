@@ -226,31 +226,62 @@ $("#deptform").on('submit',function(event){
          $("#deptname_alert").html('Department name is required.');
          swal('Cancel!','Department name is required.','error',false);
     }else{
-        
-               $.ajax({
-                url:'{{ route("invent_dept.store") }}',
-                type:"POST",
-                data:formData,
-                dataType:"json",
-    		    cache:false,
-    		    contentType: false,
-    		    processData: false,
-                success:function(r){
-    		// 		console.log(r)
-                  if(r.state == 1){
-                      if(r.contrl != ""){
-                        $("#"+r.contrl).focus();
-                        $("#"+r.contrl+"_alert").html(r.msg);
-                      }
-                      swal_alert('Alert!',r.msg,'error',false); 
-    
-                  }else {
-                     $("#deptname_alert").html('');
-                    swal_alert('Successfully!',r.msg,'success',true);
-                     $("#subdpt").tagsinput('removeAll');
-                  }
+      $('#uploadForm').on('submit', function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    var formData = new FormData(this); // Create FormData object directly from form element
+
+    $.ajax({
+        url: '{{ route("invent_dept.store") }}',
+        type: 'POST',
+        data: formData,
+        dataType: 'json',
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function(r, textStatus, jqXHR) {
+            var statusCode = jqXHR.status;
+            if (statusCode == 500) {
+                if (r.contrl != "") {
+                    $("#" + r.contrl).focus();
+                    $("#" + r.contrl + "_alert").html(r.msg);
                 }
-              });
+                swal_alert('Alert!', r.msg, 'error', false);
+            } else {
+                $("#deptname_alert").html('');
+                swal_alert('Successfully!', r.msg, 'success', true);
+                $("#subdpt").tagsinput('removeAll');
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            swal_alert('Alert!', errorThrown, 'error', false);
+        }
+    });
+});        
+        //        $.ajax({
+        //         url:'{{ route("invent_dept.store") }}',
+        //         type:"POST",
+        //         data:formData,
+        //         dataType:"json",
+    		//     cache:false,
+    		//     contentType: false,
+    		//     processData: false,
+        //         success:function(r){
+    		// // 		console.log(r)
+        //           if(r.state == 1){
+        //               if(r.contrl != ""){
+        //                 $("#"+r.contrl).focus();
+        //                 $("#"+r.contrl+"_alert").html(r.msg);
+        //               }
+        //               swal_alert('Alert!',r.msg,'error',false); 
+    
+        //           }else {
+        //              $("#deptname_alert").html('');
+        //             swal_alert('Successfully!',r.msg,'success',true);
+        //              $("#subdpt").tagsinput('removeAll');
+        //           }
+        //         }
+        //       });
     }
   });
 

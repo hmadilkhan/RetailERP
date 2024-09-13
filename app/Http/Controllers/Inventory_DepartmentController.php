@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\inventory_department;
 use App\Section;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Image;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\custom_helper;
@@ -83,25 +84,22 @@ class Inventory_DepartmentController extends Controller
 
             if ($exsist[0]->counter == 0) {
                 if (!empty($request->file('departImage'))) {
-                    $request->validate([
-                        'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                    ]);
 
-                    // $rules =[
-                    //     'departImage' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                    // ];
+                     $rules = [
+                                'departImage'=>'image|mimes:jpeg,png,jpg,webp|max:1024'
+                              ];
 
-                    // $validation = \Validator::make($request->all(),$rules);
+                     $validator = Validator::make($request->all(), $rules);
 
-                    // if($validation->fail() > 0){
-                    //     return response()->json(['error'=>$validation,'control'=>'departImage'],500);
-                    // }
-
-
+                    // Check if validation fails
+                    if ($validator->fails()) {
+                        // Redirect back with errors and old input
+                        return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
+                    }
+                    
                     $file = $this->uploads($request->file('departImage'), "images/department/");
                     $imageName = !empty($file) ? $file["fileName"] : "";
                 }
-
 
                 $items = [
                     'code'             => $request->code,
