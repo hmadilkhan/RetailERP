@@ -124,7 +124,7 @@ class Inventory_DepartmentController extends Controller
             $rules = [
                         'department_name'=>'required',
                      ];
-            $this->validation($request,$rules);         
+            $this->validate($request,$rules);         
 
             if (!empty($request->get('department_code'))) {
                 if ($invent_department->check_depart_code($request->get('department_code'))) {
@@ -136,7 +136,7 @@ class Inventory_DepartmentController extends Controller
                         'department_code.required' => 'This department code already exists.',
                     ];
 
-                    $this->validation($request,$rules,$messages);    
+                    $this->validate($request,$rules,$messages);    
                 }
             }
 
@@ -148,7 +148,7 @@ class Inventory_DepartmentController extends Controller
                     'department_name.required' => 'This department name already exists.',
                 ];
 
-                $this->validation($request,$rules,$messages);    
+                $this->validate($request,$rules,$messages);    
             }
             // else {
 
@@ -156,7 +156,7 @@ class Inventory_DepartmentController extends Controller
                 $rules=[
                         'department_image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
                       ];
-                $this->validation($request,$rules); 
+                $this->validate($request,$rules); 
                 $file = $this->uploads($request->file('department_image'), "images/department/");
                 $imageName = !empty($file) ? $file["fileName"] : "";
             }
@@ -165,7 +165,7 @@ class Inventory_DepartmentController extends Controller
                     $rules=[
                         'banner_image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
                       ];
-                $this->validation($request,$rules); 
+                $this->validate($request,$rules); 
                 $file = $this->uploads($request->file('banner_image'), "images/department/");
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";
             }
