@@ -68,7 +68,7 @@
                               @if(!empty($depart[$d]->website_products))
                                 <a href="javascript:void(0)"><i onclick="" class="text-info icofont icofont-link m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unlink Website"></i></a>
                               @else
-                                <a href="javascript:void(0)"><i onclick="" class="text-muted icofont icofont-link-broken m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Link Website"></i></a>                         
+                                <a href="javascript:void(0)"><i onclick="" class="text-muted icofont icofont-unlink m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Link Website"></i></a>                         
                               @endif
                              @endif 
                        </td>            
