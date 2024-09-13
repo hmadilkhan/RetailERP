@@ -614,6 +614,9 @@ public function updateProductName($id,$name)
 
     public function update_all_inventory_status($inventid,$statusid){
         $result = DB::table('inventory_general')->whereIn('id', $inventid)->update(['status'=> $statusid]);
+         if($statusid == 2){
+              DB::table('website_products')->whereIn('inventory_id', $inventid)->update(['status'=>0]);
+         }
         return $result;
     }
 	
@@ -626,11 +629,11 @@ public function updateProductName($id,$name)
 
         if($getImageName != null){
             foreach($getImageName as $val){
-                if(in_array(session('company_id'),[95, 102, 104])){
+                if(in_array(session('company_id'),[95, 102, 104]) && !empty($val)){
                        Cloudinary::destroy($val);
                 }else{
-                    if(File::exists(public_path('storage/images/products/').$val)){
-                        File::delete(public_path('storage/images/products/').$val);
+                    if(File::exists('/images/products/'.$val)){
+                        File::delete('/images/products/'.$val);
                     }
                 }
             }
@@ -641,9 +644,12 @@ public function updateProductName($id,$name)
             foreach($getImageGallery as $val){
                 if(in_array(session('company_id'),[95, 102, 104])){
                        Cloudinary::destroy($val);
+                       if(File::exists('/images/products/').$val){
+                        File::delete('/images/products/'.$val);
+                       }                       
                 }else{
-                    if(File::exists(public_path('storage/images/products/').$val)){
-                        File::delete(public_path('storage/images/products/').$val);
+                    if(File::exists('/images/products/').$val){
+                        File::delete('/images/products/'.$val);
                     }
                 }
             }
@@ -655,8 +661,8 @@ public function updateProductName($id,$name)
                 if(in_array(session('company_id'),[95, 102, 104])){
                        Cloudinary::destroy($val);
                 }else{
-                    if(File::exists(public_path('storage/video/products/').$val)){
-                        File::delete(public_path('storage/video/products/').$val);
+                    if(File::exists('storage/video/products/'.$val)){
+                        File::delete('storage/video/products/'.$val);
                     }
                 }
             }
