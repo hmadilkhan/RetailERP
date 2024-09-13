@@ -66,9 +66,9 @@
 
                              @if($websites)
                               @if(!empty($depart[$d]->website_products))
-                                <a href="javascript:void(0)"><i onclick="" class="text-info icofont icofont-link m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unlink Website"></i></a>
+                                <a href="javascript:void(0)"><i class="text-info icofont icofont-link m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Unlink Website"></i></a>
                               @else
-                                <a href="javascript:void(0)"><i onclick="" class="text-muted icofont icofont-unlink m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Link Website"></i></a>                         
+                                <a href="javascript:void(0)"><i class="text-muted icofont icofont-unlink m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Link Website"></i></a>                         
                               @endif
                              @endif 
                        </td>            
@@ -319,6 +319,36 @@
          </div>
       </div> 
    
+
+      <div class="modal fade modal-flex" id="department-online-link-modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-md" role="document">
+           <div class="modal-content">
+              <div class="modal-header">
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                             <span aria-hidden="true">&times;</span>
+                         </button>
+                 <h4 class="modal-title" id="wesbite_md_title"> Wesbite</h4>
+              </div>
+              <div class="modal-body">
+
+                 <div class="form-group"> 
+                      <select class="form-control  select2" data-placeholder="Select Website" id="website_md" name="website_md">
+                  <option value="">Select Website</option>
+                  @if($websites)
+                        @foreach($websites as $val)
+                            <option value="{{$val->id}}">{{$val->name}}</option>
+                        @endforeach
+                  @endif
+              </select> 
+                 </div>
+  
+              </div>
+              <div class="modal-footer">
+                 <button type="button" class="btn btn-success waves-effect waves-light" onclick="">Save Changes</button>
+              </div>
+           </div>
+        </div>
+     </div> 
 </section>
 @endsection
 
@@ -663,7 +693,7 @@ function updatedepart(){
     var formData = new FormData(form); 
     var maxSize = 1048576; 
     var process = true;
-    
+
       if($("#udeptname").val() == ""){
           $("#udeptname_alert").html('Department name is required.').addClass('text-danger');
           process = false;
