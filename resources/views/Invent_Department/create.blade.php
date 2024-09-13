@@ -136,9 +136,9 @@
                                                 <input type="file" name="department_image" id="department_image" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
                                             </label>         
-                                        @errors('department_image')
+                                        @error('department_image')
                                             <span class="form-control-feedback">{{ $message }}</span>
-                                        @errors
+                                        @enderror
                               </div> 
                 
               </div> 
@@ -160,9 +160,9 @@
                                                 <input type="file" name="banner_image" id="banner_image" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
                                             </label>         
-                                @errors('banner_image')
+                                @error('banner_image')
                                     <span class="form-control-feedback">{{ $message }}</span>
-                                @errors
+                                @enderror
                               </div> 
                 
               </div> 
