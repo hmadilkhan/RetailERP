@@ -411,7 +411,6 @@ function unLinkWebsite(departId){
 	},
 	function(isConfirm){
 		if(isConfirm){
-      alert()
         websiteConnection(departId,'','unlink');
 		}else {
 			swal("Cancelled", "Your Item is safe :)", "error");
@@ -421,6 +420,7 @@ function unLinkWebsite(departId){
 }
 
 function websiteConnection(departId,website,stcode){
+  alert()
  $.ajax({ 
           url:'{{ route("department_website_connect") }}',
           type:'POST',
