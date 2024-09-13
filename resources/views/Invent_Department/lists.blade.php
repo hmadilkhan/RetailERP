@@ -408,12 +408,6 @@ $("#btn_update").on('click',function(){
   var maxSize = 1048576; 
       if($("#udeptname").val() == ""){
           $("#udeptname_alert").html('Department name is required.').addClass('text-danger');
-      }else if($("#departImage_md")[0].get().files.size >= maxSize){
-          swal('Error! File Size','File size must be less than or equal to 1MB.','error');
-          $("#departImage_md_alert").html('Department name is required.').addClass('text-danger');
-      }else if($("#bannerImage_md")[0].get().files.size >= maxSize){
-          swal('Error! File Size','File size must be less than or equal to 1MB.','error');
-          $("#bannerImage_md_alert").html('Department name is required.').addClass('text-danger');
       }else {
           $("#udeptname_alert").html('').removeClass('text-danger');
             $.ajax({
@@ -667,6 +661,26 @@ function fileGet_sbd_md(id){
 function updatedepart(){
     var form = document.getElementById('editDepartmentForm'); 
     var formData = new FormData(form); 
+    var maxSize = 1048576; 
+    var process = true;
+    
+      if($("#udeptname").val() == ""){
+          $("#udeptname_alert").html('Department name is required.').addClass('text-danger');
+          process = false;
+      }
+
+      if($("#departImage_md")[0].get().files.size >= maxSize){
+          swal('Error! File Size','File size must be less than or equal to 1MB.','error');
+          $("#departImage_md_alert").html('Department name is required.').addClass('text-danger');
+          process = false;
+      }
+
+      if($("#bannerImage_md")[0].get().files.size >= maxSize){
+          swal('Error! File Size','File size must be less than or equal to 1MB.','error');
+          $("#bannerImage_md_alert").html('Department name is required.').addClass('text-danger');
+          process = false;
+      } 
+      if(process){  
  $.ajax({
 		url: "{{url('/updatedepart')}}",
 		type:"POST",
@@ -693,6 +707,7 @@ function updatedepart(){
 			}
 		}
 	});
+ }
 }
 
 function addsubdepart(id){
