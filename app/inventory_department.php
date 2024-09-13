@@ -157,4 +157,21 @@ class inventory_department extends Model
   {
     return $this->hasMany(Inventory::class, "department_id", "department_id");
   }
+
+  public function products()
+  {
+    return $this->hasMany(Inventory::class, "department_id", "department_id")->where("status", 1);
+  }
+
+  public function websiteProducts()
+    {
+        return $this->hasManyThrough(
+            WebsiteProduct::class, // The related model you want to access
+            Inventory::class, // The intermediate model
+            'department_id', // Foreign key on the InventoryGeneral table
+            'inventory_id', // Foreign key on the WebsiteProduct table
+            'department_id', // Local key on the InventoryDepartment table
+            'id'  // Local key on the InventoryGeneral table
+        );
+    }
 }

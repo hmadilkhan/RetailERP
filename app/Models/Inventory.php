@@ -44,8 +44,8 @@ class Inventory extends Model
 		return $this->hasMany(InventoryDealGeneral::class, "inventory_deal_id", "id")->where("status", 1);
 	}
 
-	// public function websites()
-	// {
-	// 	return $this->hasMany(WebsiteProduct::class, "inventory_id", "id");
-	// }
+	public function websitesProducts()
+	{
+		return $this->hasMany(WebsiteProduct::class, "inventory_id", "id");
+	}
 }
