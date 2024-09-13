@@ -68,10 +68,10 @@
                               @if(!empty($depart[$d]->websiteProducts))
                                 <i class="icofont icofont-link text-info pointer" data-toggle="tooltip" data-placement="top" 
                                 title="" data-original-title="Unlink Website" 
-                                onclick="unLinkWebsite('{{$depart[$d]->department_id}}')"></i>
+                                onclick="unLinkWebsite({{$depart[$d]->department_id}})"></i>
                               @else 
                                 <i class="icofont icofont-unlink text-muted pointer" data-toggle="tooltip" data-placement="top" 
-                                title="" data-original-title="Link Website" onclick="linkWebsite('{{$depart[$d]->department_id}}'')"></i>                         
+                                title="" data-original-title="Link Website" onclick="linkWebsite({{$depart[$d]->department_id}})"></i>                         
                               @endif
                              @endif 
                        </td>            
@@ -356,6 +356,66 @@
 </section>
 @endsection
 
+@section('scriptcode_one')
+<script type="text/javascript">
+$("#btn_website_connect_md").on('click',function(){
+  if($(this).val() == ''){
+    swal('Error!','Select website name field is requried.','error');
+  }else{
+    websiteConnection($("#depart_webconn_md").val(),$(this).val(),'link');
+  }
+});
+
+function linkWebsite(departId){
+$("#department-website-connect-modal").modal('show');
+ $("#website_md").val('').change();
+ $("#depart_webconn_md").val(departId);
+}
+
+function unLinkWebsite(departId){
+             swal({
+                     title: "Are you sure?",
+                     text: "This department unlink from website?",
+                     type: "warning"
+                     showCancelButton: true,
+                     confirmButtonClass: "btn-danger",
+                     confirmButtonText: "Active it!",
+                     cancelButtonText: "cancel plx!",
+                     closeOnConfirm: false,
+                     closeOnCancel: false
+                   },function(isConfirm){
+                  if(isConfirm){
+                      websiteConnection(departId,'','unlink');
+                  }
+              });
+}
+
+function websiteConnection(departId,website,stcode){
+ $.ajax({ 
+          url:'{{ route("department_website_connect") }}',
+          type:'POST',
+          data:{_token:'{{ csrf_token() }}',department:departId,website_id:website,status_code:stcode},
+          dataType:'json',
+          success:function(resp,textStatus,jqXHR){
+               if(jqXHR.status == 200){
+                 swal({
+                       title: "Operation Performed",
+                       text: "Successfully!",
+                       type: "success"},
+                       function(isConfirm){
+                         if(isConfirm){
+                           $("#department-website-connect-modal").modal("hide");
+                           window.location= "{{ url('/invent_dept') }}";
+                         }
+                       });
+               }
+          }
+         
+ })
+}
+</script>
+@endsection
+
 @section('scriptcode_three')
 
 <script type="text/javascript">
@@ -382,63 +442,6 @@
  
     } );
 
-    $("#btn_website_connect_md").on('click',function(){
-   if($(this).val() == ''){
-     swal('Error!','Select website name field is requried.','error');
-   }else{
-     websiteConnection($("#depart_webconn_md").val(),$(this).val(),'link');
-   }
-});
-
-function linkWebsite(departId){
- $("#department-website-connect-modal").modal('show');
-  $("#website_md").val('').change();
-  $("#depart_webconn_md").val(departId);
-}
-
-function unLinkWebsite(departId){
-              swal({
-                      title: "Are you sure?",
-                      text: "This department unlink from website?",
-                      type: "warning"
-                      showCancelButton: true,
-                      confirmButtonClass: "btn-danger",
-                      confirmButtonText: "Active it!",
-                      cancelButtonText: "cancel plx!",
-                      closeOnConfirm: false,
-                      closeOnCancel: false
-                    },function(isConfirm){
-                   if(isConfirm){
-                       websiteConnection(departId,'','unlink');
-                   }
-               });
-}
-
-function websiteConnection(departId,website,stcode){
-  $.ajax({ 
-           url:'{{ route("department_website_connect") }}',
-           type:'POST',
-           data:{_token:'{{ csrf_token() }}',department:departId,website_id:website,status_code:stcode},
-           dataType:'json',
-           success:function(resp,textStatus,jqXHR){
-                if(jqXHR.status == 200){
-                  swal({
-                        title: "Operation Performed",
-                        text: "Successfully!",
-                        type: "success"},
-                        function(isConfirm){
-                          if(isConfirm){
-                            $("#department-website-connect-modal").modal("hide");
-                            window.location= "{{ url('/invent_dept') }}";
-                          }
-                        });
-                }
-           }
-          
-  })
-}
-
-	
     function readURL(input, id) {
     if (input.files && input.files[0]) {
         var file = input.files[0];
