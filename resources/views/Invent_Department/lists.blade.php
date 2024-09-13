@@ -699,13 +699,13 @@ function updatedepart(){
           process = false;
       }
 
-      if($("#departImage_md")[0].get().files.size >= maxSize){
+      if($("#departImage_md")[0].files.size >= maxSize){
           swal('Error! File Size','File size must be less than or equal to 1MB.','error');
           $("#departImage_md_alert").html('Department name is required.').addClass('text-danger');
           process = false;
       }
 
-      if($("#bannerImage_md")[0].get().files.size >= maxSize){
+      if($("#bannerImage_md")[0].files.size >= maxSize){
           swal('Error! File Size','File size must be less than or equal to 1MB.','error');
           $("#bannerImage_md_alert").html('Department name is required.').addClass('text-danger');
           process = false;
