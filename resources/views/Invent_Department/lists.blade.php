@@ -65,7 +65,7 @@
                              <i onclick="deletedepart('{{$depart[$d]->department_id}}')" class="text-danger text-center icofont icofont-ui-delete" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete Department"></i>
 
                              @if($websites)
-                              @if(!empty($depart[$d]->websiteProducts))
+                              @if(count($depart[$d]->websiteProducts) > 0)
                                 <i class="icofont icofont-link text-info pointer" data-toggle="tooltip" data-placement="top" 
                                 title="" data-original-title="Unlink Website" 
                                 onclick="unLinkWebsite({{$depart[$d]->department_id}})"></i>
@@ -427,18 +427,18 @@ function websiteConnection(departId,website,stcode){
           dataType:'json',
           success:function(resp,textStatus,jqXHR){
                if(jqXHR.status == 200){
-                //  swal({
-                //        title: "Operation Performed",
-                //        text: "Successfully!",
-                //        type: "success"},
-                //        function(isConfirm){
-                //          if(isConfirm){
-                //           if(website != ''){
-                //              $("#department-website-connect-modal").modal("hide");
-                //           }
+                 swal({
+                       title: "Operation Performed",
+                       text: "Successfully!",
+                       type: "success"},
+                       function(isConfirm){
+                         if(isConfirm){
+                          if(website != ''){
+                             $("#department-website-connect-modal").modal("hide");
+                          }
                            window.location= "{{ url('/invent_dept') }}";
-                      //    }
-                      //  });
+                         }
+                       });
                }
           }
          
