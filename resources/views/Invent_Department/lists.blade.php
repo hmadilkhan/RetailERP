@@ -411,6 +411,7 @@ function unLinkWebsite(departId){
 	},
 	function(isConfirm){
 		if(isConfirm){
+      alert()
         websiteConnection(departId,'','unlink');
 		}else {
 			swal("Cancelled", "Your Item is safe :)", "error");
