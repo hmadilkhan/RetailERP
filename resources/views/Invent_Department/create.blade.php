@@ -10,7 +10,7 @@
 
 <section class="panels-wells p-t-30">
 
-<form method="POST" id="deptform" class="form-horizontal" enctype="multipart/form-data">
+<form method="post" id="deptform" action="{{ route('invent_dept.store') }}" class="form-horizontal" enctype="multipart/form-data">
    @csrf
    <div class="row">
      <div class="col-md-8 p-1">
