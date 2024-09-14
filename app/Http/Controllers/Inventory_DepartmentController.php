@@ -159,7 +159,7 @@ class Inventory_DepartmentController extends Controller
             $data = [
                 'company_id'               => session('company_id'),
                 'code'                     => $request->get('department_code'),
-                'department_name'          => $request->get('department_iname'),
+                'department_name'          => $request->get('department_name'),
                 'website_department_name'  => (empty($request->website_department_name) ?  $request->get('department_iname') : $request->website_department_name),
                 'date'                     => date('Y-m-d'),
                 'time'                     => date('H:i:s'),
