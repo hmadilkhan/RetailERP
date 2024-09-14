@@ -10,6 +10,14 @@
 
 <section class="panels-wells p-t-30">
 
+@if(Session::has('error'))
+  <div class="alert alert-danger">{{ Session::get('error') }}</div>
+@endif
+
+@if(Session::has('success'))
+  <div class="alert alert-danger">{{ Session::get('success') }}</div>
+@endif
+
 <form method="post" id="deptform" action="{{ route('invent_dept.store') }}" class="form-horizontal" enctype="multipart/form-data">
    @csrf
    <div class="row">

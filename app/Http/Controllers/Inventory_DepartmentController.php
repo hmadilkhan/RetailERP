@@ -2,17 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\inventory_department;
-use App\Section;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Image;
 use Illuminate\Support\Facades\DB;
 use App\Helpers\custom_helper;
-use App\Models\Inventory;
+use App\inventory_department;
 use App\Traits\MediaTrait;
+use App\Models\Inventory;
 use App\WebsiteProduct;
-use File, Auth;
+use App\Section;
+use Auth,File,Image,Session;
 
 class Inventory_DepartmentController extends Controller
 {
@@ -172,13 +171,9 @@ class Inventory_DepartmentController extends Controller
             ];
 
             $result = $invent_department->insert_dept($data);
-            if ($result) {
+            if (!$result) {
+                  Session::flash('error','Error! Server Issue record is not save.');
 
-                if (!empty($request->sections)) {
-                    foreach ($request->sections as $value) {
-                        $invent_department->insert_section(['department_id' => $result, 'section_id' => $value, 'created_at' => date('Y-m-d H:i:s')]);
-                    }
-                }
                 //  $subdpt_value = $request->subdpt;
 
                 //  $subdpt_value = explode(",",$subdpt_value);
@@ -198,10 +193,22 @@ class Inventory_DepartmentController extends Controller
                 // }
                 // $msg = "ID # ".$result.", Name : ".$request->get('deptname');
                 // $helper->sendPushNotification("New Department Added",$msg); 
-                return response()->json(array("state" => 0, "msg" => '', "contrl" => ''));
-            } else {
-                return response()->json(array("state" => 1, "msg" => 'Not saved :(', "contrl" => ''));
-            }
+                // return response()->json(array("state" => 0, "msg" => '', "contrl" => ''));
+
+            } 
+            // else {
+                // return response()->json(array("state" => 1, "msg" => 'Not saved :(', "contrl" => ''));
+            // }
+
+            if (!empty($request->sections)) {
+                foreach ($request->sections as $value) {
+                    $invent_department->insert_section(['department_id' => $result, 'section_id' => $value, 'created_at' => date('Y-m-d H:i:s')]);
+                }
+            }    
+            
+            Session::flash('success','Success!');
+
+            return redirect()->route('invent_dept.create');
             // }
         // }
     }
