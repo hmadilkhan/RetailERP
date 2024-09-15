@@ -1063,7 +1063,7 @@ class InventoryController extends Controller
 
         if(isset($request->website_id) && isset($request->product_id)){
 
-            if(inventory::where('id',$request->product_id)->where('company_id',session('company_id'))->count() == 0){
+            if(DB::table('inventory_general')->where('id',$request->product_id)->where('company_id',session('company_id'))->count() == 0){
                 return response()->json('Product not found!',500);
             }
            
