@@ -70,9 +70,9 @@ class InventoryController extends Controller
         //if(session("company_id") == 7 or session("company_id") ==  102 && Auth::user()->username != 'demoadmin'){ //or session("company_id") ==  102 session("company_id") == 7 or
         // if (in_array(session("company_id"), [7, 102]) && !in_array(Auth::user()->username, ['demoadmin'])) {
             $inventories = $inventory->getInventoryForPagewiseByFilters();
-            if(Auth::user()->username == 'demoadmin'){
-               return $inventories;
-            }
+            // if(Auth::user()->username == 'demoadmin'){
+            //    return $inventories;
+            // }
             $inventory = '';
             if (in_array(Auth::user()->username, ['fn1009'])) {
                 return view('Inventory.livewirelist', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
