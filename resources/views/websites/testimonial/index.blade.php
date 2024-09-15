@@ -64,7 +64,7 @@
                       $image = asset('storage/images/no-image.jpg');
                       
                       if(File::exists('storage/images/testimonials/'.$value->image)){
-                          $image = asset('storage/images/testimonials/').$value->image;
+                          $image = asset('storage/images/testimonials/'.$value->image);
                       }
                  @endphp
 				<tr>
