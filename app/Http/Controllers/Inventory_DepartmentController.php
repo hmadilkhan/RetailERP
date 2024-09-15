@@ -126,7 +126,7 @@ class Inventory_DepartmentController extends Controller
                         'department_name'=>'required',
                      ];
              
-            if (!empty($request->get('department_code'))) {
+            if (!empty($request->get('department_code'))) { //checking department code exists
                 if ($invent_department->check_depart_code($request->get('department_code'))) {
 
                     $rules['department_code']='required';
@@ -134,27 +134,29 @@ class Inventory_DepartmentController extends Controller
                 }
             }
 
-            if ($invent_department->check_dept($request->get('department_name'))) {
+            if ($invent_department->check_dept($request->get('department_name'))) { //checking department name eixts
                 $rules['department_name']='required';
                 $messages['department_name.required']='This department name already exists.';
                 $this->validate($request,$rules,$messages);    
             }
             // else {
 
-            if (!empty($request->file('department_image'))) {
+            if (!empty($request->file('department_image'))) { //department image
                 $rules['department_image']='image|mimes:jpeg,png,jpg,webp|max:1024';
                 $file = $this->uploads($request->file('department_image'), "images/department/");
                 $imageName = !empty($file) ? $file["fileName"] : "";
             }
 
-            if (!empty($request->file('banner_image'))) {
+            if (!empty($request->file('banner_image'))) { //department banner 
                     $rules['banner_image']='image|mimes:jpeg,png,jpg,webp|max:1024';
                 $file = $this->uploads($request->file('banner_image'), "images/department/");
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";
             }
 
-            $this->validate($request,$rules); 
+            $this->validate($request,$rules); // validation module 
+           
 
+            //department form details save array value 
             $data = [
                 'company_id'               => session('company_id'),
                 'code'                     => $request->get('department_code'),
@@ -169,11 +171,17 @@ class Inventory_DepartmentController extends Controller
                 "meta_description"         => $request->metadescript,
                 'website_mode'             => isset($request->showWebsite) ? 1 : 0
             ];
-
+             
+            // department save to database 
             $result = $invent_department->insert_dept($data);
-            if (!$result) {
-                  Session::flash('error','Error! Server Issue record is not save.');
-
+            if ($result) {  //checking condition department issaved to database show the success message
+                if (!empty($request->sections)) { //department section module 
+                    foreach ($request->sections as $value) {
+                        $invent_department->insert_section(['department_id' => $result, 'section_id' => $value, 'created_at' => date('Y-m-d H:i:s')]);
+                    }
+                }    
+                
+                Session::flash('success','Success!');
                 //  $subdpt_value = $request->subdpt;
 
                 //  $subdpt_value = explode(",",$subdpt_value);
@@ -195,18 +203,10 @@ class Inventory_DepartmentController extends Controller
                 // $helper->sendPushNotification("New Department Added",$msg); 
                 // return response()->json(array("state" => 0, "msg" => '', "contrl" => ''));
 
-            } 
-            // else {
+            } else { //checking condition department is not to save database error condition true
+                Session::flash('error','Error! Server Issue record is not save.');
                 // return response()->json(array("state" => 1, "msg" => 'Not saved :(', "contrl" => ''));
-            // }
-
-            if (!empty($request->sections)) {
-                foreach ($request->sections as $value) {
-                    $invent_department->insert_section(['department_id' => $result, 'section_id' => $value, 'created_at' => date('Y-m-d H:i:s')]);
-                }
-            }    
-            
-            Session::flash('success','Success!');
+            }
 
             return redirect()->route('invent_dept.create');
             // }
@@ -429,8 +429,6 @@ class Inventory_DepartmentController extends Controller
         }
 
         if (!empty($request->file('departImage'))) {
-            // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('departname'))).time().'.'.strtolower($request->file('departImage')->getClientOriginalExtension()); 
-            // $request->file('departImage')->move(public_path('assets/images/department'),$imageName);
 
             $get = DB::table('inventory_department')->where('company_id', session('company_id'))->where('department_id', $request->departid)->first();
 
