@@ -63,7 +63,7 @@
                   <td class="d-none">{{ $value->id }}</td>  
 				  <td class="text-center"><img width="42" height="42" src="{{ asset('storage/images/'.(!empty($value->image) ? 'testimonials/'.$value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
 				  <td>{{ $value->customer_name }}</td>
-				  <td>{{ $value->rating} }</td>
+				  <td>{{ $value->rating }}</td>
 				  <td>{{ $value->content }}</td>
 				  <td class="action-icon">
 					<a href="{{ route('testimonials.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
