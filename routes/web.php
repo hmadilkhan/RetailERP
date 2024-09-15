@@ -456,6 +456,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/inventory/getProduct_attribute', [InventoryController::class, 'getProduct_attribute'])->name('getProduct_attribute');
     Route::post('/inventory/product-attribute-insert', [InventoryController::class, 'insertProduct_attribute'])->name('insertProduct_attribute');
     Route::post('/inventory/product-attribute-update', [InventoryController::class, 'setProductAttribute_update'])->name('setProductAttribute_update');
+    Route::post('/product-unlink-from-website', [InventoryController::class, 'unLink_websiteProduct'])->name('website_product_unlink');
 
     Route::get('/get-pos-orders', [OrderController::class, 'getPOSOrders']);
     Route::get('/get-pos-filter-orders', [OrderController::class, 'getPOSFilterOrders']);

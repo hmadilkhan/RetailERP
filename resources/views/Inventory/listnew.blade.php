@@ -98,6 +98,9 @@
                                     data-toggle="modal" data-target="#website-detail-modal"><i
                                         class="icofont icofont-company"></i>&nbsp;Link Website</a>
                                 <div class="dropdown-divider"></div>
+                                <a class="dropdown-item waves-light waves-effect" id="btn_unlinkWebsiteProduct">
+                                    <i class="icofont icofont-company"></i>&nbsp;UnLink Website</a>
+                                <div class="dropdown-divider"></div>                               
                                 <a class="dropdown-item waves-light waves-effect" id="btn_change_brand" data-toggle="modal"
                                     data-target="#brand-detail-modal"><i class="icofont icofont-company"></i>&nbsp;Link
                                     Brand</a>
@@ -1873,10 +1876,22 @@
 
         });
 
-        function UnLinkwebsite(website,product){
-        swal({
+    $("#btn_unlinkWebsiteProduct").on('click',function(){
+        $(".chkbx").each(function(index) {
+                if ($(this).is(":checked")) {
+                    // console.log($(this).data('id'))
+                    if (jQuery.inArray($(this).data('id'), rem_id) == -1) {
+                        rem_id.push($(this).data('id'));
+                    }
+                }
+            });
+
+           if(rem_id != 0){
+             console.log(rem_id);
+             rem_id = [];
+             swal({
                 title: "UnLink Website",
-                text: "Do you want to unlink website?",
+                text: "Do you want to unlink from website?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
@@ -1886,12 +1901,54 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
+                  
+                }else{
+                    swal("Cancel!","All products are safe:)","error");
+                }
+
+            });                
+           } 
+    })    
+
+    function UnLinkwebsite(productId,websiteId,websiteName){
+        swal({
+                title: "UnLink Website",
+                text: "Do you want to unlink from "+websiteName+" website?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },function(isConfirm){
+                if(isConfirm){
+                    UnLinkwebsite_ajax(websiteId,productId);
                 }else{
                     swal("Cancel!","All products are safe:)","error");
                 }
 
             });   
     }  
+
+    function UnLinkwebsite_ajax(websiteId,productId){
+        $.ajax({
+            url:'',
+            type:'POST',
+            data:{_token:'{{ csrf_token() }}',website_id:websiteId,product_id:productId},
+            dataType:'json',
+            async:true,
+            success:function(resp,textStatus, jqXHR){
+                if(jqXHR.status == 200){
+                   swal(resp,'','success');
+                }
+
+                if(jqXHR.status == 500){
+                    swal('Error!',resp,'error');
+                }
+            }
+        })
+    }
 
     </script>
 

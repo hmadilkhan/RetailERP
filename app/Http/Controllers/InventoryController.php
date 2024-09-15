@@ -1060,7 +1060,21 @@ class InventoryController extends Controller
     
 
     public function unLink_websiteProduct(Reqeust $request){
-        return  WebsiteProduct::whereIn("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
+
+        if(isset($request->website_id) && isset($request->product_id)){
+
+            if(Inventory::where('id',$request->product_id)->where('company_id',session('company_id'))->count() == 0){
+                return response()->json('Product not found!',500);
+            }
+           
+           if(!WebsiteProduct::where("inventory_id", $request->product_id)->where('website_id',$request->website_id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")])){
+            return response()->json('Success!',200);
+           }
+
+           return response()->json('Success!',200);
+        }
+
+       return response()->json('bad request',500);   
     }
 
 
