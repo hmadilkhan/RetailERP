@@ -59,9 +59,10 @@
 		</thead>
 		<tbody>
               @foreach($testimonials as $value)
+                {{ $websites->where('id',$value->website_id)->pluck('name') }}
 				<tr>
                   <td class="d-none">{{ $value->id }}</td>  
-				  <td class="text-center"><img width="42" height="42" src="{{ asset('storage/images/'.(!empty($value->image) ? 'testimonials/'.$value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->logo) ? $value->logo : 'placeholder.jpg' }}"></td>
+				  <td class="text-center"><img width="42" height="42" src="{{ asset('storage/images/'.(!empty($value->image) ? 'testimonials/'.$value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"></td>
 				  <td>{{ $value->customer_name }}</td>
 				  <td>{{ $value->rating }}</td>
 				  <td>{{ $value->content }}</td>
