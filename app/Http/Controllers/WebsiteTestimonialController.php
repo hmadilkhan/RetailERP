@@ -109,7 +109,7 @@ class WebsiteTestimonialController extends Controller
         }
 
 
-        return view("testimonial.edit", [
+        return view("website.testimonial.edit", [
             "testimonial" => $testimonial,
             "websites"    => WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get()
         ]);
