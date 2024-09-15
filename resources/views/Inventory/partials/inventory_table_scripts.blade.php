@@ -244,24 +244,4 @@ $(".mainchk").on('click',function(){
 
         });
 
-
-     function UnLinkwebsite(website,product){
-        swal({
-                title: "UnLink Website",
-                text: "Do you want to unlink website?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "YES",
-                cancelButtonText: "NO",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },function(isConfirm){
-                if(isConfirm){
-                }else{
-                    swal("Cancel!","All products are safe:)","error");
-                }
-
-            });   
-    }  
 </script>
