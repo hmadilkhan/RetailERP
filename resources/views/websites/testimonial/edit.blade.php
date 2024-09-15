@@ -53,7 +53,7 @@
 
 				<div class="form-group @error('image') 'has-danger' @enderror ">
 				<a href="javascript:void(0)">
-					@php $image = $testimonial->image != "" ? 'testimonials/'.$testimonial->image : 'placeholder.jpg' @endphp
+					@php $image = $testimonial->image != "" ? 'testimonials/'.$testimonial->image : 'no-image.jpg' @endphp
 					<img id="preview" src="{{ asset('storage/images/'.$image) }}" class="thumb-img img-fluid width-100" alt="{{ $testimonial->image == '' ? $testimonial->image : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
 				</a>					
 					<label for="image" class="form-control-label">Customer Image</label></br>
