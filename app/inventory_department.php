@@ -61,36 +61,36 @@ class inventory_department extends Model
   // check record department exists // 
   public function check_dept($name)
   {
-    return count(DB::table("inventory_department")->where(['department_name' => $name, 'company_id' => session('company_id')])->get()) > 0 ? true : false;
+    return count(DB::table("inventory_department")->where(['department_name' => $name, 'company_id' => session('company_id'),'status'=>1])->get()) > 0 ? true : false;
   }
 
   // check record department id check this name another taken // 
   public function check_depart_code($code)
   {
-    return count(DB::table("inventory_department")->where(['code' => $code, 'company_id' => session('company_id')])->get()) > 0 ? true : false;
+    return count(DB::table("inventory_department")->where(['code' => $code, 'company_id' => session('company_id'),'status'=>1])->get()) > 0 ? true : false;
   }
 
   public function check_edit_depart_name($id, $name)
   {
-    return count(DB::table("inventory_department")->where(['department_name' => $name, 'company_id' => session('company_id')])->where('department_id', '!=', $id)->get()) > 0 ? true : false;
+    return count(DB::table("inventory_department")->where(['department_name' => $name, 'company_id' => session('company_id'),'status'=>1])->where('department_id', '!=', $id)->get()) > 0 ? true : false;
   }
 
   public function check_edit_depart_code($id, $code)
   {
-    return count(DB::table("inventory_department")->where(['code' => $code, 'company_id' => session('company_id')])->where('department_id', '!=', $id)->get()) > 0 ? true : false;
+    return count(DB::table("inventory_department")->where(['code' => $code, 'company_id' => session('company_id'),'status'=>1])->where('department_id', '!=', $id)->get()) > 0 ? true : false;
   }
 
   public function check_edit_sub_depart_name($id, $name, $departmentId)
   {
     if ($name != "") {
-      return count(DB::table("inventory_sub_department")->where(['sub_depart_name' => $name, 'department_id' => $departmentId])->where('sub_department_id', '!=', $id)->get()) > 0 ? true : false;
+      return count(DB::table("inventory_sub_department")->where(['sub_depart_name' => $name, 'department_id' => $departmentId,'status'=>1])->where('sub_department_id', '!=', $id)->get()) > 0 ? true : false;
     }
   }
 
   public function check_edit_sub_depart_code($id, $code, $departmentId)
   {
     if ($code != "") {
-      return count(DB::table("inventory_sub_department")->where(['code' => $code, 'department_id' => $departmentId])->where('sub_department_id', '!=', $id)->get()) > 0 ? true : false;
+      return count(DB::table("inventory_sub_department")->where(['code' => $code, 'department_id' => $departmentId,'status'=>1])->where('sub_department_id', '!=', $id)->get()) > 0 ? true : false;
     }
   }
 
@@ -98,38 +98,38 @@ class inventory_department extends Model
   // check record sub department exists // 
   public function check_sdept($id, $name, $dept, $code)
   {
-    return count(DB::table("inventory_sub_department")->where('sub_department_id', '!=', $id)->where('code', $code)->where('sub_depart_name', $name)->where('department_id', '=', $dept)->get()) > 0 ? true : false;
+    return count(DB::table("inventory_sub_department")->where('sub_department_id', '!=', $id)->where('status','=',1)->where('code', $code)->where('sub_depart_name', $name)->where('department_id', '=', $dept)->get()) > 0 ? true : false;
   }
 
   public function depart_exists($departname)
   {
-    $exists = DB::select('SELECT COUNT(department_id) AS counter FROM inventory_department WHERE department_name = ? and company_id = ?', [$departname, session('company_id')]);
+    $exists = DB::select('SELECT COUNT(department_id) AS counter FROM inventory_department WHERE status = 1 and department_name = ? and company_id = ?', [$departname, session('company_id')]);
     return $exists;
   }
 
   public function subdepart_exists($subdepartname, $deptid)
   {
-    $exists = DB::select('SELECT COUNT(sub_department_id) AS counter FROM inventory_sub_department WHERE sub_depart_name = ? and department_id = ?', [$subdepartname, $deptid]);
+    $exists = DB::select('SELECT COUNT(sub_department_id) AS counter FROM inventory_sub_department WHERE status = 1 and sub_depart_name = ? and department_id = ?', [$subdepartname, $deptid]);
     return $exists;
   }
 
   public function get_departments()
   {
-    $departs = DB::table('inventory_department')->where('company_id', session('company_id'))->get();
+    $departs = DB::table('inventory_department')->where('company_id', session('company_id'))->where('status',1)->get();
     return $departs;
   }
 
 
   public function get_subdepartments($departid)
   {
-    $departs = DB::table('inventory_sub_department')->where('department_id', $departid)->get();
+    $departs = DB::table('inventory_sub_department')->where('department_id', $departid)->where('status',1)->get();
     return $departs;
   }
 
 
   public function update_depart($id, $items)
   {
-    $result = DB::table('inventory_department')->where('department_id', $id)->update($items);
+    $result = DB::table('inventory_department')->where('department_id', $id)->where('company_id', session('company_id'))->where('status',1)->update($items);
     return $result;
   }
 
