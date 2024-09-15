@@ -1940,7 +1940,16 @@
             async:true,
             success:function(resp,textStatus, jqXHR){
                 if(jqXHR.status == 200){
-                   swal(resp,'','success');
+                   swal({
+                            title: "Success!",
+                            text: "",
+                            type: "success"
+                        }, function(isConfirm) {
+                            if (isConfirm) {
+                                window.location =
+                                    "{{ url('/inventory-list') }}";
+                            }
+                        });
                 }
 
                 if(jqXHR.status == 500){
