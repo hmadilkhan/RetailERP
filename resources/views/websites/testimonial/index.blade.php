@@ -59,12 +59,12 @@
 		</thead>
 		<tbody>
               @foreach($testimonials as $value)
-                 @php $website_name = $websites->where('id',$value->website_id)->pluck('name'); @endphp
                  @php 
+                   $website_name = $websites->where('id',$value->website_id)->pluck('name'); 
                       $image = asset('storage/images/placeholder.jpg');
                       
                       if(File:exists('storage/images/testimonials/'.$value->image)){
-                          $image = asset('storage/images/testimonials/'.$value->image);
+                          $image = asset('storage/images/testimonials/').$value->image;
                       }
                  @endphp
 				<tr>
