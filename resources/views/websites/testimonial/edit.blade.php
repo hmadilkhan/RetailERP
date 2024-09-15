@@ -100,7 +100,7 @@ $("#content").val('{{ $testimonial->content }}');
 	  }
 	}
 
-	$("#iamge").change(function() {
+	$("#image").change(function() {
 	  readURL(this,'preview');
 	});
 
