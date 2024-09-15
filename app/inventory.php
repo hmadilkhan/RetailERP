@@ -231,7 +231,10 @@ public function updateProductName($id,$name)
 		->join('inventory_sub_department as sdept','sdept.sub_department_id','=','invent.sub_department_id')
 		->join('inventory_product_mode','inventory_product_mode.product_mode_id','=','invent.product_mode')
 		->join('inventory_price','inventory_price.product_id','=','invent.id')
-        ->leftJoin("website_products",'website_products.inventory_id','invent.id',"website_products.status","=",1)
+        ->leftJoin('website_products', function($join) {
+            $join->on('website_products.inventory_id', '=', 'invent.id')
+                 ->where('website_products.status', '=', 1);
+        })
         ->leftJoin("website_details",'website_details.id','website_products.website_id')
 		->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id')
 		
