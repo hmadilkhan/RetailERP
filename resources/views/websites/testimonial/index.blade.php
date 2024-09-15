@@ -17,7 +17,7 @@
          <div class="alert alert-success">{{ Session::get('success') }}</div>
     @endif
 
-
+  @php $url_parameter_webId = isset($id) ? $id : null; @endphp
     <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Filter</h5>
@@ -29,7 +29,7 @@
                 <label class="form-control-label">Website</label>
                 <select name="website" id="website" class="select2" data-placeholder="Select">
                     <option value="">Select</option>
-                    @php $websiteValue = Request::has('id') ? Request::get('id') : old('websites') @endphp
+                    @php $websiteValue = $url_parameter_webId != null ? $url_parameter_webId : old('websites') @endphp
                     @foreach($websites as $value) 
                     <option {{ $websiteValue == $value->id ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
                     @endforeach
