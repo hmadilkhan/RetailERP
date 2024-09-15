@@ -121,10 +121,10 @@ class WebsiteTestimonialController extends Controller
         $testimonial = Testimonial::find($id);
 
         $this->validate($request, [
-            // "company_id"  => "required",
-            "customer"        => "required",
-            // "theme"       => "required",
-            "url"         => "required",
+            "website_id"     => "required",
+            "customer_name"  => "required|max:255",
+            "rating"         => "required",
+            "content"        => "required",
         ]);
 
         try {
