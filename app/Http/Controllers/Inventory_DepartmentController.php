@@ -77,6 +77,7 @@ class Inventory_DepartmentController extends Controller
      */
     public function store(Request $request, inventory_department $invent_department, custom_helper $helper)
     {
+      try { 
         $imageName       = "";
         $bannerImageName = "";
 
@@ -204,13 +205,18 @@ class Inventory_DepartmentController extends Controller
                 // return response()->json(array("state" => 0, "msg" => '', "contrl" => ''));
 
             } else { //checking condition department is not to save database error condition true
-                Session::flash('error','Error! Server Issue record is not save.');
+                Session::flash('error','An error occurred while saving the data.');
                 // return response()->json(array("state" => 1, "msg" => 'Not saved :(', "contrl" => ''));
             }
 
             return redirect()->route('invent_dept.create');
             // }
         // }
+      }catch (Exception $e) {
+        Log::error('Error saving data: ' . $e->getMessage());
+        Session::flash('error','An error occurred while saving the data.');
+        return redirect()->route('invent_dept.create');
+      }
     }
     public function depart_update(Request $request, inventory_department $invent_department, custom_helper $helper)
     {
