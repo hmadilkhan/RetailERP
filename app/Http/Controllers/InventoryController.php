@@ -1059,11 +1059,11 @@ class InventoryController extends Controller
     }
     
 
-    public function unLink_websiteProduct(Reqeust $request){
+    public function unLink_websiteProduct(Request $request){
 
         if(isset($request->website_id) && isset($request->product_id)){
 
-            if(Inventory::where('id',$request->product_id)->where('company_id',session('company_id'))->count() == 0){
+            if(inventory::where('id',$request->product_id)->where('company_id',session('company_id'))->count() == 0){
                 return response()->json('Product not found!',500);
             }
            
