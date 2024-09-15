@@ -14,14 +14,14 @@
 		@method("PUT")	
 				<div class="form-group">
 					<label class="form-control-label">Website</label>
-					@php $oldwebsite = old('website') ? old('website') : $testimonial->website_id @endphp
-					<select class="form-control" name="website" id="website">
+					@php $oldwebsite = old('website_id') ? old('website_id') : $testimonial->website_id @endphp
+					<select class="form-control" name="website_id" id="website_id">
 						<option>Select</option>
                         @foreach($websites as $value)
 						<option {{ $oldwebsite == $value->id ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
                         @endforeach
 					</select>
-					@error('website')
+					@error('website_id')
 						<span class="form-control-feedback text-danger">Field is required please select it</span>
 					@enderror
 				</div>
