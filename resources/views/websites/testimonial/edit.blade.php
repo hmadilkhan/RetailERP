@@ -68,7 +68,7 @@
 				</div> 
 
 				
-				<a class="btn btn-danger m-r-2" href="{{ route('filterTestimonial',$testimonial->id) }}">Cancel</a>	
+				<a class="btn btn-danger m-r-2" href="{{ route('filterTestimonial',$testimonial->website_id) }}">Cancel</a>	
 
 		       <button type="submit" class="btn btn-md btn-primary waves-effect waves-light f-right" > Update Website </button>       
 	</form>
