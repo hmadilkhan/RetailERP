@@ -1933,7 +1933,7 @@
 
     function UnLinkwebsite_ajax(websiteId,productId){
         $.ajax({
-            url:'',
+            url:'{{ route("website_product_unlink") }}',
             type:'POST',
             data:{_token:'{{ csrf_token() }}',website_id:websiteId,product_id:productId},
             dataType:'json',
