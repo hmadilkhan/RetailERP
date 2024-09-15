@@ -15,7 +15,7 @@
 @endif
 
 @if(Session::has('success'))
-  <div class="alert alert-danger">{{ Session::get('success') }}</div>
+  <div class="alert alert-success">{{ Session::get('success') }}</div>
 @endif
 
 <form method="post" id="deptform" action="{{ route('invent_dept.store') }}" class="form-horizontal" enctype="multipart/form-data">
