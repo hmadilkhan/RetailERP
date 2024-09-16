@@ -427,7 +427,7 @@
                         @else
                         <div id="urlgallery-{{$val->id}}" style="position: relative; display: inline-block; margin: 10px;">
                             <img src="{{ $value->url }}" style="max-width: 75px; max-height: 75px; object-fit: cover;">
-                            <button type="button" onclick="removeImageUrl({{ $val->id }},'{{ $val->url }}')" style="position: absolute; top: -6px; right: -6px; background-color: red; color:
+                            <button type="button" onclick="removeImageUrl({{ $val->id }},'{{ $val->image }}')" style="position: absolute; top: -6px; right: -6px; background-color: red; color:
                             white; border: none; border-radius: 50%; cursor: pointer; font-size: 12px;">
                                 ✖</button>
                         </div>
