@@ -599,7 +599,7 @@ $("#btn_update").on('click',function(){
   if(process){
 		$.ajax({
 			url:'{{ route("invent_sb_deptup") }}',
-    		type:"POST",
+    		type:"PUT",
             data:formData,
             dataType:"json",
     	    cache:false,
