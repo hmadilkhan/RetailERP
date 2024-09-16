@@ -410,6 +410,21 @@
                <h4 >Product Gallery</h4>
                </div>
                <div class="card-block p-2 p-t-0">
+                @if($images)
+                <div class="">
+                    @if(in_array(session('company_id'),[]))
+                      @foreach($images as $val)
+                        <div style="position: relative; display: inline-block; margin: 10px;">
+                            <img src="{{ $value->url }}" style="max-width: 75px; max-height: 75px; object-fit: cover;">
+                            <button style="position: absolute; top: -6px; right: -6px; background-color: red; color:
+                            white; border: none; border-radius: 50%; cursor: pointer; font-size: 12px;">
+                                ✖</button>
+                        </div>
+                      @endforeach
+                    @endif
+                </div>
+                @endif
+
                <div id="imgGalleryBox"></div>
                 <div class="form-group">
                     <br/>
