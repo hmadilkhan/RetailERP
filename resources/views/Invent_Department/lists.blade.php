@@ -280,11 +280,16 @@
                                     <th>Sub Department</th>
                                     <th>Website Department</th>
                                     <th>Image</th>
+                                    <th>Banner</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
                                     <td></td>
                                     <td></td>
                                 </tr>
@@ -661,6 +666,11 @@
                     formData.append('subdepartImage', $('#sdbptImg' + id)[0].files[0]);
                 }
 
+                if ($('#sdbptbannerImg' + id)[0].files.length != 0 && $('#sdbptbannerImg' + id)[0].files[0].size <= 1048576) {
+                    formData.append('subdepartBannerImage', $('#sdbptbannerImg' + id)[0].files[0]);
+                }
+                // sdbptbannerImg
+
                 if (process) {
                     $.ajax({
                         url: "{{ route('invent_sb_deptup') }}",
@@ -778,11 +788,17 @@
                     $(".sb_tble tbody").empty();
                     for (var s = 0; s < r.length; s++) {
 
-                        var imageColumn = "<td id='imgCell_md" + r[s].sub_department_id +
+                        let imageColumn = "<td id='imgCell_md" + r[s].sub_department_id +
                             "'><div><input type='file' name='sdbptImg' class='d-none' id='sdbptImg" + r[s]
                             .sub_department_id + "'> <i id='btn_selectImg" + r[s].sub_department_id +
                             "' class='icofont icofont-upload text-success icofont-3x' onclick='selectImg(" + r[
                                 s].sub_department_id + ")'></i></div></td>";
+
+                        let bannerColumn = "<td id='bannerCell_md" + r[s].sub_department_id +
+                            "'><div><input type='file' name='sdbptbannerImg' class='d-none' id='sdbptbannerImg" + r[s]
+                            .sub_department_id + "'> <i id='btn_selectbannerImg" + r[s].sub_department_id +
+                            "' class='icofont icofont-upload text-success icofont-3x' onclick='selectbannerImg(" + r[
+                                s].sub_department_id + ")'></i></div></td>";                                
 
                         if (r[s].image != null && r[s].image != '') {
                             imageColumn = "<td id='imgCell_md" + r[s].sub_department_id + "'><div><img src='" +
@@ -791,6 +807,12 @@
                                 r[s].sub_department_id + ")'></i></div></td>";
                         }
 
+                        if (r[s].banner != null && r[s].banner != '') {
+                            bannerColumn = "<td id='bannerCell_md" + r[s].sub_department_id + "'><div><img src='" +
+                                location.origin + "/storage/images/department/" + r[s].banner +
+                                "' width='64' height='64'/><i class='icofont icofont-close text-danger' onclick='removeBannerImgCell(" +
+                                r[s].sub_department_id + ")'></i></div></td>";
+                        }
 
                         $(".sb_tble tbody").append(
                             "<tr>" +
@@ -808,7 +830,7 @@
                             r[s].sub_department_id + "'/>" +
                             "<div class='form-control-feedback text-danger' id='tbxwb_" + r[s]
                             .sub_department_id + "_alert'></div>" + "</td>" +
-                            imageColumn +
+                            imageColumn + bannerColumn +
                             "<td class='action-icon'><i onclick='update(" + r[s].sub_department_id + "," +
                             departid + ")' class='btn btn-primary'> Update</i></td>" +
                             "</tr>"
@@ -838,7 +860,16 @@
                 '" class="icofont icofont-upload text-success icofont-3x" onclick="selectImg(' + id + ')"></i>');
         }
 
+        function removeBannerImgCell(id) {
+
+          $("#bannerCell_md" + id).empty();
+          $("#bannerCell_md" + id).append('<input type="file" name="sdbptbannerImg" class="d-none" id="sdbptbannerImg' + id +
+              '"> <i id="btn_selectbannerImg' + id +
+              '" class="icofont icofont-upload text-success icofont-3x" onclick="selectbannerImg(' + id + ')"></i>');
+        }        
+
         let imgdId = null;
+        let bannerImgId = null;
 
         function selectImg(id) {
             imgdId = id;
@@ -852,6 +883,21 @@
                 $("#imgCell_md" + id).append('<img src="" width="64" height="64" id="imgPreviewsdbpt' + id +
                     '"> <i class="icofont icofont-close text-danger" onclick="removeImgCell(' + id + ')"></i>');
                 readURL(this, "imgPreviewsdbpt" + id);
+            })
+        }
+
+        function selectbannerImg(id) {
+          bannerImgId = id;
+            $("#sdbptbannerImg" + id).trigger('click');
+            bannerImgGet_sbd_md(id)
+        }        
+
+        function bannerImgGet_sbd_md(id) {
+            $("#sdbptImg" + id).on('change', function() {
+                $("#btn_selectbannerImg" + id).remove();
+                $("#imgbannerCell_md" + id).append('<img src="" width="64" height="64" id="bannerimgPreviewsdbpt' + id +
+                    '"> <i class="icofont icofont-close text-danger" onclick="removeBannerImgCell(' + id + ')"></i>');
+                readURL(this, "bannerimgPreviewsdbpt" + id);
             })
         }
 

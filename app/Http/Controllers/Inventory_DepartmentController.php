@@ -251,31 +251,36 @@ class Inventory_DepartmentController extends Controller
         // return response()->json(array("state"=>1,"msg"=>'This sub-department already exists.',"contrl"=>'tbx_'.$request->get('sdepart')));
         // }else {
 
-
-
         if (!empty($request->file('subdepartImage'))) {
-            // $imageName = preg_replace("/[\s_]/", "-",strtolower($request->get('sdepart'))).time().'.'.strtolower($request->file('subdepartImage')->getClientOriginalExtension()); 
-
-            // $getFormFile = $request->file('subdepartImage');
-            // $getFormFile->move(public_path('assets/images/department'),$imageName);
-
             $file = $this->uploads($request->file('subdepartImage'), "images/department");
             $imageName = !empty($file) ? $file["fileName"] : "";
 
             $get = DB::table('inventory_sub_department')->where('sub_department_id', $request->id)->first();
             if ($get) {
                 $this->removeImage("images/department/", $get->image);
-                // if(File::exists(public_path('assets/images/department/').$get->image)){
-                //     File::delete(public_path('assets/images/department/').$get->image);
-                // }
             }
         }
+
+        if (!empty($request->file('subdepartBannerImage'))) {
+            $file = $this->uploads($request->file('subdepartBannerImage'), "images/department");
+            $bannerImageName = !empty($file) ? $file["fileName"] : "";
+
+            $get = DB::table('inventory_sub_department')->where('sub_department_id', $request->id)->first();
+            if ($get) {
+                $this->removeImage("images/department/", $get->image);
+            }
+        }
+        
 
         $column = ['sub_depart_name' => $request->sdepart,'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
 
         if ($imageName != null) {
             $column['image'] = $imageName;
         }
+
+        if ($bannerImageName != null) {
+            $column['banner'] = $bannerImageName;
+        }        
 
         if ($request->get('code') != null) {
             $column['code'] = $request->get('code');
