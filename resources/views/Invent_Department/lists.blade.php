@@ -647,7 +647,9 @@
 
         function update(id, dept) {
             let process = true;
-            let code = $("#department_code").val();
+            let code    = $("#department_code").val();
+            let subdepartImage       = $('#sdbptImg' + id)[0];
+            let subdepartBannerImage = $('#sdbptbannerImg' + id)[0];
 
             if (code == $("#code_" + id).val() && $("#code_" + id).val() != '') {
                 swal_alert('Alert!', "Cannot use the main department code.", 'error', false);
@@ -666,12 +668,12 @@
                 formData.append('code', $("#code_" + id).val());
                 formData.append('id', id);
 
-                if ($('#sdbptImg' + id)[0].files.length != 0 && $('#sdbptImg' + id)[0].files[0].size <= 1048576) {
-                    formData.append('subdepartImage', $('#sdbptImg' + id)[0].files);
+                if (subdepartImage.files.length != 0 && subdepartImage.files[0].size <= 1048576) {
+                    formData.append('subdepartImage', subdepartImage.files[0]);
                 }
 
-                if ($('#sdbptbannerImg' + id)[0].files.length != 0 && $('#sdbptbannerImg' + id)[0].files[0].size <= 1048576) {
-                    formData.append('subdepartBannerImage', $('#sdbptbannerImg' + id)[0].files);
+                if (subdepartBannerImage.files.length != 0 && subdepartBannerImage.files[0].size <= 1048576) {
+                    formData.append('subdepartBannerImage', subdepartBannerImage.files[0]);
                 }
                 // sdbptbannerImg
 

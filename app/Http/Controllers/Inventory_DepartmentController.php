@@ -273,7 +273,11 @@ class Inventory_DepartmentController extends Controller
             }
         }
         
-        $column = ['sub_depart_name' => $request->sdepart,'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
+        $column = [
+                    'sub_depart_name' => $request->sdepart,
+                    'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart),
+                     'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))
+                    ];
 
         if ($imageName != null) {
             $column['image'] = $imageName;
