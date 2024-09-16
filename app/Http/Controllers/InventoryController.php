@@ -926,7 +926,7 @@ class InventoryController extends Controller
            $arrayValue = explode(',',$request->oldGalleryImage);
            foreach($arrayValue as $val){
                  if(File::exists('storage/images/products/'.$val)){
-                    File::unlink('storage/images/products/'.$val);
+                    File::delete('storage/images/products/'.$val);
                  }
            }
         }
