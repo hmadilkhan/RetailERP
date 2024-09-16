@@ -25,8 +25,8 @@
       <input type="hidden" id="id" name="id" value="{{$data[0]->id}}">
       <input type="hidden" id="previmage" name="previmage" value="{{$data[0]->image}}">
       <input type="hidden" id="reminder_id" name="reminder_id" value="{{$data[0]->reminder_id}}">
-      <input type="hidden" id="oldGalleryImage" name="oldGalleryImage" value="{{ old('oldGalleryImage') }}">
-      <input type="hidden" id="oldurlGalleryImage" name="oldurlGalleryImage" value="{{ old('oldurlGalleryImage') }}">
+      <input type="hidden" id="oldGalleryImage" name="oldGalleryImage">
+      <input type="hidden" id="oldurlGalleryImage" name="oldurlGalleryImage">
 
       <div class="row">
           <div class="col-md-9">
