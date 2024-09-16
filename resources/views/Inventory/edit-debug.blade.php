@@ -410,6 +410,7 @@
                <h4 >Product Gallery</h4>
                </div>
                <div class="card-block p-2 p-t-0">
+                {{ $images }}
                 @if($images)
                 <div class="">
                     @if(in_array(session('company_id'),[]))
