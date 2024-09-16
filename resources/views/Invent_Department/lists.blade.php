@@ -649,7 +649,7 @@
             let process = true;
             let code = $("#department_code").val();
 
-            if (code == $("#code_" + id).val()) {
+            if (code == $("#code_" + id).val() && $("#code_" + id).val() != '') {
                 swal_alert('Alert!', "Cannot use the main department code.", 'error', false);
                 process = false;
             } else if ($("#tbx_" + id).val() == "") {
