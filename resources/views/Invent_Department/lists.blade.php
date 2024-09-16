@@ -233,6 +233,7 @@
                                  <div class="modal-body">
                                     <input type="hidden" name="uhidd_id" id="uhidd_id" value="0" />
                                     <input type="hidden" name="department_code" id="department_code" />
+                                    <input type="hidden" id="_token_sbDepartEditForm" value="{{ csrf_token() }}">
                                       
                                     <table class="table full-width sb_tble">
                                          <thead>
@@ -584,7 +585,7 @@ $("#btn_update").on('click',function(){
 	  
 	  var formData = new FormData();
 	  
-	  formData.append('_token','{{ csrf_token() }}');
+	  formData.append('_token',$("#_token_sbDepartEditForm").val());
 	  formData.append('sdepart',$("#tbx_"+id).val());
     formData.append('website_department_name',$("#tbxwb_"+id).val());
 	  formData.append('dept',dept);
