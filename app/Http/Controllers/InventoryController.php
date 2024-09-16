@@ -1071,7 +1071,7 @@ class InventoryController extends Controller
             }
            
            if(!WebsiteProduct::where("inventory_id", $request->product_id)->where('website_id',$request->website_id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")])){
-            return response()->json('Success!',200);
+            return response()->json('Error! this product not unlink to website',500);
            }
 
            return response()->json('Success!',200);
@@ -1080,7 +1080,23 @@ class InventoryController extends Controller
        return response()->json('bad request',500);   
     }
 
+    public function allWebsiteProduct_unlink(Request $request){
 
+        if(isset($request->product_id)){
+
+            if(DB::table('inventory_general')->whereIn('id',$request->product_id)->where('company_id',session('company_id'))->count() == 0){
+                return response()->json('Product not found!',500);
+            }
+           
+           if(!WebsiteProduct::whereIn("inventory_id", $request->product_id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")])){
+            return response()->json('All product not unlink to website!',500);
+           }
+
+           return response()->json('Success!',200);
+        }
+
+       return response()->json('bad request',500);   
+    }
 
     /**S
      * Remove the specified resource from storage.
