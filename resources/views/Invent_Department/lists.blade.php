@@ -699,14 +699,18 @@
                 formData.append('dept', dept);
                 formData.append('code', $("#code_" + id).val());
                 formData.append('id', id);
-
+            
+               if(subdepartImage.length){ 
                 if (subdepartImage.files.length != 0 && subdepartImage.files[0].size <= 1048576) {
                     formData.append('subdepartImage', subdepartImage.files[0]);
                 }
-
+               }
+           
+               if(subdepartBannerImage.length){  
                 if (subdepartBannerImage.files.length != 0 && subdepartBannerImage.files[0].size <= 1048576) {
                     formData.append('subdepartBannerImage', subdepartBannerImage.files[0]);
                 }
+               }
                 // sdbptbannerImg
 
                 if (process) {
