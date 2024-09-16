@@ -19,7 +19,7 @@
   </div>
 <section class="panels-wells">
   <form id="inventoryupdate" method="post" class="form-horizontal" enctype="multipart/form-data" action="{{ route('update') }}">
-      @method('POST')
+      {{-- @method('POST') --}}
       @csrf
 
       <input type="hidden" id="id" name="id" value="{{$data[0]->id}}">
