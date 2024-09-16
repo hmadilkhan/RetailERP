@@ -923,21 +923,21 @@ class InventoryController extends Controller
         //    return empty($request->file('image')) ? 1 : 0;
               
         if(!empty($request->oldGalleryImage)){
-            $galleryString = is_string($request->oldGalleryImage);
-            $arrayValue = !empty($galleryString) ? explode(',',$galleryString) : null;
-           foreach($arrayValue as $val){
-                 if(File::exists('storage/images/products/'.$val)){
-                    File::delete('storage/images/products/'.$val);
+        //     $galleryString = is_string($request->oldGalleryImage);
+        //     $arrayValue = !empty($galleryString) ? explode(',',$galleryString) : null;
+        //    foreach($arrayValue as $val){
+                 if(File::exists('storage/images/products/'.$request->oldGalleryImage)){
+                    File::delete('storage/images/products/'.$request->oldGalleryImage);
                  }
-           }
+        //    }
         }
 
         if(!empty($request->oldurlGalleryImage)){
-            $urlgalleryString = is_string($request->oldurlGalleryImage);
-            $arrayValue = !empty($urlgalleryString) ? explode(',',is_string($urlgalleryString)) : null;
-            foreach($arrayValue as $val){
-                Cloudinary::destroy($val);
-            }
+            // $urlgalleryString = is_string($request->oldurlGalleryImage);
+            // $arrayValue = !empty($urlgalleryString) ? explode(',',is_string($urlgalleryString)) : null;
+            // foreach($arrayValue as $val){
+                Cloudinary::destroy($request->$oldurlGalleryImage);
+            // }
          }        
 
         if (!empty($request->file('image'))) {
