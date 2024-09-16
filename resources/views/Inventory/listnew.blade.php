@@ -1888,7 +1888,6 @@
 
            if(rem_id != 0){
              console.log(rem_id);
-             rem_id = [];
              swal({
                 title: "UnLink Website",
                 text: "Do you want to unlink from website?",
@@ -1901,9 +1900,34 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                  
+                        $.ajax({
+                            url:'{{ route("all_product_unlink_website") }}',
+                            type:'POST',
+                            data:{_token:'{{ csrf_token() }}',product_id:rem_id},
+                            dataType:'json',
+                            async:true,
+                            success:function(resp,textStatus, jqXHR){
+                                if(jqXHR.status == 200){
+                                swal({
+                                            title: "Success!",
+                                            text: "",
+                                            type: "success"
+                                        }, function(isConfirm) {
+                                            if (isConfirm) {
+                                                window.location =
+                                                    "{{ url('/inventory-list') }}";
+                                            }
+                                        });
+                                }
+
+                                if(jqXHR.status == 500){
+                                    swal('Error!',resp,'error');
+                                }
+                            }
+                        })                  
                 }else{
                     swal("Cancel!","All products are safe:)","error");
+                    rem_id = [];
                 }
 
             });                
