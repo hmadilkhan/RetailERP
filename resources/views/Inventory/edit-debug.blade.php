@@ -640,7 +640,7 @@ function removeImage(id,img){
    $("#gallery-"+id).remove();
    var $input = $('#oldGalleryImage');
     var currentValue = $input.val();
-    var newValue = 'new_value'; // The value you want to add
+    var newValue = img; // The value you want to add
 
     if (currentValue) {
         $input.val(currentValue + ',' + newValue);
@@ -653,7 +653,7 @@ function removeImageUrl(id,img){
    $("#urlgallery-"+id).remove();
    var $input = $('#oldurlGalleryImage');
     var currentValue = $input.val();
-    var newValue = 'new_value'; // The value you want to add
+    var newValue = img; // The value you want to add
 
     if (currentValue) {
         $input.val(currentValue + ',' + newValue);
