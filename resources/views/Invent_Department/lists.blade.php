@@ -572,10 +572,13 @@ $("#btn_update").on('click',function(){
 
  function update(id,dept){
   let code = $("#department_code").val();
+  var process = true;
   if(code == $("#code_"+id).val()){
 	  swal_alert('Alert!',"Cannot use the main department code.",'error',false);
+    process = false;
   }else if($("#tbx_"+id).val() == ""){
           $("#tbx_"+id+"_alert").html('Sub-Department name is required.').addClass('text-danger');
+          process = false;
   }else {
 	  $("#tbx_"+id+"_alert").html('').removeClass('text-danger'); 
 	  
@@ -590,6 +593,7 @@ $("#btn_update").on('click',function(){
 
 	if($('#sdbptImg'+id)[0].files.length != 0  && $('#sdbptImg'+id)[0].files.size <= 1048576){  
 	  formData.append('subdepartImage', $('#sdbptImg'+id)[0].files[0]);
+    process = false;
 	}
 
   if(process){
