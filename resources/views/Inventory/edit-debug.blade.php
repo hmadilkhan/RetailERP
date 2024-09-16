@@ -644,10 +644,9 @@ function removeImage(id,img){
     var newValue = img; // The value you want to add
 
     if (currentValue) {
-        $input.push(currentValue);
-        $input.push(newValue);
+        $input.val(currentValue + ',' + newValue);
     } else {
-        $input.push(newValue);
+        $input.val(newValue);
     }
 }
 
