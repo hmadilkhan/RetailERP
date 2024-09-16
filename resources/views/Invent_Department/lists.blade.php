@@ -583,6 +583,7 @@ $("#btn_update").on('click',function(){
 	  
 	  formData.append('_token','{{ csrf_token() }}');
 	  formData.append('sdepart',$("#tbx_"+id).val());
+    formData.append('website_department_name',$("#tbxwb_"+id).val());
 	  formData.append('dept',dept);
 	  formData.append('code',$("#code_"+id).val());
 	  formData.append('id',id);
