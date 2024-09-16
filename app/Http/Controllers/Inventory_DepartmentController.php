@@ -11,7 +11,7 @@ use App\Traits\MediaTrait;
 use App\Models\Inventory;
 use App\WebsiteProduct;
 use App\Section;
-use Auth,File,Image,Session;
+use Auth, File, Image, Session;
 
 class Inventory_DepartmentController extends Controller
 {
@@ -36,18 +36,18 @@ class Inventory_DepartmentController extends Controller
             ->where('status', 1)
             ->where('company_id', session('company_id'))
             ->with(['websiteProducts' => function ($query) {
-                $query->select('website_id','inventory_id')->groupBy("laravel_through_key"); // Select website_id and any other necessary fields
+                $query->select('website_id', 'inventory_id')->where("website_products.status", 1)->groupBy("laravel_through_key"); // Select website_id and any other necessary fields
             }])
             ->withCount([
-                'inventoryProducts as product_count' => function($query) {
+                'inventoryProducts as product_count' => function ($query) {
                     WebsiteProduct::whereIn('inventory_id', Inventory::where('department_id', "inventory_department.department_id")
-                                                            ->where('status', 1)
-                                                            ->pluck('id'));
+                        ->where('status', 1)
+                        ->pluck('id'));
                 }
             ])
             ->orderBy('department_id', 'DESC')->get(); //inventory_department::getdepartment('');
 
-            
+
         // return $depart;
         $sdepart = inventory_department::get_subdepart('');
         $sections = Section::getSection();
@@ -77,85 +77,85 @@ class Inventory_DepartmentController extends Controller
      */
     public function store(Request $request, inventory_department $invent_department, custom_helper $helper)
     {
-      try { 
-        $imageName       = "";
-        $bannerImageName = "";
+        try {
+            $imageName       = "";
+            $bannerImageName = "";
 
-        // if (!empty($request->post('parent'))) {
-        //     $exsist = $invent_department->subdepart_exists($request->deptname, $request->post('parent'));
+            // if (!empty($request->post('parent'))) {
+            //     $exsist = $invent_department->subdepart_exists($request->deptname, $request->post('parent'));
 
-        //     if ($exsist[0]->counter == 0) {
-        //         if (!empty($request->file('departImage'))) {
+            //     if ($exsist[0]->counter == 0) {
+            //         if (!empty($request->file('departImage'))) {
 
-        //              $rules = [
-        //                         'departImage'=>'image|mimes:jpeg,png,jpg,webp|max:1024'
-        //                       ];
+            //              $rules = [
+            //                         'departImage'=>'image|mimes:jpeg,png,jpg,webp|max:1024'
+            //                       ];
 
-        //              $validator = Validator::make($request->all(), $rules);
+            //              $validator = Validator::make($request->all(), $rules);
 
-        //             // Check if validation fails
-        //             if ($validator->fails()) {
-        //                 // Redirect back with errors and old input
-        //                 return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
-        //             }
+            //             // Check if validation fails
+            //             if ($validator->fails()) {
+            //                 // Redirect back with errors and old input
+            //                 return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
+            //             }
 
-        //             $file = $this->uploads($request->file('departImage'), "images/department/");
-        //             $imageName = !empty($file) ? $file["fileName"] : "";
-        //         }
+            //             $file = $this->uploads($request->file('departImage'), "images/department/");
+            //             $imageName = !empty($file) ? $file["fileName"] : "";
+            //         }
 
-        //         $items = [
-        //             'code'             => $request->code,
-        //             'department_id'    => $request->post('parent'),
-        //             'sub_depart_name'  => $request->deptname,
-        //             'slug'             => preg_replace("/[\s_]/", "-", strtolower($request->deptname)),
-        //             'image'            => $imageName,
-        //         ];
+            //         $items = [
+            //             'code'             => $request->code,
+            //             'department_id'    => $request->post('parent'),
+            //             'sub_depart_name'  => $request->deptname,
+            //             'slug'             => preg_replace("/[\s_]/", "-", strtolower($request->deptname)),
+            //             'image'            => $imageName,
+            //         ];
 
-        //         $result = $invent_department->insert_sdept($items);
+            //         $result = $invent_department->insert_sdept($items);
 
 
-        //         $getsubdepart = $invent_department->get_subdepartments($request->post('parent'));
-        //         return 1;
-        //     } else {
-        //         return 0;
-        //     }
-        // } else {
+            //         $getsubdepart = $invent_department->get_subdepartments($request->post('parent'));
+            //         return 1;
+            //     } else {
+            //         return 0;
+            //     }
+            // } else {
 
             // return $invent_department->check_dept($request->get('deptname'),$request->get('code'));
-            $messages = []; 
+            $messages = [];
             $rules = [
-                        'department_name'=>'required',
-                     ];
-             
+                'department_name' => 'required',
+            ];
+
             if (!empty($request->get('department_code'))) { //checking department code exists
                 if ($invent_department->check_depart_code($request->get('department_code'))) {
 
-                    $rules['department_code']='required';
-                    $messages['department_code.required']='This department code already exists.';
+                    $rules['department_code'] = 'required';
+                    $messages['department_code.required'] = 'This department code already exists.';
                 }
             }
 
             if ($invent_department->check_dept($request->get('department_name'))) { //checking department name eixts
-                $rules['department_name']='required';
-                $messages['department_name.required']='This department name already exists.';
-                $this->validate($request,$rules,$messages);    
+                $rules['department_name'] = 'required';
+                $messages['department_name.required'] = 'This department name already exists.';
+                $this->validate($request, $rules, $messages);
             }
             // else {
 
             if (!empty($request->file('department_image'))) { //department image
-                $rules['department_image']='image|mimes:jpeg,png,jpg,webp|max:1024';
+                $rules['department_image'] = 'image|mimes:jpeg,png,jpg,webp|max:1024';
                 $file = $this->uploads($request->file('department_image'), "images/department/");
                 $imageName = !empty($file) ? $file["fileName"] : "";
             }
 
             if (!empty($request->file('banner_image'))) { //department banner 
-                    $rules['banner_image']='image|mimes:jpeg,png,jpg,webp|max:1024';
+                $rules['banner_image'] = 'image|mimes:jpeg,png,jpg,webp|max:1024';
                 $file = $this->uploads($request->file('banner_image'), "images/department/");
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";
             }
 
-            $this->validate($request,$rules); // validation module 
-           
+            $this->validate($request, $rules); // validation module 
+
 
             //department form details save array value 
             $data = [
@@ -172,7 +172,7 @@ class Inventory_DepartmentController extends Controller
                 "meta_description"         => $request->metadescript,
                 'website_mode'             => isset($request->showWebsite) ? 1 : 0
             ];
-             
+
             // department save to database 
             $result = $invent_department->insert_dept($data);
             if ($result) {  //checking condition department issaved to database show the success message
@@ -180,9 +180,9 @@ class Inventory_DepartmentController extends Controller
                     foreach ($request->sections as $value) {
                         $invent_department->insert_section(['department_id' => $result, 'section_id' => $value, 'created_at' => date('Y-m-d H:i:s')]);
                     }
-                }    
-                
-                Session::flash('success','Success!');
+                }
+
+                Session::flash('success', 'Success!');
                 //  $subdpt_value = $request->subdpt;
 
                 //  $subdpt_value = explode(",",$subdpt_value);
@@ -205,18 +205,18 @@ class Inventory_DepartmentController extends Controller
                 // return response()->json(array("state" => 0, "msg" => '', "contrl" => ''));
 
             } else { //checking condition department is not to save database error condition true
-                Session::flash('error','An error occurred while saving the data.');
+                Session::flash('error', 'An error occurred while saving the data.');
                 // return response()->json(array("state" => 1, "msg" => 'Not saved :(', "contrl" => ''));
             }
 
             return redirect()->route('invent_dept.create');
             // }
-        // }
-      }catch (Exception $e) {
-        Log::error('Error saving data: ' . $e->getMessage());
-        Session::flash('error','An error occurred while saving the data.');
-        return redirect()->route('invent_dept.create');
-      }
+            // }
+        } catch (Exception $e) {
+            Log::error('Error saving data: ' . $e->getMessage());
+            Session::flash('error', 'An error occurred while saving the data.');
+            return redirect()->route('invent_dept.create');
+        }
     }
     public function depart_update(Request $request, inventory_department $invent_department, custom_helper $helper)
     {
@@ -271,7 +271,7 @@ class Inventory_DepartmentController extends Controller
             }
         }
 
-        $column = ['sub_depart_name' => $request->sdepart,'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
+        $column = ['sub_depart_name' => $request->sdepart, 'website_sub_department_name' => (!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
 
         if ($imageName != null) {
             $column['image'] = $imageName;
@@ -365,7 +365,7 @@ class Inventory_DepartmentController extends Controller
                     ->join('inventory_general', 'website_products.inventory_id', '=', 'inventory_general.id')
                     ->where('inventory_general.department_id', $request->id)
                     ->where('inventory_general.status', 2)
-                    ->update(['website_products.status' => 0,'website_products.updated_at' => date("Y-m-d H:i:s")]);
+                    ->update(['website_products.status' => 0, 'website_products.updated_at' => date("Y-m-d H:i:s")]);
                 DB::commit();
                 return response()->json(["status" => 200, "message" => "Department Deleted successfully."]);
             }
@@ -443,17 +443,17 @@ class Inventory_DepartmentController extends Controller
         }
 
         if (!empty($request->file('bannerImage'))) {
-                    //  $rules = [
-                    //             'bannerImage'=>'image|mimes:jpeg,png,jpg,webp|max:1024'
-                    //           ];
+            //  $rules = [
+            //             'bannerImage'=>'image|mimes:jpeg,png,jpg,webp|max:1024'
+            //           ];
 
-                    //  $validator = Validator::make($request->all(), $rules);
+            //  $validator = Validator::make($request->all(), $rules);
 
-                    // // Check if validation fails
-                    // if ($validator->fails()) {
-                    //     // Redirect back with errors and old input
-                    //     return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
-                    // }
+            // // Check if validation fails
+            // if ($validator->fails()) {
+            //     // Redirect back with errors and old input
+            //     return response()->json(['error'=>$validator,'contrl'=>'departImage'],500);
+            // }
 
             $get = DB::table('inventory_department')->where('company_id', session('company_id'))->where('department_id', $request->departid)->first();
 
@@ -508,44 +508,121 @@ class Inventory_DepartmentController extends Controller
 
 
 
-    public function department_website_connect(Request $request){
-          
-        $statusCode = $request->status_code;
-        $department = $request->department;
-        $website_id = $request->website_id;
+    // public function department_website_connect(Request $request)
+    // {
 
-        if(empty($request->department) && empty($request->website_id) && empty($request->status_id)){
-             return response()->json('Server Issue! parameter not found!',500);
-        }
-     
-        if($statusCode == 'link'){
-           $inventories = Inventory::where('department_id',$department)->where('status',1)->pluck('id');
-           if($inventories != null){
-              foreach($inventories as $value){
-                if(WebsiteProduct::where('website_id',$website_id)
-                                  ->where('inventory_id',$value->id)
-                                   ->where('status',1)->count() == 0){
-                    WebsiteProduct::create([
-                                       'website_id'   =>$website_id,
-                                       'inventory_id' =>$value->id,
-                                       'created_at'   =>date("Y-m-d H:i:s")
-                      ]);
-                }
-              }
-              return response()->json('Success!',200);
-           }
+    //     $statusCode = $request->status_code;
+    //     $department = $request->department;
+    //     $website_id = $request->website_id;
+
+    //     if (empty($department)  && empty($statusCode)) { //&& ( $statusCode == 'link' && empty($website_id))
+    //         // return $request;
+    //         return response()->json('Server Issue! parameter not found!', 500);
+    //     }
+
+    //     if ($department != ""  && $statusCode != "") {
+
+    //         if ($statusCode == 'link') {
+    //             $inventories = Inventory::where('department_id', $department)->where('status', 1)->pluck('id');
+    //             if ($inventories != null) {
+    //                 foreach ($inventories as $value) {
+    //                     if (
+    //                         WebsiteProduct::where('website_id', $website_id)
+    //                         ->where('inventory_id', $value->id)
+    //                         ->where('status', 1)->count() == 0
+    //                     ) {
+    //                         WebsiteProduct::create([
+    //                             'website_id'   => $website_id,
+    //                             'inventory_id' => $value->id,
+    //                             'created_at'   => date("Y-m-d H:i:s")
+    //                         ]);
+    //                     }
+    //                 }
+    //                 return response()->json('Success!', 200);
+    //             }
+    //         }
+
+    //         if ($statusCode == 'unlink') {
+    //             $inventories = WebsiteProduct::whereIn(
+    //                 'inventory_id',
+    //                 Inventory::where('department_id', $department)
+    //                     ->where('status', 1)->pluck('id')
+    //             )
+    //                 ->where('status', 1)
+    //                 ->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")]);
+
+    //             if ($inventories) {
+    //                 return response()->json('Success!', 200);
+    //             }
+    //         }
+    //     }else{
+    //         return response()->json('Server Issue! parameter not found!', 500);
+    //     }
+    // }
+
+    public function departmentWebsiteConnect(Request $request)
+    {
+        $statusCode = $request->input('status_code');
+        $department = $request->input('department');
+        $websiteId = $request->input('website_id');
+
+        // Validate input
+        if (empty($department) || empty($statusCode)) {
+            return response()->json('Server Issue! Parameter not found!', 500);
         }
 
-        if($statusCode == 'unlink'){
-            $inventories = WebsiteProduct::whereIn('inventory_id',Inventory::where('department_id',$department)
-                                                                          ->where('status',1)->pluck('id')
-                                                 )
-                                          ->where('status',1)
-                                          ->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
-            if($inventories){
-                return response()->json('Success!',200);
-            }                              
-         }        
-        
+        // Get active inventories related to the department
+        $inventoryIds = Inventory::where('department_id', $department)
+            ->where("company_id",session("company_id"))
+            ->where('status', 1)
+            ->pluck('id');
+
+        if ($inventoryIds->isEmpty()) {
+            return response()->json('No active inventories found for this department.', 404);
+        }
+
+        if ($statusCode === 'link') {
+            // Find inventories that are not already linked to the website
+            $existingWebsiteProducts = WebsiteProduct::where('website_id', $websiteId)
+                ->whereIn('inventory_id', $inventoryIds)
+                ->where('status', 1)
+                ->pluck('inventory_id')
+                ->toArray();
+
+            // Filter out already linked inventories
+            $newInventoryIds = $inventoryIds->diff($existingWebsiteProducts);
+
+            // Insert new WebsiteProduct records for inventories that aren't linked yet
+            $newWebsiteProducts = $newInventoryIds->map(function ($inventoryId) use ($websiteId) {
+                return [
+                    'website_id' => $websiteId,
+                    'inventory_id' => $inventoryId,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                    'status' => 1
+                ];
+            });
+
+            if ($newWebsiteProducts->isNotEmpty()) {
+                WebsiteProduct::insert($newWebsiteProducts->toArray());
+            }
+
+            return response()->json('Success!', 200);
+        }
+
+        if ($statusCode === 'unlink') {
+            // Unlink inventories from the website by marking them as inactive
+            $updated = WebsiteProduct::whereIn('inventory_id', $inventoryIds)
+                ->where('status', 1)
+                ->update(['status' => 0, 'updated_at' => now()]);
+
+            if ($updated) {
+                return response()->json('Success!', 200);
+            }
+
+            return response()->json('No inventories were updated.', 404);
+        }
+
+        return response()->json('Invalid status code!', 400);
     }
 }

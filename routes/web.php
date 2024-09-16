@@ -609,7 +609,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/addsubdepart', [Inventory_DepartmentController::class, 'addsubdepartment']);
     Route::post('/updatedepart', [Inventory_DepartmentController::class, 'updatedepart']);
     Route::get('/getsubdepart', [Inventory_DepartmentController::class, 'getsubdepart']);
-    Route::post('/department-connect-website', [Inventory_DepartmentController::class, 'department_website_connect'])->name('department_website_connect');
+    Route::post('/department-connect-website', [Inventory_DepartmentController::class, 'departmentWebsiteConnect'])->name('department_website_connect');
 
     //Inventory Stock
     Route::get('/stock-list', [StockController::class, 'index']);

@@ -88,9 +88,9 @@
                                                             data-original-title="Delete Department"></i>
 
                                                         @if ($websites)
-                                                            @if (count($depart[$d]->websiteProducts) > 0)
+                                                            @if (count($depart[$d]->websiteProducts) > 0 && count($depart[$d]->websiteProducts->pluck('website_id')) > 0)
                                                                 {{-- {{$depart[$d]->websiteProducts->pluck('website_id')}} --}}
-                                                                @if (count($depart[$d]->websiteProducts->pluck('website_id')) > 0)
+                                                                {{-- @if (count($depart[$d]->websiteProducts->pluck('website_id')) > 0) --}}
                                                                     <i class="icofont icofont-link text-info pointer"
                                                                         data-toggle="tooltip" data-placement="top"
                                                                         title="" data-original-title="Unlink Website"
@@ -100,7 +100,7 @@
                                                                         data-toggle="tooltip" data-placement="top"
                                                                         title="" data-original-title="Link Website"
                                                                         onclick="linkWebsite({{ $depart[$d]->department_id }})"></i>
-                                                                @endif
+                                                                {{-- @endif --}}
                                                             @endif
                                                         @endif
                                                     </td>
@@ -389,6 +389,7 @@
                     <div class="modal-body">
 
                         <div class="form-group">
+                            <input type="hidden" id="depart_webconn_md">
                             <select class="form-control  select2" data-placeholder="Select Website" id="website_md"
                                 name="website_md">
                                 <option value="">Select Website</option>
@@ -455,11 +456,11 @@
         function unLinkWebsite(departId) {
             swal({
                     title: "Are you sure?",
-                    text: "This department unlink from website?",
+                    text: "This department will be unlink from the website?",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonClass: "btn-danger",
-                    confirmButtonText: "Active it!",
+                    confirmButtonText: "Unlink Website!",
                     cancelButtonText: "cancel plx!",
                     closeOnConfirm: false,
                     closeOnCancel: false
@@ -476,7 +477,7 @@
 
         function websiteConnection(departId, website, stcode) {
             $.ajax({
-                url: '{{ route('department_website_connect') }}',
+                url: "{{ route('department_website_connect') }}",
                 type: 'POST',
                 data: {
                     _token: '{{ csrf_token() }}',
@@ -486,6 +487,9 @@
                 },
                 dataType: 'json',
                 success: function(resp, textStatus, jqXHR) {
+                    console.log(resp);
+                    console.log(jqXHR);
+                    
                     if (jqXHR.status == 200) {
                         swal({
                                 title: "Operation Performed",
