@@ -285,8 +285,8 @@ class Inventory_DepartmentController extends Controller
 
         if ($bannerImageName != null) {
             $column['banner'] = $bannerImageName;
-        }        
-
+        } 
+        
         if ($request->get('code') != null) {
             $column['code'] = $request->get('code');
         }
@@ -422,6 +422,7 @@ class Inventory_DepartmentController extends Controller
                 'website_sub_department_name'  => empty($request->websubdepart) ? $request->subdepart : $request->websubdepart,
                 'slug'                         => preg_replace("/[\s_]/", "-", strtolower($request->subdepart)),
                 'image'                        => $imageName,
+                'website_mode'                 => isset($request->showWebsite) ? 1 : 0,
             ];
             $result = $in_depart->insert_sdept($items);
             $getsubdepart = $in_depart->get_subdepartments($request->departid);
