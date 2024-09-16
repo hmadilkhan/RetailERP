@@ -253,7 +253,7 @@ class Inventory_DepartmentController extends Controller
         // }else {
 
         if (!empty($request->file('subdepartImage'))) {
-            $file = $this->uploads($request->file('subdepartImage'), "images/department");
+            $file = $this->uploads($request->file('subdepartImage'), "images/department/");
             $imageName = !empty($file) ? $file["fileName"] : "";
 
             $get = DB::table('inventory_sub_department')->where('sub_department_id', $request->id)->first();
@@ -264,7 +264,7 @@ class Inventory_DepartmentController extends Controller
 
         // $column = ['sub_depart_name' => $request->sdepart, 'website_sub_department_name' => (!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
         if (!empty($request->file('subdepartBannerImage'))) {
-            $file = $this->uploads($request->file('subdepartBannerImage'), "images/department");
+            $file = $this->uploads($request->file('subdepartBannerImage'), "images/department/");
             $bannerImageName = !empty($file) ? $file["fileName"] : "";
 
             $get = DB::table('inventory_sub_department')->where('sub_department_id', $request->id)->first();
