@@ -351,13 +351,15 @@
                                 </div>
                             </div>
                             @if($websites)
+                            <div class="col-md-12">  
                             <hr/>
                             <div class="form-group">
-                                <label for="showWebsite">
+                                <label for="showWebsite" class="pointer">
                                     <input type="checkbox" id="showWebsite_sbdept_md" name="showWebsite">
                                     Show on Website
                                 </label>
                             </div>
+                        </div>  
                         <div class="col-md-12">    
                             <div class="d-none" id="website_module_sbdept_md">
                                 <div class="form-group">
