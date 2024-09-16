@@ -224,7 +224,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="showProductWebsite">
-                        <input type="checkbox" id="showProductWebsite" name="showProductWebsite" {{ count($selectedWebsites->toArray()) > 0 ? 'checked' : ''}}>
+                        <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
                         Show Product on Website
                     </label>
                 </div>
