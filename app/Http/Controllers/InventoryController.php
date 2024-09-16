@@ -926,7 +926,7 @@ class InventoryController extends Controller
         //     $galleryString = is_string($request->oldGalleryImage);
         //     $arrayValue = !empty($galleryString) ? explode(',',$galleryString) : null;
         //    foreach($arrayValue as $val){
-         return File::exists('storage/images/products/'.$request->oldGalleryImage) ? 123: $request->oldGalleryImage;
+         return File::exists('storage/images/products/1723536146.png') ? 123: $request->oldGalleryImage;
                  if(File::exists('storage/images/products/'.$request->oldGalleryImage)){
                     File::delete('storage/images/products/'.$request->oldGalleryImage);
                  }
