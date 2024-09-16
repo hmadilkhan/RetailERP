@@ -46,7 +46,7 @@
                 <div class="form-group">
                     <label class="control-label">Content <span class="text-danger">*</span></label>
                     <textarea class="form-control" name="content" id="content" placeholder="Content" rows="5"></textarea>
-                    @error('rating')
+                    @error('content')
                      <span class="form-control-feedback text-danger">{{ $message }}</span>
                     @enderror                
                 </div>         
