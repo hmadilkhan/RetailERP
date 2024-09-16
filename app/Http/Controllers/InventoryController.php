@@ -923,7 +923,7 @@ class InventoryController extends Controller
         //    return empty($request->file('image')) ? 1 : 0;
               
         if(!empty($request->oldGalleryImage)){
-            return count($request->oldGalleryImage);
+            return count($request->oldGalleryImage) ? 'yes' : 'no';
             $arrayValue = !empty($request->oldGalleryImage) ? explode(',',$request->oldGalleryImage) : null;
            foreach($arrayValue as $val){
                  if(File::exists('storage/images/products/'.$val)){
