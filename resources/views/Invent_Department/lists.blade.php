@@ -358,8 +358,8 @@
                                     Show on Website
                                 </label>
                             </div>
-                         <div class="d-none" id="website_module_sbdept_md">
-                            <div class="col-md-12">
+                        <div class="col-md-12">    
+                            <div class="d-none" id="website_module_sbdept_md">
                                 <div class="form-group">
                                     <label class="form-control-label">Show website sub department name:</label>
                                     <input type="text" name="websubdepart" id="websubdepartname" class="form-control"
