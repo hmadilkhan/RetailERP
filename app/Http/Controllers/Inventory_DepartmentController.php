@@ -238,7 +238,8 @@ class Inventory_DepartmentController extends Controller
     public function sb_depart_update(Request $request, inventory_department $invent_department)
     {
 
-        $imageName = null;
+        $imageName       = null;
+        $bannerImageName = null;
 
         if ($invent_department->check_edit_sub_depart_code($request->id, $request->code, $request->dept)) {
             return response()->json(array("state" => 1, "msg" => 'This Sub-department code already exists.', "contrl" => 'deptname'));
