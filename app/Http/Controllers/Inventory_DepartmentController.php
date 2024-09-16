@@ -261,18 +261,17 @@ class Inventory_DepartmentController extends Controller
             }
         }
 
-        $column = ['sub_depart_name' => $request->sdepart, 'website_sub_department_name' => (!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
+        // $column = ['sub_depart_name' => $request->sdepart, 'website_sub_department_name' => (!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
         if (!empty($request->file('subdepartBannerImage'))) {
             $file = $this->uploads($request->file('subdepartBannerImage'), "images/department");
             $bannerImageName = !empty($file) ? $file["fileName"] : "";
 
             $get = DB::table('inventory_sub_department')->where('sub_department_id', $request->id)->first();
-            if ($get) {
-                $this->removeImage("images/department/", $get->image);
+            if ($get != null) {
+                $this->removeImage("images/department/", $get->banner);
             }
         }
         
-
         $column = ['sub_depart_name' => $request->sdepart,'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
 
         if ($imageName != null) {
