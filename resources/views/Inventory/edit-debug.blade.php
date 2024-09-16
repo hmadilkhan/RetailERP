@@ -634,6 +634,7 @@ $(document).on('click', '[data-toggle="lightbox"]', function(event) {
 
 @if(count($selectedWebsites->toArray()) > 0 )
 $("#showProductWebsite").trigger('click');
+$("#showProductWebsite").attr('checked',true);
 @endif
 
 function removeImage(id,img){
