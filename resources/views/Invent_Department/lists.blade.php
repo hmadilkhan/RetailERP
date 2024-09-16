@@ -667,11 +667,11 @@
                 formData.append('id', id);
 
                 if ($('#sdbptImg' + id)[0].files.length != 0 && $('#sdbptImg' + id)[0].files[0].size <= 1048576) {
-                    formData.append('subdepartImage', $('#sdbptImg' + id)[0].files[0]);
+                    formData.append('subdepartImage', $('#sdbptImg' + id)[0].files);
                 }
 
                 if ($('#sdbptbannerImg' + id)[0].files.length != 0 && $('#sdbptbannerImg' + id)[0].files[0].size <= 1048576) {
-                    formData.append('subdepartBannerImage', $('#sdbptbannerImg' + id)[0].files[0]);
+                    formData.append('subdepartBannerImage', $('#sdbptbannerImg' + id)[0].files);
                 }
                 // sdbptbannerImg
 
