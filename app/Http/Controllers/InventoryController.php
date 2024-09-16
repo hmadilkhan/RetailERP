@@ -921,7 +921,7 @@ class InventoryController extends Controller
 
 
         //    return empty($request->file('image')) ? 1 : 0;
-
+              return $request->oldGalleryImage;
         if(!empty($request->oldGalleryImage)){
            $arrayValue = $request->oldGalleryImage;
            foreach($arrayValue as $val){
