@@ -603,7 +603,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::resource('invent_dept', Inventory_DepartmentController::class);
     Route::get('/create-department', [Inventory_DepartmentController::class, 'create'])->name('departmentCreate');
     Route::put('/invent-depart-modify', [Inventory_DepartmentController::class, 'depart_update'])->name('invent_deptup');
-    Route::put('/invent-sbdepart-modify', [Inventory_DepartmentController::class, 'sb_depart_update'])->name('invent_sb_deptup');
+    Route::post('/invent-sbdepart-modify', [Inventory_DepartmentController::class, 'sb_depart_update'])->name('invent_sb_deptup');
     Route::post('/adddepartment', [Inventory_DepartmentController::class, 'adddepartment']);
     Route::post('/deletedepartment', [Inventory_DepartmentController::class, 'deleteDepartment']);
     Route::post('/addsubdepart', [Inventory_DepartmentController::class, 'addsubdepartment']);

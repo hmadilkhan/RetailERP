@@ -82,7 +82,7 @@ class InventoryController extends Controller
         // } else {
         //     $inventory = '';
         //     return view('Inventory.lists', compact('inventory', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
-        // }
+        // }                                                                                                       
     }
 
     public function getInventory(inventory $inventory)
