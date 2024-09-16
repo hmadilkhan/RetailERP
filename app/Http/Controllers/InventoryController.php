@@ -923,7 +923,7 @@ class InventoryController extends Controller
         //    return empty($request->file('image')) ? 1 : 0;
 
         if(!empty($request->oldGalleryImage)){
-           $arrayValue = explode(',',$request->oldGalleryImage);
+           $arrayValue = $request->oldGalleryImage;
            foreach($arrayValue as $val){
                  if(File::exists('storage/images/products/'.$val)){
                     File::delete('storage/images/products/'.$val);
@@ -932,7 +932,7 @@ class InventoryController extends Controller
         }
 
         if(!empty($request->urlGalleryImage)){
-            $arrayValue = explode(',',$request->urlGalleryImage);
+            $arrayValue = $request->urlGalleryImage;
             foreach($arrayValue as $val){
                 Cloudinary::destroy($val);
             }
