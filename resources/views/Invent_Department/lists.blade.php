@@ -354,7 +354,7 @@
                             <div class="col-md-12">  
                             <hr/>
                             <div class="form-group">
-                                <label for="showWebsite" class="pointer">
+                                <label for="showWebsite_sbdept_md" class="pointer">
                                     <input type="checkbox" id="showWebsite_sbdept_md" name="showWebsite">
                                     Show on Website
                                 </label>
