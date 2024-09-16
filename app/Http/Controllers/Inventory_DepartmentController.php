@@ -261,9 +261,7 @@ class Inventory_DepartmentController extends Controller
             }
         }
 
-<<<<<<< HEAD
         $column = ['sub_depart_name' => $request->sdepart, 'website_sub_department_name' => (!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
-=======
         if (!empty($request->file('subdepartBannerImage'))) {
             $file = $this->uploads($request->file('subdepartBannerImage'), "images/department");
             $bannerImageName = !empty($file) ? $file["fileName"] : "";
@@ -276,7 +274,6 @@ class Inventory_DepartmentController extends Controller
         
 
         $column = ['sub_depart_name' => $request->sdepart,'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
->>>>>>> 7d6eff278ea3a8a1ff2269ddc74234d5eeb31c93
 
         if ($imageName != null) {
             $column['image'] = $imageName;
