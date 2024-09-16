@@ -897,7 +897,7 @@
         }        
 
         function bannerImgGet_sbd_md(id) {
-            $("#sdbptImg" + id).on('change', function() {
+            $("#sdbptbannerImg" + id).on('change', function() {
                 $("#btn_selectbannerImg" + id).remove();
                 $("#bannerCell_md" + id).append('<img src="" width="64" height="64" id="bannerimgPreviewsdbpt' + id +
                     '"> <i class="icofont icofont-close text-danger" onclick="removeBannerImgCell(' + id + ')"></i>');
