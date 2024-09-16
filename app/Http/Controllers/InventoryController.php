@@ -924,6 +924,7 @@ class InventoryController extends Controller
               
         if(!empty($request->oldGalleryImage)){
            foreach($request->oldGalleryImage as $val){
+           return  $request->oldGalleryImage;
                  if(File::exists('storage/images/products/'.$val)){
                     File::delete('storage/images/products/'.$val);
                  }
