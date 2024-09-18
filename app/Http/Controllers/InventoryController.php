@@ -2203,7 +2203,7 @@ class InventoryController extends Controller
                             //get last stock from stock report
                             $lastStock = $stock->getLastStock($request->productid);
                             $stk = $lastStock == "" ? 0 : $lastStock[0]->stock;
-                            $stk = $stk + $request->qty;
+                            $stk = $stk + $importData[3];
 
                             //stock report k table main insert
                             $items = [
