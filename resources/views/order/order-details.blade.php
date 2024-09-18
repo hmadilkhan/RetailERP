@@ -240,7 +240,7 @@
                                                 <i class="mdi mdi-cart-outline me-1"></i> Dispatch </a>
                                         @endif
                                     @endif
-                                    @if ($orders->orderStatus->order_status_id >= 6 && (session('roleId') == 19 or session('roleId') == 20))
+                                    @if ($orders->orderStatus->order_status_id >= 6 && (session('roleId') == 19 or session('roleId') == 20 or session('roleId') == 2))
                                         <a href="{{ url('voucher') }}/{{ $orders->receipt_no }}"
                                             class="btn btn-danger  ml-2" target="_blank">
                                             <i class="mdi mdi-cloud-print me-1"></i> Print </a>
