@@ -646,9 +646,9 @@ function removeImage(id,img){
     let newValue = img; // The value you want to add
 
     if (currentValue) {
-        $input.value = currentValue+', '+newValue;
+        input.value = currentValue+', '+newValue;
     } else {
-        $input.value = newValue;
+        input.value = newValue;
     }
 }
 
