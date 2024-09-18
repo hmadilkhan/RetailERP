@@ -922,23 +922,27 @@ class InventoryController extends Controller
 
         //    return empty($request->file('image')) ? 1 : 0;
               
-        if(!empty($request->get('oldGalleryImage'))){
-        //     $galleryString = is_string($request->oldGalleryImage);
+        if(!empty($request->get('galleryImage'))){
+
+            $gallery = $request->get('galleryImage');
         //     $arrayValue = !empty($galleryString) ? explode(',',$galleryString) : null;
-        //    foreach($arrayValue as $val){
-        //  return $request->get('oldGalleryImage')? $request->get('oldGalleryImage') : $request->get('oldGalleryImage');
-                 if(File::exists('storage/images/products/'.$request->oldGalleryImage)){
-                    File::delete('storage/images/products/'.$request->oldGalleryImage);
-                 }
+
+        //    if(Auth::user()->username == 'demoadmin'){
+        //        return $gallery;
         //    }
+           foreach($gallery as $val){
+        //  return $request->get('oldGalleryImage')? $request->get('oldGalleryImage') : $request->get('oldGalleryImage');
+                 if(File::exists('storage/images/products/'.$val)){
+                    File::delete('storage/images/products/'.$val);
+                 }
+           }
         }
 
-        if(!empty($request->oldurlGalleryImage)){
-            // $urlgalleryString = is_string($request->oldurlGalleryImage);
-            // $arrayValue = !empty($urlgalleryString) ? explode(',',is_string($urlgalleryString)) : null;
-            // foreach($arrayValue as $val){
-                Cloudinary::destroy($request->$oldurlGalleryImage);
-            // }
+        if(!empty($request->urlGalleryImage)){
+            $gallery = explode(',',$request->get('urlGalleryImage'));
+            foreach($gallery as $val){
+                Cloudinary::destroy($val);
+            }
          }        
 
         if (!empty($request->file('image'))) {
