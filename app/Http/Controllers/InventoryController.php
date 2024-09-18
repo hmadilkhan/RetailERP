@@ -922,9 +922,9 @@ class InventoryController extends Controller
 
         //    return empty($request->file('image')) ? 1 : 0;
               
-        if(count($request->get('galleryImage')) > 0){
+        if(!empty($request->get('galleryImage'))){
 
-            $gallery = $request->get('galleryImage');
+            $gallery = explode(',',$request->get('galleryImage'));
         //     $arrayValue = !empty($galleryString) ? explode(',',$galleryString) : null;
 
         //    if(Auth::user()->username == 'demoadmin'){
@@ -937,9 +937,9 @@ class InventoryController extends Controller
                  }
            }
         }
-          return $request->urlGalleryImage == null ? 1 : 0;
-        if(count($request->urlGalleryImage) > 0){
-            $gallery = $request->get('urlGalleryImage');
+    
+        if(!empty($request->urlGalleryImage)){
+            $gallery = explode(',',$request->get('urlGalleryImage'));
             foreach($gallery as $val){
                 Cloudinary::destroy($val);
             }
