@@ -925,7 +925,7 @@ class InventoryController extends Controller
         if(!empty($request->get('galleryImage'))){
             $gallery = explode(',',$request->get('galleryImage'));
            if(Auth::user()->username == 'demoadmin'){
-               return $gallery[0];
+               return var_export($gallery);
            }
            foreach($gallery as $val){
             if(Auth::user()->username == 'demoadmin'){
