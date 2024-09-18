@@ -918,23 +918,22 @@ class InventoryController extends Controller
             'brand_id'             => $request->brand,
             'actual_image_size'    => isset($request->actual_image_size) ? 1 : 0,
         ];
-
-
-        //    return empty($request->file('image')) ? 1 : 0;
-              
+ 
         if(!empty($request->get('galleryImage'))){
             $gallery = explode(',',$request->get('galleryImage'));
            for($i=0;$i < count($gallery);$i++){
                 if(File::exists('storage/images/products/'.$gallery[$i])){
                     File::delete('storage/images/products/'.$gallery[$i]);
+                    DB::table('inventory_images')->where('image',$gallery[$i])->delete();
                  }
            }
         }
     
         if(!empty($request->urlGalleryImage)){
             $gallery = explode(',',$request->get('urlGalleryImage'));
-            foreach($gallery as $val){
-                Cloudinary::destroy($val);
+            for($i=0;$i < count($gallery);$i++){
+                Cloudinary::destroy($gallery[$i]);
+                DB::table('inventory_images')->where('image',$gallery[$i])->delete();
             }
          }        
 
