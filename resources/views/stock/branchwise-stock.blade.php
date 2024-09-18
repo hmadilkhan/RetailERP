@@ -373,7 +373,7 @@
             '#subdepart').val())
 
         function getdetails(branchid, branchname, page, code, name, dept, sdept) {
-            var GlobalUsername = session("userid");
+            var GlobalUsername = "{{session('userid')}}";
             branch = branchid;
             if (page == 1) {
                 $("#tblstock tbody").empty();
