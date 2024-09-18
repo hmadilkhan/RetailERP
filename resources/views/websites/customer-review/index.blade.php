@@ -1,8 +1,8 @@
 @extends('layouts.master-layout')
 
-@section('title','Testimonials')
+@section('title','Customer Reviews')
 
-@section('breadcrumtitle','Testimonials')
+@section('breadcrumtitle','Customer Reviews')
 
 @section('navwebsite','active')
 
@@ -46,14 +46,16 @@
           </div>
        <div class="card-block">
 
-     <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
+     <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%" cellspacing="0">
          <thead>
             <tr>
                <th class="d-none"></th>
                <th>Image</th>
                <th>Customer</th>
                <th>Rating</th>
-               <th>Content</th>
+               <th>Title</th>
+               <th>Review</th>
+               <th>Product URL</th>
                <th>Action</th>
             </tr>
 		</thead>
@@ -63,24 +65,26 @@
                    $website_name = $websites->where('id',$value->website_id)->pluck('name'); 
                       $image = asset('storage/images/no-image.jpg');
                       
-                      if(File::exists('storage/images/testimonials/'.$value->image)){
-                          $image = asset('storage/images/testimonials/'.$value->image);
+                      if(File::exists('storage/images/customer-review/'.$value->image)){
+                          $image = asset('storage/images/customer-review/'.$value->image);
                       }
                  @endphp
 				<tr>
                   <td class="d-none">{{ $value->id }}</td>  
 				  <td class="text-center"><img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"></td>
-				  <td>{{ $value->customer_name }}</td>
+				  <td>{{ $value->customer_name }} <br/> {{ $value->customer_email  }}</td>
 				  <td>{{ $value->rating }}</td>
-				  <td>{{  Str::limit($value->content, 60) }}</td>
+                  <td>{{ $value->title }}</td>
+				  <td><p>{{ $value->review }}</p></td>
+                  <td><a href="{{ $value->product_url }}">Go to Product Page</a></td>
 				  <td class="action-icon">
-					<a href="{{ route('testimonials.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+					{{-- <a href="{{ route('testimonials.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
 					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ $website_name }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
 					<form action="{{ route('testimonials.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
 					    @csrf
 					    @method('DELETE')
                         <input type="hidden" name="websiteId" value="{{ Crypt::encrypt($value->website_id) }}">
-					</form>
+					</form> --}}
 				  </td>
 				</tr>
              @endforeach
@@ -108,31 +112,6 @@
         }
 
     });
-
-    $("#website").on('change',function(){
-        if($(this).val() != ''){
-             window.location = location.origin+'/website/testimonials/'+$(this).val()+'/filter';
-        }
-    });
-    
-    function remove(webId,webName){
-            swal({
-                title: 'Remove Testimonial',
-                text:  'Are you sure remove testimonial from '+webName+' website?',
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: 'btn btn-danger',
-                confirmButtonText: "YES",
-                cancelButtonText: "NO",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },function(isConfirm){
-                if(isConfirm){
-                     $("#removeForm"+webId).submit();
-                }else{
-                    swal.close();
-                }
-            });        
-    }    
+   
 </script>
 @endsection

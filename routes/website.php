@@ -73,6 +73,10 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::resource('website/testimonials', WebsiteTestimonialController::class);
     Route::get('website/testimonials/{id}/filter', [WebsiteTestimonialController::class,'index'])->name('filterTestimonial');
 
+
+    Route::get('website/customer-reviews', [WebsiteController::class, 'getCustomer_reviews'])->name('getCustomer_reviews');
+
+
     Route::resource('website', WebsiteController::class);
     /******************************* website panel route closing **********************************/
 });
