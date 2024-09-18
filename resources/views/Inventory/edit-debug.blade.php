@@ -19,12 +19,14 @@
   </div>
 <section class="panels-wells">
   <form id="inventoryupdate" method="post" class="form-horizontal" enctype="multipart/form-data" action="{{ route('update') }}">
-      @method('POST')
+      {{-- @method('POST') --}}
       @csrf
 
       <input type="hidden" id="id" name="id" value="{{$data[0]->id}}">
       <input type="hidden" id="previmage" name="previmage" value="{{$data[0]->image}}">
       <input type="hidden" id="reminder_id" name="reminder_id" value="{{$data[0]->reminder_id}}">
+      <input type="hidden" id="oldGalleryImage" name="oldGalleryImage">
+      <input type="hidden" id="oldurlGalleryImage" name="oldurlGalleryImage">
 
       <div class="row">
           <div class="col-md-9">
@@ -222,7 +224,7 @@
             <div class="col-md-12">
                 <div class="form-group">
                     <label for="showProductWebsite">
-                        <input type="checkbox" id="showProductWebsite" name="showProductWebsite" {{ count($selectedWebsites->toArray()) > 0 ? 'checked' : ''}}>
+                        <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
                         Show Product on Website
                     </label>
                 </div>
@@ -410,6 +412,31 @@
                <h4 >Product Gallery</h4>
                </div>
                <div class="card-block p-2 p-t-0">
+                {{-- {{ $images }} --}}
+                @if($images)
+                <div class="">
+                    {{-- @if(in_array(session('company_id'),[])) --}}
+                      @foreach($images as $val)
+                        @if(empty($val->url))
+                        <div style="position: relative; display: inline-block; margin: 10px;" id="gallery-{{$val->id}}">
+                            <img src="{{ asset('storage/images/products/'.$val->image) }}" style="max-width: 75px; max-height: 75px; object-fit: cover;">
+                            <button type="button" onclick="removeImage({{ $val->id }},'{{ $val->image }}')" style="position: absolute; top: -6px; right: -6px; background-color: red; color:
+                            white; border: none; border-radius: 50%; cursor: pointer; font-size: 12px;">
+                                ✖</button>
+                        </div>
+                        @else
+                        <div id="urlgallery-{{$val->id}}" style="position: relative; display: inline-block; margin: 10px;">
+                            <img src="{{ $value->url }}" style="max-width: 75px; max-height: 75px; object-fit: cover;">
+                            <button type="button" onclick="removeImageUrl({{ $val->id }},'{{ $val->image }}')" style="position: absolute; top: -6px; right: -6px; background-color: red; color:
+                            white; border: none; border-radius: 50%; cursor: pointer; font-size: 12px;">
+                                ✖</button>
+                        </div>
+                        @endif
+                      @endforeach
+                    {{-- @endif --}}
+                </div>
+                @endif
+
                <div id="imgGalleryBox"></div>
                 <div class="form-group">
                     <br/>
@@ -605,7 +632,36 @@ $(document).on('click', '[data-toggle="lightbox"]', function(event) {
  $(this).ekkoLightbox();
 });
 
+@if(count($selectedWebsites->toArray()) > 0 )
+$("#showProductWebsite").trigger('click');
+$("#showProductWebsite").attr('checked',true);
+@endif
 
+function removeImage(id,img){
+   $("#gallery-"+id).remove();
+   var $input = $('#oldGalleryImage');
+    var currentValue = $input.val();
+    var newValue = img; // The value you want to add
+
+    if (currentValue) {
+        $input.val(currentValue + ',' + newValue);
+    } else {
+        $input.val(newValue);
+    }
+}
+
+function removeImageUrl(id,img){
+   $("#urlgallery-"+id).remove();
+   var $input = $('#oldurlGalleryImage');
+    var currentValue = $input.val();
+    var newValue = img; // The value you want to add
+
+    if (currentValue) {
+        $input.val(currentValue + ',' + newValue);
+    } else {
+        $input.val(newValue);
+    }
+}
 
 $("#showProductWebsite").on('click',function(){
     

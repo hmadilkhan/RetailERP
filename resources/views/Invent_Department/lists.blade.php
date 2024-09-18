@@ -350,13 +350,26 @@
                                         placeholder="Sub department name" />
                                 </div>
                             </div>
-                            <div class="col-md-12">
+                            @if($websites)
+                            <div class="col-md-12">  
+                            <hr/>
+                            <div class="form-group">
+                                <label for="showWebsite_sbdept_md" class="pointer">
+                                    <input type="checkbox" id="showWebsite_sbdept_md" name="showWebsite">
+                                    Show on Website
+                                </label>
+                            </div>
+                        </div>  
+                        <div class="col-md-12">    
+                            <div class="d-none" id="website_module_sbdept_md">
                                 <div class="form-group">
                                     <label class="form-control-label">Show website sub department name:</label>
                                     <input type="text" name="websubdepart" id="websubdepartname" class="form-control"
                                         placeholder="Show website sub department name" />
                                 </div>
                             </div>
+                        </div>  
+                            @endif
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
@@ -371,6 +384,22 @@
                                     </label>
                                 </div>
                             </div>
+                          <div class="d-none" id="website_module_bannersbdept_md">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
+                                        width="180" height="256" id="previewBanner_sbmd" /></br>
+                                    <label for="subdepartBanner_add" class="form-control-label">Sub Department
+                                        Banner Image</label></br>
+
+                                    <label for="subdepartBanner_add" class="custom-file">
+                                        <input type="file" name="subdepartBanner" id="subdepartBanner_add"
+                                            class="custom-file-input">
+                                        <span class="custom-file-control"></span>
+                                    </label>
+                                </div>
+                            </div>   
+                          </div>                           
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -549,6 +578,9 @@
         // 		reader.readAsDataURL(input.files[0]);
         // 	}
         // }
+        $("#subdepartBanner_add").change(function() {
+            readURL(this, 'previewBanner_sbmd');
+        });       
 
         $("#bannerImage_md").change(function() {
             readURL(this, 'previewDepartBannerImage_md');
@@ -647,9 +679,11 @@
 
         function update(id, dept) {
             let process = true;
-            let code = $("#department_code").val();
+            let code    = $("#department_code").val();
+            let subdepartImage       = $('#sdbptImg' + id).length ? $('#sdbptImg' + id)[0] : null;
+            let subdepartBannerImage = $('#sdbptbannerImg' + id).length ? $('#sdbptbannerImg' + id)[0] : null;
 
-            if (code == $("#code_" + id).val()) {
+            if (code == $("#code_" + id).val() && $("#code_" + id).val() != '') {
                 swal_alert('Alert!', "Cannot use the main department code.", 'error', false);
                 process = false;
             } else if ($("#tbx_" + id).val() == "") {
@@ -665,14 +699,18 @@
                 formData.append('dept', dept);
                 formData.append('code', $("#code_" + id).val());
                 formData.append('id', id);
-
-                if ($('#sdbptImg' + id)[0].files.length != 0 && $('#sdbptImg' + id)[0].files[0].size <= 1048576) {
-                    formData.append('subdepartImage', $('#sdbptImg' + id)[0].files[0]);
+            
+               if(subdepartImage != null){ 
+                if (subdepartImage.files.length != 0 && subdepartImage.files[0].size <= 1048576) {
+                    formData.append('subdepartImage', subdepartImage.files[0]);
                 }
-
-                if ($('#sdbptbannerImg' + id)[0].files.length != 0 && $('#sdbptbannerImg' + id)[0].files[0].size <= 1048576) {
-                    formData.append('subdepartBannerImage', $('#sdbptbannerImg' + id)[0].files[0]);
+               }
+           
+               if(subdepartBannerImage  != null){  
+                if (subdepartBannerImage.files.length != 0 && subdepartBannerImage.files[0].size <= 1048576) {
+                    formData.append('subdepartBannerImage', subdepartBannerImage.files[0]);
                 }
+               }
                 // sdbptbannerImg
 
                 if (process) {
@@ -897,9 +935,9 @@
         }        
 
         function bannerImgGet_sbd_md(id) {
-            $("#sdbptImg" + id).on('change', function() {
+            $("#sdbptbannerImg" + id).on('change', function() {
                 $("#btn_selectbannerImg" + id).remove();
-                $("#imgbannerCell_md" + id).append('<img src="" width="64" height="64" id="bannerimgPreviewsdbpt' + id +
+                $("#bannerCell_md" + id).append('<img src="" width="64" height="64" id="bannerimgPreviewsdbpt' + id +
                     '"> <i class="icofont icofont-close text-danger" onclick="removeBannerImgCell(' + id + ')"></i>');
                 readURL(this, "bannerimgPreviewsdbpt" + id);
             })
@@ -1056,38 +1094,38 @@
 
         }
 
-        $("#parent").on('change', function() {
+        // $("#parent").on('change', function() {
 
-            if ($(this).val() != '') {
-                $("#showWebsite").trigger('click');
-            }
+        //     if ($(this).val() != '') {
+        //         $("#showWebsite").trigger('click');
+        //     }
 
-        });
+        // });
 
-        $("#showWebsite").on('click', function() {
+        // $("#showWebsite").on('click', function() {
 
-            if ($(this).is(':checked') == true) {
-                $("#parent").val('').change();
-                if ($("#website-module").hasClass('d-none')) {
-                    $("#website-module").removeClass('d-none');
-                }
+        //     if ($(this).is(':checked') == true) {
+        //         $("#parent").val('').change();
+        //         if ($("#website-module").hasClass('d-none')) {
+        //             $("#website-module").removeClass('d-none');
+        //         }
 
 
-                if ($("#banner-imageBox").hasClass('d-none')) {
-                    $("#banner-imageBox").removeClass('d-none');
-                }
-            }
+        //         if ($("#banner-imageBox").hasClass('d-none')) {
+        //             $("#banner-imageBox").removeClass('d-none');
+        //         }
+        //     }
 
-            if ($(this).is(':checked') == false) {
-                if (!$("#website-module").hasClass('d-none')) {
-                    $("#website-module").addClass('d-none');
-                }
+        //     if ($(this).is(':checked') == false) {
+        //         if (!$("#website-module").hasClass('d-none')) {
+        //             $("#website-module").addClass('d-none');
+        //         }
 
-                if (!$("#banner-imageBox").hasClass('d-none')) {
-                    $("#banner-imageBox").addClass('d-none');
-                }
-            }
-        });
+        //         if (!$("#banner-imageBox").hasClass('d-none')) {
+        //             $("#banner-imageBox").addClass('d-none');
+        //         }
+        //     }
+        // });
 
         $("#showWebsite_md").on('click', function() {
 
@@ -1113,7 +1151,29 @@
             }
         });
 
+$("#showWebsite_sbdept_md").on('click', function() {
 
+if ($(this).is(':checked') == true) {
+    if ($("#website_module_bannersbdept_md").hasClass('d-none')) {
+        $("#website_module_bannersbdept_md").removeClass('d-none');
+    }
+
+
+    if ($("#website_module_sbdept_md").hasClass('d-none')) {
+        $("#website_module_sbdept_md").removeClass('d-none');
+    }
+}
+
+if ($(this).is(':checked') == false) {
+    if (!$("#website_module_bannersbdept_md").hasClass('d-none')) {
+        $("#website_module_bannersbdept_md").addClass('d-none');
+    }
+
+    if (!$("#website_module_sbdept_md").hasClass('d-none')) {
+        $("#website_module_sbdept_md").addClass('d-none');
+    }
+}
+});
         @if (old('metadescript'))
             $("#metadescript").val('{{ old('metadescript') }}');
         @endif

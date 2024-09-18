@@ -238,7 +238,8 @@ class Inventory_DepartmentController extends Controller
     public function sb_depart_update(Request $request, inventory_department $invent_department)
     {
 
-        $imageName = null;
+        $imageName       = null;
+        $bannerImageName = null;
 
         if ($invent_department->check_edit_sub_depart_code($request->id, $request->code, $request->dept)) {
             return response()->json(array("state" => 1, "msg" => 'This Sub-department code already exists.', "contrl" => 'deptname'));
@@ -252,7 +253,7 @@ class Inventory_DepartmentController extends Controller
         // }else {
 
         if (!empty($request->file('subdepartImage'))) {
-            $file = $this->uploads($request->file('subdepartImage'), "images/department");
+            $file = $this->uploads($request->file('subdepartImage'), "images/department/");
             $imageName = !empty($file) ? $file["fileName"] : "";
 
             $get = DB::table('inventory_sub_department')->where('sub_department_id', $request->id)->first();
@@ -263,17 +264,20 @@ class Inventory_DepartmentController extends Controller
 
         $column = ['sub_depart_name' => $request->sdepart, 'website_sub_department_name' => (!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
         if (!empty($request->file('subdepartBannerImage'))) {
-            $file = $this->uploads($request->file('subdepartBannerImage'), "images/department");
+            $file = $this->uploads($request->file('subdepartBannerImage'), "images/department/");
             $bannerImageName = !empty($file) ? $file["fileName"] : "";
 
             $get = DB::table('inventory_sub_department')->where('sub_department_id', $request->id)->first();
-            if ($get) {
-                $this->removeImage("images/department/", $get->image);
+            if ($get != null) {
+                $this->removeImage("images/department/", $get->banner);
             }
         }
         
-
-        $column = ['sub_depart_name' => $request->sdepart,'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart), 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))];
+        $column = [
+                    'sub_depart_name' => $request->sdepart,
+                    'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart),
+                     'slug' => preg_replace("/[\s_]/", "-", strtolower($request->sdepart))
+                    ];
 
         if ($imageName != null) {
             $column['image'] = $imageName;
@@ -281,8 +285,8 @@ class Inventory_DepartmentController extends Controller
 
         if ($bannerImageName != null) {
             $column['banner'] = $bannerImageName;
-        }        
-
+        } 
+        
         if ($request->get('code') != null) {
             $column['code'] = $request->get('code');
         }
@@ -401,15 +405,20 @@ class Inventory_DepartmentController extends Controller
     public function addsubdepartment(inventory_department $in_depart, Request $request)
     {
         $imageName = null;
+        $bannerImageName = null;
 
         $exsist = $in_depart->subdepart_exists($request->subdepart, $request->departid);
         if ($exsist[0]->counter == 0) {
 
             if (!empty($request->file('subdepartImage'))) {
-                $imageName = preg_replace("/[\s_]/", "-", strtolower($request->get('subdepart'))) . time() . '.' . strtolower($request->file('subdepartImage')->getClientOriginalExtension());
-                $getFormFile = $request->file('subdepartImage');
-                $getFormFile->move(public_path('assets/images/department'), $imageName);
+                $file = $this->uploads($request->file('subdepartImage'), "images/department/");
+                $imageName = !empty($file) ? $file["fileName"] : "";                  
             }
+
+            if (!empty($request->file('subdepartBanner'))) {
+                $file = $this->uploads($request->file('subdepartBanner'), "images/department/");
+                $bannerImageName = !empty($file) ? $file["fileName"] : "";               
+            }            
 
             $items = [
                 'code'                         => $request->code,
@@ -418,6 +427,8 @@ class Inventory_DepartmentController extends Controller
                 'website_sub_department_name'  => empty($request->websubdepart) ? $request->subdepart : $request->websubdepart,
                 'slug'                         => preg_replace("/[\s_]/", "-", strtolower($request->subdepart)),
                 'image'                        => $imageName,
+                'banner'                       => $bannerImageName,
+                'website_mode'                 => isset($request->showWebsite) ? 1 : 0,
             ];
             $result = $in_depart->insert_sdept($items);
             $getsubdepart = $in_depart->get_subdepartments($request->departid);
