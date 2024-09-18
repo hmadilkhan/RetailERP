@@ -21,8 +21,7 @@
     <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Filter</h5>
-         <a href="{{route('testimonials.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Testimonial</a>
-         </div>
+      </div>
        <div class="card-block">
            <div class="col-md-4">
              <div class="form-group">
@@ -39,7 +38,7 @@
        </div>
     </div>  
 
-    @if(isset($testimonials))
+    @if(isset($reviews))
     <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Lists</h5>
@@ -60,7 +59,7 @@
             </tr>
 		</thead>
 		<tbody>
-              @foreach($testimonials as $value)
+              @foreach($reviews as $value)
                  @php 
                    $website_name = $websites->where('id',$value->website_id)->pluck('name'); 
                       $image = asset('storage/images/no-image.jpg');
@@ -111,6 +110,12 @@
    
         }
 
+    });
+
+    $("#website").on('change',function(){
+        if($(this).val() != ''){
+             window.location = location.origin+'/website/customer-reviews/'+$(this).val()+'/filter';
+        }
     });
    
 </script>

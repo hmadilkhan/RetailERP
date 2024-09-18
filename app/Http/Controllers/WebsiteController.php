@@ -1518,14 +1518,16 @@ class WebsiteController extends Controller
 
 
     public function getCustomer_reviews(Request $request){
-        
-        return view('website.customer-review.index',
-                      [  
-                        'reviews' => DB::table('website_customer_reviews')
-                                        ->where('website_id',$request->website)
+        $data = [];
+        if(isset($request->id)){
+            $data["testimonials"] = DB::table('website_customer_reviews')
+                                        ->where('website_id',$request->id)
                                         ->where('status',1)
-                                        ->get()
-                      ]);
+                                        ->get();
+        }  
+        
+        $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
+        return view('websites.customer-review.index',$data);
     }
 
     public function Customer_review_approved(Request $request){
