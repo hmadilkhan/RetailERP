@@ -266,9 +266,9 @@ class PrintController extends Controller
         $pdf->Cell(95, 7, $company[0]->name, 0, 0, 'C', 1);
         $pdf->Cell(95, 7, $company[0]->name, 0, 1, 'C', 1);
         $pdf->SetFont('Arial', '', 10);
-        $pdf->MultiCell(95, 7, $branch[0]->branch_address, 0, 0, 'C', 1);
-        $pdf->MultiCell(95, 7, $branch[0]->branch_address, 0, 0, 'C', 1);
-        $pdf->MultiCell(95, 7, $branch[0]->branch_address, 0, 1, 'C', 1);
+        $pdf->Cell(95, 7, $branch[0]->branch_address, 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, $branch[0]->branch_address, 0, 0, 'C', 1);
+        $pdf->Cell(95, 7, $branch[0]->branch_address, 0, 1, 'C', 1);
 		$pdf->SetFont('Arial', 'B', 12);		
 		$pdf->Cell(95, 7, ucwords($general[0]->customerName), 0, 0, 'C', 1);
         $pdf->Cell(95, 7, ucwords($general[0]->customerName), 0, 0, 'C', 1);
