@@ -923,6 +923,7 @@ class InventoryController extends Controller
         //    return empty($request->file('image')) ? 1 : 0;
               
         if(!empty($request->get('galleryImage'))){
+            return $request->get('galleryImage');
             $gallery = explode(',',$request->get('galleryImage'));
         //     $arrayValue = !empty($galleryString) ? explode(',',$galleryString) : null;
 
