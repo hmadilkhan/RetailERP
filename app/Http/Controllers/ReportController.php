@@ -1885,7 +1885,7 @@ class ReportController extends Controller
 
 
         //save file
-        $pdf->Output('Inventory_Summary.pdf', 'I');
+        $pdf->Output('Stock Report.pdf', 'I');
     }
 
     public function pdfTest()
