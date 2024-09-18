@@ -2183,7 +2183,7 @@ class InventoryController extends Controller
 
                             //get last stock from stock report
                             $lastStock = $stock->getLastStock($request->productid);
-                            $stk = empty($lastStock) ? 0 : $lastStock[0]->stock;
+                            $stk = $lastStock == "" ? 0 : $lastStock[0]->stock;
                             $stk = $stk + $request->qty;
 
                             //stock report k table main insert
@@ -2211,7 +2211,7 @@ class InventoryController extends Controller
             }
 
             // Redirect to index
-            return redirect()->action('InventoryController@index');
+            return redirect()->route('invent-list');
         }
     }
 

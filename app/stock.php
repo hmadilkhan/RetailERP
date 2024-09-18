@@ -215,7 +215,7 @@ class stock extends Model
 
     public function getLastStock($id)
     {
-        $result = DB::select('SELECT stock FROM `inventory_stock_report_table` where stock_report_id = (Select MAX(stock_report_id) from inventory_stock_report_table WHERE product_id = ?)', [$id]);
+        $result = DB::select('SELECT SUM(stock) FROM `inventory_stock_report_table` where stock_report_id = (Select MAX(stock_report_id) from inventory_stock_report_table WHERE product_id = ?)', [$id]);
         return $result;
     }
 }
