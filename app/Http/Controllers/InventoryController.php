@@ -922,7 +922,7 @@ class InventoryController extends Controller
 
         //    return empty($request->file('image')) ? 1 : 0;
               
-        if(!empty($request->get('galleryImage'))){
+        if(count($request->get('galleryImage')) > 0){
 
             $gallery = $request->get('galleryImage');
         //     $arrayValue = !empty($galleryString) ? explode(',',$galleryString) : null;
@@ -938,8 +938,8 @@ class InventoryController extends Controller
            }
         }
 
-        if(!empty($request->urlGalleryImage)){
-            $gallery = explode(',',$request->get('urlGalleryImage'));
+        if(count($request->urlGalleryImage) > 0){
+            $gallery = $request->get('urlGalleryImage');
             foreach($gallery as $val){
                 Cloudinary::destroy($val);
             }
