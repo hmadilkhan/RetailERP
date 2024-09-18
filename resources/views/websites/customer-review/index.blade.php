@@ -111,6 +111,12 @@
         }
 
     });
+
+    $("#website").on('change',function(){
+        if($(this).val() != ''){
+             window.location = location.origin+'/website/customer-reviews/'+$(this).val()+'/filter';
+        }
+    });
    
 </script>
 @endsection
