@@ -395,20 +395,20 @@ class PrintController extends Controller
             $itemQty++;
             $tQty = $tQty + $val->total_qty;
 
-            $pdf->Cell(53,5,$val->product_name,0,0,'L',1);
-            $pdf->Cell(15,5,$val->item_price,0,0,'L',1);
-            $pdf->Cell(13,5,$val->total_qty,0,0,'C',1);
-            $pdf->Cell(14,5,number_format($val->total_amount,0),0,0,'C',1);
+            $pdf->Cell(53,6,$val->product_name,0,0,'L',1);
+            $pdf->Cell(15,6,$val->item_price,0,0,'L',1);
+            $pdf->Cell(13,6,$val->total_qty,0,0,'C',1);
+            $pdf->Cell(14,6,number_format($val->total_amount,0),0,0,'C',1);
 			$pdf->Cell(2,7,'',0,0,'C',1);
-			$pdf->Cell(53,5,$val->product_name,0,0,'L',1);
-            $pdf->Cell(15,5,$val->item_price,0,0,'L',1);
-            $pdf->Cell(13,5,$val->total_qty,0,0,'C',1);
-            $pdf->Cell(14,5,number_format($val->total_amount,0),0,0,'C',1);
+			$pdf->Cell(53,6,$val->product_name,0,0,'L',1);
+            $pdf->Cell(15,6,$val->item_price,0,0,'L',1);
+            $pdf->Cell(13,6,$val->total_qty,0,0,'C',1);
+            $pdf->Cell(14,6,number_format($val->total_amount,0),0,0,'C',1);
 			$pdf->Cell(2,7,'',0,0,'C',1);
-			$pdf->Cell(53,5,$val->product_name,0,0,'L',1);
-            $pdf->Cell(15,5,$val->item_price,0,0,'L',1);
-            $pdf->Cell(13,5,$val->total_qty,0,0,'C',1);
-            $pdf->Cell(14,5,number_format($val->total_amount,0),0,1,'C',1);
+			$pdf->Cell(53,6,$val->product_name,0,0,'L',1);
+            $pdf->Cell(15,6,$val->item_price,0,0,'L',1);
+            $pdf->Cell(13,6,$val->total_qty,0,0,'C',1);
+            $pdf->Cell(14,6,number_format($val->total_amount,0),0,1,'C',1);
 			
 			$pdf->ln(1);
 			$pdf->SetFont('Arial','I',8);
