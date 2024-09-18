@@ -1519,7 +1519,7 @@ class WebsiteController extends Controller
 
     public function getCustomer_reviews(Request $request){
         
-        return view('website.customer-review.index',
+        return view('websites.customer-review.index',
                       [  
                         'reviews' => DB::table('website_customer_reviews')
                                         ->where('website_id',$request->website)
