@@ -632,10 +632,12 @@ $(document).on('click', '[data-toggle="lightbox"]', function(event) {
  $(this).ekkoLightbox();
 });
 
-@if(count($selectedWebsites->toArray()) > 0 )
-$("#showProductWebsite").trigger('click');
-$("#showProductWebsite").attr('checked',true);
-@endif
+$(document).ready(function(){   
+    @if(count($selectedWebsites->toArray()) > 0 )
+    $("#showProductWebsite").trigger('click');
+    $("#showProductWebsite").attr('checked',true);
+    @endif
+})
 
 function removeImage(id,img){
    $("#gallery-"+id).remove();
