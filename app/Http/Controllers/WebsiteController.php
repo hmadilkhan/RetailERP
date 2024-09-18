@@ -1521,7 +1521,8 @@ class WebsiteController extends Controller
         
         return view('websites.customer-review.index',
                       [  
-                        'reviews' => DB::table('website_customer_reviews')
+                        'websites' => WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get(),
+                        'reviews'  => DB::table('website_customer_reviews')
                                         ->where('website_id',$request->website)
                                         ->where('status',1)
                                         ->get()
