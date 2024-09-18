@@ -204,7 +204,11 @@
                             terminal = value.terminal_id;
                             terminal_name = value.terminal_name;
                             $('#terminalName').html(value.terminal_name);
-                            getPartial(value.terminal_id)
+                            console.log(value.terminal_id);
+                            
+                            if (value.terminal_id != "") {
+                                getPartial(value.terminal_id)
+                            }
                         }
                         let terminalDiv = '<li id=' + value.terminal_id + ' onclick="getPartial(' +
                             value.terminal_id +
@@ -278,9 +282,11 @@
             }
         }
 
-        getPartial(terminal) //ye wala comment
+        if (terminal != "") {
+            getPartial(terminal) //ye wala comment
+        }
 
-        function getHeads(terminal, index) {
+        function getHeads(terminal, index) {            
             getPermission(terminal);
             clearControls();
             $('#terminalID').val(terminal);
@@ -386,6 +392,8 @@
 
         function getPartial(terminal) {
             showLoader("div_details");
+            console.log("Partial");
+            
             $.ajax({
                 url: "{{ url('/heads') }}",
                 type: "POST",
