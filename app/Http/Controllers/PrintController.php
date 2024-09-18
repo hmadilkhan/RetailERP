@@ -359,32 +359,32 @@ class PrintController extends Controller
         $pdf->Cell(25.5, 8, date("H:i a",strtotime($general[0]->time)), 0, 1, 'L');
 
         // PRINT DATE & TIME
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(22, 8, 'Print Date ', 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(73.5, 8, date("d M y h:i a"), 0, 0, 'L');
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(15, 8, '', 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(26, 8, date("h:i a"), 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(22, 8, 'Print Date ', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(73.5, 8, date("d M y h:i a"), 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(15, 8, '', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(26, 8, date("h:i a"), 0, 0, 'L');
         
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(22, 8, 'Print Date ', 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(32.5, 8, date("d M y"), 0, 0, 'L');
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(15, 8, 'Print Time', 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(26, 8, date("h:i a"), 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(22, 8, 'Print Date ', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(32.5, 8, date("d M y"), 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(15, 8, 'Print Time', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(26, 8, date("h:i a"), 0, 0, 'L');
        
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(22, 8, 'Print Date ', 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(32.5, 8, date("d M y"), 0, 0, 'L');
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(15, 8, 'Print Time', 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(26, 8, date("h:i a"), 0, 1, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(22, 8, 'Print Date ', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(32.5, 8, date("d M y"), 0, 0, 'L');
+        // $pdf->SetFont('Arial', 'B', 10);
+        // $pdf->Cell(15, 8, 'Print Time', 0, 0, 'L');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(26, 8, date("h:i a"), 0, 1, 'L');
 
         $pdf->ln(2);
         $pdf->SetFont('Arial','B',10);
