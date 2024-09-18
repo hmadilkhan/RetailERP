@@ -1510,4 +1510,27 @@ class WebsiteController extends Controller
             }
         }
     }
+
+
+    // =============================================//
+    //            Customer Review Section
+    // =============================================//
+
+
+    public function getCustomer_reviews(Request $request){
+        
+        return DB::table('website_customer_reviews')
+                  ->where('website_id',$request->website)
+                  ->where('status',1)
+                  ->get();
+    }
+
+    public function Customer_review_approved(Request $request){
+        if(isset($request->mode) && isset($request->website)){
+            return DB::table('website_customer_reviews')
+                    ->where('website_id',$request->website)
+                    ->update(['status'=>$request->mode]) ? response()->json('Success!',200) : response()->json('Error! customer review is not approved. Server Issue!',500);
+        }
+       return response('Record not found!',500);
+    }    
 }
