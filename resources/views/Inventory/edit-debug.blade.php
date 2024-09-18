@@ -639,30 +639,34 @@ $(document).ready(function(){
     @endif
 })
 
-function removeImage(id,img){
-   $("#gallery-"+id).remove();
+function removeImage(id, img) {
+    $("#gallery-" + id).remove();
     let input = $('#oldGalleryImage');
-    let currentValue = input.val() == '' ? [] : input.val().splid(', ') ;
-    let newValue = img; // The value you want to add
+    let currentValue = input.val() === '' ? [] : input.val().split(', '); // 'split' ka sahi spelling
+    let newValue = img;
 
-    if (currentValue) {
-        input.value = currentValue+', '+newValue;
+    if (currentValue.length) {
+        currentValue.push(newValue); 
     } else {
-        input.value = newValue;
+        currentValue = [newValue]; 
     }
+
+    input.val(currentValue.join(', ')); 
 }
 
 function removeImageUrl(id,img){
    $("#urlgallery-"+id).remove();
-   var $input = $('#oldurlGalleryImage');
-    var currentValue = $input.val();
-    var newValue = img; // The value you want to add
+   let input = $('#oldurlGalleryImage');
+    let currentValue = input.val() === '' ? [] : input.val().split(', '); // 'split' ka sahi spelling
+    let newValue = img;
 
-    if (currentValue) {
-        $input.val(currentValue + ',' + newValue);
+    if (currentValue.length) {
+        currentValue.push(newValue); 
     } else {
-        $input.val(newValue);
+        currentValue = [newValue]; 
     }
+
+    input.val(currentValue.join(', ')); 
 }
 
 $("#showProductWebsite").on('click',function(){
