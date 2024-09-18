@@ -939,7 +939,7 @@ class InventoryController extends Controller
         }
 
         if(!empty($request->urlGalleryImage)){
-            $gallery = explode(',',$request->get('urlGalleryImage'));
+            $gallery = $request->get('urlGalleryImage');
             foreach($gallery as $val){
                 Cloudinary::destroy($val);
             }
