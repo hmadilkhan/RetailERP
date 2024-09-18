@@ -73,7 +73,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::resource('website/testimonials', WebsiteTestimonialController::class);
     Route::get('website/testimonials/{id}/filter', [WebsiteTestimonialController::class,'index'])->name('filterTestimonial');
 
-    Route::resource('website/customer-reviews', [WebsiteTestimonialController::class,'getCustomer_reviews']);
+    Route::get('website/customer-reviews', [WebsiteTestimonialController::class,'getCustomer_reviews']);
     Route::get('website/customer-reviews/{id}/filter', [WebsiteController::class, 'getCustomer_reviews'])->name('filterCustomerReviews');
 
 
