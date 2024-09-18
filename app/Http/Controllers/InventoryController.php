@@ -927,9 +927,9 @@ class InventoryController extends Controller
             $gallery = $request->get('galleryImage');
         //     $arrayValue = !empty($galleryString) ? explode(',',$galleryString) : null;
 
-           if(Auth::user()->username == 'demoadmin'){
-               return $gallery;
-           }
+        //    if(Auth::user()->username == 'demoadmin'){
+        //        return $gallery;
+        //    }
            foreach($gallery as $val){
         //  return $request->get('oldGalleryImage')? $request->get('oldGalleryImage') : $request->get('oldGalleryImage');
                  if(File::exists('storage/images/products/'.$val)){
