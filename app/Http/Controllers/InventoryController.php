@@ -929,6 +929,9 @@ class InventoryController extends Controller
         //        return $gallery;
         //    }
            foreach($gallery as $val){
+            if(Auth::user()->username == 'demoadmin'){
+               return $val;
+            }
                 if(File::exists('storage/images/products/'.$val)){
                     File::delete('storage/images/products/'.$val);
                  }
