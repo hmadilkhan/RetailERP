@@ -1088,7 +1088,7 @@ class InventoryController extends Controller
 
                 $folder = strtolower(str_replace(' ','',$company_name->name));
 
-                $imageName   = $productid.time().'-'.$count.'.'.$prodGallery->getClientOriginalExtension();
+                $imageName   = $request->id.time().'-'.$count.'.'.$prodGallery->getClientOriginalExtension();
 
                 $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
                                         'public_id'      => strtolower($imageName),
