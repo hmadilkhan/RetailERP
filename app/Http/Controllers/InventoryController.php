@@ -937,7 +937,7 @@ class InventoryController extends Controller
                  }
            }
         }
-
+          return $request->urlGalleryImage;
         if(count($request->urlGalleryImage) > 0){
             $gallery = $request->get('urlGalleryImage');
             foreach($gallery as $val){
