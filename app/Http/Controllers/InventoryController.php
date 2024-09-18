@@ -1097,7 +1097,7 @@ class InventoryController extends Controller
                                     ])->getSecurePath();
                      
             }else{
-                $path = public_path('storage/images/products/');
+                $path = '/images/products/';
                 $returnImageValue = $this->uploads($prodGallery, $path);
                 $imageName = $returnImageValue['fileName']; 
             }
@@ -1117,7 +1117,7 @@ class InventoryController extends Controller
     //Product video
     if (!empty($request->file('prodvideo'))) {
         $prodVideo     = $request->file('prodvideo');
-        $path          = public_path('storage/video/products/');
+        $path          = '/video/products/';
         $prodVideoName = $this->uploads($prodVideo, $path);
 
         if (isset($prodVideoName['filename'])) {
