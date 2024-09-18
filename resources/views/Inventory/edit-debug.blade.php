@@ -641,14 +641,14 @@ $(document).ready(function(){
 
 function removeImage(id,img){
    $("#gallery-"+id).remove();
-   var $input = $('#oldGalleryImage');
-    var currentValue = $input.val();
-    var newValue = img; // The value you want to add
+    let input = $('#oldGalleryImage');
+    let currentValue = input.val() == '' ? [] : input.val().splid(', ') ;
+    let newValue = img; // The value you want to add
 
     if (currentValue) {
-        $input.val(currentValue + ',' + newValue);
+        $input.value = currentValue+', '+newValue;
     } else {
-        $input.val(newValue);
+        $input.value = newValue;
     }
 }
 
