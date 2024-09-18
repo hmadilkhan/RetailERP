@@ -406,8 +406,8 @@ class WebsiteController extends Controller
                 return redirect()->route('sliderLists');
             }
 
-            if (\File::exists('storage/images/website/sliders'. session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
-                \File::delete('storage/images/website/sliders'. session('company_id') . '/' . $request->webId . '/' . $get->slide);
+            if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
+                \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide);
             }
             $columnArray['slide'] = $imageName;
         }
@@ -578,7 +578,7 @@ class WebsiteController extends Controller
         $path = $this->create_folder('advertisements/' . session('company_id'), $request->website);
 
         if ($path == false) {
-            return response()->json('Image not uploaded.', 500);
+            return response()->json('Image path is not defined.', 500);
         }
 
         if (!$image->move($path, $imageName)) {
@@ -651,8 +651,8 @@ class WebsiteController extends Controller
                 return redirect()->route('AdvertisementLists');
             }
 
-            if (\File::exists('storage/images/website/advertisement'. session('company_id') . '/' . $request->webId . '/' . $get->image)) {
-                \File::delete('storage/images/website/advertisement'. session('company_id') . '/' . $request->webId . '/' . $get->image);
+            if (\File::exists('storage/images/website/advertisement/'. session('company_id') . '/' . $request->webId . '/' . $get->image)) {
+                \File::delete('storage/images/website/advertisement/'. session('company_id') . '/' . $request->webId . '/' . $get->image);
             }
             $columnArray['image'] = $imageName;
         }
