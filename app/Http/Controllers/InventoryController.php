@@ -75,7 +75,7 @@ class InventoryController extends Controller
             // }
             $inventory = '';
             if (in_array(Auth::user()->username, ['fn1009'])) {
-                return view('Inventory.livewirelist', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+                return view('Inventory.inventory', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
             } else {
                 return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
             }

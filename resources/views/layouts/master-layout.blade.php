@@ -11,6 +11,7 @@
     @include('partials.html-libs')
     @yield('css_code')
     @yield('scriptcode_one')
+    @livewireStyles
 </head>
 
 @yield('scriptcode_two')
@@ -55,6 +56,7 @@
     <!-- Required Jqurey -->
     @include('partials.js-libs')
     @yield('scriptcode_three')
+    @livewireScripts
     <script src="https://www.gstatic.com/firebasejs/7.23.0/firebase.js"></script>
     <!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script> -->
     <script>
