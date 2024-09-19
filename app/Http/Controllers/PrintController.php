@@ -453,7 +453,7 @@ class PrintController extends Controller
             $pdf->Cell(13,6,$val->total_qty,0,0,'C',1);
             $pdf->Cell(14,6,number_format($val->total_amount,0),0,1,'C',1);
 			
-			$pdf->ln(1);
+			$pdf->ln(3);
 			$pdf->SetFont('Arial','I',8);
 			
 			$notes = str_split($val->note, 55);
