@@ -1160,7 +1160,7 @@ class WebsiteController extends Controller
         ]);
     }
 
-    public function getTerminalsFromBranches(Request $request, terminal $terminal)
+    public function getTerminalsFromBranches(Request $request, Terminal $terminal)
     {
         return response()->json($terminal->getterminals($request->branchId));
     }
