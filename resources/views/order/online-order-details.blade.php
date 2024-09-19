@@ -79,7 +79,7 @@
                              @if($item->image != '')
                               @php $imageShow = Cloudinary::getUrl($item->image) @endphp
                              @endif
-                             <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
+                             <img src="{{ $item->image }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
                             @else
                             <img src="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
                             @endif
