@@ -462,7 +462,7 @@ class PrintController extends Controller
 			$finalIndex = count($notes)-1;
 			for($i = 0; $i < count($notes); $i++){
 				// echo $i."</br>";
-				$pdf->Cell(5,5,"",0,0,'L',1);
+				// $pdf->Cell(5,5,"",0,0,'L',1);
 				$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($notes[$i],0,59),0,0,'L',1);
 				
 				$pdf->Cell(2,7,'',0,0,'C',1);
