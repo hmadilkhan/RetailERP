@@ -151,7 +151,7 @@
                                 <div class="mt-3">
                                     <p class="text-muted mb-2">Quantity</p>
                                     <div class="d-inline-flex">
-                                            <p>{{ number_format($item->total_qty,0) }}</p>
+                                            <h5>{{ number_format($item->total_qty,0) }}</h5>
                                     </div>
                                 </div>
                             </div>
