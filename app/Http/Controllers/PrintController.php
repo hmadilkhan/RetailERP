@@ -362,19 +362,19 @@ class PrintController extends Controller
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(37.5, 8, 'Print DateTime ', 0, 0, 'L');
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(57.5, 8, date("d M y h:i a"), 0, 0, 'L');
+        $pdf->Cell(57.5, 8, date("d M Y h:i a"), 0, 0, 'L');
         $pdf->Cell(2, 8, "", 0, 0, 'L'); // GAP
 
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(37.5, 8, 'Print DateTime ', 0, 0, 'L');
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(57.5, 8, date("d M y h:i a"), 0, 0, 'L');
+        $pdf->Cell(57.5, 8, date("d M Y h:i a"), 0, 0, 'L');
         $pdf->Cell(2, 8, "", 0, 0, 'L'); // GAP
 
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(37.5, 8, 'Print DateTime ', 0, 0, 'L');
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(57.5, 8, date("d M y h:i a"), 0, 1, 'L');
+        $pdf->Cell(57.5, 8, date("d M Y h:i a"), 0, 1, 'L');
         // $pdf->SetFont('Arial', 'B', 10);
         // $pdf->Cell(15, 8, '', 0, 0, 'L');
         // $pdf->SetFont('Arial', '', 10);
