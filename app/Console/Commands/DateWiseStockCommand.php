@@ -40,6 +40,6 @@ class DateWiseStockCommand extends Command
                 "opening_stock" => $stock->stock,
             ]);
         }
-        $this->info("");
+        $this->info("Stock Added");
     }
 }

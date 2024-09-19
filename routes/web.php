@@ -51,6 +51,7 @@ use App\Http\Controllers\VariationController;
 use App\Http\Controllers\VariationProductController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
+use App\Livewire\Inventory\Inventory;
 use App\Livewire\ViewInventory;
 use Illuminate\Support\Facades\DB;
 /*
@@ -549,6 +550,8 @@ Route::middleware(['statusCheck'])->group(function () {
 
     // Tag
     Route::resource('inventory/tags', TagController::class);
+
+    Route::get('create/inventory', Inventory::class);
 
     // Orders Module //
     Route::get('/test-query', [OrderController::class, 'testQuery']);

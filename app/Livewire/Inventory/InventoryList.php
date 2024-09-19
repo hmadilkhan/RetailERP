@@ -4,11 +4,12 @@ namespace App\Livewire\Inventory;
 
 use App\inventory;
 use Livewire\Component;
+use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
 
 class InventoryList extends Component
 {
-    use WithPagination;
+    use WithPagination, WithoutUrlPagination;
 
     protected $listeners = ['filtersUpdated'];
 
