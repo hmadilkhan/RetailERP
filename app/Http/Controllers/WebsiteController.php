@@ -8,7 +8,7 @@ use App\WebsiteProduct;
 use App\Models\InventoryDepartment;
 use App\Models\Company;
 use App\branch;
-use App\terminal;
+use App\Terminal;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Facades\DB;
 use Session, Image, Auth, Validator, File;
