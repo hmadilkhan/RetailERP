@@ -463,18 +463,18 @@ class PrintController extends Controller
 			for($i = 0; $i < count($notes); $i++){
 				// echo $i."</br>";
 				$pdf->Cell(5,5,"",0,0,'L',1);
-				$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($val->note,0,59),0,0,'L',1);
+				$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($notes[$i],0,59),0,0,'L',1);
 				
 				$pdf->Cell(2,7,'',0,0,'C',1);
 				$pdf->Cell(5,5,"",0,0,'L',1);
-				$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($val->note,0,59),0,0,'L',1);
+				$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($notes[$i],0,59),0,0,'L',1);
 				
 				$pdf->Cell(2,7,'',0,0,'C',1);
 				$pdf->Cell(5,5,"",0,0,'L',1);
 				if($i == $finalIndex){
-					$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($val->note,0,59),0,1,'L',1);
+					$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($notes[$i],0,59),0,1,'L',1);
 				}else{
-					$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($val->note,0,59),0,1,'L',1);
+					$pdf->Cell(90,5,($i == 0 ? "Note: " : "").substr($notes[$i],0,59),0,1,'L',1);
 				}
 			}
 		
