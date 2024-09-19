@@ -457,8 +457,8 @@ class PrintController extends Controller
 			$pdf->SetFont('Arial','I',8);
 			
 			$notes = str_split($val->note, 55);
-			echo count($notes);
-			exit();
+			// echo count($notes);
+			// exit();
 			$finalIndex = count($notes)-1;
 			for($i = 0; $i < count($notes); $i++){
 				// echo $i."</br>";
