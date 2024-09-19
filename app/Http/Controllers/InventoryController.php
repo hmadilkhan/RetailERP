@@ -229,7 +229,7 @@ class InventoryController extends Controller
             'item_code'           => $request->code,
             'product_name'        => $request->name,
             'product_description' => $request->description,
-            'image'               => $imageName,
+            'image'               => isset($folder) ? $folder.'/'.strtolower($imageName) : $imageName,
             'url'                 => $imageData,
             'status'              => 1,
             'created_at'          => date('Y-m-d H:s:i'),
@@ -441,7 +441,7 @@ class InventoryController extends Controller
                 if ($imageName != null) {
                     DB::table('inventory_images')->insert([
                         "item_id" => $productid,
-                        "image"   => $imageName,
+                        "image"   => isset($folder) ? $folder.'/'.strtolower($imageName) : $imageName,
                         "url"     => isset($imageData) ? $imageData : null,
                     ]);
 
@@ -977,7 +977,7 @@ class InventoryController extends Controller
                                         'transformation' => $transformationArray
                                     ])->getSecurePath();
 
-                $fields['image'] = strtolower($imageName);
+                $fields['image'] = $folder.'/'.strtolower($imageName);
                 $fields['url']   = $imageData;
 
             } else {
@@ -1105,7 +1105,7 @@ class InventoryController extends Controller
             if ($imageName != null) {
                 DB::table('inventory_images')->insert([
                     "item_id" => $request->id,
-                    "image"   => $imageName,
+                    "image"   => isset($folder) ? $folder.'/'.strtolower($imageName) : $imageName,
                     "url"     => isset($imageData) ? $imageData : null,
                 ]);
 
