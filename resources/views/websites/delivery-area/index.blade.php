@@ -57,7 +57,7 @@
       <div class="row">
         <div class="col-md-4">
           <div class="form-group">       
-            <label for="charges" class="form-control-label">Delivery Charge</label>
+            <label for="charges" class="form-control-label">Delivery Charge (PKR)</label>
             <input type="text" name="charges" id="charges" class="form-control" value="{{ old('charges') }}">
               <div class="form-control-feedback text-danger" id="charges_alert"></div>
           </div>  
@@ -107,7 +107,7 @@
         </div> 
         <div class="col-md-4">
           <div class="form-group">       
-            <label for="estimate_day" class="form-control-label">Estimate of days</label>
+            <label for="estimate_day" class="form-control-label">Estimated delivery (days)</label>
             <input type="text" name="estimate_day" id="estimate_day" class="form-control">
             <div class="form-control-feedback text-danger" id="estimate_day_alert"></div>            
           </div>  
