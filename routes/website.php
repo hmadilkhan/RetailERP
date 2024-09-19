@@ -45,7 +45,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::prefix('website/terminal-assign')->group(function () {
         Route::get('/view', [WebsiteController::class, 'getTerminalAssign'])->name('terminalAssignList');
-        Route::post('/get-terminal-branches', [WebsiteController::class, ' getTerminalsFromBranches'])->name('getTerminalBranches');
+        Route::get('/get-terminal-branches', [WebsiteController::class, ' getTerminalsFromBranches'])->name('getTerminalBranches');
         Route::post('/store', [WebsiteController::class, 'storeterminalBind'])->name('terminalAssignStore');
         Route::post('/update', [WebsiteController::class, 'updateTerminalBind'])->name('terminalAssignUpdate');
         Route::post('/delete', [WebsiteController::class, 'deleteTerminalBind'])->name('deleteWebsiteTerminal');
