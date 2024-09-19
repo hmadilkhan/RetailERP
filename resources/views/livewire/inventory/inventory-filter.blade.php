@@ -2,7 +2,7 @@
     <section class="panels-wells">
         <div class="card">
             <div class=" card-header">
-                <div class="button-group col-md-8 f-right">
+                <div class="button-group col-md-2 f-right">
                     <a style="color:white;" target="_blank" href="{{ URL::to('get-export-csv-for-retail-price') }}"
                         class="btn btn-md btn-success waves-effect waves-light f-right"><i
                             class="icofont icofont-file-excel">
