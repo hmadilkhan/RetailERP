@@ -74,7 +74,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-start border-bottom pb-3">
                         <div class="me-4">
-                            @if(session('company_id') == '102')
+                            @if(session('company_id') == 102)
                               @php  $imageShow = asset('storage/images/placeholder.jpg') @endphp
                              @if($item->image != '')
                               @php $imageShow = Cloudinary::getUrl($item->image) @endphp
