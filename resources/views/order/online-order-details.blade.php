@@ -74,8 +74,16 @@
                 <div class="card-body">
                     <div class="d-flex align-items-start border-bottom pb-3">
                         <div class="me-4">
+                            @if(session('company_id') == '102')
+                              @php  $imageShow = asset('storage/images/placeholder.jpg') @endphp
+                             @if($item->image != '')
+                              @php $imageShow = Cloudinary::getUrl($item->image) @endphp
+                             @endif
+                             <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
+                            @else
                             <img src="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
-                        </div>
+                            @endif
+                            </div>
                         <div class="flex-grow-1 align-self-center overflow-hidden">
                             <div>
                                 <!-- text-truncate  -->
