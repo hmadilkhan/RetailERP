@@ -924,7 +924,7 @@ class InventoryController extends Controller
            for($i=0;$i < count($gallery);$i++){
                 if(File::exists('storage/images/products/'.$gallery[$i])){
                     File::delete('storage/images/products/'.$gallery[$i]);
-                    DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
+                    // DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
                  }
                  DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
            }
@@ -934,7 +934,7 @@ class InventoryController extends Controller
             $gallery = explode(',',$request->get('urlGalleryImage'));
             for($i=0;$i < count($gallery);$i++){
                 Cloudinary::destroy($gallery[$i]);
-                DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
+                // DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
             }
             DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
          }        
