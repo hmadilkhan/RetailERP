@@ -527,7 +527,7 @@ class InventoryController extends Controller
                 if ($existsProduct == 0) {
                     array_push($resp,['output'=>$existsProduct,'prodId'=>$productid]);
                     WebsiteProduct::create([
-                        "website_id" => $request->website,
+                        "website_id"   => $request->website,
                         "inventory_id" => $productid,
                     ]);
 
