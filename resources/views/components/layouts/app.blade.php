@@ -7,10 +7,33 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
-    <title>@yield('title')</title>
+    <title>{{ $title ?? 'Page Title' }}</title>
     @include('partials.html-libs')
     @yield('css_code')
     @yield('scriptcode_one')
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+        integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        .select2-selection__rendered {
+            line-height: 31px !important;
+        }
+
+        .select2-container .select2-selection--single {
+            height: 35px !important;
+        }
+
+        .select2-selection__arrow {
+            height: 34px !important;
+        }
+
+        a {
+            text-decoration: none !important;
+        }
+    </style>
     @livewireStyles
 </head>
 
@@ -22,16 +45,18 @@
     <div id="cover-spin"></div>
     <!--wrapper-->
     <div class="wrapper">
+
         <!-- Navbar header-->
         @include('partials.header')
         <!-- end Navbar header -->
+
         <!-- Side-Nav-->
         <x-sidebar />
         <!-- end Side-Nav -->
         <div class="content-wrapper">
             <!-- Container-fluid starts -->
             <!-- Main content starts -->
-            <div class="container-fluid" @hasSection('dashboardInlineCSS') @else style="padding-top:3.9rem;" @endif>
+            <div class="container-fluid p-4">
                 <!-- start contect-->
                 {{ $slot }}
                 <!-- end contect-->
@@ -40,20 +65,10 @@
             <!-- Container-fluid ends -->
         </div>
     </div>
+    <!-- Required Jqurey -->
     @include('partials.js-libs')
-    <script>
-        $('.table').DataTable({
-            bLengthChange: true,
-            displayLength: 50,
-            info: true,
-            language: {
-                search: '',
-                searchPlaceholder: 'Search',
-                lengthMenu: '<span></span> _MENU_'
-
-            }
-        });
-    </script>
+    @yield('scriptcode_three')
+    @livewireScripts
 </body>
 
 </html>

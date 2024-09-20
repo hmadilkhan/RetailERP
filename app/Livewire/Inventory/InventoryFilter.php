@@ -17,7 +17,8 @@ class InventoryFilter extends Component
     public $rp = '';
     public $ref = '';
     public $status = '';
-    public $nonstock = '';
+    public $nonstockChecked = '';
+    public $inactiveChecked = false;
     public $subDepartments = [];
 
     #[Computed()]
@@ -38,7 +39,8 @@ class InventoryFilter extends Component
             'rp' => $this->rp,
             'ref' => $this->ref,
             'status' => $this->status,
-            'nonstock' => $this->nonstock,
+            'nonstock' => $this->nonstockChecked,
+            'inactive' => $this->inactiveChecked,
         ]);
     }
 
@@ -51,7 +53,8 @@ class InventoryFilter extends Component
         $this->rp = null;
         $this->ref = null;
         $this->status = null;
-        $this->nonstock = null;
+        $this->nonstockChecked = false;
+        $this->inactiveChecked = false;
         $this->subDepartments = [];
         $this->applyFilters();
     }

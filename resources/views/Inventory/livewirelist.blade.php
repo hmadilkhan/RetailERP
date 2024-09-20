@@ -52,6 +52,7 @@
             <div id="table_data" class="card-block">
                 {{-- @include('Inventory.inventory_table') --}}
                 @livewire('Inventory.inventory-list')
+                
             </div>
         </div>
 

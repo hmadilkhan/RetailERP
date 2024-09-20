@@ -21,6 +21,7 @@ class InventoryList extends Component
     public $ref = '';
     public $status = '';
     public $nonstock = '';
+    public $inactive = '';
 
     public function filtersUpdated($filters)
     {
@@ -32,16 +33,28 @@ class InventoryList extends Component
         $this->rp = $filters['rp'];
         $this->ref = $filters['ref'];
         $this->status = $filters['status'];
-        $this->nonstock = $filters['nonstock'];
+        $this->nonstock = $filters['nonstockChecked'];
+        $this->inactive = $filters['inactive'];
 
         // Reset pagination to the first page when filters change
         $this->resetPage();
     }
 
+    public function placeholder()
+    {
+        return <<<'HTML'
+        <div class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
+            <div class='spinner-border text-dark' role='status'>
+                <span class='visually-hidden'>Loading...</span>
+            </div>
+        </div>
+        HTML;
+    }
+
 
     public function render(inventory $inventory)
     {
-        $inventories = $inventory->getInventoryForPagewiseByFilters($this->code, $this->name, $this->dept, $this->sdept, $this->rp, $this->ref, $this->status, $this->nonstock);
+        $inventories = $inventory->getInventoryForPagewiseByFiltersLivewire($this->code, $this->name, $this->dept, $this->sdept, $this->rp, $this->ref, $this->status, $this->nonstock);
         return view('livewire.inventory.inventory-list', compact('inventories'));
     }
 }

@@ -178,7 +178,7 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
 
     public function getheadsDetailsFromOpeningIdForClosing($openingId)
     {
-        $result = DB::select("SELECT a.opening_id,a.status,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.status != 12 ),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
+        $result = DB::select("SELECT a.opening_id,a.status,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id ),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
         SUM(b.actual_amount) AS sales
       FROM
         sales_receipts b

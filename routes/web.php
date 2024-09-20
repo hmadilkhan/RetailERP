@@ -551,7 +551,7 @@ Route::middleware(['statusCheck'])->group(function () {
     // Tag
     Route::resource('inventory/tags', TagController::class);
 
-    Route::get('create/inventory', Inventory::class);
+    Route::get('list/inventory', Inventory::class);
 
     // Orders Module //
     Route::get('/test-query', [OrderController::class, 'testQuery']);
