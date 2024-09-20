@@ -586,7 +586,7 @@ class WebsiteController extends Controller
             //                           ->select('prod_var_rel.id','prod_var_dtl.price','prod_var_dtl.image','variations.name as variat_name','posProducts.item_name as product_name','inventGeneral.product_name as parent_prod')
             //                           ->get();
             "websites"    => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
-            "departments" => InventoryDepartment::where('company_id', Auth::user()->company_id)->get()
+            "departments" => InventoryDepartment::where('company_id', Auth::user()->company_id)->where('status',1)->get()
         ]);
     }
 
@@ -595,7 +595,7 @@ class WebsiteController extends Controller
 
         $rules = [
             'website' => 'required',
-            'image'   => 'required|mimes:jpg,jpeg,png|dimensions:width=576,height=576'
+            'image'   => 'required|mimes:jpg,jpeg,png|dimensions:width=576,height=576|max:1024'
         ];
 
         $this->validate($request, $rules);
@@ -674,7 +674,7 @@ class WebsiteController extends Controller
         if ($Slide != '') {
 
             $rules = [
-                'image_md'   => 'required|mimes:jpg,jpeg,png|dimensions:width=1520,height=460'
+                'image_md'   => 'required|mimes:jpg,jpeg,png|dimensions:width=1520,height=460|max:1024'
             ];
 
             $this->validate($request, $rules);

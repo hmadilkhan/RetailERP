@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminCompanyController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminUsersController;
 use App\Http\Controllers\BankController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BusinessPoliciesController;
 use App\Http\Controllers\CompanyController;
@@ -546,7 +547,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::delete('/inventory/variation-product/{id}/remove', [VariationProductController::class, 'destroy'])->name('removeVariation');
     Route::get('/inventory/variation-product/{filename}/image', [VariationProductController::class, 'imageView'])->name('imageVariatProduct');
 
-    Route::resource('inventory/brands', BranchController::class);
+    Route::resource('inventory/brands', BrandController::class);
 
     // Tag
     Route::resource('inventory/tags', TagController::class);
