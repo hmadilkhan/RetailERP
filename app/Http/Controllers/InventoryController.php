@@ -529,6 +529,7 @@ class InventoryController extends Controller
                     WebsiteProduct::create([
                         "website_id"   => $request->website,
                         "inventory_id" => $productid,
+                        "status"       => 1 
                     ]);
 
                     WebsiteProduct::where('website_id','!=',$request->website)
