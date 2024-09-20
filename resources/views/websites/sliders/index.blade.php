@@ -119,7 +119,7 @@
         </div> 
 
         <div class="form-group @error('mobile_slide') 'has-danger' @enderror m-r-2"> 
-            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="328" height="128" id="previewMobileSlide"/></br>
+            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/></br>
           <label for="mobile_slide" class="form-control-label">Slide</label></br>
 
           <label for="mobile_slide" class="custom-file">
