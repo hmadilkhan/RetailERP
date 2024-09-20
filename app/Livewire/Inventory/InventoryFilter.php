@@ -17,7 +17,7 @@ class InventoryFilter extends Component
     public $rp = '';
     public $ref = '';
     public $status = '';
-    public $nonstockChecked = '';
+    public $nonstockChecked = false;
     public $inactiveChecked = false;
     public $subDepartments = [];
 
