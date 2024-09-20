@@ -317,8 +317,8 @@ class WebsiteController extends Controller
 
         $rules = [
             'website'       => 'required',
-            'image'         => 'required|mimes:jpg,jpeg,png,webp|size:1024',
-            'mobile_slide'  => 'required|mimes:jpg,jpeg,png,webp|size:1024'
+            'image'         => 'required|mimes:jpg,jpeg,png,webp|max:1024',
+            'mobile_slide'  => 'required|mimes:jpg,jpeg,png,webp|max:1024'
         ];
 
         $this->validate($request, $rules);
@@ -391,7 +391,7 @@ class WebsiteController extends Controller
         if ($Slide != '') {
 
             $rules = [
-                'slide_md'   => 'required|mimes:jpg,jpeg,png,webp|size:1024'
+                'slide_md'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
             ];
 
             $this->validate($request, $rules);
@@ -419,7 +419,7 @@ class WebsiteController extends Controller
         if ($mobile_slide != '') {
 
             $rules = [
-                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp|size:1024'
+                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
             ];
 
             $this->validate($request, $rules);
