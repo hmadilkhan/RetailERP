@@ -106,7 +106,7 @@ class dashboard extends Model
     public function branchesForClosedSales()
     {
         if (session("roleId") == 2) {
-            $result = DB::select("SELECT c.*,(SELECT COALESCE(SUM(a.total_amount),0) AS sales   from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where `date` = '" . date('Y-m-d', strtotime('-1 days')) . "' AND user_id = c.branch_id and status = 2) and a.status != 12) as sales,'branch' as identify from branch c where c.company_id = ? and c.status_id = 1", [session("company_id")]);
+            $result = DB::select("SELECT c.*,(SELECT COALESCE(SUM(a.total_amount),0) AS sales   from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where `date` = '" . date('Y-m-d', strtotime('-1 days')) . "' AND user_id = c.branch_id and status = 2)) as sales,'branch' as identify from branch c where c.company_id = ? and c.status_id = 1", [session("company_id")]);
             return $result;
         } else {
             $result = DB::select("SELECT c.*,b.*,(SELECT  COALESCE(SUM(a.total_amount),0) AS sales  from sales_receipts a where opening_id IN (Select opening_id as opening_id from sales_opening a where `date` = '" . date('Y-m-d', strtotime('-1 days')) . "' AND user_id = c.branch_id and status = 2)   and a.terminal_id = b.terminal_id) as sales,'terminal' as identify from branch c INNER JOIN terminal_details b
@@ -206,7 +206,7 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
 
     public function lastDayDetails($terminal)
     {
-        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.status != 12),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
+        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
         SUM(b.total_amount) AS sales
       FROM
         sales_receipts b
