@@ -427,14 +427,14 @@ class WebsiteController extends Controller
             $mobile_slideName   = time() . '.' . $mobile_slide->getClientOriginalExtension();
 
             $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
-
+      
             if ($path == false) {
                 Session::flash('error', 'Server Issue image not uploaded route issue.');
                 return redirect()->route('sliderLists');
             }
 
-            if (!$Slide->move($path, $mobile_slideName)) {
-                Session::flash('error', 'Server Issue image not uploaded route issue.');
+            if (!$mobile_slide->move($path, $mobile_slideName)) {
+                Session::flash('error', 'Server Issue slide image not uploaded route issue.');
                 return redirect()->route('sliderLists');
             }
 
