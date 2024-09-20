@@ -246,13 +246,15 @@ class WebsiteController extends Controller
                 ->join('website_details', 'website_details.id', 'website_sliders.website_id')
                 ->select('website_details.*')
                 ->where('website_details.company_id', $companyId)
+                ->where('website_sliders.status', 1)
                 ->groupBy('website_details.name')
                 ->get(),
             "websiteSliderList" => DB::table('website_sliders')
                 ->join('website_details', 'website_details.id', 'website_sliders.website_id')
                 ->leftJoin('inventory_general', 'inventory_general.id', 'website_sliders.prod_id')
-                ->select('website_sliders.id', 'website_sliders.website_id', 'website_sliders.slide', 'website_sliders.invent_department_id', 'website_sliders.invent_department_name', 'website_sliders.prod_id', 'inventory_general.department_id as prod_dept_id', 'inventory_general.sub_department_id as prod_subdept_id')
+                ->select('website_sliders.id', 'website_sliders.website_id', 'website_sliders.slide',  'website_sliders.mobile_slide','website_sliders.invent_department_id', 'website_sliders.invent_department_name', 'website_sliders.prod_id', 'inventory_general.department_id as prod_dept_id', 'inventory_general.sub_department_id as prod_subdept_id')
                 ->where('website_details.company_id', $companyId)
+                ->where('website_sliders.status', 1)
                 ->get()
         ]);
     }
@@ -286,7 +288,7 @@ class WebsiteController extends Controller
         }
 
         if ($request->mode == 'depart') {
-            return  InventoryDepartment::whereIn('department_id', DB::table('inventory_general')->whereIn('id', WebsiteProduct::where('website_id', $request->website)->pluck('inventory_id'))->pluck('department_id'))->get();
+            return  InventoryDepartment::whereIn('department_id', DB::table('inventory_general')->whereIn('id', WebsiteProduct::where('website_id', $request->website)->where('status', 1)->pluck('inventory_id'))->pluck('department_id'))->get();
         }
 
         if ($request->mode == 'subdepart') {
@@ -304,6 +306,7 @@ class WebsiteController extends Controller
         return DB::table('website_products')
             ->join('inventory_general', 'inventory_general.id', 'website_products.inventory_id')
             ->where('website_products.website_id', $request->id)
+            ->where('website_products.status', 1)
             ->where('inventory_general.sub_department_id', $request->subDepart)
             ->select('inventory_general.id', 'inventory_general.product_name')
             ->get();
@@ -315,31 +318,33 @@ class WebsiteController extends Controller
         // dimensions:width=1520,height=460
 
         $rules = [
-            'website' => 'required',
-            'image'   => 'required|mimes:jpg,jpeg,png'
+            'website'       => 'required',
+            'image'         => 'required|mimes:jpg,jpeg,png,webp|max:1024',
+            'mobile_slide'  => 'required|mimes:jpg,jpeg,png,webp|max:1024'
         ];
 
         $this->validate($request, $rules);
 
         $image             = $request->file('image');
-        $imageName         = time() . '.' . $image->getClientOriginalExtension();
+        $imageName         = time() . '.' . strtolower(pathinfo($image->getClientOriginalExtension(),PATHINFO_EXTENSION));
+        $mobile_slide      = $request->file('mobile_slide');
+        $mobile_slideName  = time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));       
         $productSlug       = null;
         $invent_department = null;
 
         $path = $this->create_folder('sliders/' . session('company_id'), $request->website);
-
+        
         if ($path == false) {
             return response()->json('Image not uploaded.', 500);
         }
 
-        if (!$image->move($path, $imageName)) {
+        if (!$image->move($path, $imageName) || !$mobile_slide->move($path, $mobile_slideName)) {
             return response()->json('Image not uploaded.', 500);
         }
 
         if (!empty($request->product)) {
             $getprodSlug = DB::table('inventory_general')->where('id', '=', $request->product)->select('slug')->first();
             $productSlug = $getprodSlug->slug;
-
             $invent_department = null;
         }
 
@@ -358,6 +363,7 @@ class WebsiteController extends Controller
                 'prod_id'                => !empty($request->depart) ? null : $request->post('product'),
                 'prod_slug'              => $productSlug,
                 'slide'                  => $imageName,
+                'mobile_slide'           => $mobile_slideName,
                 'status'                 => 1,
                 'type'                   => 'web'
             ]);
@@ -375,9 +381,10 @@ class WebsiteController extends Controller
     public function update_slide(Request $request)
     {
 
-        $Slide = $request->file('slide_md');
-        $productSlug = null;
-        $departName  = null;
+        $Slide        = $request->file('slide_md');
+        $mobile_slide = $request->file('mobile_slide');
+        $productSlug  = null;
+        $departName   = null;
 
         $columnArray = ['updated_at' => date("Y-m-d H:i:s")];
 
@@ -386,7 +393,7 @@ class WebsiteController extends Controller
         if ($Slide != '') {
 
             $rules = [
-                'slide_md'   => 'required|mimes:jpg,jpeg,png|dimensions:width=1520,height=460'
+                'slide_md'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
             ];
 
             $this->validate($request, $rules);
@@ -410,6 +417,34 @@ class WebsiteController extends Controller
             }
             $columnArray['slide'] = $imageName;
         }
+
+        if ($mobile_slide != '') {
+
+            $rules = [
+                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+            ];
+
+            $this->validate($request, $rules);
+
+            $mobile_slideName   = time() . '.' . $mobile_slide->getClientOriginalExtension();
+
+            $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
+      
+            if ($path == false) {
+                Session::flash('error', 'Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+            if (!$mobile_slide->move($path, $mobile_slideName)) {
+                Session::flash('error', 'Server Issue slide image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+            if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide)) {
+                \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide);
+            }
+            $columnArray['mobile_slide'] = $mobile_slideName;
+        }        
 
         if (!empty($request->post('product_md'))) {
             $productSlug = DB::table('inventory_general')->where('id', '=', $request->post('product_md'))->select('slug')->first();
@@ -475,6 +510,10 @@ class WebsiteController extends Controller
                     if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide)) {
                         \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide);
                     }
+
+                    if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide)) {
+                        \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide);
+                    }                    
                 }
 
                 $process = DB::table('website_sliders')->where('website_id', '=', $id)->delete();
@@ -486,6 +525,10 @@ class WebsiteController extends Controller
                 if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide)) {
                     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide);
                 }
+
+                if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide)) {
+                    \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide);
+                }                
 
                 $process = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->delete();
             }

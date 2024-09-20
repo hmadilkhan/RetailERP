@@ -117,9 +117,23 @@
             <div class="form-control-feedback text-danger">{{ $message }}</div>
           @enderror
         </div> 
+
+        <div class="form-group @error('mobile_slide') 'has-danger' @enderror m-r-2"> 
+            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/></br>
+          <label for="mobile_slide" class="form-control-label">Slide</label></br>
+
+          <label for="mobile_slide" class="custom-file">
+          <input type="file" name="mobile_slide" id="mobile_slide" class="custom-file-input">
+          <span class="custom-file-control"></span>
+          </label>
+          @error('mobile_slide')
+            <div class="form-control-feedback text-danger">{{ $message }}</div>
+          @enderror
+        </div> 
+
         
            <div class="alert alert-info">
-               Be informed that the required image dimensions should be 1520 pixels in width and 460 pixels in height, with a file size not exceeding 200 kilobytes.
+               Be informed that the required image size not exceeding 1MB.
            </div>
          <button class="btn btn-primary m-l-1 m-t-1" id="btn_create" type="submit">Add</button>
        </div>  
@@ -163,7 +177,7 @@
            @foreach($websiteSliderList as $val)
               @if($val->website_id == $value->id )
                 <!--<input type="hidden" value="{{-- route('updateSliderImage',$val->id) --}}" id="updateUrlslideImg{{-- $val->id --}}">-->
-                <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="128" height="64" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}')" class="pointer"/>
+                <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="128" height="64" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}')" class="pointer"/>
               @endif        
            @endforeach
           </td>
@@ -204,20 +218,32 @@
                      <input type="hidden" id="webname_md" name="webName">
                      <input type="hidden" id="webid_md" name="webId">
                      <input type="hidden" id="id_md" name="id">
-                     <div class="form-group z-depth-left-2">
-                         
-                           <img src="" class="img-fluid" id="slideImgMD"/>
+
+                     <div class="form-group">
+                           <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
                      </div>
                      <div class="form-group">
                           <label for="slide_md" class="custom-file">
                           <input type="file" name="slide_md" id="slide_md" class="custom-file-input">
                           <span class="custom-file-control"></span>
                           </label>
-                          
-           <div class="alert alert-info">
-               Be informed that the required image dimensions should be 1520 pixels in width and 460 pixels in height, with a file size not exceeding 200 kilobytes. translate in urdu
-           </div>                          
                      </div>
+
+                    <div class="form-group">
+                         <img for="mobile_slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
+                   </div>
+                   <div class="form-group">
+                        <label for="mobile_slide_md" class="custom-file">
+                        <input type="file" name="mobile_slide" id="mobile_slide_md" class="custom-file-input">
+                        <span class="custom-file-control"></span>
+                        </label>
+                  </div>
+                                                  
+
+                  <div class="alert alert-info">
+                    Be informed that the required image size not exceeding 1MB.
+                </div>  
+
                    
                    <div class="form-group">
                			<label class="pointer">
@@ -374,14 +400,22 @@
    })    
     
     
-   function editSlide(unqid,webId,webName,depart,prod,prod_depart,prod_sbdepart){
+   function editSlide(unqid,webId,webName,depart,prod,prod_depart,prod_sbdepart,mobileSlide){
        $("#slideEdit_Modal").modal('show');
+
        $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'))
+
        $("#webname_md").val(webName);
        $("#webid_md").val(webId);
        $("#id_md").val(unqid);
+
        id=unqid;
         
+       if(mobileSlide != ''){
+        $("#previewMobileSlide_md").attr('src','/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide)
+       }
+      
+
        if(prod != '' && depart == ''){
            $("#navigat_prod_md").trigger('click');
            
@@ -463,7 +497,19 @@
   
   $("#image").on('change',function(){
       readURL(this,'previewImg');
-  })
+  });
+
+  $("#mobile_slide").on('change',function(){
+      readURL(this,'previewMobileSlide');
+  });
+  
+  $("#slide_md").on('change',function(){
+      readURL(this,'slideImgMD');
+  });
+
+  $("#mobile_slide_md").on('change',function(){
+      readURL(this,'previewMobileSlide_md');
+  });
   
   function getProduct(webId,elemId,prod,sub_depart){
 
