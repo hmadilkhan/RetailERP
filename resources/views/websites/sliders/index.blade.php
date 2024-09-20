@@ -220,7 +220,7 @@
                      <input type="hidden" id="id_md" name="id">
 
                      <div class="form-group">
-                           <img for="slide_md" src="" class="img-fluid" id="slideImgMD" width="250" height="128"/>
+                           <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
                      </div>
                      <div class="form-group">
                           <label for="slide_md" class="custom-file">
@@ -230,7 +230,7 @@
                      </div>
 
                     <div class="form-group">
-                         <img for="mobile_slide_md" src="" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
+                         <img for="mobile_slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
                    </div>
                    <div class="form-group">
                         <label for="mobile_slide_md" class="custom-file">
@@ -402,7 +402,9 @@
     
    function editSlide(unqid,webId,webName,depart,prod,prod_depart,prod_sbdepart,mobileSlide){
        $("#slideEdit_Modal").modal('show');
+
        $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'))
+
        $("#webname_md").val(webName);
        $("#webid_md").val(webId);
        $("#id_md").val(unqid);
