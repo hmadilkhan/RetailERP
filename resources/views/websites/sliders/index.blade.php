@@ -234,7 +234,7 @@
                    </div>
                    <div class="form-group">
                         <label for="mobileSlide_md" class="custom-file">
-                        <input type="file" name="mobile_slide" id="mobileSlide_md" class="custom-file-input">
+                        <input type="file" name="mobile_slide" id="mobile_slide_md" class="custom-file-input">
                         <span class="custom-file-control"></span>
                         </label>
                   </div>
@@ -499,7 +499,15 @@
 
   $("#mobile_slide").on('change',function(){
       readURL(this,'previewMobileSlide');
-  })
+  });
+  
+  $("#slide_md").on('change',function(){
+      readURL(this,'slideImgMD');
+  });
+
+  $("#mobile_slide_md").on('change',function(){
+      readURL(this,'previewMobileSlide_md');
+  });
   
   function getProduct(webId,elemId,prod,sub_depart){
 
