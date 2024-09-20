@@ -220,7 +220,7 @@
                      <input type="hidden" id="id_md" name="id">
 
                      <div class="form-group z-depth-left-2">
-                           <img src="" class="img-fluid" id="slideImgMD"/>
+                           <img src="" class="img-fluid" id="slideImgMD" width="250" height="128"/>
                      </div>
                      <div class="form-group">
                           <label for="slide_md" class="custom-file">
@@ -230,7 +230,7 @@
                      </div>
 
                     <div class="form-group z-depth-left-2">
-                         <img src="" class="img-fluid" id="previewMobileSlide_md"/>
+                         <img src="" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
                    </div>
                    <div class="form-group">
                         <label for="mobileSlide_md" class="custom-file">
