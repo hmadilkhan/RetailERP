@@ -518,11 +518,13 @@ class InventoryController extends Controller
 
     public function setProductAttribute_update(Request $request)
     {
-
+        $resp = [];
         if (!empty($request->website)) {
             foreach ($request->inventid as $productid) {
                 $existsProduct =  WebsiteProduct::where('website_id','=',$request->website)->where('inventory_id','=',$productid)->where('status','=',1)->count();
-                if ($existsProduct == null) {
+                  array_push($resp,['output'=>$existsProduct,'prodId'=>$productid]);
+
+                if ($existsProduct != 0) {
                     WebsiteProduct::create([
                         "website_id" => $request->website,
                         "inventory_id" => $productid,
@@ -535,6 +537,8 @@ class InventoryController extends Controller
 
                 }
             }
+            return $resp;
+            
             return response()->json('success', 200);
         } elseif (!empty($request->brand)) {
             foreach ($request->inventid as $productid) {
