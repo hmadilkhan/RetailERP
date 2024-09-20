@@ -3,6 +3,7 @@
 namespace App\Livewire\Inventory;
 
 use App\inventory;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithoutUrlPagination;
 use Livewire\WithPagination;
@@ -11,7 +12,7 @@ class InventoryList extends Component
 {
     use WithPagination, WithoutUrlPagination;
 
-    protected $listeners = ['filtersUpdated'];
+    protected $listeners = ['applyListFilters'];
 
     public $code = '';
     public $name = '';
@@ -23,7 +24,7 @@ class InventoryList extends Component
     public $nonstock = '';
     public $inactive = '';
 
-    public function filtersUpdated($filters)
+    public function applyListFilters($filters)
     {
         // Update the component's filter properties
         $this->code = $filters['code'];
@@ -36,8 +37,15 @@ class InventoryList extends Component
         $this->nonstock = $filters['nonstockChecked'];
         $this->inactive = $filters['inactive'];
 
-        // Reset pagination to the first page when filters change
+        // Debugging to check if filters are applied
+        Log::info('Filters Updated', $filters);
+        dd("Inventory list here");
+
+        // Reset pagination
         $this->resetPage();
+
+        // Re-render the component with updated filters
+        $this->emitSelf('render');
     }
 
     public function placeholder()

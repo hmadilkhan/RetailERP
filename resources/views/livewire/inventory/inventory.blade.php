@@ -13,15 +13,15 @@
                     class="icofont icofont-plus m-r-5"></i> Download Sample</a>
         </div>
         <div class="card-block">
-            @livewire('Inventory.inventory-upload')
+            <livewire:Inventory.inventory-upload wire:key="{{ str()->random(10) }}"/>
         </div>
     </div>
     <div class="card">
         <div class="card-header">
-            @livewire('Inventory.inventory-filter')
+            <livewire:Inventory.inventory-filter lazy wire:key="{{ str()->random(10) }}"/>
         </div>
         <div class="card-block">
-            <livewire:Inventory.inventory-list lazy />
+            <livewire:Inventory.inventory-list lazy wire:key="{{ str()->random(10) }}"/>
         </div>
     </div>
 </section>
