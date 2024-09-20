@@ -546,7 +546,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::delete('/inventory/variation-product/{id}/remove', [VariationProductController::class, 'destroy'])->name('removeVariation');
     Route::get('/inventory/variation-product/{filename}/image', [VariationProductController::class, 'imageView'])->name('imageVariatProduct');
 
-    Route::resource('inventory/brands', BranchController::class);
+    Route::resource('inventory/brands', BrandController::class);
 
     // Tag
     Route::resource('inventory/tags', TagController::class);
