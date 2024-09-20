@@ -219,7 +219,7 @@
                      <input type="hidden" id="webid_md" name="webId">
                      <input type="hidden" id="id_md" name="id">
 
-                     <div class="form-group z-depth-left-2">
+                     <div class="form-group">
                            <img src="" class="img-fluid" id="slideImgMD" width="250" height="128"/>
                      </div>
                      <div class="form-group">
@@ -229,7 +229,7 @@
                           </label>
                      </div>
 
-                    <div class="form-group z-depth-left-2">
+                    <div class="form-group">
                          <img src="" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
                    </div>
                    <div class="form-group">
