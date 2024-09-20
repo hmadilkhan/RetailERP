@@ -8,7 +8,7 @@
 
 @section('content')
 
-<section class="panels-wells ">
+<section class="panels-wells p-t-3">
 
     @if(Session::has('success'))
     <div class="alert alert-success">{{ Session::get('success') }}</div>
