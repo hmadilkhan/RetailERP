@@ -7,7 +7,7 @@ use App\Http\Controllers\AdminCompanyController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminUsersController;
 use App\Http\Controllers\BankController;
-use App\Http\Controllers\BandController;
+use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BusinessPoliciesController;
 use App\Http\Controllers\CompanyController;
