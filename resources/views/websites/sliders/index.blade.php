@@ -401,9 +401,12 @@
     
     
    function editSlide(unqid,webId,webName,depart,prod,prod_depart,prod_sbdepart,mobileSlide){
+    $("#slideImgMD").attr('src',location.origin+'/storage/images/no-image.png');
+    $("#previewMobileSlide_md").attr('src',location.origin+'/storage/images/no-image.png');
+
        $("#slideEdit_Modal").modal('show');
 
-       $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'))
+       $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'));
 
        $("#webname_md").val(webName);
        $("#webid_md").val(webId);
@@ -412,7 +415,7 @@
        id=unqid;
         
        if(mobileSlide != ''){
-        $("#previewMobileSlide_md").attr('src','/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide)
+        $("#previewMobileSlide_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide)
        }
       
 
