@@ -168,10 +168,10 @@
 
                     </div>
                     <div class="col-md-6">
-                        <button type="button" id="clear" data-placement="bottom"
-                            class="btn btn-warning  waves-effect waves-light f-right m-r-10">Clear</button>
-                        <button type="submit" id="search" data-placement="bottom"
-                            class="btn btn-success  waves-effect waves-light f-right m-r-10">Search</button>
+                        <button type="button" data-placement="bottom"
+                            class="btn btn-warning  waves-effect waves-light f-right m-r-10" wire:click="clear()">Clear</button>
+                        <button type="button" data-placement="bottom"
+                            class="btn btn-success  waves-effect waves-light f-right m-r-10" wire:click="applyFilters()">Search</button>
                     </div>
                 </div>
 

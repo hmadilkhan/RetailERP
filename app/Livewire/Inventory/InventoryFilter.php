@@ -30,6 +30,7 @@ class InventoryFilter extends Component
 
     public function applyFilters()
     {
+        // dd("Inventory Filter");
         // Emit an event with the filter data
         $this->dispatch('filtersUpdated', [
             'code' => $this->code,
