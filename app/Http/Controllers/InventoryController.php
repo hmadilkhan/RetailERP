@@ -935,9 +935,8 @@ class InventoryController extends Controller
             $gallery = explode(',',$request->get('urlGalleryImage'));
             for($i=0;$i < count($gallery);$i++){
                 Cloudinary::destroy($gallery[$i]);
-                // DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
+                DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
             }
-            DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
          }        
 
         if (!empty($request->file('image'))) {
