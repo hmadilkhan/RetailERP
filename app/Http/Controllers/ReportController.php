@@ -4677,8 +4677,11 @@ class ReportController extends Controller
             // }
 
             $imageUrl = $item->url;
-            // $localImagePath = 'storage/images/products/' . $item->image;
+            $localImagePath = 'storage/images/products/' . $item->image;
+            return Storage::exists($localImagePath);
             $localImagePath =  url('/') . '/storage/images/products/' . $item->image;
+
+
 
             // Determine image path
             if (filter_var($imageUrl, FILTER_VALIDATE_URL) && $this->isImageUrlAccessible($imageUrl)) {
@@ -4690,7 +4693,7 @@ class ReportController extends Controller
                     $pdf->Cell(50, 50, $pdf->Image($localImagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
                 } else {
                     // Fallback message if no image found
-                    $pdf->Cell(50, 50, asset($localImagePath), 1, 0, 'C');
+                    $pdf->Cell(50, 50, 'No Image', 1, 0, 'C');
                 }
             }
 
