@@ -67,6 +67,7 @@
 			</div>
 		</div>
         <div class="col-xl-8">
+            <?php print_r(session()) ?>
            <?php //print_r($orders->products) ?>
 		 @foreach($orders->products as $key => $item) 
               
@@ -89,7 +90,7 @@
                                 <!-- text-truncate  -->
                                 <h3><a href="#" class="code{{ $key }} text-dark fw-bold">({{ $item->item_code }}) </a> <a href="#" class="name{{ $key }} text-dark font-size-24">
                                     {{ $item->product_name }} 
-                                    <?php print_r(session()) ?>
+                                   
                                 @if($item->prod_variation != null)
                                      ({{ $item->prod_variation->variable_name }})
                                 @endif
