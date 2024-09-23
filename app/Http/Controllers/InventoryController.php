@@ -517,15 +517,16 @@ class InventoryController extends Controller
     }
 
     public function setProductAttribute_update(Request $request)
-    {
-
+    {     
         if (!empty($request->website)) {
             foreach ($request->inventid as $productid) {
-                $existsProduct =  WebsiteProduct::where('website_id', $request->website)->where('inventory_id', $productid)->where('status', 1)->first();
-                if ($existsProduct == null) {
+                $existsProduct =  WebsiteProduct::where('website_id','=',$request->website)->where('inventory_id','=',$productid)->where('status','=',1)->count();
+                if ($existsProduct == 0) {
+               
                     WebsiteProduct::create([
-                        "website_id" => $request->website,
+                        "website_id"   => $request->website,
                         "inventory_id" => $productid,
+                        "status"       => 1 
                     ]);
 
                     WebsiteProduct::where('website_id','!=',$request->website)
@@ -924,7 +925,7 @@ class InventoryController extends Controller
            for($i=0;$i < count($gallery);$i++){
                 if(File::exists('storage/images/products/'.$gallery[$i])){
                     File::delete('storage/images/products/'.$gallery[$i]);
-                    DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
+                    // DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
                  }
                  DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
            }
@@ -936,7 +937,6 @@ class InventoryController extends Controller
                 Cloudinary::destroy($gallery[$i]);
                 DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
             }
-            DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
          }        
 
         if (!empty($request->file('image'))) {

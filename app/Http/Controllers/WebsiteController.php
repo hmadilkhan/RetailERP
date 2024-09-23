@@ -328,7 +328,7 @@ class WebsiteController extends Controller
         $image             = $request->file('image');
         $imageName         = time() . '.' . strtolower(pathinfo($image->getClientOriginalExtension(),PATHINFO_EXTENSION));
         $mobile_slide      = $request->file('mobile_slide');
-        $mobile_slideName  = time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));       
+        $mobile_slideName  = 'mobile_size'.time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));       
         $productSlug       = null;
         $invent_department = null;
 
@@ -426,7 +426,7 @@ class WebsiteController extends Controller
 
             $this->validate($request, $rules);
 
-            $mobile_slideName   = time() . '.' . $mobile_slide->getClientOriginalExtension();
+            $mobile_slideName   = 'mobile_size'.time() . '.' . $mobile_slide->getClientOriginalExtension();
 
             $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
       

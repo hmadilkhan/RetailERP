@@ -757,6 +757,7 @@
                         website: $('#website_md').val()
                     },
                     success: function(resp) {
+                        console.log(resp)
                         if (resp == 'success') {
                             window.location = "{{ url('inventory-list') }}"
                         } else {
