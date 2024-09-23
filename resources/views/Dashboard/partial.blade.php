@@ -1,4 +1,4 @@
-<?php $positive = (isset($heads[0]->bal) ? $heads[0]->bal : 0) + (isset($heads[0]->Cash) ? $heads[0]->Cash : 0) + (isset($heads[0]->paidByCustomer) ? $heads[0]->paidByCustomer : 0) + (isset($heads[0]->cashIn) ? $heads[0]->cashIn : 0);
+<?php $positive = (isset($heads[0]->bal) ? $heads[0]->bal : 0) +(isset($heads[0]->order_delivered_cash) ? $heads[0]->order_delivered_cash : 0) +(isset($heads[0]->order_delivered_card) ? $heads[0]->order_delivered_card : 0) + (isset($heads[0]->Cash) ? $heads[0]->Cash : 0) + (isset($heads[0]->paidByCustomer) ? $heads[0]->paidByCustomer : 0) + (isset($heads[0]->cashIn) ? $heads[0]->cashIn : 0);
 $negative =  (isset($heads[0]->Discount) ? $heads[0]->Discount : 0) + (isset($heads[0]->SalesReturn) ? $heads[0]->SalesReturn : 0) + (isset($heads[0]->cashOut) ? $heads[0]->cashOut : 0); //+ $heads[0]->CreditCard +$heads[0]->CustomerCredit;
 // (isset($heads[0]->VoidReceipts) ? $heads[0]->VoidReceipts : 0) +
 $CashInHand = $positive - $negative + (isset($heads[0]->CardCustomerDiscount) ? $heads[0]->CardCustomerDiscount : 0) + $heads[0]->Delivery;
@@ -204,13 +204,39 @@ $closingBalance = round($heads[0]->closingBal);
                             {{ number_format($heads[0]->cost, 0) }}</td>
                     </tr>
                 @endif
-
+                
+                @if (isset($result[0]->cost) && $result[0]->cost == 1)
                 <tr id="paidBycustomer">
                     <td style="width:500px">Paid By Customer (Customer Credit)</td>
                     <td id="totalCost" style="width:500px" class="text-end">{{ session('currency') }}
                         {{ number_format($heads[0]->paidByCustomer, 0) }}</td>
                 </tr>
+                @endif
+                @if (isset($result[0]->order_booking) && $result[0]->order_booking == 1)
+                <tr>
+                    <td style="width:500px">Adv Booking (Cash)</td>
+                    <td id="totalCost" style="width:500px" class="text-end">{{ session('currency') }}
+                        {{ number_format($heads[0]->adv_booking_cash, 0) }}</td>
+                </tr>
 
+                <tr>
+                    <td style="width:500px">Adv Booking (Card)</td>
+                    <td id="totalCost" style="width:500px" class="text-end">{{ session('currency') }}
+                        {{ number_format($heads[0]->adv_booking_card, 0) }}</td>
+                </tr>
+
+                <tr>
+                    <td style="width:500px">Order Delivered (Cash)</td>
+                    <td id="totalCost" style="width:500px" class="text-end">{{ session('currency') }}
+                        {{ number_format($heads[0]->order_delivered_cash, 0) }}</td>
+                </tr>
+                
+                <tr>
+                    <td style="width:500px">Order Delivered (Card)</td>
+                    <td id="totalCost" style="width:500px" class="text-end">{{ session('currency') }}
+                        {{ number_format($heads[0]->order_delivered_card, 0) }}</td>
+                </tr>
+                @endif
                 @if (isset($result[0]->r_cash) && $result[0]->r_cash == 1)
                     <tr id="r_cash">
                         <td style="width:500px">Customer Credit Return Cash</td>
