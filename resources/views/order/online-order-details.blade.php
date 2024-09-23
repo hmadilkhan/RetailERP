@@ -67,7 +67,7 @@
 			</div>
 		</div>
         <div class="col-xl-8">
-            <?php print_r(session()) ?>
+
            <?php //print_r($orders->products) ?>
 		 @foreach($orders->products as $key => $item) 
               
