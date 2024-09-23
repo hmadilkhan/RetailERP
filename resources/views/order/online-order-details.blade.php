@@ -77,7 +77,7 @@
                             @if(session('company_id') == 102)
                               @php  $imageShow = asset('storage/images/placeholder.jpg') @endphp
                              @if($item->image != '')
-                              @php $imageShow = !empty(Cloudinary::getUrl($item->image)) ? Cloudinary::getUrl($item->image) : 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/kasheesjewellery/'.$item->image @endphp
+                              @php $imageShow = !empty(Cloudinary::getUrl($item->image)) ? Cloudinary::getUrl($item->image) : 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_75/kasheesjewellery/'.$item->image @endphp
                              @endif
                              <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
                             @else
