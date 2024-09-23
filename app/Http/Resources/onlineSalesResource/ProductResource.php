@@ -29,6 +29,7 @@ class ProductResource extends JsonResource
             "discount_code"      => $this->discount_code,
             "actual_price"       => $this->actual_price,
             "image"              => $this->image,
+            "url"                => $this->url,
             "deal"               => new ProductDealHeadResource(DB::table('inventory_deal_general')->whereIn('id',DB::table('sales_receipt_details')->where('parent_item_code',$this->receipt_detail_id)->where('mode','deal-product')->pluck('group_id'))->get(),$this->receipt_id,$this->receipt_detail_id),            
             "prod_variation"     => new POSProductVariationResource(DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'variable-product'])->first()),
             "prod_addons"        => new ProductAddonResource(DB::table('addon_categories')->whereIn('id',DB::table('addons')->whereIn('id',DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'addon'])->pluck('addon_variation_id'))->pluck('addon_category_id'))->get(),$this->receipt_id,$this->receipt_detail_id),
