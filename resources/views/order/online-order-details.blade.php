@@ -95,6 +95,7 @@
                                 <!-- text-truncate  -->
                                 <h3><a href="#" class="code{{ $key }} text-dark fw-bold">({{ $item->item_code }}) </a> <a href="#" class="name{{ $key }} text-dark font-size-24">
                                     {{ $item->product_name }} 
+                                    {{ $getImage_id  }}
                                    
                                 @if($item->prod_variation != null)
                                      ({{ $item->prod_variation->variable_name }})
