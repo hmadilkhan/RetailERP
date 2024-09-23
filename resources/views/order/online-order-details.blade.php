@@ -95,7 +95,7 @@
                                         //     $getImage_id .= '.'.$getExtension;
                                         // }
                                     }
-                                 $imageShow = !empty(Cloudinary::getUrl($getImage_id.($extensionCount > 0 ? '.'.$getExtension : ''))) ? 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/'.$getImage_id.($extensionCount > 0 ? '.'.$getExtension : '') : asset('storage/images/placeholder.jpg') 
+                                 $imageShow = !empty(Cloudinary::getUrl($getImage_id)) ? 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/'.$getImage_id.($extensionCount > 0 ? '.'.$getExtension : '') : asset('storage/images/placeholder.jpg') 
                                 @endphp
                              @endif
                              <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
