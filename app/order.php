@@ -211,6 +211,9 @@ class order extends Model
 			->when($request->sales_tax != "", function ($query) use ($request) {
 				$query->where("sales_receipts.fbrInvNumber", '!=', "");
 			})
+			->when($request->salesperson != "", function ($query) use ($request) {
+				$query->where("sales_receipts.sales_person_id", '=', $request->salesperson);
+			})
 
 			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode","service_provider_details.provider_name", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"))
 			->orderBy("sales_receipts.id", "desc")
@@ -291,6 +294,9 @@ class order extends Model
 			})
 			->when($request->sales_tax != "", function ($query) use ($request) {
 				$query->where("sales_receipts.fbrInvNumber", '!=', "");
+			})
+			->when($request->salesperson != "", function ($query) use ($request) {
+				$query->where("sales_receipts.sales_person_id", '=', $request->salesperson);
 			})
 			->where("sales_receipts.web", "=", 0)
 			// ->whereIn("sales_receipts.status",[1,4,12])
