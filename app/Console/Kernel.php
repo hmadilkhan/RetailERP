@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\TestCommand::class,
+        Commands\DateWiseStockCommand::class
     ];
 
     /**
@@ -25,6 +26,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 		$schedule->command('test:run')->everyMinute();
+		$schedule->command('app:date-wise-stock-command')->dailyAt("12:00");
         // $schedule->command('inspire')
         //          ->hourly();
     }

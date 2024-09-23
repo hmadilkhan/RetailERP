@@ -29,7 +29,7 @@ class DateWiseStockCommand extends Command
     public function handle()
     {
         $branch = 283;
-        $date = "2024-09-18";
+        $date = date("Y-m-d");
 
         $stocks = InventoryStock::where("branch_id", $branch)->where("status_id", 1)->groupBy("product_id")->select("product_id", DB::raw('SUM(inventory_stock.balance) As stock'))->get();
         foreach ($stocks as $key => $stock) {
