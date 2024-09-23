@@ -84,7 +84,9 @@
 
                                     $extensionCount =  0; 
                                     if(!empty($getExtension)){
-                                        $extensionCount = $item->url != '' ? substr_count($item->url, $getExtension) : 0;
+                                        if(substr_count($item->url, $getExtension) != substr_count($getImage_id, $getExtension) ){
+                                         $extensionCount = $item->url != '' ? substr_count($item->url, $getExtension) : 0;
+                                        }
                                     }  
 
                                     if(!Str::contains($item->image,$orders->company_name)){
