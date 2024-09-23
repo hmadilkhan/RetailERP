@@ -974,6 +974,10 @@ class InventoryController extends Controller
                 $getPreviousImage = $invent->getPreviousImage($request->id);
                 if($getPreviousImage != null){
                       Cloudinary::destroy($getPreviousImage);
+
+                      if(File::exists('storage/images/products/'.$getPreviousImage)){
+                          File::delete('storage/images/products/'.$getPreviousImage);
+                     }                      
                 }
 
 
