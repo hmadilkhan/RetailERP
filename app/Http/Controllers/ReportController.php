@@ -4678,8 +4678,8 @@ class ReportController extends Controller
 
             $imageUrl = $item->url;
             $localImagePath = 'storage/images/products/' . $item->image;
-            return Storage::exists($localImagePath);
-            $localImagePath =  url('/') . '/storage/images/products/' . $item->image;
+            
+            // $localImagePath =  url('/') . '/storage/images/products/' . $item->image;
 
 
 
@@ -4688,6 +4688,7 @@ class ReportController extends Controller
                 // Use the URL if it's valid and accessible
                 $pdf->Cell(50, 50, $pdf->Image($imageUrl, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
             } else {
+                return Storage::exists(asset($localImagePath));
                 // Fallback to local storage if URL is not accessible or invalid
                 if (Storage::exists($localImagePath)) {
                     $pdf->Cell(50, 50, $pdf->Image($localImagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
