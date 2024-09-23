@@ -81,7 +81,7 @@
                               @php
                                  $getImage_id = $item->image;
                                  $getExtension = pathinfo($getImage_id,PATHINFO_EXTENSION);
-                                 $extensionCount = substr_count($item->url, $getExtension);                                
+                                 $extensionCount = $item->url != '' ? substr_count($item->url, $getExtension) : 0;                                
                                    if(!Str::contains($item->image,$orders->company_name)){
                                         $getImage_id = $orders->company_name.'/'.$item->image;
                                         // if($extensionCount > 1){
