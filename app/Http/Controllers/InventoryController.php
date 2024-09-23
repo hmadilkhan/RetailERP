@@ -29,7 +29,6 @@ use Illuminate\Support\Str;
 use Image, File, Auth;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Illuminate\Support\Str;
 
 
 class InventoryController extends Controller
