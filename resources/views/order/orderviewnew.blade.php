@@ -506,6 +506,7 @@
                     order_no: $('#order_no').val(),
                     sales_tax: $('#sales_tax').val(),
                     type: $('#type').val(),
+                    salesperson: $('#orderserviceprovider').val(),
                 },
                 success: function(data) {
                     $('#table_data').empty();
