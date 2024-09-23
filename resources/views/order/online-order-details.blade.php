@@ -81,7 +81,14 @@
                               @php
                                  $getImage_id = $item->image;
                                    if(!Str::contains($item->image,$orders->company_name)){
+                                        $getExtension = pathinfo($item->image,PATHINFO_EXTENSION);
+                                        $extensionCount = substr_count($item->url, $getExtension);
+
                                         $getImage_id = $orders->company_name.'/'.$item->image;
+
+                                        if($extensionCount > 1){
+                                            $getImage_id .= '.'.$getExtension;
+                                        }
                                     }
                                  $imageShow = !empty(Cloudinary::getUrl($getImage_id)) ? 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/'.$getImage_id : asset('storage/images/placeholder.jpg') @endphp
                              @endif
