@@ -160,7 +160,7 @@ class OrderController extends Controller
 
     public function webOrders(Request $Request, order $order, Customer $customer)
     {
-        $customer     = $order->getCustomers();
+        $customer     = $order->getWebsiteCustomers();
         $orders       = $order->orderStatus();
         $paymentMode  = $order->paymentMode();
         $mode         = $order->ordersMode();
