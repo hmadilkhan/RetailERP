@@ -4677,8 +4677,8 @@ class ReportController extends Controller
             // }
 
             $imageUrl = $item->url;
-            // $localImagePath = 'storage/images/products/' . $item->image;
-            $localImagePath = storage_path('app/public/images/products/' . $item->image);;
+            $localImagePath = asset('storage/images/products/' . $item->image);
+            // $localImagePath = storage_path('app/public/images/products/' . $item->image);;
 
             // $localImagePath =  url('/') . '/storage/images/products/' . $item->image;
 
