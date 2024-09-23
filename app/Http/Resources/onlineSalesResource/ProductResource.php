@@ -20,7 +20,6 @@ class ProductResource extends JsonResource
     {
         return [
             "item_code"          => $this->item_code,
-            "company_name"       => strtolower($this->company_name),
 			"product_name"       => $this->item_name,
             "total_qty"          => $this->total_qty,
             "item_price"         => $this->item_price,

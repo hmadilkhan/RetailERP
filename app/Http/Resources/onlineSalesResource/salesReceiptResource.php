@@ -23,6 +23,7 @@ class salesReceiptResource extends JsonResource
         	"receipt_no"                =>$this->receipt_no,
         	"order_statusId"            =>$this->status,
         	"order_estimate_time"       =>$this->order_estimate_time,
+			"company_name"              => strtolower($this->company_name),
         	"order_status"              =>$this->status_name,
         	"website_name"              =>$this->website_name,
 			"url_orderid"               =>$this->url_orderid,
