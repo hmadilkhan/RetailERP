@@ -379,10 +379,14 @@
                         @if(in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan']))
                                @if(!empty($data[0]->url))
                                   @php $imageUrl = $data[0]->url @endphp
+                               @else
+                                @if(File::exists('storage/images/products/'.$data[0]->image)) 
+                                    @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
+                                @endif                                  
                                @endif
                         @else
                         {{-- Storage::disk('public')->exists('images/products/' . $data[0]->image) --}}
-                               @if(File::exists('storage/images/products/'.$data[0]->image) == true) 
+                               @if(File::exists('storage/images/products/'.$data[0]->image)) 
                                   @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
                                @endif
                         @endif
