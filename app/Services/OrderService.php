@@ -24,7 +24,7 @@ class OrderService
         } else {
             $serviceProvider->where("branch_id", session("branch"));
         }
-        $serviceProvider->where("status_id", 1)->select("id","provider_name");
+        $serviceProvider->with("serviceprovideruser")->where("status_id", 1)->select("id","provider_name");
         return $serviceProvider->get();
     }
 }

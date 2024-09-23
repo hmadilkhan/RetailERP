@@ -168,7 +168,7 @@
                                 data-placeholder="Select Sales Person" class="f-right select2">
                                 <option value="">Select Sales Person</option>
                                 @foreach ($serviceproviders as $provider)
-                                    <option value="{{ $provider->id }}">{{ $provider->provider_name }}</option>
+                                    <option value="{{ $provider->serviceprovideruser->user_id }}">{{ $provider->provider_name }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -12,7 +12,11 @@ class ServiceProvider extends Model
     protected $guarded = [];
     public $timestamps = false;
 	
-	
+	public function serviceprovideruser()
+    {
+        return $this->belongsTo(ServiceProviderRelation::class, 'id', 'provider_id');
+    }
+
 	public function ledger()
     {
         return $this->hasMany(ServiceProviderLedger::class,"ladger_id","provider_id");
