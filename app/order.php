@@ -630,25 +630,25 @@ class order extends Model
 		$filter = "";
 
 		/********************************** DATES **************************************/
-		if ($first != "") {
+		if (!empty($first)) {
 			$filter .= " and a.date BETWEEN '" . $first . "' and '" . $second . "'";
 		}
 		/********************************** CUSTOMER **************************************/
-		if ($customer != "") {
+		if (!empty($customer)) {
 			$filter .= " and a.customer_id = " . $customer . "";
 		}
 
 		/********************************** RECEIPT **************************************/
-		if ($receipt != "") {
+		if (!empty($receipt)) {
 			$filter .= " and a.url_orderid = '" . $receipt . "'";
 		}
 
-		if ($branch != "") {
+		if (!empty($branch)) {
 			$filter .= " and a.branch = " . $branch . "";
 		}
 
 
-		if ($websiteId != "") {
+		if (!empty($websiteId)) {
 			$filter .= " and a.website_id = " . $websiteId . "";
 		}
 
