@@ -188,7 +188,7 @@ class InventoryController extends Controller
                     ]);
             }
 
-            $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
+            $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
 
             if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
                 $transformationArray = [];
@@ -428,7 +428,7 @@ class InventoryController extends Controller
     
                     $folder = strtolower(str_replace(' ','',$company_name->name));
 
-                    $imageName   = $productid.time().'-'.$count.'.'.$prodGallery->getClientOriginalExtension();
+                    $imageName   = $productid.time().'-'.$count;
     
                     $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
                                             'public_id'      => strtolower($imageName),
@@ -953,7 +953,7 @@ class InventoryController extends Controller
                     ]);
             }
 
-            $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.' . $image->getClientOriginalExtension();
+            $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
 
             if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
                 $transformationArray = [];
@@ -1094,7 +1094,7 @@ class InventoryController extends Controller
 
                 $folder = strtolower(str_replace(' ','',$company_name->name));
 
-                $imageName   = $request->id.time().'-'.$count.'.'.$prodGallery->getClientOriginalExtension();
+                $imageName   = $request->id.time().'-'.$count;
 
                 $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
                                         'public_id'      => strtolower($imageName),
