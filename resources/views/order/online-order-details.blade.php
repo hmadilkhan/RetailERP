@@ -84,7 +84,7 @@
 
                                     $extensionCount =  0; 
                                     if(!empty($getExtension)){
-                                        if(substr_count($item->url, $getExtension) < 2 && substr_count($getImage_id, $getExtension) < 2){
+                                        if(substr_count($item->url, $getExtension) != substr_count($getImage_id, $getExtension) ){
                                          $extensionCount = $item->url != '' ? substr_count($item->url, $getExtension) : 0;
                                         }
                                     }  
