@@ -310,6 +310,10 @@
        
         var Interval_checkOrder = setInterval(checkOrders, 5000);
 
+        @if(Request::has('page_mode'))
+           Interval_checkOrder = null;
+        @endif
+
         $(".btn_close_md").on('click',function(){
             Interval_checkOrder = setInterval(checkOrders, 5000);            
         })
