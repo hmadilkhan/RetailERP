@@ -261,7 +261,7 @@ class OrderController extends Controller
         $branch      = $order->getBranch();
         $riders      = $order->getRiders();
         $totalorders = $order->getWebsiteOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch, $websiteId);
-        $website     = DB::table('website_details')->where('company_id', Auth::user()->company_id)->select('id', 'name')->get();
+        $website     = DB::table('website_details')->where('company_id', session('company_id'))->select('id', 'name')->get();
 
         return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders', 'website', 'websiteId'));
     }
@@ -276,9 +276,9 @@ class OrderController extends Controller
         $branch       = $order->getBranch();
         $riders       = $order->getRiders();
         $totalorders  = $order->getWebOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch);
-        $website      = DB::table('website_details')->where('company_id', Auth::user()->company_id)->select('id', 'name')->get();
+        $website      = DB::table('website_details')->where('company_id', session('company_id'))->select('id', 'name')->get();
 
-        return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders'));
+        return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders','website', 'websiteId'));
     }
 
     public function getWebOrders(Request $request, order $order)
