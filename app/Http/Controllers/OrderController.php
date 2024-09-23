@@ -269,7 +269,7 @@ class OrderController extends Controller
     public function webOrdersFilter(Request $request, order $order)
     {
         $websiteId    = $request->website;
-        $customer     = $order->getcustomers();
+        $customer     = $order->getWebsiteCustomers();
         $orders       = $order->orderStatus();
         $paymentMode  = $order->paymentMode();
         $mode         = $order->ordersMode();

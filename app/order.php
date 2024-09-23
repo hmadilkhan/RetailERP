@@ -751,6 +751,12 @@ class order extends Model
 		return $result;
 	}
 
+	public function getWebsiteCustomers()
+	{
+		$result = DB::table('customers')->whereIn("website_id",DB::table('website_details')->where('company_id',session('company_id')->where('status',1)->pluck('id')))->get();
+		return $result;
+	}	
+
 	public function orderItems($orderID)
 	{
 		$result = DB::table('sales_receipt_details')
