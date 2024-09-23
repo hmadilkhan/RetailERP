@@ -184,7 +184,7 @@ class InventoryController extends Controller
             if (!in_array(session('company_id'), [95, 102, 104]) && !in_array(Auth::user()->username,['demoadmin','fnkhan'])) {
 
                     $request->validate([
-                        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|max:1024',
+                        'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024',
                     ]);
             }
 
@@ -211,10 +211,14 @@ class InventoryController extends Controller
                                         'transformation' => $transformationArray
                                     ])->getSecurePath();
             } else {
+                $transFormation = [];
                 if (!isset($request->actual_image_size)) {
-                    $returnImageValue = $this->uploads($image, "images/products/", "", ['width' => 400, "height" => 400]);
-                    $imageName = $returnImageValue['fileName']; 
+                    $transFormation['width']  = 400;
+                    $transFormation['height'] = 400;
                 }
+                $returnImageValue = $this->uploads($image, "images/products/", "",$transFormation);
+                $imageName = $returnImageValue['fileName']; 
+
             }
         }
 
