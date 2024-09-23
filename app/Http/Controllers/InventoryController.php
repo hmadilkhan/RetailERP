@@ -29,6 +29,7 @@ use Illuminate\Support\Str;
 use Image, File, Auth;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Str;
 
 
 class InventoryController extends Controller
@@ -973,6 +974,10 @@ class InventoryController extends Controller
                 // previous image remove
                 $getPreviousImage = $invent->getPreviousImage($request->id);
                 if($getPreviousImage != null){
+
+                     if(!Str::contains($getPreviousImage,$folder)){
+                        $getPreviousImage = $folder.'/'.$getPreviousImage;
+                     }
                       Cloudinary::destroy($getPreviousImage);
 
                       if(File::exists('storage/images/products/'.$getPreviousImage)){
