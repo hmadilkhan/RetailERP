@@ -275,7 +275,7 @@ class OrderController extends Controller
         $mode         = $order->ordersMode();
         $branch       = $order->getBranch();
         $riders       = $order->getRiders();
-        $totalorders  = $order->getWebOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch);
+        $totalorders  = $order->getWebsiteOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch);
         $website      = DB::table('website_details')->where('company_id', session('company_id'))->select('id', 'name')->get();
 
         return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders','website', 'websiteId'));
