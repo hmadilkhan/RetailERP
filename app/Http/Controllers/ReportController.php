@@ -4677,8 +4677,8 @@ class ReportController extends Controller
             // }
 
             $imageUrl = $item->url;
-            $localImagePath = 'storage/images/products/' . $item->image;
-            $localImagePath =  url('/') . 'storage/images/products/' . $item->image;
+            // $localImagePath = 'storage/images/products/' . $item->image;
+            $localImagePath =  url('/') . '/storage/images/products/' . $item->image;
 
             // Determine image path
             if (filter_var($imageUrl, FILTER_VALIDATE_URL) && $this->isImageUrlAccessible($imageUrl)) {
