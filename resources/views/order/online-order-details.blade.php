@@ -79,18 +79,22 @@
                               @php  $imageShow = asset('storage/images/placeholder.jpg') @endphp
                              @if($item->image != '')
                               @php
-                                 $getImage_id = $item->image;
-                                 $getExtension = pathinfo($getImage_id,PATHINFO_EXTENSION);
-                                 $extensionCount =  0;                                
-                                   if(!Str::contains($item->image,$orders->company_name)){
+                                  $getImage_id = $item->image;
+                                  $getExtension = pathinfo($getImage_id,PATHINFO_EXTENSION);
+
+                                    $extensionCount =  0; 
+                                    if(!empty($getExtension)){
+                                        $extensionCount = $item->url != '' ? substr_count($item->url, $getExtension) : 0;
+                                    }  
+
+                                    if(!Str::contains($item->image,$orders->company_name)){
                                         $getImage_id = $orders->company_name.'/'.$item->image;
                                         // if($extensionCount > 1){
                                         //     $getImage_id .= '.'.$getExtension;
                                         // }
                                     }
                                  $imageShow = !empty(Cloudinary::getUrl($getImage_id)) ? 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/'.$getImage_id.($extensionCount > 1 ? '.'.$getExtension : '') : asset('storage/images/placeholder.jpg') 
-                              @endphp
-                              {{ $getImage_id }}
+                                @endphp
                              @endif
                              <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
                             @else
