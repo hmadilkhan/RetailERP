@@ -688,7 +688,7 @@
 				'#txtexpensesheet', '#txtexpensecat', '#txtsaledec', 
 				'#txttype', '#txtitemsale', '#txtstockadjustment', 
 				'#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
-				'#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport'
+				'#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport','#txtbookingorderreport','#txtsalereturn'
 			];
 			
 			fields.forEach(field => {
