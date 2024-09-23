@@ -4689,7 +4689,7 @@ class ReportController extends Controller
                     $pdf->Cell(50, 50, $pdf->Image(asset($localImagePath), $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
                 } else {
                     // Fallback message if no image found
-                    $pdf->Cell(50, 50, 'No Image', 1, 0, 'C');
+                    $pdf->Cell(50, 50, asset($localImagePath), 1, 0, 'C');
                 }
             }
 
