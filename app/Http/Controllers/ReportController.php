@@ -4689,11 +4689,11 @@ class ReportController extends Controller
                 $pdf->Cell(50, 50, $pdf->Image($imageUrl, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
             } else {
                 // Fallback to local storage if URL is not accessible or invalid
-                if (Storage::exists($localImagePath)) {
+                if (Storage::disk('public')->exists($localImagePath)) {
                     $pdf->Cell(50, 50, $pdf->Image($localImagePath, $pdf->GetX() + 0, $pdf->GetY() + 0, 50, 50), 1);
                 } else {
                     // Fallback message if no image found
-                    $pdf->Cell(50, 50, 'No Image'.Storage::exists(asset($localImagePath)), 1, 0, 'C');
+                    $pdf->Cell(50, 50, 'No Image'.Storage::disk('public')->exists($localImagePath), 1, 0, 'C');
                 }
             }
 
