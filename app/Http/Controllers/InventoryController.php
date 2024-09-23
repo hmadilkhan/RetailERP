@@ -953,7 +953,7 @@ class InventoryController extends Controller
                     ]);
             }
 
-            $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+            $imageName = time().'-'.pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
 
             if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
                 $transformationArray = [];
@@ -973,6 +973,10 @@ class InventoryController extends Controller
                 // previous image remove
                 $getPreviousImage = $invent->getPreviousImage($request->id);
                 if($getPreviousImage != null){
+
+                     if(!Str::contains($getPreviousImage,$folder)){
+                        $getPreviousImage = $folder.'/'.$getPreviousImage;
+                     }
                       Cloudinary::destroy($getPreviousImage);
 
                       if(File::exists('storage/images/products/'.$getPreviousImage)){
