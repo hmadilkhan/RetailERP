@@ -686,7 +686,7 @@ class order extends Model
 		/********************************** RECEIPT **************************************/
 		if ($receipt != "") {
 			if ($filter  == "") {
-				$filter .= " and a.receipt_no = " . $receipt . "";
+				$filter .= " and a.url_orderid = " . $receipt . "";
 			}
 		}
 
