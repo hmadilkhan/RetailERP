@@ -693,8 +693,6 @@
 			
 			fields.forEach(field => {
 				$(field).val(0);
-                console.log(field);
-                
 			});
 			
 			const filters = ['#dvbranch','#dvdepartments','#dvsubdepartments','#dvterminal','#dvtype','#dvitemcode','#dvpaymentmodes'];
@@ -715,7 +713,7 @@
 			$('#filter-modal').modal('show');
 			$('#dateFilter').css('display', fieldMappings.some(mapping => mapping.showDateFilter) ? 'block' : 'none');
 			$('#ExcelButton').css('display', fieldMappings.some(mapping => mapping.showExcelButton) ? 'block' : 'none');
-			console.log(fieldMappings.some(mapping => mapping.showBranch));
+	
 			// Call specific functions if needed
 			if (fieldMappings.some(mapping => mapping.showBranch)) showbranch();
 			if (fieldMappings.some(mapping => mapping.showTerminal)) showterminal();
@@ -1000,6 +998,24 @@
                     $("#subdepartment").append("<option value=''>Select Sub Department</option>");
                     $.each(resp, function( index, value ) {
                         $("#subdepartment").append(
+                            "<option value="+value.sub_department_id+">"+value.sub_depart_name+"</option>"
+                        );
+                    });
+                }
+            });
+        }
+
+        function load_terminals(id)
+        {
+            $.ajax({
+                url: "{{ url('getTerminals')}}",
+                type: 'POST',
+                data:{_token:"{{ csrf_token() }}",branch:$("#branch").val(),status:1},
+                success:function(resp){
+                    $('#terminal').empty();
+                    $("#terminal").append("<option value=''>Select Terminal</option>");
+                    $.each(resp, function( index, value ) {
+                        $("#terminal").append(
                             "<option value="+value.sub_department_id+">"+value.sub_depart_name+"</option>"
                         );
                     });
