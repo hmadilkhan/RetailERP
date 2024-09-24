@@ -813,16 +813,23 @@ function swalModal(branchId,mode,brnhName,status){
                type:'POST',
                data:{_token:'{{ csrf_token() }}',branchCode:branch,websiteCode:website},
                dataType:'json',
-               success:function(resp,txtStatus,jxState){
-                 if(jxState.status == 200){
-                  $.each(resp,function(i){
-                    $("#city").val(resp[i].city).remove();
-                  })
-                 }
-               },error:function(e){
-                  
-               }
-      })
+               success: function(resp, txtStatus, jxState) {
+            if (jxState.status === 200) {
+                
+                $.each(resp, function(i) {
+                    
+                    var cityToRemove = resp[i].city; 
+                    $("#city option").filter(function() {
+                        return $(this).text() === cityToRemove;
+                    }).remove();
+                });
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error:', textStatus, errorThrown);
+            
+        }
+      }); // ajax method close
     }
   }
 
