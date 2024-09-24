@@ -930,8 +930,8 @@
                             "<div class='form-control-feedback text-danger' id='tbxwb_" + r[s]
                             .sub_department_id + "_alert'></div>" + "</td>" +
                             imageColumn + bannerColumn +
-                            "<td class='action-icon'><i onclick='update(" + r[s].sub_department_id + "," +
-                            departid + ")' class='btn btn-primary'> Update</i>"+
+                            "<td class='action-icon'><button type='button' onclick='update(" + r[s].sub_department_id + "," +
+                            departid + ")' class='btn btn-primary m-r-1'> Update</button>"+
                             "<button type='button' onclick='deleteSubDepart("+r[s].sub_department_id +")' class='btn btn-danger'> Remove</button>"+
                             "</td>" +
                             "</tr>"
