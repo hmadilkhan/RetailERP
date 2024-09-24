@@ -64,8 +64,8 @@
                    $website_name = $websites->where('id',$value->website_id)->pluck('name'); 
                       $image = asset('storage/images/no-image.jpg');
                       
-                      if(File::exists('storage/images/customer-review/'.$value->image)){
-                          $image = asset('storage/images/customer-review/'.$value->image);
+                      if(File::exists('storage/images/customer-reviews/'.$value->image)){
+                          $image = asset('storage/images/customer-reviews/'.$value->image);
                       }
                  @endphp
 				<tr>
