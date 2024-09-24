@@ -3389,6 +3389,14 @@ class ReportController extends Controller
         $totalcost = 0;
         $totalmargin = 0;
         $price = 0;
+
+        $totalDeliveredOrders = 0;
+        $totalDeliveredOrdersAmount = 0;
+        $totalVoidOrders = 0;
+        $totalVoidOrdersAmount = 0;
+        $totalSalesReturnOrders = 0;
+        $totalSalesReturnOrdersAmount = 0;
+
         if ($request->terminalid == 0) {
             $terminals = $report->get_terminals();
 
@@ -3418,12 +3426,18 @@ class ReportController extends Controller
                     if ($value->void_receipt == 1) {
                         $pdf->setFillColor(255, 0, 0);
                         $pdf->SetTextColor(255, 255, 255);
+                        $totalVoidOrders++;
+                        $totalVoidOrdersAmount += $value->amount;
                     }else if ($value->is_sale_return == 1) {
                         $pdf->setFillColor(192, 64, 0);
                         $pdf->SetTextColor(255, 255, 255);
+                        $totalSalesReturnOrders++;
+                        $totalSalesReturnOrdersAmount += $value->amount;
                     } else {
                         $pdf->setFillColor(232, 232, 232);
                         $pdf->SetTextColor(0, 0, 0);
+                        $totalDeliveredOrders++;
+                        $totalDeliveredOrdersAmount += $value->amount;
                     }
                     $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
                     $pdf->Cell(65, 6, $value->product_name, 0, 0, 'L', 1);
@@ -3470,14 +3484,18 @@ class ReportController extends Controller
                 if ($value->void_receipt == 1) {
                     $pdf->setFillColor(255, 0, 0);
                     $pdf->SetTextColor(255, 255, 255);
-                    $itemStatus = "Void";
+                    $totalVoidOrders++;
+                    $totalVoidOrdersAmount += $value->amount;
                 }else if ($value->is_sale_return == 1) {
                     $pdf->setFillColor(192, 64, 0);
                     $pdf->SetTextColor(255, 255, 255);
-                    $itemStatus = "SR";
+                    $totalSalesReturnOrders++;
+                    $totalSalesReturnOrdersAmount += $value->amount;
                 } else {
                     $pdf->setFillColor(232, 232, 232);
                     $pdf->SetTextColor(0, 0, 0);
+                    $totalDeliveredOrders++;
+                    $totalDeliveredOrdersAmount += $value->amount;
                 }
                 $pdf->Cell(20, 6, $value->code, 0, 0, 'C', 1);
                 $pdf->Cell(65, 6, $value->product_name. ($itemStatus != '' ? " (".$itemStatus.") " : ''), 0, 0, 'L', 1);
@@ -3496,6 +3514,32 @@ class ReportController extends Controller
             $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
             $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
             $pdf->Cell(30, 7, number_format($totalmargin), 'B,T', 1, 'R');
+
+            $pdf->ln(2);
+
+        $pdf->SetFont('Arial', 'B', 12);
+
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
+        $pdf->Cell(63, 7, number_format($totalSalesReturnOrders), 'B,T', 0, 'R');
+        $pdf->Cell(63, 7, number_format($totalSalesReturnOrdersAmount), 'B,T', 1, 'R');
+        $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
+        $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
+        $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
+        $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
+        $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
+        $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
+
+        $pdf->ln(2);
+
+
+
         }
 
         //save file
