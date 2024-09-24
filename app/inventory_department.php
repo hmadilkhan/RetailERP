@@ -49,7 +49,7 @@ class inventory_department extends Model
   public static function get_subdepart($id)
   {
 
-    return DB::table("inventory_department as dept")->join('inventory_sub_department as sbdpt', 'sbdpt.department_id', '=', 'dept.department_id')->where(['dept.company_id' => session('company_id') . (empty($id) ? "',dept.department_id=>" . $id . "'" : "")])->get();
+    return DB::table("inventory_department as dept")->join('inventory_sub_department as sbdpt', 'sbdpt.department_id', '=', 'dept.department_id')->where(['dept.company_id' => session('company_id') . (empty($id) ? "',dept.department_id=>" . $id . "'" : "")])->where('status',1)->get();
   }
 
   public  function get_edit($id)
