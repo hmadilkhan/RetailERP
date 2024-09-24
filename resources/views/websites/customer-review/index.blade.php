@@ -17,7 +17,7 @@
          <div class="alert alert-success">{{ Session::get('success') }}</div>
     @endif
     @if(Auth::user()->username == 'uzair.kashee')
-         {{ base_path('Retail/storage') ? 1 : 0 }}
+         {{ base_path('Retail/storage') }}
     @endif
   @php $url_parameter_webId = Request::has('id')  ? Request::get('id')  : null; @endphp
     <div class="card">
