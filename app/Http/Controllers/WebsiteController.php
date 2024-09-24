@@ -930,6 +930,16 @@ class WebsiteController extends Controller
         ]);
     }
 
+    public function cityLoadnotExistsdilveryArea(Request $request){
+        return DB::table('website_delivery_areas')
+            ->leftJoin('city', 'city.city_id', 'website_delivery_areas.city')
+            ->where('website_delivery_areas.website_id', '=', $request->website)
+            ->where('website_delivery_areas.branch_id', '=', $request->branch)
+            ->where('website_delivery_areas.status', '=', 1)
+            ->select('website_delivery_areas.city', 'city.city_name')
+            ->get();
+    }
+
     public function getDeliveryAreaValues(Request $request)
     {
         $companyId = session('company_id');

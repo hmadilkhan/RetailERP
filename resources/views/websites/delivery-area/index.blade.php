@@ -798,5 +798,33 @@ function swalModal(branchId,mode,brnhName,status){
      }
   }
 
+  $("#branch").on('change',function(){
+    if($(this).val() != ''){
+      cityLoadNotExists($(this).val(),$("#website").val());
+    }
+
+  })
+
+  function cityLoadNotExists(branch,website){
+    if(website != '' && branch != ''){
+      $.ajax({
+               url:'{{-- route("cityLoadnotExistsdilveryArea") --}}',
+               type:'POST',
+               data:{_token:'{{ csrf_token() }}'},
+               dataType:'json',
+               success:function(resp,txtStatus,jxState){
+                 if(jxState.status == 200){
+                  $.each(resp,function(i){
+                    $("#city").val(resp[i].city).remove();
+                  })
+                    
+                 }
+               },error:function(e){
+                  console.log(e);
+               }
+      })
+    }
+  }
+
  </script>
 @endsection
