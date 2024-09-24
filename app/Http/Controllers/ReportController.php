@@ -3465,20 +3465,22 @@ class ReportController extends Controller
                 $totalamount = $totalamount + $value->amount;
                 $totalcost = $totalcost + $value->cost;
                 $totalmargin = $totalmargin + ($value->amount - $value->cost);
-
+                $itemStatus = "";
                 $pdf->SetFont('Arial', '', 10);
                 if ($value->void_receipt == 1) {
                     $pdf->setFillColor(255, 0, 0);
                     $pdf->SetTextColor(255, 255, 255);
+                    $itemStatus = "Void";
                 }else if ($value->is_sale_return == 1) {
                     $pdf->setFillColor(248, 131, 121);
                     $pdf->SetTextColor(255, 255, 255);
+                    $itemStatus = "SR";
                 } else {
                     $pdf->setFillColor(232, 232, 232);
                     $pdf->SetTextColor(0, 0, 0);
                 }
                 $pdf->Cell(20, 6, $value->code, 0, 0, 'C', 1);
-                $pdf->Cell(65, 6, $value->product_name, 0, 0, 'L', 1);
+                $pdf->Cell(65, 6, $value->product_name." (".$itemStatus.") ", 0, 0, 'L', 1);
                 $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
