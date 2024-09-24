@@ -446,6 +446,15 @@
     </section>
 @endsection
 
+@section('css_code')
+<style>
+    @media (min-width: 992px) {
+    .modal-xlg {
+        max-width: 1600px;
+    }
+   }
+</style>
+@endsection
 
 @section('scriptcode_three')
 
