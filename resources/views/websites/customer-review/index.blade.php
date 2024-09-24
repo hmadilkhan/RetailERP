@@ -81,6 +81,12 @@
               <input type="checkbox" title="" data-original-title="Active/In-Active Switch" 
               onclick="switchMode({{ $value->id }},{{ $value->status }},'{{ $value->customer_name }}',this)" {{ $value->status == 1 ? 'checked' : '' }}>
               <span class="slider round"></span>
+              <form action="{{ route('activeInactiveCustomer_review') }}" method="POST" id="activeInactiveForm{{ $value->id }}">
+                @csrf
+                  <input type="hidden" name="id" value="{{ Crypt::encrypt($value->id) }}">
+                  <input type="hidden" name="website" value="{{ Crypt::encrypt($value->website_id) }}"> 
+                  <input type="hidden" name="stcode" value="{{ Crypt::encrypt($value->status) }}">             
+              </form> 
             </label>					
 					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="removeReview({{ $value->id }},'{{ $value->customer_name }}','{{ $website_name }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
 					<form action="{{ route('destroyCustomer_review',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
@@ -227,7 +233,7 @@ input+.slider:before {
         }
     });
 
-function switchMode(discId,status,customer,element){
+function switchMode(id,status,customer,element){
  var status_name = null; 
  var value = 2;
     if($(element).is(':checked')){
@@ -240,7 +246,7 @@ function switchMode(discId,status,customer,element){
     
     swal({
             title: "Are you sure?",
-            text: "You want to "+status_name+" this "+customer+" csutomer review!",
+            text: "You want to "+status_name+" this "+customer+" customer review!",
             type: "warning",
             showCancelButton: true,
             confirmButtonClass: "btn-danger",
@@ -251,31 +257,7 @@ function switchMode(discId,status,customer,element){
         },
         function(isConfirm){
             if(isConfirm){
-                
-                  if(status == 1){
-                        // $.ajax({
-                        //     url: "",
-                        //     type: 'POST',
-                        //     data:{_token:"{{ csrf_token() }}",
-                        //         id:discId,mode:value
-                        //     },
-                        //     success:function(resp){
-                        //         if(resp == 1){
-                        //             swal({
-                        //                 title: "Success!",
-                        //                 text: "Campaign "+status_name+" successfully.",
-                        //                 type: "success"
-                        //             },function(isConfirm){
-                        //                 if(isConfirm){
-                        //                     window.location="";
-                        //                 }
-                        //             });
-                        //         }
-                        //     }
-
-                        // });
-                        
-                  }
+                $("#activeInactiveForm"+id).submit();
             }else {
                 swal("Cancelled", "Operation Cancelled:)", "error");
               if(status == 1){
