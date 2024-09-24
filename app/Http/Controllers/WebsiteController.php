@@ -1596,7 +1596,7 @@ class WebsiteController extends Controller
             return redirect()->route("filterCustomerReviews",$websiteId);
         }
 
-        if (DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->update(['status'=>99])) {
+        if (DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->update(['status'=>99,'updated_at'=>now()])) {
             // $this->removeImage('/images/customer-reviews/',$getRecord->image);
             Session::flash('success', 'Success!');
         } else {
