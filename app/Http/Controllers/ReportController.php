@@ -2443,8 +2443,8 @@ class ReportController extends Controller
                     $totalcashout = $totalcashout + $value->cashOut;
                     $totalpaid = $totalpaid + $value->paidByCustomer;
                     $totalhand = $totalhand + $cashinhand;
-                    $totalclosing = $totalclosing + $value->closingBal;
-                    $totalbalance = $totalbalance + $balance;
+                    $totalclosing = (float) $totalclosing + (float) $value->closingBal;
+                    $totalbalance = (float) $totalbalance + (float) $balance;
 
 
 
