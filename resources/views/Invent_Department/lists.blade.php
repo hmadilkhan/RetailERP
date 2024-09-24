@@ -473,24 +473,24 @@
 
         });
 
-        function deleteSubDepart(id) {
+        function deleteSubDepart(code) {
             swal({
                     title: "Are you sure?",
-                    text: "This "+$("#tbx_"+id).val()+" sub department will be remove?",
+                    text: "This "+$("#tbx_"+code).val()+" sub department will be remove?",
                     type: "warning",
                     showCancelButton: true,
                     confirmButtonClass: "btn-danger",
                     confirmButtonText: "Yes plx!",
-                    cancelButtonText: "cancel plx!",
-                    closeOnConfirm: false,
-                    closeOnCancel: false
+                    cancelButtonText: "cancel plx!"
+                    // closeOnConfirm: false,
+                    // closeOnCancel: false
                 },
                 function(isConfirm) {
                     if (isConfirm) {
                         $.ajax({
-                                 url:'{{-- route("remove-subdepartment") --}}',
+                                 url:'{{ url("/delete-subdepartment") }}',
                                  type:'POST',
-                                 data:{_token:'{{ csrf_token() }}'},
+                                 data:{_token:'{{ csrf_token() }}',id:code},
                                  dataType:'json',
                                  success:function(resp,txtStatus,jxState){
                                       if(jxState.status == 200){
@@ -499,12 +499,16 @@
                                                 type: 'success'
                                             }, function(isConfirm) {
                                                 if (isConfirm) {
-                                                       $("#subDept_rowmd"+id).remove();
+                                                       $("#subDept_rowmd"+code).remove();
                                                 }
                                             });
                                       }
-                                 },error:function(e){
 
+                                      if(jxState.status == 500){
+                                        swal('Error!',resp,'error');
+                                      }                                     
+                                 },error:function(e){
+                                        console.log(e)
                                  }
 
                                });

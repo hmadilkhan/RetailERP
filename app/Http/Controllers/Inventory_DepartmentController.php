@@ -384,6 +384,19 @@ class Inventory_DepartmentController extends Controller
             return response()->json(["status" => 500, "message" => "Error: " . $e->getMessage()]);
         }
     }
+
+    public function remove_sbdept(Request $request){
+        try {
+            if ($request->id != "") {
+                DB::table("inventory_sub_department")->where("sub_department_id", $request->id)->update(["status" => 2]);
+                return response()->json("Department Deleted successfully.",200);
+            }
+        } catch (\Exception $e) {
+            return response()->json($e->getMessage(),500);
+        }
+
+    }    
+
     public function adddepartment(inventory_department $in_depart, Request $request)
     {
         $exsist = $in_depart->depart_exists($request->departname);
