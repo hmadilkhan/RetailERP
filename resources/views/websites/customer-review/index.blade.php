@@ -61,6 +61,8 @@
 		<tbody>
               @foreach($reviews as $value)
                  @php 
+                   $statusName       = $value->status == 1 ? 'Active' : 'In-Active';
+                   $statusLabelColor = $value->status == 1 ? 'text-success' : 'text-danger';
                    $website_name = $websites->where('id',$value->website_id)->pluck('name'); 
                       $image = asset('storage/images/no-image.jpg');
                       
@@ -76,6 +78,7 @@
           <td>{{ $value->review_title }}</td>
 				  <td><p>{{ $value->review }}</p></td>
           <td><a href="{{ $value->product_url }}">Go to Product Page</a></td>
+          <td><span class="{{ $statusLabelColor }}">{{ $statusName }}</span></td>
 				  <td class="action-icon">
             <label class="switch m-r-1">
               <input type="checkbox" title="" data-original-title="Active/In-Active Switch" 
