@@ -777,8 +777,9 @@ function swalModal(branchId,mode,brnhName,status){
                     if(resp != null){
                       $("#branch").attr('disabled',false);
                       $("#branch").empty();
+                      $("#branch").append("<option value=''>Select<option>");
                       $.each(resp,function(i,v){
-                          $("#branch").append("<option value='"+v.branch_id+"'>"+v.branch_name+"<option>")
+                          $("#branch").append("<option value='"+v.branch_id+"'>"+v.branch_name+"<option>");
                       })
                     }
                  }
