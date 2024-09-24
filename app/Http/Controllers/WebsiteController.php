@@ -1597,7 +1597,7 @@ class WebsiteController extends Controller
         }
 
         if (DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->update(['status'=>99])) {
-            $this->removeImage('/images/customer-reviews/',$getRecord->image);
+            // $this->removeImage('/images/customer-reviews/',$getRecord->image);
             Session::flash('success', 'Success!');
         } else {
             Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' testimonial is not removed for this '.$request->websiteName.' !');
