@@ -493,7 +493,16 @@
                                  data:{_token:'{{ csrf_token() }}'},
                                  dataType:'json',
                                  success:function(resp,txtStatus,jxState){
-
+                                      if(jxState.status == 200){
+                                        swal({
+                                                title: 'Success!',
+                                                type: 'success'
+                                            }, function(isConfirm) {
+                                                if (isConfirm) {
+                                                       $("#subDept_rowmd"+id).remove();
+                                                }
+                                            });
+                                      }
                                  },error:function(e){
 
                                  }
@@ -891,7 +900,8 @@
                         }
 
                         $(".sb_tble tbody").append(
-                            "<tr>" +
+                            "<tr id='subDept_rowmd"+r[s]
+                            .sub_department_id+"'>" +
                             "<td><input type='text' value='" + (r[s].code != null ? r[s].code : '') +
                             "' placeholder='Department code' class='form-control' id='code_" + r[s]
                             .sub_department_id + "'/>" +
