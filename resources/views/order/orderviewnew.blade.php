@@ -213,8 +213,8 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header p-2 ">
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 mt-1">
+            <div class="card-header p-2">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Total Orders</span>
                         <h2 class="dashboard-total-products" id="totalorders">0</h2>
@@ -254,6 +254,7 @@
                         </div>
                     </div>
                 </div>
+                {{-- @if(session("company_id") == 102) --}}
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Dispatch Orders</span>
@@ -264,6 +265,18 @@
                         </div>
                     </div>
                 </div>
+                {{-- @else --}}
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                    <div class="card dashboard-product">
+                        <span>Sales Return</span>
+                        <h2 class="dashboard-total-products" id="salesreturnorders">0</h2>
+                        <span class="label label-danger">Sales Return</span>
+                        <div class="side-box">
+                            <i class="ti-package text-warning-color"></i>
+                        </div>
+                    </div>
+                </div>
+                {{-- @endif --}}
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Delivered Orders</span>
@@ -274,6 +287,7 @@
                         </div>
                     </div>
                 </div>
+                
             </div>
         </div>
         <div class="card">
@@ -536,7 +550,8 @@
             $('#branch').val("").change()
             $('#terminal').val("").change()
             $('#order_no').val("")
-            $('#sales_tax').val("").change()
+            $('#sales_tax').val("").change();
+            $('#orderstatus').val("").change()
         }
 
         function assignToServiceProviderModal(receiptId) {
