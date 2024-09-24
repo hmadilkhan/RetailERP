@@ -55,6 +55,7 @@
                <th>Title</th>
                <th>Review</th>
                <th>Product URL</th>
+               <th>Status</th>
                <th>Action</th>
             </tr>
 		</thead>
