@@ -462,9 +462,9 @@
                       if(md == 1){ 
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
-                                "<td><input type='text' value='"+r[s].city_name +"' class='form-control' id='name_md_"+r[s].id+"'/>"+
-                                "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/>"+
-                                "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i></td>"+
+                                "<td>"+r[s].city_name+"</td>"+
+                                "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
+                                "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+",1)' class='btn btn-primary'>Update</i></td>"+
                               "</tr>"
                            );
                       }
@@ -472,8 +472,8 @@
                       if(md == 0){
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
-                                "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/>"+
-                                "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/>"+
+                                "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/></td>"+
+                                "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i></td>"+
                               "</tr>"
                            );                          
@@ -484,12 +484,12 @@
       
   }
   
-  function updateAreaDetail(id,brnchId){
+  function updateAreaDetail(id,brnchId,md){
     
       $.ajax({
               url:"{{ route('deliveryAreaNameUpdate') }}",
               type:"POST",
-              data:{_token:'{{ csrf_token() }}',id:id,area:$("#name_md_"+id).val(),charge:$("#charge_md_"+id).val()},
+              data:{_token:'{{ csrf_token() }}',id:id,area:$("#name_md_"+id).val(),charge:$("#charge_md_"+id).val(),mode:md},
               async:true,
               dataType:'json',
               success:function(resp){
