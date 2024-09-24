@@ -492,14 +492,16 @@
               data:{_token:'{{ csrf_token() }}',id:id,area:$("#name_md_"+id).val(),charge:$("#charge_md_"+id).val(),mode:md},
               async:true,
               dataType:'json',
-              success:function(resp){
-                   console.log(resp)
-                   if(resp.status == 200){
-                       $("#alert_md").text('Success!').addClass('alert alert-success');
-                       
-                       $("#areaLabel"+id).text($("#name_md_"+id).val()+' - Rs.'+$("#charge_md_"+id).val());
+              success:function(resp,txtStatus,jXst){
+                  //  console.log(resp)
+                   if(jXst.status == 200){
+                       swal('Success!','','success');
+                      //  $("#alert_md").text('Success!').addClass('alert alert-success');
+                      if(mode != 1){ 
+                        $("#areaLabel"+id).text($("#name_md_"+id).val()+' - Rs.'+$("#charge_md_"+id).val());
+                      }
                    }else{
-                       $("#alert_md").text(resp.msg).addClass('alert alert-alert');
+                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                    }
               }
              });
