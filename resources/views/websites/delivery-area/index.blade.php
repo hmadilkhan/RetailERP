@@ -497,11 +497,10 @@
                    if(jXst.status == 200){
                        swal('Success!','','success');
                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
-                      if(mode != 1){ 
-                        $("#areaLabel"+id).text($("#name_md_"+id).val()+' - Rs.'+$("#charge_md_"+id).val());
-                      }
+                       
+                       $("#areaLabel"+id).text($("#name_md_"+id).val()+' - Rs.'+$("#charge_md_"+id).val());
                    }else{
-                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
+                       $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                    }
               }
              });
