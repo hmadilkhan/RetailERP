@@ -271,6 +271,7 @@
                 <th>Narration</th>
                 <th>Qty</th>
                 <th>Stock</th>
+                <th>Action By</th>
                 <th>Action</th>
             </tr>
             </thead>
@@ -303,6 +304,7 @@
                         <td>{{$value->narration}}</td>
                         <td>{{(preg_match('/Sales/', $value->narration) ? $value->qty/$value->weight_qty : $value->qty)}}</td>
                         <td> {{$stock}}</td>
+                        <td> {{$value->fullname}}</td>
                         <td>
                             @if (preg_match('/Purchase/', $value->narration) && $value->adjustment_mode == "")
                                 <a href="{{route('view',$value->foreign_id)}}" class="p-r-10 f-18 text-info" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit">

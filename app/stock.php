@@ -197,7 +197,7 @@ class stock extends Model
     public function getProductReport($id, $branch)
     {
         // echo $id.'------------'.$branch;exit;
-        $result = DB::select('Select a.*,b.weight_qty,c.grn_id from inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id LEFT JOIN inventory_stock c on c.stock_id = a.foreign_id and a.adjustment_mode != "NULL" where a.product_id = ? and a.branch_id = ?', [$id, $branch]);
+        $result = DB::select('Select a.*,b.weight_qty,c.grn_id,e.fullname from inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id LEFT JOIN inventory_stock c on c.stock_id = a.foreign_id and a.adjustment_mode != "NULL" LEFT JOIN purchase_rec_gen d on d.rec_id = c.grn_id LEFT JOIN user_details e on e.id = d.user_id where a.product_id = ? and a.branch_id = ?', [$id, $branch]);
         return $result;
     }
 
