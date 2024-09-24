@@ -933,29 +933,30 @@ class WebsiteController extends Controller
     public function cityLoadnotExistsdilveryArea(Request $request){
 
         if(isset($request->branchCode) && isset($request->websiteCode) && $request->mode == 1){
-        //     $cities = DB::table('city')
-        //     ->whereIn('city_id', function($query) use ($request) {
-        //         $query->select('city')
-        //             ->from('website_delivery_areas')
-        //             ->where('website_id', $request->websiteCode)
-        //             ->where('branch_id', $request->branchCode)
-        //             ->where('status', 1);
-        //     })
-        //     ->pluck('city_id');
+            $cities = DB::table('city')
+            ->whereIn('city_id', function($query) use ($request) {
+                $query->select('city')
+                    ->from('website_delivery_areas')
+                    ->where('website_id', $request->websiteCode)
+                    ->where('branch_id', $request->branchCode)
+                    ->where('status', 1);
+            })
+            ->pluck('city_id');
         
-        // $result = DB::table('city')
-        //     ->whereNotIn('city_id', $cities)
-        //     ->get();
+        $result = DB::table('city')
+            ->whereNotIn('city_id', $cities)
+            ->where('country_id',170)
+            ->get();
 
 
-           $result =   DB::table('website_delivery_areas')
-                            ->leftJoin('city', 'city.city_id', '!=', 'website_delivery_areas.city')
-                            ->where('website_delivery_areas.website_id', '=', $request->websiteCode)
-                            ->where('website_delivery_areas.branch_id', '=', $request->branchCode)
-                            ->where('website_delivery_areas.status', '=', 1)
-                            // ->where('city.city_id', '!=', 'website_delivery_areas.city') // Ensure cities are not equal
-                            ->select('website_delivery_areas.city', 'city.city_name')
-                            ->get(); 
+        //    $result =   DB::table('website_delivery_areas')
+        //                     ->leftJoin('city', 'city.city_id', '!=', 'website_delivery_areas.city')
+        //                     ->where('website_delivery_areas.website_id', '=', $request->websiteCode)
+        //                     ->where('website_delivery_areas.branch_id', '=', $request->branchCode)
+        //                     ->where('website_delivery_areas.status', '=', 1)
+        //                     // ->where('city.city_id', '!=', 'website_delivery_areas.city') // Ensure cities are not equal
+        //                     ->select('website_delivery_areas.city', 'city.city_name')
+        //                     ->get(); 
            return response()->json($result,200);                      
         }
 
