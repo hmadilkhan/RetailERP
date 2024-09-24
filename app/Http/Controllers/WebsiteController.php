@@ -1567,7 +1567,7 @@ class WebsiteController extends Controller
                                         ->join('website_details','website_details.id','website_customer_reviews.website_id')
                                         ->where('website_customer_reviews.website_id',$request->id)
                                         ->where('website_customer_reviews.status',1)
-                                        ->where('website_details.status',1)
+                                        ->where('website_details.status','!=',99)
                                         ->where('website_details.company_id',session('company_id'))
                                         ->select('website_customer_reviews.*')
                                         ->get();
