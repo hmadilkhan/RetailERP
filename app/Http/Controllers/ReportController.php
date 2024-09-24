@@ -3480,7 +3480,7 @@ class ReportController extends Controller
                     $pdf->SetTextColor(0, 0, 0);
                 }
                 $pdf->Cell(20, 6, $value->code, 0, 0, 'C', 1);
-                $pdf->Cell(65, 6, $value->product_name.$itemStatus != '' ? " (".$itemStatus.") " : '', 0, 0, 'L', 1);
+                $pdf->Cell(65, 6, $value->product_name. ($itemStatus != '' ? " (".$itemStatus.") " : ''), 0, 0, 'L', 1);
                 $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
