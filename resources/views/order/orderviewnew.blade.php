@@ -438,8 +438,9 @@
     <script type="text/javascript">
         $(".select2").select2();
         getTerminal();
-        $("#date").val('{{ date('Y-m-d') }}')
-        $("#rpdate").val('{{ date('Y-m-d') }}')
+        
+        // $("#date").val('{{ date('Y-m-d') }}')
+        // $("#rpdate").val('{{ date('Y-m-d') }}') */
 
         $('#date,#rpdate,#del_from,#del_to').bootstrapMaterialDatePicker({
             format: 'YYYY-MM-DD',

@@ -142,6 +142,10 @@ class order extends Model
 			$fromDate = $request->first;
 			$toDate = $request->second;
 		}
+		// else{
+		// 	$fromDate = date("Y-m-d");
+		// 	$toDate = date("Y-m-d");
+		// }
 		if ($request->branch == "all") {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 		} else {
@@ -223,8 +227,8 @@ class order extends Model
 
 	public function getTotalAndSumofOrdersQuery($request)
 	{
-		$fromDate = $request->deli_from;
-		$toDate = $request->deli_to;
+		$fromDate = "";
+		$toDate = "";
 		if ($request->deli_from != "" && $request->deli_to != "") {
 			$fromDate = $request->deli_from;
 			$toDate = $request->deli_to;
@@ -232,6 +236,10 @@ class order extends Model
 			$fromDate = $request->first;
 			$toDate = $request->second;
 		}
+		// else{
+		// 	$fromDate = date("Y-m-d");
+		// 	$toDate = date("Y-m-d");
+		// }
 		if ($request->branch == "all") {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 		} else {
