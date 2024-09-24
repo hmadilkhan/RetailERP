@@ -156,7 +156,7 @@
         @if($websites)    
         <div class="card d-none" id="banner-imageBox">
                   <div class="card-header">
-                     <h4 for="bannerImage">Banner</h4>
+                     <h4 for="bannerImage">Desktop Banner</h4>
                   </div>
                   <div class="card-block p-2 p-t-0">
                     <div class="form-group">
@@ -178,6 +178,31 @@
               </div> 
             </div>    
           </div> 
+
+          <div class="card d-none" id="mobile-banner-imageBox">
+            <div class="card-header">
+               <h4 for="bannerImage">Mobile Banner</h4>
+            </div>
+            <div class="card-block p-2 p-t-0">
+              <div class="form-group">
+                 <a href="javascript:void(0)">
+                  <img id="previewDepartMobileBannerImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="180px" class="thumb-img width-100" alt="img">
+                  </a>
+
+              <div class="form-group {{ $errors->has('mobile_banner') ? 'has-danger' : '' }} m-t-10">
+                              <label for="mobile_banner" class="custom-file">
+                                          <input type="file" name="mobile_banner" id="mobile_banner" class="custom-file-input">
+                                          <span class="custom-file-control"></span>
+                                      </label>   
+                                      <br/>        
+                          @error('mobile_banner')
+                              <span class="form-control-feedback">{{ $message }}</span>
+                          @enderror
+                        </div> 
+          
+        </div> 
+      </div>    
+    </div>           
         @endif
      </div> <!-- col-md-4 close image portion -->
    </div>
@@ -214,11 +239,14 @@ $("#showWebsite").on('click',function(){
         if($("#website-module").hasClass('d-none')){
             $("#website-module").removeClass('d-none');
         }
-        
-        
+                
         if($("#banner-imageBox").hasClass('d-none')){
             $("#banner-imageBox").removeClass('d-none');
-        }        
+        }   
+        
+        if($("#mobile-banner-imageBox").hasClass('d-none')){
+            $("#mobile-banner-imageBox").removeClass('d-none');
+        }         
     }
     
     if($(this).is(':checked')==false){
@@ -228,7 +256,11 @@ $("#showWebsite").on('click',function(){
         
         if(!$("#banner-imageBox").hasClass('d-none')){
             $("#banner-imageBox").addClass('d-none');
-        }         
+        }
+
+        if(!$("#mobile-banner-imageBox").hasClass('d-none')){
+            $("#mobile-banner-imageBox").addClass('d-none');
+        } 
     }    
 });
 

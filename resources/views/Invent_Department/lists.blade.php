@@ -230,7 +230,7 @@
                                         <div class="form-group">
                                             <a href="javascript:void(0)">
                                                 <img id="previewDepartBannerImage_md"
-                                                    src="{{ asset('storage/images/no-image.jpg') }}" height="180px"
+                                                    src="{{ asset('storage/images/placeholder.jpg') }}" height="180px"
                                                     class="thumb-img width-100" alt="img">
                                             </a>
 
@@ -244,6 +244,25 @@
                                             <span class="text-danger" id="bannerImage_md_alert"></span>
                                         </div>
                                     </div>
+
+                                    <div class="col-md-12 d-none" id="mobilebanner-imageBox_md">
+                                        <div class="form-group">
+                                            <a href="javascript:void(0)">
+                                                <img id="previewDepartMobileBannerImage_md"
+                                                    src="{{ asset('storage/images/placeholder.jpg') }}" width="150px" height="250px"
+                                                    class="thumb-img width-100" alt="img">
+                                            </a>
+
+                                            <div class="form-group m-t-10">
+                                                <label for="mobileBannerImage_md" class="custom-file">
+                                                    <input type="file" name="bannerImage" id="mobileBannerImage_md"
+                                                        class="custom-file-input">
+                                                    <span class="custom-file-control"></span>
+                                                </label>
+                                            </div>
+                                            <span class="text-danger" id="mobileBannerImage_md_alert"></span>
+                                        </div>
+                                    </div>                                    
                                 @endif
                             </div>
                         </form>
@@ -394,6 +413,23 @@
 
                                     <label for="subdepartBanner_add" class="custom-file">
                                         <input type="file" name="subdepartBanner" id="subdepartBanner_add"
+                                            class="custom-file-input">
+                                        <span class="custom-file-control"></span>
+                                    </label>
+                                </div>
+                            </div>   
+                          </div>  
+                          
+                          <div class="d-none" id="website_module_mobileBannersbdept_md">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
+                                        width="180" height="256" id="previewMobileBanner_sbmd" /></br>
+                                    <label for="subdepartMobileBanner_add" class="form-control-label">Sub Department
+                                        Banner Image</label></br>
+
+                                    <label for="subdepartMobileBanner_add" class="custom-file">
+                                        <input type="file" name="subdepartBanner" id="subdepartMobileBanner_add"
                                             class="custom-file-input">
                                         <span class="custom-file-control"></span>
                                     </label>
@@ -642,6 +678,10 @@
             readURL(this, 'previewDepartBannerImage_md');
         });
 
+        $("#mobileBannerImage_md").change(function() {
+            readURL(this, 'previewDepartMobileBannerImage_md');
+        });        
+        
         $("#departImage_md").change(function() {
             readURL(this, 'previewImg');
         });
@@ -1197,6 +1237,11 @@
                 if ($("#banner-imageBox_md").hasClass('d-none')) {
                     $("#banner-imageBox_md").removeClass('d-none');
                 }
+
+                if ($("#mobilebanner-imageBox_md").hasClass('d-none')) {
+                    $("#mobilebanner-imageBox_md").removeClass('d-none');
+                }                
+                
             }
 
             if ($(this).is(':checked') == false) {
@@ -1207,6 +1252,10 @@
                 if (!$("#banner-imageBox_md").hasClass('d-none')) {
                     $("#banner-imageBox_md").addClass('d-none');
                 }
+
+                if (!$("#mobilebanner-imageBox_md").hasClass('d-none')) {
+                    $("#mobilebanner-imageBox_md").addClass('d-none');
+                }                
             }
         });
 
@@ -1216,7 +1265,10 @@ if ($(this).is(':checked') == true) {
     if ($("#website_module_bannersbdept_md").hasClass('d-none')) {
         $("#website_module_bannersbdept_md").removeClass('d-none');
     }
-
+    
+    if ($("#website_module_mobileBannersbdept_md").hasClass('d-none')) {
+        $("#website_module_mobileBannersbdept_md").removeClass('d-none');
+    }
 
     if ($("#website_module_sbdept_md").hasClass('d-none')) {
         $("#website_module_sbdept_md").removeClass('d-none');
@@ -1227,6 +1279,10 @@ if ($(this).is(':checked') == false) {
     if (!$("#website_module_bannersbdept_md").hasClass('d-none')) {
         $("#website_module_bannersbdept_md").addClass('d-none');
     }
+
+    if (!$("#website_module_mobileBannersbdept_md").hasClass('d-none')) {
+        $("#website_module_mobileBannersbdept_md").addClass('d-none');
+    }    
 
     if (!$("#website_module_sbdept_md").hasClass('d-none')) {
         $("#website_module_sbdept_md").addClass('d-none');
