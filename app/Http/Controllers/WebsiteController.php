@@ -1562,7 +1562,7 @@ class WebsiteController extends Controller
     public function getCustomer_reviews(Request $request){
         $data = [];
         if(isset($request->id)){
-            $data["testimonials"] = DB::table('website_customer_reviews')
+            $data["reviews"] = DB::table('website_customer_reviews')
                                         ->where('website_id',$request->id)
                                         ->where('status',1)
                                         ->get();
