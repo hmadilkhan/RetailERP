@@ -267,6 +267,7 @@
             <thead>
             <tr>
                 <th>Date</th>
+                <th>Ref #</th>
                 <th>Narration</th>
                 <th>Qty</th>
                 <th>Stock</th>
@@ -298,6 +299,7 @@
                      ?>
                     <tr>
                         <td>{{date('d M Y',strtotime($value->date))}}</td>
+                        <td>{{$value->grn_id}}</td>
                         <td>{{$value->narration}}</td>
                         <td>{{(preg_match('/Sales/', $value->narration) ? $value->qty/$value->weight_qty : $value->qty)}}</td>
                         <td> {{$stock}}</td>
