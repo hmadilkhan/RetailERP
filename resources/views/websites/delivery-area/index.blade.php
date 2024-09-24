@@ -815,10 +815,11 @@ function swalModal(branchId,mode,brnhName,status){
                dataType:'json',
                success: function(resp, txtStatus, jxState) {
             if (jxState.status === 200) {
-                
+                console.log(resp)
                 $.each(resp, function(i) {
                     
                     var cityToRemove = resp[i].city; 
+                    console.log(cityToRemove)
                     $("#city option").filter(function() {
                         return $(this).text() === cityToRemove;
                     }).remove();
