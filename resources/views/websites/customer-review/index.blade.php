@@ -69,7 +69,7 @@
                       }
                  @endphp
 				<tr>
-                  <td class="d-none">{{ $value->id }}</td>  
+          <td class="d-none">{{ $value->id }}</td>  
 				  <td class="text-center"><img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"></td>
 				  <td>{{ $value->customer_name }} <br/> {{ $value->customer_email  }}</td>
 				  <td>{{ $value->rating }}</td>
@@ -77,13 +77,18 @@
 				  <td><p>{{ $value->review }}</p></td>
           <td><a href="{{ $value->product_url }}">Go to Product Page</a></td>
 				  <td class="action-icon">
-					{{-- <a href="{{ route('testimonials.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
-					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ $website_name }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
-					<form action="{{ route('testimonials.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
+            <label class="switch m-r-1">
+              <input type="checkbox" title="" data-original-title="Active/In-Active Switch" 
+              onclick="switchMode({{ $value->id }},{{ $value->status }},'{{ $value->customer_name }}',this)" {{ $value->status == 1 ? 'checked' : '' }}>
+              <span class="slider round"></span>
+            </label>					
+					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="removeReview({{ $value->id }},'{{ $value->customer_name }}','{{ $website_name }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
+					<form action="{{ route('deleteReview') }}" method="post" id="removeForm{{ $value->id }}">
 					    @csrf
 					    @method('DELETE')
-                        <input type="hidden" name="websiteId" value="{{ Crypt::encrypt($value->website_id) }}">
-					</form> --}}
+                <input type="hidden" name="id" value="{{ Crypt::encrypt($value->id) }}">
+                <input type="hidden" name="websiteId" value="{{ Crypt::encrypt($value->website_id) }}">
+					</form>
 				  </td>
 				</tr>
              @endforeach
@@ -117,6 +122,115 @@
              window.location = location.origin+'/website/customer-reviews/'+$(this).val()+'/filter';
         }
     });
-   
+
+function switchMode(discId,status,customer,element){
+ var status_name = null; 
+ var value = 2;
+    if($(element).is(':checked')){
+        status_name = 'Active';
+        value = 1;
+    }else{
+        status_name = 'In-Active';
+        value = 2;
+    }
+    
+    swal({
+            title: "Are you sure?",
+            text: "You want to "+status_name+" this "+customer+" csutomer review!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "yes plx!",
+            cancelButtonText: "cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm){
+            if(isConfirm){
+                
+                  if(status == 1){
+                        // $.ajax({
+                        //     url: "",
+                        //     type: 'POST',
+                        //     data:{_token:"{{ csrf_token() }}",
+                        //         id:discId,mode:value
+                        //     },
+                        //     success:function(resp){
+                        //         if(resp == 1){
+                        //             swal({
+                        //                 title: "Success!",
+                        //                 text: "Campaign "+status_name+" successfully.",
+                        //                 type: "success"
+                        //             },function(isConfirm){
+                        //                 if(isConfirm){
+                        //                     window.location="";
+                        //                 }
+                        //             });
+                        //         }
+                        //     }
+
+                        // });
+                        
+                  }
+            }else {
+                swal("Cancelled", "Operation Cancelled:)", "error");
+              if(status == 1){
+                  $(element).prop('checked', true);
+              }else{
+                  $(element).prop('checked', false);
+              }
+            }
+        });
+}
+
+function removeReview(id,customer,website){
+  swal({
+            title: "Are you sure?",
+            text: "You want to remove this "+customer+" customer review from "+website+" website!",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "yes plx!",
+            cancelButtonText: "cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm){
+            if(isConfirm){
+                
+                  if(status == 1){
+                        // $.ajax({
+                        //     url: "",
+                        //     type: 'POST',
+                        //     data:{_token:"{{ csrf_token() }}",
+                        //         id:discId,mode:value
+                        //     },
+                        //     success:function(resp){
+                        //         if(resp == 1){
+                        //             swal({
+                        //                 title: "Success!",
+                        //                 text: "Campaign "+status_name+" successfully.",
+                        //                 type: "success"
+                        //             },function(isConfirm){
+                        //                 if(isConfirm){
+                        //                     window.location="";
+                        //                 }
+                        //             });
+                        //         }
+                        //     }
+
+                        // });
+                        
+                  }
+            }else {
+                swal("Cancelled", "Operation Cancelled:)", "error");
+              if(status == 1){
+                  $(element).prop('checked', true);
+              }else{
+                  $(element).prop('checked', false);
+              }
+            }
+        });  
+}
 </script>
 @endsection
