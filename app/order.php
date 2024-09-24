@@ -630,25 +630,25 @@ class order extends Model
 		$filter = "";
 
 		/********************************** DATES **************************************/
-		if ($first != "") {
+		if (!empty($first)) {
 			$filter .= " and a.date BETWEEN '" . $first . "' and '" . $second . "'";
 		}
 		/********************************** CUSTOMER **************************************/
-		if ($customer != "") {
+		if (!empty($customer)) {
 			$filter .= " and a.customer_id = " . $customer . "";
 		}
 
 		/********************************** RECEIPT **************************************/
-		if ($receipt != "") {
+		if (!empty($receipt)) {
 			$filter .= " and a.url_orderid = '" . $receipt . "'";
 		}
 
-		if ($branch != "") {
+		if (!empty($branch)) {
 			$filter .= " and a.branch = " . $branch . "";
 		}
 
 
-		if ($websiteId != "") {
+		if (!empty($websiteId)) {
 			$filter .= " and a.website_id = " . $websiteId . "";
 		}
 
@@ -720,8 +720,9 @@ class order extends Model
 			->join('sales_account_subdetails', 'sales_account_subdetails.receipt_id', 'sales_receipts.id')
 			->join('sales_order_status', 'sales_order_status.order_status_id', 'sales_receipts.status')
 			->join('branch', 'branch.branch_id', 'sales_receipts.branch')
+			->join('company','company.company_id', 'branch.company_id')
 			->join('website_details', 'website_details.id', 'sales_receipts.website_id')
-			->select('sales_receipts.*', 'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'branch.branch_name')
+			->select('sales_receipts.*', 'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'branch.branch_name','company.name as company_name')
 			->whereRaw('sales_receipts.url_orderid = "'.$id.'" '.$filter)
 			->get();
 	}
@@ -749,6 +750,12 @@ class order extends Model
 		$result = DB::table('customers')->join("user_authorization", "user_authorization.user_id", "=", "customers.user_id")->where("user_authorization.branch_id", session("branch"))->distinct("customers.id")->get();
 		return $result;
 	}
+
+	public function getWebsiteCustomers()
+	{
+		$result = DB::table('customers')->whereIn("website_id",DB::table('website_details')->where('company_id',session('company_id'))->where('status',1)->pluck('id'))->get();
+		return $result;
+	}	
 
 	public function orderItems($orderID)
 	{

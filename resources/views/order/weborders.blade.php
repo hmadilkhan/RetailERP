@@ -85,7 +85,7 @@
                         <label class="form-control-label">Select Branch</label>
                         <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2">
                             <option value="">Select Branch</option>
-                           @php $branch_fltr = Request::has('branch') ? Request::get('receipt') : null;  @endphp
+                           @php $branch_fltr = Request::has('branch') ? Request::get('branch') : null;  @endphp
                             @foreach($branch as $value)
                                 <option {{ $branch_fltr == $value->branch_id ? 'selected' : '' }} value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                             @endforeach
@@ -380,6 +380,10 @@
         
       
         var Interval_checkOrder = setInterval(checkOrders, 10000);
+
+        @if(Request::has('page_mode'))
+           Interval_checkOrder = null;
+        @endif       
 
         $(".btn_close_md").on('click',function(){
             Interval_checkOrder = setInterval(checkOrders, 10000);            
