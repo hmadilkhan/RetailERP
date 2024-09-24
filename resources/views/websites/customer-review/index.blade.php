@@ -83,7 +83,7 @@
               <span class="slider round"></span>
             </label>					
 					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="removeReview({{ $value->id }},'{{ $value->customer_name }}','{{ $website_name }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
-					<form action="{{ route('destroyCustomer_review') }}" method="post" id="removeForm{{ $value->id }}">
+					<form action="{{ route('destroyCustomer_review',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
 					    @csrf
 					    @method('DELETE')
                 <input type="hidden" name="id" value="{{ Crypt::encrypt($value->id) }}">
