@@ -87,7 +87,7 @@
 					    @csrf
 					    @method('DELETE')
                 <input type="hidden" name="id" value="{{ Crypt::encrypt($value->id) }}">
-                <input type="hidden" name="websiteId" value="{{ Crypt::encrypt($value->website_id) }}">
+                <input type="hidden" name="website" value="{{ Crypt::encrypt($value->website_id) }}">
 					</form>
 				  </td>
 				</tr>
@@ -301,31 +301,7 @@ function removeReview(id,customer,website){
         },
         function(isConfirm){
             if(isConfirm){
-                
-                  if(status == 1){
-                        // $.ajax({
-                        //     url: "",
-                        //     type: 'POST',
-                        //     data:{_token:"{{ csrf_token() }}",
-                        //         id:discId,mode:value
-                        //     },
-                        //     success:function(resp){
-                        //         if(resp == 1){
-                        //             swal({
-                        //                 title: "Success!",
-                        //                 text: "Campaign "+status_name+" successfully.",
-                        //                 type: "success"
-                        //             },function(isConfirm){
-                        //                 if(isConfirm){
-                        //                     window.location="";
-                        //                 }
-                        //             });
-                        //         }
-                        //     }
-
-                        // });
-                        
-                  }
+                $("#removeForm"+id).submit(); 
             }else {
                 swal("Cancelled", "Operation Cancelled:)", "error");
               if(status == 1){
