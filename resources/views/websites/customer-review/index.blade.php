@@ -73,9 +73,9 @@
 				  <td class="text-center"><img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"></td>
 				  <td>{{ $value->customer_name }} <br/> {{ $value->customer_email  }}</td>
 				  <td>{{ $value->rating }}</td>
-                  <td>{{ $value->title }}</td>
+          <td>{{ $value->review_title }}</td>
 				  <td><p>{{ $value->review }}</p></td>
-                  <td><a href="{{ $value->product_url }}">Go to Product Page</a></td>
+          <td><a href="{{ $value->product_url }}">Go to Product Page</a></td>
 				  <td class="action-icon">
 					{{-- <a href="{{ route('testimonials.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
 					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ $website_name }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
