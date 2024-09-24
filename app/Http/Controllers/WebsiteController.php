@@ -1589,7 +1589,7 @@ class WebsiteController extends Controller
     public function activeInactiveCustomer_review(Request $request){
         $websiteId = Crypt::decrypt($request->website);
         $id        = Crypt::decrypt($request->id);
-        $stCode    = Crypt::decrypt($request->stCode);
+        $stCode    = Crypt::decrypt($request->stcode);
         $getRecord = DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->first();
 
         $status = $stcode == 1 ? 'Active' : 'In-Active';
