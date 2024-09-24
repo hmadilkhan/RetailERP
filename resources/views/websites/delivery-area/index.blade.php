@@ -819,7 +819,7 @@ function swalModal(branchId,mode,brnhName,status){
             if (jxState.status === 200) {
               $("#city").empty();
                 $.each(resp, function(i) {
-                     $("#city").append('<option value="'+resp[i].city_id+'">'+resp[i].city_name+'</option>');
+                     $("#city").append('<option value="'+resp[i].city+'">'+resp[i].city_name+'</option>');
                 });
             }
         },
