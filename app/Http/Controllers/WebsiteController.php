@@ -1585,7 +1585,7 @@ class WebsiteController extends Controller
 
     }
 
-    public function destroyCustomer_review(Request $request){
+    public function destroyCustomer_review(Request $request,$id){
         $websiteId = Crypt::decrypt($request->website);
         $id        = Crypt::decrypt($request->id);
         $getRecord = DB::table('website_customer_reviews')::where('id',$id)->where('website_id',$websiteId)->first();

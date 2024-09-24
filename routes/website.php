@@ -77,7 +77,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('customer-reviews/lists', [WebsiteController::class,'getCustomer_reviews'])->name('customerReviewsList');
     Route::get('customer-reviews/{id}/filter', [WebsiteController::class, 'getCustomer_reviews'])->name('filterCustomerReviews');
     Route::post('active-inactive-customer-review', [WebsiteController::class, 'activeInactiveCustomer_review'])->name('activeInactiveCustomer_review');
-    Route::post('delete-customer-review', [WebsiteController::class, 'destroyCustomer_review'])->name('destroyCustomer_review');
+    Route::destroy('customer-review/{id}/delete', [WebsiteController::class, 'destroyCustomer_review'])->name('destroyCustomer_review');
    });
 
     Route::resource('website', WebsiteController::class);
