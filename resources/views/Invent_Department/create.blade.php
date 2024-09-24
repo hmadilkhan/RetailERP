@@ -186,7 +186,7 @@
             <div class="card-block p-2 p-t-0">
               <div class="form-group">
                  <a href="javascript:void(0)">
-                  <img id="previewDepartMobileBannerImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="150px" width="250px" class="thumb-img width-100" alt="img">
+                  <img id="previewDepartMobileBannerImage" src="{{ asset('storage/images/placeholder.jpg') }}" height="150px" width="250px" class="thumb-img" alt="img">
                   </a>
 
               <div class="form-group {{ $errors->has('mobile_banner') ? 'has-danger' : '' }} m-t-10">
@@ -355,6 +355,9 @@ $("#showWebsite").on('click',function(){
 	   readURL(this,'previewDepartBannerImage');
 	}); 
 
+  $("#mobile_banner").change(function() {
+	   readURL(this,'previewDepartMobileBannerImage');
+	});
 
   function swal_alert(title,msg,type,mode){
     
