@@ -3428,11 +3428,13 @@ class ReportController extends Controller
                         $pdf->SetTextColor(255, 255, 255);
                         $totalVoidOrders++;
                         $totalVoidOrdersAmount += $value->amount;
+                        $itemStatus = "Void";
                     }else if ($value->is_sale_return == 1) {
                         $pdf->setFillColor(192, 64, 0);
                         $pdf->SetTextColor(255, 255, 255);
                         $totalSalesReturnOrders++;
                         $totalSalesReturnOrdersAmount += $value->amount;
+                        $itemStatus = "SR";
                     } else {
                         $pdf->setFillColor(232, 232, 232);
                         $pdf->SetTextColor(0, 0, 0);
@@ -3486,11 +3488,13 @@ class ReportController extends Controller
                     $pdf->SetTextColor(255, 255, 255);
                     $totalVoidOrders++;
                     $totalVoidOrdersAmount += $value->amount;
+                    $itemStatus = "Void";
                 }else if ($value->is_sale_return == 1) {
                     $pdf->setFillColor(192, 64, 0);
                     $pdf->SetTextColor(255, 255, 255);
                     $totalSalesReturnOrders++;
                     $totalSalesReturnOrdersAmount += $value->amount;
+                    $itemStatus = "SR";
                 } else {
                     $pdf->setFillColor(232, 232, 232);
                     $pdf->SetTextColor(0, 0, 0);
