@@ -1579,5 +1579,13 @@ class WebsiteController extends Controller
                     ->update(['status'=>$request->mode]) ? response()->json('Success!',200) : response()->json('Error! customer review is not approved. Server Issue!',500);
         }
        return response('Record not found!',500);
+    } 
+    
+    public function activeInactiveCustomer_review(Request $request){
+
+    }
+
+    public function destroyCustomer_review(Request $request){
+
     }    
 }
