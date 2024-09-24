@@ -11,6 +11,7 @@ use App\branch;
 use App\Terminal;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Crypt;
 use Session, Image, Auth, Validator, File;
 
 class WebsiteController extends Controller
