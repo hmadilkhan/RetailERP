@@ -473,6 +473,40 @@
 
         });
 
+        function deleteSubDepart(id) {
+            swal({
+                    title: "Are you sure?",
+                    text: "This "+$("#tbx_"+id).val()+" sub department will be remove?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "Yes plx!",
+                    cancelButtonText: "cancel plx!",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                },
+                function(isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                                 url:'{{-- route("remove-subdepartment") --}}',
+                                 type:'POST',
+                                 data:{_token:'{{ csrf_token() }}'},
+                                 dataType:'json',
+                                 success:function(resp,txtStatus,jxState){
+
+                                 },error:function(e){
+
+                                 }
+
+                               });
+                    } else {
+                        swal("Cancelled", "Your Item is safe :)", "error");
+                    }
+                });
+
+        }
+
+
         $("#btn_website_connect_md").on('click', function() {
             if ($("#website_md").val() == '') {
                 swal('Error!', 'Select website name field is requried.', 'error');
@@ -874,7 +908,9 @@
                             .sub_department_id + "_alert'></div>" + "</td>" +
                             imageColumn + bannerColumn +
                             "<td class='action-icon'><i onclick='update(" + r[s].sub_department_id + "," +
-                            departid + ")' class='btn btn-primary'> Update</i></td>" +
+                            departid + ")' class='btn btn-primary'> Update</i>"+
+                            "<button type='button' onclick='deleteSubDepart("+r[s].sub_department_id +")' class='btn btn-danger'> Remove</button>"+
+                            "</td>" +
                             "</tr>"
                         );
                         //   $(".sb_tble tbody").append(
