@@ -811,7 +811,7 @@ function swalModal(branchId,mode,brnhName,status){
       $.ajax({
                url:'{{ route("cityLoadnotExistsdilveryArea") }}',
                type:'POST',
-               data:{_token:'{{ csrf_token() }}'},
+               data:{_token:'{{ csrf_token() }}',branchCode:branch,websiteCode:website},
                dataType:'json',
                success:function(resp,txtStatus,jxState){
                  if(jxState.status == 200){
