@@ -932,9 +932,9 @@ class WebsiteController extends Controller
 
     public function cityLoadnotExistsdilveryArea(Request $request){
 
-        if(isset($request->branchCode) && isset($request->websiteCode)){
+        if(isset($request->branchCode) && isset($request->websiteCode) && $request->mode == 1){
            $result =  DB::table('website_delivery_areas')
-                        ->join('city', 'city.city_id', 'website_delivery_areas.city')
+                        ->join('city', 'city.city_id','!=','website_delivery_areas.city')
                         ->where('website_delivery_areas.website_id', '=', $request->websiteCode)
                         ->where('website_delivery_areas.branch_id', '=', $request->branchCode)
                         ->where('website_delivery_areas.status', '=', 1)
@@ -942,6 +942,12 @@ class WebsiteController extends Controller
                         ->get(); 
            return response()->json($result,200);                      
         }
+
+        if($request->mode == 0){
+           $result = DB::table('city')->where('country_id', 170)->get(); 
+           return response()->json($result,200);                      
+        }
+
       return response()->json('Record not found!',500);
     }
 

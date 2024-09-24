@@ -765,6 +765,8 @@ function swalModal(branchId,mode,brnhName,status){
        }else{
           divBox_on_off('cityBox',1);
           divBox_on_off('areaBox',0);
+
+          cityLoadNotExists();
        }
 
         $.ajax({
@@ -806,23 +808,18 @@ function swalModal(branchId,mode,brnhName,status){
 
   })
 
-  function cityLoadNotExists(branch,website){
+  function cityLoadNotExists(branch = '',website = ''){
     if(website != '' && branch != ''){
       $.ajax({
                url:'{{ route("cityLoadnotExistsdilveryArea") }}',
                type:'POST',
-               data:{_token:'{{ csrf_token() }}',branchCode:branch,websiteCode:website},
+               data:{_token:'{{ csrf_token() }}',branchCode:branch,websiteCode:website,mode:1},
                dataType:'json',
                success: function(resp, txtStatus, jxState) {
             if (jxState.status === 200) {
-                console.log(resp)
+              $("#city").empty();
                 $.each(resp, function(i) {
-                    
-                    var cityToRemove = resp[i].city; 
-                    console.log(cityToRemove)
-                    $("#city option").filter(function() {
-                        return $(this).text() === cityToRemove;
-                    }).remove();
+                     $("#city").append('<option value="'+resp[i].city+'">'+resp[i].city_name+'</option>');
                 });
             }
         },
@@ -831,6 +828,25 @@ function swalModal(branchId,mode,brnhName,status){
             
         }
       }); // ajax method close
+    }else{
+      $.ajax({
+               url:'{{ route("cityLoadnotExistsdilveryArea") }}',
+               type:'POST',
+               data:{_token:'{{ csrf_token() }}',mode:0},
+               dataType:'json',
+               success: function(resp, txtStatus, jxState) {
+            if (jxState.status === 200) {
+              $("#city").empty();
+                $.each(resp, function(i) {
+                     $("#city").append('<option value="'+resp[i].city+'">'+resp[i].city_name+'</option>');
+                });
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error('Error:', textStatus, errorThrown);
+            
+        }
+      });    
     }
   }
 
