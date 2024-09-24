@@ -1564,8 +1564,12 @@ class WebsiteController extends Controller
         $data = [];
         if(isset($request->id)){
             $data["reviews"] = DB::table('website_customer_reviews')
-                                        ->where('website_id',$request->id)
-                                        ->where('status',1)
+                                        ->join('website_details','website_details.id','website_customer_reviews.website_id')
+                                        ->where('website_customer_reviews.website_id',$request->id)
+                                        ->where('website_customer_reviews.status',1)
+                                        ->where('website_details.status',1)
+                                        ->where('website_details.company_id',session('company_id'))
+                                        ->select('website_customer_reviews.*')
                                         ->get();
         }  
         
@@ -1573,17 +1577,34 @@ class WebsiteController extends Controller
         return view('websites.customer-review.index',$data);
     }
 
-    public function Customer_review_approved(Request $request){
-        if(isset($request->mode) && isset($request->website)){
-            return DB::table('website_customer_reviews')
-                    ->where('website_id',$request->website)
-                    ->update(['status'=>$request->mode]) ? response()->json('Success!',200) : response()->json('Error! customer review is not approved. Server Issue!',500);
-        }
-       return response('Record not found!',500);
-    } 
+    // public function Customer_review_approved(Request $request){
+    //     if(isset($request->mode) && isset($request->website)){
+    //         return DB::table('website_customer_reviews')
+    //                 ->where('website_id',$request->website)
+    //                 ->update(['status'=>$request->mode]) ? response()->json('Success!',200) : response()->json('Error! customer review is not approved. Server Issue!',500);
+    //     }
+    //    return response('Record not found!',500);
+    // } 
     
     public function activeInactiveCustomer_review(Request $request){
+        $websiteId = Crypt::decrypt($request->website);
+        $id        = Crypt::decrypt($request->id);
+        $getRecord = DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->first();
 
+        $status = $request->stcode == 1 ? 'Active' : 'In-Active';
+        $stCode = $request->stcode == 1 ? 1 : 0;
+
+        if ($getRecord == null) {
+            Session::flash('error', 'Error! record not found! Server Issue!');
+            return redirect()->route("filterCustomerReviews",$websiteId);
+        }
+
+        if (DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->update(['status'=>$stCode,'updated_at'=>now()])) {
+            Session::flash('success', 'Success!');
+        } else {
+            Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' review is not been '.$status.' from '.$request->websiteName.' website!');
+        }
+        return redirect()->route("filterCustomerReviews",$websiteId);
     }
 
     public function destroyCustomer_review(Request $request,$id){
@@ -1600,7 +1621,7 @@ class WebsiteController extends Controller
             // $this->removeImage('/images/customer-reviews/',$getRecord->image);
             Session::flash('success', 'Success!');
         } else {
-            Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' testimonial is not removed for this '.$request->websiteName.' !');
+            Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' review is not removed from '.$request->websiteName.' website !');
         }
         return redirect()->route("filterCustomerReviews",$websiteId);
     }
