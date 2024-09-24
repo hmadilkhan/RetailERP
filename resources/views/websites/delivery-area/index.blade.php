@@ -809,7 +809,7 @@ function swalModal(branchId,mode,brnhName,status){
   function cityLoadNotExists(branch,website){
     if(website != '' && branch != ''){
       $.ajax({
-               url:'{{-- route("cityLoadnotExistsdilveryArea") --}}',
+               url:'{{ route("cityLoadnotExistsdilveryArea") }}',
                type:'POST',
                data:{_token:'{{ csrf_token() }}'},
                dataType:'json',
