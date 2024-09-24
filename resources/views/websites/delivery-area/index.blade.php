@@ -817,10 +817,9 @@ function swalModal(branchId,mode,brnhName,status){
                   $.each(resp,function(i){
                     $("#city").val(resp[i].city).remove();
                   })
-                    
                  }
                },error:function(e){
-                  console.log(e);
+                  
                }
       })
     }
