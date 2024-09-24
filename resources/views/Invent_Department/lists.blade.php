@@ -235,6 +235,8 @@
                                             </a>
 
                                             <div class="form-group m-t-10">
+                                                <label for="bannerImage_md" class="form-control-label">Department
+                                                    Desktop Banner</label>
                                                 <label for="bannerImage_md" class="custom-file">
                                                     <input type="file" name="bannerImage" id="bannerImage_md"
                                                         class="custom-file-input">
@@ -254,6 +256,8 @@
                                             </a>
 
                                             <div class="form-group m-t-10">
+                                                <label for="mobileBannerImage_md" class="form-control-label">Department
+                                                    Mobile Banner</label></br>
                                                 <label for="mobileBannerImage_md" class="custom-file">
                                                     <input type="file" name="bannerImage" id="mobileBannerImage_md"
                                                         class="custom-file-input">
@@ -424,9 +428,9 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
-                                        width="180" height="256" id="previewMobileBanner_sbmd" /></br>
+                                        width="150px" height="250px" id="previewMobileBanner_sbmd" /></br>
                                     <label for="subdepartMobileBanner_add" class="form-control-label">Sub Department
-                                        Banner Image</label></br>
+                                        Mobile Banner</label></br>
 
                                     <label for="subdepartMobileBanner_add" class="custom-file">
                                         <input type="file" name="subdepartBanner" id="subdepartMobileBanner_add"
