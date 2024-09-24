@@ -499,7 +499,7 @@
                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
                       //  let locationName = $("#name_md_"+id);
                        
-                       $("#areaLabel"+id).text((md == 1 ? $("#name_md_"+id).text() : $("#name_md_"+id).val())+' - Rs.'+$("#charge_md_"+id).val());
+                       $("#areaLabel"+id).text((md == 1 ? $("#name_md_"+id).val() : $("#name_md_"+id).val())+' - Rs.'+$("#charge_md_"+id).val());
                    }else{
                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                    }
