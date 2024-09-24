@@ -953,7 +953,7 @@ class WebsiteController extends Controller
                             ->where('website_delivery_areas.website_id', '=', $request->websiteCode)
                             ->where('website_delivery_areas.branch_id', '=', $request->branchCode)
                             ->where('website_delivery_areas.status', '=', 1)
-                            ->where('city.city_id', '!=', 'website_delivery_areas.city') // Ensure cities are not equal
+                            // ->where('city.city_id', '!=', 'website_delivery_areas.city') // Ensure cities are not equal
                             ->select('website_delivery_areas.city', 'city.city_name')
                             ->get(); 
            return response()->json($result,200);                      
