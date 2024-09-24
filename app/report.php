@@ -463,7 +463,7 @@ class report extends Model
 		if($branch != "" && $branch != "all"){
 			$filter .= " and c.branch_id = ".$branch;
 		}
-        $result = DB::select('SELECT c.grn_id,b.item_code,b.product_name,a.narration,a.adjustment_mode,a.qty,d.name FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_stock c on c.stock_id = a.foreign_id INNER JOIN inventory_uom d on d.uom_id = b.uom_id  WHERE Date(a.date) BETWEEN ? AND ? AND a.adjustment_mode != "NULL" AND a.branch_id IN (SELECT branch.branch_id FROM branch WHERE branch.company_id = ?) '.$filter,[$fromdate,$todate,session("company_id")]);
+        $result = DB::select('SELECT c.grn_id,b.item_code,b.product_name,a.narration,a.adjustment_mode,a.qty,d.name,a.date FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_stock c on c.stock_id = a.foreign_id INNER JOIN inventory_uom d on d.uom_id = b.uom_id  WHERE Date(a.date) BETWEEN ? AND ? AND a.adjustment_mode != "NULL" AND a.branch_id IN (SELECT branch.branch_id FROM branch WHERE branch.company_id = ?) '.$filter." order by a.date DESC",[$fromdate,$todate,session("company_id")]);
         return $result;
     }
 	

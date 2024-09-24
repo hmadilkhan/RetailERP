@@ -3977,13 +3977,15 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', 'B', 11);
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(20, 7, 'Date', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Voucher', 'B', 0, 'L', 1);
         $pdf->Cell(20, 7, 'Code', 'B', 0, 'L', 1);
-        $pdf->Cell(60, 7, 'Inventory', 'B', 0, 'L', 1);
+        $pdf->Cell(50, 7, 'Inventory', 'B', 0, 'L', 1);
         // $pdf->Cell(30,7,'Pref Vendor','B',0,'L',1);
         $pdf->Cell(15, 7, 'U/M', 'B', 0, 'L', 1);
         $pdf->Cell(15, 7, 'Qty.', 'B', 0, 'L', 1);
         // $pdf->Cell(20,7,'GRN','B',0,'L',1);
-        $pdf->Cell(80, 7, 'Narration', 'B', 1, 'L', 1);
+        $pdf->Cell(50, 7, 'Narration', 'B', 1, 'L', 1);
 
         $inventory = $report->stockadjustment($request->fromdate, $request->todate, $request->branch);
 
@@ -3993,8 +3995,10 @@ class ReportController extends Controller
 
         foreach ($inventory as $value) {
             $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(20, 6, date("d-m-Y",strtotime($value->date)), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, $value->grn_id, 0, 0, 'L', 1);
             $pdf->Cell(20, 6, $value->item_code, 0, 0, 'L', 1);
-            $pdf->Cell(60, 6, $value->product_name, 0, 0, 'L', 1);
+            $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
             // $pdf->Cell(30,6,$value->vendor_name,0,0,'L',1);
             $pdf->Cell(15, 6, $value->name, 0, 0, 'L', 1);
             if ($value->adjustment_mode  == "0") {
@@ -4006,7 +4010,7 @@ class ReportController extends Controller
             }
             $pdf->SetTextColor(0, 0, 0);
             // $pdf->Cell(20,6,$value->grn_id,0,0,'L',1);
-            $pdf->Cell(80, 6, $value->narration, 0, 1, 'L', 1);
+            $pdf->Cell(50, 6, $value->narration, 0, 1, 'L', 1);
         }
         //save file
         $pdf->Output('Stock_Adjustment.pdf', 'I');
