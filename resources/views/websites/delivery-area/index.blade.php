@@ -484,7 +484,7 @@
       
   }
   
-  function updateAreaDetail(id,brnchId,md){
+  function updateAreaDetail(id,brnchId,md=''){
     
       $.ajax({
               url:"{{ route('deliveryAreaNameUpdate') }}",
@@ -497,9 +497,9 @@
                    if(jXst.status == 200){
                        swal('Success!','','success');
                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
-                      let locationName = $("#name_md_"+id);
+                       let locationName = $("#name_md_"+id);
                        
-                       $("#areaLabel"+id).text((mode == 1 ? locationName.text() : locationName.val())+' - Rs.'+$("#charge_md_"+id).val());
+                       $("#areaLabel"+id).text((md == 1 ? locationName.text() : locationName.val())+' - Rs.'+$("#charge_md_"+id).val());
                    }else{
                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                    }
