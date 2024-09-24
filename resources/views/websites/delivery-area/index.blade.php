@@ -462,7 +462,7 @@
                       if(md == 1){ 
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
-                                "<td id='name_md_'"+r[s].id+">"+r[s].city_name+"</td>"+
+                                "<td id='name_md_"+r[s].id+"'>"+r[s].city_name+"</td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+",1)' class='btn btn-primary'>Update</i></td>"+
                               "</tr>"
@@ -499,7 +499,7 @@
                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
                       //  let locationName = $("#name_md_"+id);
                        
-                       $("#areaLabel"+id).text((md == 1 ? $("#name_md_"+id).html() : $("#name_md_"+id).val())+' - Rs.'+$("#charge_md_"+id).val());
+                       $("#areaLabel"+id).text((md == 1 ? $("#name_md_"+id).text() : $("#name_md_"+id).val())+' - Rs.'+$("#charge_md_"+id).val());
                    }else{
                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                    }
