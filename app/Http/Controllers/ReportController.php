@@ -3419,8 +3419,8 @@ class ReportController extends Controller
                         $pdf->setFillColor(255, 0, 0);
                         $pdf->SetTextColor(255, 255, 255);
                     }else if ($value->is_sale_return == 1) {
-                            $pdf->setFillColor(255, 0, 0);
-                            $pdf->SetTextColor(222, 49, 99);
+                        $pdf->setFillColor(248, 131, 121);
+                        $pdf->SetTextColor(255, 255, 255);
                     } else {
                         $pdf->setFillColor(232, 232, 232);
                         $pdf->SetTextColor(0, 0, 0);
@@ -3471,8 +3471,8 @@ class ReportController extends Controller
                     $pdf->setFillColor(255, 0, 0);
                     $pdf->SetTextColor(255, 255, 255);
                 }else if ($value->is_sale_return == 1) {
-                    $pdf->setFillColor(255, 0, 0);
-                    $pdf->SetTextColor(222, 49, 99);
+                    $pdf->setFillColor(248, 131, 121);
+                    $pdf->SetTextColor(255, 255, 255);
                 } else {
                     $pdf->setFillColor(232, 232, 232);
                     $pdf->SetTextColor(0, 0, 0);
