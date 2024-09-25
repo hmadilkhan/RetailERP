@@ -337,8 +337,7 @@
                             <div class="form-group">
                                 <label class="form-control-label">Select Sales Person</label>
                                 <select name="salesperson" id="salesperson" data-placeholder="Select Sales Person" class="form-control select2"  >
-                                    <option value="">Select Sales Person</option>
-                                    <option value="0">All</option>
+                                    <option value="all">All</option>
                                     @if($salespersons)
                                         @foreach($salespersons as $value)
                                             <option value="{{ $value->id }}">{{ $value->provider_name }}</option>

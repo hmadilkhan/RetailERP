@@ -478,7 +478,7 @@ class report extends Model
     public  function  salesPersonReportQuery($fromdate, $todate, $branch, $salesperson)
     {
         $filter = "";
-        if ($salesperson != null and $salesperson != "all") {
+        if ($salesperson != '' and $salesperson != "all") {
             $filter .= " and a.sales_person_id = " . $salesperson;
         }
         if ($branch != "" and $branch != "all") {
