@@ -49,7 +49,7 @@ class ReportController extends Controller
         // $this->middleware('auth');
     }
 
-    public function erpreportdashboard(report $report,OrderService $orderService)
+    public function erpreportdashboard(report $report, OrderService $orderService)
     {
         $branches = $report->get_branches();
         $terminals = $report->get_terminals();
@@ -57,7 +57,7 @@ class ReportController extends Controller
         $paymentModes = $report->getPaymentModes();
         $salespersons = $orderService->getServiceProviders();
 
-        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes','salespersons'));
+        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons'));
     }
 
     public function show(report $report, salary $salary)
@@ -424,11 +424,11 @@ class ReportController extends Controller
 
     public function getOrdersReportExcelExport(Request $request, report $report, order $order)
     {
-        return $this->ConsolidatedOrderReport($request, "normal",$order);
+        return $this->ConsolidatedOrderReport($request, "normal", $order);
     }
 
 
-    public function ConsolidatedOrderReport(Request $request, $mode,order $order)
+    public function ConsolidatedOrderReport(Request $request, $mode, order $order)
     {
         // $branch = Branch::with("company:company_id,name")->where("branch_id",$request->branch)->first();
         if ($request->branch == "all") {
@@ -438,7 +438,7 @@ class ReportController extends Controller
         }
 
         $record = $this->getOrdersQuery($request);
-        
+
         $datearray = [
             "from" => $request->fromdate,
             "to" => $request->todate,
@@ -463,7 +463,7 @@ class ReportController extends Controller
             ->whereColumn('receipt_id', 'id')
             ->getQuery();
 
-        return OrderModel::withCount("orderdetails")->with("salesperson","customer","terminal:terminal_id,terminal_name", "branchrelation:branch_id,branch_name,code", "orderStatus:order_status_id,order_status_name", "mode:order_mode_id,order_mode", "payment:payment_id,payment_mode", "statusLogs", "orderAccount")
+        return OrderModel::withCount("orderdetails")->with("salesperson", "customer", "terminal:terminal_id,terminal_name", "branchrelation:branch_id,branch_name,code", "orderStatus:order_status_id,order_status_name", "mode:order_mode_id,order_mode", "payment:payment_id,payment_mode", "statusLogs", "orderAccount")
             ->when($request->type == "declaration", function ($q) use ($request, $openingIds) {
                 $q->whereIn("opening_id", $openingIds);
             }, function ($q) use ($request) {
@@ -494,20 +494,20 @@ class ReportController extends Controller
                 $q->whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"));
             })
             ->when($request->customerNo != "", function ($query) use ($request) {
-				$query->where('customers.mobile', $request->customerNo);
-			})
-			->when($request->sales_tax != "", function ($query) use ($request) {
-				$query->where("fbrInvNumber", '!=', "");
-			})
-			->when($request->salesperson != "", function ($query) use ($request) {
-				$query->where("sales_person_id", '=', $request->salesperson);
-			})
+                $query->where('customers.mobile', $request->customerNo);
+            })
+            ->when($request->sales_tax != "", function ($query) use ($request) {
+                $query->where("fbrInvNumber", '!=', "");
+            })
+            ->when($request->salesperson != "", function ($query) use ($request) {
+                $query->where("sales_person_id", '=', $request->salesperson);
+            })
             ->when($request->order_no != "", function ($query) use ($request) {
-				$query->where('id', $request->order_no);
-			})
+                $query->where('id', $request->order_no);
+            })
             ->when($request->machineOrderNo != "", function ($query) use ($request) {
-				$query->where('machine_terminal_count', $request->machineOrderNo);
-			})
+                $query->where('machine_terminal_count', $request->machineOrderNo);
+            })
             ->selectSub($amountSum, 'amount_sum')
             ->orderBy("id", "asc")
             ->get();
@@ -3447,7 +3447,7 @@ class ReportController extends Controller
                         $totalVoidOrders++;
                         $totalVoidOrdersAmount += $value->amount;
                         $itemStatus = "Void";
-                    }else if ($value->is_sale_return == 1) {
+                    } else if ($value->is_sale_return == 1) {
                         $pdf->setFillColor(192, 64, 0);
                         $pdf->SetTextColor(255, 255, 255);
                         $totalSalesReturnOrders++;
@@ -3507,7 +3507,7 @@ class ReportController extends Controller
                     $totalVoidOrders++;
                     $totalVoidOrdersAmount += $value->amount;
                     $itemStatus = "Void";
-                }else if ($value->is_sale_return == 1) {
+                } else if ($value->is_sale_return == 1) {
                     $pdf->setFillColor(192, 64, 0);
                     $pdf->SetTextColor(255, 255, 255);
                     $totalSalesReturnOrders++;
@@ -3520,7 +3520,7 @@ class ReportController extends Controller
                     $totalDeliveredOrdersAmount += $value->amount;
                 }
                 $pdf->Cell(20, 6, $value->code, 0, 0, 'C', 1);
-                $pdf->Cell(65, 6, $value->product_name. ($itemStatus != '' ? " (".$itemStatus.") " : ''), 0, 0, 'L', 1);
+                $pdf->Cell(65, 6, $value->product_name . ($itemStatus != '' ? " (" . $itemStatus . ") " : ''), 0, 0, 'L', 1);
                 $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
@@ -3539,29 +3539,26 @@ class ReportController extends Controller
 
             $pdf->ln(2);
 
-        $pdf->SetFont('Arial', 'B', 12);
+            $pdf->SetFont('Arial', 'B', 12);
 
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
 
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
-        $pdf->Cell(63, 7, number_format($totalSalesReturnOrders), 'B,T', 0, 'R');
-        $pdf->Cell(63, 7, number_format($totalSalesReturnOrdersAmount), 'B,T', 1, 'R');
-        $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
-        $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
-        $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
-        $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
-        $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
-        $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
+            $pdf->Cell(63, 7, number_format($totalSalesReturnOrders), 'B,T', 0, 'R');
+            $pdf->Cell(63, 7, number_format($totalSalesReturnOrdersAmount), 'B,T', 1, 'R');
+            $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
+            $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
+            $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
+            $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
+            $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
+            $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
 
-        $pdf->ln(2);
-
-
-
+            $pdf->ln(2);
         }
 
         //save file
@@ -4061,7 +4058,7 @@ class ReportController extends Controller
 
         foreach ($inventory as $value) {
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(20, 6, date("d-m-Y",strtotime($value->date)), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, date("d-m-Y", strtotime($value->date)), 0, 0, 'L', 1);
             $pdf->Cell(20, 6, $value->grn_id, 0, 0, 'L', 1);
             $pdf->Cell(20, 6, $value->item_code, 0, 0, 'L', 1);
             $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
@@ -4878,47 +4875,95 @@ class ReportController extends Controller
         $pdf->Cell(20, 7, 'Date', 'B', 0, 'L', 1);
         $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
 
+        if ($request->salesperson == "all") {
+            $salespersons = $report->totalsalesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+            foreach ($salespersons as $key => $salesperson) {
+                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->SetTextColor(0, 0, 0);
+                $pdf->Cell(190, 10, "Sales Person Name : " . $salesperson->fullname, 0, 1, 'L');
 
-        //total variables
-        $totalamount = 0;
-        $totalOrder = 0;
-        $totalbalanceamount = 0;
+                $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $salesperson->id);
 
-        $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+                //total variables
+                $totalamount = 0;
+                $totalOrder = 0;
+                $totalbalanceamount = 0;
 
-        foreach ($orders as $values) {
-            $totalamount += $values->total_amount;
-            $totalOrder++;
-            // $totalbalanceamount += $values->balance_amount;
+                $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+
+                foreach ($orders as $values) {
+                    $totalamount += $values->total_amount;
+                    $totalOrder++;
+                    // $totalbalanceamount += $values->balance_amount;
+
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->setFillColor(232, 232, 232);
+                    $pdf->SetTextColor(0, 0, 0);
+                    $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
+                    $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
+                    $pdf->Cell(40, 6, $values->name, 0, 0, 'L', 1);
+                    $pdf->Cell(30, 6, number_format($values->total_amount, 0), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 6, $values->status, 0, 0, 'L', 1);
+                    $pdf->Cell(20, 6, date("d-m-Y", strtotime($values->date)), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 6, date("h:i a", strtotime($values->time)), 0, 1, 'C', 1);
+                    $pdf->ln(1);
+                }
+                $pdf->ln(10);
+                $pdf->SetFont('Arial', 'B', 12);
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
+                $pdf->Cell(63, 7, 'Total Amount', 'B', 0, 'C', 1);
+                $pdf->Cell(63, 7, '', 'B', 1, 'C', 1);
+
+                $pdf->SetFont('Arial', '', 10);
+                $pdf->setFillColor(232, 232, 232);
+                $pdf->SetTextColor(0, 0, 0);
+                $pdf->Cell(63, 7, number_format($totalOrder, 0), 'B,T', 0, 'C');
+                $pdf->Cell(63, 7, number_format($totalamount, 0), 'B,T', 0, 'C');
+                $pdf->Cell(63, 7, '', 'B,T', 1, 'C');
+            }
+        } else {
+            //total variables
+            $totalamount = 0;
+            $totalOrder = 0;
+            $totalbalanceamount = 0;
+
+            $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+
+            foreach ($orders as $values) {
+                $totalamount += $values->total_amount;
+                $totalOrder++;
+                // $totalbalanceamount += $values->balance_amount;
+
+                $pdf->SetFont('Arial', '', 10);
+                $pdf->setFillColor(232, 232, 232);
+                $pdf->SetTextColor(0, 0, 0);
+                $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
+                $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
+                $pdf->Cell(40, 6, $values->name, 0, 0, 'L', 1);
+                $pdf->Cell(30, 6, number_format($values->total_amount, 0), 0, 0, 'L', 1);
+                $pdf->Cell(20, 6, $values->status, 0, 0, 'L', 1);
+                $pdf->Cell(20, 6, date("d-m-Y", strtotime($values->date)), 0, 0, 'L', 1);
+                $pdf->Cell(20, 6, date("h:i a", strtotime($values->time)), 0, 1, 'C', 1);
+                $pdf->ln(1);
+            }
+            $pdf->ln(10);
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
+            $pdf->Cell(63, 7, 'Total Amount', 'B', 0, 'C', 1);
+            $pdf->Cell(63, 7, '', 'B', 1, 'C', 1);
 
             $pdf->SetFont('Arial', '', 10);
             $pdf->setFillColor(232, 232, 232);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
-            $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
-            $pdf->Cell(40, 6, $values->name, 0, 0, 'L', 1);
-            $pdf->Cell(30, 6, number_format($values->total_amount, 0), 0, 0, 'L', 1);
-            $pdf->Cell(20, 6, $values->status, 0, 0, 'L', 1);
-            $pdf->Cell(20, 6, date("d-m-Y",strtotime($values->date)), 0, 0, 'L', 1);
-            $pdf->Cell(20, 6, date("h:i a",strtotime($values->time)), 0, 1, 'C', 1);
-            $pdf->ln(1);
+            $pdf->Cell(63, 7, number_format($totalOrder, 0), 'B,T', 0, 'C');
+            $pdf->Cell(63, 7, number_format($totalamount, 0), 'B,T', 0, 'C');
+            $pdf->Cell(63, 7, '', 'B,T', 1, 'C');
         }
-        $pdf->ln(10);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
-        $pdf->Cell(63, 7, 'Total Amount', 'B', 0, 'C', 1);
-        $pdf->Cell(63, 7, '', 'B', 1, 'C', 1);
-
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->setFillColor(232, 232, 232);
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(63, 7, number_format($totalOrder, 0), 'B,T', 0, 'C');
-        $pdf->Cell(63, 7, number_format($totalamount, 0), 'B,T', 0, 'C');
-        $pdf->Cell(63, 7, '', 'B,T', 1, 'C');
         //save file
         $pdf->Output('Order Booking Report.pdf', 'I');
     }
-
 }
