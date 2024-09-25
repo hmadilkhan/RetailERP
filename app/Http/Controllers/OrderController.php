@@ -711,7 +711,7 @@ class OrderController extends Controller
     public function getServiceProviderByBranch(Request $request, OrderService $orderService)
     {
         try {
-            if ($request->branch != "" && $request->branch != "all") {
+            if ($request->branch != "") {
                 $serviceproviders = $orderService->getServiceProviders($request->branch);
                 return response()->json(["status" => 200, "message" => "Receipt has been delivered", "providers" => $serviceproviders]);
             } else {
