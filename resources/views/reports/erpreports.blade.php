@@ -847,7 +847,7 @@
 
         $('#dvsalespersonreport').on('click', function (){
 			handleButtonClick('#dvsalespersonreport', 'Sales Person Report', [
-				{ field: '#txtsalespersonreport', value: 1, showDateFilter: true,showBranch: true,showSalesPerson = true}
+				{ field: '#txtsalespersonreport', value: 1, showDateFilter: true,showBranch: true,showSalesPerson : true}
 			]);
 		});
 
