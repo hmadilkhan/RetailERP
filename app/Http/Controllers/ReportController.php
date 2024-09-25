@@ -4882,8 +4882,6 @@ class ReportController extends Controller
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Sales Person Name : " . $salesperson->fullname, 0, 1, 'L');
 
-                $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $salesperson->id);
-
                 //total variables
                 $totalamount = 0;
                 $totalOrder = 0;
