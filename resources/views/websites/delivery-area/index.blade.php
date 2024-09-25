@@ -803,12 +803,12 @@ function swalModal(branchId,mode,brnhName,status){
      }
   }
 
-  $("#branch").on('change',function(){
-    if($(this).val() != ''){
-      cityLoadNotExists($(this).val(),$("#website").val());
-    }
+  // $("#branch").on('change',function(){
+  //   if($(this).val() != ''){
+  //     cityLoadNotExists($(this).val(),$("#website").val());
+  //   }
 
-  })
+  // });
 
   function cityLoadNotExists(branch = '',website = ''){
     if(website != '' && branch != ''){
