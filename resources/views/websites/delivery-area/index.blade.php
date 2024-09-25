@@ -748,19 +748,6 @@ function swalModal(branchId,mode,brnhName,status){
                 }else{
                     swal.close();
                 }
-                
-                // else{
-                //     swal({
-                //         title: "Cancel!",
-                //         text: "All products are still inactive :)",
-                //         type: "error"
-                //     },function(isConfirm){
-                //         if(isConfirm){
-                //             //window.location="{{--url('/inventory-list')--}}";
-
-                //         }
-                //     });
-                // }
             });
         }
 
