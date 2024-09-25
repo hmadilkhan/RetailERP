@@ -30,7 +30,7 @@ Route::middleware(['statusCheck'])->group(function () {
         Route::delete('/{id}/destroy', [WebsiteController::class, 'destroy_socialLink'])->name('socialinkDestroy');
     });
 
-    Route::prefix('delivery')->group(function () {
+    Route::prefix('website/delivery')->group(function () {
         Route::get('/lists', [WebsiteController::class, 'getDeliveryArea'])->name('deliveryAreasList');
         Route::post('/get-website-branches', [WebsiteController::class, 'getWebsiteBranches'])->name('getWebsiteBranches');
         Route::post('/get-area-values', [WebsiteController::class, 'getDeliveryAreaValues'])->name('getdeliveryAreasValues');
