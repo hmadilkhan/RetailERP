@@ -535,7 +535,7 @@
                       $.ajax({
                               url:$("#removeUrlArea"+id).val(),
                               type:"DELETE",
-                              data:{_token:'{{ csrf_token() }}',stp_redirect:1},
+                              data:{_token:'{{ csrf_token() }}',id:id,branchid:brnchId,stp_redirect:1},
                               dataType:'json',
                               success:function(resp,txtStatus,jqXHR){
                                    console.log(resp)
