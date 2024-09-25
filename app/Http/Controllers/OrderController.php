@@ -15,6 +15,7 @@ use App\Models\OrderStatus;
 use App\Models\CustomerAccount;
 use App\Http\Resources\onlineSalesResource\salesReceiptResource;
 use App\Mail\OrderConfirmed;
+use App\Models\Company;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
@@ -727,7 +728,9 @@ class OrderController extends Controller
     {
         $order = OrderModel::find(675905);
         $customer = Customer::find($order->customer_id);
+        $company = Company::findOrFail(session('company_id'));
+        $logo = $company->logo;
 
-        Mail::to("hmadilkhan@gmail.com")->send(new OrderConfirmed($order, $customer));
+        Mail::to("hmadilkhan@gmail.com")->send(new OrderConfirmed($order, $customer,$logo));
     }
 }

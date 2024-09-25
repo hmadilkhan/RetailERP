@@ -25,11 +25,12 @@ class OrderConfirmed extends Mailable
     public $facebookUrl;
     public $instagramUrl;
     public $twitterUrl;
+    public $logo;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($order, $customer)
+    public function __construct($order, $customer,$logo)
     {
         $this->customerName = $customer->name;
         $this->orderNumber = $order->number;
@@ -43,6 +44,7 @@ class OrderConfirmed extends Mailable
         $this->facebookUrl = 'https://facebook.com/kashees';
         $this->instagramUrl = 'https://instagram.com/kashees';
         $this->twitterUrl = 'https://twitter.com/kashees';
+        $this->logo = $logo;
     }
 
     /**
@@ -97,6 +99,7 @@ class OrderConfirmed extends Mailable
                 'facebookUrl' => $this->facebookUrl,
                 'instagramUrl' => $this->instagramUrl,
                 'twitterUrl' => $this->twitterUrl,
+                'logo' => $this->logo,
             ]);
     }
 }
