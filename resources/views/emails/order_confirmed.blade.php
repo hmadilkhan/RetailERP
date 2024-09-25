@@ -86,7 +86,7 @@
     <div class="email-container">
         <!-- Header Section -->
         <div class="email-header">
-            <img src="{{ asset('storage/images/company/'.$logo) }}" alt="Kashees Jewellery Logo">
+            <img src="{{ asset('storage/images/company/'.$logo) }}" alt="Kashees Jewellery Logo" width="300" height="150">
             <h1>Kashees Jewellery</h1>
         </div>
 
@@ -98,10 +98,13 @@
             <!-- Order Details Section -->
             <div class="order-details">
                 <p><strong>Order Details:</strong></p>
+                @foreach ($orders->orderdetails as $key => $item)
+                {{ $item->item_name }} x  {{ number_format($item->total_qty, 0) }} = {{ session('currency') . ' ' . number_format(($item->item_price != "" ? $item->item_price : 1) * $item->total_qty, 0) }}
+                @endforeach
                 <p><strong>Items Ordered:</strong> {{ $itemsList }}</p>
                 <p><strong>Total Amount:</strong> {{ $orderAmount }}</p>
                 <p><strong>Advance Payment:</strong> {{ $advancePaymentAmount }}</p>
-                <p><strong>Remaining Amount (COD):</strong> {{ $remainingAmount }}</p>
+                <p><strong>Remaining Amount (COD):</strong> {{ $orderAmount - $advancePaymentAmount }}</p>
             </div>
 
             <p>Your order is now confirmed and will be processed shortly. Once the processing is complete, we will send you another update with shipping details, including tracking information and the estimated delivery time.</p>
