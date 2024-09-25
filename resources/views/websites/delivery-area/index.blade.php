@@ -477,7 +477,7 @@
                                 "<td id='location_name_md_"+r[s].id+"'>"+r[s].city_name +"</td>"+
                                 "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/></td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
-                                "<td class='action-icon'>"+
+                                "<td>"+
                                   "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i>"+
                                   "<i onclick='deleteAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"+
                                   "</td>"+
