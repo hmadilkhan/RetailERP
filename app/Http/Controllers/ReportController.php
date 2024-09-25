@@ -4906,7 +4906,7 @@ class ReportController extends Controller
                     $pdf->Cell(20, 6, date("h:i a", strtotime($values->time)), 0, 1, 'C', 1);
                     $pdf->ln(1);
                 }
-                $pdf->ln(10);
+                $pdf->ln(2);
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
