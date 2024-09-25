@@ -4944,7 +4944,7 @@ class ReportController extends Controller
 
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(190, 10,  "Sales Person : " . $orders[0]->fullname, 0, 1, 'L');
+            $pdf->Cell(190, 10,  "Sales Person : " . (!empty($orders) ?  $orders[0]->fullname : ''), 0, 1, 'L');
 
             foreach ($orders as $values) {
                 $totalamount += $values->total_amount;
