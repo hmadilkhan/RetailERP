@@ -1044,6 +1044,7 @@ class WebsiteController extends Controller
                         'charge'             => $request->charges,
                         'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
                         'status'             => 1,
+                        'is_city'            => 1,
                     ]);
             }
         // }
