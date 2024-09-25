@@ -591,6 +591,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/get-pos-orders-new', [OrderController::class, 'getNewPOSOrders']);
     Route::post('/make-receipt-void', [OrderController::class, 'makeReceiptVoid']);
     Route::post('/make-receipt-delivered', [OrderController::class, 'makeReceiptDelivered']);
+    Route::post('/get-service-Provider-by-branch', [OrderController::class, 'getServiceProviderByBranch'])->name("sp.branch");
 
     // SERVICE PROVIDERS ORDERS
     Route::get('/service-providers-orders', [ServiceProviderOrderController::class, 'index']);

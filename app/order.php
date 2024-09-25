@@ -131,7 +131,7 @@ class order extends Model
 		return $result;
 	}
 
-	public function getNewPOSOrdersQuery($request)
+	public function getNewPOSOrdersQuery($request, $mode = "")
 	{
 		$fromDate = "";
 		$toDate = "";
@@ -152,7 +152,7 @@ class order extends Model
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->where("terminal_id", $request->terminal)->pluck("opening_id");
 		}
 
-		return DB::table("sales_receipts")
+		$query = DB::table("sales_receipts")
 			->join("branch", "branch.branch_id", "=", "sales_receipts.branch")
 			->join("terminal_details", "terminal_details.terminal_id", "=", "sales_receipts.terminal_id")
 			->leftJoin("customers", "customers.id", "=", "sales_receipts.customer_id")
@@ -215,14 +215,22 @@ class order extends Model
 			->when($request->sales_tax != "", function ($query) use ($request) {
 				$query->where("sales_receipts.fbrInvNumber", '!=', "");
 			})
-			->when($request->salesperson != "", function ($query) use ($request) {
+			->when($request->salesperson != "" && $request->salesperson != "all" , function ($query) use ($request) {
 				$query->where("sales_receipts.sales_person_id", '=', $request->salesperson);
 			})
 
-			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode","service_provider_details.provider_name", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"))
-			->orderBy("sales_receipts.id", "desc")
-			// ->toSql();
-			->paginate(100);
+			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode", "service_provider_details.provider_name", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"))
+			->orderBy("sales_receipts.id", "desc");
+		// ->toSql();
+		// ->paginate(100);
+		// Call get() or paginate() based on the mode
+		if ($mode == "report") {
+			$results = $query->get();
+		} else {
+			$results = $query->paginate(100);
+		}
+
+		return $results;
 	}
 
 	public function getTotalAndSumofOrdersQuery($request)
@@ -719,7 +727,7 @@ class order extends Model
 	{
 
 		//if (session('roleId') == 2) {
-			$filter = " and sales_receipts.branch IN (SELECT branch_id FROM branch where company_id = " . session("company_id") . " )";
+		$filter = " and sales_receipts.branch IN (SELECT branch_id FROM branch where company_id = " . session("company_id") . " )";
 		// } else {
 		// 	$filter = " and sales_receipts.branch = " . session("branch") . " ";
 		// }
@@ -728,10 +736,10 @@ class order extends Model
 			->join('sales_account_subdetails', 'sales_account_subdetails.receipt_id', 'sales_receipts.id')
 			->join('sales_order_status', 'sales_order_status.order_status_id', 'sales_receipts.status')
 			->join('branch', 'branch.branch_id', 'sales_receipts.branch')
-			->join('company','company.company_id', 'branch.company_id')
+			->join('company', 'company.company_id', 'branch.company_id')
 			->join('website_details', 'website_details.id', 'sales_receipts.website_id')
-			->select('sales_receipts.*', 'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'branch.branch_name','company.name as company_name')
-			->whereRaw('sales_receipts.url_orderid = "'.$id.'" '.$filter)
+			->select('sales_receipts.*', 'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'branch.branch_name', 'company.name as company_name')
+			->whereRaw('sales_receipts.url_orderid = "' . $id . '" ' . $filter)
 			->get();
 	}
 
@@ -761,9 +769,9 @@ class order extends Model
 
 	public function getWebsiteCustomers()
 	{
-		$result = DB::table('customers')->whereIn("website_id",DB::table('website_details')->where('company_id',session('company_id'))->where('status',1)->pluck('id'))->get();
+		$result = DB::table('customers')->whereIn("website_id", DB::table('website_details')->where('company_id', session('company_id'))->where('status', 1)->pluck('id'))->get();
 		return $result;
-	}	
+	}
 
 	public function orderItems($orderID)
 	{

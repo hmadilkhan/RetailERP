@@ -166,7 +166,7 @@
                             <label class="form-control-label">Select Sales Person</label>
                             <select id="orderserviceprovider" name="orderserviceprovider"
                                 data-placeholder="Select Sales Person" class="f-right select2">
-                                <option value="">Select Sales Person</option>
+                                <option value="all">All</option>
                                 @foreach ($serviceproviders as $provider)
                                     <option value="{{ $provider->serviceprovideruser->user_id }}">{{ $provider->provider_name }}</option>
                                 @endforeach
@@ -668,6 +668,7 @@
 
         $("#branch").change(function() {
             getTerminal();
+            getServiceProviderByBranch();
         })
 
         function getTerminal() {
@@ -699,6 +700,34 @@
                 error: function(error) {
                     $('#loader').addClass('hidden')
                     $("#btn_search_report").attr("disabled", false);
+                    console.log("Error", error);
+                },
+
+            });
+        }
+
+        function getServiceProviderByBranch() {
+            $.ajax({
+                url: "{{ route('sp.branch') }}",
+                type: 'POST',
+                dataType: 'json',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    branch: $("#branch").val(),
+                },
+                success: function(result) {
+                    console.log("Fetching Providers",result);
+                    $('#loader').addClass('hidden')
+                    if (result != 0) {
+                        $("#orderserviceprovider").empty();
+                        $("#orderserviceprovider").append('<option value="all">All</option>');
+                        $.each(result.providers, function() {
+                            $("#orderserviceprovider").append('<option value="' + this.id + '"+>' + this
+                                .provider_name + '</option>');
+                        });
+                    }
+                },
+                error: function(error) {
                     console.log("Error", error);
                 },
 
@@ -842,7 +871,7 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=excel");
+                    "&report=excel&salesperson="+$('#orderserviceprovider').val());
             }
         })
 
@@ -857,7 +886,7 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=pdf");
+                    "&report=pdf&salesperson="+$('#orderserviceprovider').val());
             }
 
         })

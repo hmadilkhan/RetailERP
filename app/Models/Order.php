@@ -88,4 +88,9 @@ class Order extends Model
 	{
 		return number_format($this->total_amount,2);
 	}
+
+    public function salesperson()
+    {
+        return $this->belongsTo(User::class, 'sales_person_id', 'id');
+    }
 }

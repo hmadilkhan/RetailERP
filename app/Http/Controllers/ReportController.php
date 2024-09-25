@@ -35,6 +35,7 @@ use App\Exports\IsdbDatewiseExport;
 use App\Exports\ConsolidatedIsdbDatewiseExport;
 use App\Exports\OrderReportExport;
 use App\Exports\StockReportExport;
+use App\Services\OrderService;
 use Mail;
 use \Illuminate\Support\Arr;
 use App\stock;
@@ -48,14 +49,15 @@ class ReportController extends Controller
         // $this->middleware('auth');
     }
 
-    public function erpreportdashboard(report $report)
+    public function erpreportdashboard(report $report,OrderService $orderService)
     {
         $branches = $report->get_branches();
         $terminals = $report->get_terminals();
         $departments = $report->get_departments();
         $paymentModes = $report->getPaymentModes();
+        $salespersons = $orderService->getServiceProviders();
 
-        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes'));
+        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes','salespersons'));
     }
 
     public function show(report $report, salary $salary)
@@ -420,13 +422,13 @@ class ReportController extends Controller
 
     }
 
-    public function getOrdersReportExcelExport(Request $request, report $report)
+    public function getOrdersReportExcelExport(Request $request, report $report, order $order)
     {
-        return $this->ConsolidatedOrderReport($request, "normal");
+        return $this->ConsolidatedOrderReport($request, "normal",$order);
     }
 
 
-    public function ConsolidatedOrderReport(Request $request, $mode)
+    public function ConsolidatedOrderReport(Request $request, $mode,order $order)
     {
         // $branch = Branch::with("company:company_id,name")->where("branch_id",$request->branch)->first();
         if ($request->branch == "all") {
@@ -436,6 +438,7 @@ class ReportController extends Controller
         }
 
         $record = $this->getOrdersQuery($request);
+        
         $datearray = [
             "from" => $request->fromdate,
             "to" => $request->todate,
@@ -460,7 +463,7 @@ class ReportController extends Controller
             ->whereColumn('receipt_id', 'id')
             ->getQuery();
 
-        return OrderModel::withCount("orderdetails")->with("terminal:terminal_id,terminal_name", "branchrelation:branch_id,branch_name,code", "orderStatus:order_status_id,order_status_name", "mode:order_mode_id,order_mode", "payment:payment_id,payment_mode", "statusLogs", "orderAccount")
+        return OrderModel::withCount("orderdetails")->with("salesperson","customer","terminal:terminal_id,terminal_name", "branchrelation:branch_id,branch_name,code", "orderStatus:order_status_id,order_status_name", "mode:order_mode_id,order_mode", "payment:payment_id,payment_mode", "statusLogs", "orderAccount")
             ->when($request->type == "declaration", function ($q) use ($request, $openingIds) {
                 $q->whereIn("opening_id", $openingIds);
             }, function ($q) use ($request) {
@@ -490,6 +493,21 @@ class ReportController extends Controller
             ->when($request->department != "", function ($q) use ($request) {
                 $q->whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"));
             })
+            ->when($request->customerNo != "", function ($query) use ($request) {
+				$query->where('customers.mobile', $request->customerNo);
+			})
+			->when($request->sales_tax != "", function ($query) use ($request) {
+				$query->where("fbrInvNumber", '!=', "");
+			})
+			->when($request->salesperson != "", function ($query) use ($request) {
+				$query->where("sales_person_id", '=', $request->salesperson);
+			})
+            ->when($request->order_no != "", function ($query) use ($request) {
+				$query->where('id', $request->order_no);
+			})
+            ->when($request->machineOrderNo != "", function ($query) use ($request) {
+				$query->where('machine_terminal_count', $request->machineOrderNo);
+			})
             ->selectSub($amountSum, 'amount_sum')
             ->orderBy("id", "asc")
             ->get();

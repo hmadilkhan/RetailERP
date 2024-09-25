@@ -123,6 +123,12 @@
                             <h4 class="text-sm-center">Booking Order Report</h4>
                         </div>
                     </div>
+
+                    <div id="dvsalespersonreport" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top" title="Sales Person Report">
+                            <h4 class="text-sm-center">Sales Person Report</h4>
+                        </div>
+                    </div>
 				</div>
 				
 
@@ -197,6 +203,7 @@
                     <input type="hidden" value="0" id="txtstockreport" />
                     <input type="hidden" value="0" id="txtinventorygeneralreport" />
                     <input type="hidden" value="0" id="txtbookingorderreport" />
+                    <input type="hidden" value="0" id="txtsalespersonreport" />
 
 
 
@@ -317,6 +324,24 @@
                                     @if($terminals)
                                         @foreach($terminals as $value)
                                             <option value="{{ $value->terminal_id }}">{{ $value->terminal_name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row" id="dvsalesperson" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Sales Person</label>
+                                <select name="salesperson" id="salesperson" data-placeholder="Select Sales Person" class="form-control select2"  >
+                                    <option value="">Select Sales Person</option>
+                                    <option value="0">All</option>
+                                    @if($salespersons)
+                                        @foreach($salespersons as $value)
+                                            <option value="{{ $value->id }}">{{ $value->provider_name }}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -819,6 +844,12 @@
 			]);
 		});
 
+        $('#dvsalespersonreport').on('click', function (){
+			handleButtonClick('#dvsalespersonreport', 'Sales Person Report', [
+				{ field: '#txtsalespersonreport', value: 1, showDateFilter: true,showBranch: true}
+			]);
+		});
+
         function copydate(){
             let date = $('#datefrom').val();
             $('#dateto').val(date);
@@ -888,6 +919,9 @@
             }
 			if ($('#txtbookingorderreport').val() == 1){
                 window.location = "{{url('order-booking-report')}}?fromdate="+date+"&todate="+todate+"&paymentmethod="+paymentmethod+"&branch="+branch;
+            }
+            if ($('#txtsalespersonreport').val() == 1){
+                window.location = "{{url('salse-person-report')}}?fromdate="+date+"&todate="+todate+"&branch="+branch;
             }
         }
 		
@@ -1011,6 +1045,24 @@
                 url: "{{ url('getTerminals')}}",
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",branch:$("#branch").val(),status:1},
+                success:function(resp){
+                    $('#terminal').empty();
+                    $("#terminal").append("<option value=''>Select Terminal</option>");
+                    $.each(resp, function( index, value ) {
+                        $("#terminal").append(
+                            "<option value="+value.sub_department_id+">"+value.sub_depart_name+"</option>"
+                        );
+                    });
+                }
+            });
+        }
+
+        function loadSalesPersons(id)
+        {
+            $.ajax({
+                url: "{{ route('sp.branch')}}",
+                type: 'POST',
+                data:{_token:"{{ csrf_token() }}",branch:$("#branch").val()},
                 success:function(resp){
                     $('#terminal').empty();
                     $("#terminal").append("<option value=''>Select Terminal</option>");

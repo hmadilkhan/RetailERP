@@ -74,13 +74,13 @@ class OrderController extends Controller
 
     public function orderdetails(Request $request, Customer $customer)
     {
-        $orders = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user","payment")->where("id", $request->id)->first();
+        $orders = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user", "payment")->where("id", $request->id)->first();
         $received = CustomerAccount::where("receipt_no", $request->id)->sum('received');
         $statuses = OrderStatus::all();
         $ledgerDetails = $customer->LedgerDetailsShowInOrderDetails($orders->customer->id, $request->id);
-        $provider = ServiceProviderOrders::with("serviceprovider")->where("receipt_id",$orders->id)->first();
+        $provider = ServiceProviderOrders::with("serviceprovider")->where("receipt_id", $orders->id)->first();
         // return $ledgerDetails;
-        return view("order.order-details", compact("orders", "received", "statuses", "ledgerDetails","provider"));
+        return view("order.order-details", compact("orders", "received", "statuses", "ledgerDetails", "provider"));
     }
 
     public function orderStatusChange(Request $request, order $order)
@@ -238,7 +238,7 @@ class OrderController extends Controller
             return redirect('web-orders-view');
         }
 
-        $orders =new salesReceiptResource($record[0]);
+        $orders = new salesReceiptResource($record[0]);
 
         if ($orders != null) {
             $orders = json_encode($orders);
@@ -275,10 +275,10 @@ class OrderController extends Controller
         $mode         = $order->ordersMode();
         $branch       = $order->getBranch();
         $riders       = $order->getRiders();
-        $totalorders  = $order->getWebsiteOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch,$websiteId);
+        $totalorders  = $order->getWebsiteOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch, $websiteId);
         $website      = DB::table('website_details')->where('company_id', session('company_id'))->select('id', 'name')->get();
 
-        return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders','website', 'websiteId'));
+        return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders', 'website', 'websiteId'));
     }
 
     public function getWebOrders(Request $request, order $order)
@@ -706,5 +706,18 @@ class OrderController extends Controller
         $responseOne = curl_exec($chs);
         $response = curl_exec($ch);
         // return json_encode($responseOne).json_encode($response);
+    }
+
+    public function getServiceProviderByBranch(Request $request, OrderService $orderService)
+    {
+        try {
+            if ($request->branch != "" && $request->branch != "all") {
+                $serviceproviders = $orderService->getServiceProviders($request->branch);
+                return response()->json(["status" => 200, "message" => "Receipt has been delivered", "providers" => $serviceproviders]);
+            } else {
+                return response()->json(["status" => 403, "message" => "Branch is null"]);
+            }
+        } catch (\Exception $e) {
+        }
     }
 }

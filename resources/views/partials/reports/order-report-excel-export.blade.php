@@ -23,6 +23,7 @@
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Customer</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">OrderType</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Payment</th>
+		  <th style="background-color: #1a4567;color:white;text-align: center;">Sales Person</th>
 		  @if(session("company_id") != 102)
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Count/Total</th>
 		  @endif
@@ -67,6 +68,7 @@
 			  <td style="text-align: left;">{{$value->bill_print_name}}</td>
 			  <td style="text-align: center;">{{$value->mode->order_mode}}</td>
 			  <td style="text-align: center;">{{(!empty($value->payment) ? $value->payment->payment_mode : 0)}}</td>
+			  <td style="text-align: center;">{{(!empty($value->salesperson) ? $value->salesperson->fullname : 0)}}</td>
 			  @if(session("company_id") != 102)
 			  <td style="text-align: center;">{{$value->orderdetails_count."/".$value->amount_sum}}</td>
 		      @endif
