@@ -517,11 +517,11 @@
       
   }
   
-  function removeAreaDetail(unqid,brnchId){
+  function removeAreaDetail(id,brnchId){
 
          swal({
                 title: 'Remove Delivery Area',
-                text:  'Are you sure you want to remove this '+$("#name_md_"+unqid).val()+' delivery area?',
+                text:  'Are you sure you want to remove this '+$("#name_md_"+id).val()+' delivery area?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn btn-danger",
@@ -535,7 +535,7 @@
                       $.ajax({
                               url:'{{ route("deliveryAreaValueDestroy") }}',
                               type:"POST",
-                              data:{_token:'{{ csrf_token() }}',id:unqid,stp_redirect:1},
+                              data:{_token:'{{ csrf_token() }}',id:id,stp_redirect:1,branchid:brnchId},
                               async:true,
                               dataType:'json',
                               success:function(resp,txtStatus,jqXHR){
@@ -543,8 +543,8 @@
                                    if(jqXHR.status == 200){
                                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
                                        swal('Success!','','success');
-                                       $("#areaLabel"+unqid).remove();
-                                       $("#tbl_md_row"+unqid).remove();
+                                       $("#areaLabel"+id).remove();
+                                       $("#tbl_md_row"+id).remove();
                                    }else{
                                        swal('Error!',resp.msg,'error');
                                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
