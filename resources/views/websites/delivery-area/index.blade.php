@@ -153,7 +153,7 @@
 				  <td>{{ $parent_rowVal->website_name }}</td>
 				  <td>{{ $parent_rowVal->branch_name }}</td>
 
-          <td id="areaColumn{{ $parent_rowVal->branch_id }}" onclick="getAreaValues({{ $parent_rowVal->branch_id }},{{ $parent_rowVal->is_city }},{{ $parent_rowVal->website_id }})"  class="pointer">
+          <td id="areaColumn{{ $parent_rowVal->branch_id }}" onclick="getAreaValues({{ $parent_rowVal->branch_id }},{{ $parent_rowVal->website_id }})"  class="pointer">
             @php $count = 0 @endphp
              @foreach($deliveryAreaValue as $area_val)
                  @if($area_val->website_id == $parent_rowVal->website_id)
@@ -276,7 +276,7 @@
       </div> 
       
 <div class="modal fade modal-flex" id="createSingleLocation_Modal" tabindex="-1" role="dialog">
-         <div class="modal-dialog modal-md" role="document">
+         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -439,7 +439,7 @@
   }); 
     
     
-  function getAreaValues(brnhId,md,webId){
+  function getAreaValues(brnhId,md='',webId){
       $(".area_table_md tbody").empty();
         $.ajax({
                 url: "{{ route('getdeliveryAreasValues') }}",
@@ -477,7 +477,7 @@
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td class='action-icon'>"+
                                   "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i>"+
-                                  "<i onclick='deleteAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"
+                                  "<i onclick='deleteAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"+
                                   "</td>"+
                               "</tr>"
                            );                          
