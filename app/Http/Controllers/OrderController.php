@@ -21,8 +21,6 @@ use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
 use App\Services\OrderService;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Arr;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
@@ -726,7 +724,7 @@ class OrderController extends Controller
 
     public function sendEmail()
     {
-        $order = OrderModel::find(675905);
+        $order = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user", "payment")->where("id", 675905)->first();;
         $customer = Customer::find($order->customer_id);
         $company = Company::findOrFail(session('company_id'));
         $logo = $company->logo;
