@@ -153,7 +153,7 @@
 				  <td>{{ $parent_rowVal->website_name }}</td>
 				  <td>{{ $parent_rowVal->branch_name }}</td>
 
-          <td id="areaColumn{{ $parent_rowVal->branch_id }}" onclick="getAreaValues({{ $parent_rowVal->branch_id }},{{ $parent_rowVal->is_city }},{{ $parent_rowVal->website_id }})"  class="pointer">
+          <td id="areaColumn{{ $parent_rowVal->branch_id }}" onclick="getAreaValues({{ $parent_rowVal->branch_id }},{{ $parent_rowVal->website_id }})"  class="pointer">
             @php $count = 0 @endphp
              @foreach($deliveryAreaValue as $area_val)
                  @if($area_val->website_id == $parent_rowVal->website_id)
@@ -439,7 +439,7 @@
   }); 
     
     
-  function getAreaValues(brnhId,md,webId){
+  function getAreaValues(brnhId,md='',webId){
       $(".area_table_md tbody").empty();
         $.ajax({
                 url: "{{ route('getdeliveryAreasValues') }}",
