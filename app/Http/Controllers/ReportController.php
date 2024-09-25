@@ -4896,9 +4896,9 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
             $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
-            $pdf->Cell(50, 6, number_format($values->name, 0), 0, 0, 'L', 1);
+            $pdf->Cell(50, 6, $values->name, 0, 0, 'L', 1);
             $pdf->Cell(20, 6, number_format($values->total_amount, 0), 0, 0, 'L', 1);
-            $pdf->Cell(20, 6, number_format($values->status, 0), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, $values->status, 0, 0, 'L', 1);
             $pdf->Cell(20, 6, date("d-m-Y",strtotime($values->date)), 0, 0, 'L', 1);
             $pdf->Cell(20, 6, date("h:i a",strtotime($values->date)), 0, 1, 'C', 1);
             $pdf->ln(1);
