@@ -4870,7 +4870,7 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(20, 7, 'Order No', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Order#', 'B', 0, 'L', 1);
         $pdf->Cell(40, 7, 'Receipt No', 'B', 0, 'L', 1);
         $pdf->Cell(40, 7, 'Customer Name', 'B', 0, 'L', 1);
         $pdf->Cell(30, 7, 'Total Amount', 'B', 0, 'L', 1);
@@ -4908,7 +4908,7 @@ class ReportController extends Controller
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
-        $pdf->Cell(63, 7, 'Total Amount.', 'B', 0, 'C', 1);
+        $pdf->Cell(63, 7, 'Total Amount', 'B', 0, 'C', 1);
         $pdf->Cell(63, 7, '', 'B', 1, 'C', 1);
 
         $pdf->SetFont('Arial', '', 10);
