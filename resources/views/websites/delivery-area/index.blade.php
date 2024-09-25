@@ -159,7 +159,7 @@
                  @if($area_val->website_id == $parent_rowVal->website_id)
                   
                    @php $count = $count + 1 @endphp
-                   <input type="hidden" id="removeUrlArea{{ $area_val->id }}" value="{{ route('deliveryAreaValueDestroy',[$area_val->id,$area_val->branch_id]) }}"/>
+                   <input type="hidden" id="removeUrlArea{{ $area_val->id }}" value="{{ route('deliveryAreaValueDestroy',[$area_val->id,$area_val->branch_id,1]) }}"/>
                    {{-- @if($area_val->is_city == 1)
                    
                    <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->city_name.' - Rs.'.$area_val->charge }}</label>
@@ -535,7 +535,7 @@
                       $.ajax({
                               url:$("#removeUrlArea"+id).val(),
                               type:"POST",
-                              data:{_token:'{{ csrf_token() }}',id:id,branchid:brnchId,stp_redirect:1},
+                              data:{_method:'DELETE',_token:'{{ csrf_token() }}'},
                               dataType:'json',
                               success:function(resp,txtStatus,jqXHR){
                                    console.log(resp)
