@@ -30,7 +30,7 @@ Route::middleware(['statusCheck'])->group(function () {
         Route::delete('/{id}/destroy', [WebsiteController::class, 'destroy_socialLink'])->name('socialinkDestroy');
     });
 
-    Route::prefix('website/delivery')->group(function () {
+    Route::prefix('delivery')->group(function () {
         Route::get('/lists', [WebsiteController::class, 'getDeliveryArea'])->name('deliveryAreasList');
         Route::post('/get-website-branches', [WebsiteController::class, 'getWebsiteBranches'])->name('getWebsiteBranches');
         Route::post('/get-area-values', [WebsiteController::class, 'getDeliveryAreaValues'])->name('getdeliveryAreasValues');
@@ -40,7 +40,7 @@ Route::middleware(['statusCheck'])->group(function () {
         // Route::patch('/{id}/',[WebsiteController::class,' update_deliveryArea'])->name('deliveryAreaNameUpdate');
         Route::patch('/{branchid}/update', [WebsiteController::class, 'update_deliveryAreaSpecificField'])->name('deliveryAreaUpdate');
         Route::delete('/{branchid}/destroy', [WebsiteController::class, 'destroy_deliveryArea'])->name('deliveryAreaDestroy');
-        Route::post('/destroy-area', [WebsiteController::class, 'destroy_deliveryAreaValue'])->name('deliveryAreaValueDestroy');
+        Route::post('/destroy-delivery-area', [WebsiteController::class, 'destroy_deliveryAreaValue'])->name('deliveryAreaValueDestroy');
         Route::post('cityLoadnotExistsdilveryArea',[WebsiteController::class, 'cityLoadnotExistsdilveryArea'])->name('cityLoadnotExistsdilveryArea');
     });
 
