@@ -4794,4 +4794,131 @@ class ReportController extends Controller
         }
         $pdf->Output('Inventory Details Report.pdf', 'I');
     }
+
+    public function salesPersonReport(Request $request, Vendor $vendor, Report $report)
+    {
+        $company = $vendor->company(session('company_id'));
+
+
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
+
+        $pdf = new pdfClass();
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        //first row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        //second row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+
+        //third row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        //forth row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company[0]->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        //fifth row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        //sixth row
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        //filter section
+        $fromdate = date('F-d-Y', strtotime($request->fromdate));
+        $todate = date('F-d-Y', strtotime($request->todate));
+
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromdate . ' through ' . $todate, 0, 1, 'C');
+
+        //report name
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'Order Booking Report', 'B,T', 1, 'L');
+        $pdf->ln(1);
+
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(20, 7, 'Order No', 'B', 0, 'L', 1);
+        $pdf->Cell(40, 7, 'Receipt No', 'B', 0, 'L', 1);
+        $pdf->Cell(50, 7, 'Customer Name', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Total Amount.', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Status', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Date', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
+
+
+        //total variables
+        $totalamount = 0;
+        $totalOrder = 0;
+        $totalbalanceamount = 0;
+
+        $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+
+        foreach ($orders as $values) {
+            $totalamount += $values->total_amount;
+            $totalOrder++;
+            // $totalbalanceamount += $values->balance_amount;
+
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->setFillColor(232, 232, 232);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
+            $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
+            $pdf->Cell(50, 6, number_format($values->name, 0), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, number_format($values->total_amount, 0), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, number_format($values->status, 0), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, date("d-m-Y",strtotime($values->date)), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, date("h:i a",strtotime($values->date)), 0, 1, 'C', 1);
+            $pdf->ln(1);
+        }
+        $pdf->ln(10);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(63, 7, 'Total Amount', 'B', 0, 'C', 1);
+        $pdf->Cell(63, 7, 'Receive Amount.', 'B', 0, 'C', 1);
+        $pdf->Cell(63, 7, 'Balance Amount', 'B', 1, 'C', 1);
+
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->setFillColor(232, 232, 232);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(63, 7, number_format($totalamount, 0), 'B,T', 0, 'C');
+        $pdf->Cell(63, 7, number_format($totalOrder, 0), 'B,T', 0, 'C');
+        $pdf->Cell(63, 7, number_format($totalbalanceamount, 0), 'B,T', 1, 'C');
+        //save file
+        $pdf->Output('Order Booking Report.pdf', 'I');
+    }
+
 }
