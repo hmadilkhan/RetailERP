@@ -4878,9 +4878,9 @@ class ReportController extends Controller
         if ($request->salesperson == "all") {
             $salespersons = $report->totalsalesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
             foreach ($salespersons as $key => $salesperson) {
-                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->SetFont('Arial', 'B', 18);
                 $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(190, 10, "Sales Person Name : " . $salesperson->fullname, 0, 1, 'L');
+                $pdf->Cell(190, 10,  $salesperson->fullname, 0, 1, 'C');
 
                 //total variables
                 $totalamount = 0;
@@ -4888,6 +4888,17 @@ class ReportController extends Controller
                 $totalbalanceamount = 0;
 
                 $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+
+                $pdf->SetFont('Arial', 'B', 12);
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(20, 7, 'Order#', 'B', 0, 'L', 1);
+                $pdf->Cell(40, 7, 'Receipt No', 'B', 0, 'L', 1);
+                $pdf->Cell(40, 7, 'Customer Name', 'B', 0, 'L', 1);
+                $pdf->Cell(30, 7, 'Total Amount', 'B', 0, 'L', 1);
+                $pdf->Cell(20, 7, 'Status', 'B', 0, 'L', 1);
+                $pdf->Cell(20, 7, 'Date', 'B', 0, 'L', 1);
+                $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
 
                 foreach ($orders as $values) {
                     $totalamount += $values->total_amount;
