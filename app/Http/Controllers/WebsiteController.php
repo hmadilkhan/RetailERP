@@ -935,7 +935,7 @@ class WebsiteController extends Controller
         if(isset($request->branchCode) && isset($request->websiteCode) && $request->mode == 1){
             $cities = DB::table('city')
             ->whereIn('city_id', function($query) use ($request) {
-                $query->select('city')
+                $query->select('city_id')
                     ->from('website_delivery_areas')
                     ->where('website_id', $request->websiteCode)
                     ->where('branch_id', $request->branchCode)
@@ -944,9 +944,9 @@ class WebsiteController extends Controller
             ->pluck('city_id');
         
         $result = DB::table('city')
-            ->whereNotIn('city_id', $cities)
-            ->where('country_id',170)
-            ->get();
+                    ->whereNotIn('city_id', $cities)
+                    ->where('country_id',170)
+                    ->get();
 
 
         //    $result =   DB::table('website_delivery_areas')
