@@ -4865,16 +4865,16 @@ class ReportController extends Controller
         $pdf->ln(1);
 
         if ($request->salesperson != "all") {
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(20, 7, 'Order#', 'B', 0, 'L', 1);
-        $pdf->Cell(40, 7, 'Receipt No', 'B', 0, 'L', 1);
-        $pdf->Cell(40, 7, 'Customer Name', 'B', 0, 'L', 1);
-        $pdf->Cell(30, 7, 'Total Amount', 'B', 0, 'L', 1);
-        $pdf->Cell(20, 7, 'Status', 'B', 0, 'L', 1);
-        $pdf->Cell(20, 7, 'Date', 'B', 0, 'L', 1);
-        $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(20, 7, 'Order#', 'B', 0, 'L', 1);
+            $pdf->Cell(40, 7, 'Receipt No', 'B', 0, 'L', 1);
+            $pdf->Cell(40, 7, 'Customer Name', 'B', 0, 'L', 1);
+            $pdf->Cell(30, 7, 'Total Amount', 'B', 0, 'L', 1);
+            $pdf->Cell(20, 7, 'Status', 'B', 0, 'L', 1);
+            $pdf->Cell(20, 7, 'Date', 'B', 0, 'L', 1);
+            $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
         }
 
         if ($request->salesperson == "all") {
@@ -4882,7 +4882,7 @@ class ReportController extends Controller
             foreach ($salespersons as $key => $salesperson) {
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(190, 10,  "Sales Person :".$salesperson->fullname, 0, 1, 'L');
+                $pdf->Cell(190, 10,  "Sales Person : " . $salesperson->fullname, 0, 1, 'L');
 
                 //total variables
                 $totalamount = 0;
@@ -4941,6 +4941,10 @@ class ReportController extends Controller
             $totalbalanceamount = 0;
 
             $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(190, 10,  "Sales Person : " . $orders[0]->fullname, 0, 1, 'L');
 
             foreach ($orders as $values) {
                 $totalamount += $values->total_amount;
