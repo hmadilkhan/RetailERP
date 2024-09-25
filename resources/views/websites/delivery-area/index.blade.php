@@ -767,15 +767,15 @@ function swalModal(branchId,mode,brnhName,status){
 
   $("#website").on('change',function(){
       
-       if($(this).find(':selected').attr('data-type') == 'restaurant'){
-          divBox_on_off('areaBox',1);
-          divBox_on_off('cityBox',0);
-       }else{
-          divBox_on_off('cityBox',1);
-          divBox_on_off('areaBox',0);
+      //  if($(this).find(':selected').attr('data-type') == 'restaurant'){
+      //     divBox_on_off('areaBox',1);
+      //     divBox_on_off('cityBox',0);
+      //  }else{
+      //     divBox_on_off('cityBox',1);
+      //     divBox_on_off('areaBox',0);
 
-          cityLoadNotExists();
-       }
+      //     // cityLoadNotExists();
+      //  }
 
         $.ajax({
                  url:'{{ route("getWebsiteBranches") }}',
