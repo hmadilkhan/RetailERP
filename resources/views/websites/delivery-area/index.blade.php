@@ -549,7 +549,7 @@
                                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                                    }
                               },error:function(e){
-                                console.log(e)
+                                console.log(e.responseText)
                               }
                              });                    
                 }else{
