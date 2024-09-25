@@ -99,7 +99,7 @@
             <div class="order-details">
                 <p><strong>Order Details:</strong></p>
                 @foreach ($itemsList as $key => $item)
-                {{ $item->item_name }} x  {{ number_format($item->total_qty, 0) }} = {{ session('currency') . ' ' . number_format(($item->item_price != "" ? $item->item_price : 1) * $item->total_qty, 0) }} </br>
+                <p>{{ $item->item_name }} x  {{ number_format($item->total_qty, 0) }} = {{ session('currency') . ' ' . number_format(($item->item_price != "" ? $item->item_price : 1) * $item->total_qty, 0) }} </p>
                 @endforeach
                 <p><strong>Total Amount:</strong> {{ $orderAmount }}</p>
                 <p><strong>Advance Payment:</strong> {{ $advancePaymentAmount }}</p>
