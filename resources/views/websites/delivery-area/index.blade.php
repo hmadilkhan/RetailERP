@@ -460,25 +460,28 @@
                 
                 $(".area_table_md").removeClass('dataTable');
                   for(var s=0;s < r.length ;s++){
-                      if(md == 1){ 
-                          $(".area_table_md tbody").append(
-                              "<tr id='tbl_md_row"+r[s].id+"'>"+
-                                "<td id='name_md_"+r[s].id+"'>"+r[s].city_name+"</td>"+
-                                "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
-                                "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+",1)' class='btn btn-primary'>Update</i></td>"+
-                              "</tr>"
-                           );
-                      }
+                      // if(md == 1){ 
+                      //     $(".area_table_md tbody").append(
+                      //         "<tr id='tbl_md_row"+r[s].id+"'>"+
+                      //           "<td id='name_md_"+r[s].id+"'>"+r[s].city_name+"</td>"+
+                      //           "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
+                      //           "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+",1)' class='btn btn-primary'>Update</i></td>"+
+                      //         "</tr>"
+                      //      );
+                      // }
                       
-                      if(md == 0){
+                      // if(md == 0){
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
                                 "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/></td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
-                                "<td class='action-icon'><i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i></td>"+
+                                "<td class='action-icon'>"+
+                                  "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i>"+
+                                  "<i onclick='deleteAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"
+                                  "</td>"+
                               "</tr>"
                            );                          
-                      }
+                      // }
                    }
               }
         });
