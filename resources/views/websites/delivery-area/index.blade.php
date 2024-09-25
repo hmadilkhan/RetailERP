@@ -439,7 +439,7 @@
   }); 
     
     
-  function getAreaValues(brnhId,md='',webId){
+  function getAreaValues(brnhId,webId,md=''){
       $(".area_table_md tbody").empty();
         $.ajax({
                 url: "{{ route('getdeliveryAreasValues') }}",
