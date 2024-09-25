@@ -86,7 +86,7 @@
     <div class="email-container">
         <!-- Header Section -->
         <div class="email-header">
-            <img src="{{ asset('images/company/'.$logo) }}" alt="Kashees Jewellery Logo">
+            <img src="{{ asset('storage/images/company/'.$logo) }}" alt="Kashees Jewellery Logo">
             <h1>Kashees Jewellery</h1>
         </div>
 
