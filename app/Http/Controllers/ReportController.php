@@ -4880,9 +4880,9 @@ class ReportController extends Controller
         if ($request->salesperson == "all") {
             $salespersons = $report->totalsalesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
             foreach ($salespersons as $key => $salesperson) {
-                $pdf->SetFont('Arial', 'B', 18);
+                $pdf->SetFont('Arial', 'B', 14);
                 $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(190, 10,  "Sales Person ".$salesperson->fullname, 0, 1, 'C');
+                $pdf->Cell(190, 10,  "Sales Person :".$salesperson->fullname, 0, 1, 'L');
 
                 //total variables
                 $totalamount = 0;
