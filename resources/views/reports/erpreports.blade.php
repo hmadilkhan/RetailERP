@@ -1071,9 +1071,9 @@
                     $('#salesperson').empty();
                     $("#salesperson").append('<option value="all">All</option>');
                     $("#salesperson").append("<option value=''>Select Sales Person</option>");
-                    $.each(resp, function( index, value ) {
+                    $.each(resp.providers, function( index, value ) {
                         $("#salesperson").append(
-                            "<option value="+value.sub_department_id+">"+value.sub_depart_name+"</option>"
+                            "<option value="+value.serviceprovideruser.user_id+">"+value.provider_name+"</option>"
                         );
                     });
                 }
