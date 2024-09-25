@@ -73,21 +73,19 @@
       <div class="row">
         <div class="col-md-4">
           <div class="form-group">       
-            <label for="area" class="form-control-label">Area</label>
-            <br/>
-              @php $oldArea = old('areas') ? explode(',',old('areas')) : null; @endphp
-            <input type="text" name="areas" id="areas" class="form-control" value="@if($oldArea != null) @foreach($oldArea as $val) {{ $val }} @endforeach @endif">
-            <!--<div class="form-control-feedback text-danger" id="areas_alert"></div>-->
-              <div class="form-control-feedback text-danger" id="areas_alert"></div>
-          </div> 
-        </div>  
-        <div class="col-md-4">
-          <div class="form-group">       
             <label for="estimate_time" class="form-control-label">Time Estimate</label>
             <input type="text" name="estimate_time" id="estimate_time" class="form-control">
             <div class="form-control-feedback text-danger" id="estimate_time_alert"></div>
           </div>  
-        </div>        
+        </div> 
+        
+        <div class="col-md-4">
+          <div class="form-group">       
+            <label for="estimate_day" class="form-control-label">Estimated delivery (days)</label>
+            <input type="text" name="estimate_day" id="estimate_day" class="form-control">
+            <div class="form-control-feedback text-danger" id="estimate_day_alert"></div>            
+          </div>  
+        </div>         
       </div>
 
       <div class="row">
@@ -107,11 +105,14 @@
         </div> 
         <div class="col-md-4">
           <div class="form-group">       
-            <label for="estimate_day" class="form-control-label">Estimated delivery (days)</label>
-            <input type="text" name="estimate_day" id="estimate_day" class="form-control">
-            <div class="form-control-feedback text-danger" id="estimate_day_alert"></div>            
-          </div>  
-        </div>        
+            <label for="area" class="form-control-label">Area</label>
+            <br/>
+              @php $oldArea = old('areas') ? explode(',',old('areas')) : null; @endphp
+            <input type="text" name="areas" id="areas" class="form-control" value="@if($oldArea != null) @foreach($oldArea as $val) {{ $val }} @endforeach @endif">
+            <!--<div class="form-control-feedback text-danger" id="areas_alert"></div>-->
+              <div class="form-control-feedback text-danger" id="areas_alert"></div>
+          </div> 
+        </div>         
       </div>
 
                   
@@ -382,25 +383,25 @@
           process_md = false;   
       } 
       
-      if(!$("#areaBox").hasClass('d-none') && $("#areas").val() == ''){
+      if($("#areas").val() == ''){
           $("#areas").focus();
           $("#areas_alert").text('field is required.');   
           process_md = false;   
       }  
       
-      if(!$("#cityaBox").hasClass('d-none') && $("#time_estimate").val() == ''){
+      if($("#time_estimate").val() == ''){
           $("#time_estimate").focus();
           $("#time_estimate_alert").text('field is required.');   
           process_md = false;   
       }       
       
-      if(!$("#cityaBox").hasClass('d-none') && $("#city").val() == ''){
+      if($("#city").val() == ''){
           $("#city").focus();
           $("#city_alert").text('field is required.');   
           process_md = false;   
       }       
       
-      if(!$("#cityaBox").hasClass('d-none') && $("#estimate_day").val() == ''){
+      if($("#estimate_day").val() == ''){
           $("#estimate_day").focus();
           $("#estimate_day_alert").text('field is required.');   
           process_md = false;   
