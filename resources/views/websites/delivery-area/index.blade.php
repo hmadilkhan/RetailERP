@@ -479,7 +479,7 @@
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td>"+
                                   "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i>"+
-                                  "<i onclick='deleteAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"+
+                                  "<i onclick='removeAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"+
                                   "</td>"+
                               "</tr>"
                            );                          
@@ -540,11 +540,12 @@
                               success:function(resp){
                                    console.log(resp)
                                    if(resp.status == 200){
-                                       $("#alert_md").text('Success!').addClass('alert alert-success');
-                                       
+                                      //  $("#alert_md").text('Success!').addClass('alert alert-success');
+                                       swal('Success!','','success');
                                        $("#areaLabel"+id).remove();
                                        $("#tbl_md_row"+id).remove();
                                    }else{
+                                       swal('Error!',resp.msg,'error');
                                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                                    }
                               }
@@ -555,6 +556,46 @@
                 
             });      
   }
+
+  // function deleteAreaDetail(id,branch){
+  //   swal({
+  //               title: 'Remove Delivery Area',
+  //               text:  'Are you sure you want to remove this '+$("#name_md_"+id).val()+' delivery area from '+$("#location_name_md_"+id).val()+'?',
+  //               type: "warning",
+  //               showCancelButton: true,
+  //               confirmButtonClass: "btn btn-danger",
+  //               confirmButtonText: "YES",
+  //               cancelButtonText: "NO",
+  //               closeOnConfirm: false,
+  //               closeOnCancel: false
+  //           },function(isConfirm){
+  //               if(isConfirm){
+  //                     $.ajax({
+  //                             url:$("#removeUrlArea"+id).val(),
+  //                             type:"DELETE",
+  //                             data:{_token:'{{ csrf_token() }}',id:id,stp_redirect:1},
+  //                             async:true,
+  //                             dataType:'json',
+  //                             success:function(resp){
+  //                                  console.log(resp)
+  //                                  if(resp.status == 200){
+  //                                      $("#alert_md").text('Success!').addClass('alert alert-success');
+                                       
+  //                                      $("#areaLabel"+id).remove();
+  //                                      $("#tbl_md_row"+id).remove();
+  //                                  }else{
+  //                                      $("#alert_md").text(resp.msg).addClass('alert alert-alert');
+  //                                  }
+  //                             }
+  //                            });                    
+  //               }else{
+  //                   swal.close();
+  //               }
+                
+  //           });      
+
+
+  // }
     
     
   function createSingleLocation(brnhId,brnhName,md,webId,webName){
