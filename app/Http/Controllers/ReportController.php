@@ -4861,7 +4861,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Order Booking Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Person Report', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         if ($request->salesperson != "all") {
