@@ -340,7 +340,7 @@
                                     <option value="all">All</option>
                                     @if($salespersons)
                                         @foreach($salespersons as $value)
-                                            <option value="{{ $value->id }}">{{ $value->provider_name }}</option>
+                                            <option value="{{ $value->serviceprovideruser->user_id }}">{{ $value->provider_name }}</option>
                                         @endforeach
                                     @endif
                                 </select>
