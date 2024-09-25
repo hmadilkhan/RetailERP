@@ -383,25 +383,25 @@
           process_md = false;   
       } 
       
-      if(!$("#areaBox").hasClass('d-none') && $("#areas").val() == ''){
+      if($("#areas").val() == ''){
           $("#areas").focus();
           $("#areas_alert").text('field is required.');   
           process_md = false;   
       }  
       
-      if(!$("#cityaBox").hasClass('d-none') && $("#time_estimate").val() == ''){
+      if($("#time_estimate").val() == ''){
           $("#time_estimate").focus();
           $("#time_estimate_alert").text('field is required.');   
           process_md = false;   
       }       
       
-      if(!$("#cityaBox").hasClass('d-none') && $("#city").val() == ''){
+      if($("#city").val() == ''){
           $("#city").focus();
           $("#city_alert").text('field is required.');   
           process_md = false;   
       }       
       
-      if(!$("#cityaBox").hasClass('d-none') && $("#estimate_day").val() == ''){
+      if($("#estimate_day").val() == ''){
           $("#estimate_day").focus();
           $("#estimate_day_alert").text('field is required.');   
           process_md = false;   
