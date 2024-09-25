@@ -531,11 +531,11 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                    console.log(1)
+                   
                       $.ajax({
                               url:'{{ route("deliveryAreaValueDestroy") }}',
                               type:"POST",
-                              data:{_token:'{{ csrf_token() }}',id:id,branchid:brnchId,},
+                              data:{_token:'{{ csrf_token() }}',id:id,branchid:brnchId},
                               dataType:'json',
                               success:function(resp,txtStatus,jqXHR){
                                    console.log(resp)
