@@ -999,7 +999,8 @@ class WebsiteController extends Controller
 
     public function store_deliveryArea(Request $request)
     {
-
+       try {  
+             DB::beginTransaction();
         // $rules = [
         //     'branch'    => 'required',
         //     'areas'     => 'required',
@@ -1008,46 +1009,52 @@ class WebsiteController extends Controller
 
         // $this->validate($request, $rules);        
 
-        $result = null;
+        // $result = null;
 
-        if ($request->city != null) {
-            $city  = $request->city;
+        // if ($request->city != null) {
+        //     $city  = $request->city;
 
-            for ($i = 0; $i < count($city); $i++) {
-                $result = DB::table('website_delivery_areas')
+        //     for ($i = 0; $i < count($city); $i++) {
+        //         $result = DB::table('website_delivery_areas')
+        //             ->insert([
+        //                 'website_id'         => $request->website,
+        //                 'branch_id'          => $request->branch,
+        //                 'city'               => addslashes($city[$i]),
+        //                 'is_city'            => 1,
+        //                 'estimate_of_days'   => $request->estimate_day,
+        //                 'charge'             => $request->charges,
+        //                 'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
+        //                 'status'             => 1,
+        //             ]);
+        //     }
+        // } else {
+            $areas  = explode(',', $request->areas);
+
+            for ($i = 0; $i < count($areas); $i++) {
+                  DB::table('website_delivery_areas')
                     ->insert([
                         'website_id'         => $request->website,
                         'branch_id'          => $request->branch,
-                        'city'               => addslashes($city[$i]),
-                        'is_city'            => 1,
+                        'name'               => addslashes($areas[$i]),
+                        'city'               => $request->city,
+                        'estimate_time'      => $request->time_estimate,
                         'estimate_of_days'   => $request->estimate_day,
                         'charge'             => $request->charges,
                         'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
                         'status'             => 1,
                     ]);
             }
-        } else {
-            $areas  = explode(',', $request->areas);
+        // }
 
-            for ($i = 0; $i < count($areas); $i++) {
-                $result = DB::table('website_delivery_areas')
-                    ->insert([
-                        'website_id'         => $request->website,
-                        'branch_id'          => $request->branch,
-                        'name'               => addslashes($areas[$i]),
-                        'estimate_time'      => $request->time_estimate,
-                        'charge'             => $request->charges,
-                        'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
-                        'status'             => 1,
-                    ]);
-            }
-        }
-
-
-        if ($result == null) {
-            Session::flash('error', 'Record is not created!');
-        } else {
+        DB::commit();
+        // if ($result == null) {
+        //     Session::flash('error', 'Record is not created!');
+        // } else {
             Session::flash('success', 'Success!');
+        // }
+        }catch(\Exception $e){
+            DB::rollback();
+            Session::flash('error', 'Error! '.$e->getMessage());
         }
 
         return redirect()->route('deliveryAreasList');
