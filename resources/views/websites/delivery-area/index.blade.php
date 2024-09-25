@@ -503,9 +503,11 @@
                    if(jXst.status == 200){
                        swal('Success!','','success');
                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
-                       let locationName = $("#name_md_"+id);
-                       
-                       $("#areaLabel"+id).text((md == 1 ? locationName.text() : locationName.val())+' - Rs.'+$("#charge_md_"+id).val());
+                       let locationName = $("#location_name_md_"+id);
+                       let areaName     = $("#name_md_"+id);
+                       let charge       = $("#charge_md_"+id);
+
+                       $("#areaLabel"+id).text(locationName.text()+' - '+areaName.val()+' - Rs.'+charge.val());
                    }else{
                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                    }
