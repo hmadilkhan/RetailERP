@@ -160,15 +160,15 @@
                   
                    @php $count = $count + 1 @endphp
                    <input type="hidden" id="removeUrlArea{{ $area_val->id }}" value="{{ route('deliveryAreaValueDestroy',[$area_val->id,$area_val->branch_id]) }}"/>
-                   @if($area_val->is_city == 1)
+                   {{-- @if($area_val->is_city == 1)
                    
                    <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->city_name.' - Rs.'.$area_val->charge }}</label>
-                   @else
+                   @else --}}
                    <!--<input type="hidden" id="modifyUrlArea{{-- $area_val->id --}}" value="{{-- route('deliveryAreaNameUpdate',$area_val->id) --}}"/>-->
                    
-                   <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->name.' - Rs.'.$area_val->charge }}</label>
+                   <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->city_name.' - '.$area_val->name.' - Rs.'.$area_val->charge }}</label>
                    
-                   @endif
+                   {{-- @endif --}}
                  @endif  
              @endforeach
           </td>
