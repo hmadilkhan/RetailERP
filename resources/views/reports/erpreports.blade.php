@@ -1043,7 +1043,7 @@
             });
         }
 
-        function load_terminals(id)
+        function load_terminals()
         {
             $.ajax({
                 url: "{{ url('getTerminals')}}",
@@ -1061,22 +1061,28 @@
             });
         }
 
-        function loadSalesPersons(id)
+        function loadSalesPersons()
         {
             $.ajax({
                 url: "{{ route('sp.branch')}}",
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",branch:$("#branch").val()},
                 success:function(resp){
-                    $('#terminal').empty();
-                    $("#terminal").append("<option value=''>Select Terminal</option>");
+                    $('#salesperson').empty();
+                    $("#salesperson").append('<option value="all">All</option>');
+                    $("#salesperson").append("<option value=''>Select Sales Person</option>");
                     $.each(resp, function( index, value ) {
-                        $("#terminal").append(
+                        $("#salesperson").append(
                             "<option value="+value.sub_department_id+">"+value.sub_depart_name+"</option>"
                         );
                     });
                 }
             });
         }
+
+        $("#branch").change(function(){
+            load_terminals($(this).val())
+            loadSalesPersons($(this).val());
+        })
     </script>
 @endsection
