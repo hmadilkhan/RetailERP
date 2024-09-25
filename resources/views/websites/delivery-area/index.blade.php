@@ -536,7 +536,6 @@
                               url:'{{ route("deliveryAreaValueDestroy") }}',
                               type:"POST",
                               data:{_token:'{{ csrf_token() }}',id:id,stp_redirect:1,branchid:brnchId},
-                              async:true,
                               dataType:'json',
                               success:function(resp,txtStatus,jqXHR){
                                    console.log(resp)
