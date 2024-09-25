@@ -531,6 +531,7 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
+                    console.log(1)
                       $.ajax({
                               url:'{{ route("deliveryAreaValueDestroy") }}',
                               type:"POST",
