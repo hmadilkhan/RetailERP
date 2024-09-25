@@ -14,6 +14,7 @@ use App\Models\Terminal;
 use App\Models\OrderStatus;
 use App\Models\CustomerAccount;
 use App\Http\Resources\onlineSalesResource\salesReceiptResource;
+use App\Mail\OrderConfirmed;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
@@ -21,6 +22,7 @@ use App\Services\OrderService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Arr;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
@@ -719,5 +721,13 @@ class OrderController extends Controller
             }
         } catch (\Exception $e) {
         }
+    }
+
+    public function sendEmail()
+    {
+        $order = OrderModel::find(675905);
+        $customer = Customer::find($order->customer_id);
+
+        Mail::to("hmadilkhan@gmail.com")->send(new OrderConfirmed($order, $customer));
     }
 }
