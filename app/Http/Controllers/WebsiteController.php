@@ -1212,13 +1212,13 @@ class WebsiteController extends Controller
 
         if (DB::table('website_delivery_areas')->where(['id' => $request->id, 'branch_id' => $request->branchid])->update(['remove' => 1])) {
 
-            if (!isset($request->stp_redirect)) {
+            if (isset($request->stp_redirect)) {
                 return response()->json('success',200);
             }
             Session::flash('success', 'Successfully');
         } else {
 
-            if (!isset($request->stp_redirect)) {
+            if (isset($request->stp_redirect)) {
                 return response()->json('This ' . $request->area . ' delivery area not remove.',500);
             }
 
