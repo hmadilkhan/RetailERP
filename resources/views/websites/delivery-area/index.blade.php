@@ -276,7 +276,7 @@
       </div> 
       
 <div class="modal fade modal-flex" id="createSingleLocation_Modal" tabindex="-1" role="dialog">
-         <div class="modal-dialog modal-md" role="document">
+         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
