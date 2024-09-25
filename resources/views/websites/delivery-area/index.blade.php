@@ -205,7 +205,7 @@
 </section>
 
 <div class="modal fade modal-flex" id="editArea_md" tabindex="-1" role="dialog">
-         <div class="modal-dialog modal-lg" role="document">
+         <div class="modal-dialog modal-xlg" role="document">
             <div class="modal-content">
                <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -478,7 +478,7 @@
                                 "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/></td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td>"+
-                                  "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i>"+
+                                  "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary m-r-1'>Update</i>"+
                                   "<i onclick='removeAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"+
                                   "</td>"+
                               "</tr>"
