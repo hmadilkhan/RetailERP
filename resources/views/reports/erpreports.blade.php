@@ -720,7 +720,7 @@
 				$(field).val(0);
 			});
 			
-			const filters = ['#dvbranch','#dvdepartments','#dvsubdepartments','#dvterminal','#dvtype','#dvitemcode','#dvpaymentmodes'];
+			const filters = ['#dvbranch','#dvdepartments','#dvsubdepartments','#dvterminal','#dvtype','#dvitemcode','#dvpaymentmodes','#dvsalesperson'];
 			filters.forEach(field => {
 				$(field).css('display','none');
 			});
@@ -747,6 +747,7 @@
 			if (fieldMappings.some(mapping => mapping.showType)) showType();
 			if (fieldMappings.some(mapping => mapping.showCode)) showCode();
 			if (fieldMappings.some(mapping => mapping.showPaymentMode)) showPaymentMode();
+			if (fieldMappings.some(mapping => mapping.showSalesPerson)) loadSalesPersons();
 		}
 		
 		$('#dvprofitstandard').on('click', function () {
@@ -846,7 +847,7 @@
 
         $('#dvsalespersonreport').on('click', function (){
 			handleButtonClick('#dvsalespersonreport', 'Sales Person Report', [
-				{ field: '#txtsalespersonreport', value: 1, showDateFilter: true,showBranch: true}
+				{ field: '#txtsalespersonreport', value: 1, showDateFilter: true,showBranch: true,showSalesPerson = true}
 			]);
 		});
 
