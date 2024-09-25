@@ -1036,6 +1036,7 @@ class WebsiteController extends Controller
                         'website_id'         => $request->website,
                         'branch_id'          => $request->branch,
                         'name'               => addslashes($areas[$i]),
+                        'city_id'            => $request->city,
                         'city'               => $request->city,
                         'estimate_time'      => $request->time_estimate,
                         'estimate_of_days'   => $request->estimate_day,
