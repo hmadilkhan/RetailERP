@@ -34,7 +34,7 @@ class OrderConfirmed extends Mailable
     {
         $this->customerName = $customer->name;
         $this->orderNumber = $order->number;
-        $this->itemsList = $order->items; // Assuming it's a list of items
+        $this->itemsList =$order->orderdetails; // Assuming it's a list of items
         $this->orderAmount = $order->total_amount;
         $this->advancePaymentAmount = $order->orderAccount->receive_amount;
         $this->remainingAmount = $order->remaining_amount;

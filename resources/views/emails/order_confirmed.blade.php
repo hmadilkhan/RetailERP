@@ -98,7 +98,7 @@
             <!-- Order Details Section -->
             <div class="order-details">
                 <p><strong>Order Details:</strong></p>
-                @foreach ($order->orderdetails as $key => $item)
+                @foreach ($itemsList as $key => $item)
                 {{ $item->item_name }} x  {{ number_format($item->total_qty, 0) }} = {{ session('currency') . ' ' . number_format(($item->item_price != "" ? $item->item_price : 1) * $item->total_qty, 0) }}
                 @endforeach
                 <p><strong>Items Ordered:</strong> {{ $itemsList }}</p>
