@@ -4864,6 +4864,7 @@ class ReportController extends Controller
         $pdf->Cell(190, 10, 'Order Booking Report', 'B,T', 1, 'L');
         $pdf->ln(1);
 
+        if ($request->salesperson != "all") {
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
@@ -4874,13 +4875,14 @@ class ReportController extends Controller
         $pdf->Cell(20, 7, 'Status', 'B', 0, 'L', 1);
         $pdf->Cell(20, 7, 'Date', 'B', 0, 'L', 1);
         $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
+        }
 
         if ($request->salesperson == "all") {
             $salespersons = $report->totalsalesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
             foreach ($salespersons as $key => $salesperson) {
                 $pdf->SetFont('Arial', 'B', 18);
                 $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(190, 10,  $salesperson->fullname, 0, 1, 'C');
+                $pdf->Cell(190, 10,  "Sales Person ".$salesperson->fullname, 0, 1, 'C');
 
                 //total variables
                 $totalamount = 0;
