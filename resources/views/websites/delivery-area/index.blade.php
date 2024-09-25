@@ -535,7 +535,7 @@
                       $.ajax({
                               url:$("#removeUrlArea"+id).val(),
                               type:"POST",
-                              data:{_method:'DELETE',_token:'{{ csrf_token() }}'},
+                              data:{_token:'{{ csrf_token() }}'},
                               dataType:'json',
                               success:function(resp,txtStatus,jqXHR){
                                    console.log(resp)
