@@ -747,7 +747,7 @@
 			if (fieldMappings.some(mapping => mapping.showType)) showType();
 			if (fieldMappings.some(mapping => mapping.showCode)) showCode();
 			if (fieldMappings.some(mapping => mapping.showPaymentMode)) showPaymentMode();
-			if (fieldMappings.some(mapping => mapping.showSalesPerson)) loadSalesPersons();
+			if (fieldMappings.some(mapping => mapping.showSalesPerson)) showSalesPerson();
 		}
 		
 		$('#dvprofitstandard').on('click', function () {
@@ -980,6 +980,9 @@
             // else{
                 // $('#dvbranch').css("display", "none");
             // }
+        }
+        function showSalesPerson() {
+            $('#dvsalesperson').css("display", "block");
         }
 		showdepartments();
 		function showdepartments() {
