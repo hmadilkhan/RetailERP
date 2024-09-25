@@ -221,6 +221,7 @@
                          <thead>
                             <tr>
                               <th>Location</th>
+                              <th>Area</th>
                               <th>Charge</th>
                               <th>Action</th>
                             </tr>
