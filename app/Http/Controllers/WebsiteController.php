@@ -1200,7 +1200,7 @@ class WebsiteController extends Controller
 
     public function destroy_deliveryAreaValue(Request $request)
     {
-
+             return $request;
         if (empty($request->id) || empty($request->branchid)) {
 
             if (!isset($request->stp_redirect)) {
