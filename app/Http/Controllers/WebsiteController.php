@@ -939,7 +939,7 @@ class WebsiteController extends Controller
                     ->from('website_delivery_areas')
                     ->where('website_id', $request->websiteCode)
                     ->where('branch_id', $request->branchCode)
-                    ->where('status', 1);
+                    ->where('remove','=', 0);
             })
             ->pluck('city_id');
         
@@ -975,7 +975,7 @@ class WebsiteController extends Controller
         return DB::table('website_delivery_areas')
             ->join('city', 'city.city_id', 'website_delivery_areas.city_id')
             ->where('website_delivery_areas.website_id', '=', $request->website)
-            // ->where('website_delivery_areas.status',1)
+            ->where('website_delivery_areas.remove','=',0)
             ->select('website_delivery_areas.*', 'city.city_name')
             ->get();
 
