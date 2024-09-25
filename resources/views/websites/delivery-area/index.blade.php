@@ -538,9 +538,9 @@
                               data:{_token:'{{ csrf_token() }}',id:unqid,stp_redirect:1},
                               async:true,
                               dataType:'json',
-                              success:function(resp){
+                              success:function(resp,txtStatus,jqXHR){
                                    console.log(resp)
-                                   if(resp.status == 200){
+                                   if(jqXHR.status == 200){
                                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
                                        swal('Success!','','success');
                                        $("#areaLabel"+unqid).remove();
@@ -549,6 +549,8 @@
                                        swal('Error!',resp.msg,'error');
                                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                                    }
+                              },error:function(e){
+                                console.log(e)
                               }
                              });                    
                 }else{
