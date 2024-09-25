@@ -70,7 +70,7 @@
         </div>          
       </div>
       
-      <div class="row">
+      <div id="areaBox" class="row d-none">
         <div class="col-md-4">
           <div class="form-group">       
             <label for="area" class="form-control-label">Area</label>
@@ -90,16 +90,16 @@
         </div>        
       </div>
 
-      <div class="row">
+      <div id="cityBox" class="row d-none">
         <div class="col-md-4">
           <div class="form-group">       
             <label for="city" class="form-control-label">City</label>
             <br/>
-              @php $oldCity = old('city'); @endphp
+              @php $oldCity = old('city') ? explode(',',old('city')) : []; @endphp
             <select name="city" id="city" data-placeholder="Select" class="form-control select2">
               <option value="">Select</option>
               @foreach($city as $val)
-                 <option {{ $val->city_id == $oldCity ? 'selected' : '' }}  value="{{ $val->city_id }}" >{{ $val->city_name }}</option> 
+                 <option {{ in_array($val->city_id,$oldCity) ? 'selected' : '' }}  value="{{ $val->city_id }}" >{{ $val->city_name }}</option> 
               @endforeach
             </select>
               <div class="form-control-feedback text-danger" id="city_alert"></div>
