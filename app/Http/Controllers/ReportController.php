@@ -3429,7 +3429,8 @@ class ReportController extends Controller
                 $totalVoidOrdersAmount = 0;
                 $totalSalesReturnOrders = 0;
                 $totalSalesReturnOrdersAmount = 0;
-                
+                $totalCount=0;
+
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
@@ -3509,6 +3510,8 @@ class ReportController extends Controller
                 $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
                 $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
                 $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
+
+                $pdf->ln(5);
             }
         } else {
 
