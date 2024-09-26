@@ -78,6 +78,42 @@
                                 <span class="text-danger" id="priority_alert"></span>
                             </div>
 
+                            <div class="form-group">
+                                <a href="javascript:void(0)">
+                                 <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="250" width="350" class="" alt="img">
+                                 </a>
+               
+                                <div class="form-group {{ $errors->has('desktop_banner') ? 'has-danger' : '' }} m-t-10">
+                                        <label for="mobile_banner" class="custom-file">
+                                                    <input type="file" name="desktop_banner" id="desktop_banner" class="custom-file-input">
+                                                    <span class="custom-file-control"></span>
+                                                </label>   
+                                                <br/>        
+                                    @error('desktop_banner')
+                                        <span class="form-control-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div> 
+                         
+                           </div>                               
+
+                            <div class="form-group">
+                                <a href="javascript:void(0)">
+                                 <img id="previewMobileBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" width="150" class="" alt="img">
+                                 </a>
+               
+                                <div class="form-group {{ $errors->has('mobile_banner') ? 'has-danger' : '' }} m-t-10">
+                                        <label for="mobile_banner" class="custom-file">
+                                                    <input type="file" name="mobile_banner" id="mobile_banner" class="custom-file-input">
+                                                    <span class="custom-file-control"></span>
+                                                </label>   
+                                                <br/>        
+                                    @error('mobile_banner')
+                                        <span class="form-control-feedback">{{ $message }}</span>
+                                    @enderror
+                                </div> 
+                         
+                           </div>                            
+
                         
     		            <button type="submit" class="btn btn-success f-right">{{ isset($id) ? 'Save Changes' : 'Submit' }}</button>
     		       </form> 
