@@ -428,7 +428,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
-                                        width="150px" height="250px" id="previewMobileBanner_sbmd" /></br>
+                                        width="150" height="200" id="previewMobileBanner_sbmd" /></br>
                                     <label for="subdepartMobileBanner_add" class="form-control-label">Sub Department
                                         Mobile Banner</label></br>
 
@@ -676,7 +676,11 @@
         // }
         $("#subdepartBanner_add").change(function() {
             readURL(this, 'previewBanner_sbmd');
-        });       
+        });  
+        
+        $("#subdepartMobileBanner_add").change(function() {
+            readURL(this, 'previewMobileBanner_sbmd');
+        }); 
 
         $("#bannerImage_md").change(function() {
             readURL(this, 'previewDepartBannerImage_md');
