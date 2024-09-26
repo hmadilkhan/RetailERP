@@ -43,6 +43,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SideBarController;
 use App\Http\Controllers\SMSController;
 use App\Http\Controllers\StockController;
+use App\Http\Controllers\SectionController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TerminalController;
 use App\Http\Controllers\TransferController;
