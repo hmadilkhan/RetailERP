@@ -855,12 +855,15 @@ function swalModal(branchId,mode,brnhName,status){
      }
   }
 
-  // $("#branch").on('change',function(){
-  //   if($(this).val() != ''){
-  //     cityLoadNotExists($(this).val(),$("#website").val());
-  //   }
+  @if(session('company_id') == 102)
+  $("#branch").on('change',function(){
+    if($(this).val() != ''){
+      cityLoadNotExists($(this).val(),$("#website").val());
+    }
 
-  // });
+  });
+ @endif
+
 
   function cityLoadNotExists(branch = '',website = ''){
     if(website != '' && branch != ''){
