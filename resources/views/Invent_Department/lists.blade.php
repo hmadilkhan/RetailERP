@@ -1150,6 +1150,8 @@
             $("#subdepartcode").val('');
             $('#subdepartname').val('');
             $('#subdepartImage_add').val('');
+            $("#subdepartBanner_add").val('');
+            $("#subdepartMobileBanner_add").val('');
             $('#departmodal').val(id).change();
             $("#subdepartment-modal").modal("show");
         }
@@ -1215,6 +1217,14 @@
 
                 if ($('#subdepartImage_add')[0].files.length != 0) {
                     formData.append('subdepartImage', $('#subdepartImage_add')[0].files[0]);
+                }
+
+                if ($('#subdepartBanner_add')[0].files.length != 0) {
+                    formData.append('subdepartBanner', $('#subdepartBanner_add')[0].files[0]);
+                }
+
+                if ($('#subdepartMobileBanner_add')[0].files.length != 0) {
+                    formData.append('mobile_banner_sbdepart', $('#subdepartMobileBanner_add')[0].files[0]);
                 }
 
                 $.ajax({
