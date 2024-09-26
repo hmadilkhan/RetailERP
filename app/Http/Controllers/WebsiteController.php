@@ -914,12 +914,20 @@ class WebsiteController extends Controller
             ->get();
 
         $deliveryAreaValues = DB::table('website_delivery_areas as AreaList')
-            ->leftJoin('city', 'city.city_id', 'AreaList.city_id')
-            // ->whereIn('branch_id',DB::table('branch')->where('company_id','=',$companyId)->pluck('branch_id'))
-            ->whereIn('AreaList.website_id', WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->pluck('id'))
-            ->where('remove', '=', 0)
-            ->select('AreaList.*', 'city.city_name')
-            ->get();
+                                ->leftJoin('city', 'city.city_id', '=', 'AreaList.city_id')
+                                ->whereIn('AreaList.website_id', WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->pluck('id'))
+                                ->where('remove', '=', 0)
+                                ->select('AreaList.*', 'city.city_name')
+                                ->orderByRaw('city.city_name IS NULL, city.city_name ASC') 
+                                ->get();
+        
+        // DB::table('website_delivery_areas as AreaList')
+        //     ->leftJoin('city', 'city.city_id', 'AreaList.city_id')
+        //     // ->whereIn('branch_id',DB::table('branch')->where('company_id','=',$companyId)->pluck('branch_id'))
+        //     ->whereIn('AreaList.website_id', WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->pluck('id'))
+        //     ->where('remove', '=', 0)
+        //     ->select('AreaList.*', 'city.city_name')
+        //     ->get(); 
 
         return view("websites.delivery-area.index", [
             "website"            => WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->get(),
