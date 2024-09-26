@@ -84,8 +84,8 @@
                                  </a>
                
                                 <div class="form-group {{ $errors->has('desktop_banner') ? 'has-danger' : '' }} m-t-10">
-                                    <label>Desktop Banner</label>
-                                        <label for="mobile_banner" class="custom-file">
+                                    <label for="desktop_banner" >Desktop Banner</label>
+                                        <label for="desktop_banner" class="custom-file">
                                                     <input type="file" name="desktop_banner" id="desktop_banner" class="custom-file-input">
                                                     <span class="custom-file-control"></span>
                                                 </label>   
@@ -103,7 +103,7 @@
                                  </a>
                
                                 <div class="form-group {{ $errors->has('mobile_banner') ? 'has-danger' : '' }} m-t-10">
-                                        <label>Mobile Banner</label>
+                                        <label for="mobile_banner" >Mobile Banner</label>
                                         <label for="mobile_banner" class="custom-file">
                                                     <input type="file" name="mobile_banner" id="mobile_banner" class="custom-file-input">
                                                     <span class="custom-file-control"></span>
