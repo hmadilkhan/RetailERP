@@ -253,7 +253,6 @@ class order extends Model
 		}else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->whereIn("branch_id",$request->branch)->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 		} else {
-			dd($request->terminal);
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
 		}
 
