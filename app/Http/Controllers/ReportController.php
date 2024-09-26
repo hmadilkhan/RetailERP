@@ -624,7 +624,7 @@ class ReportController extends Controller
     {
         if (is_array($request->branch) && $request->branch != "") {
             return response()->json(["terminal" => Terminal::whereIn("branch_id", $request->branch)->where("status_id", 1)->select("terminal_id", "terminal_name")->get()]);
-        }elseif ($request->branch != "") {
+        } elseif ($request->branch != "") {
             return response()->json(["terminal" => Terminal::where("branch_id", $request->branch)->where("status_id", 1)->select("terminal_id", "terminal_name")->get()]);
         } else {
             return 0;
@@ -3419,15 +3419,23 @@ class ReportController extends Controller
         $totalSalesReturnOrdersAmount = 0;
 
         if ($request->terminalid == 0) {
-            
+
             $terminals = $report->get_terminals();
 
             foreach ($terminals as $values) {
+                $totalDeliveredOrders = 0;
+                $totalDeliveredOrdersAmount = 0;
+                $totalVoidOrders = 0;
+                $totalVoidOrdersAmount = 0;
+                $totalSalesReturnOrders = 0;
+                $totalSalesReturnOrdersAmount = 0;
+                
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
                 $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $request->type, $request->department, $request->subdepartment);
                 foreach ($details as $value) {
+
                     $totalCount++;
                     // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
                     if (session('company_id') == 74) {
@@ -3476,7 +3484,7 @@ class ReportController extends Controller
                 }
                 $pdf->SetFont('Arial', 'B', 10);
                 $pdf->Cell(30, 7, "Total", 'B,T', 0, 'L');
-                $pdf->Cell(55, 7, "Item Count (".$totalCount.")", 'B,T', 0, 'L');
+                $pdf->Cell(55, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
                 $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
                 $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
                 $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
@@ -3503,7 +3511,7 @@ class ReportController extends Controller
                 $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
             }
         } else {
-            
+
             $terminals = $report->get_terminals_byid($request->terminalid);
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->SetTextColor(0, 0, 0);
@@ -3558,7 +3566,7 @@ class ReportController extends Controller
             }
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->Cell(30, 7, "Total", 'B,T', 0, 'L');
-            $pdf->Cell(55, 7, "Item Count (".$totalCount.")", 'B,T', 0, 'L');
+            $pdf->Cell(55, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
             $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
             $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
             $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
@@ -4918,7 +4926,7 @@ class ReportController extends Controller
                 $totalbalanceamount = 0;
 
                 $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $salesperson->id);
-                echo 
+                echo
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
