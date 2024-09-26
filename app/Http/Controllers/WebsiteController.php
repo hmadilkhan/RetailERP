@@ -1016,11 +1016,14 @@ class WebsiteController extends Controller
             $city  = $request->city;
 
             for ($i = 0; $i < count($city); $i++) {
+
+               $getCity= DB::table('city')->where('country_id', $city[$i])->first();
                 $result = DB::table('website_delivery_areas')
                     ->insert([
                         'website_id'         => $request->website,
                         'branch_id'          => $request->branch,
-                        'city'               => addslashes($city[$i]),
+                        'name'               => $getCity->city_name,
+                        'city_id'            => addslashes($city[$i]),
                         'is_city'            => 1,
                         'estimate_of_days'   => $request->estimate_day,
                         'charge'             => $request->charges,
@@ -1174,7 +1177,7 @@ class WebsiteController extends Controller
         //          return response()->json('This ' . $areaName . ' area name already taken this ' . $websiteName . ' wsebsite.',);
         //      }
 
-        if (DB::table('website_delivery_areas')->where(['id' => $uniqueId])->update(['name' =>$areaName,'charge' => $charge])) {
+        if (DB::table('website_delivery_areas')->where(['id' => $uniqueId])->update([(session('company_id') == 102 ? '' : "'name' =>".$areaName.",").'charge' => $charge])) {
             return response()->json(['status' => 200]);
         } else {
             return response()->json(['status' => 500, 'msg' => 'Server issue record is not updated.']);
