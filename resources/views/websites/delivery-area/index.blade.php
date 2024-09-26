@@ -159,16 +159,16 @@
                  @if($area_val->website_id == $parent_rowVal->website_id)
                   
                    @php $count = $count + 1 @endphp
-                   <input type="hidden" id="removeUrlArea{{ $area_val->id }}" value="{{ route('deliveryAreaValueDestroy',[$area_val->id,$area_val->branch_id]) }}"/>
-                   @if($area_val->is_city == 1)
+                   {{-- <input type="hidden" id="removeUrlArea{{ $area_val->id }}" value="{{ route('deliveryAreaValueDestroy',[$area_val->id,$area_val->branch_id,1]) }}"/> --}}
+                   {{-- @if($area_val->is_city == 1)
                    
                    <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->city_name.' - Rs.'.$area_val->charge }}</label>
-                   @else
+                   @else --}}
                    <!--<input type="hidden" id="modifyUrlArea{{-- $area_val->id --}}" value="{{-- route('deliveryAreaNameUpdate',$area_val->id) --}}"/>-->
                    
-                   <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->name.' - Rs.'.$area_val->charge }}</label>
+                   <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">{{ $area_val->city_name.' - '.$area_val->name.' - Rs.'.$area_val->charge }}</label>
                    
-                   @endif
+                   {{-- @endif --}}
                  @endif  
              @endforeach
           </td>
@@ -205,7 +205,7 @@
 </section>
 
 <div class="modal fade modal-flex" id="editArea_md" tabindex="-1" role="dialog">
-         <div class="modal-dialog modal-md" role="document">
+         <div class="modal-dialog modal-xlg" role="document">
             <div class="modal-content">
                <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -221,6 +221,7 @@
                          <thead>
                             <tr>
                               <th>Location</th>
+                              <th>Area</th>
                               <th>Charge</th>
                               <th>Action</th>
                             </tr>
@@ -439,7 +440,7 @@
   }); 
     
     
-  function getAreaValues(brnhId,md='',webId){
+  function getAreaValues(brnhId,webId,md=''){
       $(".area_table_md tbody").empty();
         $.ajax({
                 url: "{{ route('getdeliveryAreasValues') }}",
@@ -473,11 +474,12 @@
                       // if(md == 0){
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
+                                "<td id='location_name_md_"+r[s].id+"'>"+r[s].city_name +"</td>"+
                                 "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/></td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
-                                "<td class='action-icon'>"+
-                                  "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary'>Update</i>"+
-                                  "<i onclick='deleteAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"+
+                                "<td>"+
+                                  "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary m-r-1'>Update</i>"+
+                                  "<i onclick='removeAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"+
                                   "</td>"+
                               "</tr>"
                            );                          
@@ -501,10 +503,13 @@
                    if(jXst.status == 200){
                        swal('Success!','','success');
                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
-                       let locationName = $("#name_md_"+id);
-                       
-                       $("#areaLabel"+id).text((md == 1 ? locationName.text() : locationName.val())+' - Rs.'+$("#charge_md_"+id).val());
+                       let locationName = $("#location_name_md_"+id);
+                       let areaName     = $("#name_md_"+id);
+                       let charge       = $("#charge_md_"+id);
+
+                       $("#areaLabel"+id).text(locationName.text()+' - '+areaName.val()+' - Rs.'+charge.val());
                    }else{
+                       swal('Error!',resp.msg,'error');
                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                    }
               }
@@ -527,21 +532,23 @@
             },function(isConfirm){
                 if(isConfirm){
                       $.ajax({
-                              url:$("#removeUrlArea"+id).val(),
-                              type:"DELETE",
-                              data:{_token:'{{ csrf_token() }}',id:id,stp_redirect:1},
-                              async:true,
+                              url:'{{ route("deliveryAreaValueDestroy") }}',
+                              type:"POST",
+                              data:{_token:'{{ csrf_token() }}',id:id,branchid:brnchId},
                               dataType:'json',
-                              success:function(resp){
+                              success:function(resp,txtStatus,jqXHR){
                                    console.log(resp)
-                                   if(resp.status == 200){
-                                       $("#alert_md").text('Success!').addClass('alert alert-success');
-                                       
+                                   if(jqXHR.status == 200){
+                                      //  $("#alert_md").text('Success!').addClass('alert alert-success');
+                                       swal('Success!','','success');
                                        $("#areaLabel"+id).remove();
                                        $("#tbl_md_row"+id).remove();
                                    }else{
+                                       swal('Error!',resp.msg,'error');
                                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
                                    }
+                              },error:function(e){
+                                console.log(e.responseText)
                               }
                              });                    
                 }else{
@@ -550,6 +557,46 @@
                 
             });      
   }
+
+  // function deleteAreaDetail(id,branch){
+  //   swal({
+  //               title: 'Remove Delivery Area',
+  //               text:  'Are you sure you want to remove this '+$("#name_md_"+id).val()+' delivery area from '+$("#location_name_md_"+id).val()+'?',
+  //               type: "warning",
+  //               showCancelButton: true,
+  //               confirmButtonClass: "btn btn-danger",
+  //               confirmButtonText: "YES",
+  //               cancelButtonText: "NO",
+  //               closeOnConfirm: false,
+  //               closeOnCancel: false
+  //           },function(isConfirm){
+  //               if(isConfirm){
+  //                     $.ajax({
+  //                             url:$("#removeUrlArea"+id).val(),
+  //                             type:"DELETE",
+  //                             data:{_token:'{{ csrf_token() }}',id:id,stp_redirect:1},
+  //                             async:true,
+  //                             dataType:'json',
+  //                             success:function(resp){
+  //                                  console.log(resp)
+  //                                  if(resp.status == 200){
+  //                                      $("#alert_md").text('Success!').addClass('alert alert-success');
+                                       
+  //                                      $("#areaLabel"+id).remove();
+  //                                      $("#tbl_md_row"+id).remove();
+  //                                  }else{
+  //                                      $("#alert_md").text(resp.msg).addClass('alert alert-alert');
+  //                                  }
+  //                             }
+  //                            });                    
+  //               }else{
+  //                   swal.close();
+  //               }
+                
+  //           });      
+
+
+  // }
     
     
   function createSingleLocation(brnhId,brnhName,md,webId,webName){
@@ -746,34 +793,21 @@ function swalModal(branchId,mode,brnhName,status){
                 }else{
                     swal.close();
                 }
-                
-                // else{
-                //     swal({
-                //         title: "Cancel!",
-                //         text: "All products are still inactive :)",
-                //         type: "error"
-                //     },function(isConfirm){
-                //         if(isConfirm){
-                //             //window.location="{{--url('/inventory-list')--}}";
-
-                //         }
-                //     });
-                // }
             });
         }
 
 
   $("#website").on('change',function(){
       
-       if($(this).find(':selected').attr('data-type') == 'restaurant'){
-          divBox_on_off('areaBox',1);
-          divBox_on_off('cityBox',0);
-       }else{
-          divBox_on_off('cityBox',1);
-          divBox_on_off('areaBox',0);
+      //  if($(this).find(':selected').attr('data-type') == 'restaurant'){
+      //     divBox_on_off('areaBox',1);
+      //     divBox_on_off('cityBox',0);
+      //  }else{
+      //     divBox_on_off('cityBox',1);
+      //     divBox_on_off('areaBox',0);
 
-          cityLoadNotExists();
-       }
+      //     // cityLoadNotExists();
+      //  }
 
         $.ajax({
                  url:'{{ route("getWebsiteBranches") }}',

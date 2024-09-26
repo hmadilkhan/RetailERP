@@ -40,7 +40,7 @@ Route::middleware(['statusCheck'])->group(function () {
         // Route::patch('/{id}/',[WebsiteController::class,' update_deliveryArea'])->name('deliveryAreaNameUpdate');
         Route::patch('/{branchid}/update', [WebsiteController::class, 'update_deliveryAreaSpecificField'])->name('deliveryAreaUpdate');
         Route::delete('/{branchid}/destroy', [WebsiteController::class, 'destroy_deliveryArea'])->name('deliveryAreaDestroy');
-        Route::delete('/{id}/{branchid}/destroy-area-value', [WebsiteController::class, 'destroy_deliveryAreaValue'])->name('deliveryAreaValueDestroy');
+        Route::post('destroy-delivery-area', [WebsiteController::class, 'destroy_deliveryAreaValue'])->name('deliveryAreaValueDestroy');
         Route::post('cityLoadnotExistsdilveryArea',[WebsiteController::class, 'cityLoadnotExistsdilveryArea'])->name('cityLoadnotExistsdilveryArea');
     });
 

@@ -914,7 +914,7 @@ class WebsiteController extends Controller
             ->get();
 
         $deliveryAreaValues = DB::table('website_delivery_areas as AreaList')
-            ->leftJoin('city', 'city.city_id', 'AreaList.city')
+            ->leftJoin('city', 'city.city_id', 'AreaList.city_id')
             // ->whereIn('branch_id',DB::table('branch')->where('company_id','=',$companyId)->pluck('branch_id'))
             ->whereIn('AreaList.website_id', WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->pluck('id'))
             ->where('remove', '=', 0)
@@ -939,7 +939,7 @@ class WebsiteController extends Controller
                     ->from('website_delivery_areas')
                     ->where('website_id', $request->websiteCode)
                     ->where('branch_id', $request->branchCode)
-                    ->where('status', 1);
+                    ->where('remove','=', 0);
             })
             ->pluck('city_id');
         
@@ -973,8 +973,9 @@ class WebsiteController extends Controller
         $companyId = session('company_id');
 
         return DB::table('website_delivery_areas')
-            ->leftJoin('city', 'city.city_id', 'website_delivery_areas.city')
+            ->join('city', 'city.city_id', 'website_delivery_areas.city_id')
             ->where('website_delivery_areas.website_id', '=', $request->website)
+            ->where('website_delivery_areas.remove','=',0)
             ->select('website_delivery_areas.*', 'city.city_name')
             ->get();
 
@@ -1043,6 +1044,7 @@ class WebsiteController extends Controller
                         'charge'             => $request->charges,
                         'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
                         'status'             => 1,
+                        'is_city'            => 1,
                     ]);
             }
         // }
@@ -1172,7 +1174,7 @@ class WebsiteController extends Controller
         //          return response()->json('This ' . $areaName . ' area name already taken this ' . $websiteName . ' wsebsite.',);
         //      }
 
-        if (DB::table('website_delivery_areas')->where(['id' => $uniqueId])->update([( $request->mode != 1 ? "'name' =>".$areaName."," : '').'charge' => $charge])) {
+        if (DB::table('website_delivery_areas')->where(['id' => $uniqueId])->update(['name' =>$areaName,'charge' => $charge])) {
             return response()->json(['status' => 200]);
         } else {
             return response()->json(['status' => 500, 'msg' => 'Server issue record is not updated.']);
@@ -1198,32 +1200,32 @@ class WebsiteController extends Controller
 
     public function destroy_deliveryAreaValue(Request $request)
     {
-
+            
         if (empty($request->id) || empty($request->branchid)) {
 
-            if (!isset($request->stp_redirect)) {
-                return response()->json(['status' => 'Invalid field']);
-            }
-            Session::flash('error', 'Server issue record is not removed.');
-            return redirect()->route('deliveryAreasList');
+            // if (!isset($request->stp_redirect)) {
+                return response()->json('Invalid field',500);
+            // }
+            // Session::flash('error', 'Server issue record is not removed.');
+            // return redirect()->route('deliveryAreasList');
         }
 
         if (DB::table('website_delivery_areas')->where(['id' => $request->id, 'branch_id' => $request->branchid])->update(['remove' => 1])) {
 
-            if (!isset($request->stp_redirect)) {
-                return response()->json(['status' => 200]);
-            }
-            Session::flash('success', 'Successfully');
+            // if (isset($request->stp_redirect)) {
+                return response()->json('success',200);
+            // }
+            // Session::flash('success', 'Successfully');
         } else {
 
-            if (!isset($request->stp_redirect)) {
-                return response()->json(['status' => 500, 'msg' => 'This ' . $request->area . ' delivery area not remove.']);
-            }
+            // if (isset($request->stp_redirect)) {
+                return response()->json('This ' . $request->area . ' delivery area not remove.',500);
+            // }
 
-            Session::flash('error', 'This ' . $request->areaName . ' delivery area not remove for this ' . $request->branchName . ' branch.');
+            // Session::flash('error', 'This ' . $request->areaName . ' delivery area not remove for this ' . $request->branchName . ' branch.');
         }
 
-        return redirect()->route('deliveryAreasList');
+        // return redirect()->route('deliveryAreasList');
     }
 
     public function getTerminalAssign(Request $request, branch $branch)
