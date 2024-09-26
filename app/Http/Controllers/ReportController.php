@@ -3482,6 +3482,25 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
                 $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
                 $pdf->Cell(30, 7, number_format($totalmargin), 'B,T', 1, 'R');
+
+                $pdf->SetFont('Arial', 'B', 12);
+
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
+
+                $pdf->SetFont('Arial', 'B', 10);
+                $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
+                $pdf->Cell(63, 7, number_format($totalSalesReturnOrders), 'B,T', 0, 'R');
+                $pdf->Cell(63, 7, number_format($totalSalesReturnOrdersAmount), 'B,T', 1, 'R');
+                $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
+                $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
+                $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
+                $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
+                $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
+                $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
             }
         } else {
             
