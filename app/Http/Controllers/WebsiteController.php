@@ -954,6 +954,7 @@ class WebsiteController extends Controller
         $result = DB::table('city')
             ->whereNotIn('city_id', $cities)
             ->where('country_id',170)
+            ->orderByRaw('city_name IS NULL, city_name ASC') 
             ->get();
 
 
