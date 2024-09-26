@@ -888,26 +888,27 @@ function swalModal(branchId,mode,brnhName,status){
             
         }
       }); // ajax method close
-    }else{
-      $.ajax({
-               url:'{{ route("cityLoadnotExistsdilveryArea") }}',
-               type:'POST',
-               data:{_token:'{{ csrf_token() }}',mode:0},
-               dataType:'json',
-               success: function(resp, txtStatus, jxState) {
-            if (jxState.status === 200) {
-              $("#city").empty();
-                $.each(resp, function(i) {
-                     $("#city").append('<option value="'+resp[i].city+'">'+resp[i].city_name+'</option>');
-                });
-            }
-        },
-        error: function(jqXHR, textStatus, errorThrown) {
-            console.error('Error:', textStatus, errorThrown);
-            
-        }
-      });    
     }
+    // else{
+    //   $.ajax({
+    //            url:'{{ route("cityLoadnotExistsdilveryArea") }}',
+    //            type:'POST',
+    //            data:{_token:'{{ csrf_token() }}',mode:0},
+    //            dataType:'json',
+    //            success: function(resp, txtStatus, jxState) {
+    //         if (jxState.status === 200) {
+    //           $("#city").empty();
+    //             $.each(resp, function(i) {
+    //                  $("#city").append('<option value="'+resp[i].city+'">'+resp[i].city_name+'</option>');
+    //             });
+    //         }
+    //     },
+    //     error: function(jqXHR, textStatus, errorThrown) {
+    //         console.error('Error:', textStatus, errorThrown);
+            
+    //     }
+    //   });    
+    // }
   }
 
  </script>
