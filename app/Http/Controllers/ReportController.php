@@ -3511,7 +3511,7 @@ class ReportController extends Controller
                 $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
                 $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
 
-                $pdf->ln(5);
+                $pdf->ln(10);
             }
         } else {
 
