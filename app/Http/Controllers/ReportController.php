@@ -4892,7 +4892,7 @@ class ReportController extends Controller
                 $totalbalanceamount = 0;
 
                 $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $salesperson->id);
-                return $orders;
+                echo 
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
@@ -4905,6 +4905,7 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
 
                 foreach ($orders as $values) {
+                    echo $values->id;
                     $totalamount += (int)$values->total_amount;
                     $totalOrder++;
                     // $totalbalanceamount += $values->balance_amount;
