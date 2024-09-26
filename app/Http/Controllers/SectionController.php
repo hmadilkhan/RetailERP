@@ -136,7 +136,7 @@ class SectionController extends Controller
           return redirect()->route('sections.index');
       }
       
-      if(Section::where(['id'=>$id,'company_id'=>session('company_id'),'status'=>1])->delete()){
+      if(Section::where(['id'=>$id,'company_id'=>session('company_id')])->delete()){
             
          Session::flash('success','Success!'); 
       }else{
