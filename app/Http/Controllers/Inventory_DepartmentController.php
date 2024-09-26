@@ -78,8 +78,9 @@ class Inventory_DepartmentController extends Controller
     public function store(Request $request, inventory_department $invent_department, custom_helper $helper)
     {
         try {
-            $imageName       = "";
-            $bannerImageName = "";
+            $imageName         = "";
+            $bannerImageName   = "";
+            $mobile_bannerName = "";
 
             // if (!empty($request->post('parent'))) {
             //     $exsist = $invent_department->subdepart_exists($request->deptname, $request->post('parent'));
@@ -154,6 +155,12 @@ class Inventory_DepartmentController extends Controller
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";
             }
 
+            if (!empty($request->file('mobile_banner'))) { //department banner 
+                $rules['mobile_banner'] = 'image|mimes:jpeg,png,jpg,webp|max:1024';
+                $file = $this->uploads($request->file('mobile_banner'), "images/department/");
+                $mobile_bannerName = !empty($file) ? $file["fileName"] : "";
+            }            
+
             $this->validate($request, $rules); // validation module 
 
 
@@ -168,6 +175,7 @@ class Inventory_DepartmentController extends Controller
                 'slug'                     => preg_replace("/[\s_]/", "-", strtolower($request->get('department_iname'))),
                 "image"                    => $imageName,
                 "banner"                   => $bannerImageName,
+                "mobile_banner"            => $mobile_banner,
                 "meta_title"               => $request->metatitle,
                 "meta_description"         => $request->metadescript,
                 'website_mode'             => isset($request->showWebsite) ? 1 : 0
