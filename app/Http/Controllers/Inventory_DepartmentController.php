@@ -248,6 +248,7 @@ class Inventory_DepartmentController extends Controller
 
         $imageName       = null;
         $bannerImageName = null;
+        $mobile_banner   = null;
 
         if ($invent_department->check_edit_sub_depart_code($request->id, $request->code, $request->dept)) {
             return response()->json(array("state" => 1, "msg" => 'This Sub-department code already exists.', "contrl" => 'deptname'));
@@ -280,6 +281,16 @@ class Inventory_DepartmentController extends Controller
                 $this->removeImage("images/department/", $get->banner);
             }
         }
+
+        if (!empty($request->file('subdepartMobileBanner'))) {
+            $file = $this->uploads($request->file('subdepartMobileBanner'), "images/department/");
+            $mobile_banner = !empty($file) ? $file["fileName"] : "";
+
+            $get = DB::table('inventory_sub_department')->where('sub_department_id', $request->id)->first();
+            if ($get != null) {
+                $this->removeImage("images/department/", $get->mobile_banner);
+            }
+        }       
         
         $column = [
                     'sub_depart_name' => $request->sdepart,
@@ -293,6 +304,10 @@ class Inventory_DepartmentController extends Controller
 
         if ($bannerImageName != null) {
             $column['banner'] = $bannerImageName;
+        } 
+
+        if ($mobile_banner != null) {
+            $column['mobile_banner'] = $mobile_banner;
         } 
         
         if ($request->get('code') != null) {

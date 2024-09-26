@@ -787,6 +787,7 @@
             let code    = $("#department_code").val();
             let subdepartImage       = $('#sdbptImg' + id).length ? $('#sdbptImg' + id)[0] : null;
             let subdepartBannerImage = $('#sdbptbannerImg' + id).length ? $('#sdbptbannerImg' + id)[0] : null;
+            let subdepartMobileBanner = $('#mobile_banner_sdbedit' + id).length ? $('#mobile_banner_sdbedit' + id)[0] : null;
 
             if (code == $("#code_" + id).val() && $("#code_" + id).val() != '') {
                 swal_alert('Alert!', "Cannot use the main department code.", 'error', false);
@@ -816,6 +817,13 @@
                     formData.append('subdepartBannerImage', subdepartBannerImage.files[0]);
                 }
                }
+
+               if(subdepartMobileBanner  != null){  
+                if (subdepartMobileBanner.files.length != 0 && subdepartMobileBanner.files[0].size <= 1048576) {
+                    formData.append('subdepartMobileBanner', subdepartMobileBanner.files[0]);
+                }
+               }
+               
                 // sdbptbannerImg
 
                 if (process) {
