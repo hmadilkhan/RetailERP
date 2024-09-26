@@ -622,7 +622,9 @@ class ReportController extends Controller
 
     public function getTerminals(Request $request)
     {
-        if ($request->branch != "") {
+        if (is_array($request->branch) && $request->branch != "") {
+            return response()->json(["terminal" => Terminal::whereIn("branch_id", $request->branch)->where("status_id", 1)->select("terminal_id", "terminal_name")->get()]);
+        }elseif ($request->branch != "") {
             return response()->json(["terminal" => Terminal::where("branch_id", $request->branch)->where("status_id", 1)->select("terminal_id", "terminal_name")->get()]);
         } else {
             return 0;

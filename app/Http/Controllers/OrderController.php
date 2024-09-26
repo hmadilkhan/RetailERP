@@ -122,14 +122,14 @@ class OrderController extends Controller
         $mode = $order->ordersMode();
         $branch = $order->getBranch();
         $serviceproviders = $orderService->getServiceProviders();
-        $orders = "";
-        $totalorders = $order->getTotalAndSumofOrdersQuery($request);
+        $orders = [];
+        $totalorders = [];//$order->getTotalAndSumofOrdersQuery($request);
         return view('order.orderviewnew', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'orders', 'serviceproviders', 'totalorders', 'statuses'));
     }
 
     public function getNewPOSOrders(Request $request, order $order)
     {
-        // return $request;
+        // return $request->status;
         $orders = $order->getNewPOSOrdersQuery($request);
         // return $orders;
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
