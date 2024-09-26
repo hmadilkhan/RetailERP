@@ -94,7 +94,7 @@
             <label for="city" class="form-control-label">City</label>
             <br/>
               @php $oldCity = old('city'); @endphp
-            <select name="city" id="city" data-placeholder="Select" class="form-control select2">
+            <select name="city[]" id="city" data-placeholder="Select" class="form-control select2" multiple>
               <option value="">Select</option>
               @foreach($city as $val)
                  <option {{ $val->city_id == $oldCity ? 'selected' : '' }}  value="{{ $val->city_id }}" >{{ $val->city_name }}</option> 
