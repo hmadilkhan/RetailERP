@@ -69,9 +69,9 @@ class SectionController extends Controller
           return redirect()->route('sections.index');
       }   
       
-      $lists = Section::where(['company_id'=>session('company_id'),'status'=>1])->get();
+      $lists = Section::where(['company_id'=>session('company_id')])->get();
       
-      $edit  = Section::where(['id'=>$id,'company_id'=>session('company_id'),'status'=>1])->first();
+      $edit  = Section::where(['id'=>$id,'company_id'=>session('company_id')])->first();
         
      return view('Invent_Department.Section.index',compact('lists','id','edit'));   
     }
@@ -136,7 +136,7 @@ class SectionController extends Controller
           return redirect()->route('sections.index');
       }
       
-      if(Section::where(['id'=>$id,'company_id'=>session('company_id'),'status'=>1])->update(['status'=>0])){
+      if(Section::where(['id'=>$id,'company_id'=>session('company_id'),'status'=>1])->delete()){
             
          Session::flash('success','Success!'); 
       }else{
