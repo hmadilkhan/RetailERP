@@ -1012,23 +1012,23 @@ class WebsiteController extends Controller
 
         // $result = null;
 
-        // if ($request->city != null) {
-        //     $city  = $request->city;
+        if ($request->city != null && session('company_id') == 102) {
+            $city  = $request->city;
 
-        //     for ($i = 0; $i < count($city); $i++) {
-        //         $result = DB::table('website_delivery_areas')
-        //             ->insert([
-        //                 'website_id'         => $request->website,
-        //                 'branch_id'          => $request->branch,
-        //                 'city'               => addslashes($city[$i]),
-        //                 'is_city'            => 1,
-        //                 'estimate_of_days'   => $request->estimate_day,
-        //                 'charge'             => $request->charges,
-        //                 'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
-        //                 'status'             => 1,
-        //             ]);
-        //     }
-        // } else {
+            for ($i = 0; $i < count($city); $i++) {
+                $result = DB::table('website_delivery_areas')
+                    ->insert([
+                        'website_id'         => $request->website,
+                        'branch_id'          => $request->branch,
+                        'city'               => addslashes($city[$i]),
+                        'is_city'            => 1,
+                        'estimate_of_days'   => $request->estimate_day,
+                        'charge'             => $request->charges,
+                        'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
+                        'status'             => 1,
+                    ]);
+            }
+        } else {
             $areas  = explode(',', $request->areas);
 
             for ($i = 0; $i < count($areas); $i++) {
@@ -1044,10 +1044,10 @@ class WebsiteController extends Controller
                         'charge'             => $request->charges,
                         'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
                         'status'             => 1,
-                        'is_city'            => 1,
+                        // 'is_city'            => session('company_id') == 102 ? 1 : 0,
                     ]);
             }
-        // }
+        }
 
         DB::commit();
         // if ($result == null) {

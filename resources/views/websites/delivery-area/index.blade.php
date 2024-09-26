@@ -384,17 +384,22 @@
           process_md = false;   
       } 
       
-      if($("#areas").val() == ''){
+      @if(session('company_id') != 102)
+       if($("#areas").val() == ''){
           $("#areas").focus();
           $("#areas_alert").text('field is required.');   
           process_md = false;   
-      }  
+      } 
+     
       
       if($("#time_estimate").val() == ''){
           $("#time_estimate").focus();
           $("#time_estimate_alert").text('field is required.');   
           process_md = false;   
       }       
+      @endif 
+
+      @if(session('company_id') == 102)
       
       if($("#city").val() == ''){
           $("#city").focus();
@@ -407,7 +412,7 @@
           $("#estimate_day_alert").text('field is required.');   
           process_md = false;   
       } 
-
+      @endif 
 
       if(process_md){
             $("#deliveryAreasForm").submit();
