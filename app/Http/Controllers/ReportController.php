@@ -4905,7 +4905,7 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
 
                 foreach ($orders as $values) {
-                    $totalamount += $values->total_amount;
+                    $totalamount += (int)$values->total_amount;
                     $totalOrder++;
                     // $totalbalanceamount += $values->balance_amount;
 
@@ -4981,6 +4981,6 @@ class ReportController extends Controller
             $pdf->Cell(63, 7, '', 'B,T', 1, 'C');
         }
         //save file
-        $pdf->Output('Order Booking Report.pdf', 'I');
+        $pdf->Output('Sales Person Report.pdf', 'I');
     }
 }
