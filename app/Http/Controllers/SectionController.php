@@ -45,8 +45,8 @@ class SectionController extends Controller
         
 
         $save = Section::create(array_merge(
-                $request->except(["_token","slug"]),
-                ['created_at' => date("Y-m-d H:i:s"),'created_at' => date("Y-m-d H:i:s"),'company_id' => session('company_id'),'slug'=>$this->removeSpecialCharacters((!empty($request->slug) ? $request->slug : $request->name))]));
+                $request->except(["_token"]),
+                ['created_at' => date("Y-m-d H:i:s"),'created_at' => date("Y-m-d H:i:s"),'company_id' => session('company_id')]));
                 
         if(!$save){
             Session::flash('error','Error! record is not saved.');
@@ -114,8 +114,6 @@ class SectionController extends Controller
           $recordUpdate = Section::find($id);
            
           $recordUpdate->name     = $request->name;
-          $recordUpdate->slug     = $this->removeSpecialCharacters((!empty($request->slug) ? $request->slug : $request->name));
-          $recordUpdate->priority = $request->priority;
 
           if($recordUpdate->save()){
               Session::flash('success','Success!');  
