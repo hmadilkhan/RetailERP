@@ -524,8 +524,15 @@
                     salesperson: $('#orderserviceprovider').val(),
                 },
                 success: function(data) {
+                    console.log(data);
+                    
                     $('#table_data').empty();
-                    $('#table_data').html(data);
+                    if (data != "") {
+                        $('#table_data').html(data);
+                    }else{
+                        
+                        $('#table_data').html('<tr><td colspan="15">No Record Found</td></tr>');
+                    }
                 }
             });
         }

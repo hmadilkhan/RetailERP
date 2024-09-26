@@ -21,7 +21,7 @@
             </tr>
         </thead>
         <tbody>
-            @if ($orders)
+            @if ($orders->isNotEmpty())
                 @foreach ($orders as $key => $order)
                     <tr class="{{ $order->is_sale_return == 1 ? 'table-danger' : '' }}">
                         <td>{{ $order->machine_terminal_count }}</td>
@@ -148,6 +148,10 @@
                         </td>
                     </tr>
                 @endforeach
+            @else
+                <tr>
+                    <td colspan="15" class="text-center">No Record Found</td>
+                </tr>
             @endif
         </tbody>
     </table>

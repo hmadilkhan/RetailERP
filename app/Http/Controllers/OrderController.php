@@ -133,6 +133,7 @@ class OrderController extends Controller
         $orders = $order->getNewPOSOrdersQuery($request);
         // return $orders;
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
+        // return $request;
         // return $totalorders;
         // $filteredArray = Arr::where($totalorders->toArray(), function ($value, $key) {
         // return $value->order_status_name == "Void";
