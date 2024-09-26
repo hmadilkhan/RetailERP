@@ -618,6 +618,9 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/delete-subdepartment', [Inventory_DepartmentController::class, 'remove_sbdept']);
     Route::post('/department-connect-website', [Inventory_DepartmentController::class, 'departmentWebsiteConnect'])->name('department_website_connect');
 
+    // sections
+    Route::resource('inventory/department/sections', SectionController::class);
+
     //Inventory Stock
     Route::get('/stock-list', [StockController::class, 'index']);
     Route::get('/stock-details/{id}', [StockController::class, 'getStock']);
