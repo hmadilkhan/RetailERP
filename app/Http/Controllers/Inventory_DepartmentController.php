@@ -175,7 +175,7 @@ class Inventory_DepartmentController extends Controller
                 'slug'                     => preg_replace("/[\s_]/", "-", strtolower($request->get('department_iname'))),
                 "image"                    => $imageName,
                 "banner"                   => $bannerImageName,
-                "mobile_banner"            => $mobile_banner,
+                "mobile_banner"            => $mobile_bannerName,
                 "meta_title"               => $request->metatitle,
                 "meta_description"         => $request->metadescript,
                 'website_mode'             => isset($request->showWebsite) ? 1 : 0
