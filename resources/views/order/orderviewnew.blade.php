@@ -439,8 +439,8 @@
         $(".select2").select2();
         getTerminal();
         
-        // $("#date").val('{{ date('Y-m-d') }}')
-        // $("#rpdate").val('{{ date('Y-m-d') }}') */
+        $("#date").val('{{ date('Y-m-d') }}')
+        $("#rpdate").val('{{ date('Y-m-d') }}')
 
         $('#date,#rpdate,#del_from,#del_to').bootstrapMaterialDatePicker({
             format: 'YYYY-MM-DD',
@@ -524,15 +524,9 @@
                     salesperson: $('#orderserviceprovider').val(),
                 },
                 success: function(data) {
-                    console.log(data);
-                    
                     $('#table_data').empty();
-                    if (data != "") {
-                        $('#table_data').html(data);
-                    }else{
-                        
-                        $('#table_data').html('<tr><td colspan="15">No Record Found</td></tr>');
-                    }
+                    $('#table_data').html(data);
+                    
                 }
             });
         }
