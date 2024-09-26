@@ -433,7 +433,7 @@
                                         Mobile Banner</label></br>
 
                                     <label for="subdepartMobileBanner_add" class="custom-file">
-                                        <input type="file" name="subdepartBanner" id="subdepartMobileBanner_add"
+                                        <input type="file" name="mobile_banner_sbdepart" id="subdepartMobileBanner_add"
                                             class="custom-file-input">
                                         <span class="custom-file-control"></span>
                                     </label>

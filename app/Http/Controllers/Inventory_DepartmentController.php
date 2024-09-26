@@ -428,6 +428,7 @@ class Inventory_DepartmentController extends Controller
     {
         $imageName = null;
         $bannerImageName = null;
+        $mobile_banner   = null;
 
         $exsist = $in_depart->subdepart_exists($request->subdepart, $request->departid);
         if ($exsist[0]->counter == 0) {
@@ -440,7 +441,12 @@ class Inventory_DepartmentController extends Controller
             if (!empty($request->file('subdepartBanner'))) {
                 $file = $this->uploads($request->file('subdepartBanner'), "images/department/");
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";               
-            }            
+            }  
+            
+            if (!empty($request->file('mobile_banner_sbdepart'))) {
+                $file = $this->uploads($request->file('mobile_banner_sbdepart'), "images/department/");
+                $mobile_banner = !empty($file) ? $file["fileName"] : "";               
+            }             
 
             $items = [
                 'code'                         => $request->code,
@@ -450,6 +456,7 @@ class Inventory_DepartmentController extends Controller
                 'slug'                         => preg_replace("/[\s_]/", "-", strtolower($request->subdepart)),
                 'image'                        => $imageName,
                 'banner'                       => $bannerImageName,
+                'mobile_banner'                => $mobile_banner,
                 'website_mode'                 => isset($request->showWebsite) ? 1 : 0,
             ];
             $result = $in_depart->insert_sdept($items);
@@ -464,7 +471,7 @@ class Inventory_DepartmentController extends Controller
         $imageName = null;
         $bannerImageName = null;
         $mobile_banner = null;
-        
+
         if (!empty($request->editcode)) {
             if ($in_depart->check_edit_depart_code($request->departid, $request->editcode)) {
                 return response()->json(array("state" => 1, "msg" => 'This department code already exists.', "contrl" => 'codeid'));
