@@ -4905,7 +4905,6 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
 
                 foreach ($orders as $values) {
-                    echo $values->id;
                     $totalamount += (int)$values->total_amount;
                     $totalOrder++;
                     // $totalbalanceamount += $values->balance_amount;
