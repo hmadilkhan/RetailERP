@@ -259,7 +259,7 @@
                                                 <label for="mobileBannerImage_md" class="form-control-label">Department
                                                     Mobile Banner</label></br>
                                                 <label for="mobileBannerImage_md" class="custom-file">
-                                                    <input type="file" name="bannerImage" id="mobileBannerImage_md"
+                                                    <input type="file" name="mobile_banner" id="mobileBannerImage_md"
                                                         class="custom-file-input">
                                                     <span class="custom-file-control"></span>
                                                 </label>
