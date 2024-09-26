@@ -471,7 +471,7 @@
                   }
                 $("#editArea_md").modal("show");
                 
-                $(".area_table_md").removeClass('dataTable');
+                // $(".area_table_md").removeClass('dataTable');
                   for(var s=0;s < r.length ;s++){
                       if(md == 1){ 
                           $(".area_table_md tbody").append(
