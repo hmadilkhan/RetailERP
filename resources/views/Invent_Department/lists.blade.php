@@ -303,7 +303,8 @@
                                     <th>Sub Department</th>
                                     <th>Website Department</th>
                                     <th>Image</th>
-                                    <th>Banner</th>
+                                    <th>Desktop Banner</th>
+                                    <th>Mobile Banner</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -428,7 +429,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
-                                        width="150px" height="250px" id="previewMobileBanner_sbmd" /></br>
+                                        width="150" height="200" id="previewMobileBanner_sbmd" /></br>
                                     <label for="subdepartMobileBanner_add" class="form-control-label">Sub Department
                                         Mobile Banner</label></br>
 
@@ -676,7 +677,11 @@
         // }
         $("#subdepartBanner_add").change(function() {
             readURL(this, 'previewBanner_sbmd');
-        });       
+        });  
+        
+        $("#subdepartMobileBanner_add").change(function() {
+            readURL(this, 'previewMobileBanner_sbmd');
+        }); 
 
         $("#bannerImage_md").change(function() {
             readURL(this, 'previewDepartBannerImage_md');
@@ -946,6 +951,12 @@
                             "'><div><input type='file' name='sdbptbannerImg' class='d-none' id='sdbptbannerImg" + r[s]
                             .sub_department_id + "'> <i id='btn_selectbannerImg" + r[s].sub_department_id +
                             "' class='icofont icofont-upload text-success icofont-3x' onclick='selectbannerImg(" + r[
+                                s].sub_department_id + ")'></i></div></td>";    
+                                
+                        let mobileBannerColumn = "<td id='mobileBannerCell_md" + r[s].sub_department_id +
+                            "'><div><input type='file' name='mobile_banner_sdbedit' class='d-none' id='mobile_banner_sdbedit" + r[s]
+                            .sub_department_id + "'> <i id='btn_selectMobileBanner" + r[s].sub_department_id +
+                            "' class='icofont icofont-upload text-success icofont-3x' onclick='selectMobilebanner(" + r[
                                 s].sub_department_id + ")'></i></div></td>";                                
 
                         if (r[s].image != null && r[s].image != '') {
@@ -961,6 +972,14 @@
                                 "' width='64' height='64'/><i class='icofont icofont-close text-danger' onclick='removeBannerImgCell(" +
                                 r[s].sub_department_id + ")'></i></div></td>";
                         }
+
+ 
+                        if (r[s].mobile_banner != null && r[s].mobile_banner != '') {
+                            mobileBannerColumn = "<td id='mobileBannerCell_md" + r[s].sub_department_id + "'><div><img src='" +
+                                location.origin + "/storage/images/department/" + r[s].mobile_banner +
+                                "' width='64' height='64'/><i class='icofont icofont-close text-danger' onclick='removeMobileBannerCell(" +
+                                r[s].sub_department_id + ")'></i></div></td>";
+                        }                       
 
                         $(".sb_tble tbody").append(
                             "<tr id='subDept_rowmd"+r[s]
@@ -979,7 +998,7 @@
                             r[s].sub_department_id + "'/>" +
                             "<div class='form-control-feedback text-danger' id='tbxwb_" + r[s]
                             .sub_department_id + "_alert'></div>" + "</td>" +
-                            imageColumn + bannerColumn +
+                            imageColumn + bannerColumn + mobileBannerColumn +
                             "<td class='action-icon'><button type='button' onclick='update(" + r[s].sub_department_id + "," +
                             departid + ")' class='btn btn-primary m-r-1'> Update</button>"+
                             "<button type='button' onclick='deleteSubDepart("+r[s].sub_department_id +")' class='btn btn-danger'> Remove</button>"+
@@ -1017,10 +1036,20 @@
           $("#bannerCell_md" + id).append('<input type="file" name="sdbptbannerImg" class="d-none" id="sdbptbannerImg' + id +
               '"> <i id="btn_selectbannerImg' + id +
               '" class="icofont icofont-upload text-success icofont-3x" onclick="selectbannerImg(' + id + ')"></i>');
-        }        
+        }    
+
+        function removeMobileBannerCell(id) {
+
+            $("#mobileBannerCell_md" + id).empty();
+            $("#mobileBannerCell_md" + id).append('<input type="file" name="sdbptbannerImg" class="d-none" id="mobile_banner_sdbedit' + id +
+                '"> <i id="btn_selectMobileBanner' + id +
+                '" class="icofont icofont-upload text-success icofont-3x" onclick="selectMobilebanner(' + id + ')"></i>');
+        }  
+        
 
         let imgdId = null;
         let bannerImgId = null;
+        let mobileBannerId = null;
 
         function selectImg(id) {
             imgdId = id;
@@ -1051,6 +1080,21 @@
                 readURL(this, "bannerimgPreviewsdbpt" + id);
             })
         }
+
+        function selectMobilebanner(id) {
+            mobileBannerId = id;
+            $("#mobile_banner_sdbedit" + id).trigger('click');
+            mobileBannerGet_sbd_md(id)
+        } 
+        
+        function mobileBannerGet_sbd_md(id) {
+            $("#mobile_banner_sdbedit" + id).on('change', function() {
+                $("#btn_selectMobileBanner" + id).remove();
+                $("#mobileBannerCell_md" + id).append('<img src="" width="64" height="64" id="mobilebannerPreviewsdbpt' + id +
+                    '"> <i class="icofont icofont-close text-danger" onclick="removeMobileBannerCell(' + id + ')"></i>');
+                readURL(this, "mobilebannerPreviewsdbpt" + id);
+            })
+        }        
 
         function updatedepart() {
             var form = document.getElementById('editDepartmentForm');
