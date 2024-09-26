@@ -114,8 +114,11 @@
                     </div>
                     <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                         <label class="form-control-label">Select Status</label>
+                        <i id="btn_depart" class="icofont icofont-eraser mt-2 f-right text-success" data-toggle="tooltip"
+                            data-placement="top" title="" data-original-title="Clear All"
+                            onclick="clearControl('orderstatus')"></i>
                         <select id="orderstatus" name="orderstatus" data-placeholder="Select Status"
-                            class="f-right select2">
+                            class="f-right select2" multiple>
                             <option value="">Select Status</option>
                             @foreach ($statuses as $status)
                                 <option value="{{ $status->order_status_id }}">{{ $status->order_status_name }}</option>
@@ -124,9 +127,13 @@
                     </div>
                     <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="">
                         <label class="form-control-label">Select Branch</label>
-                        <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2">
+                        <i id="btn_depart" class="icofont icofont-eraser mt-2 f-right text-success" data-toggle="tooltip"
+                            data-placement="top" title="" data-original-title="Clear All"
+                            onclick="clearControl('branch')"></i>
+                        <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2"
+                            multiple>
                             @if (session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19)
-                                <option value="all">All</option>
+                                <option selected value="all">All</option>
                             @endif
                             @foreach ($branch as $value)
                                 <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
@@ -134,15 +141,18 @@
                         </select>
                     </div>
 
-                    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
+                    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                         <label class="form-control-label">Select Terminal</label>
+                        <i id="btn_depart" class="icofont icofont-eraser mt-2 f-right text-success" data-toggle="tooltip"
+                            data-placement="top" title="" data-original-title="Clear All"
+                            onclick="clearControl('terminal')"></i>
                         <select id="terminal" name="terminal" data-placeholder="Select Terminal"
-                            class="f-right select2">
-                            <option value="">Select Terminal</option>
+                            class="f-right select2" multiple>
+                            <option selected value="all">All</option>
                         </select>
                     </div>
                     @if (session('roleId') != 20 && session('roleId') != 19)
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                             <label class="form-control-label">Select Customer</label>
                             <select id="customer" name="customer" data-placeholder="Select Customer"
                                 class="f-right select2">
@@ -168,7 +178,8 @@
                                 data-placeholder="Select Sales Person" class="f-right select2">
                                 <option value="all">All</option>
                                 @foreach ($serviceproviders as $provider)
-                                    <option value="{{ $provider->serviceprovideruser->user_id }}">{{ $provider->provider_name }}</option>
+                                    <option value="{{ $provider->serviceprovideruser->user_id }}">
+                                        {{ $provider->provider_name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -254,7 +265,7 @@
                         </div>
                     </div>
                 </div>
-                {{-- @if(session("company_id") == 102) --}}
+                {{-- @if (session('company_id') == 102) --}}
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Dispatch Orders</span>
@@ -287,7 +298,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
         </div>
         <div class="card">
@@ -438,7 +449,7 @@
     <script type="text/javascript">
         $(".select2").select2();
         getTerminal();
-        
+
         $("#date").val('{{ date('Y-m-d') }}')
         $("#rpdate").val('{{ date('Y-m-d') }}')
 
@@ -526,7 +537,9 @@
                 success: function(data) {
                     $('#table_data').empty();
                     $('#table_data').html(data);
-                    
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    $("#table_data").empty();
                 }
             });
         }
@@ -670,7 +683,42 @@
         $("#branch").change(function() {
             getTerminal();
             getServiceProviderByBranch();
+            clearAllFromControl($(this).val(), 'branch');
         })
+
+        $("#terminal").change(function() {
+            clearAllFromControl($(this).val(), 'terminal');
+        })
+        $("#orderstatus").change(function() {
+            clearAllFromControl($(this).val(), 'orderstatus');
+        })
+
+
+
+        function clearAllFromControl(values, controlId) {
+            var selectedValues = values;
+            // If nothing is selected, set "All" as the default selection
+            console.log(selectedValues);
+            
+            
+            // If "All" is selected, unselect other options
+            if (selectedValues.includes('all')) {
+                // Deselect other options
+                $('#' + controlId + ' option[value="all"]').prop('selected', false);
+                // $('#branch option').not('[value="all"]').prop('selected', false);
+            } else {
+                // If any other option is selected, unselect "All"
+                $('#' + controlId + ' option[value="all"]').prop('selected', false);
+            }
+
+            if (!selectedValues || selectedValues.length === 0) {
+                // $('#orderserviceprovider option[value="all"]').prop('selected', true);
+                $("#" + controlId).val('all').trigger('change.select2')
+            }
+            // Update the select input manually to trigger the change
+            $('#' + controlId).trigger('change.select2');
+
+        }
 
         function getTerminal() {
             $.ajax({
@@ -689,6 +737,7 @@
                     $('#loader').addClass('hidden')
                     if (result != 0) {
                         $("#terminal").empty();
+                        $("#terminal").append('<option selected value="all">All</option>');
                         $.each(result.terminal, function() {
                             $("#terminal").append('<option value="' + this.terminal_id + '"+>' + this
                                 .terminal_name + '</option>');
@@ -717,7 +766,7 @@
                     branch: $("#branch").val(),
                 },
                 success: function(result) {
-                    console.log("Fetching Providers",result);
+                    console.log("Fetching Providers", result);
                     $('#loader').addClass('hidden')
                     if (result != 0) {
                         $("#orderserviceprovider").empty();
@@ -872,7 +921,7 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=excel&salesperson="+$('#orderserviceprovider').val());
+                    "&report=excel&salesperson=" + $('#orderserviceprovider').val());
             }
         })
 
@@ -887,9 +936,13 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=pdf&salesperson="+$('#orderserviceprovider').val());
+                    "&report=pdf&salesperson=" + $('#orderserviceprovider').val());
             }
 
         })
+
+        function clearControl(controlId) {
+            $("#" + controlId).val('all').trigger('change.select2')
+        }
     </script>
 @endsection

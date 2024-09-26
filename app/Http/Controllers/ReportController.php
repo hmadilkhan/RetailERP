@@ -622,7 +622,9 @@ class ReportController extends Controller
 
     public function getTerminals(Request $request)
     {
-        if ($request->branch != "") {
+        if (is_array($request->branch) && $request->branch != "") {
+            return response()->json(["terminal" => Terminal::whereIn("branch_id", $request->branch)->where("status_id", 1)->select("terminal_id", "terminal_name")->get()]);
+        }elseif ($request->branch != "") {
             return response()->json(["terminal" => Terminal::where("branch_id", $request->branch)->where("status_id", 1)->select("terminal_id", "terminal_name")->get()]);
         } else {
             return 0;
@@ -4890,7 +4892,7 @@ class ReportController extends Controller
                 $totalbalanceamount = 0;
 
                 $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $salesperson->id);
-
+                echo 
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
@@ -4903,7 +4905,7 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, 'Time', 'B', 1, 'C', 1);
 
                 foreach ($orders as $values) {
-                    $totalamount += $values->total_amount;
+                    $totalamount += (int)$values->total_amount;
                     $totalOrder++;
                     // $totalbalanceamount += $values->balance_amount;
 
@@ -4979,6 +4981,6 @@ class ReportController extends Controller
             $pdf->Cell(63, 7, '', 'B,T', 1, 'C');
         }
         //save file
-        $pdf->Output('Order Booking Report.pdf', 'I');
+        $pdf->Output('Sales Person Report.pdf', 'I');
     }
 }

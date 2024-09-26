@@ -142,16 +142,18 @@ class order extends Model
 			$fromDate = $request->first;
 			$toDate = $request->second;
 		}
+
 		// else{
 		// 	$fromDate = date("Y-m-d");
 		// 	$toDate = date("Y-m-d");
 		// }
-		if ($request->branch == "all") {
+		if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+		}else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->whereIn("branch_id",$request->branch)->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 		} else {
-			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->where("terminal_id", $request->terminal)->pluck("opening_id");
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
 		}
-
 		$query = DB::table("sales_receipts")
 			->join("branch", "branch.branch_id", "=", "sales_receipts.branch")
 			->join("terminal_details", "terminal_details.terminal_id", "=", "sales_receipts.terminal_id")
@@ -182,16 +184,16 @@ class order extends Model
 			->when($request->machineOrderNo != "", function ($query) use ($request) {
 				$query->where('sales_receipts.machine_terminal_count', $request->machineOrderNo);
 			})
-			->when($request->branch != "" && $request->branch != "all", function ($query) use ($request) {
-				$query->where('sales_receipts.branch', $request->branch);
+			->when(!empty($request->branch) &&  $request->branch[0] != 'all', function ($query) use ($request) {
+				$query->whereIn('sales_receipts.branch', $request->branch);
 			})
 			// ->when($request->branch == "" && $request->branch != "all", function ($query) use ($request) {
 			// 	$query->where('sales_receipts.branch', session('branch'));
 			// })
-			->when($request->branch == "all", function ($query) use ($request) {
+			->when(!empty($branch) && $request->branch[0] == "all", function ($query) use ($request) {
 				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
 			})
-			->when($request->terminal != "", function ($query) use ($request) {
+			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
 				$query->where('sales_receipts.terminal_id', $request->terminal);
 			})
 			->when($request->payMode != "", function ($query) use ($request) {
@@ -206,8 +208,8 @@ class order extends Model
 			->when($request->customer != "", function ($query) use ($request) {
 				$query->where('sales_receipts.customer_id', $request->customer);
 			})
-			->when($request->status != "", function ($query) use ($request) {
-				$query->where('sales_receipts.status', $request->status);
+			->when(!empty($request->status), function ($query) use ($request) {
+				$query->whereIn('sales_receipts.status', $request->status);
 			})
 			->when($request->customerNo != "", function ($query) use ($request) {
 				$query->where('customers.mobile', $request->customerNo);
@@ -228,6 +230,7 @@ class order extends Model
 			$results = $query->get();
 		} else {
 			$results = $query->paginate(100);
+			// $results = $query->toSql();
 		}
 
 		return $results;
@@ -245,10 +248,13 @@ class order extends Model
 			$toDate = $request->second;
 		}
 
-		if ($request->branch == "all") {
+		if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+		}else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->whereIn("branch_id",$request->branch)->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 		} else {
-			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->where("terminal_id", $request->terminal)->pluck("opening_id");
+			dd($request->terminal);
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
 		}
 
 		return DB::table("sales_receipts")
@@ -274,17 +280,16 @@ class order extends Model
 			->when($request->machineOrderNo != "", function ($query) use ($request) {
 				$query->where('sales_receipts.machine_terminal_count', $request->machineOrderNo);
 			})
-			
-			->when($request->branch != "" && $request->branch != "all", function ($query) use ($request) {
-				$query->where('sales_receipts.branch', $request->branch);
+			->when(!empty($request->branch) &&  $request->branch[0] != 'all', function ($query) use ($request) {
+				$query->whereIn('sales_receipts.branch', $request->branch);
 			})
 			// ->when($request->branch == "" && $request->branch != "all", function ($query) use ($request) {
 			// 	$query->where('sales_receipts.branch', session('branch'));
 			// })
-			->when($request->branch == "all", function ($query) use ($request) {
+			->when(!empty($branch) && $request->branch[0] == "all", function ($query) use ($request) {
 				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
 			})
-			->when($request->terminal != "", function ($query) use ($request) {
+			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
 				$query->where('sales_receipts.terminal_id', $request->terminal);
 			})
 			->when($request->payMode != "", function ($query) use ($request) {
@@ -299,15 +304,9 @@ class order extends Model
 			->when($request->customer != "", function ($query) use ($request) {
 				$query->where('sales_receipts.customer_id', $request->customer);
 			})
-			->when($request->status != "", function ($query) use ($request) {
-				$query->where('sales_receipts.status', $request->status);
+			->when(!empty($request->status), function ($query) use ($request) {
+				$query->whereIn('sales_receipts.status', $request->status);
 			})
-			// ->when($request->first != "", function ($query) use ($request) {
-			// 	$query->where("sales_receipts.date", '>=', $request->first);
-			// })
-			// ->when($request->second != "", function ($query) use ($request) {
-			// 	$query->where("sales_receipts.date", '<=', $request->second);
-			// })
 			->when($request->customerNo != "", function ($query) use ($request) {
 				$query->where('customers.mobile', $request->customerNo);
 			})
@@ -318,11 +317,7 @@ class order extends Model
 				$query->where("sales_receipts.sales_person_id", '=', $request->salesperson);
 			})
 			->where("sales_receipts.web", "=", 0)
-			// ->whereIn("sales_receipts.status",[1,4,12])
-			// ->where("sales_receipts.void_receipt","!=",1)
-			// ->selectRaw("COUNT(sales_receipts.id) as totalorders,SUM(sales_receipts.total_amount) as totalamount")
 			->selectRaw("COUNT(sales_receipts.id) as totalorders,sales_order_status.order_status_name")
-			// ->orderBy("sales_receipts.id","desc")
 			->groupBy("status")
 			->get();
 	}
