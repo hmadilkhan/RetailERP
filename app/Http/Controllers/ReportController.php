@@ -3419,7 +3419,7 @@ class ReportController extends Controller
         $totalSalesReturnOrdersAmount = 0;
 
         if ($request->terminalid == 0) {
-            $totalCount++;
+            
             $terminals = $report->get_terminals();
 
             foreach ($terminals as $values) {
@@ -3428,6 +3428,7 @@ class ReportController extends Controller
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
                 $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $request->type, $request->department, $request->subdepartment);
                 foreach ($details as $value) {
+                    $totalCount++;
                     // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
                     if (session('company_id') == 74) {
                         $totalqty = $totalqty + ($value->qty * $value->weight_qty);
@@ -3474,8 +3475,8 @@ class ReportController extends Controller
                     $pdf->ln(1);
                 }
                 $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(60, 7, "Total", 'B,T', 0, 'L');
-                $pdf->Cell(25, 7, "Item Count (".$totalCount.")", 'B,T', 0, 'L');
+                $pdf->Cell(30, 7, "Total", 'B,T', 0, 'L');
+                $pdf->Cell(55, 7, "Item Count (".$totalCount.")", 'B,T', 0, 'L');
                 $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
                 $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
                 $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
@@ -3483,13 +3484,14 @@ class ReportController extends Controller
                 $pdf->Cell(30, 7, number_format($totalmargin), 'B,T', 1, 'R');
             }
         } else {
-            $totalCount++;
+            
             $terminals = $report->get_terminals_byid($request->terminalid);
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminals[0]->terminal_name, 0, 1, 'L');
             $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $request->type, $request->department, $request->subdepartment);
             foreach ($details as $value) {
+                $totalCount++;
                 // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
                 if (session('company_id') == 74) {
                     $totalqty = $totalqty + ($value->qty * $value->weight_qty);
@@ -3536,8 +3538,8 @@ class ReportController extends Controller
                 $pdf->ln(1);
             }
             $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Cell(60, 7, "Total", 'B,T', 0, 'L');
-            $pdf->Cell(25, 7, "Item Count (".$totalCount.")", 'B,T', 0, 'L');
+            $pdf->Cell(30, 7, "Total", 'B,T', 0, 'L');
+            $pdf->Cell(55, 7, "Item Count (".$totalCount.")", 'B,T', 0, 'L');
             $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
             $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
             $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
