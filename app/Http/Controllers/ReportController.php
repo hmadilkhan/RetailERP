@@ -4892,7 +4892,7 @@ class ReportController extends Controller
                 $totalbalanceamount = 0;
 
                 $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $salesperson->id);
-
+                return $orders;
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
