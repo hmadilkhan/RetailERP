@@ -45,10 +45,10 @@
                                                 <tr>
                                                     <td class="d-none">{{ $depart[$d]->department_id }}</td>
                                                     <td class="pointer"
-                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}',{{ $sectionValue }})">
+                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->mobile_banner }}',{{ $sectionValue }})">
                                                         {{ $depart[$d]->code }}</td>
                                                     <td class="pointer"
-                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}',{{ $sectionValue }})">
+                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->mobile_banner }}',{{ $sectionValue }})">
                                                         @if (!empty($depart[$d]->image) && File::exists('storage/images/department/' . $depart[$d]->image))
                                                             <img id="img-tble-{{ $depart[$d]->department_id }}"
                                                                 src="{{ asset('storage/images/department/' . $depart[$d]->image) }}"
@@ -62,10 +62,10 @@
                                                         @endif
                                                     </td>
                                                     <td class="pointer"
-                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}',{{ $sectionValue }})">
+                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->mobile_banner }}',{{ $sectionValue }})">
                                                         {{ $depart[$d]->department_name }}</td>
                                                     <td class="pointer"
-                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}',{{ $sectionValue }})">
+                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->mobile_banner }}',{{ $sectionValue }})">
                                                         {{ $depart[$d]->website_department_name }}</td>
                                                     <td class="pointer"
                                                         onclick="editsubdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_id }}','{{ addslashes($depart[$d]->department_name) }}')">
@@ -251,8 +251,8 @@
                                         <div class="form-group">
                                             <a href="javascript:void(0)">
                                                 <img id="previewDepartMobileBannerImage_md"
-                                                    src="{{ asset('storage/images/placeholder.jpg') }}" width="150px" height="250px"
-                                                    class="thumb-img width-100" alt="img">
+                                                    src="{{ asset('storage/images/placeholder.jpg') }}" width="150" height="200"
+                                                    class="thumb-img" alt="img">
                                             </a>
 
                                             <div class="form-group m-t-10">
@@ -888,7 +888,7 @@
         }
 
 
-        function editdepart(code, depart, webDepart, departid, websiteMode, bannerImage, sectionArray) {
+        function editdepart(code, depart, webDepart, departid, websiteMode, bannerImage,mobileBanner, sectionArray) {
             $("#departImage_md_alert,#bannerImage_md_alert").text('');
             $("#depart-modal").modal("show");
             $('#depart').val(depart);
@@ -908,6 +908,12 @@
             if (bannerImage != '') {
                 $("#previewDepartBannerImage_md").attr('src', location.origin + '/storage/images/department/' +
                     bannerImage);
+            }
+
+            if(mobileBanner != ''){
+                
+                $("#previewDepartMobileBannerImage_md").attr('src', location.origin + '/storage/images/department/' +
+                    mobileBanner);
             }
         }
 
