@@ -80,11 +80,11 @@
 
                             <div class="form-group">
                                 <a href="javascript:void(0)">
-                                 <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="250" width="350" class="" alt="img">
+                                 <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" width="400" class="" alt="img">
                                  </a>
                
                                 <div class="form-group {{ $errors->has('desktop_banner') ? 'has-danger' : '' }} m-t-10">
-                                    <label for="desktop_banner" >Desktop Banner</label>
+                                    <label for="desktop_banner" >Desktop Banner</label><br/>
                                         <label for="desktop_banner" class="custom-file">
                                                     <input type="file" name="desktop_banner" id="desktop_banner" class="custom-file-input">
                                                     <span class="custom-file-control"></span>
@@ -103,7 +103,7 @@
                                  </a>
                
                                 <div class="form-group {{ $errors->has('mobile_banner') ? 'has-danger' : '' }} m-t-10">
-                                        <label for="mobile_banner" >Mobile Banner</label>
+                                        <label for="mobile_banner" >Mobile Banner</label><br/>
                                         <label for="mobile_banner" class="custom-file">
                                                     <input type="file" name="mobile_banner" id="mobile_banner" class="custom-file-input">
                                                     <span class="custom-file-control"></span>
