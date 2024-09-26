@@ -25,7 +25,7 @@
         <div class="col-md-6">
          <div class="card">
               <div class="card-header">
-                  <h5 class="card-header-text">{{ isset($id) ? 'Edit' : 'Create' }} Tag</h5>
+                  <h5 class="card-header-text">{{ isset($id) ? 'Edit' : 'Create' }} section</h5>
                     @if(isset($id))
                          <a href="{{ route('sections.index') }}" class="f-right">Back to lists</a>
                     @endif                    
@@ -54,7 +54,7 @@
                                  @endphp                                  
                                 
                                 <label>Section Name</label>
-                                <input type="text" class="form-control @error('name') 'has-danger' @enderror" placeholder="Brand Name like 'nikke' " name="name" id="name" value="{{ $tagName }}">
+                                <input type="text" class="form-control @error('name') 'has-danger' @enderror" placeholder="Brand Name like 'nikke' " name="name" id="name" value="{{ $sectionName }}">
                                   @error('name')    
                                     <span class="text-danger" id="name_alert">{{ $message }}</span>
                                   @enderror   
@@ -76,7 +76,7 @@
                 <h5 class="card-header-text">Lists</h5>
             </div>
             <div class="card-block">
-                <table id="table_tag" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
+                <table id="table_section" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
                     <thead>
                     <tr>
                         <th class="d-none">#</th>
@@ -85,16 +85,16 @@
                     </tr>
                     </thead>
                     <tbody>
-                      @foreach($lists as $tag)
+                      @foreach($lists as $section)
                          <tr id="row-">
-                             <td class="d-none">{{ $tag->id }}</td>
-                             <td>{{ $tag->name }}</td>
+                             <td class="d-none">{{ $section->id }}</td>
+                             <td>{{ $section->name }}</td>
                              <td>
-                                <a href="{{ route('sections.edit',$tag->id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" ><i class="icofont icofont-ui-edit text-primary f-18"></i> </a>
+                                <a href="{{ route('sections.edit',$section->id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" ><i class="icofont icofont-ui-edit text-primary f-18"></i> </a>
 
-                                <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" onclick="remove({{ $tag->id }},'{{ $tag->name }}')"><i class="icofont icofont-ui-delete text-danger f-18"></i></a>
+                                <a data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" onclick="remove({{ $section->id }},'{{ $section->name }}')"><i class="icofont icofont-ui-delete text-danger f-18"></i></a>
                                 
-                                <form action="{{ route('sections.destroy',$tag->id) }}" class="d-none" id="removeForm{{ $tag->id }}" method="post">
+                                <form action="{{ route('sections.destroy',$section->id) }}" class="d-none" id="removeForm{{ $section->id }}" method="post">
                                     @csrf
                                     @METHOD('DELETE')
                                 </form>                                
@@ -131,7 +131,7 @@
 
    $(".select2").select2();
    
-       $('#table_tag').DataTable({
+       $('#table_section').DataTable({
             bLengthChange: true,
             displayLength: 10,
             info: true,
@@ -147,7 +147,7 @@
     function remove(id,name){
   
             swal({
-                title: "DELETE TAG",
+                title: "DELETE SECTION",
                 text: "Do you want to delete section "+name+"?",
                 type: "warning",
                 showCancelButton: true,
