@@ -78,9 +78,9 @@
                                 <span class="text-danger" id="priority_alert"></span>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group m-t-4">
                                 <a href="javascript:void(0)">
-                                 <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" width="400" class="" alt="img">
+                                 <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" class="width-100" alt="img">
                                  </a>
                
                                 <div class="form-group {{ $errors->has('desktop_banner') ? 'has-danger' : '' }} m-t-10">
