@@ -22,7 +22,7 @@ class SectionController extends Controller
     
     public function index(Section $section){
         
-        $lists = $section->getTags();
+        $lists = Section::getSection();
         
         return view('invent_Department.Section.index',compact('lists'));
     }
