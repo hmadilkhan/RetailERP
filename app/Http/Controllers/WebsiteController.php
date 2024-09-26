@@ -986,6 +986,7 @@ class WebsiteController extends Controller
             ->where('website_delivery_areas.website_id', '=', $request->website)
             ->where('website_delivery_areas.remove','=',0)
             ->select('website_delivery_areas.*', 'city.city_name')
+            ->orderBy('city.city_name','ASC') 
             ->get();
 
         // return DB::table('website_delivery_areas')

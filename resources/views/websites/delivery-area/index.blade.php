@@ -476,7 +476,7 @@
                       if(md == 1){ 
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
-                                "<td class='d-none'>"+r[s].city_id+"</td>"+
+                                "<td class='d-none'>"+r[s].id+"</td>"+
                                 "<td id='name_md_"+r[s].id+"'>"+r[s].city_name+"</td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td>"+
@@ -490,7 +490,7 @@
                       if(md == 0){
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
-                                "<td class='d-none'>"+r[s].city_id+"</td>"+
+                                "<td class='d-none'>"+r[s].id+"</td>"+
                                 // "<td id='location_name_md_"+r[s].id+"'>"+r[s].city_name +"</td>"+
                                 "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/></td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
