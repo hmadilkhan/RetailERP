@@ -549,6 +549,7 @@
                                 "<tr>" +
                                 "<td>"+result[count].id+"</td>" +
                                 "<td class='pro-name' >"+result[count].date+"</td>" +
+                                "<td class='pro-name' >"+formatTimeToAMPM(result[count].time)+"</td>" +
                                 "<td>"+result[count].branch+"</td>" +
                                 "<td onclick='getBill("+result[count].id+",\""+ result[count].receipt_no+"\",\""+result[count].date+"\",\""+result[count].name+"\",\""+result[count].mobile+"\",\""+result[count].order_mode+"\",\""+result[count].order_status_name+"\","+result[count].total_amount+","+(result[count].receive_amount == "" ? 0 : result[count].receive_amount) +",\""+result[count].payment_mode+"\",\""+result[count].address+"\")'>"+result[count].receipt_no+"</td>" +
                                 "<td>"+result[count].name+"</td>" +
@@ -582,6 +583,19 @@
                 }
             });
         }
+
+        function formatTimeToAMPM(timeString) {
+            // Input time string should be in HH:MM:SS format (like '14:30:00' or '07:45:00')
+            var timeParts = timeString.split(':');
+            var hours = parseInt(timeParts[0]);
+            var minutes = timeParts[1];
+            
+            var ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // 0 ko 12 mein convert karne ke liye (midnight case)
+            
+            return hours + ':' + minutes + ' ' + ampm;
+        }     
 
         function ordermove(id)
         {
