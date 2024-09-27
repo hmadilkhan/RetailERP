@@ -46,6 +46,7 @@ use Illuminate\Support\Facades\Http;
 class ReportController extends Controller
 {
     use MediaTrait;
+    public $filesArray = [];
     public function __construct()
     {
         // $this->middleware('auth');
@@ -4122,21 +4123,25 @@ class ReportController extends Controller
 
     public function generatedSystematicReport(Request $request)
     {
+        $filesArray = [];
         $totalReports = DB::table("fbr_details")
             ->join("branch", "branch.branch_id", "=", "fbr_details.branch_id")
             ->join("company", "company.company_id", "=", "branch.company_id")
             ->select("branch.branch_id", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
             ->where("fbr_details.status", 1)->get();
      
-
+            echo "Generating Emails";
         foreach ($totalReports as $report) {
             $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
-        return $totalReports;
+        echo "Email Sending";
+        $this->sendEmail("2024-09-01", $report,$filesArray);
+        return 1;
     }
 
     public function savefbrReport($report, $from, $to)
     {
+        
         $reportmodel = new report();
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
@@ -4266,30 +4271,28 @@ class ReportController extends Controller
             $pdf->Cell(35, 7, number_format($totalamount, 2), 'B,T', 1, 'C');
         }
         $fileName = 'FBR_REPORT_' . date("M",strtotime($from))."_".$report->company_name . '.pdf';
-        $pdfContent = $pdf->Output('F');
         $filePath = storage_path('app/public/pdfs/') . $fileName;
-         // Set the file path where you want to save the PDF in the 'storage/app/public/pdfs' folder
-        // Storage::disk('public')->put($filePath,$pdfContent);
-        //  $filePath = public_path('app/public/pdfs/FBR_REPORT_' . date("M",strtotime($from))."_".$report->company_name . '.pdf');
+        array_push($filesArray,asset('storage/pdfs/'.$fileName));
         // //save file
         $pdf->Output($filePath, 'F');
         // $this->sendEmail($from, $report);
     }
 
-    public function sendEmail($from, $report)
+    public function sendEmail($from, $report,$filesArray)
     {
-        $data["email"] =  "adil.khan@sabsons.com.pk";
+        $data["email"] =  "faizanakramkhanfaizan@gmail.com";
         $data["title"] =  $report->reportname;
         $data["body"]  =  $report;
         $data["from"]  =  $from;
 
-        $files = [
-            asset('assets/pdf/' . $from . '_' . trim($report->branch_id) . '_FBR_Report.pdf'),
-        ];
+        // $files = [
+        //     asset('assets/pdf/' . $from . '_' . trim($report->branch_id) . '_FBR_Report.pdf'),
+        // ];
+        $files = $filesArray;
 
         Mail::send('emails.automaticemail', $data, function ($message) use ($data, $files) {
             $message->to($data["email"], "Sabify")
-                ->cc(['humayun@sabsons.com.pk', 'faizan.akram@sabsons.com.pk'])
+                ->cc([ 'hmadilkhan@gmail.com'])
                 // ->cc(['adil.khan@sabsons.com.pk','faizan.akram@sabsons.com.pk'])
                 ->subject($data["title"]);
 
