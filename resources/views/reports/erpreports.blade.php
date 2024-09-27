@@ -430,6 +430,7 @@
         // Common function to handle the button clicks
         function handleButtonClick(buttonId, filterText, fieldMappings) {
             // Reset all fields to 0
+            load_terminals();
             const fields = [
                 '#txtprofitstandard', '#txtprofitdetails', '#txtinventory',
                 '#txtexpensesheet', '#txtexpensecat', '#txtsaledec',
