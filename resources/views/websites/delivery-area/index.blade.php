@@ -92,9 +92,8 @@
         <div class="col-md-4">
           <div class="form-group">       
             <label for="city" class="form-control-label">City</label>
-            <br/>
               @php $oldCity = old('city'); @endphp
-              <label class="switch m-r-1 f-right">
+              <label class="switch f-right">
                 <input type="checkbox" title="" data-original-title="Select Area" 
                 onclick="switchMode(this)" >
                 <span class="slider round"></span>
