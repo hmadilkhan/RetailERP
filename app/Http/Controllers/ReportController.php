@@ -532,6 +532,7 @@ class ReportController extends Controller
             ->when($request->machineOrderNo != "", function ($query) use ($request) {
                 $query->where('machine_terminal_count', $request->machineOrderNo);
             })
+            ->where("web", "=", 0)
             ->selectSub($amountSum, 'amount_sum')
             ->orderBy("id", "asc")
             ->get();
