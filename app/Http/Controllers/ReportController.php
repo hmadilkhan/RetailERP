@@ -3394,16 +3394,16 @@ class ReportController extends Controller
         $pdf->Cell(190, 10, 'Item Sale Database', 'B,T', 1, 'L');
         $pdf->ln(1);
         if ($request->terminalid != 0) {
-            $pdf->SetFont('Arial', 'B', 12);
-            $pdf->setFillColor(0, 0, 0);
-            $pdf->SetTextColor(255, 255, 255);
-            $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
-            $pdf->Cell(65, 7, 'Poduct Name', 'B', 0, 'L', 1);
-            $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
-            $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
-            $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
-            $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
-            $pdf->Cell(30, 7, 'Gross Margin', 'B', 1, 'R', 1);
+            // $pdf->SetFont('Arial', 'B', 12);
+            // $pdf->setFillColor(0, 0, 0);
+            // $pdf->SetTextColor(255, 255, 255);
+            // $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
+            // $pdf->Cell(65, 7, 'Poduct Name', 'B', 0, 'L', 1);
+            // $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
+            // $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
+            // $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
+            // $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
+            // $pdf->Cell(30, 7, 'Gross Margin', 'B', 1, 'R', 1);
         }
 
 
