@@ -143,10 +143,6 @@ class order extends Model
 			$toDate = $request->second;
 		}
 
-		// else{
-		// 	$fromDate = date("Y-m-d");
-		// 	$toDate = date("Y-m-d");
-		// }
 		if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 		}else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
@@ -190,7 +186,7 @@ class order extends Model
 			// ->when($request->branch == "" && $request->branch != "all", function ($query) use ($request) {
 			// 	$query->where('sales_receipts.branch', session('branch'));
 			// })
-			->when(!empty($branch) && $request->branch[0] == "all", function ($query) use ($request) {
+			->when(!empty($request->branch) && $request->branch[0] == "all", function ($query) use ($request) {
 				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
 			})
 			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
@@ -285,7 +281,7 @@ class order extends Model
 			// ->when($request->branch == "" && $request->branch != "all", function ($query) use ($request) {
 			// 	$query->where('sales_receipts.branch', session('branch'));
 			// })
-			->when(!empty($branch) && $request->branch[0] == "all", function ($query) use ($request) {
+			->when(!empty($request->branch) && $request->branch[0] == "all", function ($query) use ($request) {
 				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
 			})
 			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {

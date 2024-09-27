@@ -129,7 +129,7 @@ class OrderController extends Controller
 
     public function getNewPOSOrders(Request $request, order $order)
     {
-        // return $request->status;
+        // return $request;
         $orders = $order->getNewPOSOrdersQuery($request);
         // return $orders;
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
