@@ -4130,7 +4130,7 @@ class ReportController extends Controller
      
 
         foreach ($totalReports as $report) {
-            return $this->savefbrReport($report, "2024-09-01", "2024-09-30");
+            $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
         return $totalReports;
     }
