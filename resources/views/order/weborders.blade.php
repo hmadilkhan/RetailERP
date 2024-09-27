@@ -147,7 +147,7 @@
                                     <td class="d-none">{{ $value->id }}</td>
                                     <td>{{$value->url_orderid}}</td>
                                     <td>{{$value->date.' '.$value->time}}</td>
-                                    <td>{{ date("h:i:s ",strtotime($value->time)) }}</td>
+                                    <td>{{ Carbon::parse($value->time )->format('h:i A') }}</td>
                                     <td>{{$value->branch}}</td>
                                     <td>{{$value->name}}</td>
                                     <td>{{$value->mobile}}</td>
