@@ -4269,10 +4269,10 @@ class ReportController extends Controller
         $pdfContent = $pdf->Output('F');
         $filePath = 'pdfs/' . $fileName;
          // Set the file path where you want to save the PDF in the 'storage/app/public/pdfs' folder
-        Storage::disk('public')->put($filePath,$pdfContent);
+        // Storage::disk('public')->put($filePath,$pdfContent);
         //  $filePath = public_path('app/public/pdfs/FBR_REPORT_' . date("M",strtotime($from))."_".$report->company_name . '.pdf');
         // //save file
-        // $pdf->Output($filePath, 'F');
+        $pdf->Output($filePath, 'F');
         // $this->sendEmail($from, $report);
     }
 
