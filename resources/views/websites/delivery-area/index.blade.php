@@ -181,7 +181,7 @@
           <!--<td id="minOrder{{-- $value->branch_id --}}" class="pointer" onclick="modifyField({{-- $value->branch_id --}},'{{-- $value->min_order --}}','min_order')">{{-- 'PKR '.$value->min_order --}}</td>-->
 				  <td class="action-icon">
                     				      
-                    <a href="javascript:void(0)" class="m-r-1" title="Add Area Name" onclick="createSingleLocation({{ $parent_rowVal->branch_id }},'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->is_city }},{{ $parent_rowVal->website_id }},'{{ $parent_rowVal->website_name }}')"><i class="icofont icofont-plus text-success"></i></a>				      
+                    {{-- <a href="javascript:void(0)" class="m-r-1" title="Add Area Name" onclick="createSingleLocation({{ $parent_rowVal->branch_id }},'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->is_city }},{{ $parent_rowVal->website_id }},'{{ $parent_rowVal->website_name }}')"><i class="icofont icofont-plus text-success"></i></a>				       --}}
 				      
                     <i class="icofont icofont-ui-wifi {{ $parent_rowVal->status == 1 ? 'text-success' : 'text-muted' }} f-18 m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Live " onclick="swalModal({{ $parent_rowVal->branch_id }},1,'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->status }})"></i>
           
