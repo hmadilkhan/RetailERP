@@ -36,7 +36,7 @@
                                         <!--<a href="https://sabsoft.com.pk/Retail/" style="font-size:32px;color:#fff;"> SABIFY</a> -->
                                         <img width="210" height="100" src="{{asset('assets/images/email/sabify.png')}}" />
                                         <br>
-                                        <span style="margin-top: 10px;display: block;"><b>{{$reportname}} of {{$body->company_name}} (
+                                        <span style="margin-top: 10px;display: block;"><b>{{$title}} of {{$body->company_name}} (
                                                 {{$body->branch_name}} )</b></span>
                                     </td>
                                 </tr>
