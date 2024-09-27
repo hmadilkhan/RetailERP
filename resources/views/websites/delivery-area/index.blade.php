@@ -549,7 +549,7 @@ input+.slider:before {
           process_md = false;   
       } 
       
-      @if(session('company_id') != 102)
+      @if($("#on_off_btn").is(":checked") == true)
        if($("#areas").val() == ''){
           $("#areas").focus();
           $("#areas_alert").text('field is required.');   
@@ -564,7 +564,7 @@ input+.slider:before {
       }       
       @endif 
 
-      @if(session('company_id') == 102)
+      @if($("#on_off_btn").is(":checked") == false)
       
       if($("#city").val() == ''){
           $("#city").focus();
