@@ -672,11 +672,16 @@ input+.slider:before {
                    if(jXst.status == 200){
                        swal('Success!','','success');
                       //  $("#alert_md").text('Success!').addClass('alert alert-success');
-                       let locationName = $("#location_name_md_"+id);
+                       let locationName = $("#name_md_"+id);
                        let areaName     = $("#name_md_"+id);
                        let charge       = $("#charge_md_"+id);
 
-                       $("#areaLabel"+id).text(locationName.text()+' - '+areaName.val()+' - Rs.'+charge.val());
+                       if(md == 1){
+                         $("#areaLabel"+id).text(locationName.text()+' - Rs.'+charge.val());
+                       }else{
+                         $("#areaLabel"+id).text(areaName.val()+' - Rs.'+charge.val());
+                       }
+                       
                    }else{
                        swal('Error!',resp.msg,'error');
                        $("#alert_md").text(resp.msg).addClass('alert alert-alert');
