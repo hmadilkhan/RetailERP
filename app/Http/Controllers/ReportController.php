@@ -4272,7 +4272,7 @@ class ReportController extends Controller
         }
         $fileName = 'FBR_REPORT_' . date("M",strtotime($from))."_".$report->company_name . '.pdf';
         $filePath = storage_path('app/public/pdfs/') . $fileName;
-        array_push($this->filesArray,asset('storage/pdfs/'.$fileName));
+        array_push($this->filesArray,storage_path('app/public/pdfs/'.$fileName));
         // //save file
         $pdf->Output($filePath, 'F');
         // $this->sendEmail($from, $report);
