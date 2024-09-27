@@ -207,7 +207,7 @@ class AdminCompanyController extends Controller
             $request->validate([
                 'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             ]);
-            $file = $this->uploads($request->vdimg, "images/pos-background/", $request->prev_logo);
+            $file = $this->uploads($request->vdimg, "images/company/", $request->prev_logo);
         }
 
         $items = [
@@ -219,7 +219,7 @@ class AdminCompanyController extends Controller
             'email' => $request->company_email,
             'ptcl_contact' => $request->company_ptcl,
             'mobile_contact' => $request->company_mobile,
-            'logo' => (!empty($request->vdimg) ? $request->prev_logo : $file["fileName"]),
+            'logo' => (!empty($request->vdimg) ? $file["fileName"] : $request->prev_logo ),
             'pos_background' => (!empty($request->posbgimg) ? $bgFile["fileName"] : $request->pos_bg_logo),
             'updated_at' => date('Y-m-d H:i:s'),
             'package_id' => $request->package,
