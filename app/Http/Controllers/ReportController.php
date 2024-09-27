@@ -3770,12 +3770,12 @@ class ReportController extends Controller
         $company = $vendor->company(session('company_id'));
 
 
-        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
-        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
-        //     \QrCode::size(200)
-        //         ->format('png')
-        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
-        // }
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
 
         $pdf = new pdfClass();
 
@@ -3854,7 +3854,7 @@ class ReportController extends Controller
         $totalbalanceamount = 0;
 
         $orders = $report->orderBookingQuery($request->fromdate, $request->todate, $request->paymentmethod, $request->branch,$request->mode);
-        return $orders;
+        
         foreach ($orders as $values) {
             $totalamount += $values->total_amount;
             $totalreceiveamount += $values->receive_amount;
