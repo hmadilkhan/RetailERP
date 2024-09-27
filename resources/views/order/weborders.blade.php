@@ -129,7 +129,8 @@
                         <tr>
                             <th class="d-none">#</th>
                             <th>Order#</th>
-                            <th>DateTime</th>
+                            <th>Date</th>
+                            <th>Time</th>
                             <th>Branch</th>
                             <th>Customer</th>
                             <th>Contact</th>
@@ -146,6 +147,7 @@
                                     <td class="d-none">{{ $value->id }}</td>
                                     <td>{{$value->url_orderid}}</td>
                                     <td>{{$value->date.' '.$value->time}}</td>
+                                    <td>{{ date("h:i:s ",strtotime($value->time)) }}</td>
                                     <td>{{$value->branch}}</td>
                                     <td>{{$value->name}}</td>
                                     <td>{{$value->mobile}}</td>
