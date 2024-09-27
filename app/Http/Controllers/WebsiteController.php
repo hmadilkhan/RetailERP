@@ -1027,7 +1027,7 @@ class WebsiteController extends Controller
 
             for ($i = 0; $i < count($city); $i++) {
 
-               $getCity= DB::table('city')->where('country_id', $city[$i])->first();
+               $getCity= DB::table('city')->where('city_id', $city[$i])->first();
                 $result = DB::table('website_delivery_areas')
                     ->insert([
                         'website_id'         => $request->website,
