@@ -659,6 +659,7 @@
             let subdepartment = $('#subdepartment').val();
             let paymentmethod = $('#paymentmethod').val();
             let salesperson = $('#salesperson').val();
+            let mode = $('#mode').val();
 
             if ($('#txtprofitstandard').val() == 1) {
                 window.location = "{{ url('profitLossStandardReport') }}?fromdate=" + date + "&todate=" + todate +
@@ -719,7 +720,7 @@
             }
             if ($('#txtbookingorderreport').val() == 1) {
                 window.location = "{{ url('order-booking-report') }}?fromdate=" + date + "&todate=" + todate +
-                    "&paymentmethod=" + paymentmethod + "&branch=" + branch;
+                    "&paymentmethod=" + paymentmethod + "&branch=" + branch+ "&mode=" + mode;
             }
             if ($('#txtsalespersonreport').val() == 1) {
                 window.location = "{{ url('sales-person-report') }}?fromdate=" + date + "&todate=" + todate + "&branch=" +
