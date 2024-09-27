@@ -93,9 +93,8 @@
           <div class="form-group">       
             <label for="city" class="form-control-label">City</label>
               @php $oldCity = old('city'); @endphp
-              <label class="switch f-right">
-                <input type="checkbox" title="" data-original-title="Select Area" 
-                onclick="switchMode(this)" >
+              <label class="switch f-right" title="" data-original-title="You want city area click to slide on">
+                <input type="checkbox" onclick="switchMode(this)" >
                 <span class="slider round"></span>
               </label>
             <select name="city{{ session('company_id') == 102 ? '[]' : '' }}" id="city" data-placeholder="Select" class="form-control select2" {{ session('company_id') == 102 ? 'multiple' : '' }}>
