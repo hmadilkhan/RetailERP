@@ -24,8 +24,10 @@ class OrderService
         } else {
             $serviceProvider->where("branch_id", session("branch"));
         }
-        if ($branch != "" && $branch != "all") {
+        if (is_array($branch) && $branch != "" && $branch != "all") {
             $serviceProvider->whereIn("branch_id", $branch);
+        }else{
+            $serviceProvider->where("branch_id", $branch);
         }
         $serviceProvider->with("serviceprovideruser")->where("status_id", 1)->groupBy('id')->select("id","provider_name");
         return $serviceProvider->get();
