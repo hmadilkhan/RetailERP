@@ -1186,8 +1186,14 @@ class WebsiteController extends Controller
 
         //          return response()->json('This ' . $areaName . ' area name already taken this ' . $websiteName . ' wsebsite.',);
         //      }
+           
+        $column = [];
+        $column['charge'] =$charge;
+        if($request->mode != 1){
+          $column['name'] = $areaName;
+        }
 
-        if (DB::table('website_delivery_areas')->where(['id' => $uniqueId])->update([($request->mode == 1 ? '' : "'name' =>".$areaName.",").'charge' => $charge])) {
+        if (DB::table('website_delivery_areas')->where(['id' => $uniqueId])->update($column)) {
             return response()->json(['status' => 200]);
         } else {
             return response()->json(['status' => 500, 'msg' => 'Server issue record is not updated.']);
