@@ -28,7 +28,7 @@
 						    @elseif($orders->order_status == "Order Picked Up")
 							  Picked Up By Branch
 						    @else
-							  $orders->order_status
+							  {{ $orders->order_status }}
 						    @endif
 						</label>
                     </div>
