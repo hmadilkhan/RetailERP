@@ -162,7 +162,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="margin-top: 20px;">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
                             <label class="form-control-label">Select Sales Tax</label>
                             <select id="sales_tax" name="sales_tax" data-placeholder="Select Sales Tax"
                                 class="f-right select2">
@@ -172,7 +172,7 @@
                             </select>
                         </div>
 
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="margin-top: 20px;">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
                             <label class="form-control-label">Select Sales Person</label>
                             <select id="orderserviceprovider" name="orderserviceprovider"
                                 data-placeholder="Select Sales Person" class="f-right select2">
@@ -185,7 +185,7 @@
                         </div>
 
                         @endif
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="margin-top: 20px;">
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
                             <label class="form-control-label">Select Type</label>
                             <select id="type" name="type" data-placeholder="Select Type"
                                 {{ in_array(session('roleId'), [19, 20]) ? 'disabled' : '' }} class="f-right select2">
