@@ -104,6 +104,14 @@
           </div> 
         </div> 
         <div class="col-md-4">
+
+          <label class="switch m-r-1">
+            <input type="checkbox" title="" data-original-title="Select Area" 
+            onclick="switchMode()" >
+            <span class="slider round"></span>
+          </label>	
+
+
           <div class="form-group">       
             <label for="area" class="form-control-label">Area</label>
             <br/>
