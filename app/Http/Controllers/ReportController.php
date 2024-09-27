@@ -441,7 +441,7 @@ class ReportController extends Controller
         }
 
         $record = $this->getOrdersQuery($request);
-
+        
         $datearray = [
             "from" => $request->fromdate,
             "to" => $request->todate,
@@ -455,13 +455,27 @@ class ReportController extends Controller
 
     public function getOrdersQuery(Request $request)
     {
-        // $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id",$request->terminal)->pluck("opening_id");	
-        if ($request->branch == "all") {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
-        } else {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
-        }
-
+        $request->branch = explode(",",$request->branch);
+        $request->terminal = explode(",",$request->terminal);
+        // $request->status = explode(",",$request->status);
+        // return $request->status;
+        if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
+			$openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+		}else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
+			$openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->whereIn("branch_id",$request->branch)->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+		} else {
+			$openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
+		}
+      
+        // if (!empty($request->branch) && $request->branch[0] == "all") {
+        //     return 1;
+        //     $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+        // } else {
+        //     return 2;
+        //     $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
+        // }
+       
+       
         $amountSum = OrderDetails::selectRaw('sum(total_qty)')
             ->whereColumn('receipt_id', 'id')
             ->getQuery();
@@ -472,17 +486,21 @@ class ReportController extends Controller
             }, function ($q) use ($request) {
                 $q->whereBetween("date", [$request->fromdate, $request->todate]);
             })
-            ->when($request->branch != ""  && $request->branch != "all", function ($q) use ($request) {
-                $q->where("branch", $request->branch);
+            ->when(!empty($request->branch) &&  $request->branch[0] != 'all', function ($q) use ($request) {
+                $q->whereIn("branch", $request->branch);
             })
-            ->when($request->branch == ""  && $request->branch != "all", function ($q) use ($request) {
-                $q->where("branch", auth()->user()->branch_id);
+            ->when(!empty($request->branch) && $request->branch[0] == "all", function ($q) use ($request) {
+                $q->whereIn("branch", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
             })
-            ->when($request->branch == "all", function ($query) use ($request) {
-                $query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
-            })
-            ->when($request->terminal != "" && $request->terminal != "null", function ($q) use ($request) {
-                $q->where("terminal_id", $request->terminal);
+            // ->when($request->branch == "all", function ($query) use ($request) {
+            //     $query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+            // })
+            // ->when($request->terminal != "" && $request->terminal != "null", function ($q) use ($request) {
+            //     $q->where("terminal_id", $request->terminal);
+            // })
+
+            ->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
+                $query->where('terminal_id', $request->terminal);
             })
             ->when($request->customer != "", function ($q) use ($request) {
                 $q->where("customer_id", $request->customer);
@@ -502,7 +520,10 @@ class ReportController extends Controller
             ->when($request->sales_tax != "", function ($query) use ($request) {
                 $query->where("fbrInvNumber", '!=', "");
             })
-            ->when($request->salesperson != "", function ($query) use ($request) {
+            // ->when(!empty($request->status) , function ($query) use ($request) {
+            //     $query->whereIn('status', $request->status);
+            // })
+            ->when($request->salesperson != "" && $request->salesperson != "all", function ($query) use ($request) {
                 $query->where("sales_person_id", '=', $request->salesperson);
             })
             ->when($request->order_no != "", function ($query) use ($request) {
@@ -511,6 +532,7 @@ class ReportController extends Controller
             ->when($request->machineOrderNo != "", function ($query) use ($request) {
                 $query->where('machine_terminal_count', $request->machineOrderNo);
             })
+            ->where("web", "=", 0)
             ->selectSub($amountSum, 'amount_sum')
             ->orderBy("id", "asc")
             ->get();
