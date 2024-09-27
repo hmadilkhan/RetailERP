@@ -129,7 +129,7 @@
                         <tr>
                             <th class="d-none">#</th>
                             <th>Order#</th>
-                            <th>Date</th>
+                            <th>DateTime</th>
                             <th>Branch</th>
                             <th>Customer</th>
                             <th>Contact</th>
@@ -145,7 +145,7 @@
                                 <tr id="tbRow{{ $value->id }}" style="background-color:{{($value->isSeen == 1 ? '#efefef' : '')}}" >
                                     <td class="d-none">{{ $value->id }}</td>
                                     <td>{{$value->url_orderid}}</td>
-                                    <td>{{$value->date}}</td>
+                                    <td>{{$value->date.' '.date('H:i:s',strtotime($value->time))}}</td>
                                     <td>{{$value->branch}}</td>
                                     <td>{{$value->name}}</td>
                                     <td>{{$value->mobile}}</td>
