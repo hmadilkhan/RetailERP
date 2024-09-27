@@ -3393,17 +3393,18 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(190, 10, 'Item Sale Database', 'B,T', 1, 'L');
         $pdf->ln(1);
-
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
-        $pdf->Cell(65, 7, 'Poduct Name', 'B', 0, 'L', 1);
-        $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
-        $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
-        $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
-        $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
-        $pdf->Cell(30, 7, 'Gross Margin', 'B', 1, 'R', 1);
+        if ($request->terminalid != 0) {
+            // $pdf->SetFont('Arial', 'B', 12);
+            // $pdf->setFillColor(0, 0, 0);
+            // $pdf->SetTextColor(255, 255, 255);
+            // $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
+            // $pdf->Cell(65, 7, 'Poduct Name', 'B', 0, 'L', 1);
+            // $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
+            // $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
+            // $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
+            // $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
+            // $pdf->Cell(30, 7, 'Gross Margin', 'B', 1, 'R', 1);
+        }
 
 
         //total variables
@@ -3432,69 +3433,107 @@ class ReportController extends Controller
                 $totalVoidOrdersAmount = 0;
                 $totalSalesReturnOrders = 0;
                 $totalSalesReturnOrdersAmount = 0;
-                $totalCount=0;
+                $totalCount = 0;
 
-                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->SetFont('Arial', 'B', 15);
                 $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
+                $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'C');
                 $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $request->type, $request->department, $request->subdepartment);
-                foreach ($details as $value) {
 
-                    $totalCount++;
-                    // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
-                    if (session('company_id') == 74) {
-                        $totalqty = $totalqty + ($value->qty * $value->weight_qty);
-                    } else {
-                        $totalqty = $totalqty + $value->qty;
+                // Filter the collection for specific statuses
+                $filtered = collect($details)->filter(function ($order) {
+                    return $order->ordermode;
+                });
+
+                // Get the unique `status` values and group by the status
+                $orderModes = $filtered->groupBy('ordermode')->keys();
+
+                // Group the filtered collection by status
+                $grouped = $filtered->groupBy('ordermode');
+
+                // return $grouped["TAKE AWAY"];
+                foreach ($orderModes as $mode) {
+                    $totalCount = 0;
+                    $totalqty = 0;
+                    $totalamount = 0;
+                    $totalcost = 0;
+                    $totalmargin = 0;
+                    //report name
+                    $pdf->ln(2);
+                    $pdf->SetFont('Arial', 'B', 12);
+                    $pdf->setFillColor(128, 128, 128);
+                    $pdf->SetTextColor(255, 255, 255);
+                    $pdf->Cell(190, 5, $mode, 0, 1, 'C', 1);
+                    // $pdf->ln(1);
+                    // TABLE HEADERS
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->setFillColor(0, 0, 0);
+                    $pdf->SetTextColor(255, 255, 255);
+                    $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
+                    $pdf->Cell(50, 7, 'Poduct Name', 'B', 0, 'L', 1);
+                    $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
+                    $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
+                    $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
+                    $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
+                    $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
+                    $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
+                    foreach ($grouped[$mode] as $value) {
+
+                        $totalCount++;
+                        // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
+                        if (session('company_id') == 74) {
+                            $totalqty = $totalqty + ($value->qty * $value->weight_qty);
+                        } else {
+                            $totalqty = $totalqty + $value->qty;
+                        }
+                        $totalamount = $totalamount + $value->amount;
+                        $totalcost = $totalcost + $value->cost;
+                        $totalmargin = $totalmargin + ($value->amount - $value->cost);
+
+                        $pdf->SetFont('Arial', '', 10);
+                        if ($value->void_receipt == 1) {
+                            $pdf->setFillColor(255, 0, 0);
+                            $pdf->SetTextColor(255, 255, 255);
+                            $totalVoidOrders += $value->qty;
+                            $totalVoidOrdersAmount += $value->amount;
+                            $itemStatus = "Void";
+                        } else if ($value->is_sale_return == 1) {
+                            $pdf->setFillColor(192, 64, 0);
+                            $pdf->SetTextColor(255, 255, 255);
+                            $totalSalesReturnOrders += $value->qty;
+                            $totalSalesReturnOrdersAmount += $value->amount;
+                            $itemStatus = "SR";
+                        } else {
+                            $pdf->setFillColor(232, 232, 232);
+                            $pdf->SetTextColor(0, 0, 0);
+                            $totalDeliveredOrders++;
+                            $totalDeliveredOrdersAmount += $value->amount;
+                        }
+                        $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
+                        $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
+                        $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
+                        $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
+                        $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
+                        $pdf->Cell(15, 6, number_format($value->price), 0, 0, 'R', 1);
+                        $pdf->Cell(15, 6, number_format($value->amount - $value->cost), 0, 0, 'R', 1);
+                        $pdf->Cell(30, 6, $value->order_status_name, 0, 1, 'R', 1);
+
+                        // $pdf->ln(1);
                     }
-                    // if($value->itemId == 817947 or $value->itemId == 817992 ){
-                    // $totalqty = $totalqty + ($value->qty * 2);
-                    // }else{
-                    // $totalqty = $totalqty + $value->qty;
-                    // }
-                    // $totalqty = $totalqty + $value->qty;
-                    $totalamount = $totalamount + $value->amount;
-                    $totalcost = $totalcost + $value->cost;
-                    $totalmargin = $totalmargin + ($value->amount - $value->cost);
-
-                    $pdf->SetFont('Arial', '', 10);
-                    if ($value->void_receipt == 1) {
-                        $pdf->setFillColor(255, 0, 0);
-                        $pdf->SetTextColor(255, 255, 255);
-                        $totalVoidOrders++;
-                        $totalVoidOrdersAmount += $value->amount;
-                        $itemStatus = "Void";
-                    } else if ($value->is_sale_return == 1) {
-                        $pdf->setFillColor(192, 64, 0);
-                        $pdf->SetTextColor(255, 255, 255);
-                        $totalSalesReturnOrders++;
-                        $totalSalesReturnOrdersAmount += $value->amount;
-                        $itemStatus = "SR";
-                    } else {
-                        $pdf->setFillColor(232, 232, 232);
-                        $pdf->SetTextColor(0, 0, 0);
-                        $totalDeliveredOrders++;
-                        $totalDeliveredOrdersAmount += $value->amount;
-                    }
-                    $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
-                    $pdf->Cell(65, 6, $value->product_name, 0, 0, 'L', 1);
-                    $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
-                    $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
-                    $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
-                    $pdf->Cell(15, 6, number_format($value->price), 0, 0, 'R', 1);
-                    $pdf->Cell(30, 6, number_format($value->amount - $value->cost), 0, 1, 'R', 1);
-
-                    $pdf->ln(1);
+                    $pdf->setFillColor(255, 255, 255);
+                    $pdf->SetTextColor(0, 0, 0);
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->Cell(20, 7, "Total", 'B,T', 0, 'L');
+                    $pdf->Cell(50, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
+                    $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
+                    $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
+                    $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'C');
+                    $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
+                    $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
+                    $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
                 }
-                $pdf->SetFont('Arial', 'B', 10);
-                $pdf->Cell(30, 7, "Total", 'B,T', 0, 'L');
-                $pdf->Cell(55, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
-                $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
-                $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
-                $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
-                $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
-                $pdf->Cell(30, 7, number_format($totalmargin), 'B,T', 1, 'R');
 
+                $pdf->ln(2);
                 $pdf->SetFont('Arial', 'B', 12);
 
                 $pdf->setFillColor(0, 0, 0);
@@ -3510,9 +3549,9 @@ class ReportController extends Controller
                 $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
                 $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
                 $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
-                $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
-                $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
-                $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
+                // $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
+                // $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
+                // $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
 
                 $pdf->ln(10);
             }
@@ -3523,71 +3562,96 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminals[0]->terminal_name, 0, 1, 'L');
             $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $request->type, $request->department, $request->subdepartment);
-            foreach ($details as $value) {
-                $totalCount++;
-                // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
-                if (session('company_id') == 74) {
-                    $totalqty = $totalqty + ($value->qty * $value->weight_qty);
-                } else {
-                    $totalqty = $totalqty + $value->qty;
-                }
-                // if($value->itemId == 817947 or $value->itemId == 817992 ){
-                // $totalqty = $totalqty + ($value->qty * 2);
-                // }else{
-                // $totalqty = $totalqty + $value->qty;
-                // }
-                // $totalqty = $totalqty + $value->qty;
-                $totalamount = $totalamount + $value->amount;
-                $totalcost = $totalcost + $value->cost;
-                $totalmargin = $totalmargin + ($value->amount - $value->cost);
-                $itemStatus = "";
-                $pdf->SetFont('Arial', '', 10);
-                if ($value->void_receipt == 1) {
-                    $pdf->setFillColor(255, 0, 0);
-                    $pdf->SetTextColor(255, 255, 255);
-                    $totalVoidOrders++;
-                    $totalVoidOrdersAmount += $value->amount;
-                    $itemStatus = "Void";
-                } else if ($value->is_sale_return == 1) {
-                    $pdf->setFillColor(192, 64, 0);
-                    $pdf->SetTextColor(255, 255, 255);
-                    $totalSalesReturnOrders++;
-                    $totalSalesReturnOrdersAmount += $value->amount;
-                    $itemStatus = "SR";
-                } else {
-                    $pdf->setFillColor(232, 232, 232);
-                    $pdf->SetTextColor(0, 0, 0);
-                    $totalDeliveredOrders++;
-                    $totalDeliveredOrdersAmount += $value->amount;
-                }
-                $pdf->Cell(20, 6, $value->code, 0, 0, 'C', 1);
-                $pdf->Cell(65, 6, $value->product_name . ($itemStatus != '' ? " (" . $itemStatus . ") " : ''), 0, 0, 'L', 1);
-                $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
-                $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
-                $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
-                $pdf->Cell(15, 6, number_format($value->cost), 0, 0, 'R', 1);
-                $pdf->Cell(30, 6, number_format($value->amount - $value->cost), 0, 1, 'R', 1);
+            // Filter the collection for specific statuses
+            $filtered = collect($details)->filter(function ($order) {
+                return $order->ordermode;
+            });
 
-                $pdf->ln(1);
+            // Get the unique `status` values and group by the status
+            $orderModes = $filtered->groupBy('ordermode')->keys();
+
+            // Group the filtered collection by status
+            $grouped = $filtered->groupBy('ordermode');
+            foreach ($orderModes as $mode) {
+                $totalCount = 0;
+                $totalqty = 0;
+                $totalamount = 0;
+                $totalcost = 0;
+                $totalmargin = 0;
+                //report name
+                $pdf->ln(2);
+                $pdf->SetFont('Arial', 'B', 12);
+                $pdf->setFillColor(128, 128, 128);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(190, 5, $mode, 0, 1, 'C', 1);
+                // $pdf->ln(1);
+                // TABLE HEADERS
+                $pdf->SetFont('Arial', 'B', 10);
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
+                $pdf->Cell(50, 7, 'Poduct Name', 'B', 0, 'L', 1);
+                $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
+                $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
+                $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
+                $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
+                $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
+                $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
+                foreach ($grouped[$mode] as $value) {
+                    $totalCount++;
+                    // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
+                    if (session('company_id') == 74) {
+                        $totalqty = $totalqty + ($value->qty * $value->weight_qty);
+                    } else {
+                        $totalqty = $totalqty + $value->qty;
+                    }
+                    $totalamount = $totalamount + $value->amount;
+                    $totalcost = $totalcost + $value->cost;
+                    $totalmargin = $totalmargin + ($value->amount - $value->cost);
+
+                    $pdf->SetFont('Arial', '', 10);
+                    if ($value->void_receipt == 1) {
+                        $pdf->setFillColor(255, 0, 0);
+                        $pdf->SetTextColor(255, 255, 255);
+                        $totalVoidOrders += $value->qty;
+                        $totalVoidOrdersAmount += $value->amount;
+                        $itemStatus = "Void";
+                    } else if ($value->is_sale_return == 1) {
+                        $pdf->setFillColor(192, 64, 0);
+                        $pdf->SetTextColor(255, 255, 255);
+                        $totalSalesReturnOrders += $value->qty;
+                        $totalSalesReturnOrdersAmount += $value->amount;
+                        $itemStatus = "SR";
+                    } else {
+                        $pdf->setFillColor(232, 232, 232);
+                        $pdf->SetTextColor(0, 0, 0);
+                        $totalDeliveredOrders++;
+                        $totalDeliveredOrdersAmount += $value->amount;
+                    }
+                    $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
+                    $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
+                    $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
+                    $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
+                    $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
+                    $pdf->Cell(15, 6, number_format($value->price), 0, 0, 'R', 1);
+                    $pdf->Cell(15, 6, number_format($value->amount - $value->cost), 0, 0, 'R', 1);
+                    $pdf->Cell(30, 6, $value->order_status_name, 0, 1, 'R', 1);
+                }
+
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
+                $pdf->SetFont('Arial', 'B', 10);
+                $pdf->Cell(20, 7, "Total", 'B,T', 0, 'L');
+                $pdf->Cell(50, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
+                $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
+                $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
+                $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'C');
+                $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
+                $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
+                $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
             }
-            $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Cell(30, 7, "Total", 'B,T', 0, 'L');
-            $pdf->Cell(55, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
-            $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
-            $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
-            $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
-            $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
-            $pdf->Cell(30, 7, number_format($totalmargin), 'B,T', 1, 'R');
 
             $pdf->ln(2);
-
-            $pdf->SetFont('Arial', 'B', 12);
-
-            $pdf->setFillColor(0, 0, 0);
-            $pdf->SetTextColor(255, 255, 255);
-            $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
-            $pdf->setFillColor(255, 255, 255);
-            $pdf->SetTextColor(0, 0, 0);
 
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
@@ -3596,11 +3660,11 @@ class ReportController extends Controller
             $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
             $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
             $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
-            $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
-            $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
-            $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
+            // $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
+            // $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
+            // $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
 
-            $pdf->ln(2);
+            $pdf->ln(10);
         }
 
         //save file
@@ -3853,8 +3917,8 @@ class ReportController extends Controller
         $totalreceiveamount = 0;
         $totalbalanceamount = 0;
 
-        $orders = $report->orderBookingQuery($request->fromdate, $request->todate, $request->paymentmethod, $request->branch,$request->mode);
-        
+        $orders = $report->orderBookingQuery($request->fromdate, $request->todate, $request->paymentmethod, $request->branch, $request->mode);
+
         foreach ($orders as $values) {
             $totalamount += $values->total_amount;
             $totalreceiveamount += $values->receive_amount;
@@ -4129,19 +4193,19 @@ class ReportController extends Controller
             ->join("company", "company.company_id", "=", "branch.company_id")
             ->select("branch.branch_id", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
             ->where("fbr_details.status", 1)->get();
-     
-            echo "Generating Emails";
+
+        echo "Generating Emails";
         foreach ($totalReports as $report) {
             $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
         echo "Email Sending";
-        $this->sendEmail("2024-09-01", $report,"FBR Report");
+        $this->sendEmail("2024-09-01", $report, "FBR Report");
         return 1;
     }
 
     public function savefbrReport($report, $from, $to)
     {
-        
+
         $reportmodel = new report();
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
@@ -4270,15 +4334,15 @@ class ReportController extends Controller
             $pdf->Cell(20, 7, number_format($totalsalestax, 2), 'B,T', 0, 'C');
             $pdf->Cell(35, 7, number_format($totalamount, 2), 'B,T', 1, 'C');
         }
-        $fileName = 'FBR_REPORT_' . date("M",strtotime($from))."_".$report->company_name . '.pdf';
+        $fileName = 'FBR_REPORT_' . date("M", strtotime($from)) . "_" . $report->company_name . '.pdf';
         $filePath = storage_path('app/public/pdfs/') . $fileName;
-        array_push($this->filesArray,storage_path('app/public/pdfs/'.$fileName));
+        array_push($this->filesArray, storage_path('app/public/pdfs/' . $fileName));
         // //save file
         $pdf->Output($filePath, 'F');
         // $this->sendEmail($from, $report);
     }
 
-    public function sendEmail($from, $report,$reportname)
+    public function sendEmail($from, $report, $reportname)
     {
         $data["email"] =  "faizanakramkhanfaizan@gmail.com";
         $data["title"] =  $reportname;
@@ -4292,7 +4356,7 @@ class ReportController extends Controller
 
         Mail::send('emails.automaticemail', $data, function ($message) use ($data, $files) {
             $message->to($data["email"], "Sabify")
-                ->cc([ 'hmadilkhan@gmail.com'])
+                ->cc(['hmadilkhan@gmail.com'])
                 // ->cc(['adil.khan@sabsons.com.pk','faizan.akram@sabsons.com.pk'])
                 ->subject($data["title"]);
 

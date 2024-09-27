@@ -430,6 +430,7 @@
         // Common function to handle the button clicks
         function handleButtonClick(buttonId, filterText, fieldMappings) {
             // Reset all fields to 0
+            load_terminals();
             const fields = [
                 '#txtprofitstandard', '#txtprofitdetails', '#txtinventory',
                 '#txtexpensesheet', '#txtexpensecat', '#txtsaledec',
@@ -537,6 +538,7 @@
                 field: '#txtsaledec',
                 value: 1,
                 showDateFilter: true,
+                showBranch: true,
                 showTerminal: true
             }]);
         });
@@ -549,6 +551,7 @@
                 showType: true,
                 showDepartments: true,
                 showsubdepartments: true,
+                showBranch:true,
                 showTerminal: true
             }]);
         });
@@ -558,6 +561,7 @@
                 field: '#txtsalereturn',
                 value: 1,
                 showDateFilter: true,
+                showBranch:true,
                 showTerminal: true,
                 showCode: true
             }]);
@@ -585,6 +589,7 @@
                 field: '#txtfbrreport',
                 value: 1,
                 showDateFilter: true,
+                showBranch:true,
                 showTerminal: true
             }]);
         });
@@ -595,6 +600,7 @@
                 value: 1,
                 showDateFilter: true,
                 showType: true,
+                showBranch:true,
                 showTerminal: true
             }]);
         });
@@ -864,8 +870,8 @@
                     $("#terminal").append("<option value=''>Select Terminal</option>");
                     $.each(resp, function(index, value) {
                         $("#terminal").append(
-                            "<option value=" + value.sub_department_id + ">" + value
-                            .sub_depart_name + "</option>"
+                            "<option value=" + value.terminal_id + ">" + value
+                            .terminal_name + "</option>"
                         );
                     });
                 }
