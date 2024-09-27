@@ -482,7 +482,7 @@ input+.slider:before {
  
  function switchMode(element){
   var currentName = $("#city").attr('name');
-   if($(this).is(":checked") == true){
+   if($(element).is(':checked') == true){
       if (currentName === 'city[]') {
            $("#city").attr('name', 'city');
            cityLoadNotExists();
@@ -493,7 +493,7 @@ input+.slider:before {
        }
    }
 
-   if($(this).is(":checked") == false){
+   if($(element).is(":checked") == false){
        if (currentName === 'city') {
            $("#city").attr('name', 'city[]');
              cityLoadNotExists();
