@@ -19,8 +19,9 @@
 				<div class="  d-flex align-items-start  pb-2">
 					<div class="  bg-transparent py-2 px-4">
                         <h5 class="font-size-24 text-sm-end text-muted mb-5">Date Time : {{ $orders->dateTime }}</h5>
-						<label class="label {{-- Custom_Helper::getColorName($orders->order_status) --}} font-size-28 border border-white rounded my-5 mt-3">
-						    @if($orders->order_status == "Ready for Delivery")
+						<label class="label {{-- Custom_Helper::getColorName() --}} font-size-28 border border-white rounded my-5 mt-3">
+						    {{ $orders }}
+                            @if($orders->order_status == "Ready for Delivery")
 							  Ready
 						    @elseif($orders->order_status == "Dispatch")
 							  Dispatch from workshop
