@@ -94,7 +94,7 @@
             <label for="city" class="form-control-label">City</label>
               @php $oldCity = old('city'); @endphp
               <label class="switch f-right" title="" data-toggle="toolip" data-original-title="You want city area click to slide on">
-                <input type="checkbox" onclick="switchMode(this)" >
+                <input type="checkbox" onclick="switchMode(this)" id="on_off_btn">
                 <span class="slider round"></span>
               </label>
             <select name="city{{ session('company_id') == 102 ? '[]' : '' }}" id="city" data-placeholder="Select" class="form-control select2" {{ session('company_id') == 102 ? 'multiple' : '' }}>
@@ -1016,7 +1016,7 @@ function swalModal(branchId,mode,brnhName,status){
 
   @if(session('company_id') == 102)
   $("#branch").on('change',function(){
-    if($(this).val() != ''){
+    if($(this).val() != '' && $("#on_off_btn").is(":checked") == false){
       cityLoadNotExists($(this).val(),$("#website").val());
     }
 
