@@ -4267,7 +4267,7 @@ class ReportController extends Controller
         }
 
          // Set the file path where you want to save the PDF in the 'storage/app/public/pdfs' folder
-         $filePath = storage_path('app/public/pdfs/FBR_REPORT_' . date("M",$from)."_".$report->company_name . '.pdf');
+         $filePath = storage_path('app/public/pdfs/FBR_REPORT_' . date("M",strtotime($from))."_".$report->company_name . '.pdf');
         //save file
         $pdf->Output($filePath, 'F');
         // $this->sendEmail($from, $report);
