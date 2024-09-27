@@ -155,7 +155,7 @@
 				  <td>{{ $parent_rowVal->website_name }}</td>
 				  <td>{{ $parent_rowVal->branch_name }}</td>
 
-          <td id="areaColumn{{ $parent_rowVal->branch_id }}" onclick="getAreaValues({{ $parent_rowVal->branch_id }},{{ $parent_rowVal->website_id }},{{(session('company_id') == 102 ? 1 : null)}})"  class="pointer">
+          <td id="areaColumn{{ $parent_rowVal->branch_id }}" onclick="getAreaValues({{ $parent_rowVal->branch_id }},{{ $parent_rowVal->website_id }},{{($parent_rowVal->is_city == 1 ? 1 : null)}})"  class="pointer">
             @php $count = 0 @endphp
              @foreach($deliveryAreaValue as $area_val)
                  @if($area_val->website_id == $parent_rowVal->website_id)
@@ -169,7 +169,7 @@
                    <!--<input type="hidden" id="modifyUrlArea{{-- $area_val->id --}}" value="{{-- route('deliveryAreaNameUpdate',$area_val->id) --}}"/>-->
                    
                    <label class="label {{ $area_val->status == 1 ? 'bg-primary' : 'bg-gray' }} pointer m-1" id="areaLabel{{ $area_val->id }}">
-                    {{ (session('company_id') == 102 ? $area_val->city_name : $area_val->name).' - Rs.'.$area_val->charge }}
+                    {{ ($area_val->is_city == 1 ? $area_val->city_name : $area_val->name).' - Rs.'.$area_val->charge }}
                   </label>
                    
                    {{-- @endif --}}
