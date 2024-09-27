@@ -112,7 +112,7 @@
           </label>	
 
 
-          <div class="form-group">       
+          <div class="form-group d-none" id="areaBox">       
             <label for="area" class="form-control-label">Area</label>
             <br/>
               @php $oldArea = old('areas') ? explode(',',old('areas')) : null; @endphp
@@ -486,6 +486,10 @@ input+.slider:before {
       if (currentName === 'city[]') {
            $("#city").attr('name', 'city');
            cityLoadNotExists();
+
+           if($("#areaBox").hasClass('d-none')){
+            $("#areaBox").removeClass('d-none').val('');
+           }
        }
    }
 
@@ -493,6 +497,10 @@ input+.slider:before {
        if (currentName === 'city') {
            $("#city").attr('name', 'city[]');
              cityLoadNotExists();
+
+           if(!$("#areaBox").hasClass('d-none')){
+            $("#areaBox").addClass('d-none').val('');
+           }             
        }
    }   
  }
