@@ -4127,7 +4127,7 @@ class ReportController extends Controller
             ->join("company", "company.company_id", "=", "branch.company_id")
             ->select("branch.branch_id", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
             ->where("fbr_details.status", 1)->get();
-        // return $totalReports;
+     
 
         foreach ($totalReports as $report) {
             return $this->savefbrReport($report, "2024-09-01", "2024-09-30");
@@ -4267,7 +4267,7 @@ class ReportController extends Controller
         }
 
          // Set the file path where you want to save the PDF in the 'storage/app/public/pdfs' folder
-         $filePath = storage_path('app/public/pdfs/FBR_REPORT_' . date("M",$fromdate)."_".$report->company_name . '.pdf');
+         $filePath = storage_path('app/public/pdfs/FBR_REPORT_' . date("M",$from)."_".$report->company_name . '.pdf');
         //save file
         $pdf->Output($filePath, 'F');
         // $this->sendEmail($from, $report);
