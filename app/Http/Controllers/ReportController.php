@@ -39,11 +39,13 @@ use App\Services\OrderService;
 use Mail;
 use \Illuminate\Support\Arr;
 use App\stock;
+use App\Traits\MediaTrait;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 
 class ReportController extends Controller
 {
+    use MediaTrait;
     public function __construct()
     {
         // $this->middleware('auth');
@@ -4120,25 +4122,22 @@ class ReportController extends Controller
 
     public function generatedSystematicReport(Request $request)
     {
-        $totalReports = DB::table("branch_reports")
-            ->join("branch", "branch.branch_id", "=", "branch_reports.branch_id")
+        $totalReports = DB::table("fbr_details")
+            ->join("branch", "branch.branch_id", "=", "fbr_details.branch_id")
             ->join("company", "company.company_id", "=", "branch.company_id")
-            ->join("reports", "reports.id", "=", "branch_reports.report_id")
-            ->select("branch.branch_id", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo", "reports.name as reportname")
-            ->where("branch_reports.status", 1)->get();
+            ->select("branch.branch_id", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
+            ->where("fbr_details.status", 1)->get();
         // return $totalReports;
 
         foreach ($totalReports as $report) {
-            return $this->savefbrReport($report, "2024-01-01", "2024-01-31");
+            return $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
         return $totalReports;
     }
 
     public function savefbrReport($report, $from, $to)
     {
-        // $vendor = new vendor();
         $reportmodel = new report();
-        // $company = $vendor->company($company);
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $report->company_name . " | " . $report->ptcl_contact . " | " . $report->address;
@@ -4162,7 +4161,7 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
         $pdf->Image(asset('storage/images/company/' . $report->logo), 12, 10, -200);
-        $pdf->Cell(105, 12, $report->reportname, 0, 0, 'L');
+        $pdf->Cell(105, 12, "FBR REPORT", 0, 0, 'L');
         $pdf->Cell(50, 0, "", 0, 1, 'R');
         $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
 
@@ -4267,9 +4266,11 @@ class ReportController extends Controller
             $pdf->Cell(35, 7, number_format($totalamount, 2), 'B,T', 1, 'C');
         }
 
+         // Set the file path where you want to save the PDF in the 'storage/app/public/pdfs' folder
+         $filePath = storage_path('app/public/pdfs/FBR_REPORT_' . date("M",$fromdate)."_".$report->company_name . '.pdf');
         //save file
-        $pdf->Output(asset('assets/pdf/' . $from . '_' . trim($report->branch_id) . '_FBR_Report.pdf'), 'F');
-        $this->sendEmail($from, $report);
+        $pdf->Output($filePath, 'F');
+        // $this->sendEmail($from, $report);
     }
 
     public function sendEmail($from, $report)

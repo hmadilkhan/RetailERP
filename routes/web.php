@@ -238,8 +238,8 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/branch-emails/{id}', [BranchController::class, 'getEmail']);
     Route::post('/save-email', [BranchController::class, 'saveEmail']);
     Route::post('/delete-email', [BranchController::class, 'deleteEmail']);
-    Route::get('/send-report', [ReportController::class, 'generatedSystematicReport']);
 });
+Route::get('/send-report', [ReportController::class, 'generatedSystematicReport']);
 
 
 Route::get('/send-logout-notification/{id}', 'UserDetailsController@sendPushNotificationToUserDevice');
