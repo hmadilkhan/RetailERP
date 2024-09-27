@@ -73,7 +73,7 @@
       <div class="row">
         <div class="col-md-4">
           <div class="form-group">       
-            <label for="estimate_time" class="form-control-label">Time Estimate</label>
+            <label for="estimate_time" class="form-control-label">Estimated delivery (Time)</label>
             <input type="text" name="estimate_time" id="estimate_time" class="form-control">
             <div class="form-control-feedback text-danger" id="estimate_time_alert"></div>
           </div>  
