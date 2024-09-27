@@ -190,7 +190,7 @@ class order extends Model
 				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
 			})
 			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
-				$query->where('sales_receipts.terminal_id', $request->terminal);
+				$query->whereIn('sales_receipts.terminal_id', $request->terminal);
 			})
 			->when($request->payMode != "", function ($query) use ($request) {
 				$query->where('sales_receipts.payment_id', $request->payMode);
@@ -285,7 +285,7 @@ class order extends Model
 				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
 			})
 			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
-				$query->where('sales_receipts.terminal_id', $request->terminal);
+				$query->whereIn('sales_receipts.terminal_id', $request->terminal);
 			})
 			->when($request->payMode != "", function ($query) use ($request) {
 				$query->where('sales_receipts.payment_id', $request->payMode);
