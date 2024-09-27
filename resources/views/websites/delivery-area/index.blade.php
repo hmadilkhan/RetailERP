@@ -548,35 +548,32 @@ input+.slider:before {
           process_md = false;   
       } 
       
-      @if($("#on_off_btn").is(":checked") == true)
-       if($("#areas").val() == ''){
+       if($("#areas").val() == '' && $("#on_off_btn").is(":checked") == true){
           $("#areas").focus();
           $("#areas_alert").text('field is required.');   
           process_md = false;   
       } 
      
       
-      if($("#time_estimate").val() == ''){
+      if($("#time_estimate").val() == '' && $("#on_off_btn").is(":checked") == true){
           $("#time_estimate").focus();
           $("#time_estimate_alert").text('field is required.');   
           process_md = false;   
       }       
-      @endif 
 
-      @if($("#on_off_btn").is(":checked") == false)
-      
-      if($("#city").val() == ''){
+
+      if($("#city").val() == '' && $("#on_off_btn").is(":checked") == false){
           $("#city").focus();
           $("#city_alert").text('field is required.');   
           process_md = false;   
       }       
       
-      if($("#estimate_day").val() == ''){
+      if($("#estimate_day").val() == '' && $("#on_off_btn").is(":checked") == false){
           $("#estimate_day").focus();
           $("#estimate_day_alert").text('field is required.');   
           process_md = false;   
       } 
-      @endif 
+ 
 
       if(process_md){
             $("#deliveryAreasForm").submit();
