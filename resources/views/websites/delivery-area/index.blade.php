@@ -93,7 +93,7 @@
           <div class="form-group">       
             <label for="city" class="form-control-label">City</label>
               @php $oldCity = old('city'); @endphp
-              <label class="switch f-right" title="" data-toggle="toolip" data-original-title="You want city area click to slide on">
+              <label class="switch f-right" title="" data-toggle="tooltip" data-placement="bottom" data-original-title="You want city area click to slide on">
                 <input type="checkbox" onclick="switchMode(this)" name="on_off_btn" id="on_off_btn">
                 <span class="slider round"></span>
               </label>
