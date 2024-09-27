@@ -4123,7 +4123,7 @@ class ReportController extends Controller
 
     public function generatedSystematicReport(Request $request)
     {
-        $filesArray = [];
+        $this->filesArray = [];
         $totalReports = DB::table("fbr_details")
             ->join("branch", "branch.branch_id", "=", "fbr_details.branch_id")
             ->join("company", "company.company_id", "=", "branch.company_id")
@@ -4135,7 +4135,7 @@ class ReportController extends Controller
             $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
         echo "Email Sending";
-        $this->sendEmail("2024-09-01", $report,$filesArray);
+        $this->sendEmail("2024-09-01", $report);
         return 1;
     }
 
@@ -4272,13 +4272,13 @@ class ReportController extends Controller
         }
         $fileName = 'FBR_REPORT_' . date("M",strtotime($from))."_".$report->company_name . '.pdf';
         $filePath = storage_path('app/public/pdfs/') . $fileName;
-        array_push($filesArray,asset('storage/pdfs/'.$fileName));
+        array_push($this->filesArray,asset('storage/pdfs/'.$fileName));
         // //save file
         $pdf->Output($filePath, 'F');
         // $this->sendEmail($from, $report);
     }
 
-    public function sendEmail($from, $report,$filesArray)
+    public function sendEmail($from, $report)
     {
         $data["email"] =  "faizanakramkhanfaizan@gmail.com";
         $data["title"] =  $report->reportname;
@@ -4288,7 +4288,7 @@ class ReportController extends Controller
         // $files = [
         //     asset('assets/pdf/' . $from . '_' . trim($report->branch_id) . '_FBR_Report.pdf'),
         // ];
-        $files = $filesArray;
+        $files = $this->filesArray;
 
         Mail::send('emails.automaticemail', $data, function ($message) use ($data, $files) {
             $message->to($data["email"], "Sabify")
