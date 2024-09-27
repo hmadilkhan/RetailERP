@@ -94,7 +94,7 @@
             <label for="city" class="form-control-label">City</label>
               @php $oldCity = old('city'); @endphp
               <label class="switch f-right" title="" data-toggle="toolip" data-original-title="You want city area click to slide on">
-                <input type="checkbox" onclick="switchMode(this)" id="on_off_btn">
+                <input type="checkbox" onclick="switchMode(this)" name="on_off_btn" id="on_off_btn">
                 <span class="slider round"></span>
               </label>
             <select name="city{{ session('company_id') == 102 ? '[]' : '' }}" id="city" data-placeholder="Select" class="form-control select2" {{ session('company_id') == 102 ? 'multiple' : '' }}>
@@ -627,21 +627,19 @@ input+.slider:before {
                 
                 // $(".area_table_md").dataTable();
                   for(var s=0;s < r.length ;s++){
-                      if(md == 1){ 
+                      if(r[s].is_city == 1){ 
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
                                 "<td class='d-none'>"+r[s].id+"</td>"+
                                 "<td id='name_md_"+r[s].id+"'>"+r[s].city_name+"</td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td>"+
-                                  "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-primary m-r-1'>Update</i>"+
+                                  "<i onclick='updateAreaDetail("+r[s].id+","+brnhId+","+r[s].is_city+")' class='btn btn-primary m-r-1'>Update</i>"+
                                   "<i onclick='removeAreaDetail("+r[s].id+","+brnhId+")' class='btn btn-danger'>Remove</i>"+
                                   "</td>"+
                               "</tr>"
                            );
-                      }
-                      
-                      if(md == 0){
+                      }else{
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
                                 "<td class='d-none'>"+r[s].id+"</td>"+
