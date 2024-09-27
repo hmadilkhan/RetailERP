@@ -107,7 +107,7 @@
 
           <label class="switch m-r-1">
             <input type="checkbox" title="" data-original-title="Select Area" 
-            onclick="switchMode()" >
+            onclick="switchMode(this)" >
             <span class="slider round"></span>
           </label>	
 
