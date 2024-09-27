@@ -548,8 +548,8 @@
                             $("#order_table tbody").append(
                                 "<tr>" +
                                 "<td>"+result[count].id+"</td>" +
-                                "<td class='pro-name' >"+result[count].date+"</td>" +
-                                "<td class='pro-name' >"+formatTimeToAMPM(result[count].time)+"</td>" +
+                                "<td>"+result[count].date+"</td>" +
+                                "<td>"+formatTimeToAMPM(result[count].time)+"</td>" +
                                 "<td>"+result[count].branch+"</td>" +
                                 "<td onclick='getBill("+result[count].id+",\""+ result[count].receipt_no+"\",\""+result[count].date+"\",\""+result[count].name+"\",\""+result[count].mobile+"\",\""+result[count].order_mode+"\",\""+result[count].order_status_name+"\","+result[count].total_amount+","+(result[count].receive_amount == "" ? 0 : result[count].receive_amount) +",\""+result[count].payment_mode+"\",\""+result[count].address+"\")'>"+result[count].receipt_no+"</td>" +
                                 "<td>"+result[count].name+"</td>" +
@@ -848,6 +848,7 @@
                                     '<td class="d-none">'+orderLists[i].id+'</td>'+
                                     '<td>'+orderLists[i].url_orderid+'</td>'+
                                     '<td>'+orderLists[i].date+'</td>'+
+                                    "<td>"+formatTimeToAMPM(orderLists[i].time)+"</td>" +
                                     '<td>'+orderLists[i].branch+'</td>'+
                                     '<td>'+orderLists[i].name+'</td>'+
                                     '<td>'+orderLists[i].mobile+'</td>'+
