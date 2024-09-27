@@ -36,7 +36,7 @@
                                         <!--<a href="https://sabsoft.com.pk/Retail/" style="font-size:32px;color:#fff;"> SABIFY</a> -->
                                         <img width="210" height="100" src="{{asset('assets/images/email/sabify.png')}}" />
                                         <br>
-                                        <span style="margin-top: 10px;display: block;"><b>{{$body->reportname}} of {{$body->company_name}} (
+                                        <span style="margin-top: 10px;display: block;"><b>{{$reportname}} of {{$body->company_name}} (
                                                 {{$body->branch_name}} )</b></span>
                                     </td>
                                 </tr>
@@ -63,7 +63,7 @@
                                                     <td class="content-block"
                                                         style="font-family: 'Helvetica Neue',Helvetica,Arial,sans-serif; box-sizing: border-box; font-size: 14px; vertical-align: top; margin: 0; padding: 0 0 20px;"
                                                         valign="top">
-                                                        Enclose please find <b>{{$body->reportname}}</b> <br />
+                                                        Enclose please find <b>{{$reportname}}</b> <br />
                                                         for the month of <b>{{date("F",strtotime($from))}} - {{date("Y",strtotime($from))}}</b> from have been attached. <br />
 														Kindly check attachment.
                                                     </td>

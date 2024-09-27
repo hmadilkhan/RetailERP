@@ -4135,7 +4135,7 @@ class ReportController extends Controller
             $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
         echo "Email Sending";
-        $this->sendEmail("2024-09-01", $report);
+        $this->sendEmail("2024-09-01", $report,"FBR Report");
         return 1;
     }
 
@@ -4278,10 +4278,10 @@ class ReportController extends Controller
         // $this->sendEmail($from, $report);
     }
 
-    public function sendEmail($from, $report)
+    public function sendEmail($from, $report,$reportname)
     {
         $data["email"] =  "faizanakramkhanfaizan@gmail.com";
-        $data["title"] =  $report->reportname;
+        $data["title"] =  $reportname;
         $data["body"]  =  $report;
         $data["from"]  =  $from;
 
