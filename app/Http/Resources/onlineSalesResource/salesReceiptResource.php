@@ -36,7 +36,7 @@ class salesReceiptResource extends JsonResource
 			"delivery_area_name"        =>$this->delivery_area_name,
 			"delivery_charges"          =>$this->delivery_charges,
 			"delivery_instructions"     =>$this->delivery_instructions,
-			"dateTime"                  =>date('M d, Y h:i:s', strtotime($this->date." ".$this->time)), //date("M ,d Y H:i:s",strtotime($this->date." ".$this->time)),
+			"dateTime"                  =>date('M d, Y  H:i:s', strtotime($this->date." ".$this->time)), //date("M ,d Y H:i:s",strtotime($this->date." ".$this->time)),
 			"deliveryDate"              =>$this->delivery_date,
 			"Rider"                     =>ServiceProviderOrderResource::collection(DB::table('service_provider_orders')
 			                                                                          ->join('service_provider_details','service_provider_details.id','service_provider_orders.service_provider_id')
