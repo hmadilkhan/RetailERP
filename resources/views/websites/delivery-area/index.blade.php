@@ -112,8 +112,7 @@
             <br/>
               @php $oldArea = old('areas') ? explode(',',old('areas')) : null; @endphp
             <input type="text" name="areas" id="areas" class="form-control" value="@if($oldArea != null) @foreach($oldArea as $val) {{ $val }} @endforeach @endif">
-            <!--<div class="form-control-feedback text-danger" id="areas_alert"></div>-->
-              <div class="form-control-feedback text-danger" id="areas_alert"></div>
+            <div class="form-control-feedback text-danger" id="areas_alert"></div>
           </div> 
         </div>         
       </div>
