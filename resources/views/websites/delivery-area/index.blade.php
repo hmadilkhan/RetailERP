@@ -94,7 +94,7 @@
             <label for="city" class="form-control-label">City</label>
             <br/>
               @php $oldCity = old('city'); @endphp
-              <label class="switch m-r-1">
+              <label class="switch m-r-1 f-right">
                 <input type="checkbox" title="" data-original-title="Select Area" 
                 onclick="switchMode(this)" >
                 <span class="slider round"></span>
@@ -479,16 +479,38 @@ input+.slider:before {
  
  function switchMode(element){
   var currentName = $("#city").attr('name');
-   if($(element).is(':checked') == true){
-      if (currentName === 'city[]') {
-           $("#city").attr('name', 'city');
-           cityLoadNotExists();
+  if($(element).is(':checked') == true){
 
-           if($("#areaBox").hasClass('d-none')){
-            $("#areaBox").removeClass('d-none').val('');
-           }
-       }
-   }
+  swal({
+            title: "Do you want to set up the area along with the city?",
+            text: "Would you like to enable this option? If yes, please confirm.",
+            type: "warning",
+            showCancelButton: true,
+            confirmButtonClass: "btn-danger",
+            confirmButtonText: "yes plx!",
+            cancelButtonText: "cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        },
+        function(isConfirm){
+            if(isConfirm){
+               if (currentName === 'city[]') {
+                    $("#city").attr('name', 'city');
+                    cityLoadNotExists();
+
+                    if($("#areaBox").hasClass('d-none')){
+                      $("#areaBox").removeClass('d-none').val('');
+                    }
+                }
+            }else {
+                swal("Cancelled", "Operation Cancelled:)", "error");
+              if($(element).is(':checked')){
+                 $(element).prop('checked', false);
+              }
+            }
+        });
+
+      } 
 
    if($(element).is(":checked") == false){
        if (currentName === 'city') {
