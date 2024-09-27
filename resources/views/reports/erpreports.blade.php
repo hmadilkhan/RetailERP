@@ -538,6 +538,7 @@
                 field: '#txtsaledec',
                 value: 1,
                 showDateFilter: true,
+                showBranch: true,
                 showTerminal: true
             }]);
         });
@@ -550,6 +551,7 @@
                 showType: true,
                 showDepartments: true,
                 showsubdepartments: true,
+                showBranch:true,
                 showTerminal: true
             }]);
         });
