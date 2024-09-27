@@ -472,7 +472,7 @@ class report extends Model
             $filter .= " and b.branch = '" . $branch . "'";
         }
         if ($mode != "" and $mode == "balances") {
-            $filter .= " and b.payment_id = 3";
+            $filter .= " and c.balance_amount > 0";
         }
         // $query = 'SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2  ' . $filter;
         // return $query;
