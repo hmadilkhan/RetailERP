@@ -4272,7 +4272,7 @@ class ReportController extends Controller
         // Storage::disk('public')->put($filePath,$pdfContent);
         //  $filePath = public_path('app/public/pdfs/FBR_REPORT_' . date("M",strtotime($from))."_".$report->company_name . '.pdf');
         // //save file
-        $pdf->Output($filePath, 'F');
+        $pdf->Output($fileName, 'I');
         // $this->sendEmail($from, $report);
     }
 
