@@ -663,7 +663,7 @@ class order extends Model
 
 
 
-		$result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount, f.payment_mode,a.fbrInvNumber,a.isSeen,c_add.address,c_add.landmark,a.delivery_area_name,a.delivery_charges,a.delivery_type from sales_receipts a
+		$result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.time,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount, f.payment_mode,a.fbrInvNumber,a.isSeen,c_add.address,c_add.landmark,a.delivery_area_name,a.delivery_charges,a.delivery_type from sales_receipts a
 							INNER JOIN sales_order_mode b on b.order_mode_id = a.order_mode_id
 							INNER JOIN customers c on c.id = a.customer_id
 							INNER JOIN customer_addresses c_add on c_add.id = a.cust_location_id
