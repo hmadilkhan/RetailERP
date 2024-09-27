@@ -94,6 +94,11 @@
             <label for="city" class="form-control-label">City</label>
             <br/>
               @php $oldCity = old('city'); @endphp
+              <label class="switch m-r-1">
+                <input type="checkbox" title="" data-original-title="Select Area" 
+                onclick="switchMode(this)" >
+                <span class="slider round"></span>
+              </label>
             <select name="city{{ session('company_id') == 102 ? '[]' : '' }}" id="city" data-placeholder="Select" class="form-control select2" {{ session('company_id') == 102 ? 'multiple' : '' }}>
               <option value="">Select</option>
               @foreach($city as $val)
@@ -104,14 +109,6 @@
           </div> 
         </div> 
         <div class="col-md-4">
-
-          <label class="switch m-r-1">
-            <input type="checkbox" title="" data-original-title="Select Area" 
-            onclick="switchMode(this)" >
-            <span class="slider round"></span>
-          </label>	
-
-
           <div class="form-group d-none" id="areaBox">       
             <label for="area" class="form-control-label">Area</label>
             <br/>
