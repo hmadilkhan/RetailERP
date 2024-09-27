@@ -132,9 +132,9 @@
                             onclick="clearControl('branch')"></i>
                         <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2"
                             multiple>
-                            @if (session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19)
+                            {{-- @if (session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19) --}}
                                 <option selected value="all">All</option>
-                            @endif
+                            {{-- @endif --}}
                             @foreach ($branch as $value)
                                 <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                             @endforeach
@@ -184,6 +184,7 @@
                             </select>
                         </div>
 
+                        @endif
                         <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="margin-top: 20px;">
                             <label class="form-control-label">Select Type</label>
                             <select id="type" name="type" data-placeholder="Select Type"
@@ -193,7 +194,6 @@
                                     Datewise</option>
                             </select>
                         </div>
-                    @endif
                 </div>
 
                 <div class="row">
@@ -697,10 +697,6 @@
 
         function clearAllFromControl(values, controlId) {
             var selectedValues = values;
-            // If nothing is selected, set "All" as the default selection
-            console.log(selectedValues);
-            
-            
             // If "All" is selected, unselect other options
             if (selectedValues.includes('all')) {
                 // Deselect other options

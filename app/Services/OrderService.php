@@ -22,7 +22,7 @@ class OrderService
         if (session("roleId") == 2) {
             $serviceProvider->whereIn("branch_id", Branch::where("company_id", session("company_id"))->pluck("branch_id"));
         } else {
-            $serviceProvider->whereIn("branch_id", session("branch"));
+            $serviceProvider->where("branch_id", session("branch"));
         }
         if ($branch != "" && $branch != "all") {
             $serviceProvider->whereIn("branch_id", $branch);
