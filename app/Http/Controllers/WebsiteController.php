@@ -1022,7 +1022,7 @@ class WebsiteController extends Controller
 
         // $result = null;
 
-        if ($request->city != null && isset($request->on_off_btn)) {
+        if ($request->city != null && !isset($request->on_off_btn)) {
             $city  = $request->city;
 
             for ($i = 0; $i < count($city); $i++) {
@@ -1051,7 +1051,7 @@ class WebsiteController extends Controller
                         'branch_id'          => $request->branch,
                         'name'               => addslashes($areas[$i]),
                         'city_id'            => $request->city,
-                        'city'               => $request->city,
+                        // 'city'               => $request->city,
                         'estimate_time'      => $request->time_estimate,
                         'estimate_of_days'   => $request->estimate_day,
                         'charge'             => $request->charges,
