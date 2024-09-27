@@ -502,6 +502,7 @@ input+.slider:before {
                       $("#areaBox").removeClass('d-none').val('');
                     }
                 }
+                swal.close();
             }else {
                 swal("Cancelled", "Operation Cancelled:)", "error");
               if($(element).is(':checked')){
