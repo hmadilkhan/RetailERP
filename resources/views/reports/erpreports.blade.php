@@ -561,6 +561,7 @@
                 field: '#txtsalereturn',
                 value: 1,
                 showDateFilter: true,
+                showBranch:true,
                 showTerminal: true,
                 showCode: true
             }]);
@@ -588,6 +589,7 @@
                 field: '#txtfbrreport',
                 value: 1,
                 showDateFilter: true,
+                showBranch:true,
                 showTerminal: true
             }]);
         });
@@ -598,6 +600,7 @@
                 value: 1,
                 showDateFilter: true,
                 showType: true,
+                showBranch:true,
                 showTerminal: true
             }]);
         });
