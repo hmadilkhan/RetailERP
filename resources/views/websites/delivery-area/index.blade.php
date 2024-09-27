@@ -514,7 +514,9 @@ input+.slider:before {
    if($(element).is(":checked") == false){
        if (currentName === 'city') {
            $("#city").attr('name', 'city[]');
-             cityLoadNotExists();
+            if($("#website").val() != '' && $("#branch").val() != ''){
+               cityLoadNotExists($("#branch").val(),$("#website").val());
+            }
 
            if(!$("#areaBox").hasClass('d-none')){
             $("#areaBox").addClass('d-none').val('');
