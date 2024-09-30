@@ -923,7 +923,6 @@
                 $("#sections_md").val($("#depatSection_mdept"+departid).val()).trigger('change');
             }            
 
-            $("#depart-modal").modal("show");
             $('#depart').val($("#deptName_mdept"+departid).val());
             $('#departid').val(departid);
             $('#editcode').val($("#deptCode_mdept"+departid).val());
@@ -941,6 +940,8 @@
                 $("#previewDepartMobileBannerImage_md").attr('src', location.origin + '/storage/images/department/' +
                 $("#mobileBanner_mdept"+departid).val());
             }
+
+            $("#depart-modal").modal("show");
         }
 
         function editsubdepart(departcode, departid, departname) {
