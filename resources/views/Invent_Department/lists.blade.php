@@ -76,7 +76,7 @@
                                                         <input type="hidden" id="websiteDeptName_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->website_department_name }}">
                                                         <input type="hidden" id="metaTitle_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->meta_title }}">
                                                         <input type="hidden" id="metaDescript_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->meta_description }}">
-                                                        <input type="hidden" id="depatSection_mdept{{ $depart[$d]->department_id }}" value="{{ $sectionValue }}">
+                                                        <input type="hidden" id="deptSection_mdept{{ $depart[$d]->department_id }}" value="{{ $sectionValue }}">
                                                     </td>
                                                     <td class="pointer"
                                                         onclick="editsubdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_id }}','{{ addslashes($depart[$d]->department_name) }}')">
@@ -918,8 +918,8 @@
                 $("#showWebsite_md").trigger('click');
             }
 
-            if ($("#depatSection_mdept"+departid).val().length > 0) {
-                $("#sections_md").val($("#depatSection_mdept"+departid).val()).trigger('change');
+            if ($("#deptSection_mdept"+departid).val() != '') {
+                $("#sections_md").val($("#deptSection_mdept"+departid).val()).trigger('change');
             }            
 
             $('#depart').val($("#deptName_mdept"+departid).val());
