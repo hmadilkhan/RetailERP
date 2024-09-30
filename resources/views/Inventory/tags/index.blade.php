@@ -225,10 +225,11 @@
         $meta_description = old('meta_description');
         
         if(isset($id)){
-            $meta_description = old('meta_description') ? old('meta_description') : $edit->meta_description;
-            $("#meta_description").val('{{ $meta_description }}');
+            $meta_description = old('meta_description') ? old('meta_description') : $edit->meta_description; 
         }
         @endphp 
+
+    $("#meta_description").val('{{ $meta_description }}');    
 
         
     function remove(id,name){
@@ -255,7 +256,7 @@
     }      
     
     
-    
+
         
 
 </script>
