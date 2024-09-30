@@ -482,13 +482,15 @@ class report extends Model
         }
         if ($branch != "" and $branch != "all") {
             $filter .= " and b.branch = '" . $branch . "'";
+        }else{
+            $filter .= " and b.branch IN ( Select branch_id from branch where company_id = ".session("company_id").")";
         }
         if ($mode != "" and $mode == "balances") {
             $filter .= " and c.balance_amount > 0";
         }
         // $query = 'SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2  ' . $filter;
         // return $query;
-        $result = DB::select('SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode,(SELECT SUM(received) FROM `customer_account` WHERE `receipt_no` = b.id) as received FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2  ' . $filter, [$fromdate, $todate]);
+        $result = DB::select('SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode,(SELECT SUM(received) FROM `customer_account` WHERE `receipt_no` = b.id) as received FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2  ' . $filter." group by a.receipt_no" , [$fromdate, $todate]);
         return $result;
     }
 
@@ -511,10 +513,12 @@ class report extends Model
         if ($salesperson != '' and $salesperson != "all") {
             $filter .= " and a.sales_person_id = " . $salesperson;
         }
-        // if ($branch != "" and $branch != "all") {
-        //     $filter .= " and a.branch = '" . $branch . "'";
-        // }
-        $result = DB::select('SELECT d.id,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ? and branch IN (select branch_id from branch where company_id = ?) ' . $filter.' group by d.fullname', [$fromdate, $todate,session('company_id')]);
+        if ($branch != "" and $branch != "all") {
+            $filter .= " and a.branch = '" . $branch . "'";
+        }else{
+            $filter .= " and branch IN (select branch_id from branch where company_id = ".session('branch').")";
+        }
+        $result = DB::select('SELECT d.id,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter.' group by d.fullname', [$fromdate, $todate]);
         return $result;
     }
 

@@ -2724,7 +2724,7 @@ class ReportController extends Controller
 
         if ($request->terminalid == 0) {
 
-            $terminals = $report->get_terminals();
+            $terminals = $report->getTerminals($request->branch);
             foreach ($terminals as  $values) {
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
@@ -2893,7 +2893,7 @@ class ReportController extends Controller
 
         if ($request->terminalid == 0) {
 
-            $terminals = $report->get_terminals();
+            $terminals = $report->getTerminals($request->branch);
             foreach ($terminals as  $values) {
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
@@ -3132,7 +3132,7 @@ class ReportController extends Controller
 
         if ($request->terminalid == 0) {
 
-            $terminals = $report->get_terminals();
+            $terminals = $report->getTerminals($request->branch);
             foreach ($terminals as  $values) {
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
