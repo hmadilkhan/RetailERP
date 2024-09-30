@@ -457,8 +457,8 @@ class ReportController extends Controller
     {
         $request->branch = explode(",",$request->branch);
         $request->terminal = explode(",",$request->terminal);
-        // $request->status = explode(",",$request->status);
-        // return $request->status;
+        $request->status = explode(",",$request->status);
+        
         if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
 			$openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 		}else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
@@ -517,12 +517,12 @@ class ReportController extends Controller
             ->when($request->customerNo != "", function ($query) use ($request) {
                 $query->where('customers.mobile', $request->customerNo);
             })
-            ->when($request->sales_tax != "", function ($query) use ($request) {
+            ->when($request->sales_tax != "", function ($query) {
                 $query->where("fbrInvNumber", '!=', "");
             })
-            // ->when(!empty($request->status) , function ($query) use ($request) {
-            //     $query->whereIn('status', $request->status);
-            // })
+            ->when(!empty($request->status) && $request->status[0] != "" , function ($query) use ($request) {
+                $query->whereIn('status', $request->status);
+            })
             ->when($request->salesperson != "" && $request->salesperson != "all", function ($query) use ($request) {
                 $query->where("sales_person_id", '=', $request->salesperson);
             })
@@ -536,6 +536,7 @@ class ReportController extends Controller
             ->selectSub($amountSum, 'amount_sum')
             ->orderBy("id", "asc")
             ->get();
+            // ->toSql();
     }
 
     public function getStockReportExcelExport(Request $request, stock $stock)
@@ -3942,9 +3943,11 @@ class ReportController extends Controller
         $orders = $report->orderBookingQuery($request->fromdate, $request->todate, $request->paymentmethod, $request->branch, $request->mode);
 
         foreach ($orders as $values) {
+            $received = $values->receive_amount + $values->received;
+            $balance = $values->total_amount - $received;
             $totalamount += $values->total_amount;
-            $totalreceiveamount += $values->receive_amount;
-            $totalbalanceamount += $values->balance_amount;
+            $totalreceiveamount += $received;
+            $totalbalanceamount += $balance;
 
             $pdf->SetFont('Arial', '', 10);
             $pdf->setFillColor(232, 232, 232);
@@ -3952,8 +3955,8 @@ class ReportController extends Controller
             $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
             $pdf->Cell(50, 6, $values->name, 0, 0, 'L', 1);
             $pdf->Cell(20, 6, number_format($values->total_amount, 0), 0, 0, 'L', 1);
-            $pdf->Cell(20, 6, number_format($values->receive_amount, 0), 0, 0, 'L', 1);
-            $pdf->Cell(20, 6, number_format($values->balance_amount, 0), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, number_format($received, 0), 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, number_format($balance, 0), 0, 0, 'L', 1);
             $pdf->Cell(40, 6, $values->payment_mode, 0, 1, 'C', 1);
             $pdf->ln(1);
         }
