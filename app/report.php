@@ -372,8 +372,14 @@ class report extends Model
         return $result;
     }
 
-    public function sales_details($terminal, $fromdate, $todate)
+    public function sales_details($terminal, $fromdate, $todate,$branch)
     {
+        $filter = "";
+        if ($branch != "all" && $terminal == "") {
+            $filter .= " and a.terminal_id IN (SELECT terminal_id FROM `terminal_details` where branch_id = $branch)";
+        }else{
+            $filter .= " and a.terminal_id = ".$terminal;
+        }
 
         $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,
 		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,
@@ -402,7 +408,7 @@ class report extends Model
 		IFNULL((SELECT SUM(coupon) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id )),0) as coupon,
 		IFNULL((SELECT SUM(sales_tax_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id )),0) as sale_tax,
 		IFNULL((SELECT SUM(service_tax_amount) FROM sales_account_subdetails where receipt_id IN(Select id from sales_receipts where opening_id = a.opening_id )),0) as service_tax 
-		FROM sales_opening a where a.terminal_id = ? and a.date BETWEEN ? and ?", [$terminal, $fromdate, $todate]);
+		FROM sales_opening a where  a.date BETWEEN ? and ? ".$filter, [$fromdate, $todate]);
         return $result;
     }
 
