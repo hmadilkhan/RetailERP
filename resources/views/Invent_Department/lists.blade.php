@@ -920,7 +920,7 @@
             }
 
             if ($("#depatSection_mdept"+departid).val() != '') {
-                $("#sections_md").val(sectionArray).trigger('change');
+                $("#sections_md").val($("#depatSection_mdept"+departid).val()).trigger('change');
             }            
 
             $("#depart-modal").modal("show");
