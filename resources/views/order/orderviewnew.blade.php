@@ -768,7 +768,7 @@
                         $("#orderserviceprovider").empty();
                         $("#orderserviceprovider").append('<option value="all">All</option>');
                         $.each(result.providers, function() {
-                            $("#orderserviceprovider").append('<option value="' + this.id + '"+>' + this
+                            $("#orderserviceprovider").append('<option value="' + this.serviceprovideruser.user_id + '"+>' + this
                                 .provider_name + '</option>');
                         });
                     }
