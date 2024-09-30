@@ -915,6 +915,10 @@
         function editdepart(departid) {
             $("#departImage_md_alert,#bannerImage_md_alert").text('');
 
+            if($("#showWebsite_md").is(':checked')){
+                 $("#showWebsite_md").prop('checked', false);
+              }
+
             if ($("#websiteMode_mdept"+departid).val() == 1) {
                 $("#showWebsite_md").trigger('click');
             }
