@@ -96,7 +96,8 @@
                             <textarea rows="5" class="form-control" placeholder="Meta Description" name="meta_descript" id="meta_descript"></textarea>
                             <span class="text-danger" id="metadescript_alert"></span>
                           </div>                             
-
+                           <br/>
+                           <hr/>
                             <div class="form-group m-t-4">
                                 <a href="javascript:void(0)">
                                  <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" class="width-100" alt="img">
