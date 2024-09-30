@@ -126,7 +126,7 @@
 
 <link
   rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"
+  href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css"
 />
 
 <style type="text/css">
@@ -234,7 +234,7 @@ input+.slider:before {
 
 @section('scriptcode_three')
 
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 
 <script type="text/javascript">
     $(".select2").select2();
