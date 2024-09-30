@@ -108,10 +108,10 @@
                             
                             <div class="form-group">
                                  @php 
-                                    $brandImage = asset('assets/images/placeholder.jpg');
+                                    $brandImage = asset('storage/images/placeholder.jpg');
                                    
                                     if(isset($id)){
-                                       $brandImage = asset('assets/images/brands/'.session('company_id').'/'.$edit->image);
+                                       $brandImage = asset('storage/images/brands/'.session('company_id').'/'.$edit->image);
                                     }
                                  @endphp                                  
                                <label class="form-control-label">Image</label>
@@ -129,10 +129,10 @@
                             
                             <div class="form-group">
                                  @php 
-                                    $brandBanner = asset('assets/images/placeholder.jpg');
+                                    $brandBanner = asset('storage/images/placeholder.jpg');
                                    
                                     if(isset($id)){
-                                       $brandBanner = asset('assets/images/brands/'.session('company_id').'/'.$edit->banner);
+                                       $brandBanner = asset('storage/images/brands/'.session('company_id').'/'.$edit->banner);
                                     }
                                  @endphp                                  
                                <label class="form-control-label">Banner</label>
@@ -181,21 +181,21 @@
                              <td class="d-none">{{ $brand->priority }}</td>
                              <td>
                                  @php 
-                                   $image = asset('assets/images/placeholder.jpg');   
+                                   $image = asset('storage/images/placeholder.jpg');   
                                     if($brand->image != null){
-                                       $path = public_path('assets/images/brands/').session('company_id').'/'.$brand->image;
-                                       $image = File::exists($path) ? asset('assets/images/brands/'.session('company_id').'/'.$brand->image) : asset('assets/images/placeholder.jpg');
+                                       $path = public_path('storage/images/brands/').session('company_id').'/'.$brand->image;
+                                       $image = File::exists($path) ? asset('storage/images/brands/'.session('company_id').'/'.$brand->image) : asset('storage/images/placeholder.jpg');
                                     }
                                  @endphp    
                                  <img src="{{ $image }}" class="thumb-img img-fluid" alt="{{ $brand->image == '' ? 'placeholder.jpg' : $brand->image }}" width="100px" height="100px">
                                  
                                  @if($brand->banner != null)
                                   @php
-                                   $path = public_path('assets/images/brands/').session('company_id').'/'.$brand->banner;
+                                   $path = public_path('storage/images/brands/').session('company_id').'/'.$brand->banner;
                                      if(File::exists($path)){
                                   @endphp  
                                     <br/>
-                                         <img src="{{ asset('assets/images/brands/'.session('company_id').'/'.$brand->banner) }}" class="thumb-img img-fluid" alt="{{ $brand->banner }}" width="100px" height="100px">
+                                         <img src="{{ asset('storage/images/brands/'.session('company_id').'/'.$brand->banner) }}" class="thumb-img img-fluid" alt="{{ $brand->banner }}" width="100px" height="100px">
                                   @php         
                                      }
                                   @endphp 

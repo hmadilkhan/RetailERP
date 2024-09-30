@@ -285,7 +285,7 @@
 
                                 $("#tblposproducts tbody").append(
                                     "<tr>" +
-                                    "<td class='text-center'><img width='42' height='42' src='assets/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
+                                    "<td class='text-center'><img width='42' height='42' src='storage/images/products/"+((result[count].image != "") ? result[count].image : 'placeholder.jpg')+"' alt='"+result[count].image+"'/></td>" +
                                     "<td>"+result[count].branch_name+"</td>" +
                                     "<td>"+result[count].item_name+"</td>" +
                                     "<td>"+result[count].department_name+"</td>" +

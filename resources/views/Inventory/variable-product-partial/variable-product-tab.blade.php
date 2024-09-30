@@ -90,7 +90,7 @@
             <div class="col-md-6">
                <label for="productImage" class="form-control-label">Product Image</label>
              <a href="#">
-                        <img id="productImages_preview" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
+                        <img id="productImages_preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
                         </a>
 
                     <div class="form-group {{ $errors->has('productImage') ? 'has-danger' : '' }} m-t-10">
@@ -148,7 +148,7 @@
                         <tr id="tr-{{ $value->pos_item_id }}">
                             <td class="d-none">{{ $value->priority }}</td>
                             <td class="text-center">
-                                <img width="42" height="42" src="{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
+                                <img width="42" height="42" src="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
                             </td>
                             <td>{{$value->item_code}} | {{$value->item_name}} </td>
                             <td >{{ $value->attribute }}</td>
@@ -174,7 +174,7 @@
                                 
                                 <i class="icofont icofont-plus text-success pointer m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" onclick="createVariation({{ $value->pos_item_id }},'{{ $value->item_name }}')"></i>                                
 
-                                <a  class="m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit({{$value->pos_item_id}},{{$value->product_id}},'{{$value->item_code}}','{{$value->item_name}}','{{$value->online_price}}','{{$value->uom_id}}','{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}',{{$value->priority}})" ></i> </a>
+                                <a  class="m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit({{$value->pos_item_id}},{{$value->product_id}},'{{$value->item_code}}','{{$value->item_name}}','{{$value->online_price}}','{{$value->uom_id}}','{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}',{{$value->priority}})" ></i> </a>
 
                                 <i class="icofont icofont-ui-delete text-danger m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" onclick="remove('{{$value->item_name}}','{{$value->pos_item_id}}')"></i>
                                
@@ -297,7 +297,7 @@
                             </div>
 
 							<a href="#">
-								<img id="modal_previewImage_vpmd" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+								<img id="modal_previewImage_vpmd" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 							</a>
 							<div class="form-group{{ $errors->has('updateproduct') ? 'has-danger' : '' }} ">
 								<label for="item_image_vpmd" class="form-control-label">Product Image</label>
