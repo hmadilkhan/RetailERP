@@ -246,7 +246,7 @@
         }
         @endphp 
 
-    $("#meta_description").val('{{ $meta_description }}');    
+    $("#meta_descript").val('{{ $meta_description }}');    
 
         
     function remove(id,name){
