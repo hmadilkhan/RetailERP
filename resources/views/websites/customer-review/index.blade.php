@@ -70,14 +70,17 @@
           <td class="d-none">{{ $value->id }}</td>  
 				  <td class="text-center">
             @if($images)
-              @foreach($images as $value)
+              @foreach($images as $img_val)
                 @php 
                   $image = asset('storage/images/no-image.jpg');
-                    if(File::exists('storage/images/customer-reviews/'.$value->image)){
-                          $image = asset('storage/images/customer-reviews/'.$value->image);
+
+                  if($img_val->review_id == $value->id){
+                    if(File::exists('storage/images/customer-reviews/'.$img_val->image)){
+                          $image = asset('storage/images/customer-reviews/'.$img_val->image);
                     }
+                  }
                 @endphp  
-                 <img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                 <img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
               @endforeach
             @endif
           </td>
