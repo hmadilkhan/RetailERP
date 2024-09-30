@@ -3947,7 +3947,7 @@ class ReportController extends Controller
             $totalreceiveamount += $received;
             $totalbalanceamount += $balance;
 
-            if ($request->mode != "" && $request->mode == "balances") {
+            if ($request->mode != "" && $request->mode == "balances" && $balance != 0) {
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);
