@@ -53,12 +53,12 @@ class TagController extends Controller
         
         
         if (!empty($request->file('desktop_banner'))) { //desktop image
-            $file = $this->uploads($request->file('desktop_banner'), "images/tag/");
+            $file = $this->uploads($request->file('desktop_banner'), "images/tags/");
             $desktop_banner = !empty($file) ? $file["fileName"] : "";
         }        
         
         if (!empty($request->file('mobile_banner'))) { //mobile image
-            $file = $this->uploads($request->file('mobile_banner'), "images/tag/");
+            $file = $this->uploads($request->file('mobile_banner'), "images/tags/");
             $mobile_banner = !empty($file) ? $file["fileName"] : "";
         }  
 
@@ -156,7 +156,7 @@ class TagController extends Controller
           $recordUpdate->meta_description = $request->meta_description;
 
           if(!empty($request->desktop_banner)){
-            $file = $this->uploads($request->file('desktop_banner'), "images/tag/",$recordUpdate->desktop_banner);
+            $file = $this->uploads($request->file('desktop_banner'), "images/tags/",$recordUpdate->desktop_banner);
             $desktop_banner = !empty($file) ? $file["fileName"] : "";  
             if(!empty($desktop_banner)){          
             $recordUpdate->desktop_banner = $desktop_banner;
@@ -165,7 +165,7 @@ class TagController extends Controller
 
     
           if(!empty($request->mobile_banner)){
-            $file = $this->uploads($request->file('mobile_banner'), "images/tag/",$recordUpdate->mobile_banner);
+            $file = $this->uploads($request->file('mobile_banner'), "images/tags/",$recordUpdate->mobile_banner);
             $mobile_banner = !empty($file) ? $file["fileName"] : "";  
             if(!empty($mobile_banner)){          
               $recordUpdate->mobile_banner = $mobile_banner;
