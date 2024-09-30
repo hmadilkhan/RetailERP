@@ -170,6 +170,7 @@
                     <thead>
                     <tr>
                         <th class="d-none">#</th>
+                        <th>Image</th>
                         <th>Name</th>
                         <th>Slug</th>
                         <!--<th>Priority</th>-->
@@ -180,6 +181,29 @@
                       @foreach($lists as $tag)
                          <tr id="row-">
                              <td class="d-none">{{ $tag->priority }}</td>
+                             <td>
+                                @php 
+                                  $image = asset('storage/images/placeholder.jpg');   
+                                   if($tag->mobile_banner != null){
+                                      $path = 'storage/images/brands/'.session('company_id').'/'.$tag->mobile_banner;
+                                      $image = File::exists($path) ? asset('storage/images/brands/'.session('company_id').'/'.$tag->mobile_banner) : asset('storage/images/placeholder.jpg');
+                                   }
+                                @endphp    
+                                <img src="{{ $image }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner == '' ? 'placeholder.jpg' : $tag->mobile_banner }}" width="100px" height="100px">
+                                
+                                @if($tag->desktop_banner != null)
+                                 @php
+                                  $path = 'storage/images/tags/'.$tag->desktop_banner;
+                                    if(File::exists($path)){
+                                 @endphp  
+                                   <br/>
+                                        <img src="{{ asset('storage/images/tags/').$tag->desktop_banner }}" class="thumb-img img-fluid" alt="{{ $tag->desktop_banner }}" width="100px" height="100px">
+                                 @php         
+                                    }
+                                 @endphp 
+                                
+                                @endif
+                            </td>                             
                              <td>{{ $tag->name }}</td>
                              <td>{{ $tag->slug }}</td>
                              <!--<td>{{-- $brand->priority --}}</td>-->

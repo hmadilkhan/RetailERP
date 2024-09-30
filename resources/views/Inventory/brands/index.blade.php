@@ -183,7 +183,7 @@
                                  @php 
                                    $image = asset('storage/images/placeholder.jpg');   
                                     if($brand->image != null){
-                                       $path = public_path('storage/images/brands/').session('company_id').'/'.$brand->image;
+                                       $path = 'storage/images/brands/'.session('company_id').'/'.$brand->image;
                                        $image = File::exists($path) ? asset('storage/images/brands/'.session('company_id').'/'.$brand->image) : asset('storage/images/placeholder.jpg');
                                     }
                                  @endphp    
@@ -191,7 +191,7 @@
                                  
                                  @if($brand->banner != null)
                                   @php
-                                   $path = public_path('storage/images/brands/').session('company_id').'/'.$brand->banner;
+                                   $path = 'storage/images/brands/'.session('company_id').'/'.$brand->banner;
                                      if(File::exists($path)){
                                   @endphp  
                                     <br/>
