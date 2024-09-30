@@ -941,7 +941,7 @@
                 $("#mobileBanner_mdept"+departid).val());
             }
 
-            $("#metatitle_md").val($("#metaTile_mdept"+departid).val());
+            $("#metatitle_md").val($("#metaTitle_mdept"+departid).val());
             $("#metadescript_md").val($("#metaDescript_mdept"+departid).val());
 
             $("#depart-modal").modal("show");
