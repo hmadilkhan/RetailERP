@@ -100,7 +100,7 @@
                                 @endphp
                              @endif
                             <a href="{{ $imageShow }}" data-fancybox data-caption="Single Image"> 
-                             <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
+                             <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded">
                             </a>
                              @else
                             <a href="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" data-fancybox data-caption="Single Image"> 
