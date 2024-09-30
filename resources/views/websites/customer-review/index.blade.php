@@ -80,7 +80,9 @@
                     }
                   }
                 @endphp  
+                <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
                  <img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
+                </a>
               @endforeach
             @endif
           </td>
@@ -121,6 +123,12 @@
 @endsection
 
 @section('css_code')
+
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css"
+/>
+
 <style type="text/css">
 
 .container1 {
@@ -225,6 +233,9 @@ input+.slider:before {
 @endsection
 
 @section('scriptcode_three')
+
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+
 <script type="text/javascript">
     $(".select2").select2();
 	$('.table').DataTable({
