@@ -482,6 +482,8 @@ class report extends Model
         }
         if ($branch != "" and $branch != "all") {
             $filter .= " and b.branch = '" . $branch . "'";
+        }else{
+            $filter .= " and b.branch IN ( Select branch_id from branch where company_id = ".session("company_id").")";
         }
         if ($mode != "" and $mode == "balances") {
             $filter .= " and c.balance_amount > 0";
