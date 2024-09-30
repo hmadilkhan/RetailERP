@@ -655,16 +655,44 @@
     }     
  }
 
- function readURL(input,id) {
+ function readURL(input, id) {
     if (input.files && input.files[0]) {
+        let file = input.files[0];
+        
+        // Check file size (1MB = 1 * 1024 * 1024 bytes)
+        if (file.size > 1 * 1024 * 1024) {
+            swal("Error!","File size must be less than 1MB.","error");
+            return;
+        }
+        
+        // Check file type (allowed extensions)
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
+        if (!allowedExtensions.exec(file.name)) {
+            swal("Error!","Invalid file type. Please select a JPG, PNG, or GIF image.","error");
+            return;
+        }
+
         var reader = new FileReader();
         reader.onload = function(e) {
-          $('#'+id).attr('src', e.target.result);
+            $('#' + id).attr('src', e.target.result);
         }
-        updateImage(input,id.replace('images',''));
-        reader.readAsDataURL(input.files[0]);
+        
+        updateImage(input, id.replace('images', ''));
+        reader.readAsDataURL(file);
     }
- }
+}
+
+
+//  function readURL(input,id) {
+//     if (input.files && input.files[0]) {
+//         var reader = new FileReader();
+//         reader.onload = function(e) {
+//           $('#'+id).attr('src', e.target.result);
+//         }
+//         updateImage(input,id.replace('images',''));
+//         reader.readAsDataURL(input.files[0]);
+//     }
+//  }
 
  function updateImage(data,elem){
      var myFormData = new FormData();
