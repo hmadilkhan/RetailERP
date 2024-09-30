@@ -106,7 +106,7 @@
                                 <div class="form-group {{ $errors->has('desktop_banner') ? 'has-danger' : '' }} m-t-10">
                                     <label for="desktop_banner" >Desktop Banner</label><br/>
                                         <label for="desktop_banner" class="custom-file">
-                                                    <input type="file" name="desktop_banner" id="desktop_banner" class="custom-file-input">
+                                                    <input type="file" name="desktop_banner" id="desktop_banner" onchange="readURL(this,'previewdesktopBanner')" class="custom-file-input">
                                                     <span class="custom-file-control"></span>
                                                 </label>   
                                                 <br/>        
@@ -125,7 +125,7 @@
                                 <div class="form-group {{ $errors->has('mobile_banner') ? 'has-danger' : '' }} m-t-10">
                                         <label for="mobile_banner" >Mobile Banner</label><br/>
                                         <label for="mobile_banner" class="custom-file">
-                                                    <input type="file" name="mobile_banner" id="mobile_banner" class="custom-file-input">
+                                                    <input type="file" name="mobile_banner" id="mobile_banner" onchange="readURL(this,'previewMobileBanner')" class="custom-file-input">
                                                     <span class="custom-file-control"></span>
                                                 </label>   
                                                 <br/>        
@@ -257,7 +257,32 @@
     }      
     
     
+    function readURL(input, id) {
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
+        
+        // Check file size (1MB = 1 * 1024 * 1024 bytes)
+        if (file.size > 1 * 1024 * 1024) {
+            alert("File size must be less than 1MB.");
+            return;
+        }
+        
+        // Check file type (allowed extensions)
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+        if (!allowedExtensions.exec(file.name)) {
+            alert("Invalid file type. Please select a JPG, PNG, or GIF image.");
+            return;
+        }
 
+        // If validations pass, read the file
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('#' + id).attr('src', e.target.result);
+        }
+        
+        reader.readAsDataURL(file);
+    }
+}
         
 
 </script>

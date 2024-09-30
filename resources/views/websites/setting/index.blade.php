@@ -708,7 +708,7 @@
              processData:false,
              success: function(data){
                  notify('Success!', 'success');
-               console.log(data);
+               //console.log(data);
              }         
     }); 
  } 
