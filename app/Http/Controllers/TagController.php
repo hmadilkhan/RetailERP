@@ -45,8 +45,8 @@ class TagController extends Controller
                   'name' => 'required',Rule::unique('tags')->where(function ($query) {
                                                 return $query->where('company_id', session('company_id'));
                                             }),
-                   'desktop_banner' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                   'mobile_banner' => 'image|mimes:jpeg,png,jpg,webp|max:1024',                         
+                   'desktop_banner' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024',
+                   'mobile_banner'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024',                         
                 ];
         
         $this->validate($request,$rules); 
@@ -140,8 +140,8 @@ class TagController extends Controller
                   'name' => 'required',Rule::unique('tags')->where(function ($query) {
                                                 return $query->where('company_id', session('company_id'));
                                             }),
-                  'desktop_banner' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
-                  'mobile_banner' => 'image|mimes:jpeg,png,jpg,webp|max:1024',                         
+                  'desktop_banner' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024',
+                  'mobile_banner'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024',                         
          ]; 
 
         $this->validate($request,$rules);            
