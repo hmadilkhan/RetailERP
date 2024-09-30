@@ -81,7 +81,7 @@
                   }
                 @endphp  
                 <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
-                 <img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
+                 <img width="64" height="64" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
                 </a>
               @endforeach
             @endif
