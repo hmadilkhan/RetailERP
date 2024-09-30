@@ -1635,6 +1635,16 @@ class WebsiteController extends Controller
                                         ->where('website_details.company_id',session('company_id'))
                                         ->select('website_customer_reviews.*')
                                         ->get();
+            $data["images"] = DB::table('website_customer_review_images')
+                                        ->join('website_customer_reviews','website_customer_reviews.id','website_customer_review_images.review_id')
+                                        ->join('website_details','website_details.id','website_customer_reviews.website_id')
+                                        ->where('website_customer_reviews.website_id',$request->id)
+                                        ->where('website_customer_reviews.status','!=',99)
+                                        ->where('website_details.status','=',1)
+                                        ->where('website_details.company_id',session('company_id'))
+                                        ->select('website_customer_review_images.*')
+                                        ->get();
+
         }  
         
         $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
