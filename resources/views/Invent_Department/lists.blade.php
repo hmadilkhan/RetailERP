@@ -918,7 +918,7 @@
                 $("#showWebsite_md").trigger('click');
             }
 
-            if ($("#deptSection_mdept"+departid).val().length > 0) {
+            if ($("#deptSection_mdept"+departid).val() != '') {
                 $("#sections_md").val($("#deptSection_mdept"+departid).val()).trigger('change');
             }            
 
