@@ -3446,7 +3446,7 @@ class ReportController extends Controller
 
         if ($request->terminalid == 0) {
 
-            $terminals = $report->get_terminals();
+            $terminals = $report->getTerminals($request->branch);
 
             foreach ($terminals as $values) {
                 $totalDeliveredOrders = 0;

@@ -691,7 +691,7 @@
             }
             if ($('#txtitemsale').val() == 1) {
                 window.location = "{{ url('itemsaledatabasepdf') }}?fromdate=" + date + "&todate=" + todate +
-                    "&terminalid=" + terminalid + "&type=" + $("#type").val() + "&department=" + department;
+                    "&terminalid=" + terminalid + "&type=" + $("#type").val() + "&department=" + department +"&branch=" + branch;
             }
             if ($('#txtsalereturn').val() == 1) {
                 window.location = "{{ url('salesreturnpdf') }}?fromdate=" + date + "&todate=" + todate + "&terminalid=" +
