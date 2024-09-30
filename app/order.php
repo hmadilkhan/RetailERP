@@ -198,13 +198,13 @@ class order extends Model
 			->when($request->mode != "", function ($query) use ($request) {
 				$query->where('sales_receipts.order_mode_id', $request->mode);
 			})
-			->when($request->receipt != "", function ($query) use ($request) {
+			->when(!empty($request->receipt), function ($query) use ($request) {
 				$query->where('sales_receipts.receipt_no', $request->receipt);
 			})
 			->when($request->customer != "", function ($query) use ($request) {
 				$query->where('sales_receipts.customer_id', $request->customer);
 			})
-			->when(!empty($request->status), function ($query) use ($request) {
+			->when(!empty($request->status) && $request->status[0] != null, function ($query) use ($request) {
 				$query->whereIn('sales_receipts.status', $request->status);
 			})
 			->when($request->customerNo != "", function ($query) use ($request) {
@@ -299,7 +299,7 @@ class order extends Model
 			->when($request->customer != "", function ($query) use ($request) {
 				$query->where('sales_receipts.customer_id', $request->customer);
 			})
-			->when(!empty($request->status), function ($query) use ($request) {
+			->when(!empty($request->status) && $request->status[0] != null, function ($query) use ($request) {
 				$query->whereIn('sales_receipts.status', $request->status);
 			})
 			->when($request->customerNo != "", function ($query) use ($request) {
