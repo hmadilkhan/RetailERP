@@ -45,10 +45,10 @@
                                                 <tr>
                                                     <td class="d-none">{{ $depart[$d]->department_id }}</td>
                                                     <td class="pointer"
-                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->mobile_banner }}',{{ $sectionValue }})">
+                                                        onclick="editdepart({{ $depart[$d]->department_id }})">
                                                         {{ $depart[$d]->code }}</td>
                                                     <td class="pointer"
-                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->mobile_banner }}',{{ $sectionValue }})">
+                                                        onclick="editdepart({{ $depart[$d]->department_id }})">
                                                         @if (!empty($depart[$d]->image) && File::exists('storage/images/department/' . $depart[$d]->image))
                                                             <img id="img-tble-{{ $depart[$d]->department_id }}"
                                                                 src="{{ asset('storage/images/department/' . $depart[$d]->image) }}"
@@ -62,11 +62,22 @@
                                                         @endif
                                                     </td>
                                                     <td class="pointer"
-                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->mobile_banner }}',{{ $sectionValue }})">
+                                                        onclick="editdepart({{ $depart[$d]->department_id }})">
                                                         {{ $depart[$d]->department_name }}</td>
                                                     <td class="pointer"
-                                                        onclick="editdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_name }}','{{ $depart[$d]->website_department_name }}','{{ $depart[$d]->department_id }}',{{ $depart[$d]->website_mode }},'{{ $depart[$d]->banner }}','{{ $depart[$d]->mobile_banner }}',{{ $sectionValue }})">
-                                                        {{ $depart[$d]->website_department_name }}</td>
+                                                        onclick="editdepart({{ $depart[$d]->department_id }})">
+                                                        {{ $depart[$d]->website_department_name }}
+                                                        <input type="hidden" id="deptCode_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->code }}">
+                                                        <input type="hidden" id="deptName_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->department_name }}">
+                                                        {{-- <input type="hidden" id="image_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->image }}"> --}}
+                                                        <input type="hidden" id="desktopBanner_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->banner }}">
+                                                        <input type="hidden" id="mobileBanner_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->mobile_banner }}">
+                                                        <input type="hidden" id="websiteMode_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->website_mode }}">
+                                                        <input type="hidden" id="websiteDeptName_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->website_department_name }}">
+                                                        <input type="hidden" id="metaTitle_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->meta_title }}">
+                                                        <input type="hidden" id="metaDescript_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->meta_description }}">
+                                                        <input type="hidden" id="depatSection_mdept{{ $depart[$d]->department_id }}" value="{{ $sectionValue }}">
+                                                    </td>
                                                     <td class="pointer"
                                                         onclick="editsubdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_id }}','{{ addslashes($depart[$d]->department_name) }}')">
                                                         @if ($depart)
@@ -901,33 +912,43 @@
         }
 
 
-        function editdepart(code, depart, webDepart, departid, websiteMode, bannerImage,mobileBanner, sectionArray) {
+        function editdepart(departid) {
             $("#departImage_md_alert,#bannerImage_md_alert").text('');
-            $("#depart-modal").modal("show");
-            $('#depart').val(depart);
-            $('#departid').val(departid);
-            $('#editcode').val(code);
-            $('#webdeptname_md').val(webDepart);
-            console.log(sectionArray[0]);
-            if (websiteMode == 1) {
+
+            if($("#showWebsite_md").is(':checked')){
+                 $("#showWebsite_md").prop('checked', false);
+              }
+
+            if ($("#websiteMode_mdept"+departid).val() == 1) {
                 $("#showWebsite_md").trigger('click');
             }
 
-            if (sectionArray != '') {
-                $("#sections_md").val(sectionArray).trigger('change');
-            }
+            if ($("#depatSection_mdept"+departid).val() != '') {
+                $("#sections_md").val($("#depatSection_mdept"+departid).val()).trigger('change');
+            }            
+
+            $('#depart').val($("#deptName_mdept"+departid).val());
+            $('#departid').val(departid);
+            $('#editcode').val($("#deptCode_mdept"+departid).val());
+            $('#webdeptname_md').val($("#websiteDeptName_mdept"+departid).val());
+            
 
             $("#previewImg").attr('src', $("#img-tble-" + departid).attr('src'));
-            if (bannerImage != '') {
+            if ($("#desktopBanner_mdept"+departid).val() != '') {
                 $("#previewDepartBannerImage_md").attr('src', location.origin + '/storage/images/department/' +
-                    bannerImage);
+                $("#desktopBanner_mdept"+departid).val());
             }
 
-            if(mobileBanner != ''){
+            if($("#mobileBanner_mdept"+departid).val() != ''){
                 
                 $("#previewDepartMobileBannerImage_md").attr('src', location.origin + '/storage/images/department/' +
-                    mobileBanner);
+                $("#mobileBanner_mdept"+departid).val());
             }
+
+            $("#metatitle_md").val($("#metaTitle_mdept"+departid).val());
+            $("#metadescript_md").val($("#metaDescript_mdept"+departid).val());
+
+            $("#depart-modal").modal("show");
         }
 
         function editsubdepart(departcode, departid, departname) {
