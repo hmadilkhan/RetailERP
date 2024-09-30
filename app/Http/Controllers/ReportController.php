@@ -3947,17 +3947,19 @@ class ReportController extends Controller
             $totalreceiveamount += $received;
             $totalbalanceamount += $balance;
 
-            if ($request->mode != "" && $request->mode == "balances") {
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->setFillColor(232, 232, 232);
-                $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
-                $pdf->Cell(50, 6, $values->name, 0, 0, 'L', 1);
-                $pdf->Cell(20, 6, number_format($values->total_amount, 0), 0, 0, 'L', 1);
-                $pdf->Cell(20, 6, number_format($received, 0), 0, 0, 'L', 1);
-                $pdf->Cell(20, 6, number_format($balance, 0), 0, 0, 'L', 1);
-                $pdf->Cell(40, 6, $values->payment_mode, 0, 1, 'C', 1);
-                $pdf->ln(1);
+            if ($request->mode != "" && $request->mode == "balances" ) {
+                if ($balance > 0) {
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->setFillColor(232, 232, 232);
+                    $pdf->SetTextColor(0, 0, 0);
+                    $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
+                    $pdf->Cell(50, 6, $values->name, 0, 0, 'L', 1);
+                    $pdf->Cell(20, 6, number_format($values->total_amount, 0), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 6, number_format($received, 0), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 6, number_format($balance, 0), 0, 0, 'L', 1);
+                    $pdf->Cell(40, 6, $values->payment_mode, 0, 1, 'C', 1);
+                    $pdf->ln(1);
+                }
             } else {
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->setFillColor(232, 232, 232);
