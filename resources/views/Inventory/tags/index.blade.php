@@ -100,7 +100,15 @@
                            <hr/>
                             <div class="form-group m-t-4">
                                 <a href="javascript:void(0)">
-                                 <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" class="width-100" alt="img">
+                                @php 
+                                    $desktop_banner = asset('storage/images/placeholder.jpg');
+                                   
+                                    if(isset($id)){
+                                       $desktop_banner =  File::exists('storage/images/tag/'.$edit->desktop_banner) ? asset('storage/images/tag/'.$edit->desktop_banner) : asset('storage/images/placeholder.jpg');
+                                    }
+                                    
+                                 @endphp                                      
+                                 <img id="previewdesktopBanner" src="{{ $desktop_banner }}" height="200" class="width-100" alt="img">
                                  </a>
                
                                 <div class="form-group {{ $errors->has('desktop_banner') ? 'has-danger' : '' }} m-t-10">
@@ -118,8 +126,16 @@
                            </div>                               
 
                             <div class="form-group">
+                                @php 
+                                    $mobile_banner = asset('storage/images/placeholder.jpg');
+                                   
+                                    if(isset($id)){
+                                       $mobile_banner =  File::exists('storage/images/tag/'.$edit->mobile_banner) ? asset('storage/images/tag/'.$edit->mobile_banner) : asset('storage/images/placeholder.jpg');
+                                    }
+                                    
+                                 @endphp                                  
                                 <a href="javascript:void(0)">
-                                 <img id="previewMobileBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" width="150" class="" alt="img">
+                                 <img id="previewMobileBanner" src="{{ $mobile_banner }}" height="200" width="150" class="" alt="img">
                                  </a>
                
                                 <div class="form-group {{ $errors->has('mobile_banner') ? 'has-danger' : '' }} m-t-10">
