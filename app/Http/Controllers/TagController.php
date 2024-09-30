@@ -152,6 +152,8 @@ class TagController extends Controller
           $recordUpdate->name     = $request->name;
           $recordUpdate->slug     = $this->removeSpecialCharacters((!empty($request->slug) ? $request->slug : $request->name));
           $recordUpdate->priority = $request->priority;
+          $recordUpdate->meta_title       = $request->meta_title;
+          $recordUpdate->meta_description = $request->meta_description;
 
           if(!empty($request->desktop_banner)){
             $file = $this->uploads($request->file('desktop_banner'), "images/tag/",$recordUpdate->desktop_banner);
