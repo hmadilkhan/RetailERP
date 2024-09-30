@@ -137,7 +137,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
+                            <span aria-hidden="true" onclick="edit_mdepartCloseModal()">&times;</span>
                         </button>
                         <h4 class="modal-title">Edit Department</h4>
                     </div>
@@ -913,17 +913,12 @@
 
 
         function editdepart(departid) {
-            $("#departImage_md_alert,#bannerImage_md_alert").text('');
-
-            if($("#showWebsite_md").is(':checked')){
-                 $("#showWebsite_md").prop('checked', false);
-              }
 
             if ($("#websiteMode_mdept"+departid).val() == 1) {
                 $("#showWebsite_md").trigger('click');
             }
 
-            if ($("#depatSection_mdept"+departid).val() != '') {
+            if ($("#depatSection_mdept"+departid).val().length > 0) {
                 $("#sections_md").val($("#depatSection_mdept"+departid).val()).trigger('change');
             }            
 
@@ -949,6 +944,14 @@
             $("#metadescript_md").val($("#metaDescript_mdept"+departid).val());
 
             $("#depart-modal").modal("show");
+        }
+
+        function edit_mdepartCloseModal(){
+            $("#departImage_md_alert,#bannerImage_md_alert").text('');
+
+            if($("#showWebsite_md").is(':checked')){
+                 $("#showWebsite_md").prop('checked', false);
+              }
         }
 
         function editsubdepart(departcode, departid, departname) {
