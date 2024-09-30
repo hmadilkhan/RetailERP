@@ -703,7 +703,7 @@
             }
 
             if ($('#txtfbrreport').val() == 1) {
-                window.location = "{{ url('fbr-report') }}?fromdate=" + date + "&todate=" + todate;
+                window.location = "{{ url('fbr-report') }}?fromdate=" + date + "&todate=" + todate +"&branch=" + branch;
             }
 
             if ($('#txtinvoicereport').val() == 1) {
