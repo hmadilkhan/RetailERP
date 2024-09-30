@@ -695,7 +695,7 @@
             }
             if ($('#txtsalereturn').val() == 1) {
                 window.location = "{{ url('salesreturnpdf') }}?fromdate=" + date + "&todate=" + todate + "&terminalid=" +
-                    terminalid + "&code=" + code;
+                    terminalid + "&code=" + code +"&branch=" + branch;
             }
             if ($('#txtstockadjustment').val() == 1) {
                 window.location = "{{ url('stockAdjustmentReport') }}?fromdate=" + date + "&todate=" + todate +

@@ -3785,8 +3785,7 @@ class ReportController extends Controller
         $totalcost = 0;
         $totalmargin = 0;
         if ($request->terminalid == 0) {
-            $terminals = $report->get_terminals();
-            $terminals = $report->get_terminals();
+            $terminals = $report->getTerminals($request->branch);
 
             foreach ($terminals as $values) {
                 $pdf->SetFont('Arial', 'B', 11);
