@@ -29,7 +29,7 @@ class OrderService
         }else{
             $serviceProvider->where("branch_id", $branch);
         }
-        $serviceProvider->with("serviceprovideruser")->where("status_id", 1)->groupBy('id')->select("id","provider_name");
+        $serviceProvider->with("serviceprovideruser")->where("status_id", 1)->groupBy('id');
         return $serviceProvider->get();
     }
 }
