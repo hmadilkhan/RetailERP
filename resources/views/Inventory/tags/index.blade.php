@@ -78,6 +78,26 @@
                                 <span class="text-danger" id="priority_alert"></span>
                             </div>
 
+                            <div class="form-group"> 
+                                @php 
+                                $meta_title = old('meta_title');
+                               
+                                if(isset($id)){
+                                   $meta_title = old('meta_title') ? old('meta_title') : $edit->meta_title;
+                                }
+                             @endphp                                                              
+                               <label>Meta Title</label>
+                               <input type="text" class="form-control" placeholder="Meta Title" name="meta_title" id="meta_title" value="{{ $meta_title }}">
+                               <span class="text-danger" id="metatitle_alert"></span>
+                           </div> 
+                           
+                           <div class="form-group">                              
+                            <label>Meta Description</label>
+                            <textarea rows="5" class="form-control" placeholder="Meta Description" name="meta_descript" id="meta_descript"></textarea>
+                            <span class="text-danger" id="metadescript_alert"></span>
+                          </div>                             
+                           <br/>
+                           <hr/>
                             <div class="form-group m-t-4">
                                 <a href="javascript:void(0)">
                                  <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" class="width-100" alt="img">
@@ -201,6 +221,17 @@
 
             }
         });
+
+        @php 
+        $meta_description = old('meta_description');
+        
+        if(isset($id)){
+            $meta_description = old('meta_description') ? old('meta_description') : $edit->meta_description; 
+        }
+        @endphp 
+
+    $("#meta_description").val('{{ $meta_description }}');    
+
         
     function remove(id,name){
   
@@ -223,7 +254,10 @@
             });		            
         
         
-    }        
+    }      
+    
+    
+
         
 
 </script>

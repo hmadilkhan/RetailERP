@@ -45,7 +45,7 @@ class TagController extends Controller
         
 
         $save = Tag::create(array_merge(
-                $request->except(["_token","slug"]),
+                $request->except(["_token","slug","desktop_banner","mobile_banner"]),
                 ['created_at' => date("Y-m-d H:i:s"),'created_at' => date("Y-m-d H:i:s"),'company_id' => session('company_id'),'slug'=>$this->removeSpecialCharacters((!empty($request->slug) ? $request->slug : $request->name))]));
                 
         if(!$save){
