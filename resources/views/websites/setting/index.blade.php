@@ -659,13 +659,11 @@
     if (input.files && input.files[0]) {
         let file = input.files[0];
         
-        // Check file size (1MB = 1 * 1024 * 1024 bytes)
         if (file.size > 1 * 1024 * 1024) {
             swal("Error!","File size must be less than 1MB.","error");
             return;
         }
         
-        // Check file type (allowed extensions)
         var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
         if (!allowedExtensions.exec(file.name)) {
             swal("Error!","Invalid file type. Please select a JPG, PNG, or GIF image.","error");
@@ -675,9 +673,8 @@
         var reader = new FileReader();
         reader.onload = function(e) {
             $('#' + id).attr('src', e.target.result);
+            updateImage(input, id.replace('images', '')); 
         }
-        
-        updateImage(input, id.replace('images', ''));
         reader.readAsDataURL(file);
     }
 }
