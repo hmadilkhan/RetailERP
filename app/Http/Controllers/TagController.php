@@ -10,10 +10,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Http;
+use App\Traits\MediaTrait;
+use Auth,File;
 
 
 class TagController extends Controller
 {
+    use MediaTrait;
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -34,21 +38,48 @@ class TagController extends Controller
     
     
     public function store(Request $request){
-     try{    
+     try{   
+        $desktop_banner = ''; 
+        $mobile_banner = '';
         $rules = [
                   'name' => 'required',Rule::unique('tags')->where(function ($query) {
                                                 return $query->where('company_id', session('company_id'));
-                                            })
+                                            }),
+                   'desktop_banner' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                   'mobile_banner' => 'image|mimes:jpeg,png,jpg,webp|max:1024',                         
                 ];
         
-        $this->validate($request,$rules);  
+        $this->validate($request,$rules); 
         
+        
+        if (!empty($request->file('desktop_banner'))) { //desktop image
+            $file = $this->uploads($request->file('desktop_banner'), "images/tag/");
+            $desktop_banner = !empty($file) ? $file["fileName"] : "";
+        }        
+        
+        if (!empty($request->file('mobile_banner'))) { //mobile image
+            $file = $this->uploads($request->file('mobile_banner'), "images/tag/");
+            $mobile_banner = !empty($file) ? $file["fileName"] : "";
+        }  
 
         $save = Tag::create(array_merge(
                 $request->except(["_token","slug","desktop_banner","mobile_banner"]),
-                ['created_at' => date("Y-m-d H:i:s"),'created_at' => date("Y-m-d H:i:s"),'company_id' => session('company_id'),'slug'=>$this->removeSpecialCharacters((!empty($request->slug) ? $request->slug : $request->name))]));
+                [
+                'created_at' => date("Y-m-d H:i:s"),'created_at' => date("Y-m-d H:i:s"),
+                'company_id' => session('company_id'),
+                'slug'=>$this->removeSpecialCharacters((!empty($request->slug) ? $request->slug : $request->name)),
+                'desktop_banner'=>$desktop_banner,'mobile_banner'=>$mobile_banner,
+               ]));
                 
         if(!$save){
+            if(File::exists('storage/images/tags/'.$desktop_banner)){
+                File::delete('storage/images/tags/'.$desktop_banner);
+            }
+
+            if(File::exists('storage/images/tags/'.$mobile_banner)){
+                File::delete('storage/images/tags/'.$mobile_banner);
+            }
+
             Session::flash('error','Error! record is not saved.');
             return redirect()->route('tags.index')->withInput();
         }       
