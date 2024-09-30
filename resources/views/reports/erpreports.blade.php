@@ -551,7 +551,7 @@
                 showType: true,
                 showDepartments: true,
                 showsubdepartments: true,
-                showBranch:true,
+                showBranch: true,
                 showTerminal: true
             }]);
         });
@@ -561,7 +561,7 @@
                 field: '#txtsalereturn',
                 value: 1,
                 showDateFilter: true,
-                showBranch:true,
+                showBranch: true,
                 showTerminal: true,
                 showCode: true
             }]);
@@ -589,7 +589,7 @@
                 field: '#txtfbrreport',
                 value: 1,
                 showDateFilter: true,
-                showBranch:true,
+                showBranch: true,
                 showTerminal: true
             }]);
         });
@@ -600,7 +600,7 @@
                 value: 1,
                 showDateFilter: true,
                 showType: true,
-                showBranch:true,
+                showBranch: true,
                 showTerminal: true
             }]);
         });
@@ -686,16 +686,16 @@
                 window.location = "{{ url('expense_by_categorypdf') }}?fromdate=" + date + "&todate=" + todate;
             }
             if ($('#txtsaledec').val() == 1) {
-                window.location = "{{ url('salesdeclerationreport') }}?fromdate=" + date + "&todate=" + todate +
-                    "&terminalid=" + terminalid;
+                window.location = "{{ url('salesdeclerationreport') }}?fromdate=" + date + "&todate=" + todate
+                    +"&branch=" + branch + "&terminalid=" + terminalid;
             }
             if ($('#txtitemsale').val() == 1) {
                 window.location = "{{ url('itemsaledatabasepdf') }}?fromdate=" + date + "&todate=" + todate +
-                    "&terminalid=" + terminalid + "&type=" + $("#type").val() + "&department=" + department;
+                    "&terminalid=" + terminalid + "&type=" + $("#type").val() + "&department=" + department +"&branch=" + branch;
             }
             if ($('#txtsalereturn').val() == 1) {
                 window.location = "{{ url('salesreturnpdf') }}?fromdate=" + date + "&todate=" + todate + "&terminalid=" +
-                    terminalid + "&code=" + code;
+                    terminalid + "&code=" + code +"&branch=" + branch;
             }
             if ($('#txtstockadjustment').val() == 1) {
                 window.location = "{{ url('stockAdjustmentReport') }}?fromdate=" + date + "&todate=" + todate +
@@ -726,7 +726,7 @@
             }
             if ($('#txtbookingorderreport').val() == 1) {
                 window.location = "{{ url('order-booking-report') }}?fromdate=" + date + "&todate=" + todate +
-                    "&paymentmethod=" + paymentmethod + "&branch=" + branch+ "&mode=" + mode;
+                    "&paymentmethod=" + paymentmethod + "&branch=" + branch + "&mode=" + mode;
             }
             if ($('#txtsalespersonreport').val() == 1) {
                 window.location = "{{ url('sales-person-report') }}?fromdate=" + date + "&todate=" + todate + "&branch=" +

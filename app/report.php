@@ -334,6 +334,19 @@ class report extends Model
         }
     }
 
+    //sales decleration report
+    public  function  getTerminals($branch="")
+    {
+
+        if (session("roleId") == 2 && $branch == "all") {
+            $result = DB::select('SELECT * FROM terminal_details WHERE branch_id IN (SELECT branch_id FROM branch WHERE company_id = ?) and status_id = 1', [session("company_id")]);
+            return $result;
+        } else {
+            $result = DB::select('SELECT * FROM terminal_details WHERE branch_id = ? and status_id = 1', [$branch]);
+            return $result;
+        }
+    }
+
 
     public function sales($terminal, $fromdate, $todate)
     {
@@ -374,7 +387,6 @@ class report extends Model
 
     public function sales_details($terminal, $fromdate, $todate)
     {
-
         $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,
 		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,
 		IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,
