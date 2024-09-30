@@ -92,6 +92,14 @@
            </div>                                   
           <span id="meta_title_alert"></span>        
      </div>
+
+  <div class="form-group">
+      <label for="meta_description" class="form-control-label">Meta Description</label>
+
+        <textarea rows="5" class="form-control" name="meta_description" data-id="website" id="meta_description"></textarea>
+        <button type="button" onclick="btn_update('meta_description')" class="btn btn-primary shadow-none waves-effect waves-light m-t-1">Update!</button> 
+       <span id="meta_description_alert"></span>      
+   </div>     
      
      <div class="form-group">
           <label for="depart_nav_layout" class="form-control-label">Department Navigation Bar Style</label>
