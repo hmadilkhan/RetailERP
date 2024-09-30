@@ -279,14 +279,14 @@
         
         // Check file size (1MB = 1 * 1024 * 1024 bytes)
         if (file.size > 1 * 1024 * 1024) {
-            alert("File size must be less than 1MB.");
+            swal("Error!","File size must be less than 1MB.","error");
             return;
         }
         
         // Check file type (allowed extensions)
         var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
         if (!allowedExtensions.exec(file.name)) {
-            alert("Invalid file type. Please select a JPG, PNG, or GIF image.");
+            swal("Error!","Invalid file type. Please select a JPG, PNG, or GIF image.","error");
             return;
         }
 
