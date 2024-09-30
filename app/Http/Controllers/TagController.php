@@ -178,7 +178,7 @@ class TagController extends Controller
               Session::flash('error','error! record is not save');
           }
 
-        return redirect()->route('tags.index');
+        return redirect()->route('tags.index')->withInput();
         
       }catch(Exception $e){
           Session::flash('error','Error! '.$e->getMessage());
