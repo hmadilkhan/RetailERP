@@ -111,6 +111,9 @@ class TagController extends Controller
     public function update(Request $request,$id){
      try{        
          
+         $mobile_banner = null;
+         $desktop_banner = null;
+
          $rules = ['name'=>'required'];
 
          $this->validate($request,$rules);
@@ -136,17 +139,36 @@ class TagController extends Controller
         $rules = [
                   'name' => 'required',Rule::unique('tags')->where(function ($query) {
                                                 return $query->where('company_id', session('company_id'));
-                                            })
-                ];
-                
+                                            }),
+                  'desktop_banner' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                  'mobile_banner' => 'image|mimes:jpeg,png,jpg,webp|max:1024',                         
+         ]; 
+
         $this->validate($request,$rules);            
       }
-
-          $recordUpdate = Tag::find($id);
+      
+      $recordUpdate = Tag::find($id);     
            
           $recordUpdate->name     = $request->name;
           $recordUpdate->slug     = $this->removeSpecialCharacters((!empty($request->slug) ? $request->slug : $request->name));
           $recordUpdate->priority = $request->priority;
+
+          if(!empty($request->desktop_banner)){
+            $file = $this->uploads($request->file('desktop_banner'), "images/tag/",$recordUpdate->desktop_banner);
+            $desktop_banner = !empty($file) ? $file["fileName"] : "";  
+            if(!empty($desktop_banner)){          
+            $recordUpdate->desktop_banner = $desktop_banner;
+            }
+         } 
+
+    
+          if(!empty($request->mobile_banner)){
+            $file = $this->uploads($request->file('mobile_banner'), "images/tag/",$recordUpdate->mobile_banner);
+            $mobile_banner = !empty($file) ? $file["fileName"] : "";  
+            if(!empty($mobile_banner)){          
+              $recordUpdate->mobile_banner = $mobile_banner;
+            }    
+          }
 
           if($recordUpdate->save()){
               Session::flash('success','Success!');  
