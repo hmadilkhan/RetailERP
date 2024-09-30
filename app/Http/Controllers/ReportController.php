@@ -2457,14 +2457,13 @@ class ReportController extends Controller
 
         //quries
         if ($request->terminalid == 0) {
-            $terminals = $report->get_terminals();
-
+            $terminals = $report->getTerminals($request->branch);
             foreach ($terminals as $values) {
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(275, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
                 $details = $report->sales_details($values->terminal_id, $request->fromdate, $request->todate,$request->branch);
-                
+                return $details;
                 foreach ($details as $value) {
                     $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->paidByCustomer) - ($value->cashOut + $value->Expenses + $value->Discount + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
                     if (session("company_id") == 102) {
