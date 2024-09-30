@@ -458,7 +458,7 @@ class ReportController extends Controller
         $request->branch = explode(",",$request->branch);
         $request->terminal = explode(",",$request->terminal);
         $request->status = explode(",",$request->status);
-        
+
         if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
 			$openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 		}else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
@@ -500,7 +500,7 @@ class ReportController extends Controller
             // })
 
             ->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
-                $query->where('terminal_id', $request->terminal);
+                $query->whereIn('terminal_id', $request->terminal);
             })
             ->when($request->customer != "", function ($q) use ($request) {
                 $q->where("customer_id", $request->customer);
