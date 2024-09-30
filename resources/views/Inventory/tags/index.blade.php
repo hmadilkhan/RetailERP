@@ -93,7 +93,7 @@
                            
                            <div class="form-group">                              
                             <label>Meta Description</label>
-                            <textarea rows="5" class="form-control" placeholder="Meta Description" name="meta_descript" id="meta_descript"></textarea>
+                            <textarea rows="5" class="form-control" placeholder="Meta Description" name="meta_description" id="meta_descript"></textarea>
                             <span class="text-danger" id="metadescript_alert"></span>
                           </div>                             
                            <br/>
