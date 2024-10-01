@@ -3461,21 +3461,22 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 15);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'C');
-                $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $request->type, $request->department, $request->subdepartment);
+                $modes = $report->itemSalesOrderMode($request->fromdate, $request->todate, $values->terminal_id);
+                // $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $request->type, $request->department, $request->subdepartment);
 
                 // Filter the collection for specific statuses
-                $filtered = collect($details)->filter(function ($order) {
-                    return $order->ordermode;
-                });
+                // $filtered = collect($details)->filter(function ($order) {
+                //     return $order->ordermode;
+                // });
 
                 // Get the unique `status` values and group by the status
-                $orderModes = $filtered->groupBy('ordermode')->keys();
+                // $orderModes = $filtered->groupBy('ordermode')->keys();
 
                 // Group the filtered collection by status
-                $grouped = $filtered->groupBy('ordermode');
+                // $grouped = $filtered->groupBy('ordermode');
 
                 // return $grouped["TAKE AWAY"];
-                foreach ($orderModes as $mode) {
+                foreach ($modes as $mode) {
                     $totalCount = 0;
                     $totalqty = 0;
                     $totalamount = 0;
@@ -3486,7 +3487,7 @@ class ReportController extends Controller
                     $pdf->SetFont('Arial', 'B', 12);
                     $pdf->setFillColor(128, 128, 128);
                     $pdf->SetTextColor(255, 255, 255);
-                    $pdf->Cell(190, 5, $mode, 0, 1, 'C', 1);
+                    $pdf->Cell(190, 5, $mode[0]->ordermode, 0, 1, 'C', 1);
                     // $pdf->ln(1);
                     // TABLE HEADERS
                     $pdf->SetFont('Arial', 'B', 10);
@@ -3500,7 +3501,10 @@ class ReportController extends Controller
                     $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
                     $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
                     $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
-                    foreach ($grouped[$mode] as $value) {
+
+                    $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $mode[0]->order_mode_id, $request->department, $request->subdepartment);
+
+                    foreach ($details as $value) {
 
                         $totalCount++;
                         // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
@@ -3584,18 +3588,19 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminals[0]->terminal_name, 0, 1, 'L');
-            $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $request->type, $request->department, $request->subdepartment);
+            $modes = $report->itemSalesOrderMode($request->fromdate, $request->todate, $values->terminal_id);
+            // $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $request->type, $request->department, $request->subdepartment);
             // Filter the collection for specific statuses
-            $filtered = collect($details)->filter(function ($order) {
-                return $order->ordermode;
-            });
+            // $filtered = collect($details)->filter(function ($order) {
+            //     return $order->ordermode;
+            // });
 
             // Get the unique `status` values and group by the status
-            $orderModes = $filtered->groupBy('ordermode')->keys();
+            // $orderModes = $filtered->groupBy('ordermode')->keys();
 
             // Group the filtered collection by status
-            $grouped = $filtered->groupBy('ordermode');
-            foreach ($orderModes as $mode) {
+            // $grouped = $filtered->groupBy('ordermode');
+            foreach ($modes as $mode) {
                 $totalCount = 0;
                 $totalqty = 0;
                 $totalamount = 0;
@@ -3606,7 +3611,7 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(128, 128, 128);
                 $pdf->SetTextColor(255, 255, 255);
-                $pdf->Cell(190, 5, $mode, 0, 1, 'C', 1);
+                $pdf->Cell(190, 5, $mode[0]->ordermode, 0, 1, 'C', 1);
                 // $pdf->ln(1);
                 // TABLE HEADERS
                 $pdf->SetFont('Arial', 'B', 10);
@@ -3620,7 +3625,8 @@ class ReportController extends Controller
                 $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
                 $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
                 $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
-                foreach ($grouped[$mode] as $value) {
+                $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $mode[0]->order_mode_id, $request->department, $request->subdepartment);
+                foreach ($details as $value) {
                     $totalCount++;
                     // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
                     if (session('company_id') == 74) {

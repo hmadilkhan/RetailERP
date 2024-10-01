@@ -436,10 +436,18 @@ class report extends Model
         return $result;
     }
 
+    public function itemSalesOrderMode($fromdate, $todate, $terminalid)
+    {
+        $result = DB::select("SELECT e.order_mode_id,e.order_mode as ordermode FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ?) GROUP BY e.order_mode_id",[$fromdate, $todate, $terminalid]);
+        return $result;
+    }
     //item sale database
     public function  itemsale_details($fromdate, $todate, $terminalid, $type, $department, $subdepartment = "")
     {
         $filter = "";
+        if ($type != "") {
+            $filter .= " and b.order_mode_id = ".$type;
+        }
         // if ($type != "" && $type == "datewise") {
         //     $filter = "  a.date between '" . $fromdate . "' and '" . $todate . "' and a.terminal_id = " . $terminalid . "";
         // } else {
