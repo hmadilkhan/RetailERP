@@ -1055,6 +1055,7 @@ function swalModal(branchId,mode,brnhName,status){
                success: function(resp, txtStatus, jxState) {
             if (jxState.status === 200) {
               $("#city").empty();
+              $("#city").append('<option value="">Select</option>');
                 $.each(resp, function(i) {
                      $("#city").append('<option value="'+resp[i].city+'">'+resp[i].city_name+'</option>');
                 });
