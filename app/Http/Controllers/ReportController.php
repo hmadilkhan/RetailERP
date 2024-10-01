@@ -4948,8 +4948,15 @@ class ReportController extends Controller
 
     public function salesPersonReport(Request $request, Vendor $vendor, Report $report)
     {
+        $branchname = "";
         $company = $vendor->company(session('company_id'));
 
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id",$request->branch)->first();
+            $branchname = " (".$branchname->branch_name.") ";
+        }else{
+            $branchname = " (All Branches) ";
+        }
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
@@ -5015,7 +5022,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Person Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Person Report '.$branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         if ($request->salesperson != "all") {

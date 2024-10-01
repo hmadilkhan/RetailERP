@@ -335,7 +335,7 @@ class report extends Model
     }
 
     //sales decleration report
-    public  function  getTerminals($branch="")
+    public  function  getTerminals($branch = "")
     {
 
         if (session("roleId") == 2 && $branch == "all") {
@@ -474,7 +474,7 @@ class report extends Model
     }
 
     // 
-    public  function  orderBookingQuery($fromdate, $todate, $paymentmethod, $branch,$mode)
+    public  function  orderBookingQuery($fromdate, $todate, $paymentmethod, $branch, $mode)
     {
         $filter = "";
         if ($paymentmethod != "") {
@@ -482,35 +482,19 @@ class report extends Model
         }
         if ($branch != "" and $branch != "all") {
             $filter .= " and b.branch = '" . $branch . "'";
-        }else{
-            $filter .= " and b.branch IN ( Select branch_id from branch where company_id = ".session("company_id").")";
+        } else {
+            $filter .= " and b.branch IN ( Select branch_id from branch where company_id = " . session("company_id") . ")";
         }
         // if ($mode != "" and $mode == "balances") {
         //     $filter .= " and c.balance_amount > 0";
         // }
         // $query = 'SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2  ' . $filter;
         // return $query;
-        $result = DB::select('SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode,(SELECT SUM(received) FROM `customer_account` WHERE `receipt_no` = b.id) as received FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2  ' . $filter." group by a.receipt_no" , [$fromdate, $todate]);
+        $result = DB::select('SELECT b.id,b.receipt_no,d.name,c.total_amount,c.receive_amount,c.balance_amount,e.payment_mode,(SELECT SUM(received) FROM `customer_account` WHERE `receipt_no` = b.id) as received FROM customer_account a INNER JOIN sales_receipts b on b.id = a.receipt_no INNER JOIN sales_account_general c on c.receipt_id = a.receipt_no INNER JOIN customers d on d.id = a.cust_id INNER JOIN sales_payment e on e.payment_id = a.payment_mode_id where b.date between ? and ? and b.order_mode_id = 2  ' . $filter . " group by a.receipt_no", [$fromdate, $todate]);
         return $result;
     }
 
-    public  function  salesPersonReportQuery($fromdate, $todate, $branch, $salesperson,$status)
-    {
-        $filter = "";
-        if ($salesperson != '' and $salesperson != "all") {
-            $filter .= " and a.sales_person_id = " . $salesperson;
-        }
-        // if ($branch != "" and $branch != "all") {
-        //     $filter .= " and a.branch = '" . $branch . "'";
-        // }
-        if ($status != "") {
-            $filter .= " and a.status = ".$status;
-       }
-        $result = DB::select('SELECT a.id,a.receipt_no,b.order_status_name as status,a.date,a.time,c.name,a.total_amount,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter, [$fromdate, $todate]);
-        return $result;
-    }
-
-    public  function  totalsalesPersonReportQuery($fromdate, $todate, $branch, $salesperson,$status)
+    public  function  salesPersonReportQuery($fromdate, $todate, $branch, $salesperson, $status)
     {
         $filter = "";
         if ($salesperson != '' and $salesperson != "all") {
@@ -518,13 +502,31 @@ class report extends Model
         }
         if ($branch != "" and $branch != "all") {
             $filter .= " and a.branch = '" . $branch . "'";
-        }else{
-            $filter .= " and branch IN (select branch_id from branch where company_id = ".session('branch').")";
+        } else {
+            $filter .= " and branch IN (select branch_id from branch where company_id = " . session('company_id') . ")";
         }
-        // if ($status != "" && $status != "all") {
-        //      $filter .= " and a.status = ".$status;
-        // }
-        $result = DB::select('SELECT d.id,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter.' group by d.fullname', [$fromdate, $todate]);
+        if ($status != "" && $status != "all") {
+            $filter .= " and a.status = " . $status;
+        }
+        $result = DB::select('SELECT a.id,a.receipt_no,b.order_status_name as status,a.date,a.time,c.name,a.total_amount,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter, [$fromdate, $todate]);
+        return $result;
+    }
+
+    public  function  totalsalesPersonReportQuery($fromdate, $todate, $branch, $salesperson, $status)
+    {
+        $filter = "";
+        if ($salesperson != '' and $salesperson != "all") {
+            $filter .= " and a.sales_person_id = " . $salesperson;
+        }
+        if ($branch != "" and $branch != "all") {
+            $filter .= " and a.branch = '" . $branch . "'";
+        } else {
+            $filter .= " and branch IN (select branch_id from branch where company_id = " . session('company_id') . ")";
+        }
+        if ($status != "" && $status != "all") {
+            $filter .= " and a.status = " . $status;
+        }
+        $result = DB::select('SELECT d.id,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter . ' group by d.fullname', [$fromdate, $todate]);
         return $result;
     }
 
