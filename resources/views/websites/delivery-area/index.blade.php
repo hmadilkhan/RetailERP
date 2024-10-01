@@ -490,7 +490,8 @@ input+.slider:before {
                     $("#city").attr('name', 'city').removeAttr('multiple').val('');
                     $("#city").select2();
                     if($("#areaBox").hasClass('d-none')){
-                      $("#areaBox").removeClass('d-none').val('');
+                        $("#areaBox").removeClass('d-none');
+                        $("#area").val('');
                     }
                     cityLoadNotExists();
                 }
@@ -517,7 +518,8 @@ input+.slider:before {
             }
 
            if(!$("#areaBox").hasClass('d-none')){
-            $("#areaBox").addClass('d-none').val('');
+               $("#areaBox").addClass('d-none');
+               $("#area").val('');
            }             
        }
    }   
