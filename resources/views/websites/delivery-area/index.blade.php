@@ -491,7 +491,7 @@ input+.slider:before {
                     $("#city").select2();
                     if($("#areaBox").hasClass('d-none')){
                         $("#areaBox").removeClass('d-none');
-                        $("#area").val('');
+                        $("#areas").val('');
                     }
                     cityLoadNotExists();
                 }
@@ -519,7 +519,7 @@ input+.slider:before {
 
            if(!$("#areaBox").hasClass('d-none')){
                $("#areaBox").addClass('d-none');
-               $("#area").val('');
+               $("#areas").val('');
            }             
        }
    }   
