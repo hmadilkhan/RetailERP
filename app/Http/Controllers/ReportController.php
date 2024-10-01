@@ -4952,7 +4952,7 @@ class ReportController extends Controller
         $company = $vendor->company(session('company_id'));
 
         if ($request->branch != "all") {
-            $branchname = Branch::where("branch_id",$request->branch)->get("branch_name");
+            $branchname = Branch::where("branch_id",$request->branch)->first();
             $branchname = " (".$branchname->branch_name.") ";
         }else{
             $branchname = " (All Branches) ";
