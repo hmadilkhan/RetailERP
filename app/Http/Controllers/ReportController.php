@@ -5080,20 +5080,7 @@ class ReportController extends Controller
                     $pdf->Cell(20, 6, date("h:i a", strtotime($values->time)), 0, 1, 'C', 1);
                     $pdf->ln(1);
                 }
-                $pdf->ln(2);
-                $pdf->SetFont('Arial', 'B', 12);
-                $pdf->setFillColor(0, 0, 0);
-                $pdf->SetTextColor(255, 255, 255);
-                $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
-                $pdf->Cell(63, 7, 'Total Amount', 'B', 0, 'C', 1);
-                $pdf->Cell(63, 7, '', 'B', 1, 'C', 1);
-
-                $pdf->SetFont('Arial', '', 10);
-                $pdf->setFillColor(232, 232, 232);
-                $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(63, 7, number_format($totalOrder, 0), 'B,T', 0, 'C');
-                $pdf->Cell(63, 7, number_format($totalamount, 0), 'B,T', 0, 'C');
-                $pdf->Cell(63, 7, '', 'B,T', 1, 'C');
+                
 
                 $pdf->ln(2);
                 $pdf->SetFont('Arial', 'B', 12);
@@ -5111,6 +5098,21 @@ class ReportController extends Controller
                     $pdf->Cell(63, 7, number_format($status->totalorders, 0), 'B,T', 0, 'C');
                     $pdf->Cell(63, 7, number_format($status->totalamount, 0), 'B,T', 1, 'C');
                 }
+
+                $pdf->ln(2);
+                $pdf->SetFont('Arial', 'B', 12);
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
+                $pdf->Cell(63, 7, 'Total Amount', 'B', 0, 'C', 1);
+                $pdf->Cell(63, 7, '', 'B', 1, 'C', 1);
+
+                $pdf->SetFont('Arial', '', 10);
+                $pdf->setFillColor(232, 232, 232);
+                $pdf->SetTextColor(0, 0, 0);
+                $pdf->Cell(63, 7, number_format($totalOrder, 0), 'B,T', 0, 'C');
+                $pdf->Cell(63, 7, number_format($totalamount, 0), 'B,T', 0, 'C');
+                $pdf->Cell(63, 7, '', 'B,T', 1, 'C');
             }
         } else {
             //total variables
