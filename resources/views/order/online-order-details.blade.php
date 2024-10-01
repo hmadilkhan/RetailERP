@@ -99,10 +99,14 @@
                                  $imageShow = !empty(Cloudinary::getUrl($getImage_id)) ? 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/'.$getImage_id.($extensionCount > 1 ? '.'.$getExtension : '') : asset('storage/images/placeholder.jpg') 
                                 @endphp
                              @endif
-                             <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
-                            @else
-                            <img src="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
-                            @endif
+                            <a href="{{ $imageShow }}" data-fancybox data-caption="Single Image"> 
+                             <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded">
+                            </a>
+                             @else
+                            <a href="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" data-fancybox data-caption="Single Image"> 
+                             <img src="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
+                            </a>
+                             @endif
                             </div>
                         <div class="flex-grow-1 align-self-center overflow-hidden">
                             <div>
@@ -367,6 +371,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css" integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
 <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css"
+/>
+
 <style>
 body{
     margin-top:-3.5rem;
@@ -435,6 +444,9 @@ a {
 @endsection
 
 @section("scriptcode_three")
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
 <script>
 	function showImage(key){
 			let image = $(".productImage"+key).attr('src');

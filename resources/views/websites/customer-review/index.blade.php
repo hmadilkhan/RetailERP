@@ -65,15 +65,27 @@
                    $statusName       = $value->status == 1 ? 'Active' : 'In-Active';
                    $statusLabelColor = $value->status == 1 ? 'text-success' : 'text-danger';
                    $website_name = $websites->where('id',$value->website_id)->pluck('name'); 
-                      $image = asset('storage/images/no-image.jpg');
-                      
-                      if(File::exists('storage/images/customer-reviews/'.$value->image)){
-                          $image = asset('storage/images/customer-reviews/'.$value->image);
-                      }
                  @endphp
 				<tr>
           <td class="d-none">{{ $value->id }}</td>  
-				  <td class="text-center"><img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"></td>
+				  <td class="text-center">
+            @if($images)
+              @foreach($images as $img_val)
+                @php 
+                  $image = asset('storage/images/no-image.jpg');
+
+                  if($img_val->review_id == $value->id){
+                    if(File::exists('storage/images/customer-reviews/'.$img_val->image)){
+                          $image = asset('storage/images/customer-reviews/'.$img_val->image);
+                    }
+                  }
+                @endphp  
+                <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
+                 <img width="64" height="64" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
+                </a>
+              @endforeach
+            @endif
+          </td>
 				  <td>{{ $value->customer_name }} <br/> {{ $value->customer_email  }}</td>
 				  <td>{{ $value->rating }}</td>
           <td>{{ $value->review_title }}</td>
@@ -111,6 +123,12 @@
 @endsection
 
 @section('css_code')
+
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css"
+/>
+
 <style type="text/css">
 
 .container1 {
@@ -215,6 +233,9 @@ input+.slider:before {
 @endsection
 
 @section('scriptcode_three')
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
+
 <script type="text/javascript">
     $(".select2").select2();
 	$('.table').DataTable({

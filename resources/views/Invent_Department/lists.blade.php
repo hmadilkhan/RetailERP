@@ -919,7 +919,7 @@
             }
 
             if ($("#deptSection_mdept"+departid).val() != '') {
-                $("#sections_md").val($("#deptSection_mdept"+departid).val()).trigger('change');
+                $("#sections_md").val(JSON.parse($("#deptSection_mdept"+departid).val())).trigger('change');
             }            
 
             $('#depart').val($("#deptName_mdept"+departid).val());

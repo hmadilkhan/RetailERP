@@ -93,20 +93,28 @@
                            
                            <div class="form-group">                              
                             <label>Meta Description</label>
-                            <textarea rows="5" class="form-control" placeholder="Meta Description" name="meta_descript" id="meta_descript"></textarea>
+                            <textarea rows="5" class="form-control" placeholder="Meta Description" name="meta_description" id="meta_descript"></textarea>
                             <span class="text-danger" id="metadescript_alert"></span>
                           </div>                             
                            <br/>
                            <hr/>
                             <div class="form-group m-t-4">
                                 <a href="javascript:void(0)">
-                                 <img id="previewdesktopBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" class="width-100" alt="img">
+                                @php 
+                                    $desktop_banner = asset('storage/images/placeholder.jpg');
+                                   
+                                    if(isset($id)){
+                                       $desktop_banner =  File::exists('storage/images/tag/'.$edit->desktop_banner) ? asset('storage/images/tag/'.$edit->desktop_banner) : asset('storage/images/placeholder.jpg');
+                                    }
+                                    
+                                 @endphp                                      
+                                 <img id="previewdesktopBanner" src="{{ $desktop_banner }}" height="200" class="width-100" alt="img">
                                  </a>
                
                                 <div class="form-group {{ $errors->has('desktop_banner') ? 'has-danger' : '' }} m-t-10">
                                     <label for="desktop_banner" >Desktop Banner</label><br/>
                                         <label for="desktop_banner" class="custom-file">
-                                                    <input type="file" name="desktop_banner" id="desktop_banner" class="custom-file-input">
+                                                    <input type="file" name="desktop_banner" id="desktop_banner" onchange="readURL(this,'previewdesktopBanner')" class="custom-file-input">
                                                     <span class="custom-file-control"></span>
                                                 </label>   
                                                 <br/>        
@@ -118,14 +126,22 @@
                            </div>                               
 
                             <div class="form-group">
+                                @php 
+                                    $mobile_banner = asset('storage/images/placeholder.jpg');
+                                   
+                                    if(isset($id)){
+                                       $mobile_banner =  File::exists('storage/images/tag/'.$edit->mobile_banner) ? asset('storage/images/tag/'.$edit->mobile_banner) : asset('storage/images/placeholder.jpg');
+                                    }
+                                    
+                                 @endphp                                  
                                 <a href="javascript:void(0)">
-                                 <img id="previewMobileBanner" src="{{ asset('storage/images/placeholder.jpg') }}" height="200" width="150" class="" alt="img">
+                                 <img id="previewMobileBanner" src="{{ $mobile_banner }}" height="200" width="150" class="" alt="img">
                                  </a>
                
                                 <div class="form-group {{ $errors->has('mobile_banner') ? 'has-danger' : '' }} m-t-10">
                                         <label for="mobile_banner" >Mobile Banner</label><br/>
                                         <label for="mobile_banner" class="custom-file">
-                                                    <input type="file" name="mobile_banner" id="mobile_banner" class="custom-file-input">
+                                                    <input type="file" name="mobile_banner" id="mobile_banner" onchange="readURL(this,'previewMobileBanner')" class="custom-file-input">
                                                     <span class="custom-file-control"></span>
                                                 </label>   
                                                 <br/>        
@@ -154,6 +170,7 @@
                     <thead>
                     <tr>
                         <th class="d-none">#</th>
+                        <th>Image</th>
                         <th>Name</th>
                         <th>Slug</th>
                         <!--<th>Priority</th>-->
@@ -164,6 +181,29 @@
                       @foreach($lists as $tag)
                          <tr id="row-">
                              <td class="d-none">{{ $tag->priority }}</td>
+                             <td>
+                                @php 
+                                  $image = asset('storage/images/placeholder.jpg');   
+                                   if($tag->mobile_banner != null){
+                                      $path = 'storage/images/brands/'.session('company_id').'/'.$tag->mobile_banner;
+                                      $image = File::exists($path) ? asset('storage/images/brands/'.session('company_id').'/'.$tag->mobile_banner) : asset('storage/images/placeholder.jpg');
+                                   }
+                                @endphp    
+                                <img src="{{ $image }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner == '' ? 'placeholder.jpg' : $tag->mobile_banner }}" width="100px" height="100px">
+                                
+                                @if($tag->desktop_banner != null)
+                                 @php
+                                  $path = 'storage/images/tags/'.$tag->desktop_banner;
+                                    if(File::exists($path)){
+                                 @endphp  
+                                   <br/>
+                                        <img src="{{ asset('storage/images/tags/').$tag->desktop_banner }}" class="thumb-img img-fluid" alt="{{ $tag->desktop_banner }}" width="100px" height="100px">
+                                 @php         
+                                    }
+                                 @endphp 
+                                
+                                @endif
+                            </td>                             
                              <td>{{ $tag->name }}</td>
                              <td>{{ $tag->slug }}</td>
                              <!--<td>{{-- $brand->priority --}}</td>-->
@@ -230,7 +270,7 @@
         }
         @endphp 
 
-    $("#meta_description").val('{{ $meta_description }}');    
+    $("#meta_descript").val('{{ $meta_description }}');    
 
         
     function remove(id,name){
@@ -257,7 +297,32 @@
     }      
     
     
+    function readURL(input, id) {
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
+        
+        // Check file size (1MB = 1 * 1024 * 1024 bytes)
+        if (file.size > 1 * 1024 * 1024) {
+            swal("Error!","File size must be less than 1MB.","error");
+            return;
+        }
+        
+        // Check file type (allowed extensions)
+        var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif)$/i;
+        if (!allowedExtensions.exec(file.name)) {
+            swal("Error!","Invalid file type. Please select a JPG, PNG, or GIF image.","error");
+            return;
+        }
 
+        // If validations pass, read the file
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            $('#' + id).attr('src', e.target.result);
+        }
+        
+        reader.readAsDataURL(file);
+    }
+}
         
 
 </script>
