@@ -488,6 +488,7 @@ input+.slider:before {
             if(isConfirm){
                if (currentName === 'city[]') {
                     $("#city").attr('name', 'city').removeAttr('multiple').val('');
+                    $("#city").select2();
                     if($("#areaBox").hasClass('d-none')){
                       $("#areaBox").removeClass('d-none').val('');
                     }
@@ -510,6 +511,7 @@ input+.slider:before {
             'name': 'city[]',
             'multiple': 'multiple'
         });
+        $("#city").select2();
             if($("#website").val() != '' && $("#branch").val() != ''){
                cityLoadNotExists($("#branch").val(),$("#website").val());
             }
