@@ -37,7 +37,7 @@
                     }
                  @endphp                     
                   
-                 <form method="post" class="form-horizontal" action="{{ $route }}">
+                 <form method="post" class="form-horizontal" action="{{ $route }}" enctype="multipart/form-data">
                     @csrf
                     
                     @if(isset($id))
