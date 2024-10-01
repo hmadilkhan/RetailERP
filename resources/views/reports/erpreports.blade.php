@@ -394,6 +394,22 @@
                         </div>
                     </div>
 
+                    <div class="row" id="dvstatus" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Status</label>
+                                <select name="status" id="status" data-placeholder="Select Status"
+                                    class="form-control select2">
+                                    <option value="all">All</option>
+                                    @foreach($statuses as $status)
+                                        <option value="{{$status->order_status_id}}">{{$status->order_status_name}}</option>
+                                    @endforeach
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button id="ExcelButton" style="display:none;" type="button"
@@ -445,7 +461,7 @@
             });
 
             const filters = ['#dvbranch', '#dvdepartments', '#dvsubdepartments', '#dvterminal', '#dvtype', '#dvitemcode',
-                '#dvpaymentmodes', '#dvsalesperson', '#dvmode'
+                '#dvpaymentmodes', '#dvsalesperson', '#dvmode','#dvstatus'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -475,6 +491,7 @@
             if (fieldMappings.some(mapping => mapping.showPaymentMode)) showPaymentMode();
             if (fieldMappings.some(mapping => mapping.showSalesPerson)) showSalesPerson();
             if (fieldMappings.some(mapping => mapping.showMode)) showMode();
+            if (fieldMappings.some(mapping => mapping.showStatus)) showStatus();
         }
 
         $('#dvprofitstandard').on('click', function() {
@@ -643,7 +660,8 @@
                 value: 1,
                 showDateFilter: true,
                 showBranch: true,
-                showSalesPerson: true
+                showSalesPerson: true,
+                showStatus :true
             }]);
         });
 
@@ -666,6 +684,7 @@
             let paymentmethod = $('#paymentmethod').val();
             let salesperson = $('#salesperson').val();
             let mode = $('#mode').val();
+            let status = $('#status').val();
 
             if ($('#txtprofitstandard').val() == 1) {
                 window.location = "{{ url('profitLossStandardReport') }}?fromdate=" + date + "&todate=" + todate +
@@ -731,7 +750,7 @@
             }
             if ($('#txtsalespersonreport').val() == 1) {
                 window.location = "{{ url('sales-person-report') }}?fromdate=" + date + "&todate=" + todate + "&branch=" +
-                    branch + "&salesperson=" + salesperson ;
+                    branch + "&salesperson=" + salesperson+ "&status=" + status ;
             }
         }
 
@@ -771,22 +790,10 @@
 
         function showterminal() {
             $('#dvterminal').css("display", "block");
-            // if($('#txtsaledec').val() == 1 || $('#txtitemsale').val() == 1 || $('#txtsalereturn').val() == 1 || $('#txtsalesinvoicesreport').val() == 1){
-            // $('#dvterminal').css("display", "block");
-            // }
-            // else{
-            // $('#dvterminal').css("display", "none");
-            // }
         }
 
         function showbranch() {
             $('#dvbranch').css("display", "block");
-            // if($('#txtprofitstandard').val() == 1 || $('#txtprofitdetails').val() == 1 || $('#txtinventory').val() == 1 || $('#txtstockreport').val() == 1 || $('#txtstockadjustment').val() == 1 || $('#txtsalesinvoicesreport').val() == 1){
-            // $('#dvbranch').css("display", "block");
-            // }
-            // else{
-            // $('#dvbranch').css("display", "none");
-            // }
         }
 
         function showSalesPerson() {
@@ -795,6 +802,9 @@
 
         function showMode() {
             $('#dvmode').css("display", "block");
+        }
+        function showstatus() {
+            $('#dvstatus').css("display", "block");
         }
         showdepartments();
 
