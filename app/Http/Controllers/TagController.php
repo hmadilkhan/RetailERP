@@ -193,7 +193,7 @@ class TagController extends Controller
           return redirect()->route('tags.index');
       }
       
-      if(Tag::where(['id'=>$id,'company_id'=>session('company_id'),'status'=>1])->update(['status'=>0])){
+      if(Tag::where(['id'=>$id,'company_id'=>session('company_id'),'status'=>1])->update(['status'=>0,'updated_at'=>now()])){
             
          Session::flash('success','Success!'); 
       }else{
