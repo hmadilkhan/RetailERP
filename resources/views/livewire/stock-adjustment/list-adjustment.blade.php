@@ -55,9 +55,9 @@
                         </div>
                         <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                             <label class="form-control-label"></label>
-                            <button type="button" data-placement="bottom"
+                            <button id="submit-button" type="button" data-placement="bottom"
                                 class="btn btn-success  waves-effect waves-light mt-4"
-                                wire:click="applyFilters()">Search</button>
+                                >Search</button>
                             <button type="button" data-placement="bottom"
                                 class="btn btn-warning  waves-effect waves-light mt-4 text-white"
                                 wire:click="clear()">Clear</button>
@@ -89,7 +89,7 @@
                             <th>Code</th>
                             <th>Name</th>
                             <th>Qty</th>
-                            <th>Stock</th>
+                            {{-- <th>Stock</th> --}}
                             <th>Created By</th>
                             <th>Narration</th>
                             <th>Action</th>
@@ -104,12 +104,12 @@
                                     <td>{{ $stock->products->item_code }}</td>
                                     <td>{{ $stock->products->product_name }}</td>
                                     <td>{{ $stock->qty }}</td>
-                                    <td>{{ $stock->stock }}</td>
+                                    {{-- <td>{{ $stock->stock }}</td> --}}
                                     <td>{{ $stock->productstock->grn->user->fullname }}</td>
                                     <td>{{ $stock->narration }}</td>
                                     <td>
                                         <a target="_blank"
-                                            href="{{route('stock.adjustment.voucher',$stock->productstock->grn_id)}}"
+                                            href="{{ route('stock.adjustment.voucher', $stock->productstock->grn_id) }}"
                                             class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top"
                                             title="" data-original-title="View"><i
                                                 class="icofont icofont-printer"></i></a>
@@ -149,20 +149,33 @@
                 }
             });
 
-            $('#from').on('change', function(e) {
-                var data = $('#from').val();
-                @this.set('from', data);
+            $('#submit-button').on('click', function(e) {
+                e.preventDefault();
+
+                let from = $('#from').val();
+                let to = $('#to').val(); 
+                let code = $('#code').val(); 
+                let name = $('#name').val(); 
+                let branch = $('#branch').val(); 
+
+                // Call Livewire component method on form submission
+                @this.call('submitForm', from, to,code,name,branch);
             });
 
-            $('#to').on('change', function(e) {
-                var data = $('#to').val();
-                @this.set('to', data);
-            });
+            // $('#from').on('change', function(e) {
+            //     var data = $('#from').val();
+            //     @this.set('from', data);
+            // });
 
-            $('#branch').on('change', function(e) {
-                var data = $('#branch').select2("val");
-                @this.set('branch', data);
-            });
+            // $('#to').on('change', function(e) {
+            //     var data = $('#to').val();
+            //     @this.set('to', data);
+            // });
+
+            // $('#branch').on('change', function(e) {
+            //     var data = $('#branch').select2("val");
+            //     @this.set('branch', data);
+            // });
 
             Livewire.hook('morph.updating', ({
                 component,

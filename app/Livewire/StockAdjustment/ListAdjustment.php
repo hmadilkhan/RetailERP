@@ -20,11 +20,20 @@ class ListAdjustment extends Component
     public $name = '';
     public $branch = '';
 
-    public function mount(StockAdjustmentService $stockAdjustmentService)
+    public function submitForm($from, $to,$code,$name,$branch)
     {
-        // $stocks = $stockAdjustmentService->getStockAdjustmentLists($this->from, $this->to, $this->code, $this->name, $this->branch);
- 
+        $this->from = $from;
+        $this->to = $to;
+        $this->code = $code;
+        $this->name = $name;
+        $this->branch = $branch;
     }
+
+    // public function mount(StockAdjustmentService $stockAdjustmentService)
+    // {
+    //     // $stocks = $stockAdjustmentService->getStockAdjustmentLists($this->from, $this->to, $this->code, $this->name, $this->branch);
+ 
+    // }
 
     public function applyFilters()
     {
