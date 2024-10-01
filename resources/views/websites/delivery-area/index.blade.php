@@ -487,7 +487,7 @@ input+.slider:before {
         function(isConfirm){
             if(isConfirm){
                if (currentName === 'city[]') {
-                    $("#city").attr('name', 'city').removeAttr('multiple');
+                    $("#city").attr('name', 'city').removeAttr('multiple').val('');
                     if($("#areaBox").hasClass('d-none')){
                       $("#areaBox").removeClass('d-none').val('');
                     }
