@@ -480,7 +480,9 @@
             $('#filter-modal').modal('show');
             $('#dateFilter').css('display', fieldMappings.some(mapping => mapping.showDateFilter) ? 'block' : 'none');
             $('#ExcelButton').css('display', fieldMappings.some(mapping => mapping.showExcelButton) ? 'block' : 'none');
-
+            console.log("Print Mappings",fieldMappings);
+            console.log("Print Condition",fieldMappings.some(mapping => mapping.showStatus));
+            
             // Call specific functions if needed
             if (fieldMappings.some(mapping => mapping.showBranch)) showbranch();
             if (fieldMappings.some(mapping => mapping.showTerminal)) showterminal();
