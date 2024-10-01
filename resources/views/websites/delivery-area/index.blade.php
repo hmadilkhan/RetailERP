@@ -97,7 +97,7 @@
                 <input type="checkbox" onclick="switchMode(this)" name="on_off_btn" id="on_off_btn">
                 <span class="slider round"></span>
               </label>
-            <select name="city{{ session('company_id') == 102 ? '[]' : '' }}" id="city" data-placeholder="Select" class="form-control select2" {{ session('company_id') == 102 ? 'multiple' : '' }}>
+            <select name="city[]" id="city" data-placeholder="Select" class="form-control select2" multiple>
               <option value="">Select</option>
               @foreach($city as $val)
                  <option {{ $val->city_id == $oldCity ? 'selected' : '' }}  value="{{ $val->city_id }}" >{{ $val->city_name }}</option> 
@@ -487,7 +487,7 @@ input+.slider:before {
         function(isConfirm){
             if(isConfirm){
                if (currentName === 'city[]') {
-                    $("#city").attr('name', 'city');
+                    $("#city").attr('name', 'city').removeAttr('multiple');
                     if($("#areaBox").hasClass('d-none')){
                       $("#areaBox").removeClass('d-none').val('');
                     }
@@ -506,7 +506,10 @@ input+.slider:before {
 
    if($(element).is(":checked") == false){
        if (currentName === 'city') {
-           $("#city").attr('name', 'city[]');
+        $("#city").attr({
+            'name': 'city[]',
+            'multiple': 'multiple'
+        });
             if($("#website").val() != '' && $("#branch").val() != ''){
                cityLoadNotExists($("#branch").val(),$("#website").val());
             }
@@ -1012,17 +1015,14 @@ function swalModal(branchId,mode,brnhName,status){
          }         
      }
   }
-
-  @if(session('company_id') == 102)
+ 
   $("#branch").on('change',function(){
     if($(this).val() != '' && $("#on_off_btn").is(":checked") == false){
       cityLoadNotExists($(this).val(),$("#website").val());
     }
 
   });
- @endif
-
-
+ 
   function cityLoadNotExists(branch = '',website = ''){
     if(website != '' && branch != ''){
       $.ajax({
