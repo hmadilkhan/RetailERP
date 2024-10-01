@@ -95,6 +95,11 @@
 @section('css_code')
 
 <style>
+
+table {
+            width: 100%;
+            border-collapse: collapse;
+        }
           td {
             border: 1px solid black;
             vertical-align: top; /* Text ko top se align karega */
