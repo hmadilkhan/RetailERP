@@ -54,6 +54,7 @@ use App\Http\Controllers\VariationProductController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
 use App\Livewire\Inventory\Inventory;
+use App\Livewire\StockAdjustment\ListAdjustment;
 use App\Livewire\ViewInventory;
 use Illuminate\Support\Facades\DB;
 /*
@@ -93,6 +94,7 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
 });
 
 Route::get('/view-inventory', ViewInventory::class);
+Route::get('/view-adjustments', ListAdjustment::class);
 
 Route::resource('addons', AddonController::class);
 Route::resource('addon-category', AddonCategoryController::class);
@@ -634,6 +636,9 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('save-stock-tranfer', [StockController::class, 'saveStockTransfer']);
     Route::get('terminal-stock', [StockController::class, 'getTerminalStock']);
     Route::post('terminal-stock', [StockController::class, 'getTerminalStockDetails']);
+
+    //VOUCHER GENERATE
+    Route::get('stock-adjustment-voucher/{id}', [StockController::class, 'StockAdjustmentVoucher'])->name("stock.adjustment.voucher");
 
 
     // expense module //
