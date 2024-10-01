@@ -192,15 +192,13 @@
                                 <img src="{{ $image }}" class="thumb-img img-fluid" alt="{{ $tag->desktop_banner == '' ? 'placeholder.jpg' : $tag->desktop_banner }}" width="80" height="160">
                                 
                                 @if($tag->mobile_banner != null)
-                                 @php
-                                  $path = 'storage/images/tags/'.$tag->mobile_banner;
-                                    if(File::exists($path)){
-                                 @endphp  
-                                   <br/>
-                                        <img src="{{ asset('storage/images/tags/').$tag->mobile_banner }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner }}" width="50" height="150">
-                                 @php         
-                                    }
-                                 @endphp 
+                                  @php
+                                   $path = 'storage/images/tags/'.$tag->mobile_banner;
+                                  @endphp  
+                                  @if(File::exists($path))
+                                    <br/>
+                                    <img src="{{ asset('storage/images/tags/').$tag->mobile_banner }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner }}" width="50" height="150">
+                                  @endif
                                 
                                 @endif
                             </td>                             
