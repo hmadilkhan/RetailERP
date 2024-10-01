@@ -3591,7 +3591,7 @@ class ReportController extends Controller
                     $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
 
 
-                    $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->branch, $mode->order_mode_id);
+                    $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id);
                     $pdf->SetFont('Arial', '', 10);
                     $pdf->setFillColor(232, 232, 232);
                     $pdf->SetTextColor(0, 0, 0);
@@ -3735,7 +3735,7 @@ class ReportController extends Controller
                 $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
 
 
-                $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->branch, $mode->order_mode_id);
+                $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id);
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);
