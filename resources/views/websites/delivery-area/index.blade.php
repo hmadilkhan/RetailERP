@@ -225,12 +225,7 @@
                          <thead>
                             <tr>
                               <th class="d-none">#</th>
-                              @if(session('company_id') == 102)  
-                              <th>Location</th>
-                             @endif 
-                             @if(session('company_id') != 102) 
-                              <th>Area</th>
-                             @endif 
+                              <th id="tableHeadCell_md">Area</th>
                               <th>Charge</th>
                               <th>Action</th>
                             </tr>
@@ -624,8 +619,13 @@ input+.slider:before {
                       $('#title_editmd').text('Edit Area Name');
                   }
                 $("#editArea_md").modal("show");
-                
-                // $(".area_table_md").dataTable();
+
+                  if(md == 1){
+                    $("#tableHeadCell_md").text('City');  
+                  }else{
+                    $("#tableHeadCell_md").text('Area'); 
+                  }
+  
                   for(var s=0;s < r.length ;s++){
                       if(r[s].is_city == 1){ 
                           $(".area_table_md tbody").append(
@@ -643,7 +643,6 @@ input+.slider:before {
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
                                 "<td class='d-none'>"+r[s].id+"</td>"+
-                                // "<td id='location_name_md_"+r[s].id+"'>"+r[s].city_name +"</td>"+
                                 "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/></td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td>"+
