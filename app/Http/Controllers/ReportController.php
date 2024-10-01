@@ -4205,7 +4205,6 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', '', 10);
         $pdf->setFillColor(255, 255, 255);
 
-
         foreach ($inventory as $value) {
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(20, 6, date("d-m-Y", strtotime($value->date)), 0, 0, 'L', 1);
