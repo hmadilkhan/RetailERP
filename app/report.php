@@ -494,7 +494,7 @@ class report extends Model
         return $result;
     }
 
-    public  function  salesPersonReportQuery($fromdate, $todate, $branch, $salesperson)
+    public  function  salesPersonReportQuery($fromdate, $todate, $branch, $salesperson,$status)
     {
         $filter = "";
         if ($salesperson != '' and $salesperson != "all") {
@@ -503,11 +503,14 @@ class report extends Model
         // if ($branch != "" and $branch != "all") {
         //     $filter .= " and a.branch = '" . $branch . "'";
         // }
+        if ($status != "") {
+            $filter .= " and a.status = ".$status;
+       }
         $result = DB::select('SELECT a.id,a.receipt_no,b.order_status_name as status,a.date,a.time,c.name,a.total_amount,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter, [$fromdate, $todate]);
         return $result;
     }
 
-    public  function  totalsalesPersonReportQuery($fromdate, $todate, $branch, $salesperson)
+    public  function  totalsalesPersonReportQuery($fromdate, $todate, $branch, $salesperson,$status)
     {
         $filter = "";
         if ($salesperson != '' and $salesperson != "all") {
@@ -517,6 +520,9 @@ class report extends Model
             $filter .= " and a.branch = '" . $branch . "'";
         }else{
             $filter .= " and branch IN (select branch_id from branch where company_id = ".session('branch').")";
+        }
+        if ($status != "") {
+             $filter .= " and a.status = ".$status;
         }
         $result = DB::select('SELECT d.id,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter.' group by d.fullname', [$fromdate, $todate]);
         return $result;

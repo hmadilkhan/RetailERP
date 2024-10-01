@@ -59,8 +59,9 @@ class ReportController extends Controller
         $departments = $report->get_departments();
         $paymentModes = $report->getPaymentModes();
         $salespersons = $orderService->getServiceProviders();
+        $statuses = $orderService->getOrderStatus();
 
-        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons'));
+        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons','statuses'));
     }
 
     public function show(report $report, salary $salary)
@@ -5031,7 +5032,7 @@ class ReportController extends Controller
         }
 
         if ($request->salesperson == "all") {
-            $salespersons = $report->totalsalesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+            $salespersons = $report->totalsalesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson,$request->status);
             foreach ($salespersons as $key => $salesperson) {
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->SetTextColor(0, 0, 0);
@@ -5042,7 +5043,7 @@ class ReportController extends Controller
                 $totalOrder = 0;
                 $totalbalanceamount = 0;
 
-                $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $salesperson->id);
+                $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $salesperson->id,$request->status);
                 echo
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(0, 0, 0);
@@ -5093,7 +5094,7 @@ class ReportController extends Controller
             $totalOrder = 0;
             $totalbalanceamount = 0;
 
-            $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson);
+            $orders = $report->salesPersonReportQuery($request->fromdate, $request->todate, $request->branch, $request->salesperson,$request->status);
 
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->SetTextColor(0, 0, 0);

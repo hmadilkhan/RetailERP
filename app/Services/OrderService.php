@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Branch;
+use App\Models\Order;
+use App\Models\OrderStatus;
 use App\Models\ServiceProvider;
 
 class OrderService
@@ -31,5 +33,10 @@ class OrderService
         }
         $serviceProvider->with("serviceprovideruser")->where("status_id", 1)->groupBy('id');
         return $serviceProvider->get();
+    }
+
+    public function getOrderStatus()
+    {
+        return OrderStatus::all();
     }
 }
