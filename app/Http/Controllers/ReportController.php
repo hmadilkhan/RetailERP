@@ -5080,6 +5080,7 @@ class ReportController extends Controller
                     $pdf->ln(1);
                 }
 
+                if ($request->status == "all") {
                 $pdf->ln(2);
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(0, 0, 0);
@@ -5088,7 +5089,7 @@ class ReportController extends Controller
                 $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
                 $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
 
-                if ($request->status == "all") {
+                
                     $allOrdersByStatus = $report->salesPersonReportQueryByStatus($request->fromdate, $request->todate, $request->branch, $salesperson->id, $request->status);
                     $pdf->SetFont('Arial', '', 10);
                     $pdf->setFillColor(232, 232, 232);
