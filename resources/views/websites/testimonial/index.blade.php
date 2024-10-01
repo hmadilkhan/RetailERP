@@ -94,23 +94,6 @@
 
 @section('css_code')
 
-<style>
-          td {
-            border: 1px solid black;
-            vertical-align: top; /* Text ko top se align karega */
-            width: 30%; /* Isse column ki width set hoti hai */
-            overflow: hidden; /* Agar content zyada ho toh hide ho jayega */
-            text-overflow: ellipsis; /* Zyada text ko "..." se indicate karega */
-            white-space: nowrap; /* Line break nahi hone dega */
-        }
-        .paragraph {
-            overflow: hidden; /* Zyada text hide ho jayega */
-            text-overflow: ellipsis; /* Zyada text ko "..." se indicate karega */
-            display: block; /* Block element banayega */
-            height: 100px; /* Fixed height set karega */
-            overflow-y: auto; /* Scrollable banayega agar text zyada ho */
-        }
-</style>
 @endsection
 @section('scriptcode_three')
 <script type="text/javascript">
