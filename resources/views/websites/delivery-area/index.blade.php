@@ -510,7 +510,7 @@ input+.slider:before {
         $("#city").attr({
             'name': 'city[]',
             'multiple': 'multiple'
-        });
+        }).val('');
         $("#city").select2();
             if($("#website").val() != '' && $("#branch").val() != ''){
                cityLoadNotExists($("#branch").val(),$("#website").val());
