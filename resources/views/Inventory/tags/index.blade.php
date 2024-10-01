@@ -189,7 +189,7 @@
                                       $image = File::exists($path) ? asset($path) : asset('storage/images/placeholder.jpg');
                                    }
                                 @endphp    
-                                <img src="{{ $image }}" class="thumb-img img-fluid" alt="{{ $tag->desktop_banner == '' ? 'placeholder.jpg' : $tag->desktop_banner }}" width="100px" height="100px">
+                                <img src="{{ $image }}" class="thumb-img img-fluid" alt="{{ $tag->desktop_banner == '' ? 'placeholder.jpg' : $tag->desktop_banner }}" width="80" height="160">
                                 
                                 @if($tag->mobile_banner != null)
                                  @php
@@ -197,7 +197,7 @@
                                     if(File::exists($path)){
                                  @endphp  
                                    <br/>
-                                        <img src="{{ asset('storage/images/tags/').$tag->mobile_banner }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner }}" width="100px" height="100px">
+                                        <img src="{{ asset('storage/images/tags/').$tag->mobile_banner }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner }}" width="50" height="150">
                                  @php         
                                     }
                                  @endphp 
