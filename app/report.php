@@ -466,7 +466,7 @@ class report extends Model
 
     public function groupByItemSaleStatus($fromdate, $todate, $terminalid, $type)
     {
-        $result = DB::select('SELECT SUM(a.total_qty) as totalorders,SUM(a.price * a.total_qty) as totalamount,d.order_status_name as status FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id INNER JOIN sales_order_status d on d.order_status_id = b.status where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ?) and b.order_mode_id = ? GROUP BY b.status',[$fromdate, $todate, $terminalid,$type]);
+        $result = DB::select('SELECT SUM(a.total_qty) as totalorders,SUM(a.total_amount) as totalamount,d.order_status_name as status FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id INNER JOIN sales_order_status d on d.order_status_id = b.status where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ?) and b.order_mode_id = ? GROUP BY b.status',[$fromdate, $todate, $terminalid,$type]);
         return $result;
     }
 
