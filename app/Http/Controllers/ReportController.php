@@ -3581,6 +3581,25 @@ class ReportController extends Controller
                     $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
                     $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
                     $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
+
+                    $pdf->ln(2);
+                    $pdf->SetFont('Arial', 'B', 12);
+                    $pdf->setFillColor(0, 0, 0);
+                    $pdf->SetTextColor(255, 255, 255);
+                    $pdf->Cell(63, 7, 'Status Name', 'B', 0, 'C', 1);
+                    $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
+                    $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
+
+
+                    $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->branch, $mode->order_mode_id);
+                    $pdf->SetFont('Arial', '', 10);
+                    $pdf->setFillColor(232, 232, 232);
+                    $pdf->SetTextColor(0, 0, 0);
+                    foreach ($allOrdersByStatus as $status) {
+                        $pdf->Cell(63, 7, $status->status, 'B,T', 0, 'C');
+                        $pdf->Cell(63, 7, number_format($status->totalorders, 0), 'B,T', 0, 'C');
+                        $pdf->Cell(63, 7, number_format($status->totalamount, 0), 'B,T', 1, 'C');
+                    }
                 }
 
 
@@ -3706,6 +3725,25 @@ class ReportController extends Controller
                 $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
                 $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
                 $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
+
+                $pdf->ln(2);
+                $pdf->SetFont('Arial', 'B', 12);
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(63, 7, 'Status Name', 'B', 0, 'C', 1);
+                $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
+                $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
+
+
+                $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->branch, $mode->order_mode_id);
+                $pdf->SetFont('Arial', '', 10);
+                $pdf->setFillColor(232, 232, 232);
+                $pdf->SetTextColor(0, 0, 0);
+                foreach ($allOrdersByStatus as $status) {
+                    $pdf->Cell(63, 7, $status->status, 'B,T', 0, 'C');
+                    $pdf->Cell(63, 7, number_format($status->totalorders, 0), 'B,T', 0, 'C');
+                    $pdf->Cell(63, 7, number_format($status->totalamount, 0), 'B,T', 1, 'C');
+                }
             }
 
             // $pdf->ln(2);
