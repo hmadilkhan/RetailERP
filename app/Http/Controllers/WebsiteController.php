@@ -1011,6 +1011,9 @@ class WebsiteController extends Controller
     public function store_deliveryArea(Request $request)
     {
        try {  
+        if(Auth::user()->username == 'uzair.sdb'){
+        return $request->city;
+        }
              DB::beginTransaction();
         // $rules = [
         //     'branch'    => 'required',
