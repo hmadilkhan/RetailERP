@@ -3588,7 +3588,7 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminals[0]->terminal_name, 0, 1, 'L');
-            $modes = $report->itemSalesOrderMode($request->fromdate, $request->todate, $values->terminal_id);
+            $modes = $report->itemSalesOrderMode($request->fromdate, $request->todate,$request->terminalid);
             // $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $request->type, $request->department, $request->subdepartment);
             // Filter the collection for specific statuses
             // $filtered = collect($details)->filter(function ($order) {
