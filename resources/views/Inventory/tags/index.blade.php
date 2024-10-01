@@ -104,7 +104,7 @@
                                     $desktop_banner = asset('storage/images/placeholder.jpg');
                                    
                                     if(isset($id)){
-                                       $desktop_banner =  File::exists('storage/images/tag/'.$edit->desktop_banner) ? asset('storage/images/tag/'.$edit->desktop_banner) : asset('storage/images/placeholder.jpg');
+                                       $desktop_banner =  File::exists('storage/images/tags/'.$edit->desktop_banner) ? asset('storage/images/tags/'.$edit->desktop_banner) : asset('storage/images/placeholder.jpg');
                                     }
                                     
                                  @endphp                                      
@@ -130,7 +130,7 @@
                                     $mobile_banner = asset('storage/images/placeholder.jpg');
                                    
                                     if(isset($id)){
-                                       $mobile_banner =  File::exists('storage/images/tag/'.$edit->mobile_banner) ? asset('storage/images/tag/'.$edit->mobile_banner) : asset('storage/images/placeholder.jpg');
+                                       $mobile_banner =  File::exists('storage/images/tags/'.$edit->mobile_banner) ? asset('storage/images/tags/'.$edit->mobile_banner) : asset('storage/images/placeholder.jpg');
                                     }
                                     
                                  @endphp                                  
