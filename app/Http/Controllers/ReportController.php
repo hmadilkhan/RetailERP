@@ -3487,7 +3487,7 @@ class ReportController extends Controller
                     $pdf->SetFont('Arial', 'B', 12);
                     $pdf->setFillColor(128, 128, 128);
                     $pdf->SetTextColor(255, 255, 255);
-                    $pdf->Cell(190, 5, $mode[0]->ordermode, 0, 1, 'C', 1);
+                    $pdf->Cell(190, 5, $mode->ordermode, 0, 1, 'C', 1);
                     // $pdf->ln(1);
                     // TABLE HEADERS
                     $pdf->SetFont('Arial', 'B', 10);
@@ -3502,7 +3502,7 @@ class ReportController extends Controller
                     $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
                     $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
 
-                    $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $mode[0]->order_mode_id, $request->department, $request->subdepartment);
+                    $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $mode->order_mode_id, $request->department, $request->subdepartment);
 
                     foreach ($details as $value) {
 
@@ -3611,7 +3611,7 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 12);
                 $pdf->setFillColor(128, 128, 128);
                 $pdf->SetTextColor(255, 255, 255);
-                $pdf->Cell(190, 5, $mode[0]->ordermode, 0, 1, 'C', 1);
+                $pdf->Cell(190, 5, $mode->ordermode, 0, 1, 'C', 1);
                 // $pdf->ln(1);
                 // TABLE HEADERS
                 $pdf->SetFont('Arial', 'B', 10);
@@ -3625,7 +3625,7 @@ class ReportController extends Controller
                 $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
                 $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
                 $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
-                $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $mode[0]->order_mode_id, $request->department, $request->subdepartment);
+                $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id, $request->department, $request->subdepartment);
                 foreach ($details as $value) {
                     $totalCount++;
                     // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
