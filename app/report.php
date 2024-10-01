@@ -512,6 +512,24 @@ class report extends Model
         return $result;
     }
 
+    public  function  salesPersonReportQueryByStatus($fromdate, $todate, $branch, $salesperson, $status)
+    {
+        $filter = "";
+        if ($salesperson != '' and $salesperson != "all") {
+            $filter .= " and a.sales_person_id = " . $salesperson;
+        }
+        if ($branch != "" and $branch != "all") {
+            $filter .= " and a.branch = '" . $branch . "'";
+        } else {
+            $filter .= " and branch IN (select branch_id from branch where company_id = " . session('company_id') . ")";
+        }
+        if ($status != "" && $status != "all") {
+            $filter .= " and a.status = " . $status;
+        }
+        $result = DB::select('SELECT COUNT(*) as totalorders,SUM(a.total_amount) as totalamount,b.order_status_name as status, FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter.' group by b.order_status_name', [$fromdate, $todate]);
+        return $result;
+    }
+
     public  function  totalsalesPersonReportQuery($fromdate, $todate, $branch, $salesperson, $status)
     {
         $filter = "";
