@@ -563,7 +563,7 @@ input+.slider:before {
       }       
 
 
-      if($("#city").val() == '' && $("#on_off_btn").is(":checked") == false){
+      if($("#city").val() == ''){
           $("#city").focus();
           $("#city_alert").text('field is required.');   
           process_md = false;   
@@ -1059,7 +1059,7 @@ function swalModal(branchId,mode,brnhName,status){
               $("#city").empty();
               $("#city").append('<option value="">Select</option>');
                 $.each(resp, function(i) {
-                     $("#city").append('<option value="'+resp[i].city+'">'+resp[i].city_name+'</option>');
+                     $("#city").append('<option value="'+resp[i].city_id+'">'+resp[i].city_name+'</option>');
                 });
             }
         },
