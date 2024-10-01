@@ -16,7 +16,7 @@
     @if(Session::has('success'))
          <div class="alert alert-success">{{ Session::get('success') }}</div>
     @endif
-{{ $request }}
+{{ Request::all() }}
   @php $url_parameter_webId = Request::has('id') ? Request::get('id') : null; @endphp
     <div class="card">
      <div class="card-header">
