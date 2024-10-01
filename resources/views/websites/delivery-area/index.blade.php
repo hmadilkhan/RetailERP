@@ -97,7 +97,7 @@
                 <input type="checkbox" onclick="switchMode(this)" name="on_off_btn" id="on_off_btn">
                 <span class="slider round"></span>
               </label>
-            <select name="city{{ session('company_id') == 102 ? '[]' : '' }}" id="city" data-placeholder="Select" class="form-control select2" {{ session('company_id') == 102 ? 'multiple' : '' }}>
+            <select name="city[]" id="city" data-placeholder="Select" class="form-control select2" multiple>
               <option value="">Select</option>
               @foreach($city as $val)
                  <option {{ $val->city_id == $oldCity ? 'selected' : '' }}  value="{{ $val->city_id }}" >{{ $val->city_name }}</option> 
@@ -225,12 +225,7 @@
                          <thead>
                             <tr>
                               <th class="d-none">#</th>
-                              @if(session('company_id') == 102)  
-                              <th>Location</th>
-                             @endif 
-                             @if(session('company_id') != 102) 
-                              <th>Area</th>
-                             @endif 
+                              <th id="tableHeadCell_md">Area</th>
                               <th>Charge</th>
                               <th>Action</th>
                             </tr>
@@ -492,12 +487,12 @@ input+.slider:before {
         function(isConfirm){
             if(isConfirm){
                if (currentName === 'city[]') {
-                    $("#city").attr('name', 'city');
-                    cityLoadNotExists();
-
+                    $("#city").attr('name', 'city').removeAttr('multiple').val('');
+                    $("#city").select2();
                     if($("#areaBox").hasClass('d-none')){
                       $("#areaBox").removeClass('d-none').val('');
                     }
+                    cityLoadNotExists();
                 }
                 swal("Success!", "", "success");
             }else {
@@ -512,7 +507,11 @@ input+.slider:before {
 
    if($(element).is(":checked") == false){
        if (currentName === 'city') {
-           $("#city").attr('name', 'city[]');
+        $("#city").attr({
+            'name': 'city[]',
+            'multiple': 'multiple'
+        }).val('');
+        $("#city").select2();
             if($("#website").val() != '' && $("#branch").val() != ''){
                cityLoadNotExists($("#branch").val(),$("#website").val());
             }
@@ -624,8 +623,13 @@ input+.slider:before {
                       $('#title_editmd').text('Edit Area Name');
                   }
                 $("#editArea_md").modal("show");
-                
-                // $(".area_table_md").dataTable();
+
+                  if(md == 1){
+                    $("#tableHeadCell_md").text('City');  
+                  }else{
+                    $("#tableHeadCell_md").text('Area'); 
+                  }
+  
                   for(var s=0;s < r.length ;s++){
                       if(r[s].is_city == 1){ 
                           $(".area_table_md tbody").append(
@@ -643,7 +647,6 @@ input+.slider:before {
                           $(".area_table_md tbody").append(
                               "<tr id='tbl_md_row"+r[s].id+"'>"+
                                 "<td class='d-none'>"+r[s].id+"</td>"+
-                                // "<td id='location_name_md_"+r[s].id+"'>"+r[s].city_name +"</td>"+
                                 "<td><input type='text' value='"+r[s].name +"' class='form-control' id='name_md_"+r[s].id+"'/></td>"+
                                 "<td><input type='text' value='"+r[s].charge +"' class='form-control' id='charge_md_"+r[s].id+"'/></td>"+
                                 "<td>"+
@@ -1014,17 +1017,14 @@ function swalModal(branchId,mode,brnhName,status){
          }         
      }
   }
-
-  @if(session('company_id') == 102)
+ 
   $("#branch").on('change',function(){
     if($(this).val() != '' && $("#on_off_btn").is(":checked") == false){
       cityLoadNotExists($(this).val(),$("#website").val());
     }
 
   });
- @endif
-
-
+ 
   function cityLoadNotExists(branch = '',website = ''){
     if(website != '' && branch != ''){
       $.ajax({
@@ -1055,6 +1055,7 @@ function swalModal(branchId,mode,brnhName,status){
                success: function(resp, txtStatus, jxState) {
             if (jxState.status === 200) {
               $("#city").empty();
+              $("#city").append('<option value="">Select</option>');
                 $.each(resp, function(i) {
                      $("#city").append('<option value="'+resp[i].city+'">'+resp[i].city_name+'</option>');
                 });
