@@ -37,7 +37,7 @@
                     }
                  @endphp                     
                   
-                 <form method="post" class="form-horizontal" action="{{ $route }}">
+                 <form method="post" class="form-horizontal" action="{{ $route }}" enctype="multipart/form-data">
                     @csrf
                     
                     @if(isset($id))
@@ -104,7 +104,7 @@
                                     $desktop_banner = asset('storage/images/placeholder.jpg');
                                    
                                     if(isset($id)){
-                                       $desktop_banner =  File::exists('storage/images/tag/'.$edit->desktop_banner) ? asset('storage/images/tag/'.$edit->desktop_banner) : asset('storage/images/placeholder.jpg');
+                                       $desktop_banner =  File::exists('storage/images/tags/'.$edit->desktop_banner) ? asset('storage/images/tags/'.$edit->desktop_banner) : asset('storage/images/placeholder.jpg');
                                     }
                                     
                                  @endphp                                      
@@ -130,7 +130,7 @@
                                     $mobile_banner = asset('storage/images/placeholder.jpg');
                                    
                                     if(isset($id)){
-                                       $mobile_banner =  File::exists('storage/images/tag/'.$edit->mobile_banner) ? asset('storage/images/tag/'.$edit->mobile_banner) : asset('storage/images/placeholder.jpg');
+                                       $mobile_banner =  File::exists('storage/images/tags/'.$edit->mobile_banner) ? asset('storage/images/tags/'.$edit->mobile_banner) : asset('storage/images/placeholder.jpg');
                                     }
                                     
                                  @endphp                                  
@@ -192,15 +192,13 @@
                                 <img src="{{ $image }}" class="thumb-img img-fluid" alt="{{ $tag->desktop_banner == '' ? 'placeholder.jpg' : $tag->desktop_banner }}" width="80" height="160">
                                 
                                 @if($tag->mobile_banner != null)
-                                 @php
-                                  $path = 'storage/images/tags/'.$tag->mobile_banner;
-                                    if(File::exists($path)){
-                                 @endphp  
-                                   <br/>
-                                        <img src="{{ asset('storage/images/tags/').$tag->mobile_banner }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner }}" width="50" height="150">
-                                 @php         
-                                    }
-                                 @endphp 
+                                  @php
+                                   $path = 'storage/images/tags/'.$tag->mobile_banner;
+                                  @endphp  
+                                  @if(File::exists($path))
+                                    <br/>
+                                    <img src="{{ asset('storage/images/tags/'.$tag->mobile_banner) }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner }}" width="50" height="150">
+                                  @endif
                                 
                                 @endif
                             </td>                             
