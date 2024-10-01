@@ -390,10 +390,6 @@ class StockController extends Controller
             $pdf->Cell(45, 7, number_format($value->qty, 2), 0, 0, 'L', 1);
             $pdf->Cell(45, 7, $value->name, 0, 1, 'L', 1);
         }
-
-
-        $pdf->SetFont('Arial', '', 12);
-        $pdf->Cell(190, 7, "", 'B', 0, 'R', 1);
         $pdf->ln(30);
         $pdf->Cell(150, 7, "", 0, 0, 'L', 1);
         $pdf->Cell(40, 7, "Receiving Signature", 'B', 0, 'R', 1);
