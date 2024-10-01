@@ -197,7 +197,7 @@
                                   @endphp  
                                   @if(File::exists($path))
                                     <br/>
-                                    <img src="{{ asset('storage/images/tags/').$tag->mobile_banner }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner }}" width="50" height="150">
+                                    <img src="{{ asset('storage/images/tags/'.$tag->mobile_banner) }}" class="thumb-img img-fluid" alt="{{ $tag->mobile_banner }}" width="50" height="150">
                                   @endif
                                 
                                 @endif
