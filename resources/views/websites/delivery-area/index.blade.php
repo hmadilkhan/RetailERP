@@ -563,7 +563,7 @@ input+.slider:before {
       }       
 
 
-      if($("#city").val() == '' && $("#on_off_btn").is(":checked") == false){
+      if($("#city").val() == ''){
           $("#city").focus();
           $("#city_alert").text('field is required.');   
           process_md = false;   
