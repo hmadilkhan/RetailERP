@@ -357,32 +357,18 @@ class StockController extends Controller
 
         //details start here
         $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(70, 6, 'FROM :', 0, 0);
-        $pdf->Cell(60, 6, 'TO:', 0, 0);
-        $pdf->Cell(40, 6, 'VOUCHER # | ', 0, 0);
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(20, 6, $details[0]->grn_id, 0, 1, 'L');
+        $pdf->Cell(48, 6, 'VOUCHER :', 0, 0);
+        $pdf->Cell(48, 6, 'BRANCH:', 0, 0);
+        $pdf->Cell(48, 6, 'CREATED ON ', 0, 0);
+        $pdf->Cell(46, 6, 'Created BY ', 0, 1);
 
         $pdf->SetFont('Arial', '', 11);
-        $pdf->Cell(70, 6, 'BRANCH MANAGER:', 0, 0);
-        $pdf->Cell(60, 6, 'ADMINISTRATOR:', 0, 0);
-        $pdf->Cell(30, 6, 'CREATED ON: ', 0, 0);
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(30, 6, date('d-m-Y', strtotime($details[0]->date)), 0, 1, 'L');
+        $pdf->Cell(48, 6, $details[0]->grn_id, 0, 0);
+        $pdf->Cell(48, 6, $details[0]->branch_name, 0, 0);
+        $pdf->Cell(48, 6, date('d-m-Y', strtotime($details[0]->date)), 0, 0);
+        $pdf->Cell(46, 6, $details[0]->fullname, 0, 1);
 
-        $pdf->SetFont('Arial', '', 11);
-        $pdf->Cell(70, 6, $details[0]->branch_name, 0, 0);
-        $pdf->Cell(60, 6, '', 0, 0);
-        $pdf->Cell(30, 6, 'STATUS: ', 0, 0);
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(30, 6, "Added", 0, 1, 'L');
 
-        $pdf->SetFont('Arial', '', 11);
-        $pdf->Cell(70, 6, '', 0, 0); //$details[0]->br_fr_address
-        $pdf->Cell(60, 6, '', 0, 0); //$details[0]->br_to_address
-        $pdf->Cell(30, 6, 'Created By :', 0, 0);
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(30, 6, $details[0]->fullname, 0, 1, 'L');
 
         $pdf->ln(2);
 
