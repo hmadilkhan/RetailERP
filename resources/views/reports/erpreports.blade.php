@@ -805,9 +805,7 @@
         function showMode() {
             $('#dvmode').css("display", "block");
         }
-        function showstatus() {
-            console.log("Function Is calling");
-            
+        function showStatus() {
             $('#dvstatus').css("display", "block");
         }
         showdepartments();
