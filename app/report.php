@@ -526,7 +526,7 @@ class report extends Model
         if ($status != "" && $status != "all") {
             $filter .= " and a.status = " . $status;
         }
-        $result = DB::select('SELECT COUNT(*) as totalorders,SUM(a.total_amount) as totalamount,b.order_status_name as status, FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter.' group by b.order_status_name', [$fromdate, $todate]);
+        $result = DB::select('SELECT COUNT(*) as totalorders,SUM(a.total_amount) as totalamount,b.order_status_name as status FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter.' group by b.order_status_name', [$fromdate, $todate]);
         return $result;
     }
 
