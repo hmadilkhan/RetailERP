@@ -1012,7 +1012,7 @@ class WebsiteController extends Controller
     {
        try {  
         if(Auth::user()->username == 'uzair.sdb'){
-        return $request->city;
+        return $request;
         }
              DB::beginTransaction();
         // $rules = [
