@@ -3943,12 +3943,14 @@ class ReportController extends Controller
         foreach ($orders as $values) {
             $received = $values->receive_amount + $values->received;
             $balance = $values->total_amount - $received;
-            $totalamount += $values->total_amount;
-            $totalreceiveamount += $received;
-            $totalbalanceamount += $balance;
+           
 
             if ($request->mode != "" && $request->mode == "balances" ) {
                 if ($balance > 0) {
+                    $totalamount += $values->total_amount;
+                    $totalreceiveamount += $received;
+                    $totalbalanceamount += $balance;
+
                     $pdf->SetFont('Arial', '', 10);
                     $pdf->setFillColor(232, 232, 232);
                     $pdf->SetTextColor(0, 0, 0);
@@ -3961,6 +3963,10 @@ class ReportController extends Controller
                     $pdf->ln(1);
                 }
             } else {
+                $totalamount += $values->total_amount;
+                $totalreceiveamount += $received;
+                $totalbalanceamount += $balance;
+                
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);
