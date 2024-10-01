@@ -488,11 +488,10 @@ input+.slider:before {
             if(isConfirm){
                if (currentName === 'city[]') {
                     $("#city").attr('name', 'city');
-                    cityLoadNotExists();
-
                     if($("#areaBox").hasClass('d-none')){
                       $("#areaBox").removeClass('d-none').val('');
                     }
+                    cityLoadNotExists();
                 }
                 swal("Success!", "", "success");
             }else {
