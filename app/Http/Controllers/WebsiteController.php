@@ -1188,7 +1188,8 @@ class WebsiteController extends Controller
         //      }
            
         $column = [];
-        $column['charge'] =$charge;
+        $column['charge']     =$charge;
+        $column['updated_at'] =now();
         if($request->mode != 1){
           $column['name'] = $areaName;
         }
