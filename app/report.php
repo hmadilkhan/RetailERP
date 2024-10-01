@@ -503,7 +503,7 @@ class report extends Model
         if ($branch != "" and $branch != "all") {
             $filter .= " and a.branch = '" . $branch . "'";
         } else {
-            $filter .= " and branch IN (select branch_id from branch where company_id = " . session('branch') . ")";
+            $filter .= " and branch IN (select branch_id from branch where company_id = " . session('company_id') . ")";
         }
         if ($status != "" && $status != "all") {
             $filter .= " and a.status = " . $status;
@@ -521,7 +521,7 @@ class report extends Model
         if ($branch != "" and $branch != "all") {
             $filter .= " and a.branch = '" . $branch . "'";
         } else {
-            $filter .= " and branch IN (select branch_id from branch where company_id = " . session('branch') . ")";
+            $filter .= " and branch IN (select branch_id from branch where company_id = " . session('company_id') . ")";
         }
         if ($status != "" && $status != "all") {
             $filter .= " and a.status = " . $status;
