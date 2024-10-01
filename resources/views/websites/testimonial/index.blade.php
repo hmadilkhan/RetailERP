@@ -68,9 +68,12 @@
                       }
                  @endphp
 				<tr>
-                  <td class="d-none">{{ $value->id }}</td>  
-				  <td class="text-center"><img width="42" height="42" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"></td>
-				  <td>{{ $value->customer_name }}</td>
+          <td class="d-none">{{ $value->id }}</td>  
+				  <td>
+            <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}"> 
+              <img width="64" height="64" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"></td>
+				    </a>
+          <td>{{ $value->customer_name }}</td>
 				  <td>{{ $value->rating }}</td>
 				  <td>{{  Str::limit($value->content, 65) }}</td>
 				  <td class="action-icon">
@@ -93,9 +96,13 @@
 @endsection
 
 @section('css_code')
-
+<link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css"
+/>
 @endsection
 @section('scriptcode_three')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 <script type="text/javascript">
     $(".select2").select2();
 	$('.table').DataTable({
