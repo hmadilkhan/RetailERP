@@ -1025,7 +1025,7 @@ class WebsiteController extends Controller
 
         // $result = null;
 
-        if ($request->city != null && !isset($request->on_off_btn)) {
+        if (!isset($request->on_off_btn)) {
             $city  = $request->city;
 
             for ($i = 0; $i < count($city); $i++) {
