@@ -1201,7 +1201,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Profit & Loss (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Profit & Loss ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
 
@@ -1438,7 +1438,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Profit & Loss Details (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Profit & Loss Details ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -1894,7 +1894,7 @@ class ReportController extends Controller
         $pdf->ln(15);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Stock Summary (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Stock Summary ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
@@ -2034,7 +2034,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Inventory Details (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Inventory Details ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -2388,7 +2388,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(275, 10, 'Sales Decleration Report (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(275, 10, 'Sales Decleration Report ' . $branchname, 'B,T', 1, 'L');
 
 
         $pdf->SetFont('Arial', 'B', 10);
@@ -2719,7 +2719,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'FBR Report (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'FBR Report ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -2905,7 +2905,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Invoice Detail Report (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Invoice Detail Report ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         //total variables
@@ -3153,7 +3153,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Invoice Details Report (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Invoice Details Report ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         //total variables
@@ -3458,7 +3458,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Item Sale Database (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Item Sale Database ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
         if ($request->terminalid != 0) {
             // $pdf->SetFont('Arial', 'B', 12);
@@ -3889,7 +3889,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Return Report (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Return Report ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -4051,7 +4051,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Order Booking Report (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Order Booking Report ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -4316,7 +4316,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Stock Adjustment (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Stock Adjustment ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
@@ -5027,7 +5027,7 @@ class ReportController extends Controller
         $pdf->ln(15);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Inventory Details (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Inventory Details ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
@@ -5176,7 +5176,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Person Report (' . $branchname . ') ', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Person Report ' . $branchname , 'B,T', 1, 'L');
         $pdf->ln(1);
 
         if ($request->salesperson != "all") {

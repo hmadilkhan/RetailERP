@@ -59,37 +59,6 @@
                         <td>{{ $order->total_amount }}</td>
                         <td>{{ $order->itemcount }}/{{ $order->itemstotalqty }}</td>
                         <td>{{ !empty($order->provider_name) ? $order->provider_name : '-' }}</td>
-                        {{-- <td>
-                            <i onclick='showOrderDetails("{{ $order->id }}")'
-                                class='icofont icofont icofont-eye-alt icofont-1x text-info' data-toggle='tooltip'
-                                data-placement='top' title='' data-original-title='Show Order Details'></i>
-                            @if (session('roleId') != 20 && session('roleId') != 19)
-                                <i onclick='showReceipt("{{ $order->receipt_no }}")'
-                                    class='icofont icofont icofont-printer text-success' data-toggle='tooltip'
-                                    data-placement='top' title='' data-original-title='Show Receipt'></i>
-                                <i onclick='assignToServiceProviderModal("{{ $order->id }}")'
-                                    class='icofont icofont icofont-business-man' data-toggle='tooltip'
-                                    data-placement='top' title=''
-                                    data-original-title='Assign To Service Provider'></i>
-                            @endif
-                            @if ($order->status != 12 && (session('roleId') != 20 && session('roleId') != 19))
-                                <i onclick='voidReceipt("{{ $order->id }}")'
-                                    class='alert-confirm text-danger icofont icofont icofont-delete-alt'
-                                    data-toggle='tooltip' data-placement='top' title=''
-                                    data-original-title='Mark as Void'></i>
-                            @endif
-                            @if ($order->status != 4 && session('roleId') != 20 && session('roleId') != 19)
-                                <i onclick='deliveredReceipt("{{ $order->id }}")'
-                                    class='alert-confirm text-success icofont icofont icofont-tick-mark'
-                                    data-toggle='tooltip' data-placement='top' title=''
-                                    data-original-title='Mark as Delivered'></i>
-                            @endif
-                            @if (session('roleId') == 20 && $order->status == 6)
-                                <i onclick='assignToBranchModal("{{ $order->id }}")'
-                                    class='icofont icofont icofont-business-man' data-toggle='tooltip'
-                                    data-placement='top' title='' data-original-title='Assign to Branch'></i>
-                            @endif
-                        </td> --}}
                         <td>
                             <!-- Large button groups (default and split) -->
                             <div class="btn-group border border-black">
@@ -100,24 +69,34 @@
                                 <ul class="dropdown-menu px-2">
                                     <li onclick='showOrderDetails("{{ $order->id }}")'><a class="dropdown-item"><i
                                                 onclick='showOrderDetails("{{ $order->id }}")'
-                                                class='icofont icofont icofont-eye-alt icofont-1x text-info mx-2'
+                                                class='icofont icofont-eye-alt icofont-1x text-info mx-2'
                                                 data-toggle='tooltip' data-placement='top' title=''
                                                 data-original-title='Show Order Details'></i>Show Order Details</a></li>
                                     @if (session('roleId') != 20 && session('roleId') != 19)
                                         <li onclick='showReceipt("{{ $order->receipt_no }}")'><a
                                                 class="dropdown-item"><i
                                                     onclick='showReceipt("{{ $order->receipt_no }}")'
-                                                    class='icofont icofont icofont-printer text-success mx-2'
+                                                    class='icofont icofont-printer text-success mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
                                                     data-original-title='Show Receipt'></i>Show Receipt </a></li>
                                         <li onclick='assignToServiceProviderModal("{{ $order->id }}")'><a
                                                 class="dropdown-item"><i
                                                     onclick='assignToServiceProviderModal("{{ $order->id }}")'
-                                                    class='icofont icofont icofont-business-man mx-2'
-                                                    data-toggle='tooltip' data-placement='top' title=''
+                                                    class='icofont icofont-business-man mx-2' data-toggle='tooltip'
+                                                    data-placement='top' title=''
                                                     data-original-title='Assign To Service Provider'></i>Assign To
                                                 Service
                                                 Provider </a></li>
+                                        @if (empty($order->provider_name) && $order->provider_name == '')
+                                            <li
+                                                onclick='assignSalesPerson("{{ $order->id }}","{{ $order->branch }}")'>
+                                                <a class="dropdown-item"><i
+                                                        onclick='assignSalesPerson("{{ $order->id }}","{{ $order->branch }}")'
+                                                        class='icofont icofont-business-man mx-2' data-toggle='tooltip'
+                                                        data-placement='top' title=''
+                                                        data-original-title='Assign Sales Person'></i>Assign Sales
+                                                    Person </a></li>
+                                        @endif
                                     @endif
                                     @if ($order->status != 12 && (session('roleId') != 20 && session('roleId') != 19))
                                         <li onclick='voidReceipt("{{ $order->id }}")'><a class="dropdown-item"><i

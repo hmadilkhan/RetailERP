@@ -9,12 +9,14 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderConfirmed extends Mailable
+class OrderCancel extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $customerName;
     public $orderNumber;
+    public $orderDate;
+    public $orderPaymentMethod;
     public $itemsList;
     public $orderAmount;
     public $advancePaymentAmount;
@@ -34,6 +36,8 @@ class OrderConfirmed extends Mailable
     {
         $this->customerName = $customer->name;
         $this->orderNumber = $order->number;
+        $this->orderDate = date("d M Y",strtotime($order->date));
+        $this->orderPaymentMethod = $order->payment->payment_mode;
         $this->itemsList =$order->orderdetails; // Assuming it's a list of items
         $this->orderAmount = $order->total_amount;
         $this->advancePaymentAmount = $order->orderAccount->receive_amount;
@@ -53,7 +57,7 @@ class OrderConfirmed extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Order Confirmed - Your Kashees Jewellery Order is Now Being Processed',
+            subject: 'Order Canceled - Important Update on Your Kashees Jewellery Order',
         );
     }
 
@@ -63,7 +67,7 @@ class OrderConfirmed extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.order_confirmed',
+            view: 'emails.order_cancelled',
         );
     }
 
@@ -77,18 +81,15 @@ class OrderConfirmed extends Mailable
         return [];
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
     public function build()
     {
-        return $this->view('emails.order_confirmed')
-            ->subject('Order Confirmed – Your Kashees Jewellery Order is Now Being Processed')
+        return $this->view('emails.order_cancelled')
+            ->subject('Order Canceled - Important Update on Your Kashees Jewellery Order')
             ->with([
                 'customerName' => $this->customerName,
                 'orderNumber' => $this->orderNumber,
+                'orderDate' => $this->orderDate,
+                'orderPaymentMethod' => $this->orderPaymentMethod,
                 'itemsList' => $this->itemsList,
                 'orderAmount' => $this->orderAmount,
                 'advancePaymentAmount' => $this->advancePaymentAmount,
