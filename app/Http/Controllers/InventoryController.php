@@ -2667,12 +2667,13 @@ class InventoryController extends Controller
 
         if (!empty($request->productImage)) {
             $request->validate([
-                'image' => 'image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
+                'image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
             ]);
-
-            $pname = str_replace(' ', '', $request->item_name);
-            $imageName = $pname . '.' . $request->productImage->getClientOriginalExtension();
-            $request->productImage->move(public_path('assets/images/products/'), $imageName);
+            $getImageName = $this->uploads($request->productImage, "images/products/");
+            $imageName = !empty($getImageName) ? $getImageName['fileName'] : null;
+            // $pname = str_replace(' ', '', $request->item_name);
+            // $imageName = $pname . '.' . $request->productImage->getClientOriginalExtension();
+            // $request->productImage->move(public_path('assets/images/products/'), $imageName);
         }
         $items = [
             'item_code' => $request->item_code,
@@ -2732,8 +2733,8 @@ class InventoryController extends Controller
                         $pname     = strtolower(str_replace(' ', '', $getPosProduct->item_name));
                         $imageName = $pname . '-' . $val . '.' . pathinfo($getPosProduct->image, PATHINFO_EXTENSION);
 
-                        if (File::exists(public_path('assets/images/products') . '/' . $getPosProduct->image)) {
-                            File::move(public_path('assets/images/products') . '/' . $getPosProduct->image, public_path('assets/images/products') . '/' . $imageName);
+                        if (File::exists('storage/images/products/'.$getPosProduct->image)) {
+                            File::move('storage/images/products/'.$getPosProduct->image, 'storage/images/products/'.$imageName);
                         }
                     }
 
@@ -2803,23 +2804,24 @@ class InventoryController extends Controller
                 // 			]);	
 
                 $validator = Validator::make($request->all(), [
-                    'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100'
+                    'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024'
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['status' => 500, 'msg' => 'product image accept only this file format {jpg,pngjpeg} ', 'control' => 'item_image_vpmd']);
+                    return response()->json(['status' => 500, 'msg' => 'product image accept only this file format {jpg,png,jpeg,webp} ', 'control' => 'item_image_vpmd']);
                 }
 
                 if ($request->prevImageName != "") {
-                    $file_path = public_path('assets/images/products/' . $request->prevImageName);
-                    if (file_exists($file_path)) {
-                        unlink($file_path);
+                    $file_path = 'storage/images/products/'.$request->prevImageName;
+                    if (File::exists($file_path)) {
+                        File::delete($file_path);
                     }
                 }
-
-                $pname = str_replace(' ', '', $request->item_name);
-                $imageName = time() . '.' . $request->item_image->getClientOriginalExtension();
-                $request->item_image->move(public_path('assets/images/products/'), $imageName);
+               $getImage = $this->upload($request->item_image,'storage/images/products/',$request->prevImageName);
+               $imageName = !empty($getImage) ? $getImage['fileName'] : null;
+                // $pname = str_replace(' ', '', $request->item_name);
+                // $imageName = time() . '.' . $request->item_image->getClientOriginalExtension();
+                // $request->item_image->move(public_path('assets/images/products/'), $imageName);
             }
 
             $items = [
