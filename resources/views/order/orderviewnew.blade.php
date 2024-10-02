@@ -133,7 +133,7 @@
                         <select id="branch" name="branch" data-placeholder="Select Branch" class="f-right select2"
                             multiple>
                             {{-- @if (session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19) --}}
-                                <option selected value="all">All</option>
+                            <option selected value="all">All</option>
                             {{-- @endif --}}
                             @foreach ($branch as $value)
                                 <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
@@ -162,7 +162,7 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                             <label class="form-control-label">Select Sales Tax</label>
                             <select id="sales_tax" name="sales_tax" data-placeholder="Select Sales Tax"
                                 class="f-right select2">
@@ -172,7 +172,7 @@
                             </select>
                         </div>
 
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
+                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                             <label class="form-control-label">Select Sales Person</label>
                             <select id="orderserviceprovider" name="orderserviceprovider"
                                 data-placeholder="Select Sales Person" class="f-right select2">
@@ -184,16 +184,16 @@
                             </select>
                         </div>
 
-                        @endif
-                        <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" >
-                            <label class="form-control-label">Select Type</label>
-                            <select id="type" name="type" data-placeholder="Select Type"
-                                {{ in_array(session('roleId'), [19, 20]) ? 'disabled' : '' }} class="f-right select2">
-                                <option value="declaration">Declaration</option>
-                                <option {{ in_array(session('roleId'), [19, 20]) ? 'selected' : '' }} value="datewise">
-                                    Datewise</option>
-                            </select>
-                        </div>
+                    @endif
+                    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
+                        <label class="form-control-label">Select Type</label>
+                        <select id="type" name="type" data-placeholder="Select Type"
+                            {{ in_array(session('roleId'), [19, 20]) ? 'disabled' : '' }} class="f-right select2">
+                            <option value="declaration">Declaration</option>
+                            <option {{ in_array(session('roleId'), [19, 20]) ? 'selected' : '' }} value="datewise">
+                                Datewise</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -345,6 +345,36 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade modal-flex in" id="sales-person-modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 id="mod-title" class="modal-title">Select Sales Person</h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <input type="hidden" id="orderid" name="orderid" />
+                                <div class="col-md-12">
+                                    <label class="form-control-label">Select Sales Person</label>
+                                    <select id="salespersonmodal" name="salespersonmodal"
+                                        data-placeholder="Select Sales Person" class="f-right select2">
+                                        <option value="">Select Sales Person</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" id="btn_assign_sp"
+                                class="btn btn-success waves-effect waves-light">Assign</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="modal fade modal-flex in" id="assign-modal" tabindex="-1" role="dialog"
                 style="overflow-y:auto;">
                 <div class="modal-dialog modal-md" role="document">
@@ -577,6 +607,15 @@
             $("#orderidforsp").val(receiptId);
         }
 
+        function assignSalesPerson(receiptId, branch) {
+            $('#sales-person-modal').modal("show");
+            $("#salespersonmodal").select2({
+                dropdownParent: $('#sales-person-modal')
+            });
+            $("#orderid").val(receiptId);
+            getServiceProviderByBranch(branch, "#salespersonmodal");
+        }
+
 
 
         function assignToBranchModal(receiptId) {
@@ -608,6 +647,33 @@
                         if (result.status == 200) {
                             $('#sp-modal').modal("hide");
                             location.reload();
+                        }
+                    }
+                });
+            }
+        })
+
+
+        $("#btn_assign_sp").click(function() {
+            let sp = $("#salespersonmodal").val();
+            let receiptId = $("#orderid").val();
+            if (sp == "") {
+                alert("Please Select Sales Person")
+            } else {
+                $.ajax({
+                    url: "{{ url('/assign-sales-person') }}",
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        receiptId: receiptId,
+                        sp: sp,
+                    },
+                    dataType: 'json',
+                    success: function(result) {
+                        console.log(result);
+                        if (result.status == 200) {
+                            $('#sales-person-modal').modal("hide");
+                            fetch_data(1);
                         }
                     }
                 });
@@ -682,7 +748,7 @@
 
         $("#branch").change(function() {
             getTerminal();
-            getServiceProviderByBranch();
+            getServiceProviderByBranch($("#branch").val(), "#orderserviceprovider");
             clearAllFromControl($(this).val(), 'branch');
         })
 
@@ -752,23 +818,24 @@
             });
         }
 
-        function getServiceProviderByBranch() {
+        function getServiceProviderByBranch(branch, controlId) {
+            // let branch = (branch != "" ? $("#branch").val() : branch);
             $.ajax({
                 url: "{{ route('sp.branch') }}",
                 type: 'POST',
                 dataType: 'json',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    branch: $("#branch").val(),
+                    branch: branch,
                 },
                 success: function(result) {
                     console.log("Fetching Providers", result);
-                    $('#loader').addClass('hidden')
                     if (result != 0) {
-                        $("#orderserviceprovider").empty();
-                        $("#orderserviceprovider").append('<option value="all">All</option>');
+                        $(controlId).empty();
+                        $(controlId).append('<option value="all">All</option>');
                         $.each(result.providers, function() {
-                            $("#orderserviceprovider").append('<option value="' + this.serviceprovideruser.user_id + '"+>' + this
+                            $(controlId).append('<option value="' + this.serviceprovideruser.user_id +
+                                '"+>' + this
                                 .provider_name + '</option>');
                         });
                     }

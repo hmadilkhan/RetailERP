@@ -19,6 +19,7 @@ use App\Models\Company;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
+use App\Models\ServiceProviderRelation;
 use App\Services\OrderService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -579,6 +580,28 @@ class OrderController extends Controller
             return DB::table("sales_receipts")->where("receipt_no", $request->receiptNo)->update(["isSeen" => 0, "is_notify" => 0]);
         } else {
             return 0;
+        }
+    }
+
+    public function assignSalesPerson(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            $order = OrderModel::where("id", $request->receiptId)->first();
+            $order->sales_person_id = $request->sp;
+            $order->save();
+            $provider = ServiceProviderRelation::where("user_id",$request->sp)->first();
+            if (!empty($provider)) {
+                ServiceProviderOrders::create([
+                    "service_provider_id" => $provider->provider_id,
+                    "receipt_id" => $request->receiptId,
+                ]);
+            }
+            DB::commit();
+            return response()->json(["status" => 200,"message" => "Sales Person assigned"]);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(["status" => 500,"message" => "Error: ".$th->getMessage()]);
         }
     }
 

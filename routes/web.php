@@ -590,6 +590,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/order-change-status', [OrderController::class, 'changeOrderStatuswithLogs']);
     Route::post('/order-seen', [OrderController::class, 'orderSeen']);
     Route::post('/assign-service-provider', [OrderController::class, 'assignServiceProvider']);
+    Route::post('/assign-sales-person', [OrderController::class, 'assignSalesPerson']);
     Route::get('/orders-view-new', [OrderController::class, 'ordersviewnew']);
     Route::get('/get-pos-orders-new', [OrderController::class, 'getNewPOSOrders']);
     Route::post('/make-receipt-void', [OrderController::class, 'makeReceiptVoid']);

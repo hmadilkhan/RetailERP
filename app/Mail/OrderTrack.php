@@ -9,13 +9,15 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class OrderConfirmed extends Mailable
+class OrderTrack extends Mailable
 {
     use Queueable, SerializesModels;
 
     public $customerName;
     public $orderNumber;
     public $itemsList;
+    public $orderDate;
+    public $orderPaymentMethod;
     public $orderAmount;
     public $advancePaymentAmount;
     public $remainingAmount;
@@ -30,11 +32,13 @@ class OrderConfirmed extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($order, $customer,$logo)
+    public function __construct($order, $customer, $logo)
     {
         $this->customerName = $customer->name;
         $this->orderNumber = $order->number;
-        $this->itemsList =$order->orderdetails; // Assuming it's a list of items
+        $this->orderDate = date("d M Y", strtotime($order->date));
+        $this->orderPaymentMethod = $order->payment->payment_mode;
+        $this->itemsList = $order->orderdetails; // Assuming it's a list of items
         $this->orderAmount = $order->total_amount;
         $this->advancePaymentAmount = $order->orderAccount->receive_amount;
         $this->remainingAmount = $order->remaining_amount;
@@ -53,7 +57,7 @@ class OrderConfirmed extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Order Confirmed - Your Kashees Jewellery Order is Now Being Processed',
+            subject: 'Your Kashees Jewellery Order is Ready for Delivery - Track Your Shipment',
         );
     }
 
@@ -63,7 +67,7 @@ class OrderConfirmed extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.order_confirmed',
+            view: 'emails.order_tracking',
         );
     }
 
@@ -77,18 +81,15 @@ class OrderConfirmed extends Mailable
         return [];
     }
 
-    /**
-     * Build the message.
-     *
-     * @return $this
-     */
     public function build()
     {
-        return $this->view('emails.order_confirmed')
-            ->subject('Order Confirmed – Your Kashees Jewellery Order is Now Being Processed')
+        return $this->view('emails.order_pending')
+            ->subject('Your Kashees Jewellery Order is Ready for Delivery - Track Your Shipment')
             ->with([
                 'customerName' => $this->customerName,
                 'orderNumber' => $this->orderNumber,
+                'orderDate' => $this->orderDate,
+                'orderPaymentMethod' => $this->orderPaymentMethod,
                 'itemsList' => $this->itemsList,
                 'orderAmount' => $this->orderAmount,
                 'advancePaymentAmount' => $this->advancePaymentAmount,
