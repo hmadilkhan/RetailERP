@@ -80,8 +80,11 @@
                         <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'no-image.jpg' }}">
                           <img width="64" height="64" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'no-image.jpg' }}">
                         </a>                        
+                    @else
+                        <a href="{{ asset('storage/images/no-image.jpg') }}" data-fancybox data-caption="no-image.jpg">
+                          <img width="64" height="64" src="{{ asset('storage/images/no-image.jpg') }}" class="d-inline-block img-circle " alt="no-image.jpg">
+                         </a>  
                     @endif
-                  @endif
               @endforeach
             @else
             <a href="{{ asset('storage/images/no-image.jpg') }}" data-fancybox data-caption="no-image.jpg">
