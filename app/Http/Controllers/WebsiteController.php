@@ -1628,6 +1628,7 @@ class WebsiteController extends Controller
     public function getCustomer_reviews(Request $request){
         $data = [];
         if(isset($request->id)){
+            $data["websiteId"] = $request->id;
             $data["reviews"] = DB::table('website_customer_reviews')
                                         ->join('website_details','website_details.id','website_customer_reviews.website_id')
                                         ->where('website_customer_reviews.website_id',$request->id)

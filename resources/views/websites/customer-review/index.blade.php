@@ -17,7 +17,7 @@
          <div class="alert alert-success">{{ Session::get('success') }}</div>
     @endif
 
-  @php $url_parameter_webId = Request::has('id')  ? Request::get('id')  : null; @endphp
+  @php $url_parameter_webId = isset($websiteId) ?? null; @endphp
     <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Filter</h5>
