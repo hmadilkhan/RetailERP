@@ -4366,9 +4366,9 @@ class ReportController extends Controller
         $totalReports = DB::table("fbr_details")
             ->join("branch", "branch.branch_id", "=", "fbr_details.branch_id")
             ->join("company", "company.company_id", "=", "branch.company_id")
-            ->select("branch.branch_id", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
+            ->select("branch.branch_id","branch.branch_email", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
             ->where("fbr_details.status", 1)->get();
-
+        
         foreach ($totalReports as $report) {
             $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
@@ -4518,14 +4518,14 @@ class ReportController extends Controller
 
     public function sendSingleEmail($from, $report, $reportname, $file)
     {
-        $data["email"] =  "faizanakramkhanfaizan@gmail.com";
+        $data["email"] =  $report->branch_email;
         $data["title"] =  $reportname;
         $data["body"]  =  $report;
         $data["from"]  =  $from;
 
         Mail::send('emails.automaticemail', $data, function ($message) use ($data, $file) {
             $message->to($data["email"], "Sabify")
-                ->cc(['hmadilkhan@gmail.com'])
+                ->cc(['faizanakramkhanfaizan@gmail.com'])
                 // ->cc(['adil.khan@sabsons.com.pk','faizan.akram@sabsons.com.pk'])
                 ->subject($data["title"]);
             $message->attach($file);
