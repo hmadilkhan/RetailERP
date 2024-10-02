@@ -520,7 +520,7 @@
                                 "<option value='"+resp[count].id+"'>"+resp[count].name+"</option>");
                         }
                         
-                        if(status == 500){
+                        if(JxStat.status == 500){
                              swal({
                                     title: "Error!",
                                     text: resp,
