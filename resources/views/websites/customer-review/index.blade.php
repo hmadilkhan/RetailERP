@@ -73,17 +73,20 @@
               @foreach($images as $img_val)
                 @php 
                   $image = asset('storage/images/no-image.jpg');
-
-                  if($img_val->review_id == $value->id){
-                    if(File::exists('storage/images/customer-reviews/'.$img_val->image)){
-                          $image = asset('storage/images/customer-reviews/'.$img_val->image);
-                    }
-                  }
-                @endphp  
-                <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
-                 <img width="64" height="64" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
-                </a>
+                @endphp
+                  @if($img_val->review_id == $value->id)
+                    @if(File::exists('storage/images/customer-reviews/'.$img_val->image))
+                        @php $image = asset('storage/images/customer-reviews/'.$img_val->image) @endphp
+                        <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'no-image.jpg' }}">
+                          <img width="64" height="64" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'no-image.jpg' }}">
+                        </a>                        
+                    @endif
+                  @endif
               @endforeach
+            @else
+            <a href="{{ asset('storage/images/no-image.jpg') }}" data-fancybox data-caption="no-image.jpg">
+              <img width="64" height="64" src="{{ asset('storage/images/no-image.jpg') }}" class="d-inline-block img-circle " alt="no-image.jpg">
+             </a>  
             @endif
           </td>
 				  <td>{{ $value->customer_name }} <br/> {{ $value->customer_email  }}</td>
