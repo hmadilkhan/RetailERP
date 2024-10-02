@@ -2677,7 +2677,7 @@ class InventoryController extends Controller
         }
         $items = [
             'item_code' => $request->item_code,
-            'priority'  => $request->item_priority,
+            'priority'  => empty($request->item_priority) ?? 0,
             'attribute' => $request->attribute,
             'item_name' => $request->item_name,
             'product_id' => $request->finishgood,
