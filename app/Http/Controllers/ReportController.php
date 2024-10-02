@@ -1110,7 +1110,14 @@ class ReportController extends Controller
     //Profit & Loss Standard Report
     public function profitLossStandardReport(Request $request, Vendor $vendor, Report $report)
     {
+        $branchname = "";
 
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
 
         $company = $vendor->company(session('company_id'));
         $totalBalance = 0;
@@ -1194,7 +1201,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Profit & Loss', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Profit & Loss (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
 
@@ -1334,7 +1341,14 @@ class ReportController extends Controller
     //Profit & Loss Details Report
     public function profitLossDetailsReport(Request $request, Vendor $vendor, Report $report)
     {
+        $branchname = "";
 
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
 
         $company = $vendor->company(session('company_id'));
         $totalBalance = 0;
@@ -1424,7 +1438,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Profit & Loss Details', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Profit & Loss Details (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -1811,10 +1825,16 @@ class ReportController extends Controller
     //inventory summary report
     public function inventoryReport(Request $request, Vendor $vendor, Report $report)
     {
-
-
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
@@ -1874,7 +1894,7 @@ class ReportController extends Controller
         $pdf->ln(15);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Stock Summary', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Stock Summary (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
@@ -1935,39 +1955,19 @@ class ReportController extends Controller
         $pdf->Output('Stock Report.pdf', 'I');
     }
 
-    public function pdfTest()
-    {
-
-        return view("Test.test");
-        // instantiate and use the dompdf class
-        $dompdf = new Dompdf();
-        $dompdf->loadHtml('<style type="text/css">
-		@font-face {
-    font-family: "Jameel-Noori-Nastaleeq";
-    src: url({{ storage_path("fonts\Jameel-Noori-Nastaleeq.ttf") }}) format("truetype");
-    font-weight: 400; // use the matching font-weight here ( 100, 200, 300, 400, etc).
-    font-style: normal; // use the matching font-style here
-} 
-    body { font-family: "Jameel-Noori-Nastaleeq"; }
-</style>بِسْمِ اللهِ الرَّحْمنِ الرَّحِيمِ', "UTF-8");
-
-        // (Optional) Setup the paper size and orientation
-        $dompdf->setPaper('A4', 'landscape');
-
-        // Render the HTML as PDF
-        $dompdf->render();
-
-        // Output the generated PDF to Browser
-        $dompdf->stream();
-    }
-
     //inventory details report
     public function inventory_detailsPDF(Request $request, Vendor $vendor, Report $report)
     {
-
-
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
@@ -2034,7 +2034,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Inventory Details', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Inventory Details (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -2207,8 +2207,7 @@ class ReportController extends Controller
     {
         $company = $expense->company(session('company_id'));
         //get expense details
-        $expenses = $report->expenses_details($request->fromdate, $request->todate);
-
+        $expenses = $report->expenses_details($request->fromdate, $request->todate, $request->branch);
 
 
         $pdf = new pdfClass();
@@ -2317,6 +2316,15 @@ class ReportController extends Controller
     {
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
+
         $pdf = app('Fpdf');
         $pdf->AliasNbPages();
         $pdf->AddPage(['L', 'mm', array(100, 150)]);
@@ -2380,7 +2388,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(275, 10, 'Sales Decleration Report', 'B,T', 1, 'L');
+        $pdf->Cell(275, 10, 'Sales Decleration Report (' . $branchname . ') ', 'B,T', 1, 'L');
 
 
         $pdf->SetFont('Arial', 'B', 10);
@@ -2638,6 +2646,15 @@ class ReportController extends Controller
     {
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
+
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
             \QrCode::size(200)
@@ -2702,7 +2719,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'FBR Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'FBR Report (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -2815,6 +2832,15 @@ class ReportController extends Controller
     {
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
+
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
             \QrCode::size(200)
@@ -2879,7 +2905,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Invoice Detail Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Invoice Detail Report (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         //total variables
@@ -3055,6 +3081,15 @@ class ReportController extends Controller
     {
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
+
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
             \QrCode::size(200)
@@ -3118,7 +3153,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Invoice Details Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Invoice Details Report (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         //total variables
@@ -3350,6 +3385,15 @@ class ReportController extends Controller
     {
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
+
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
             \QrCode::size(200)
@@ -3414,7 +3458,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Item Sale Database', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Item Sale Database (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
         if ($request->terminalid != 0) {
             // $pdf->SetFont('Arial', 'B', 12);
@@ -3769,9 +3813,16 @@ class ReportController extends Controller
     //Sale Return  report
     public function salesreturnpdf(Request $request, Vendor $vendor, Report $report)
     {
-
-
         $company = $vendor->company(session('company_id'));
+
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
 
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
@@ -3838,7 +3889,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Return Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Return Report (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -3927,6 +3978,14 @@ class ReportController extends Controller
 
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
@@ -3992,7 +4051,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Order Booking Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Order Booking Report (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -4310,12 +4369,11 @@ class ReportController extends Controller
             ->select("branch.branch_id", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
             ->where("fbr_details.status", 1)->get();
 
-        echo "Generating Emails";
         foreach ($totalReports as $report) {
             $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
-        echo "Email Sending";
-        $this->sendEmail("2024-09-01", $report, "FBR Report");
+        // echo "Email Sending";
+        // $this->sendEmail("2024-09-01", $report, "FBR Report");
         return 1;
     }
 
@@ -4455,7 +4513,23 @@ class ReportController extends Controller
         array_push($this->filesArray, storage_path('app/public/pdfs/' . $fileName));
         // //save file
         $pdf->Output($filePath, 'F');
-        // $this->sendEmail($from, $report);
+        $this->sendSingleEmail("2024-09-01", $report, "FBR Report", $filePath);
+    }
+
+    public function sendSingleEmail($from, $report, $reportname, $file)
+    {
+        $data["email"] =  "faizanakramkhanfaizan@gmail.com";
+        $data["title"] =  $reportname;
+        $data["body"]  =  $report;
+        $data["from"]  =  $from;
+
+        Mail::send('emails.automaticemail', $data, function ($message) use ($data, $file) {
+            $message->to($data["email"], "Sabify")
+                ->cc(['hmadilkhan@gmail.com'])
+                // ->cc(['adil.khan@sabsons.com.pk','faizan.akram@sabsons.com.pk'])
+                ->subject($data["title"]);
+            $message->attach($file);
+        });
     }
 
     public function sendEmail($from, $report, $reportname)
@@ -4887,6 +4961,14 @@ class ReportController extends Controller
 
         $company = $vendor->company(session('company_id'));
 
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
@@ -4945,7 +5027,7 @@ class ReportController extends Controller
         $pdf->ln(15);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Inventory Details', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Inventory Details (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
@@ -5094,7 +5176,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Person Report ' . $branchname, 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Person Report (' . $branchname . ') ', 'B,T', 1, 'L');
         $pdf->ln(1);
 
         if ($request->salesperson != "all") {
