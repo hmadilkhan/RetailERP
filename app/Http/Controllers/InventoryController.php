@@ -27,6 +27,7 @@ use Config;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Str;
 use Image, File, Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
