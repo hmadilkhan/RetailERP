@@ -3739,4 +3739,18 @@ class InventoryController extends Controller
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
+
+
+    public function imageOptimize(Request $request){
+        if(!empty($request->image)){
+               return $this->imageOptimize('/images/products/'.$request->image);
+        }
+
+        $headers = array(
+                          'Content-Type'        => 'image/png',
+                          'Content-Description' => 'no-image.png'
+                        ); 
+
+        return response()->file('https://retail.sabsoft.com.pk/storage/images/no-image.png', $headers);  
+    }
 }

@@ -1040,3 +1040,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/opening-closing', 'OpeningClosingController@index')->name("opening.closing");
     /******************************* OPENING CLOSING ENDS HERE **********************************/
 });
+
+
+// optimize image link
+Route::get('image-optimize/{image}', [InventoryController::class, 'imageOptimize'])->name("imageOptimize"); 

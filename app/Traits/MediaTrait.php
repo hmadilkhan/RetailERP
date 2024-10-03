@@ -67,9 +67,10 @@ trait MediaTrait
         }
     }
 
-    public function imageOptimize($image){
+    public function imageOptimize($path){
             // Create a new Image instance
-            $img = Image::make($image->getRealPath());
+            $imageContent = Storage::disk('public')->get($path);
+            $img = Image::make($imageContent);
     
             // Resize and optimize the image
             $img->resize(800, null, function ($constraint) {
