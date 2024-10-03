@@ -30,7 +30,7 @@ use Image, File, Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+// use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 
 class InventoryController extends Controller
