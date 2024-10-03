@@ -14,8 +14,8 @@ class ListAdjustment extends Component
 
     #[Title("Stock Adjustment")]
 
-    public $from = '2024-09-01';
-    public $to = '2024-09-30';
+    public $from = '';
+    public $to = '';
     public $code = '';
     public $name = '';
     public $branch = '';
