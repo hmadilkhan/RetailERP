@@ -69,35 +69,28 @@
                             <th>Qty</th>
                             {{-- <th>Stock</th> --}}
                             <th>Created By</th>
-                            <th>Narration</th>
-                            <th>Action</th>
+                            {{-- <th>Narration</th> --}}
+                            {{-- <th>Action</th> --}}
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @if (!empty($stocks))
+                        @if (!empty($stocks))
                             @foreach ($stocks as $stock)
                                 <tr>
-                                    <td>{{ $stock->productstock->grn_id }}</td>
-                                    <td>{{ date('d-m-Y', strtotime($stock->date)) }}</td>
-                                    <td>{{ $stock->products->item_code }}</td>
-                                    <td>{{ $stock->products->product_name }}</td>
-                                    <td>{{ $stock->qty }}</td>
-                                    <td>{{ $stock->productstock->grn->user->fullname }}</td>
-                                    <td>{{ $stock->narration }}</td>
-                                    <td>
-                                        <a target="_blank"
-                                            href="{{ route('stock.adjustment.voucher', $stock->productstock->grn_id) }}"
-                                            class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top"
-                                            title="" data-original-title="View"><i
-                                                class="icofont icofont-printer"></i></a>
-                                    </td>
+                                    <td>{{ $stock->product_id }}</td>
+                                    <td>{{ $stock->opening_date }}</td>
+                                    <td>{{ $stock->sales}}</td>
+                                    <td>{{ $stock->opening_stock }}</td>
+                                    <td>{{ $stock->closing_date }}</td>
+                                    <td>{{ $stock->closing_stock }}</td>
+
                                 </tr>
                             @endforeach
                         @else
                             <tr>
                                 <td colspan="8">No record found</td>
                             </tr>
-                        @endif --}}
+                        @endif
                     </tbody>
                 </table>
             </div>

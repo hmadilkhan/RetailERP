@@ -42,8 +42,8 @@ class StockReport extends Component
 
     public function render(BranchService $branchService,StockAdjustmentService $stockAdjustmentService)
     {
-        dd($stockAdjustmentService->stockReport());
+        $stocks = $stockAdjustmentService->stockReport();
         $branches = $branchService->getBranches();
-        return view('livewire.stock-report',compact('branches'));
+        return view('livewire.stock-report',compact('branches','stocks'));
     }
 }
