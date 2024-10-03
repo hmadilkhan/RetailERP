@@ -3748,7 +3748,7 @@ class InventoryController extends Controller
 
              // Create a new Image instance
              $imageContent = Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image);
-             $img = Image::make($imageContent);
+             $img = Image::make('https://retail.sabsoft.com.pk/image-optimize/1727867687-1726240292-ker-003.jpg');
      
              // Resize and optimize the image
              $img->resize(800, null, function ($constraint) {
