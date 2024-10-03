@@ -30,6 +30,7 @@ use Image, File, Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 
 class InventoryController extends Controller
@@ -3748,13 +3749,19 @@ class InventoryController extends Controller
 
              // Create a new Image instance
              $imageContent = Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image);
-             $img = Image::make('https://retail.sabsoft.com.pk/image-optimize/1727867687-1726240292-ker-003.jpg');
+
+             $headers = array(
+                'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
+                'Content-Description' => $request->image
+              );
+            return  response()->file(ImageOptimizer::optimize($imageContent),);
+            //  $img = Image::make($imageContent);
      
              // Resize and optimize the image
-             $img->resize(800, null, function ($constraint) {
-                 $constraint->aspectRatio();
-                 $constraint->upsize();
-             });
+            //  $img->resize(800, null, function ($constraint) {
+            //      $constraint->aspectRatio();
+            //      $constraint->upsize();
+            //  });
      
              // Return the optimized image as a response
       return $img->response('webp', 85); // Adjust the format and quality as needed              
