@@ -484,7 +484,7 @@
    $("#btn_attr_create").on('click',function(){
         $('#attribute_txt').val('');
         $("#create-attribute-modal").modal("show");
-        alert(0)
+        // alert(0)
     });	
     
    function add_attribute(){
@@ -507,8 +507,8 @@
                     value:$('#attribute_txt').val(),
                   },
 
-                    success:function(resp,status){
-                        if(status == 200){
+                    success:function(resp,txtstatus,JxStat){
+                        if(JxStat.status == 200){
                              swal({
                                     title: "Operation Performed",
                                     text: "Unit of Measure Added Successfully!",
@@ -520,7 +520,7 @@
                                 "<option value='"+resp[count].id+"'>"+resp[count].name+"</option>");
                         }
                         
-                        if(status == 500){
+                        if(JxStat.status == 500){
                              swal({
                                     title: "Error!",
                                     text: resp,
