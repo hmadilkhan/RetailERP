@@ -3748,7 +3748,7 @@ class InventoryController extends Controller
             //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
 
              // Create a new Image instance
-             $imageContent = Storage::disk('public')->get('/images/products/kasheesjewellery/'.$request->image);
+             $imageContent = Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image);
 
              $headers = array(
                 'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
