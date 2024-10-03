@@ -52,7 +52,7 @@ class StockAdjustmentService
         return DB::select("SELECT 
                             product_id,
                             MIN(Date(created_at)) AS opening_date,
-                            (SELECT SUM(total_qty) FROM `sales_receipt_details` where receipt_id IN (Select id from sales_receipts where opening_id IN ( Select opening_id from sales_opening where date between  '2024-09-23' AND '2024-09-30') and branch = 283 ) and item_code = product_id) as sales,
+                            (SELECT SUM(total_qty) FROM `sales_receipt_details` where receipt_id IN (Select id from sales_receipts where opening_id IN ( Select opening_id from sales_opening where date between  '2024-09-23' AND '2024-09-24') and branch = 283 ) and item_code = product_id) as sales,
                             (SELECT opening_stock FROM daily_stock ds2 
                             WHERE ds2.product_id = ds1.product_id 
                             AND Date(ds2.created_at) = MIN(Date(ds1.created_at))) AS opening_stock,
@@ -64,7 +64,7 @@ class StockAdjustmentService
                         FROM 
                             daily_stock ds1
                         WHERE 
-                            Date(created_at) BETWEEN '2024-09-23' AND '2024-09-30'  -- Replace with the date range
+                            Date(created_at) BETWEEN '2024-09-23' AND '2024-09-24'  -- Replace with the date range
                         AND
                             branch_id = 283
                         GROUP BY 
