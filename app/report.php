@@ -414,7 +414,7 @@ class report extends Model
 		IFNULL((SELECT SUM(coupon) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id )),0) as coupon,
 		IFNULL((SELECT SUM(sales_tax_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id )),0) as sale_tax,
 		IFNULL((SELECT SUM(service_tax_amount) FROM sales_account_subdetails where receipt_id IN(Select id from sales_receipts where opening_id = a.opening_id )),0) as service_tax,
-        (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 1) AS order_delivered_cash,
+        (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 1) AS order_delivered_cash
 		FROM sales_opening a where a.terminal_id = ? and a.date BETWEEN ? and ?", [$terminal, $fromdate, $todate]);
         return $result;
     }
