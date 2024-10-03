@@ -3754,7 +3754,7 @@ class InventoryController extends Controller
                 'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
                 'Content-Description' => $request->image
               );
-            return  response($imageContent,$headers);
+            return  $imageContent;
             //  $img = Image::make($imageContent);
      
              // Resize and optimize the image
