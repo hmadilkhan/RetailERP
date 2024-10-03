@@ -3743,7 +3743,7 @@ class InventoryController extends Controller
 
     public function imageOptimize(Request $request){
         if(!empty($request->image)){
-               return $this->imageOptimize('/images/products/'.$request->image);
+               return $this->imageOptimize('/images/products/kasheesjewellery/'.$request->image);
         }
 
         $headers = array(
