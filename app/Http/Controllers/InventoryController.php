@@ -184,7 +184,7 @@ class InventoryController extends Controller
             // if (!in_array(session('company_id'), [95, 102, 104]) && !in_array(Auth::user()->username,['demoadmin','fnkhan'])) {
 
                     $request->validate([
-                        'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024',
+                        'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
                     ]);
             // }
 
@@ -949,7 +949,7 @@ class InventoryController extends Controller
             // if (!in_array(session('company_id'),[95, 102, 104]) && !in_array(Auth::user()->username,['demoadmin','fnkhan'])) {
 
                     $request->validate([
-                        'image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                        'image' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
                     ]);
             // }
 
@@ -2667,7 +2667,7 @@ class InventoryController extends Controller
 
         if (!empty($request->productImage)) {
             $request->validate([
-                'image' => 'image|mimes:jpeg,png,jpg,webp|max:1024',
+                'image' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
             ]);
             $getImageName = $this->uploads($request->productImage, "images/products/");
             $imageName = !empty($getImageName) ? $getImageName['fileName'] : null;
@@ -2804,7 +2804,7 @@ class InventoryController extends Controller
                 // 			]);	
 
                 $validator = Validator::make($request->all(), [
-                    'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:1024'
+                    'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120'
                 ]);
 
                 if ($validator->fails()) {
