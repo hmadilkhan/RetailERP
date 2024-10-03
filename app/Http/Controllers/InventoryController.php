@@ -3744,28 +3744,28 @@ class InventoryController extends Controller
 
 
     public function imageOptimize(Request $request){
-        if(!empty($request->image)){
-            //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
+    //     if(!empty($request->image)){
+    //         //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
 
-             // Create a new Image instance
-             $imageContent = Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image);
+    //          // Create a new Image instance
+    //          $imageContent = Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image);
 
-             $headers = array(
-                'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
-                'Content-Description' => $request->image
-              );
-            return  $imageContent;
-            //  $img = Image::make($imageContent);
+    //          $headers = array(
+    //             'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
+    //             'Content-Description' => $request->image
+    //           );
+    //         return  $imageContent;
+    //         //  $img = Image::make($imageContent);
      
-             // Resize and optimize the image
-            //  $img->resize(800, null, function ($constraint) {
-            //      $constraint->aspectRatio();
-            //      $constraint->upsize();
-            //  });
+    //          // Resize and optimize the image
+    //         //  $img->resize(800, null, function ($constraint) {
+    //         //      $constraint->aspectRatio();
+    //         //      $constraint->upsize();
+    //         //  });
      
-             // Return the optimized image as a response
-      return $img->response('webp', 85); // Adjust the format and quality as needed              
-        }
+    //          // Return the optimized image as a response
+    //   return $img->response('webp', 85); // Adjust the format and quality as needed              
+    //     }
 
         $headers = array(
                           'Content-Type'        => 'image/png',
