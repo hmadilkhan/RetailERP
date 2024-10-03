@@ -3748,7 +3748,7 @@ class InventoryController extends Controller
             //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
 
 
-             $img = Image::make(Storage::disk('public')->get('/images/products/kasheesjewellery/'.$request->image));
+             $img = Image::make(Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image));
      
             //  Resize and optimize the image
              $img->resize(800, null, function ($constraint) {
