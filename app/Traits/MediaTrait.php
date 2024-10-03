@@ -67,7 +67,7 @@ trait MediaTrait
         }
     }
 
-    public function imageOptimize($path){
+    public function setImageOptimize($path){
             // Create a new Image instance
             $imageContent = Storage::disk('public')->get($path);
             $img = Image::make($imageContent);
