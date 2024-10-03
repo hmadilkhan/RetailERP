@@ -94,6 +94,9 @@
                     </tbody>
                 </table>
             </div>
+            @if (!empty($stocks))
+                {{ $stocks->links() }}
+            @endif
         </div>
     </div>
 </section>
