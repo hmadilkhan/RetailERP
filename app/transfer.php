@@ -358,7 +358,7 @@ WHERE a.DC_id = ?', [$dcid]);
 			INNER JOIN branch d ON d.branch_id = a.branch_to
 			INNER JOIN inventory_general e ON e.id = b.product_id
             INNER JOIN deliverychallan_general_details f ON f.Transfer_id = a.transfer_id
-            INNER JOIN deliverychallan_item_details g ON g.DC_Id = f.DC_id
+            INNER JOIN deliverychallan_item_details g ON g.DC_Id = f.DC_id and g.product_id = b.product_id
             WHERE a.transfer_id = ?', [$trfid]);
 		return $result;
 	}
