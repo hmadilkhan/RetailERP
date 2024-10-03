@@ -67,18 +67,18 @@ trait MediaTrait
         }
     }
 
-    public function setImageOptimize($path){
-            // Create a new Image instance
-            $imageContent = Storage::disk('public')->get($path);
-            $img = Image::make($imageContent);
+//     public function setImageOptimize($path){
+//             // Create a new Image instance
+//             $imageContent = Storage::disk('public')->get($path);
+//             $img = Image::make($imageContent);
     
-            // Resize and optimize the image
-            $img->resize(800, null, function ($constraint) {
-                $constraint->aspectRatio();
-                $constraint->upsize();
-            });
+//             // Resize and optimize the image
+//             $img->resize(800, null, function ($constraint) {
+//                 $constraint->aspectRatio();
+//                 $constraint->upsize();
+//             });
     
-            // Return the optimized image as a response
-     return $img->response('webp', 85); // Adjust the format and quality as needed
-  }
+//             // Return the optimized image as a response
+//      return $img->response('webp', 85); // Adjust the format and quality as needed
+//   }
 }
