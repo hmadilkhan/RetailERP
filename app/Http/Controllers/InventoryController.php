@@ -3772,6 +3772,6 @@ class InventoryController extends Controller
                           'Content-Description' => 'no-image.png'
                         ); 
 
-        return response()->file('https://retail.sabsoft.com.pk/storage/images/no-image.png', $headers);  
+        return response()->file(Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image), $headers);  
     }
 }
