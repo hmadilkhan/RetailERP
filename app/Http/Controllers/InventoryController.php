@@ -3755,6 +3755,16 @@ class InventoryController extends Controller
             if (file_exists($pathToImage)) {
                 // Create an optimizer chain
                 $optimizerChain = OptimizerChainFactory::create();
+
+                // // Specify the quality (0-100)
+                // $optimizerChain->setConfig([
+                //     'jpegoptim' => [
+                //         '--max=75', // JPEG quality
+                //     ],
+                //     'pngquant' => [
+                //         '--quality=65-80', // PNG quality
+                //     ],
+                // ]);
                 
                 // Optimize the image in place
                 $optimizerChain->optimize($pathToImage);
