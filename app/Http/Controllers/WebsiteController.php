@@ -1800,7 +1800,7 @@ class WebsiteController extends Controller
            $path .= 'website/'.$filename;
        }
 
-       if(!File::exists($path)){
+       if(!Storage::disk('public')->exists($path)){
           $extension = 'png';
           $filename  = 'no-image.png';
           $path      = Storage::disk('public')->path('/images/'.$filename);
