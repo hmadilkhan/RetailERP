@@ -50,6 +50,28 @@ class InventoryController extends Controller
      */
     public function index(inventory $inventory, Brand $brand)
     {
+      if(AUTH::user()->username == 'uzair.kashee'){
+        $records = DB::table('inventory_general')->where('company_id',102)->get();
+        foreach ($records as $record) {
+            // Assuming 'image_path' is the column name in your database
+            $originalPath = $record->image_path;
+        
+            // Remove the prefix
+            $modifiedPath = str_replace('kasheesjewellery/', '', $originalPath);
+        
+            // Add .jpg at the end
+            $modifiedPath .= '.jpg';
+             return $modifiedPath;
+            // Optionally, save the modified path back to the database
+            // $record->image_path = $modifiedPath;
+            // $record->save();
+        
+            // For demonstration, you can echo the modified path
+            // DB::table('inventory_general')->where('id',$record->id)->update(['image'=>$modifiedPath]);
+        }
+    }
+
+
         // return  InventoryDepartment::whereIn("department_id",ModelsInventory::whereIn("id",WebsiteProduct::where("website_id",41)->pluck("inventory_id"))->pluck("department_id"))->where('status',1)->select("code","department_id","department_name","website_department_name","slug","image","banner")->orderBy('priority','desc')->get();
         $department    = $inventory->department();
         $subdepartment = ''; //$inventory->subDepartment();
