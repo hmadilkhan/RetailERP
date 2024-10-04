@@ -64,11 +64,11 @@
                         <tr>
                             <th>Product Id</th>
                             <th>Opening Date</th>
-                            <th>Sales</th>
                             <th>Opening Stock</th>
+                            <th>Sales</th>
+                            <th>Closing Stock</th>
                             <th>Closing Date</th>
                             {{-- <th>Stock</th> --}}
-                            <th>Closing Stock</th>
                             {{-- <th>Narration</th> --}}
                             {{-- <th>Action</th> --}}
                         </tr>
@@ -79,10 +79,10 @@
                                 <tr>
                                     <td>{{ $stock->product_id }}</td>
                                     <td>{{ $stock->opening_date }}</td>
-                                    <td>{{ $stock->sales}}</td>
                                     <td>{{ $stock->opening_stock }}</td>
-                                    <td>{{ $stock->closing_date }}</td>
+                                    <td>{{ $stock->sales}}</td>
                                     <td>{{ $stock->closing_stock }}</td>
+                                    <td>{{ $stock->closing_date }}</td>
 
                                 </tr>
                             @endforeach
