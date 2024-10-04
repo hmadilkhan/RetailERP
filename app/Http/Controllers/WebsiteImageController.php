@@ -121,11 +121,16 @@ class WebsiteImageController extends Controller
 
         $optimizerChain = OptimizerChainFactory::create();
 
-        // Optimize the image in place
-        $optimizerChain->optimize($path);
+        // Create a temporary file for the optimized image
+        $tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');        
+
+        // Optimize the image and save it to the temporary path
+        $optimizerChain->optimize($path, $tempPath);
 
 
-     return response()->file($path, $headers); 
+        // Return the optimized image as a file response
+        // Use deleteFileAfterSend to clean up the temporary file after the response is sent
+        return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
    }
 
 }
