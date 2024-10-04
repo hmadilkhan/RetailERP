@@ -108,7 +108,9 @@ WHERE
     Date(ds1.created_at) BETWEEN '2024-09-23' AND '2024-09-24'
     AND ds1.branch_id = 283
 GROUP BY 
-    ds1.product_id, os.opening_date, cs.closing_date;
+    ds1.product_id, os.opening_date, cs.closing_date
+Order By 
+	sales.sales DESC
 ");
         // return DB::select("SELECT 
         //                     product_id,
