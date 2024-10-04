@@ -25,7 +25,9 @@
         "livewire/livewire": "^3.0",
         "maatwebsite/excel": "^3.1",
         "riskihajar/terbilang": "^2.0.7",
-        "simplesoftwareio/simple-qrcode": "^4.1"
+        "simplesoftwareio/simple-qrcode": "^4.1",
+        "spatie/image-optimizer": "^1.7",
+        "spatie/laravel-image-optimizer": "^1.8"
     },
     "require-dev": {
         "spatie/laravel-ignition": "^2.0",

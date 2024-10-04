@@ -27,8 +27,10 @@ use Config;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Str;
 use Image, File, Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+// use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 
 class InventoryController extends Controller
@@ -3738,5 +3740,31 @@ class InventoryController extends Controller
         } catch (Exception $e) {
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
+    }
+
+
+    public function imageOptimize(Request $request){
+        if(!empty($request->image)){
+            //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
+
+
+             $img = Image::make(Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image));
+     
+            //  Resize and optimize the image
+             $img->resize(800, null, function ($constraint) {
+                 $constraint->aspectRatio();
+                 $constraint->upsize();
+             });
+     
+             // Return the optimized image as a response
+               return $img->response('webp', 85); // Adjust the format and quality as needed              
+        }
+
+        $headers = array(
+                          'Content-Type'        => 'image/png',
+                          'Content-Description' => 'no-image.png'
+                        ); 
+
+        return response()->file(Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image), $headers);  
     }
 }

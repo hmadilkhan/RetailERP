@@ -382,6 +382,7 @@
                                @else
                                 @if(File::exists('storage/images/products/'.$data[0]->image)) 
                                     @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
+                                    {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp --}}
                                 @endif                                  
                                @endif
                         @else
