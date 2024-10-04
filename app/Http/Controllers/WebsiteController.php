@@ -1711,7 +1711,7 @@ class WebsiteController extends Controller
     // ===============================================
 
     public function show_image_website(Request $request){
-
+            return $request;
         $mode      = $request->mode;
         // $compId    = $request->compId;
         $filename  = $request->filename;
