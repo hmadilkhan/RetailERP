@@ -3749,7 +3749,7 @@ class InventoryController extends Controller
     {
        if (!empty($request->image)) {
             // Define the path to the image
-            $pathToImage = storage_path('app/public/images/products/kasheesjewellery/' . $request->image);
+            $pathToImage = storage_path('app/public/images/products/' . $request->image);
         
             // Ensure the image exists before proceeding
             if (file_exists($pathToImage)) {
