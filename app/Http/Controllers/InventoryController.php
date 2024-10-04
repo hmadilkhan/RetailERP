@@ -3747,7 +3747,7 @@ class InventoryController extends Controller
 
     public function imageOptimize(Request $request)
     {
-        if (!empty($request->image)) {
+       if (!empty($request->image)) {
             // Define the path to the image
             $pathToImage = storage_path('app/public/images/products/kasheesjewellery/' . $request->image);
         
