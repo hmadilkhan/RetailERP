@@ -3766,7 +3766,7 @@ class InventoryController extends Controller
                 );
                 
                 // Return the optimized image as a file response
-                return response()->file($pathToImage, $headers);
+                return $pathToImage;
             } else {
                 $headers = array(
                     'Content-Type'        => 'image/jpg',
