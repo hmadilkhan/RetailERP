@@ -30,7 +30,7 @@ use Image, File, Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-// use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 
 
 class InventoryController extends Controller
@@ -3745,19 +3745,18 @@ class InventoryController extends Controller
 
     public function imageOptimize(Request $request){
         if(!empty($request->image)){
-            //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
-
-
-             $img = Image::make(Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image));
+           return ImageOptimizer::optimize(Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image));
+            // //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
+            //  $img = Image::make(Storage::disk('public')->get('/images/products/kasheesjewellery/'.$request->image));
      
-            //  Resize and optimize the image
-             $img->resize(800, null, function ($constraint) {
-                 $constraint->aspectRatio();
-                 $constraint->upsize();
-             });
+            // //  Resize and optimize the image
+            //  $img->resize(800, null, function ($constraint) {
+            //      $constraint->aspectRatio();
+            //      $constraint->upsize();
+            //  });
      
-             // Return the optimized image as a response
-               return $img->response('webp', 85); // Adjust the format and quality as needed              
+            //  // Return the optimized image as a response
+            //    return $img->response('webp', 85); // Adjust the format and quality as needed              
         }
 
         $headers = array(
