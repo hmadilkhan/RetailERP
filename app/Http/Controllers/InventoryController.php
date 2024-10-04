@@ -63,6 +63,7 @@ class InventoryController extends Controller
             if (!str_ends_with($modifiedPath, '.jpg')) {
                 // Add .jpg at the end
                 $modifiedPath .= '.jpg';
+                DB::table('inventory_general')->where('id',$record->id)->update(['image'=>$modifiedPath]);
             }
             //  return $modifiedPath;
             // Optionally, save the modified path back to the database
@@ -70,7 +71,7 @@ class InventoryController extends Controller
             // $record->save();
         
             // For demonstration, you can echo the modified path
-            DB::table('inventory_general')->where('id',$record->id)->update(['image'=>$modifiedPath]);
+            
         }
     }
 
