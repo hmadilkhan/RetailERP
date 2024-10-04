@@ -21,7 +21,7 @@ class WebsiteImageController extends Controller
         $webid     = $request->webid != null ? explode('-',$request->webid) : null;
         // =====================================================
         $extension = strtolower(pathinfo($filename,PATHINFO_EXTENSION));
-        $path = Storage::disk('public')->get('/images/');
+        $path = Storage::disk('public')->path('images/');
        // =====================================================
 
               // Error image format
