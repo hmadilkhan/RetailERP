@@ -76,7 +76,7 @@
                 <div class="card-body">
                     <div class="d-flex align-items-start border-bottom pb-3">
                         <div class="me-4">
-                            @if(session('company_id') == 102)
+                            {{-- @if(session('company_id') == 102)
                               @php  $imageShow = asset('storage/images/placeholder.jpg') @endphp
                              @if($item->image != '')
                               @php
@@ -102,11 +102,15 @@
                             <a href="{{ $imageShow }}" data-fancybox data-caption="Single Image"> 
                              <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded">
                             </a>
-                             @else
-                            <a href="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" data-fancybox data-caption="Single Image"> 
-                             <img src="{{ asset('storage/images/'.($item->image != '' ? 'products/'.$item->image : 'placeholder.jpg')) }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
+                             @else --}}
+                             @php $image = asset('storage/images/no-image.png') @endphp
+                            @if(Storage::disk('public')->exists('images/'.$item->image))
+                            @php $image = route('imageOptimize',$item->image) @endphp
+                            @endif
+                            <a href="{{ $image }}" data-fancybox data-caption="Single Image"> 
+                             <img src="{{ $image }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
                             </a>
-                             @endif
+                             {{-- @endif --}}
                             </div>
                         <div class="flex-grow-1 align-self-center overflow-hidden">
                             <div>
