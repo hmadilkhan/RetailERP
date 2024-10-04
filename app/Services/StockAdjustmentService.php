@@ -88,7 +88,7 @@ sales_cte AS (
             FROM sales_opening 
             WHERE date BETWEEN '2024-09-23' AND '2024-09-24'
         )
-        AND sr.branch = 283 AND sr.order_mode_id = 1
+        AND sr.branch = 283 AND sr.order_mode_id != 2
     GROUP BY 
         srd.item_code
 )
