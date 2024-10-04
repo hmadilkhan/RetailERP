@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Branch;
 use App\Models\DailyStock;
 use App\Models\InventoryStock;
 use Illuminate\Console\Command;
@@ -30,16 +31,20 @@ class DateWiseStockCommand extends Command
     {
         $branch = 283;
         $date = date("Y-m-d");
-
-        $stocks = InventoryStock::where("branch_id", $branch)->where("status_id", 1)->groupBy("product_id")->select("product_id", DB::raw('SUM(inventory_stock.balance) As stock'))->get();
-        foreach ($stocks as $key => $stock) {
-            DailyStock::insert([
-                "company_id" => 102,
-                "branch_id" => $branch,
-                "product_id" =>  $stock->product_id,
-                "opening_stock" => $stock->stock,
-            ]);
+        // This change will add to 04-10-2024 and starts run on 05-10-2024
+        $branches = Branch::where("company_id",102)->get();
+        foreach ($branches as $key => $branch) {
+            $stocks = InventoryStock::where("branch_id", $branch)->where("status_id", 1)->groupBy("product_id")->select("product_id", DB::raw('SUM(inventory_stock.balance) As stock'))->get();
+            foreach ($stocks as $key => $stock) {
+                DailyStock::insert([
+                    "company_id" => 102,
+                    "branch_id" => $branch,
+                    "product_id" =>  $stock->product_id,
+                    "opening_stock" => $stock->stock,
+                ]);
+            }
         }
+
         $this->info("Stock Added");
     }
 }
