@@ -3755,16 +3755,6 @@ class InventoryController extends Controller
             if (file_exists($pathToImage)) {
                 // Create an optimizer chain
                 $optimizerChain = OptimizerChainFactory::create();
-
-                // // Specify the quality (0-100)
-                // $optimizerChain->setConfig([
-                //     'jpegoptim' => [
-                //         '--max=75', // JPEG quality
-                //     ],
-                //     'pngquant' => [
-                //         '--quality=65-80', // PNG quality
-                //     ],
-                // ]);
                 
                 // Optimize the image in place
                 $optimizerChain->optimize($pathToImage);
@@ -3801,7 +3791,10 @@ class InventoryController extends Controller
             //    return $img->response('webp', 85); // Adjust the format and quality as needed              
         // }
 
-
-        // return response()->file(Storage::disk('public')->path('/images/products/kasheesjewellery/' . $request->image), $headers);
+            $headers = array(
+                'Content-Type'        => 'image/jpg',
+                'Content-Description' => 'no-image.jpg',
+            );
+        return response()->file(Storage::disk('public')->path('/images/no-image.jpg'), $headers);
     }
 }
