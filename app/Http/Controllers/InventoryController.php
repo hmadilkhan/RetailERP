@@ -3747,9 +3747,9 @@ class InventoryController extends Controller
 
     public function imageOptimize(Request $request)
     {
-        if (!empty($request->image)) {
+       if (!empty($request->image)) {
             // Define the path to the image
-            $pathToImage = storage_path('app/public/images/products/kasheesjewellery/' . $request->image);
+            $pathToImage = storage_path('app/public/images/products/' . $request->image);
         
             // Ensure the image exists before proceeding
             if (file_exists($pathToImage)) {
@@ -3761,14 +3761,18 @@ class InventoryController extends Controller
                 
                 // Set headers for the image response
                 $headers = array(
-                    'Content-Type'        => 'image/jpeg', // Assuming it's a JPEG, you can change as per your image type
+                    'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)), // Assuming it's a JPEG, you can change as per your image type
                     'Content-Description' => $request->image,
                 );
                 
                 // Return the optimized image as a file response
                 return response()->file($pathToImage, $headers);
             } else {
-                return response()->json(['error' => 'Image not found'], 404);
+                $headers = array(
+                    'Content-Type'        => 'image/jpg',
+                    'Content-Description' => 'no-image.jpg',
+                );                
+                return response()->file(Storage::disk('public')->path('/images/no-image.jpg'), $headers);
             }
         }
         // if (!empty($request->image)) {
@@ -3791,7 +3795,10 @@ class InventoryController extends Controller
             //    return $img->response('webp', 85); // Adjust the format and quality as needed              
         // }
 
-
-        // return response()->file(Storage::disk('public')->path('/images/products/kasheesjewellery/' . $request->image), $headers);
+            $headers = array(
+                'Content-Type'        => 'image/jpg',
+                'Content-Description' => 'no-image.jpg',
+            );
+        return response()->file(Storage::disk('public')->path('/images/no-image.jpg'), $headers);
     }
 }

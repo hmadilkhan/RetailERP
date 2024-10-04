@@ -216,17 +216,18 @@ class custom_helper
     {
         $imageUrl = asset('storage/images/no-image.png');
 
-        if (in_array(session('company_id'), [95, 102, 104])) {
-            if (!empty($inventory->product_image_url)) {
-                $imageUrl = $inventory->product_image_url;
-            } elseif (!empty($inventory->product_image)) {
-                $imageUrl = asset('storage/images/products/' . $inventory->product_image);
-            }
-        } else {
+        // if (in_array(session('company_id'), [95, 102, 104])) {
+        //     if (!empty($inventory->product_image_url)) {
+        //         $imageUrl = $inventory->product_image_url;
+        //     } elseif (!empty($inventory->product_image)) {
+        //         $imageUrl = asset('storage/images/products/' . $inventory->product_image);
+        //     }
+        // } else {
             if (!empty($inventory->product_image)) {
-                $imageUrl = asset('storage/images/products/' . $inventory->product_image);
+                // $imageUrl = asset('storage/images/products/' . $inventory->product_image);
+                $imageUrl = route('imageOptimize',$inventory->product_image);
             }
-        }
+        // }
 
         return $imageUrl;
     }
