@@ -3768,7 +3768,11 @@ class InventoryController extends Controller
                 // Return the optimized image as a file response
                 return response()->file($pathToImage, $headers);
             } else {
-                return response()->json(['error' => 'Image not found'], 404);
+                $headers = array(
+                    'Content-Type'        => 'image/jpg',
+                    'Content-Description' => 'no-image.jpg',
+                );                
+                return response()->file(Storage::disk('public')->path('/images/no-image.jpg'), $headers);
             }
         }
         // if (!empty($request->image)) {
