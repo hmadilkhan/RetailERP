@@ -376,22 +376,22 @@
                   <div class="card-block p-1 p-t-0">
                     <div class="form-group">
                         @php $imageUrl = asset('storage/images/placeholder.jpg') @endphp
-                        @if(in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan']))
-                               @if(!empty($data[0]->url))
+                        {{-- @if(in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan']))
+                               @if(!empty($data[0]->url)) --}}
                                   {{-- @php $imageUrl = $data[0]->url @endphp --}}
-                                  @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
-                               @else
+                                  {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
+                               @else --}}
                                 @if(File::exists('storage/images/products/'.$data[0]->image)) 
                                     {{-- @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp --}}
                                     @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
                                 @endif                                  
-                               @endif
+                               {{-- @endif
                         @else
                         {{-- Storage::disk('public')->exists('images/products/' . $data[0]->image) --}}
-                               @if(File::exists('storage/images/products/'.$data[0]->image)) 
+                               {{-- @if(File::exists('storage/images/products/'.$data[0]->image)) 
                                   @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
-                               @endif
-                        @endif
+                               @endif --}}
+                        {{-- @endif --}} 
                             <a href="{{ $imageUrl }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
                                 <img id="simg" src="{{ $imageUrl }}" class="thumb-img width-100" height="380px" alt="{{ empty($data[0]->image) ? $data[0]->image : 'placeholder.jpg' }}">
                                 </a>
