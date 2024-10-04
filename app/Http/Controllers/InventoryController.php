@@ -54,7 +54,7 @@ class InventoryController extends Controller
         $records = DB::table('inventory_general')->where('company_id',102)->get();
         foreach ($records as $record) {
             // Assuming 'image_path' is the column name in your database
-            $originalPath = $record->image_path;
+            $originalPath = $record->image;
         
             // Remove the prefix
             $modifiedPath = str_replace('kasheesjewellery/', '', $originalPath);
