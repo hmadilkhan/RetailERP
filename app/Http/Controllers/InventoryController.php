@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 
 class InventoryController extends Controller
@@ -71,16 +72,16 @@ class InventoryController extends Controller
 
         //if(session("company_id") == 7 or session("company_id") ==  102 && Auth::user()->username != 'demoadmin'){ //or session("company_id") ==  102 session("company_id") == 7 or
         // if (in_array(session("company_id"), [7, 102]) && !in_array(Auth::user()->username, ['demoadmin'])) {
-            $inventories = $inventory->getInventoryForPagewiseByFilters();
-            // if(Auth::user()->username == 'demoadmin'){
-            //    return $inventories;
-            // }
-            $inventory = '';
-            if (in_array(Auth::user()->username, ['fn1009'])) {
-                return view('Inventory.inventory', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
-            } else {
-                return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
-            }
+        $inventories = $inventory->getInventoryForPagewiseByFilters();
+        // if(Auth::user()->username == 'demoadmin'){
+        //    return $inventories;
+        // }
+        $inventory = '';
+        if (in_array(Auth::user()->username, ['fn1009'])) {
+            return view('Inventory.inventory', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+        } else {
+            return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+        }
         // } else {
         //     $inventory = '';
         //     return view('Inventory.lists', compact('inventory', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
@@ -178,16 +179,16 @@ class InventoryController extends Controller
         //         $websiteMode = 0;
         //     }
         // }
-        $imageName = NULL;   
+        $imageName = NULL;
         $imageData = NULL;
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
 
             // if (!in_array(session('company_id'), [95, 102, 104]) && !in_array(Auth::user()->username,['demoadmin','fnkhan'])) {
 
-                    $request->validate([
-                        'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-                    ]);
+            $request->validate([
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            ]);
             // }
 
             // $imageName = time() . '-' . pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
@@ -213,13 +214,13 @@ class InventoryController extends Controller
             //                             'transformation' => $transformationArray
             //                         ])->getSecurePath();
             // } else {
-                $transFormation = [];
-                if (!isset($request->actual_image_size)) {
-                    $transFormation['width']  = 400;
-                    $transFormation['height'] = 400;
-                }
-                $returnImageValue = $this->uploads($image, "images/products/", "",$transFormation);
-                $imageName = $returnImageValue['fileName']; 
+            $transFormation = [];
+            if (!isset($request->actual_image_size)) {
+                $transFormation['width']  = 400;
+                $transFormation['height'] = 400;
+            }
+            $returnImageValue = $this->uploads($image, "images/products/", "", $transFormation);
+            $imageName = $returnImageValue['fileName'];
 
             // }
         }
@@ -235,7 +236,7 @@ class InventoryController extends Controller
             'item_code'           => $request->code,
             'product_name'        => $request->name,
             'product_description' => $request->description,
-            'image'               => isset($folder) ? $folder.'/'.strtolower($imageName) : $imageName,
+            'image'               => isset($folder) ? $folder . '/' . strtolower($imageName) : $imageName,
             'url'                 => $imageData,
             'status'              => 1,
             'created_at'          => date('Y-m-d H:s:i'),
@@ -395,10 +396,10 @@ class InventoryController extends Controller
 
         if (!empty($request->website) && isset($request->showProductWebsite)) {
             // foreach ($request->website as $website) {
-                WebsiteProduct::create([
-                    "website_id"    => $request->website,
-                    "inventory_id"  => $productid,
-                ]);
+            WebsiteProduct::create([
+                "website_id"    => $request->website,
+                "inventory_id"  => $productid,
+            ]);
             // }
         }
 
@@ -425,29 +426,29 @@ class InventoryController extends Controller
                 //     $transformationArray = [];
                 //     $transformationArray['quality']  = 'auto';
                 //     $transformationArray['fetch']    = 'auto';
-    
+
                 //     $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
-    
+
                 //     $folder = strtolower(str_replace(' ','',$company_name->name));
 
                 //     $imageName   = $productid.time().'-'.$count;
-    
+
                 //     $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
                 //                             'public_id'      => strtolower($imageName),
                 //                             'folder'         => $folder,
                 //                             'transformation' => $transformationArray
                 //                         ])->getSecurePath();
-                         
+
                 // }else{
-                    $path = '/images/products/';
-                    $returnImageValue = $this->uploads($prodGallery, $path);
-                    $imageName = $returnImageValue['fileName']; 
+                $path = '/images/products/';
+                $returnImageValue = $this->uploads($prodGallery, $path);
+                $imageName = $returnImageValue['fileName'];
                 // }
 
                 if ($imageName != null) {
                     DB::table('inventory_images')->insert([
                         "item_id" => $productid,
-                        "image"   => isset($folder) ? $folder.'/'.strtolower($imageName) : $imageName,
+                        "image"   => isset($folder) ? $folder . '/' . strtolower($imageName) : $imageName,
                         "url"     => isset($imageData) ? $imageData : null,
                     ]);
 
@@ -523,23 +524,22 @@ class InventoryController extends Controller
     }
 
     public function setProductAttribute_update(Request $request)
-    {     
+    {
         if (!empty($request->website)) {
             foreach ($request->inventid as $productid) {
-                $existsProduct =  WebsiteProduct::where('website_id','=',$request->website)->where('inventory_id','=',$productid)->where('status','=',1)->count();
+                $existsProduct =  WebsiteProduct::where('website_id', '=', $request->website)->where('inventory_id', '=', $productid)->where('status', '=', 1)->count();
                 if ($existsProduct == 0) {
-               
+
                     WebsiteProduct::create([
                         "website_id"   => $request->website,
                         "inventory_id" => $productid,
-                        "status"       => 1 
+                        "status"       => 1
                     ]);
 
-                    WebsiteProduct::where('website_id','!=',$request->website)
-                                   ->where('inventory_id',$productid)
-                                   ->where('status',1)
-                                   ->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
-
+                    WebsiteProduct::where('website_id', '!=', $request->website)
+                        ->where('inventory_id', $productid)
+                        ->where('status', 1)
+                        ->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")]);
                 }
             }
             return response()->json('success', 200);
@@ -803,7 +803,7 @@ class InventoryController extends Controller
         // 		$extras = DB::table("extra_products")->whereNull("parent")->get();
 
         // if (Auth::user()->username == 'demoadmin') {
-            return view('Inventory.create-debug', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList', 'attributes'));
+        return view('Inventory.create-debug', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList', 'attributes'));
         // } else {
         //     return view('Inventory.create', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList'));
         // }
@@ -845,7 +845,7 @@ class InventoryController extends Controller
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
         $totaladdons = AddonCategory::where("company_id", session("company_id"))->where("mode", "addons")->get();
         $selectedAddons = InventoryAddon::where("product_id", $data[0]->id)->pluck("addon_id");
-        $selectedWebsites = WebsiteProduct::where("inventory_id", $data[0]->id)->where("status",1)->pluck("website_id");
+        $selectedWebsites = WebsiteProduct::where("inventory_id", $data[0]->id)->where("status", 1)->pluck("website_id");
         $extras = DB::table("extra_products")->whereNull("parent")->get();
         $selectedExtras = DB::table("inventory_extra_products")->where("product_id", $data[0]->id)->pluck("extra_product_id");
 
@@ -861,10 +861,10 @@ class InventoryController extends Controller
         } else {
             $references = "";
         }
-            
+
         // if(Auth::user()->username == 'demoadmin'){
-            return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
-        
+        return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
+
         // }else{
         //  return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
         // }
@@ -925,34 +925,34 @@ class InventoryController extends Controller
             'brand_id'             => $request->brand,
             'actual_image_size'    => isset($request->actual_image_size) ? 1 : 0,
         ];
- 
-        if(!empty($request->get('galleryImage'))){
-            $gallery = explode(',',$request->get('galleryImage'));
-           for($i=0;$i < count($gallery);$i++){
-                if(File::exists('storage/images/products/'.$gallery[$i])){
-                    File::delete('storage/images/products/'.$gallery[$i]);
+
+        if (!empty($request->get('galleryImage'))) {
+            $gallery = explode(',', $request->get('galleryImage'));
+            for ($i = 0; $i < count($gallery); $i++) {
+                if (File::exists('storage/images/products/' . $gallery[$i])) {
+                    File::delete('storage/images/products/' . $gallery[$i]);
                     // DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
-                 }
-                 DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
-           }
-        }
-    
-        if(!empty($request->urlGalleryImage)){
-            $gallery = explode(',',$request->get('urlGalleryImage'));
-            for($i=0;$i < count($gallery);$i++){
-                Cloudinary::destroy($gallery[$i]);
-                DB::table('inventory_images')->where('image',$gallery[$i])->where('item_id',$request->id)->delete();
+                }
+                DB::table('inventory_images')->where('image', $gallery[$i])->where('item_id', $request->id)->delete();
             }
-         }        
+        }
+
+        if (!empty($request->urlGalleryImage)) {
+            $gallery = explode(',', $request->get('urlGalleryImage'));
+            for ($i = 0; $i < count($gallery); $i++) {
+                Cloudinary::destroy($gallery[$i]);
+                DB::table('inventory_images')->where('image', $gallery[$i])->where('item_id', $request->id)->delete();
+            }
+        }
 
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
 
             // if (!in_array(session('company_id'),[95, 102, 104]) && !in_array(Auth::user()->username,['demoadmin','fnkhan'])) {
 
-                    $request->validate([
-                        'image' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
-                    ]);
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            ]);
             // }
 
             // $imageName = time().'-'.pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
@@ -997,18 +997,18 @@ class InventoryController extends Controller
             //     $fields['url']   = $imageData;
 
             // } else {
-                $transFormation = [];
-                if (!isset($request->actual_image_size)) {
-                    $transFormation = ['width' => 400, "height" => 400];
-                }
+            $transFormation = [];
+            if (!isset($request->actual_image_size)) {
+                $transFormation = ['width' => 400, "height" => 400];
+            }
 
-                $returnImageValue = $this->uploads($image, "images/products/","",$transFormation);
-                $fields['image']  = $returnImageValue['fileName'];                
+            $returnImageValue = $this->uploads($image, "images/products/", "", $transFormation);
+            $fields['image']  = $returnImageValue['fileName'];
             // }
         }
 
-  
-         $result = $invent->modify($fields, $request->id);
+
+        $result = $invent->modify($fields, $request->id);
 
         $result = $invent->modifyReminder($request->reminder_id, $request->reminder);
 
@@ -1062,17 +1062,17 @@ class InventoryController extends Controller
             ];
             DB::table("inventory_download_status")->insert($items);
         }
-       
+
         if (!empty($request->website) && isset($request->showProductWebsite)) {
-            WebsiteProduct::where("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]);
+            WebsiteProduct::where("inventory_id", $request->id)->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")]);
             // foreach ($request->website as $website) {
-                WebsiteProduct::create([
-                    "website_id"   => $request->website,
-                    "inventory_id" => $request->id,
-                ]);
+            WebsiteProduct::create([
+                "website_id"   => $request->website,
+                "inventory_id" => $request->id,
+            ]);
             // }
-        }else{
-            WebsiteProduct::where("inventory_id", $request->id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")]); 
+        } else {
+            WebsiteProduct::where("inventory_id", $request->id)->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")]);
         }
 
         DB::table('inventory_tags')->where("inventory_id", $request->id)->delete();
@@ -1086,107 +1086,109 @@ class InventoryController extends Controller
             }
         }
 
-       //Product Gallery		
-       if (!empty($request->file('prodgallery'))) {
-        $count = 1;
-        foreach ($request->file('prodgallery') as $val) {
-            $prodGallery = $val;
-            $imageName   = null;
-            // $response    = Image::make($image)
-            //     ->save(public_path('storage/images/products/' . $imageName));
+        //Product Gallery		
+        if (!empty($request->file('prodgallery'))) {
+            $count = 1;
+            foreach ($request->file('prodgallery') as $val) {
+                $prodGallery = $val;
+                $imageName   = null;
+                // $response    = Image::make($image)
+                //     ->save(public_path('storage/images/products/' . $imageName));
 
-            // if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
-            //     $transformationArray = [];
-            //     $transformationArray['quality']  = 'auto';
-            //     $transformationArray['fetch']    = 'auto';
+                // if (in_array(session('company_id'), [95, 102, 104]) || in_array(Auth::user()->username,['demoadmin','fnkhan'])) { //cloudinary image save fro kashee
+                //     $transformationArray = [];
+                //     $transformationArray['quality']  = 'auto';
+                //     $transformationArray['fetch']    = 'auto';
 
-            //     $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
+                //     $company_name = DB::table('company')->where('company_id', session('company_id'))->first();
 
-            //     $folder = strtolower(str_replace(' ','',$company_name->name));
+                //     $folder = strtolower(str_replace(' ','',$company_name->name));
 
-            //     $imageName   = $request->id.time().'-'.$count;
+                //     $imageName   = $request->id.time().'-'.$count;
 
-            //     $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
-            //                             'public_id'      => strtolower($imageName),
-            //                             'folder'         => $folder,
-            //                             'transformation' => $transformationArray
-            //                         ])->getSecurePath();
-                     
-            // }else{
+                //     $imageData = Cloudinary::upload($prodGallery->getRealPath(), [
+                //                             'public_id'      => strtolower($imageName),
+                //                             'folder'         => $folder,
+                //                             'transformation' => $transformationArray
+                //                         ])->getSecurePath();
+
+                // }else{
                 $path = '/images/products/';
                 $returnImageValue = $this->uploads($prodGallery, $path);
-                $imageName = $returnImageValue['fileName']; 
-            // }
+                $imageName = $returnImageValue['fileName'];
+                // }
 
-            if ($imageName != null) {
-                DB::table('inventory_images')->insert([
-                    "item_id" => $request->id,
-                    "image"   => isset($folder) ? $folder.'/'.strtolower($imageName) : $imageName,
-                    "url"     => isset($imageData) ? $imageData : null,
-                ]);
+                if ($imageName != null) {
+                    DB::table('inventory_images')->insert([
+                        "item_id" => $request->id,
+                        "image"   => isset($folder) ? $folder . '/' . strtolower($imageName) : $imageName,
+                        "url"     => isset($imageData) ? $imageData : null,
+                    ]);
 
-                $count++;
+                    $count++;
+                }
             }
         }
-    }
 
-    //Product video
-    if (!empty($request->file('prodvideo'))) {
-        $prodVideo     = $request->file('prodvideo');
-        $path          = '/video/products/';
-        $prodVideoName = $this->uploads($prodVideo, $path);
+        //Product video
+        if (!empty($request->file('prodvideo'))) {
+            $prodVideo     = $request->file('prodvideo');
+            $path          = '/video/products/';
+            $prodVideoName = $this->uploads($prodVideo, $path);
 
-        if (isset($prodVideoName['filename'])) {
+            if (isset($prodVideoName['filename'])) {
 
-            DB::table('inventory_video')->insert([
-                "inventory_id" => $request->id,
-                "file"         => $$prodVideoName['filename'],
-                'created_at'   => date("Y-m-d H:i:s")
-            ]);
+                DB::table('inventory_video')->insert([
+                    "inventory_id" => $request->id,
+                    "file"         => $$prodVideoName['filename'],
+                    'created_at'   => date("Y-m-d H:i:s")
+                ]);
+            }
         }
-    }       
 
 
         $this->sendPushNotification($request->code, $request->name, "update");
         //   return redirect()->back();
         return  1;
     }
-    
 
-    public function unLink_websiteProduct(Request $request){
 
-        if(isset($request->website_id) && isset($request->product_id)){
+    public function unLink_websiteProduct(Request $request)
+    {
 
-            if(DB::table('inventory_general')->where('id',$request->product_id)->where('company_id',session('company_id'))->count() == 0){
-                return response()->json('Product not found!',500);
+        if (isset($request->website_id) && isset($request->product_id)) {
+
+            if (DB::table('inventory_general')->where('id', $request->product_id)->where('company_id', session('company_id'))->count() == 0) {
+                return response()->json('Product not found!', 500);
             }
-           
-           if(!WebsiteProduct::where("inventory_id", $request->product_id)->where('website_id',$request->website_id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")])){
-            return response()->json('Error! this product not unlink to website',500);
-           }
 
-           return response()->json('Success!',200);
+            if (!WebsiteProduct::where("inventory_id", $request->product_id)->where('website_id', $request->website_id)->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")])) {
+                return response()->json('Error! this product not unlink to website', 500);
+            }
+
+            return response()->json('Success!', 200);
         }
 
-       return response()->json('bad request',500);   
+        return response()->json('bad request', 500);
     }
 
-    public function allWebsiteProduct_unlink(Request $request){
+    public function allWebsiteProduct_unlink(Request $request)
+    {
 
-        if(isset($request->product_id)){
+        if (isset($request->product_id)) {
 
-            if(DB::table('inventory_general')->whereIn('id',$request->product_id)->where('company_id',session('company_id'))->count() == 0){
-                return response()->json('Product not found!',500);
+            if (DB::table('inventory_general')->whereIn('id', $request->product_id)->where('company_id', session('company_id'))->count() == 0) {
+                return response()->json('Product not found!', 500);
             }
-           
-           if(!WebsiteProduct::whereIn("inventory_id", $request->product_id)->update(['status'=>0,'updated_at'=>date("Y-m-d H:i:s")])){
-            return response()->json('All product not unlink to website!',500);
-           }
 
-           return response()->json('Success!',200);
+            if (!WebsiteProduct::whereIn("inventory_id", $request->product_id)->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")])) {
+                return response()->json('All product not unlink to website!', 500);
+            }
+
+            return response()->json('Success!', 200);
         }
 
-       return response()->json('bad request',500);   
+        return response()->json('bad request', 500);
     }
 
     /**S
@@ -2735,8 +2737,8 @@ class InventoryController extends Controller
                         $pname     = strtolower(str_replace(' ', '', $getPosProduct->item_name));
                         $imageName = $pname . '-' . $val . '.' . pathinfo($getPosProduct->image, PATHINFO_EXTENSION);
 
-                        if (File::exists('storage/images/products/'.$getPosProduct->image)) {
-                            File::move('storage/images/products/'.$getPosProduct->image, 'storage/images/products/'.$imageName);
+                        if (File::exists('storage/images/products/' . $getPosProduct->image)) {
+                            File::move('storage/images/products/' . $getPosProduct->image, 'storage/images/products/' . $imageName);
                         }
                     }
 
@@ -2814,13 +2816,13 @@ class InventoryController extends Controller
                 }
 
                 if ($request->prevImageName != "") {
-                    $file_path = 'storage/images/products/'.$request->prevImageName;
+                    $file_path = 'storage/images/products/' . $request->prevImageName;
                     if (File::exists($file_path)) {
                         File::delete($file_path);
                     }
                 }
-               $getImage = $this->upload($request->item_image,'storage/images/products/',$request->prevImageName);
-               $imageName = !empty($getImage) ? $getImage['fileName'] : null;
+                $getImage = $this->upload($request->item_image, 'storage/images/products/', $request->prevImageName);
+                $imageName = !empty($getImage) ? $getImage['fileName'] : null;
                 // $pname = str_replace(' ', '', $request->item_name);
                 // $imageName = time() . '.' . $request->item_image->getClientOriginalExtension();
                 // $request->item_image->move(public_path('assets/images/products/'), $imageName);
@@ -3743,27 +3745,53 @@ class InventoryController extends Controller
     }
 
 
-    public function imageOptimize(Request $request){
-        if(!empty($request->image)){
-           return ImageOptimizer::optimize(Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image));
+    public function imageOptimize(Request $request)
+    {
+        if (!empty($request->image)) {
+            // Define the path to the image
+            $pathToImage = storage_path('app/public/images/products/kasheesjewellery/' . $request->image);
+        
+            // Ensure the image exists before proceeding
+            if (file_exists($pathToImage)) {
+                // Create an optimizer chain
+                $optimizerChain = OptimizerChainFactory::create();
+                
+                // Optimize the image in place
+                $optimizerChain->optimize($pathToImage);
+                
+                // Set headers for the image response
+                $headers = array(
+                    'Content-Type'        => 'image/jpeg', // Assuming it's a JPEG, you can change as per your image type
+                    'Content-Description' => $request->image,
+                );
+                
+                // Return the optimized image as a file response
+                return response()->file($pathToImage, $headers);
+            } else {
+                return response()->json(['error' => 'Image not found'], 404);
+            }
+        }
+        // if (!empty($request->image)) {
+        //     $headers = array(
+        //         'Content-Type'        => 'image/jpg',
+        //         'Content-Description' => $request->image,
+        //     );
+        //     $pathToImage = storage_path('app/public/images/products/kasheesjewellery/'. $request->image);
+        //     return response()->file(ImageOptimizer::optimize($pathToImage),$headers);
             // //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
             //  $img = Image::make(Storage::disk('public')->get('/images/products/kasheesjewellery/'.$request->image));
-     
+
             // //  Resize and optimize the image
             //  $img->resize(800, null, function ($constraint) {
             //      $constraint->aspectRatio();
             //      $constraint->upsize();
             //  });
-     
+
             //  // Return the optimized image as a response
             //    return $img->response('webp', 85); // Adjust the format and quality as needed              
-        }
+        // }
 
-        $headers = array(
-                          'Content-Type'        => 'image/png',
-                          'Content-Description' => 'no-image.png'
-                        ); 
 
-        return response()->file(Storage::disk('public')->path('/images/products/kasheesjewellery/'.$request->image), $headers);  
+        // return response()->file(Storage::disk('public')->path('/images/products/kasheesjewellery/' . $request->image), $headers);
     }
 }
