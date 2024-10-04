@@ -21,22 +21,24 @@ class WebsiteImageController extends Controller
         $webid     = $request->webid != null ? explode('-',$request->webid) : null;
         // =====================================================
         $extension = strtolower(pathinfo($filename,PATHINFO_EXTENSION));
-        $path = Storage::disk('public')->path('images/');
+        $path = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/';
        // =====================================================
 
               // Error image format
        // ===================================================== 
-        if(!in_array($extension,['jpeg','jpg','png','webp'])){
+        if(!in_array($extension,['jpeg','jpg','gif','png','webp'])){
            return response()->json('Invalid image format!',500);
         }
       // =====================================================  
       
        if($mode == 'slider'){
             if($webid == null){
-               $path      .= 'no-image.png';
+               $extension = 'png';
+               $filename  = 'no-image.png';
+               $path     .= $filename;
                $headers = array(
-                                 'Content-Type'        => 'image/png',
-                                 'Content-Description' => 'no-image.png'
+                                 'Content-Type'        => 'image/'.$extension,
+                                 'Content-Description' => $filename
                                ); 
 
                return response()->file($path, $headers);                                                   
@@ -103,10 +105,10 @@ class WebsiteImageController extends Controller
            $path .= 'website/'.$filename;
        }
 
-       if(!Storage::disk('public')->exists($path)){
+       if(!\File::exists($path)){
           $extension = 'png';
           $filename  = 'no-image.png';
-          $path      = Storage::disk('public')->path('/images/'.$filename);
+          $path      = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/'.$filename;
 
        }
 
