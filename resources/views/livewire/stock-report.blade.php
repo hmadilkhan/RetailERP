@@ -62,13 +62,13 @@
                     class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
                     <thead>
                         <tr>
-                            <th>Ref#</th>
-                            <th>Date</th>
-                            <th>Code</th>
-                            <th>Name</th>
-                            <th>Qty</th>
+                            <th>Product Id</th>
+                            <th>Opening Date</th>
+                            <th>Sales</th>
+                            <th>Opening Stock</th>
+                            <th>Closing Date</th>
                             {{-- <th>Stock</th> --}}
-                            <th>Created By</th>
+                            <th>Closing Stock</th>
                             {{-- <th>Narration</th> --}}
                             {{-- <th>Action</th> --}}
                         </tr>
