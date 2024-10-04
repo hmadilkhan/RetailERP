@@ -3761,12 +3761,12 @@ class InventoryController extends Controller
                 
                 // Set headers for the image response
                 $headers = array(
-                    'Content-Type'        => 'image/jpeg'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)), // Assuming it's a JPEG, you can change as per your image type
+                    'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)), // Assuming it's a JPEG, you can change as per your image type
                     'Content-Description' => $request->image,
                 );
                 
                 // Return the optimized image as a file response
-                return $pathToImage;
+                return response()->file($pathToImage, $headers);
             } else {
                 $headers = array(
                     'Content-Type'        => 'image/jpg',
