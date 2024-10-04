@@ -58,9 +58,12 @@ class InventoryController extends Controller
         
             // Remove the prefix
             $modifiedPath = str_replace('kasheesjewellery/', '', $originalPath);
-        
-            // Add .jpg at the end
-            $modifiedPath .= '.jpg';
+              
+            // Check if the modified path already ends with .jpg
+            if (!str_ends_with($modifiedPath, '.jpg')) {
+                // Add .jpg at the end
+                $modifiedPath .= '.jpg';
+            }
              return $modifiedPath;
             // Optionally, save the modified path back to the database
             // $record->image_path = $modifiedPath;
