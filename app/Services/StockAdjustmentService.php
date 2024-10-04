@@ -57,7 +57,7 @@ class StockAdjustmentService
     FROM 
         daily_stock
     WHERE 
-        Date(created_at) BETWEEN '2024-09-23' AND '2024-09-24'
+        Date(created_at) BETWEEN '2024-09-24' AND '2024-09-24'
         AND branch_id = 283
     GROUP BY 
         product_id, Date(created_at)
@@ -70,7 +70,7 @@ closing_stock_cte AS (
     FROM 
         daily_stock
     WHERE 
-        Date(created_at) BETWEEN '2024-09-23' AND '2024-09-24'
+        Date(created_at) BETWEEN '2024-09-24' AND '2024-09-24'
         AND branch_id = 283
     GROUP BY 
         product_id, Date(created_at)
@@ -86,7 +86,7 @@ sales_cte AS (
         sr.opening_id IN (
             SELECT opening_id 
             FROM sales_opening 
-            WHERE date BETWEEN '2024-09-23' AND '2024-09-24'
+            WHERE date BETWEEN '2024-09-24' AND '2024-09-24'
         )
         AND sr.branch = 283 AND sr.order_mode_id != 2
     GROUP BY 
