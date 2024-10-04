@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Http\Controllers\WebsiteController;
+use App\Http\Controllers\WebsiteImageController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,7 +49,7 @@ Route::get('newproduct/{id}','apiController@newproduct');
 Route::post('add-sales','apiController@addSales');
 Route::post('add-sales-details','apiController@addSalesDetails');
 
-Route::get('website/image/{filename}/{mode?}/{webid?}',[WebsiteController::class,'show_image_website']);
+Route::get('website/image/{filename}/{mode?}/{webid?}',[WebsiteImageController::class,'show_image_website']);
 
 
 /******************************************** API ROUTES *************************************************************/
