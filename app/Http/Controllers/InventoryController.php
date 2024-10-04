@@ -218,7 +218,7 @@ class InventoryController extends Controller
                     $transFormation['width']  = 400;
                     $transFormation['height'] = 400;
                 }
-                $returnImageValue = $this->uploads($request->file('image'), "images/products/", "",$transFormation);
+                $returnImageValue = $this->uploads($image, "images/products/", "",$transFormation);
                 $imageName = $returnImageValue['fileName']; 
 
             // }
