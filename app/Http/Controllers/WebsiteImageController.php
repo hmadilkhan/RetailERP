@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use File;
 use Illuminate\Support\Facades\Storage;
+use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+use Spatie\ImageOptimizer\OptimizerChainFactory;
 
 class WebsiteImageController extends Controller
 {
@@ -116,6 +118,12 @@ class WebsiteImageController extends Controller
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
                        ); 
+
+        $optimizerChain = OptimizerChainFactory::create();
+
+        // Optimize the image in place
+        $optimizerChain->optimize($path);
+
 
      return response()->file($path, $headers); 
    }
