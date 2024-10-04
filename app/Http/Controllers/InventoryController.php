@@ -50,7 +50,7 @@ class InventoryController extends Controller
      */
     public function index(inventory $inventory, Brand $brand)
     {
-      if(AUTH::user()->username == 'uzair.kashee'){
+      if(Auth::user()->username == 'uzair.kashee'){
         $records = DB::table('inventory_general')->where('company_id',102)->get();
         foreach ($records as $record) {
             // Assuming 'image_path' is the column name in your database
