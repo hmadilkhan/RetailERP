@@ -32,6 +32,8 @@ use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
+use Optimizer\JpegOptimizer; 
+use Optimizer\PngOptimizer; 
 
 
 class InventoryController extends Controller
@@ -3755,7 +3757,11 @@ class InventoryController extends Controller
             if (file_exists($pathToImage)) {
                 // Create an optimizer chain
                 $optimizerChain = OptimizerChainFactory::create();
-                
+
+                // Add specific optimizers with custom options
+                $optimizerChain->add(new JpegOptimizer(['quality' => 90])); // Adjust quality for JPEG
+                $optimizerChain->add(new PngOptimizer(['optimize' => true])); // Example for PNG optimization
+               
                 // // Optimize the image in place
                 // $optimizerChain->optimize($pathToImage);
 
