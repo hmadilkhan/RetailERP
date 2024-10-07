@@ -152,7 +152,7 @@ class WebsiteImageController extends Controller
         // Storage::put($tempPath, $imageContents);
 
         // Optimize the image
-        $image = Image::make(storage_path($imageContents));
+        $image = Image::make($imageContents);
         $image->resize(800, null, function ($constraint) {
             $constraint->aspectRatio();
         });
