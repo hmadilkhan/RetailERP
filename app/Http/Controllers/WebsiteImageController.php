@@ -142,7 +142,7 @@ class WebsiteImageController extends Controller
    public function optimize(Request $request)
     {
         // Image URL
-        $imageUrl = 'https://retail.sabsoft.com.pk/api/website/image/1727867687-1726240292-ker-003.jpg/prod';
+        $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727867687-1726240292-ker-003.jpg';
 
         // Fetch the image from the provided URL
         $imageContents = file_get_contents($imageUrl);
