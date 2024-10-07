@@ -142,7 +142,7 @@ class WebsiteImageController extends Controller
          // Image URL
          $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/'.$request->image;
 
-          ImageOptimizer::optimize($imageUrl);
+        //   ImageOptimizer::optimize($imageUrl);
 
        // if you use a second parameter the package will not modify the original
         ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
