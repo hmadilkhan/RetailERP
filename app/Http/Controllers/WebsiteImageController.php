@@ -7,6 +7,8 @@ use File;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
+use Spatie\ImageOptimizer\Optimizers\Jpegoptim; 
+use Spatie\ImageOptimizer\Optimizer\PngOptimizer; 
 
 class WebsiteImageController extends Controller
 {
