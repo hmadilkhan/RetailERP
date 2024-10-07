@@ -142,15 +142,15 @@ class WebsiteImageController extends Controller
          // Image URL
          $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/'.$request->image;
 
-        //   ImageOptimizer::optimize($imageUrl);
+          ImageOptimizer::optimize($imageUrl);
 
        // if you use a second parameter the package will not modify the original
-        ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
+        // ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
         $headers = array(
             'Content-Type'        => 'image/jpg',
             'Content-Description' => $request->image
           ); 
-        return response()->file('/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image, $headers);
+        return response()->file($imageUrl, $headers);
     }
 
 // public function Optimize_testing(Request $request) {
