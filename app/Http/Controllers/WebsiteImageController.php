@@ -146,13 +146,13 @@ class WebsiteImageController extends Controller
 
         // Fetch the image from the provided URL
         $imageContents = file_get_contents($imageUrl);
-        $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
+        // $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
 
         // Store the original image temporarily
-        Storage::put($tempPath, $imageContents);
+        // Storage::put($tempPath, $imageContents);
 
         // Optimize the image
-        $image = Image::make(storage_path($imageUrl));
+        $image = Image::make(storage_path($imageContents));
         $image->resize(800, null, function ($constraint) {
             $constraint->aspectRatio();
         });
