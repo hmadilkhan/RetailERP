@@ -140,17 +140,17 @@ class WebsiteImageController extends Controller
    
    public function Optimize_testing(){
          // Image URL
-         $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1728205470-KJM-104.jpg';
+         $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727864900-1726240720-ker-004.jpg';
 
           ImageOptimizer::optimize($imageUrl);
 
        // if you use a second parameter the package will not modify the original
-        ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1728205470-KJM-104.jpg');
+        ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1727864900-1726240720-ker-004.jpg');
         $headers = array(
             'Content-Type'        => 'image/jpg',
-            'Content-Description' => '1728205470-KJM-104.jpg'
+            'Content-Description' => '1727864900-1726240720-ker-004.jpg'
           ); 
-        return response()->file('/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1728205470-KJM-104.jpg', $headers);
+        return response()->file('/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1727864900-1726240720-ker-004.jpg', $headers);
     }
 
    public function optimize(Request $request)
