@@ -137,7 +137,21 @@ class WebsiteImageController extends Controller
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
         return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
    }
+   
+   public function Optimize_testing(){
+         // Image URL
+         $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727867687-1726240292-ker-003.jpg';
 
+          ImageOptimizer::optimize($imageUrl);
+
+       // if you use a second parameter the package will not modify the original
+        ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/');
+        $headers = array(
+            'Content-Type'        => 'image/'.$extension,
+            'Content-Description' => $filename
+          ); 
+        return response()->file('/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1727867687-1726240292-ker-003.jpg', $headers);
+    }
 
    public function optimize(Request $request)
     {
