@@ -117,8 +117,8 @@ class WebsiteImageController extends Controller
 
        }
 
-    //    return $this->optimize($path);
-    //    die;  
+       return $this->optimize($path);
+       die;  
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
@@ -147,11 +147,11 @@ class WebsiteImageController extends Controller
        $imageContents = file_get_contents($imageUrl);
        $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
 
-       // Store the original image temporarily
-       Storage::put($tempPath, $imageContents);
+    //    // Store the original image temporarily
+    //    Storage::put($tempPath, $imageContents);
 
        // Optimize the image
-       $image = Image::make(storage_path('app/' . $tempPath));
+       $image = Image::make($imageContents);
        $image->resize(800, null, function ($constraint) {
            $constraint->aspectRatio();
        });
@@ -160,8 +160,8 @@ class WebsiteImageController extends Controller
        $optimizedPath = 'optimized/' . basename($tempPath);
        $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
 
-       // Remove the temporary file
-       Storage::delete($tempPath);
+    //    // Remove the temporary file
+    //    Storage::delete($tempPath);
 
        // Show the optimized image
        return response()->file(storage_path('app/' . $optimizedPath))->deleteFileAfterSend(true);
