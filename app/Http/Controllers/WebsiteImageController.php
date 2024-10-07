@@ -117,8 +117,8 @@ class WebsiteImageController extends Controller
 
        }
 
-       return $this->optimize($path);
-       die;  
+    //    return $this->optimize($path);
+    //    die;  
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
