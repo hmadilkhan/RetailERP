@@ -139,32 +139,32 @@ class WebsiteImageController extends Controller
    }
 
 
-   public function optimize($file)
-   {
+   public function optimize(Request $request)
+    {
+        // Image URL
+        $imageUrl = 'https://retail.sabsoft.com.pk/api/website/image/1727867687-1726240292-ker-003.jpg/prod';
 
-       // Fetch the image from the provided URL
-       $imageUrl = $file;
-       $imageContents = file_get_contents($imageUrl);
-       $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
+        // Fetch the image from the provided URL
+        $imageContents = file_get_contents($imageUrl);
+        $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
 
-    //    // Store the original image temporarily
-    //    Storage::put($tempPath, $imageContents);
+        // Store the original image temporarily
+        Storage::put($tempPath, $imageContents);
 
-       // Optimize the image
-       $image = Image::make($imageContents);
-       $image->resize(800, null, function ($constraint) {
-           $constraint->aspectRatio();
-       });
+        // Optimize the image
+        $image = Image::make(storage_path('app/' . $tempPath));
+        $image->resize(800, null, function ($constraint) {
+            $constraint->aspectRatio();
+        });
 
-       // Save optimized image to a new path
-       $optimizedPath = 'optimized/' . basename($tempPath);
-       $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
+        // Save optimized image to a new path
+        $optimizedPath = 'optimized/' . basename($tempPath);
+        $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
 
-    //    // Remove the temporary file
-    //    Storage::delete($tempPath);
+        // Remove the temporary file
+        Storage::delete($tempPath);
 
-       // Show the optimized image
-       return response()->file(storage_path('app/' . $optimizedPath))->deleteFileAfterSend(true);
-   }   
-
+        // Show the optimized image
+        return response()->file(storage_path('app/' . $optimizedPath));
+    }
 }
