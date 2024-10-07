@@ -138,20 +138,42 @@ class WebsiteImageController extends Controller
         return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
    }
    
-   public function Optimize_testing(){
-         // Image URL
-         $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727864890-1726240777-ker-00.jpg';
+//    public function Optimize_testing(){
+//          // Image URL
+//          $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727864890-1726240777-ker-00.jpg';
 
-          ImageOptimizer::optimize($imageUrl);
+//           ImageOptimizer::optimize($imageUrl);
 
-       // if you use a second parameter the package will not modify the original
-        ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1727864890-1726240777-ker-00.jpg');
-        $headers = array(
-            'Content-Type'        => 'image/jpg',
-            'Content-Description' => '1727864890-1726240777-ker-00.jpg'
-          ); 
-        return response()->file('/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1727864890-1726240777-ker-00.jpg', $headers);
+//        // if you use a second parameter the package will not modify the original
+//         ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1727864890-1726240777-ker-00.jpg');
+//         $headers = array(
+//             'Content-Type'        => 'image/jpg',
+//             'Content-Description' => '1727864890-1726240777-ker-00.jpg'
+//           ); 
+//         return response()->file('/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/1727864890-1726240777-ker-00.jpg', $headers);
+//     }
+
+public function Optimize_testing(Request $request) {
+    // Image URL
+    $originalImageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/'.$request->image;
+    $optimizedImageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image;
+
+    // Copy original image to the optimize folder
+    if (!copy($originalImageUrl, $optimizedImageUrl)) {
+        // Handle the error if the copy fails
+        return response()->json(['error' => 'Failed to copy the original image.'], 500);
     }
+
+    // Optimize the copied image
+    ImageOptimizer::optimize($optimizedImageUrl);
+
+    $headers = array(
+        'Content-Type'        => 'image/jpg',
+        'Content-Description' => $request->image
+    ); 
+
+    return response()->file($optimizedImageUrl, $headers);
+}
 
    public function optimize(Request $request)
     {
