@@ -159,7 +159,7 @@ public function Optimize_testing(Request $request) {
     $optimizedImageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image;
 
     // Copy original image to the optimize folder
-    if (!copy($originalImageUrl, $optimizedImageUrl)) {
+    if (!rename($originalImageUrl, $optimizedImageUrl)) {
         // Handle the error if the copy fails
         return response()->json(['error' => 'Failed to copy the original image.'], 500);
     }
