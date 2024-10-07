@@ -9,6 +9,7 @@ use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
 use Spatie\ImageOptimizer\Optimizers\Jpegoptim; 
 use Spatie\ImageOptimizer\Optimizer\PngOptimizer; 
+use Image;
 
 class WebsiteImageController extends Controller
 {
@@ -109,13 +110,15 @@ class WebsiteImageController extends Controller
            $path .= 'website/'.$filename;
        }
 
-       if(!\File::exists($path)){
+       if(!File::exists($path)){
           $extension = 'png';
           $filename  = 'no-image.png';
           $path      = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/'.$filename;
 
        }
 
+       return $this->optimize($path);
+       die;  
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
@@ -134,5 +137,34 @@ class WebsiteImageController extends Controller
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
         return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
    }
+
+
+   public function optimize($file)
+   {
+
+       // Fetch the image from the provided URL
+       $imageUrl = $file;
+       $imageContents = file_get_contents($imageUrl);
+       $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
+
+       // Store the original image temporarily
+       Storage::put($tempPath, $imageContents);
+
+       // Optimize the image
+       $image = Image::make(storage_path('app/' . $tempPath));
+       $image->resize(800, null, function ($constraint) {
+           $constraint->aspectRatio();
+       });
+
+       // Save optimized image to a new path
+       $optimizedPath = 'optimized/' . basename($tempPath);
+       $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
+
+       // Remove the temporary file
+       Storage::delete($tempPath);
+
+       // Show the optimized image
+       return response()->file(storage_path('app/' . $optimizedPath))->deleteFileAfterSend(true);
+   }   
 
 }
