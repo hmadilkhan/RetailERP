@@ -3759,8 +3759,8 @@ class InventoryController extends Controller
                 $optimizerChain = OptimizerChainFactory::create();
 
                 // Add specific optimizers with custom options
-                $optimizerChain->add(new JpegOptimizer(['quality' => 90])); // Adjust quality for JPEG
-                $optimizerChain->add(new PngOptimizer(['optimize' => true])); // Example for PNG optimization
+                $optimizerChain->add(new \JpegOptimizer(['quality' => 90])); // Adjust quality for JPEG
+                $optimizerChain->add(new \PngOptimizer(['optimize' => true])); // Example for PNG optimization
                
                 // // Optimize the image in place
                 // $optimizerChain->optimize($pathToImage);
