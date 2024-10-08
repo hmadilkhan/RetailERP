@@ -144,7 +144,7 @@ class WebsiteImageController extends Controller
          $imageUrl = Storage::disk('public')->path('/images/products/'.$request->image);
 
         // Temporary folder ka path
-        $tmpPath = Storage::disk('public')->path('images/optimize_images/'); // Ensure karein ke ye folder exist kare
+        $tmpPath = Storage::disk('public')->path('images/optimize_images'); // Ensure karein ke ye folder exist kare
 
         // Temporary image ka path
         $tmpImagePath = $tmpPath .'/'.$request->image;
