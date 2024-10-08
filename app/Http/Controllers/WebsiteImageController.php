@@ -135,7 +135,7 @@ class WebsiteImageController extends Controller
 
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
-        return response()->file($tempPath, $headers);
+        return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
    }
    
    public function Optimize_testing($image){
@@ -217,32 +217,32 @@ class WebsiteImageController extends Controller
 //     return response()->file($optimizedImageUrl, $headers);
 // }
 
-   public function optimize(Request $request)
-    {
-        // Image URL
-        $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727867687-1726240292-ker-003.jpg';
+//    public function optimize(Request $request)
+//     {
+//         // Image URL
+//         $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727867687-1726240292-ker-003.jpg';
 
-        // Fetch the image from the provided URL
-        $imageContents = file_get_contents($imageUrl);
-        // $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
+//         // Fetch the image from the provided URL
+//         $imageContents = file_get_contents($imageUrl);
+//         // $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
 
-        // Store the original image temporarily
-        // Storage::put($tempPath, $imageContents);
+//         // Store the original image temporarily
+//         // Storage::put($tempPath, $imageContents);
 
-        // Optimize the image
-        $image = Image::make($imageContents);
-        $image->resize(800, null, function ($constraint) {
-            $constraint->aspectRatio();
-        });
+//         // Optimize the image
+//         $image = Image::make($imageContents);
+//         $image->resize(800, null, function ($constraint) {
+//             $constraint->aspectRatio();
+//         });
 
-        // Save optimized image to a new path
-        $optimizedPath = 'optimized/' . basename($tempPath);
-        $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
+//         // Save optimized image to a new path
+//         $optimizedPath = 'optimized/' . basename($tempPath);
+//         $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
 
-        // Remove the temporary file
-        Storage::delete($tempPath);
+//         // Remove the temporary file
+//         Storage::delete($tempPath);
 
-        // Show the optimized image
-        return response()->file(storage_path('app/' . $optimizedPath));
-    }
+//         // Show the optimized image
+//         return response()->file(storage_path('app/' . $optimizedPath));
+//     }
 }
