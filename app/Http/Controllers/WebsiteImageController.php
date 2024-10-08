@@ -155,7 +155,7 @@ class WebsiteImageController extends Controller
         }
 
         // Original image ko temporary folder mein copy karna
-        Storage::disk('public')->copy($imageUrl, $tmpImagePath);        
+        Storage::disk('public')->copy('images/products/' . $request->image, $tmpImagePath);        
         //  Image::load(Storage::disk('public')->path($imageUrl))
         //  ->optimize()
         //  ->save($imageName);
