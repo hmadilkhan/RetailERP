@@ -135,7 +135,7 @@ class WebsiteImageController extends Controller
 
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
-        return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
+        return response()->file($tempPath, $headers);
    }
    
    public function Optimize_testing(Request $request){
