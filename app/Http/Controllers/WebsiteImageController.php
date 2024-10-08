@@ -142,10 +142,10 @@ class WebsiteImageController extends Controller
          // Image URL
          $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
          $imageUrl = '/images/products/'.$request->image;
-         Image::load(Storage::disk('public')->path($imageUrl))
-         ->optimize()
-         ->save($imageName);
-        //   ImageOptimizer::optimize($imageUrl);
+        //  Image::load(Storage::disk('public')->path($imageUrl))
+        //  ->optimize()
+        //  ->save($imageName);
+        //   ImageOptimizer::optimize(Storage::disk('public')->path($imageUrl));
 
        // if you use a second parameter the package will not modify the original
         // ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
@@ -153,7 +153,7 @@ class WebsiteImageController extends Controller
             'Content-Type'        => 'image/jpg',
             'Content-Description' => $request->image
           ); 
-        return response()->file('/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/'.$imageName, $headers);
+        return response()->file(Storage::disk('public')->path($imageUrl), $headers);
     }
 
 // public function Optimize_testing(Request $request) {
