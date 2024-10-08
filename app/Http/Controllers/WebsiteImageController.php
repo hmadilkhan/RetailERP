@@ -139,21 +139,29 @@ class WebsiteImageController extends Controller
    }
    
    public function Optimize_testing(Request $request){
-         // Image URL
+    
          $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
-         $imageUrl = '/images/products/'.$request->image;
+         $imageUrl = Storage::disk('public')->path('/images/products/'.$request->image);
+
+        // Temporary folder ka path
+        $tmpPath = Storage::disk('public')->path('images/optimize_images/'); // Ensure karein ke ye folder exist kare
+
+        // Temporary image ka path
+        $tmpImagePath = $tmpPath .'/'.$request->image;
         //  Image::load(Storage::disk('public')->path($imageUrl))
         //  ->optimize()
         //  ->save($imageName);
-          ImageOptimizer::optimize(Storage::disk('public')->path($imageUrl));
 
-       // if you use a second parameter the package will not modify the original
-        // ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
+        // Original image ko temporary folder mein copy karna
+         Storage::disk('public')->copy($imageUrl, $tmpImagePath);
+
+          ImageOptimizer::optimize(Storage::disk('public')->path($tmpImagePath));
+
         $headers = array(
             'Content-Type'        => 'image/jpg',
             'Content-Description' => $request->image
           ); 
-        return response()->file(Storage::disk('public')->path($imageUrl), $headers);
+        return response()->file(Storage::disk('public')->path($tmpImagePath), $headers);
     }
 
 // public function Optimize_testing(Request $request) {
