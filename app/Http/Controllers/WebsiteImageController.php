@@ -166,8 +166,9 @@ class WebsiteImageController extends Controller
     // Storage::disk('public')->move('/images/products/' . $request->image,'images/optimize_images'.$request->image);
 
     // Optimize the image
-    $optimizer = OptimizerChainFactory::create();
-    $optimizer->optimize($imageUrl);
+    ImageOptimizer::optimize($imageUrl);
+    // $optimizer = OptimizerChainFactory::create();
+    // $optimizer->optimize($imageUrl);
 
     // Response headers
     $headers = [
