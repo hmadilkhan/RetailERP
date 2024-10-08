@@ -3,7 +3,7 @@
         width="100%">
         <thead>
             <tr>
-                <th>Machine#</th>
+                <th>Machine/Website</th>
                 <th>Order#</th>
                 <th>Date</th>
                 <th>Time</th>
