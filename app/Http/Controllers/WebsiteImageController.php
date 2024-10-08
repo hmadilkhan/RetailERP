@@ -140,29 +140,34 @@ class WebsiteImageController extends Controller
    
    public function Optimize_testing(Request $request){
     
-         $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
-         $imageUrl = Storage::disk('public')->path('/images/products/'.$request->image);
+        //  $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
+         $imageUrl = Storage::disk('public')->path('images/products/' . $request->image);
 
         // Temporary folder ka path
-        $tmpPath = Storage::disk('public')->path('images/optimize_images'); // Ensure karein ke ye folder exist kare
-
+        $tmpPath = Storage::disk('public')->path('images/optimize_images'); 
+        
         // Temporary image ka path
-        $tmpImagePath = $tmpPath .'/'.$request->image;
+        $tmpImagePath = $tmpPath . '/' . $request->image;
+
+        // Ensure karein ke temporary folder exist kare
+        if (!is_dir($tmpPath)) {
+            mkdir($tmpPath, 0755, true);
+        }
+
+        // Original image ko temporary folder mein copy karna
+        Storage::disk('public')->copy($imageUrl, $tmpImagePath);        
         //  Image::load(Storage::disk('public')->path($imageUrl))
         //  ->optimize()
         //  ->save($imageName);
 
-        // Original image ko temporary folder mein copy karna
-         Storage::disk('public')->copy($imageUrl, $tmpImagePath);
 
-         $optimizer = OptimizerChainFactory::create();
-         $optimizer->optimize($tmpImagePath);
+          ImageOptimizer::optimize($tmpImagePath);
 
         $headers = array(
             'Content-Type'        => 'image/jpg',
             'Content-Description' => $request->image
           ); 
-        return response()->file($tmpImagePath, $headers);
+        return response()->file(Storage::disk('public')->path($tmpImagePath), $headers);
     }
 
 // public function Optimize_testing(Request $request) {
