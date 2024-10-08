@@ -148,25 +148,26 @@ class WebsiteImageController extends Controller
         return response()->json(['error' => 'Original image does not exist.'], 404);
     }
 
-    // // Temporary folder path
-    // $tmpPath = Storage::disk('public')->path('images/optimize_images');
+    // Temporary folder path
+    $tmpPath = Storage::disk('public')->path('images/optimize_images');
 
-    // // Ensure temporary directory exists
-    // if (!is_dir($tmpPath)) {
-    //     if (!mkdir($tmpPath, 0755, true)) {
-    //         return response()->json(['error' => 'Unable to create temporary directory.'], 500);
-    //     }
-    // }
+    // Ensure temporary directory exists
+    if (!is_dir($tmpPath)) {
+        if (!mkdir($tmpPath, 0755, true)) {
+            return response()->json(['error' => 'Unable to create temporary directory.'], 500);
+        }
+    }
 
-    // // Temporary image path
-    // $tmpImagePath = $tmpPath . '/' . basename($request->image);
+    // Temporary image path
+    $tmpImagePath = $tmpPath . '/' .$request->image;
 
-    // // Copy original image to temporary folder
-    // Storage::disk('public')->put('images/products/' . $request->image, $tmpImagePath);
+    // Copy original image to temporary folder
+    // Move the image
+    Storage::disk('public')->move('/images/products/' . $request->image,'images/optimize_images'.$request->image);
 
     // Optimize the image
     $optimizer = OptimizerChainFactory::create();
-    $optimizer->optimize($imageUrl);
+    $optimizer->optimize($tmpImagePath);
 
     // Response headers
     $headers = [
@@ -174,7 +175,7 @@ class WebsiteImageController extends Controller
     ];
 
     // Return the optimized image
-    return response()->file($imageUrl, $headers);
+    return response()->file($tmpImagePath, $headers);
 
     //      // Image URL
     //      $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
