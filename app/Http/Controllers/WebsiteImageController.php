@@ -117,8 +117,8 @@ class WebsiteImageController extends Controller
 
        }
 
-    //    return $this->optimize($path);
-    //    die;  
+       return $this->Optimize_testing($filename);
+       die;  
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
@@ -138,10 +138,10 @@ class WebsiteImageController extends Controller
         return response()->file($tempPath, $headers);
    }
    
-   public function Optimize_testing(Request $request){
+   public function Optimize_testing($image){
 
     // Original image path
-    $imageUrl = Storage::disk('public')->path('images/products/' . $request->image);
+    $imageUrl = Storage::disk('public')->path('images/products/' . $image);
     
     // Check if the original image exists
     if (!file_exists($imageUrl)) {
@@ -172,7 +172,7 @@ class WebsiteImageController extends Controller
 
     // Response headers
     $headers = [
-        'Content-Type' => 'image/jpg',
+        'Content-Type' => 'image/'.strtolower(pathinfo($image,PATHINFO_EXTENSION)),
     ];
 
     // Return the optimized image
