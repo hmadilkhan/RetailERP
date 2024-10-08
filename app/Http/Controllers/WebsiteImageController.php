@@ -167,7 +167,7 @@ class WebsiteImageController extends Controller
             'Content-Type'        => 'image/jpg',
             'Content-Description' => $request->image
           ); 
-        return response()->file(Storage::disk('public')->path($imageUrl), $headers);
+        return response()->file($imageUrl, $headers);
     }
 
 // public function Optimize_testing(Request $request) {
