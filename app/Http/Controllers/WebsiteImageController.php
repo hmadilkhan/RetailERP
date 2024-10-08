@@ -155,7 +155,8 @@ class WebsiteImageController extends Controller
         // Original image ko temporary folder mein copy karna
          Storage::disk('public')->copy($imageUrl, $tmpImagePath);
 
-          ImageOptimizer::optimize($tmpImagePath);
+         $optimizer = OptimizerChainFactory::create();
+         $optimizer->optimize($tmpImagePath);
 
         $headers = array(
             'Content-Type'        => 'image/jpg',
