@@ -521,7 +521,7 @@ class ReportController extends Controller
             ->when($request->sales_tax != "", function ($query) {
                 $query->where("fbrInvNumber", '!=', "");
             })
-            ->when(!empty($request->status) && $request->status[0] != "", function ($query) use ($request) {
+            ->when(!empty($request->status) && $request->status[0] != null, function ($query) use ($request) {
                 $query->whereIn('status', $request->status);
             })
             ->when($request->salesperson != "" && $request->salesperson != "all", function ($query) use ($request) {
