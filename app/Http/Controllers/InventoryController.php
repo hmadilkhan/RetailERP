@@ -57,7 +57,8 @@ class InventoryController extends Controller
         
         foreach($getImages as $value){
              if(strpos($value->image, 'kasheesjewellery/') !== false){
-                return str_replace('kasheesjewellery/','',$value->image);
+                $stImageValue = str_replace('kasheesjewellery/','',$value->image);
+                DB::table('inventory_images')->where('id',$value->image)->update(['image'=>$stImageValue]);
              }
         }
     }
