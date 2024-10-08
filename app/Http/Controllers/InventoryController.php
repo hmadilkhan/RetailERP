@@ -52,16 +52,6 @@ class InventoryController extends Controller
      */
     public function index(inventory $inventory, Brand $brand)
     {
-      if(Auth::user()->username == 'uzair.kashee'){
-        $getImages = DB::table('inventory_images')->get();       
-        foreach($getImages as $value){
-             if(strpos($value->image, 'kasheesjewellery/') !== false){
-                $stImageValue = str_replace('kasheesjewellery/','',$value->image);
-                DB::table('inventory_images')->where('id',$value->id)->update(['image'=>$stImageValue]);
-             }
-        }
-    }
-
         // return  InventoryDepartment::whereIn("department_id",ModelsInventory::whereIn("id",WebsiteProduct::where("website_id",41)->pluck("inventory_id"))->pluck("department_id"))->where('status',1)->select("code","department_id","department_name","website_department_name","slug","image","banner")->orderBy('priority','desc')->get();
         $department    = $inventory->department();
         $subdepartment = ''; //$inventory->subDepartment();
