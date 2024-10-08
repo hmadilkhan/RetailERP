@@ -54,7 +54,8 @@
                <th>Rating</th>
                <th>Title</th>
                <th>Review</th>
-               <th>Product URL</th>
+               <th>Date</th>
+               <th>Time</th>
                <th>Status</th>
                <th>Action</th>
             </tr>
@@ -97,8 +98,9 @@
 				  <td>{{ $value->rating }}</td>
           <td>{{ $value->review_title }}</td>
 				  <td><p>{{ $value->review }}</p></td>
-          <td><a href="{{ $value->product_url }}">Go to Product Page</a></td>
           <td><span class="{{ $statusLabelColor }}"><b>{{ $statusName }}</b></span></td>
+          <td>{{ date('Y-m-d',strtotime($value->created_at)) }}</td>
+          <td>{{ date('h:i a',strtotime($value->created_at)) }}</td>
 				  <td class="action-icon">
             <label class="switch m-r-1">
               <input type="checkbox" title="" data-original-title="Active/In-Active Switch" 
