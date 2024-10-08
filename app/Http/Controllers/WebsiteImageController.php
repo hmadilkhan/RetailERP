@@ -142,7 +142,7 @@ class WebsiteImageController extends Controller
          // Image URL
          $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
          $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/'.$request->image;
-         Image::load($imageUrl)
+         Image::load(File::get($imageUrl))
          ->optimize()
          ->save($imageName);
         //   ImageOptimizer::optimize($imageUrl);
