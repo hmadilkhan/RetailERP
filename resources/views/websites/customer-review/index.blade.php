@@ -98,9 +98,9 @@
 				  <td>{{ $value->rating }}</td>
           <td>{{ $value->review_title }}</td>
 				  <td><p>{{ $value->review }}</p></td>
-          <td><span class="{{ $statusLabelColor }}"><b>{{ $statusName }}</b></span></td>
           <td>{{ date('Y-m-d',strtotime($value->created_at)) }}</td>
-          <td>{{ date('h:i a',strtotime($value->created_at)) }}</td>
+          <td>{{ date('h:i a',strtotime($value->created_at)) }}</td>          
+          <td><span class="{{ $statusLabelColor }}"><b>{{ $statusName }}</b></span></td>
 				  <td class="action-icon">
             <label class="switch m-r-1">
               <input type="checkbox" title="" data-original-title="Active/In-Active Switch" 
