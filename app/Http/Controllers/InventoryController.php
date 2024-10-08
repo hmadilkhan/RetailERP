@@ -53,12 +53,11 @@ class InventoryController extends Controller
     public function index(inventory $inventory, Brand $brand)
     {
       if(Auth::user()->username == 'uzair.kashee'){
-        $getImages = DB::table('inventory_images')->get();
-        
+        $getImages = DB::table('inventory_images')->get();       
         foreach($getImages as $value){
              if(strpos($value->image, 'kasheesjewellery/') !== false){
                 $stImageValue = str_replace('kasheesjewellery/','',$value->image);
-                DB::table('inventory_images')->where('id',$value->image)->update(['image'=>$stImageValue]);
+                DB::table('inventory_images')->where('id',$value->id)->update(['image'=>$stImageValue]);
              }
         }
     }
