@@ -161,13 +161,13 @@ class WebsiteImageController extends Controller
         //  ->save($imageName);
 
 
-          ImageOptimizer::optimize($tmpImagePath);
+          ImageOptimizer::optimize($imageUrl);
 
         $headers = array(
             'Content-Type'        => 'image/jpg',
             'Content-Description' => $request->image
           ); 
-        return response()->file(Storage::disk('public')->path($tmpImagePath), $headers);
+        return response()->file(Storage::disk('public')->path($imageUrl), $headers);
     }
 
 // public function Optimize_testing(Request $request) {
