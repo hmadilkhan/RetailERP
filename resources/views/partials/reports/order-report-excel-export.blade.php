@@ -9,7 +9,7 @@
 	<tr colspan="8"></tr>
 	<thead>
 	   <tr>
-		  <th style="background-color: #1a4567;color:white;text-align: center;">Machine #</th>
+		  <th style="background-color: #1a4567;color:white;text-align: center;">Machine / Website #</th>
 		  @if(session("company_id") != 102)
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Order #</th>
 		  @endif
@@ -18,6 +18,7 @@
 		  @endif
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Order Date</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Order Time</th>
+		  <th style="background-color: #1a4567;color:white;text-align: center;">Category</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Branch</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Terminal</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Customer</th>
@@ -54,7 +55,7 @@
 
 			?>
 		   <tr>
-			  <td style="text-align: center;">{{$value->machine_terminal_count }}</td>
+			  <td style="text-align: center;">{{($value->web == 1 ? strtoupper($value->url_orderid) : $value->machine_terminal_count) }}</td>
 			  @if(session("company_id") != 102)
 			  <td style="text-align: center;">{{$value->id}}</td>
 		      @endif
@@ -63,9 +64,10 @@
 		      @endif
 			  <td style="text-align: center;">{{date("d M Y",strtotime($value->date))}}</td>
 			  <td style="text-align: center;">{{date("H:i a",strtotime($value->time))}}</td>
+			  <td style="text-align: center;">{{ ($value->web == 1 ? 'Website' : 'POS' )}}</td>
 			  <td style="text-align: center;">{{$value->branchrelation->branch_name}}</td>
 			  <td style="text-align: center;">{{$value->terminal->terminal_name }}</td>
-			  <td style="text-align: left;">{{$value->bill_print_name}}</td>
+			  <td style="text-align: left;">{{$value->customer->name}}</td>
 			  <td style="text-align: center;">{{$value->mode->order_mode}}</td>
 			  <td style="text-align: center;">{{(!empty($value->payment) ? $value->payment->payment_mode : 0)}}</td>
 			  <td style="text-align: center;">{{(!empty($value->salesperson) ? $value->salesperson->fullname : 0)}}</td>

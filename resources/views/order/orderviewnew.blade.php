@@ -1027,5 +1027,13 @@
         function clearControl(controlId) {
             $("#" + controlId).val('all').trigger('change.select2')
         }
+
+        $("#category").change(function(){
+            if ($(this).val() == 1) {
+                $("#type").val("datewise").change();
+            }else{
+                $("#type").val("declaration").change();
+            }
+        })
     </script>
 @endsection
