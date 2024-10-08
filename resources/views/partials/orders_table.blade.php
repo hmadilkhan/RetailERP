@@ -7,6 +7,7 @@
                 <th>Order#</th>
                 <th>Date</th>
                 <th>Time</th>
+                <th class="text-center">Category</th>
                 <th>Branch</th>
                 <th>Terminal</th>
                 <th>Receipt#</th>
@@ -24,7 +25,7 @@
             @if ($orders->isNotEmpty())
                 @foreach ($orders as $key => $order)
                     <tr class="{{ $order->is_sale_return == 1 ? 'table-danger' : '' }}">
-                        <td>{{ $order->machine_terminal_count }}</td>
+                        <td>{{ ($order->web == 1 ? strtoupper($order->url_orderid) : $order->machine_terminal_count ) }}</td>
                         <td>{{ $order->id }}</td>
                         <td>
                             <div class="btn-group dropend border border-black">
@@ -47,6 +48,7 @@
                             </div>
                         </td>
                         <td>{{ date('h:i a', strtotime($order->time)) }}</td>
+                        <td class="text-center"><label class="label {{($order->web == 1 ? 'label-warning' : 'label-info' )}}"> {{ ($order->web == 1 ? 'Website' : 'POS' ) }}</label></td>
                         <td>{{ $order->branch_name }}</td>
                         <td>{{ $order->terminal_name }}</td>
                         <td>{{ $order->receipt_no }}</td>

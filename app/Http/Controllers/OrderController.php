@@ -76,12 +76,13 @@ class OrderController extends Controller
 
     public function orderdetails(Request $request, Customer $customer)
     {
-        $orders = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user", "payment")->where("id", $request->id)->first();
+        $orders = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user", "payment","address")->where("id", $request->id)->first();
         $received = CustomerAccount::where("receipt_no", $request->id)->sum('received');
         $statuses = OrderStatus::all();
         $ledgerDetails = $customer->LedgerDetailsShowInOrderDetails($orders->customer->id, $request->id);
         $provider = ServiceProviderOrders::with("serviceprovider")->where("receipt_id", $orders->id)->first();
         // return $ledgerDetails;
+        // return $orders;
         return view("order.order-details", compact("orders", "received", "statuses", "ledgerDetails", "provider"));
     }
 
