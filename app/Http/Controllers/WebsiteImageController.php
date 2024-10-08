@@ -170,7 +170,7 @@ class WebsiteImageController extends Controller
 
     // Response headers
     $headers = [
-        'Content-Type' => 'image/jpeg',
+        'Content-Type' => 'image/jpg',
     ];
 
     // Return the optimized image
