@@ -307,7 +307,7 @@
                     </div>
                 </div>
 
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                {{-- <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Cancel Orders</span>
                         <h2 class="dashboard-total-products" id="cancelorders">0</h2>
@@ -316,7 +316,7 @@
                             <i class="ti-package text-warning-color"></i>
                         </div>
                     </div>
-                </div>
+                </div> --}}
 
             </div>
         </div>
