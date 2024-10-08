@@ -162,7 +162,7 @@ class WebsiteImageController extends Controller
     $tmpImagePath = $tmpPath . '/' . basename($request->image);
 
     // Copy original image to temporary folder
-    Storage::disk('public')->copy('images/products/' . $request->image, $tmpImagePath);
+    Storage::disk('public')->put('images/products/' . $request->image, $tmpImagePath);
 
     // Optimize the image
     $optimizer = OptimizerChainFactory::create();
