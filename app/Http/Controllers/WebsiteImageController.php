@@ -155,13 +155,13 @@ class WebsiteImageController extends Controller
         // Original image ko temporary folder mein copy karna
          Storage::disk('public')->copy($imageUrl, $tmpImagePath);
 
-          ImageOptimizer::optimize(Storage::disk('public')->path($tmpImagePath));
+          ImageOptimizer::optimize($tmpImagePath);
 
         $headers = array(
             'Content-Type'        => 'image/jpg',
             'Content-Description' => $request->image
           ); 
-        return response()->file(Storage::disk('public')->path($tmpImagePath), $headers);
+        return response()->file($tmpImagePath, $headers);
     }
 
 // public function Optimize_testing(Request $request) {
