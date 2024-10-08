@@ -309,9 +309,9 @@
 
                 {{-- <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
-                        <span>Online Orders</span>
-                        <h2 class="dashboard-total-products" id="onlineorders">0</h2>
-                        <span class="label label-warning">Online</span>
+                        <span>Cancel Orders</span>
+                        <h2 class="dashboard-total-products" id="cancelorders">0</h2>
+                        <span class="label label-danger">Cancel</span>
                         <div class="side-box">
                             <i class="ti-package text-warning-color"></i>
                         </div>
