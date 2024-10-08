@@ -57,7 +57,7 @@ class InventoryController extends Controller
         
         foreach($getImages as $value){
              if(strpos($value->image, 'kasheesjewellery/') !== false){
-                return $value->image;
+                return str_replace('kasheesjewellery/','',$value->image);
              }
         }
     }
