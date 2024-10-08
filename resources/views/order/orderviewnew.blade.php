@@ -194,6 +194,14 @@
                                 Datewise</option>
                         </select>
                     </div>
+                    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
+                        <label class="form-control-label">Select Category</label>
+                        <select id="category" name="category" data-placeholder="Select Category" class="f-right select2">
+                            <option value="all" >All</option>
+                            <option value="0" >POS</option>
+                            <option value="1">Website</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -298,6 +306,17 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                    <div class="card dashboard-product">
+                        <span>Online Orders</span>
+                        <h2 class="dashboard-total-products" id="onlineorders">0</h2>
+                        <span class="label label-warning">Online</span>
+                        <div class="side-box">
+                            <i class="ti-package text-warning-color"></i>
+                        </div>
+                    </div>
+                </div> --}}
 
             </div>
         </div>
@@ -563,6 +582,7 @@
                     sales_tax: $('#sales_tax').val(),
                     type: $('#type').val(),
                     salesperson: $('#orderserviceprovider').val(),
+                    category: $('#category').val(),
                 },
                 success: function(data) {
                     $('#table_data').empty();
@@ -984,7 +1004,7 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=excel&salesperson=" + $('#orderserviceprovider').val());
+                    "&report=excel&salesperson=" + $('#orderserviceprovider').val()+"&category=" + $('#category').val());
             }
         })
 
@@ -999,7 +1019,7 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=pdf&salesperson=" + $('#orderserviceprovider').val());
+                    "&report=pdf&salesperson=" + $('#orderserviceprovider').val()+"&category=" + $('#category').val());
             }
 
         })

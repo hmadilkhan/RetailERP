@@ -207,10 +207,12 @@
                                             {{ $orders->orderStatus->order_status_name }}
                                         @endif
                                     </label>
-                                    <label class="mt-5">
-                                        <h5 class="font-size-24 text-sm-end text-muted float-left ">Delivery Date :
-                                            {{ date('d M Y', strtotime($orders->delivery_date)) }}</h5>
-                                    </label>
+                                    @if ($orders->delivery_date != '')
+                                        <label class="mt-5">
+                                            <h5 class="font-size-24 text-sm-end text-muted float-left ">Delivery Date :
+                                                {{ date('d M Y', strtotime($orders->delivery_date)) }}</h5>
+                                        </label>
+                                    @endif
                                 </div>
 
                             </div>
@@ -219,7 +221,11 @@
                             <h3 class="font-size-24 text-center mb-4">Branch #</h3>
                             <h1 class="fs-1 text-center mb-4">{{ $orders->branchrelation->branch_name }}</h1>
                             <h2 class="font-size-28 text-center mb-2">Customer : {{ ucwords($orders->customer->name) }}</h2>
-                            <h3 class="font-size-24 text-center mb-2">Receipt No : {{ $orders->receipt_no }}</h3>
+                            @if ($orders->web == 1)
+                                <h3 class="font-size-24 text-center mb-2">Order ID : {{ $orders->url_orderid }}</h3>
+                            @else
+                                <h3 class="font-size-24 text-center mb-2">Receipt No : {{ $orders->receipt_no }}</h3>
+                            @endif
 
                         </div>
                         <div class="col-xl-4">
@@ -240,7 +246,9 @@
                                                 <i class="mdi mdi-cart-outline me-1"></i> Dispatch </a>
                                         @endif
                                     @endif
-                                    @if ($orders->orderStatus->order_status_id >= 6 && (session('roleId') == 19 or session('roleId') == 20 or session('roleId') == 2))
+                                    @if (
+                                        $orders->orderStatus->order_status_id >= 6 &&
+                                            (session('roleId') == 19 or session('roleId') == 20 or session('roleId') == 2))
                                         <a href="{{ url('voucher') }}/{{ $orders->receipt_no }}"
                                             class="btn btn-danger  ml-2" target="_blank">
                                             <i class="mdi mdi-cloud-print me-1"></i> Print </a>
@@ -270,9 +278,9 @@
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')"> --}}
-                                           
+
                                         <img id="myImg{{ $key }}"
-                                            src="{{ Custom_Helper::getProductImage($item->inventory->url,$item->inventory->image) }}"
+                                            src="{{ Custom_Helper::getProductImage($item->inventory->url, $item->inventory->image) }}"
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')">
@@ -330,7 +338,8 @@
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Price</p>
                                                 <h5 class="mb-0 mt-2">
-                                                    {{ session('currency') . ' ' . number_format($item->item_price, 0) }}</h5>
+                                                    {{ session('currency') . ' ' . number_format($item->item_price, 0) }}
+                                                </h5>
                                             </div>
                                         </div>
                                         <div class="col-md-5">
@@ -347,7 +356,7 @@
                                         <div class="col-md-3">
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Total</p>
-                                                <h5>{{ session('currency') . ' ' . number_format(($item->item_price != "" ? $item->item_price : 1) * $item->total_qty, 0) }}
+                                                <h5>{{ session('currency') . ' ' . number_format(($item->item_price != '' ? $item->item_price : 1) * $item->total_qty, 0) }}
                                                 </h5>
                                             </div>
                                         </div>
@@ -363,7 +372,7 @@
                                 <div class="d-flex align-items-start border-bottom pb-3">
                                     <div class="me-4">
                                         <img id="myImg{{ $key }}"
-                                            src="{{ Custom_Helper::getProductImage($item->inventory->url,$item->inventory->image) }}"
+                                            src="{{ Custom_Helper::getProductImage($item->inventory->url, $item->inventory->image) }}"
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')">
@@ -374,7 +383,7 @@
                                             <h5 class="text-truncate font-size-18"><a href="#"
                                                     class="code{{ $key }} text-dark fw-bold">({{ $item->inventory->item_code }})
                                                 </a> <a href="#"
-                                                    class="name{{ $key }} text-dark">{{ $item->item_name }}  </a>
+                                                    class="name{{ $key }} text-dark">{{ $item->item_name }} </a>
                                             </h5>
                                             <p class="mb-0 mt-1  fs-5"><span class="fw-bold">Comments : </span><span
                                                     class="comments{{ $key }} fs-5">{{ $item->note }}</span>
@@ -402,7 +411,8 @@
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Price</p>
                                                 <h5 class="mb-0 mt-2">
-                                                    {{ session('currency') . ' ' . ($item->item_price != "" ? number_format($item->item_price, 0) : 0) }}</h5>
+                                                    {{ session('currency') . ' ' . ($item->item_price != '' ? number_format($item->item_price, 0) : 0) }}
+                                                </h5>
                                             </div>
                                         </div>
                                         <div class="col-md-5">
@@ -419,7 +429,7 @@
                                         <div class="col-md-3">
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Total</p>
-                                                <h5>{{ session('currency') . ' ' .  number_format(($item->item_price != "" ? $item->item_price : 1) * $item->total_qty, 0) }}
+                                                <h5>{{ session('currency') . ' ' . number_format(($item->item_price != '' ? $item->item_price : 1) * $item->total_qty, 0) }}
                                                 </h5>
                                             </div>
                                         </div>
@@ -494,7 +504,17 @@
                                         </tr>
                                         <tr>
                                             <td>Sales Person :</td>
-                                            <td class="text-end">{{ (!empty($provider) ? $provider->serviceprovider->provider_name : '-') }}</td>
+                                            <td class="text-end">
+                                                {{ !empty($provider) ? $provider->serviceprovider->provider_name : '-' }}
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Land Mark :</td>
+                                            <td class="text-end">{{ $orders->address->landmark }}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Address :</td>
+                                            <td class="text-end">{{ $orders->address->address }}</td>
                                         </tr>
 
                                     </tbody>
@@ -504,6 +524,32 @@
                         </div>
                     </div>
                 </div>
+                <div class="mt-5 mt-lg-0">
+                    <div class="card border shadow-none">
+                        <div class="card-header bg-transparent border-bottom py-3 px-4">
+                            <h5 class="font-size-16 mb-0">Delivery Detail</h5>
+                        </div>
+                        <div class="card-body p-4 pt-2">
+    
+                            <div class="table-responsive">
+                                <table class="table mb-0">
+                                    <tbody>
+    
+                                        <tr>
+                                            <td>Area Name :</td>
+                                            <td class="text-end">{{($orders->delivery_area_name != "" ? $orders->delivery_area_name : '-' )}}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Instructions :</td>
+                                            <td class="text-end">{{($orders->delivery_instructions != "" ? $orders->delivery_instructions : '-')}}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- end table-responsive -->
+                        </div>
+                    </div>
+                </div>  
                 <div class="mt-5 mt-lg-0">
                     <div class="card border shadow-none">
                         <div class="card-header bg-transparent border-bottom py-3 px-4">

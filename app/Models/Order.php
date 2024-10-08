@@ -93,4 +93,9 @@ class Order extends Model
     {
         return $this->belongsTo(User::class, 'sales_person_id', 'id');
     }
+
+    public function address()
+    {
+        return $this->belongsTo(CustomerAddress::class,"cust_location_id","id")->where("status",1);
+    }
 }
