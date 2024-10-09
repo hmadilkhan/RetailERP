@@ -25,11 +25,12 @@ class WebsiteTestimonialController extends Controller
         $data = [];
 
         if(isset($request->id)){
+            $data['websiteId']=$request->id;
             $data["testimonials"] = Testimonial::where('website_id',$request->id)->get();
         }
-            
+
         $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
-        
+
         return view("websites.testimonial.index",$data);
     }
 
@@ -70,7 +71,7 @@ class WebsiteTestimonialController extends Controller
 
                 $path = '/images/testimonials/';
                 $returnImageValue = $this->uploads($image, $path);
-                $imageName = $returnImageValue['fileName']; 
+                $imageName = $returnImageValue['fileName'];
             }
 
 
@@ -138,7 +139,7 @@ class WebsiteTestimonialController extends Controller
 
                 $path = '/images/testimonials/';
                 $returnImageValue = $this->uploads($image, $path,$testimonial->image);
-                $imageName = !empty($returnImageValue['fileName']) ? $returnImageValue['fileName'] : null; 
+                $imageName = !empty($returnImageValue['fileName']) ? $returnImageValue['fileName'] : null;
             }
 
 
@@ -151,7 +152,7 @@ class WebsiteTestimonialController extends Controller
                 $this->validate($request, $rule);
             }
 
-            $testimonial->website_id      = $request->website_id; 
+            $testimonial->website_id      = $request->website_id;
             $testimonial->customer_name   = $request->customer_name;
             $testimonial->rating          = $request->rating;
             $testimonial->content         = $request->content;

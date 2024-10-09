@@ -8,7 +8,7 @@
 
 @section('content')
 <section class="panels-wells p-t-3">
-   
+
     @if(Session::has('error'))
          <div class="alert alert-danger">{{ Session::get('error') }}</div>
     @endif
@@ -17,8 +17,7 @@
          <div class="alert alert-success">{{ Session::get('success') }}</div>
     @endif
 
-  @php $url_parameter_webId = Request::has('id') ? Request::get('id') : null; @endphp
-    <div class="card">
+ <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Filter</h5>
          <a href="{{route('testimonials.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Testimonial</a>
@@ -29,15 +28,15 @@
                 <label class="form-control-label">Website</label>
                 <select name="website" id="website" class="select2" data-placeholder="Select">
                     <option value="">Select</option>
-                    @php $websiteValue = $url_parameter_webId != null ? $url_parameter_webId : old('websites') @endphp
-                    @foreach($websites as $value) 
+                    @php $websiteValue = isset($websiteId) ? $websiteId : old('websites') @endphp
+                    @foreach($websites as $value)
                     <option {{ $websiteValue == $value->id ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
                     @endforeach
                 </select>
              </div>
            </div>
        </div>
-    </div>  
+    </div>
 
     @if(isset($testimonials))
     <div class="card">
@@ -59,18 +58,18 @@
 		</thead>
 		<tbody>
               @foreach($testimonials as $value)
-                 @php 
-                   $website_name = $websites->where('id',$value->website_id)->pluck('name'); 
+                 @php
+                   $website_name = $websites->where('id',$value->website_id)->pluck('name');
                       $image = asset('storage/images/no-image.jpg');
-                      
+
                       if(File::exists('storage/images/testimonials/'.$value->image)){
                           $image = asset('storage/images/testimonials/'.$value->image);
                       }
                  @endphp
 				<tr>
-          <td class="d-none">{{ $value->id }}</td>  
+          <td class="d-none">{{ $value->id }}</td>
 				  <td>
-            <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}"> 
+            <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'placeholder.jpg' }}">
               <img width="64" height="64" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"></td>
 				    </a>
           <td>{{ $value->customer_name }}</td>
@@ -111,10 +110,10 @@
         displayLength: 10,
         info: false,
         language: {
-          search:'', 
+          search:'',
           searchPlaceholder: 'Search',
           lengthMenu: '<span></span> _MENU_'
-   
+
         }
 
     });
@@ -124,7 +123,7 @@
              window.location = location.origin+'/website/testimonials/'+$(this).val()+'/filter';
         }
     });
-    
+
     function remove(webId,webName){
             swal({
                 title: 'Remove Testimonial',
@@ -142,7 +141,7 @@
                 }else{
                     swal.close();
                 }
-            });        
-    }    
+            });
+    }
 </script>
 @endsection
