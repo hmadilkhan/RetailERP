@@ -5326,15 +5326,6 @@ class ReportController extends Controller
     {
         $company = $vendor->company(session('company_id'));
 
-        $branchname = "";
-
-        if ($request->branch != "all") {
-            $branchname = Branch::where("branch_id", $request->branch)->first();
-            $branchname = " (" . $branchname->branch_name . ") ";
-        } else {
-            $branchname = " (All Branches) ";
-        }
-
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
             $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
             \QrCode::size(200)
