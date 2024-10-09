@@ -8,7 +8,7 @@
 
 @section('content')
 <section class="panels-wells p-t-3">
-   
+
     @if(Session::has('error'))
          <div class="alert alert-danger">{{ Session::get('error') }}</div>
     @endif
@@ -29,14 +29,14 @@
                 <select name="website" id="website" class="select2" data-placeholder="Select">
                     <option value="">Select</option>
                     @php $websiteValue = $url_parameter_webId != null ? $url_parameter_webId : old('websites') @endphp
-                    @foreach($websites as $value) 
+                    @foreach($websites as $value)
                     <option {{ $websiteValue == $value->id ? 'selected' : '' }} value="{{ $value->id }}">{{ $value->name }}</option>
                     @endforeach
                 </select>
              </div>
            </div>
        </div>
-    </div>  
+    </div>
 
     @if(isset($reviews))
     <div class="card">
@@ -62,17 +62,17 @@
 		</thead>
 		<tbody>
               @foreach($reviews as $value)
-                 @php 
+                 @php
                    $statusName       = $value->status == 1 ? 'Active' : 'In-Active';
                    $statusLabelColor = $value->status == 1 ? 'text-success' : 'text-danger';
-                   $website_name = $websites->where('id',$value->website_id)->pluck('name'); 
+                   $website_name = $websites->where('id',$value->website_id)->first();
                  @endphp
 				<tr>
-          <td class="d-none">{{ $value->id }}</td>  
+          <td class="d-none">{{ $value->id }}</td>
 				  <td class="text-center">
             @if($images)
               @foreach($images as $img_val)
-                @php 
+                @php
                   $image = asset('storage/images/no-image.jpg');
                 @endphp
                   @if($img_val->review_id == $value->id)
@@ -80,18 +80,18 @@
                         @php $image = asset('storage/images/customer-reviews/'.$img_val->image) @endphp
                         <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'no-image.jpg' }}">
                           <img width="32" height="32" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'no-image.jpg' }}">
-                        </a>                        
+                        </a>
                     @else
                         <a href="{{ asset('storage/images/no-image.jpg') }}" data-fancybox data-caption="no-image.jpg">
                           <img width="32" height="32" src="{{ asset('storage/images/no-image.jpg') }}" class="d-inline-block img-circle " alt="no-image.jpg">
-                         </a>  
+                         </a>
                     @endif
-                  @endif  
+                  @endif
               @endforeach
             @else
             <a href="{{ asset('storage/images/no-image.jpg') }}" data-fancybox data-caption="no-image.jpg">
               <img width="32" height="32" src="{{ asset('storage/images/no-image.jpg') }}" class="d-inline-block img-circle " alt="no-image.jpg">
-             </a>  
+             </a>
             @endif
           </td>
 				  <td>{{ $value->customer_name }} <br/> {{ $value->customer_email  }}</td>
@@ -99,21 +99,21 @@
           <td>{{ $value->review_title }}</td>
 				  <td><p>{{ $value->review }}</p></td>
           <td>{{ date('Y-m-d',strtotime($value->created_at)) }}</td>
-          <td>{{ date('h:i a',strtotime($value->created_at)) }}</td>          
+          <td>{{ date('h:i a',strtotime($value->created_at)) }}</td>
           <td><span class="{{ $statusLabelColor }}"><b>{{ $statusName }}</b></span></td>
 				  <td class="action-icon">
             <label class="switch m-r-1">
-              <input type="checkbox" title="" data-original-title="Active/In-Active Switch" 
+              <input type="checkbox" title="" data-original-title="Active/In-Active Switch"
               onclick="switchMode({{ $value->id }},{{ $value->status }},'{{ $value->customer_name }}',this)" {{ $value->status == 1 ? 'checked' : '' }}>
               <span class="slider round"></span>
               <form action="{{ route('activeInactiveCustomer_review') }}" method="POST" id="activeInactiveForm{{ $value->id }}">
                 @csrf
                   <input type="hidden" name="id" value="{{ Crypt::encrypt($value->id) }}">
-                  <input type="hidden" name="website" value="{{ Crypt::encrypt($value->website_id) }}"> 
-                  <input type="hidden" name="stcode" value="{{ Crypt::encrypt($value->status) }}">             
-              </form> 
-            </label>					
-					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="removeReview({{ $value->id }},'{{ $value->customer_name }}','{{ $website_name }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
+                  <input type="hidden" name="website" value="{{ Crypt::encrypt($value->website_id) }}">
+                  <input type="hidden" name="stcode" value="{{ Crypt::encrypt($value->status) }}">
+              </form>
+            </label>
+					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="removeReview({{ $value->id }},'{{ $value->customer_name }}','{{ $website_name != null ? $website_name->name : '' }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
 					<form action="{{ route('destroyCustomer_review',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
 					    @csrf
 					    @method('DELETE')
@@ -141,35 +141,35 @@
 <style type="text/css">
 
 .container1 {
-  width: 480px; 
-  height: 240px; 
+  width: 480px;
+  height: 240px;
   overflow-x: scroll;
   overflow-y: hidden;
 }
 
 .container2 {
-  width: 480px; 
-  height: 330px; 
+  width: 480px;
+  height: 330px;
   overflow-x: scroll;
   overflow-y: hidden;
 }
 
 .inner {
   height: 40px;
-  white-space:nowrap; 
+  white-space:nowrap;
 }
 
 .floatLeft {
   width: 200px;
-  height: 180px; 
-  margin:10px 10px 50px 10px; 
+  height: 180px;
+  margin:10px 10px 50px 10px;
   display: inline-block;
 }
 
 .floatLeft1 {
   width: 160px;
-  height: 200px; 
-  margin:10px 10px 50px 10px; 
+  height: 200px;
+  margin:10px 10px 50px 10px;
   display: inline-block;
 }
 
@@ -181,7 +181,7 @@
   height: 21px;
 }
 
-.switch input { 
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -253,10 +253,10 @@ input+.slider:before {
         displayLength: 10,
         info: false,
         language: {
-          search:'', 
+          search:'',
           searchPlaceholder: 'Search',
           lengthMenu: '<span></span> _MENU_'
-   
+
         }
 
     });
@@ -268,7 +268,7 @@ input+.slider:before {
     });
 
 function switchMode(id,status,customer,element){
- var status_name = null; 
+ var status_name = null;
  var value = 2;
     if($(element).is(':checked')){
         status_name = 'Active';
@@ -277,7 +277,7 @@ function switchMode(id,status,customer,element){
         status_name = 'In-Active';
         value = 2;
     }
-    
+
     swal({
             title: "Are you sure?",
             text: "You want to "+status_name+" this "+customer+" customer review!",
@@ -317,7 +317,7 @@ function removeReview(id,customer,website){
         },
         function(isConfirm){
             if(isConfirm){
-                $("#removeForm"+id).submit(); 
+                $("#removeForm"+id).submit();
             }else {
                 swal("Cancelled", "Operation Cancelled:)", "error");
               if(status == 1){
@@ -326,7 +326,7 @@ function removeReview(id,customer,website){
                   $(element).prop('checked', false);
               }
             }
-        });  
+        });
 }
 </script>
 @endsection
