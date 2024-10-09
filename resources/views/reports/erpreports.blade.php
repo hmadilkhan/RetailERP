@@ -148,6 +148,15 @@
                         </div>
                     </div>
                 </div>
+                <br>
+                <div class="row">
+                    <div id="dvwebsiteitemssummary" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
+                            title="Website Items Summary">
+                            <h4 class="text-sm-center">Website Items Summary</h4>
+                        </div>
+                    </div>
+                </div>
 
 
             </div>
@@ -225,6 +234,7 @@
                     <input type="hidden" value="0" id="txtinventorygeneralreport" />
                     <input type="hidden" value="0" id="txtbookingorderreport" />
                     <input type="hidden" value="0" id="txtsalespersonreport" />
+                    <input type="hidden" value="0" id="txtwebsiteitemssummary" />
 
 
 
@@ -401,8 +411,9 @@
                                 <select name="status" id="status" data-placeholder="Select Status"
                                     class="form-control select2">
                                     <option value="all">All</option>
-                                    @foreach($statuses as $status)
-                                        <option value="{{$status->order_status_id}}">{{$status->order_status_name}}</option>
+                                    @foreach ($statuses as $status)
+                                        <option value="{{ $status->order_status_id }}">{{ $status->order_status_name }}
+                                        </option>
                                     @endforeach
                                 </select>
                                 <div class="form-control-feedback"></div>
@@ -453,7 +464,7 @@
                 '#txttype', '#txtitemsale', '#txtstockadjustment',
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
-                '#txtsalereturn'
+                '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport'
             ];
 
             fields.forEach(field => {
@@ -461,7 +472,7 @@
             });
 
             const filters = ['#dvbranch', '#dvdepartments', '#dvsubdepartments', '#dvterminal', '#dvtype', '#dvitemcode',
-                '#dvpaymentmodes', '#dvsalesperson', '#dvmode','#dvstatus'
+                '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -480,9 +491,9 @@
             $('#filter-modal').modal('show');
             $('#dateFilter').css('display', fieldMappings.some(mapping => mapping.showDateFilter) ? 'block' : 'none');
             $('#ExcelButton').css('display', fieldMappings.some(mapping => mapping.showExcelButton) ? 'block' : 'none');
-            console.log("Print Mappings",fieldMappings);
-            console.log("Print Condition",fieldMappings.some(mapping => mapping.showStatus));
-            
+            console.log("Print Mappings", fieldMappings);
+            console.log("Print Condition", fieldMappings.some(mapping => mapping.showStatus));
+
             // Call specific functions if needed
             if (fieldMappings.some(mapping => mapping.showBranch)) showbranch();
             if (fieldMappings.some(mapping => mapping.showTerminal)) showterminal();
@@ -663,7 +674,14 @@
                 showDateFilter: true,
                 showBranch: true,
                 showSalesPerson: true,
-                showStatus :true
+                showStatus: true
+            }]);
+        });
+
+        $('#dvwebsiteitemssummary').on('click', function() {
+            handleButtonClick('#dvsalespersonreport', 'Sales Person Report', [{
+                field: '#txtsalespersonreport',
+                value: 1,
             }]);
         });
 
@@ -748,11 +766,14 @@
             }
             if ($('#txtbookingorderreport').val() == 1) {
                 window.location = "{{ url('order-booking-report') }}?fromdate=" + date + "&todate=" + todate +
-                    "&paymentmethod=" + paymentmethod + "&branch=" + branch + "&mode=" + mode ;
+                    "&paymentmethod=" + paymentmethod + "&branch=" + branch + "&mode=" + mode;
             }
             if ($('#txtsalespersonreport').val() == 1) {
                 window.location = "{{ url('sales-person-report') }}?fromdate=" + date + "&todate=" + todate + "&branch=" +
-                    branch + "&salesperson=" + salesperson+ "&status=" + status ;
+                    branch + "&salesperson=" + salesperson + "&status=" + status;
+            }
+            if ($('#txtwebsiteitemssummary').val() == 1) {
+                window.location = "{{ url('website-items-summary') }}?fromdate=" + date + "&todate=" + todate ;
             }
         }
 
@@ -805,6 +826,7 @@
         function showMode() {
             $('#dvmode').css("display", "block");
         }
+
         function showStatus() {
             $('#dvstatus').css("display", "block");
         }
