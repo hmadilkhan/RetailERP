@@ -534,8 +534,8 @@ class ReportController extends Controller
                 $query->where('machine_terminal_count', $request->machineOrderNo);
             })
             ->when($request->category != "" && $request->category != "all", function ($query) use ($request) {
-				$query->where("web", "=", $request->category);
-			})
+                $query->where("web", "=", $request->category);
+            })
             // ->where("web", "=", 0)
             ->selectSub($amountSum, 'amount_sum')
             ->orderBy("id", "asc")
@@ -1204,7 +1204,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Profit & Loss ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Profit & Loss ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
 
@@ -1897,7 +1897,7 @@ class ReportController extends Controller
         $pdf->ln(15);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Stock Summary ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Stock Summary ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
@@ -2037,7 +2037,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Inventory Details ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Inventory Details ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -2722,7 +2722,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'FBR Report ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'FBR Report ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -3156,7 +3156,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Invoice Details Report ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Invoice Details Report ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         //total variables
@@ -3461,7 +3461,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Item Sale Database ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Item Sale Database ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
         if ($request->terminalid != 0) {
             // $pdf->SetFont('Arial', 'B', 12);
@@ -3892,7 +3892,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Return Report ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Return Report ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -4054,7 +4054,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Order Booking Report ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Order Booking Report ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 12);
@@ -4319,7 +4319,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Stock Adjustment ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Stock Adjustment ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
@@ -4369,9 +4369,9 @@ class ReportController extends Controller
         $totalReports = DB::table("fbr_details")
             ->join("branch", "branch.branch_id", "=", "fbr_details.branch_id")
             ->join("company", "company.company_id", "=", "branch.company_id")
-            ->select("branch.branch_id","branch.branch_email", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
+            ->select("branch.branch_id", "branch.branch_email", "branch.branch_name", "company.company_id", "company.name as company_name", "company.ptcl_contact", "company.address", "company.logo")
             ->where("fbr_details.status", 1)->get();
-        
+
         foreach ($totalReports as $report) {
             $this->savefbrReport($report, "2024-09-01", "2024-09-30");
         }
@@ -5030,7 +5030,7 @@ class ReportController extends Controller
         $pdf->ln(15);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Inventory Details ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Inventory Details ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
@@ -5179,7 +5179,7 @@ class ReportController extends Controller
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Person Report ' . $branchname , 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Person Report ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
 
         if ($request->salesperson != "all") {
@@ -5319,5 +5319,165 @@ class ReportController extends Controller
         }
         //save file
         $pdf->Output('Sales Person Report.pdf', 'I');
+    }
+
+    //item sale database report
+    public function itemsaledatabasepdf(Request $request, Vendor $vendor, Report $report)
+    {
+        $company = $vendor->company(session('company_id'));
+
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (All Branches) ";
+        }
+
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
+
+        $pdf = new pdfClass();
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        //first row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        //second row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+
+        //third row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        //forth row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company[0]->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        //fifth row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        //sixth row
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        //filter section
+        $fromdate = date('F-d-Y', strtotime($request->fromdate));
+        $todate = date('F-d-Y', strtotime($request->todate));
+
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromdate . ' through ' . $todate, 0, 1, 'C');
+
+        //report name
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'Website Items Summary', 'B,T', 1, 'L');
+        $pdf->ln(1);
+
+
+
+        //total variables
+        $totalCount = 0;
+        $totalqty = 0;
+        $totalamount = 0;
+        $totalcost = 0;
+        $totalmargin = 0;
+        $price = 0;
+
+        $totalDeliveredOrders = 0;
+        $totalDeliveredOrdersAmount = 0;
+        $totalVoidOrders = 0;
+        $totalVoidOrdersAmount = 0;
+        $totalSalesReturnOrders = 0;
+        $totalSalesReturnOrdersAmount = 0;
+
+
+        // $pdf->ln(1);
+        // TABLE HEADERS
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
+        $pdf->Cell(50, 7, 'Poduct Name', 'B', 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
+        $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
+        $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
+        $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
+        $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
+        $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
+        $details = $report->getWebsiteItemSummaryQuery($request->fromdate, $request->todate);
+        foreach ($details as $value) {
+            $totalCount++;
+            // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
+
+            $totalamount = $totalamount + $value->amount;
+            $totalcost = $totalcost + $value->cost;
+            $totalmargin = $totalmargin + ($value->amount - $value->cost);
+
+            $pdf->SetFont('Arial', '', 10);
+
+            $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
+            $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
+            $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
+            $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
+            $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
+            $pdf->Cell(15, 6, number_format($value->price), 0, 0, 'R', 1);
+            $pdf->Cell(15, 6, number_format($value->amount - $value->cost), 0, 0, 'R', 1);
+            $pdf->Cell(30, 6, $value->order_status_name, 0, 1, 'R', 1);
+        }
+
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(20, 7, "Total", 'B,T', 0, 'L');
+        $pdf->Cell(50, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
+        $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
+        $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
+        $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'C');
+        $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
+        $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
+        $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
+
+        $pdf->ln(2);
+        $pdf->SetFont('Arial', 'B', 12);
+
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+
+        $pdf->ln(10);
+
+        //save file
+        $pdf->Output('website_items_summary.pdf', 'I');
     }
 }
