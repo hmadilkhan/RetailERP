@@ -5410,8 +5410,6 @@ class ReportController extends Controller
         $pdf->Cell(30, 7, 'Qty', 'B', 0, 'C', 1);
         $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
         $pdf->Cell(30, 7, 'Amount', 'B', 0, 'R', 1);
-        // $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
-        // $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
         $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
         $details = $report->getWebsiteItemSummaryQuery($request->fromdate, $request->todate);
         $pdf->setFillColor(255, 255, 255);
@@ -5431,8 +5429,6 @@ class ReportController extends Controller
             $pdf->Cell(30, 6, number_format($value->qty), 0, 0, 'C', 1);
             $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($value->amount), 0, 0, 'R', 1);
-            // $pdf->Cell(15, 6, number_format($value->price), 0, 0, 'R', 1);
-            // $pdf->Cell(15, 6, number_format($value->amount - $value->cost), 0, 0, 'R', 1);
             $pdf->Cell(30, 6, $value->order_status_name, 0, 1, 'R', 1);
         }
 
@@ -5444,18 +5440,16 @@ class ReportController extends Controller
         $pdf->Cell(30, 7, number_format($totalqty), 'B,T', 0, 'C');
         $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
         $pdf->Cell(30, 7, number_format($totalamount), 'B,T', 0, 'R');
-        // $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
-        // $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
         $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
 
         $pdf->ln(2);
         $pdf->SetFont('Arial', 'B', 12);
 
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
+        // $pdf->setFillColor(0, 0, 0);
+        // $pdf->SetTextColor(255, 255, 255);
+        // $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
+        // $pdf->setFillColor(255, 255, 255);
+        // $pdf->SetTextColor(0, 0, 0);
 
         $pdf->ln(10);
 
