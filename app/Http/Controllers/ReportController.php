@@ -5322,7 +5322,7 @@ class ReportController extends Controller
     }
 
     //item sale database report
-    public function itemsaledatabasepdf(Request $request, Vendor $vendor, Report $report)
+    public function websiteItemsSummary(Request $request, Vendor $vendor, Report $report)
     {
         $company = $vendor->company(session('company_id'));
 
