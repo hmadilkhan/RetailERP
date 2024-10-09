@@ -20,7 +20,7 @@
 					<div class="  bg-transparent py-2 px-4">
                         <h5 class="font-size-24 text-sm-end text-muted mb-5">Date Time : {{ $orders->dateTime }}</h5>
 						<label class="label {{ Custom_Helper::getColorName($orders->order_status) }} font-size-28 border border-white rounded my-5 mt-3">
-				
+
                             @if($orders->order_status == "Ready for Delivery")
 							  Ready
 						    @elseif($orders->order_status == "Dispatch")
@@ -70,8 +70,8 @@
         <div class="col-xl-8">
 
            <?php //print_r($orders->products) ?>
-		 @foreach($orders->products as $key => $item) 
-              
+		 @foreach($orders->products as $key => $item)
+
 <div class="card border shadow-none">
                 <div class="card-body">
                     <div class="d-flex align-items-start border-bottom pb-3">
@@ -83,12 +83,12 @@
                                   $getImage_id = $item->image;
                                   $getExtension = pathinfo($getImage_id,PATHINFO_EXTENSION);
 
-                                    $extensionCount =  0; 
+                                    $extensionCount =  0;
                                     if(!empty($getExtension)){
                                         if(substr_count($item->url, $getExtension) != substr_count($getImage_id, $getExtension) ){
                                          $extensionCount = $item->url != '' ? substr_count($item->url, $getExtension) : 0;
                                         }
-                                    }  
+                                    }
 
                                     if(!Str::contains($item->image,$orders->company_name)){
                                         $getImage_id = $orders->company_name.'/'.$item->image;
@@ -96,18 +96,18 @@
                                         //     $getImage_id .= '.'.$getExtension;
                                         // }
                                     }
-                                 $imageShow = !empty(Cloudinary::getUrl($getImage_id)) ? 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/'.$getImage_id.($extensionCount > 1 ? '.'.$getExtension : '') : asset('storage/images/placeholder.jpg') 
+                                 $imageShow = !empty(Cloudinary::getUrl($getImage_id)) ? 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/'.$getImage_id.($extensionCount > 1 ? '.'.$getExtension : '') : asset('storage/images/placeholder.jpg')
                                 @endphp
                              @endif
-                            <a href="{{ $imageShow }}" data-fancybox data-caption="Single Image"> 
+                            <a href="{{ $imageShow }}" data-fancybox data-caption="Single Image">
                              <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded">
                             </a>
                              @else --}}
                              @php $image = asset('storage/images/no-image.png') @endphp
-                            @if(Storage::disk('public')->exists('images/products/'.$item->image))
+                            @if(Storage::disk('public')->exists('/images/products/'.$item->image))
                             @php $image = route('imageOptimize',$item->image) @endphp
                             @endif
-                            <a href="{{ $image }}" data-fancybox data-caption="Single Image"> 
+                            <a href="{{ $image }}" data-fancybox data-caption="Single Image">
                              <img src="{{ $image }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
                             </a>
                              {{-- @endif --}}
@@ -116,7 +116,7 @@
                             <div>
                                 <!-- text-truncate  -->
                                 <h3><a href="#" class="code{{ $key }} text-dark fw-bold">({{ $item->item_code }}) </a> <a href="#" class="name{{ $key }} text-dark font-size-24">
-                                    {{ $item->product_name }} 
+                                    {{ $item->product_name }}
                                 @if($item->prod_variation != null)
                                      ({{ $item->prod_variation->variable_name }})
                                 @endif
@@ -124,18 +124,18 @@
                             </div>
                         </div>
                     </div>
-                    
-                   
+
+
 
                             @if($item->prod_variation != null)
                             <br>
-                           <div class=""> 
+                           <div class="">
                                <h5 class="font-size-18">Variation</h5>
-                              @foreach($item->prod_variation->variation as $variation) 
+                              @foreach($item->prod_variation->variation as $variation)
                                 <div>
                                     <h5 class="text-muted font-size-18">{{ $variation->name }}</h5>
                                    @if(count($variation->values) > 0)
-                                     <table class="table"> 
+                                     <table class="table">
                                     @foreach($variation->values as $variation_val)
                                       <tr>
                                         <th>{{ $variation_val->name }}</th>
@@ -143,22 +143,22 @@
                                       </tr>
                                     @endforeach
                                     </table>
-                                   @endif 
-                                </div>  
-                              @endforeach  
-                              </div>    
+                                   @endif
+                                </div>
+                              @endforeach
+                              </div>
                             @endif
 
 
                             @if(count($item->prod_addons) > 0)
                             <br>
-                           <div class=""> 
+                           <div class="">
                                <h5 class="font-size-18">Addon</h5>
-                              @foreach($item->prod_addons as $addon) 
+                              @foreach($item->prod_addons as $addon)
                                 <div>
                                     <h5 class="text-muted font-size-18">{{ $addon->name }}</h5>
                                    @if(count($addon->values) > 0)
-                                     <table class="table"> 
+                                     <table class="table">
                                     @foreach($addon->values as $addon_val)
                                       <tr>
                                         <th>{{ $addon_val->name }}</th>
@@ -166,11 +166,11 @@
                                       </tr>
                                     @endforeach
                                     </table>
-                                   @endif 
-                                </div>  
-                              @endforeach  
-                              </div>                          
-                            @endif					
+                                   @endif
+                                </div>
+                              @endforeach
+                              </div>
+                            @endif
                     <div>
                         <div class="row">
                             <div class="col-md-4">
@@ -202,9 +202,9 @@
                 </div>
             </div>
             <!-- end card -->
-           
-          @endforeach 
-           
+
+          @endforeach
+
         </div>
 
         <div class="col-xl-4">
@@ -225,7 +225,7 @@
                                                 {{ $orders->website_name }}
                                             </span>
                                         </td>
-                                    </tr>                                    
+                                    </tr>
 									<tr class="bg-light">
                                         <th>Branch :</th>
                                         <td class="text-end">
@@ -253,7 +253,7 @@
                                     <tr>
                                         <td>Address :</td>
                                         <td class="text-end">{{($orders->customer->Address)}}</td>
-                                    </tr>                                    
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -286,7 +286,7 @@
                         <!-- end table-responsive -->
                     </div>
                 </div>
-            </div>            
+            </div>
 			<div class="mt-5 mt-lg-0">
                 <div class="card border shadow-none">
                     <div class="card-header bg-transparent border-bottom py-3 px-4">
@@ -301,7 +301,7 @@
                                         <td>Sub Total :</td>
                                         <td class="text-end">{{session("currency")." ".($orders->sub_total)}}</td>
                                     </tr>
-                                  @if($orders->discount_amount != 0)  
+                                  @if($orders->discount_amount != 0)
                                     <tr>
                                         <td>Discount : </td>
                                         <td class="text-end">- {{ session("currency")." ".($orders->discount_amount).' ('.$orders->discount_percentage.'%)' }}</td>
@@ -329,15 +329,15 @@
     <!-- end row -->
 <div class="modal fade in" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog" data-dismiss="modal">
-    <div class="modal-content"  >   
+    <div class="modal-content"  >
 		<div class="modal-header">
         <h5 id="modalTitle" class="modal-title">Modal title</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>	
+      </div>
       <div class="modal-body">
         <img src="" class="imagepreview mt-2" style="width: 100%;" >
 		<p class="text-left mt-2  fs-5"><span class="fw-bold">Comments : </span><span id="modalComments" class=" fs-5"></span></p>
-      </div> 
+      </div>
     </div>
   </div>
 </div>
@@ -353,7 +353,7 @@
                     <h4 id="mod-title" class="modal-title">Select Rider</h4>
                 </div>
                 <div class="modal-body">
-				<input type="hidden" id="modalreceipt" /> 
+				<input type="hidden" id="modalreceipt" />
 				<input type="hidden" id="modalreceiptno" />
 				<input type="hidden" id="modalstatus" />
 					 <select id="rider" class="form-control select2" dataplaceholder="Select Rider"  >
@@ -457,17 +457,17 @@ a {
 			let comments = $(".comments"+key).text();
 			let name = $(".name"+key).text();
 			let code = $(".code"+key).text();
-			
+
 			$('.imagepreview').attr('src', image);
 			$('#modalComments').html(comments);
 			$('#modalTitle').html(code + " " + name);
-			$('#imagemodal').modal('show'); 
+			$('#imagemodal').modal('show');
 		}
-		
-        function statusChange(id,receipt,receiptNo){ 
+
+        function statusChange(id,receipt,receiptNo){
 
 			// This is to check if the order status is dispatch i,e 6 than display modal to select rider
-			if($('#'+id).val() == 6){ 
+			if($('#'+id).val() == 6){
 				$('#modalreceipt').val(receipt);
 				$('#modalreceiptno').val(receiptNo);
 				$('#modalstatus').val($('#'+id).val() );
@@ -475,9 +475,9 @@ a {
 			}else{
 				statusChangeFromDB(receipt,$('#'+id).val(),receiptNo,0)
 			}
-			
-        }		
-		
+
+        }
+
 		function statusChangeFromDB(receipt,status,receiptNo,rider)
 		{
 			 $.ajax({
@@ -495,7 +495,7 @@ a {
                 }
             });
 		}
-		
+
 		async function orderSeen(ReceiptNo,tbrowId){
 			  $.ajax({
 					url : "{{url('/order-seen')}}",
@@ -504,13 +504,13 @@ a {
 					dataType : 'json',
 					success : function(resp){
 						if(resp.status == true){
-						       if($("#tbRow"+tbrowId).hasClass('bg-primary')){  
+						       if($("#tbRow"+tbrowId).hasClass('bg-primary')){
                                     $("#tbRow"+tbrowId).removeClass('bg-primary');
                                }
 						}
 					}
 				});
-		}		
-		
+		}
+
 </script>
 @endsection
