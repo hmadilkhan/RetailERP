@@ -680,7 +680,7 @@
 
         $('#dvwebsiteitemssummary').on('click', function() {
             handleButtonClick('#dvsalespersonreport', 'Website Items Summary', [{
-                field: '#txtsalespersonreport',
+                field: '#txtwebsiteitemssummary',
                 value: 1,
                 showDateFilter: true,
             }]);
