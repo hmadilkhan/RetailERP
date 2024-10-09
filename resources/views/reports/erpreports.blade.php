@@ -679,9 +679,10 @@
         });
 
         $('#dvwebsiteitemssummary').on('click', function() {
-            handleButtonClick('#dvsalespersonreport', 'Sales Person Report', [{
+            handleButtonClick('#dvsalespersonreport', 'Website Items Summary', [{
                 field: '#txtsalespersonreport',
                 value: 1,
+                showDateFilter: true,
             }]);
         });
 
