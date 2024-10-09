@@ -5425,10 +5425,12 @@ class ReportController extends Controller
         $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
         $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
         $details = $report->getWebsiteItemSummaryQuery($request->fromdate, $request->todate);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0,0,0);
         foreach ($details as $value) {
             $totalCount++;
-            // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
 
+            $totalqty += $value->qty;
             $totalamount = $totalamount + $value->amount;
             $totalcost = $totalcost + $value->cost;
             $totalmargin = $totalmargin + ($value->amount - $value->cost);
@@ -5452,7 +5454,7 @@ class ReportController extends Controller
         $pdf->Cell(50, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
         $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
         $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
-        $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'C');
+        $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
         $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
         $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
         $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
