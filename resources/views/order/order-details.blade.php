@@ -510,11 +510,11 @@
                                         </tr>
                                         <tr>
                                             <td>Land Mark :</td>
-                                            <td class="text-end">{{ $orders->address->landmark }}</td>
+                                            <td class="text-end">{{ (!empty($orders->address) ? $orders->address->landmark : '-' )}}</td>
                                         </tr>
                                         <tr>
                                             <td>Address :</td>
-                                            <td class="text-end">{{ $orders->address->address }}</td>
+                                            <td class="text-end">{{(!empty($orders->address) ? $orders->address->address : '-' ) }}</td>
                                         </tr>
 
                                     </tbody>
