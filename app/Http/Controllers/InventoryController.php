@@ -19,21 +19,23 @@ use App\InventoryVariation;
 use App\InventoryVariationProduct;
 use App\WebsiteDetail;
 use App\WebsiteProduct;
-use Session;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Config;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Str;
-use Image, File, Auth;
+use Illuminate\Support\Facades\Image;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
-use Spatie\ImageOptimizer\Optimizers\Jpegoptim; 
-use Spatie\ImageOptimizer\Optimizer\PngOptimizer; 
+use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
+use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
 
 
 class InventoryController extends Controller
@@ -66,9 +68,9 @@ class InventoryController extends Controller
         //                                  ->whereIn('website_id',WebsiteDetail::where("company_id", session("company_id"))
         //                                                               ->where("status", 1)->pluck('id')
         //                                           )
-        //                                  ->select('id','website_id','inventory_id')         
-        //                                  ->where('status',1)         
-        //                                  ->get();         
+        //                                  ->select('id','website_id','inventory_id')
+        //                                  ->where('status',1)
+        //                                  ->get();
         $brandList  = $brand->getBrand();
         $tagsList   = Tag::getTags();
 
@@ -87,7 +89,7 @@ class InventoryController extends Controller
         // } else {
         //     $inventory = '';
         //     return view('Inventory.lists', compact('inventory', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
-        // }                                                                                                       
+        // }
     }
 
     public function getInventory(inventory $inventory)
@@ -155,7 +157,7 @@ class InventoryController extends Controller
         // if(Auth::user()->username == 'demoadmin'){
         //       return empty($request->file('productvideo')) ? 1 : 0;
         // }
-        //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size 
+        //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size
 
         $rules = [
             'code'          => 'required',
@@ -415,7 +417,7 @@ class InventoryController extends Controller
             }
         }
 
-        //Product Gallery		
+        //Product Gallery
         if (!empty($request->file('prodgallery'))) {
             $count = 1;
             foreach ($request->file('prodgallery') as $val) {
@@ -604,13 +606,13 @@ class InventoryController extends Controller
         //                                                                     		  ->where('group_id',$request->group_id)
         //                                                                     		  ->pluck('id')
         //                                                     )
-        //                                         ->join('addons','addons.id','inventory_deal_details.sub_group_id') 
+        //                                         ->join('addons','addons.id','inventory_deal_details.sub_group_id')
         //                                         ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
         //                                         ->join('inventory_department','inventory_department.department_id','inventory_general.department_id')
         //                                         ->where('inventory_deal_details.status',1)
         //                                         ->select('inventory_deal_details.*','addons.inventory_product_id','addons.name','addons.quantity','inventory_department.department_name')
-        //                                         ->get();  
-        //   return $getRecord;                                      
+        //                                         ->get();
+        //   return $getRecord;
         // $productId = [];
 
         // $departmentId = $getRecord[0]->department_id;
@@ -619,7 +621,7 @@ class InventoryController extends Controller
         //     array_push($productId,$val->inventory_product_id);
         // }
 
-        // return response()->json(['departmentId'=>$departmentId,'productId'=>$productId]);    
+        // return response()->json(['departmentId'=>$departmentId,'productId'=>$productId]);
     }
 
     public function storeDeal(Request $request)
@@ -675,7 +677,7 @@ class InventoryController extends Controller
                 }
             }
             return response()->json(["status" => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
         // 			}else{
@@ -745,7 +747,7 @@ class InventoryController extends Controller
                 }
             }
             return response()->json(["status" => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
     }
@@ -985,7 +987,7 @@ class InventoryController extends Controller
 
             //           if(File::exists('storage/images/products/'.$getPreviousImage)){
             //               File::delete('storage/images/products/'.$getPreviousImage);
-            //          }                      
+            //          }
             //     }
 
 
@@ -1027,7 +1029,7 @@ class InventoryController extends Controller
 
         $prices = $invent->getpricebyproduct($request->id);
 
-        // if ($request->rp != $prices[0]->retail_price || $request->wp != $prices[0]->wholesale_price || $request->op != $prices[0]->online_price || $request->dp != $prices[0]->discount_price) 
+        // if ($request->rp != $prices[0]->retail_price || $request->wp != $prices[0]->wholesale_price || $request->op != $prices[0]->online_price || $request->dp != $prices[0]->discount_price)
         // {
         // return $prices;
         $items = [
@@ -1088,7 +1090,7 @@ class InventoryController extends Controller
             }
         }
 
-        //Product Gallery		
+        //Product Gallery
         if (!empty($request->file('prodgallery'))) {
             $count = 1;
             foreach ($request->file('prodgallery') as $val) {
@@ -1383,7 +1385,7 @@ class InventoryController extends Controller
                     } else {
                         // Insert to MySQL database
                         foreach ($importData_arr as $importData) {
-                            // echo  $importData[1];  exit;  
+                            // echo  $importData[1];  exit;
                             $departmentId = "";
                             $subDepartmentId = "";
                             $uomId = "";
@@ -1436,7 +1438,7 @@ class InventoryController extends Controller
                                     'uom_id' => $uomId, //1,
                                     'product_mode' => 2,
                                     'item_code' => $importData[0],
-                                    'product_name' => $importData[1], // preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $importData[1]), Raza asked to remove this   
+                                    'product_name' => $importData[1], // preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $importData[1]), Raza asked to remove this
                                     'product_description' => $importData[2],
                                     'image' => '',
                                     'weight_qty' => 1,
@@ -2570,8 +2572,8 @@ class InventoryController extends Controller
     }
 
 
-    // -----------------------------------------------------------------	
-    // 	Inventroy variable product 
+    // -----------------------------------------------------------------
+    // 	Inventroy variable product
     // -----------------------------------------------------------------
 
     public function createVariableProduct(Request $request, inventory $inventory, posProducts $posProducts)
@@ -2780,7 +2782,7 @@ class InventoryController extends Controller
 
             DB::commit();
             return response()->json(["status" => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
@@ -2807,7 +2809,7 @@ class InventoryController extends Controller
 
                 // 			$request->validate([
                 // 			  'image' => 'image|mimes:jpeg,png,jpg|max:2048',
-                // 			]);	
+                // 			]);
 
                 $validator = Validator::make($request->all(), [
                     'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120'
@@ -2863,7 +2865,7 @@ class InventoryController extends Controller
             $result = $posProducts->insert('pos_product_price', $items);
 
             return response()->json(['status' => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
@@ -2924,7 +2926,7 @@ class InventoryController extends Controller
         //                                    ->join('inventory_department','inventory_department.department_id','inventory_general.department_id')
         //                                    ->join('inventory_sub_department','inventory_sub_department.sub_department_id','inventory_general.sub_department_id')
         //                                    ->select('inventory_variation_products.*','addons.name','addons.inventory_product_id','addons.price','inventory_department.department_name','inventory_general.department_id','inventory_sub_department.sub_depart_name')
-        //                                    ->get(); 
+        //                                    ->get();
 
     }
 
@@ -2984,13 +2986,13 @@ class InventoryController extends Controller
             }
             DB::commit();
             return response()->json(["status" => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             DB::rollback();
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
     }
 
-    // variable product sub variation 
+    // variable product sub variation
     public function addVariation(Request $request)
     {
         // return $request;
@@ -3042,12 +3044,12 @@ class InventoryController extends Controller
                 //                                                     'inventory_variation_id'  => $getInventoryVariation_ID->id,
                 //                                                     'product_id'              => $prod_val->id,
                 //                                                     'status'                  => 1,
-                //                                               ]);                    
-                //         }   
-                // }   
+                //                                               ]);
+                //         }
+                // }
             }
             return response()->json(["status" => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
     }
@@ -3109,15 +3111,15 @@ class InventoryController extends Controller
                 //                                                     'inventory_variation_id'  => $getInventoryVariation_ID->id,
                 //                                                     'product_id'              => $prod_val->id,
                 //                                                     'status'                  => 1,
-                //                                               ]);                    
-                //         }                        
+                //                                               ]);
+                //         }
 
-                // }                                  
+                // }
 
 
             }
             return response()->json(["status" => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
     }
@@ -3163,7 +3165,7 @@ class InventoryController extends Controller
                     ->where('inventory_deal_id', $request->id)
                     ->pluck('id')
             )
-                // ->join('addons','addons.id','inventory_deal_details.sub_group_id') 
+                // ->join('addons','addons.id','inventory_deal_details.sub_group_id')
                 // ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
                 ->where('inventory_deal_details.status', 1)
                 // ->select('inventory_deal_details.*','addons.inventory_product_id','addons.name','addons.quantity','inventory_general.department_id')
@@ -3216,7 +3218,7 @@ class InventoryController extends Controller
                 ->get(),
 
             // 'dealChild'        => DB::table('inventory_deal_details')
-            //                         ->join('addons','addons.id','inventory_deal_details.sub_group_id') 
+            //                         ->join('addons','addons.id','inventory_deal_details.sub_group_id')
             //                         ->join('inventory_general','inventory_general.id','addons.inventory_product_id')
             //                         ->where('inventory_general_id',$request->id)
             //                         ->where('inventory_deal_details.status',1)
@@ -3234,7 +3236,7 @@ class InventoryController extends Controller
             //                          ->where('status',1)
             //                          ->groupBy('product_id')
             //                          ->select(DB::raw('product_id, count(addon_id) as counts'))
-            //                          ->get(),  
+            //                          ->get(),
         ]);
     }
 
@@ -3280,7 +3282,7 @@ class InventoryController extends Controller
                 }
             }
             return response()->json(["status" => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
     }
@@ -3357,7 +3359,7 @@ class InventoryController extends Controller
             } else {
                 return response()->json(["status" => 500, "msg" => "Record is not saved."]);
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
     }
@@ -3384,7 +3386,7 @@ class InventoryController extends Controller
 
 
             return ($resp) ? response()->json(["status" => 200]) : response()->json(["status" => 500, "msg" => " Record is not save"]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(["status" => 500, "msg" => $e->getMessage()]);
         }
     }
@@ -3400,11 +3402,11 @@ class InventoryController extends Controller
 
     // public function removeDeal_value(Request $request){
     //   if(InventoryDealDetail::where(['inventory_general_id'=>$request->general_deal_id,''])->update(['status'=>0]) && InventoryAddon::where(['product_id'=>$request->id,'inventory_addon_type'=>'deal'])->update(['status'=>0])){
-    //       return response()->json(["status" => 200]); 
+    //       return response()->json(["status" => 200]);
     //   }else{
-    //       return response()->json(["status" => 500,"msg"=>'Server issue! record is not removed.']); 
+    //       return response()->json(["status" => 500,"msg"=>'Server issue! record is not removed.']);
     //   }
-    // }      
+    // }
 
     public function get_addons_dealProduct(Request $request)
     {
@@ -3482,7 +3484,7 @@ class InventoryController extends Controller
             }
 
             return response()->json(['status' => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
@@ -3500,7 +3502,7 @@ class InventoryController extends Controller
             ]);
 
             return ($result) ? response()->json(['status' => 200]) : response()->json(['status' => 500, 'msg' => 'Record is not saved!']);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
@@ -3555,7 +3557,7 @@ class InventoryController extends Controller
             }
 
             return response()->json(['status' => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
@@ -3647,7 +3649,7 @@ class InventoryController extends Controller
             }
 
             return response()->json(['status' => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
@@ -3723,7 +3725,7 @@ class InventoryController extends Controller
             }
 
             return response()->json(['status' => 200]);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
@@ -3741,7 +3743,7 @@ class InventoryController extends Controller
             ]);
 
             return ($result) ? response()->json(['status' => 200]) : response()->json(['status' => 500, 'msg' => 'Record is not saved!']);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['status' => 500, 'msg' => $e->getMessage()]);
         }
     }
@@ -3751,27 +3753,27 @@ class InventoryController extends Controller
     {
        if (!empty($request->image)) {
             // Define the path to the image
-            $pathToImage = storage_path('app/public/images/products/' . $request->image);
-        
+            $pathToImage = Storage::disk('public')->path('/images/products/' . $request->image);
+
             // Ensure the image exists before proceeding
-            if (file_exists($pathToImage)) {
+            if (Storage::disk('public')->exists($pathToImage)) {
                 // Create an optimizer chain
                 $optimizerChain = OptimizerChainFactory::create();
 
                 //Add specific optimizers with custom options
                 // $optimizerChain->add(new \JpegOptimizer(['quality' => 90])); // Adjust quality for JPEG
                 // $optimizerChain->add(new \PngOptimizer(['optimize' => true])); // Example for PNG optimization
-               
+
                 // // Optimize the image in place
                 // $optimizerChain->optimize($pathToImage);
 
          // Create a temporary file for the optimized image
-        $tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');        
+        $tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');
 
         // Optimize the image and save it to the temporary path
         $optimizerChain->optimize($pathToImage, $tempPath);
 
-                
+
                 // Set headers for the image response
                 $headers = array(
                     'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)), // Assuming it's a JPEG, you can change as per your image type
@@ -3781,10 +3783,10 @@ class InventoryController extends Controller
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
         return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
-        
+
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
-        // return response()->file($tempPath, $headers)->deleteFileAfterSend(true);                
+        // return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
 
                 // Return the optimized image as a file response
                 // return response()->file($pathToImage, $headers);
@@ -3792,7 +3794,7 @@ class InventoryController extends Controller
                 $headers = array(
                     'Content-Type'        => 'image/jpg',
                     'Content-Description' => 'no-image.jpg',
-                );                
+                );
                 return response()->file(Storage::disk('public')->path('/images/no-image.jpg'), $headers);
             }
         }
@@ -3813,7 +3815,7 @@ class InventoryController extends Controller
             //  });
 
             //  // Return the optimized image as a response
-            //    return $img->response('webp', 85); // Adjust the format and quality as needed              
+            //    return $img->response('webp', 85); // Adjust the format and quality as needed
         // }
 
             $headers = array(

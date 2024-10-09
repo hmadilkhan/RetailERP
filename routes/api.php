@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebsiteImageController;
 
 /*
@@ -50,8 +51,8 @@ Route::post('add-sales','apiController@addSales');
 Route::post('add-sales-details','apiController@addSalesDetails');
 
 Route::get('website/image/{filename}/{mode?}/{webid?}',[WebsiteImageController::class,'show_image_website']);
-Route::get('optimize-image/{image}',[WebsiteImageController::class,'Optimize_testing']);
+// Route::get('optimize-image/{image}',[WebsiteImageController::class,'Optimize_testing']);
 
 /******************************************** API ROUTES *************************************************************/
 
- 
+
