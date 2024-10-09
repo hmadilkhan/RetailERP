@@ -178,7 +178,7 @@ class WebsiteController extends Controller
                     'logo' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-                $imageLogo =$this->uploads($request->file('logo'),'images/website/',$website_detail->logo); 
+                $imageLogo =$this->uploads($request->file('logo'),'images/website/',$website_detail->logo);
             }
 
 
@@ -234,7 +234,7 @@ class WebsiteController extends Controller
 
     // ======================================================================================
     //                  Website Slider Modules
-    //======================================================================================= 
+    //=======================================================================================
 
     public function getSlider(Request $request)
     {
@@ -330,12 +330,12 @@ class WebsiteController extends Controller
         $image             = $request->file('image');
         $imageName         = time() . '.' . strtolower(pathinfo($image->getClientOriginalExtension(),PATHINFO_EXTENSION));
         $mobile_slide      = $request->file('mobile_slide');
-        $mobile_slideName  = 'mobile_size'.time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));       
+        $mobile_slideName  = 'mobile_size'.time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));
         $productSlug       = null;
         $invent_department = null;
 
         $path = $this->create_folder('sliders/' . session('company_id'), $request->website);
-        
+
         if ($path == false) {
             return response()->json('Image not uploaded.', 500);
         }
@@ -431,7 +431,7 @@ class WebsiteController extends Controller
             $mobile_slideName   = 'mobile_size'.time() . '.' . $mobile_slide->getClientOriginalExtension();
 
             $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
-      
+
             if ($path == false) {
                 Session::flash('error', 'Server Issue image not uploaded route issue.');
                 return redirect()->route('sliderLists');
@@ -446,7 +446,7 @@ class WebsiteController extends Controller
                 \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide);
             }
             $columnArray['mobile_slide'] = $mobile_slideName;
-        }        
+        }
 
         if (!empty($request->post('product_md'))) {
             $productSlug = DB::table('inventory_general')->where('id', '=', $request->post('product_md'))->select('slug')->first();
@@ -515,7 +515,7 @@ class WebsiteController extends Controller
 
                     if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide)) {
                         \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide);
-                    }                    
+                    }
                 }
 
                 $process = DB::table('website_sliders')->where('website_id', '=', $id)->delete();
@@ -530,7 +530,7 @@ class WebsiteController extends Controller
 
                 if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide)) {
                     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide);
-                }                
+                }
 
                 $process = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->delete();
             }
@@ -547,7 +547,7 @@ class WebsiteController extends Controller
 
     // ======================================================================================
     //                  Website Advertisement Modules
-    //======================================================================================= 
+    //=======================================================================================
 
     public function getAdvertisement(Request $request)
     {
@@ -768,7 +768,7 @@ class WebsiteController extends Controller
         //       }
 
         //       $process = DB::table('website_advertisement_notifications')->where('id','=',$request->post('mode'.$id))->delete();
-        //     }           
+        //     }
 
         // }
 
@@ -897,7 +897,7 @@ class WebsiteController extends Controller
 
     // ======================================================================================
     //                  Website Delivery areas
-    //======================================================================================= 
+    //=======================================================================================
 
     public function getDeliveryArea(Request $request, branch $branch)
     {
@@ -919,16 +919,16 @@ class WebsiteController extends Controller
                                 ->whereIn('AreaList.website_id', WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->pluck('id'))
                                 ->where('remove', '=', 0)
                                 ->select('AreaList.*', 'city.city_name')
-                                ->orderByRaw('city.city_name IS NULL, city.city_name ASC') 
+                                ->orderByRaw('city.city_name IS NULL, city.city_name ASC')
                                 ->get();
-        
+
         // DB::table('website_delivery_areas as AreaList')
         //     ->leftJoin('city', 'city.city_id', 'AreaList.city_id')
         //     // ->whereIn('branch_id',DB::table('branch')->where('company_id','=',$companyId)->pluck('branch_id'))
         //     ->whereIn('AreaList.website_id', WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->pluck('id'))
         //     ->where('remove', '=', 0)
         //     ->select('AreaList.*', 'city.city_name')
-        //     ->get(); 
+        //     ->get();
 
         return view("websites.delivery-area.index", [
             "website"            => WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->get(),
@@ -951,11 +951,11 @@ class WebsiteController extends Controller
                     ->where('remove','=', 0);
             })
             ->pluck('city_id');
-        
+
         $result = DB::table('city')
             ->whereNotIn('city_id', $cities)
             ->where('country_id',170)
-            ->orderBy('city_name','ASC') 
+            ->orderBy('city_name','ASC')
             ->get();
 
 
@@ -966,13 +966,13 @@ class WebsiteController extends Controller
         //                     ->where('website_delivery_areas.status', '=', 1)
         //                     // ->where('city.city_id', '!=', 'website_delivery_areas.city') // Ensure cities are not equal
         //                     ->select('website_delivery_areas.city', 'city.city_name')
-        //                     ->get(); 
-           return response()->json($result,200);                      
+        //                     ->get();
+           return response()->json($result,200);
         }
 
         if($request->mode == 0){
-           $result = DB::table('city')->where('country_id', 170)->get(); 
-           return response()->json($result,200);                      
+           $result = DB::table('city')->where('country_id', 170)->get();
+           return response()->json($result,200);
         }
 
       return response()->json('Record not found!',500);
@@ -987,7 +987,7 @@ class WebsiteController extends Controller
             ->where('website_delivery_areas.website_id', '=', $request->website)
             ->where('website_delivery_areas.remove','=',0)
             ->select('website_delivery_areas.*', 'city.city_name')
-            ->orderBy('city.city_name','ASC') 
+            ->orderBy('city.city_name','ASC')
             ->get();
 
         // return DB::table('website_delivery_areas')
@@ -1011,7 +1011,7 @@ class WebsiteController extends Controller
 
     public function store_deliveryArea(Request $request)
     {
-       try {  
+       try {
              DB::beginTransaction();
         // $rules = [
         //     'branch'    => 'required',
@@ -1019,7 +1019,7 @@ class WebsiteController extends Controller
         //     'charges'   => 'required',
         // ];
 
-        // $this->validate($request, $rules);        
+        // $this->validate($request, $rules);
 
         // $result = null;
 
@@ -1187,7 +1187,7 @@ class WebsiteController extends Controller
 
         //          return response()->json('This ' . $areaName . ' area name already taken this ' . $websiteName . ' wsebsite.',);
         //      }
-           
+
         $column = [];
         $column['charge']     =$charge;
         $column['updated_at'] =now();
@@ -1221,7 +1221,7 @@ class WebsiteController extends Controller
 
     public function destroy_deliveryAreaValue(Request $request)
     {
-            
+
         if (empty($request->id) || empty($request->branchid)) {
 
             // if (!isset($request->stp_redirect)) {
@@ -1571,7 +1571,7 @@ class WebsiteController extends Controller
                 $rules = ['logo' => 'mimes:jpeg,png,jpg,webp|max:1024'];
                 // Create the validator instance
                 $validator = Validator::make($request->all(), $rules);
-        
+
                 // Check if validation fails
                 if ($validator->fails()) {
                     // Redirect back with input and errors
@@ -1587,7 +1587,7 @@ class WebsiteController extends Controller
                 // $imglogo = Image::make($request->value)->resize(150, 70);
                 // $image->move(public_path('storage/images/website'), $imageName);
 
-                $getFile = $this->uploads($request->file('value'),'images/website/',$getRecord_webDetail[$request->col]); 
+                $getFile = $this->uploads($request->file('value'),'images/website/',$getRecord_webDetail[$request->col]);
 
                 $value = !empty($getFile) ? $getFile['fileName'] : '';
 
@@ -1637,6 +1637,7 @@ class WebsiteController extends Controller
                                         ->where('website_details.status','=',1)
                                         ->where('website_details.company_id',session('company_id'))
                                         ->select('website_customer_reviews.*')
+                                        ->orderBy('website_customer_reviews.id','DESC')
                                         ->get();
             $data["images"] = DB::table('website_customer_review_images')
                                         ->join('website_customer_reviews','website_customer_reviews.id','website_customer_review_images.review_id')
@@ -1648,8 +1649,8 @@ class WebsiteController extends Controller
                                         ->select('website_customer_review_images.*')
                                         ->get();
 
-        }  
-        
+        }
+
         $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
         return view('websites.customer-review.index',$data);
     }
@@ -1661,8 +1662,8 @@ class WebsiteController extends Controller
     //                 ->update(['status'=>$request->mode]) ? response()->json('Success!',200) : response()->json('Error! customer review is not approved. Server Issue!',500);
     //     }
     //    return response('Record not found!',500);
-    // } 
-    
+    // }
+
     public function activeInactiveCustomer_review(Request $request){
         $websiteId = Crypt::decrypt($request->website);
         $id        = Crypt::decrypt($request->id);
@@ -1703,5 +1704,5 @@ class WebsiteController extends Controller
         }
         return redirect()->route("filterCustomerReviews",$websiteId);
     }
- 
+
 }
