@@ -5394,35 +5394,24 @@ class ReportController extends Controller
         $pdf->ln(1);
 
 
-
         //total variables
         $totalCount = 0;
         $totalqty = 0;
         $totalamount = 0;
         $totalcost = 0;
         $totalmargin = 0;
-        $price = 0;
 
-        $totalDeliveredOrders = 0;
-        $totalDeliveredOrdersAmount = 0;
-        $totalVoidOrders = 0;
-        $totalVoidOrdersAmount = 0;
-        $totalSalesReturnOrders = 0;
-        $totalSalesReturnOrdersAmount = 0;
-
-
-        // $pdf->ln(1);
         // TABLE HEADERS
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
-        $pdf->Cell(50, 7, 'Poduct Name', 'B', 0, 'L', 1);
-        $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
+        $pdf->Cell(60, 7, 'Poduct Name', 'B', 0, 'L', 1);
+        $pdf->Cell(30, 7, 'Qty', 'B', 0, 'C', 1);
         $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
-        $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
-        $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
-        $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
+        $pdf->Cell(30, 7, 'Amount', 'B', 0, 'R', 1);
+        // $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
+        // $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
         $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
         $details = $report->getWebsiteItemSummaryQuery($request->fromdate, $request->todate);
         $pdf->setFillColor(255, 255, 255);
@@ -5438,12 +5427,12 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
 
             $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
-            $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
-            $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
+            $pdf->Cell(60, 6, $value->product_name, 0, 0, 'L', 1);
+            $pdf->Cell(30, 6, number_format($value->qty), 0, 0, 'C', 1);
             $pdf->Cell(20, 6, number_format($value->price), 0, 0, 'C', 1);
-            $pdf->Cell(20, 6, number_format($value->amount), 0, 0, 'R', 1);
-            $pdf->Cell(15, 6, number_format($value->price), 0, 0, 'R', 1);
-            $pdf->Cell(15, 6, number_format($value->amount - $value->cost), 0, 0, 'R', 1);
+            $pdf->Cell(30, 6, number_format($value->amount), 0, 0, 'R', 1);
+            // $pdf->Cell(15, 6, number_format($value->price), 0, 0, 'R', 1);
+            // $pdf->Cell(15, 6, number_format($value->amount - $value->cost), 0, 0, 'R', 1);
             $pdf->Cell(30, 6, $value->order_status_name, 0, 1, 'R', 1);
         }
 
@@ -5455,8 +5444,8 @@ class ReportController extends Controller
         $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
         $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
         $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'R');
-        $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
-        $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
+        // $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
+        // $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
         $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
 
         $pdf->ln(2);
