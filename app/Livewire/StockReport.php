@@ -13,13 +13,18 @@ class StockReport extends Component
     use WithPagination;
 
     #[Title("Stock Adjustment")]
-    
+
     public $from = '';
     public $to = '';
     public $branch = '';
 
+    public function mount()
+    {
+        $this->from = date("Y-m-d");
+        $this->to = date("Y-m-d");
+    }
 
-    public function submitForm($from, $to,$branch)
+    public function submitForm($from, $to, $branch)
     {
         $this->from = $from;
         $this->to = $to;
@@ -40,10 +45,10 @@ class StockReport extends Component
         $this->applyFilters();
     }
 
-    public function render(BranchService $branchService,StockAdjustmentService $stockAdjustmentService)
+    public function render(BranchService $branchService, StockAdjustmentService $stockAdjustmentService)
     {
-        $stocks = $stockAdjustmentService->stockReport();
+        $stocks = $stockAdjustmentService->stockReport($this->from, $this->to);
         $branches = $branchService->getBranches();
-        return view('livewire.stock-report',compact('branches','stocks'));
+        return view('livewire.stock-report', compact('branches', 'stocks'));
     }
 }
