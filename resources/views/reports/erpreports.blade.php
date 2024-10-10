@@ -421,6 +421,21 @@
                         </div>
                     </div>
 
+                    <div class="row" id="dvcategory" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Category</label>
+                                <select name="category" id="category" data-placeholder="Select Category"
+                                    class="form-control select2">
+                                    <option value="all">All</option>
+                                    <option value="0">POS</option>
+                                    <option value="1">Wesbite</option>
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button id="ExcelButton" style="display:none;" type="button"
@@ -472,7 +487,7 @@
             });
 
             const filters = ['#dvbranch', '#dvdepartments', '#dvsubdepartments', '#dvterminal', '#dvtype', '#dvitemcode',
-                '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus'
+                '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus','#dvcategory'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -491,8 +506,6 @@
             $('#filter-modal').modal('show');
             $('#dateFilter').css('display', fieldMappings.some(mapping => mapping.showDateFilter) ? 'block' : 'none');
             $('#ExcelButton').css('display', fieldMappings.some(mapping => mapping.showExcelButton) ? 'block' : 'none');
-            console.log("Print Mappings", fieldMappings);
-            console.log("Print Condition", fieldMappings.some(mapping => mapping.showStatus));
 
             // Call specific functions if needed
             if (fieldMappings.some(mapping => mapping.showBranch)) showbranch();
@@ -505,6 +518,7 @@
             if (fieldMappings.some(mapping => mapping.showSalesPerson)) showSalesPerson();
             if (fieldMappings.some(mapping => mapping.showMode)) showMode();
             if (fieldMappings.some(mapping => mapping.showStatus)) showStatus();
+            if (fieldMappings.some(mapping => mapping.showCategory)) showCategory();
         }
 
         $('#dvprofitstandard').on('click', function() {
@@ -642,7 +656,8 @@
                 showDateFilter: true,
                 showBranch: true,
                 showType: true,
-                showTerminal: true
+                showTerminal: true,
+                showCategory:true
             }]);
         });
 
@@ -706,6 +721,7 @@
             let salesperson = $('#salesperson').val();
             let mode = $('#mode').val();
             let status = $('#status').val();
+            let category = $('#category').val();
 
             if ($('#txtprofitstandard').val() == 1) {
                 window.location = "{{ url('profitLossStandardReport') }}?fromdate=" + date + "&todate=" + todate +
@@ -754,7 +770,7 @@
 
             if ($('#txtsalesinvoicesreport').val() == 1) {
                 window.location = "{{ url('sales-invoices-report') }}?fromdate=" + date + "&todate=" + todate +
-                    "&terminalid=" + terminalid + "&type=" + type + "&branch=" + branch;
+                    "&terminalid=" + terminalid + "&type=" + type + "&branch=" + branch+ "&category=" + category;
             }
 
             if ($('#txtstockreport').val() == 1) {
@@ -830,6 +846,10 @@
 
         function showStatus() {
             $('#dvstatus').css("display", "block");
+        }
+
+        function showCategory() {
+            $('#dvcategory').css("display", "block");
         }
         showdepartments();
 

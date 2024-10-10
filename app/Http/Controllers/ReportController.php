@@ -3176,7 +3176,7 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
-                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type);
+                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type,$request->category); 
                 $permission = $report->terminalPermission($values->terminal_id);
 
                 $pdf->SetFont('Arial', 'B', 12);
@@ -3293,7 +3293,7 @@ class ReportController extends Controller
             $pdf->Cell(15, 7, 'Disc.', 'B', 0, 'C', 1);
             $pdf->Cell(30, 7, 'Total Amount', 'B', 1, 'R', 1);
             $pdf->ln(2);
-            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type);
+            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type,$request->category);
             $permission = $report->terminalPermission($request->terminalid);
             foreach ($details as $value) {
 

@@ -47,7 +47,7 @@ class StockAdjustmentService
         return $query;
     }
 
-    public function stockReport()
+    public function stockReport($from,$to)
     {
         return DB::select("WITH opening_stock_cte AS (
     SELECT 
@@ -57,7 +57,7 @@ class StockAdjustmentService
     FROM 
         daily_stock
     WHERE 
-        Date(created_at) BETWEEN '2024-09-24' AND '2024-09-24'
+        Date(created_at) = '$from'
         AND branch_id = 283
     GROUP BY 
         product_id, Date(created_at)
@@ -70,7 +70,7 @@ closing_stock_cte AS (
     FROM 
         daily_stock
     WHERE 
-        Date(created_at) BETWEEN '2024-09-24' AND '2024-09-24'
+        Date(created_at) = '$to'
         AND branch_id = 283
     GROUP BY 
         product_id, Date(created_at)
@@ -86,7 +86,7 @@ sales_cte AS (
         sr.opening_id IN (
             SELECT opening_id 
             FROM sales_opening 
-            WHERE date BETWEEN '2024-09-24' AND '2024-09-24'
+            WHERE date BETWEEN '$from' AND '$to'
         )
         AND sr.branch = 283 AND sr.order_mode_id != 2
     GROUP BY 
@@ -105,7 +105,7 @@ JOIN opening_stock_cte os ON ds1.product_id = os.product_id
 JOIN closing_stock_cte cs ON ds1.product_id = cs.product_id
 LEFT JOIN sales_cte sales ON ds1.product_id = sales.product_id
 WHERE 
-    Date(ds1.created_at) BETWEEN '2024-09-23' AND '2024-09-24'
+    Date(ds1.created_at) BETWEEN '$from' AND '$to'
     AND ds1.branch_id = 283
 GROUP BY 
     ds1.product_id, os.opening_date, cs.closing_date
