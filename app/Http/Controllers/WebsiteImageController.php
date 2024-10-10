@@ -7,13 +7,13 @@ use File;
 use Illuminate\Support\Facades\Storage;
 use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
 use Spatie\ImageOptimizer\OptimizerChainFactory;
-use Spatie\ImageOptimizer\Optimizers\Jpegoptim; 
-use Spatie\ImageOptimizer\Optimizer\PngOptimizer; 
+use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
+use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
 use Image;
 
 class WebsiteImageController extends Controller
 {
-    
+
     // ===============================================
     //         image show module //
     // ===============================================
@@ -30,12 +30,12 @@ class WebsiteImageController extends Controller
        // =====================================================
 
               // Error image format
-       // ===================================================== 
+       // =====================================================
         if(!in_array($extension,['jpeg','jpg','gif','png','webp'])){
            return response()->json('Invalid image format!',500);
         }
-      // =====================================================  
-      
+      // =====================================================
+
        if($mode == 'slider'){
             if($webid == null){
                $extension = 'png';
@@ -44,13 +44,13 @@ class WebsiteImageController extends Controller
                $headers = array(
                                  'Content-Type'        => 'image/'.$extension,
                                  'Content-Description' => $filename
-                               ); 
+                               );
 
-               return response()->file($path, $headers);                                                   
+               return response()->file($path, $headers);
             }
 
           $path .= 'website/sliders/'.$webid[0].'/'.$webid[1].'/'.$filename;
-           
+
        }elseif($mode == 'advertisement'){
 
             if($webid == null){
@@ -60,9 +60,9 @@ class WebsiteImageController extends Controller
                $headers = array(
                                  'Content-Type'        => 'image/'.$extension,
                                  'Content-Description' => $filename
-                               ); 
+                               );
 
-               return response()->file($path, $headers);                                                   
+               return response()->file($path, $headers);
             }
 
            $path .= 'website/advertisements/'.$webid[0].'/'.$webid[1].'/'.$filename;
@@ -81,9 +81,9 @@ class WebsiteImageController extends Controller
                $headers = array(
                                  'Content-Type'        => 'image/'.$extension,
                                  'Content-Description' => $filename
-                               ); 
+                               );
 
-               return response()->file($path, $headers);                                                   
+               return response()->file($path, $headers);
             }
 
            $path .= 'variation-product/'.$webid[0].'/'.$filename;
@@ -98,9 +98,9 @@ class WebsiteImageController extends Controller
                $headers = array(
                                  'Content-Type'        => 'image/'.$extension,
                                  'Content-Description' => $filename
-                               ); 
+                               );
 
-               return response()->file($path, $headers);                                                   
+               return response()->file($path, $headers);
             }
 
            $path .= 'brands/'.$webid[0].'/'.$filename;
@@ -117,32 +117,32 @@ class WebsiteImageController extends Controller
 
        }
 
-       return $this->Optimize_testing($filename);
-       die;  
+    //    return $this->Optimize_testing($filename);
+    //    die;
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
-                       ); 
+                       );
 
-        $optimizerChain = OptimizerChainFactory::create();
+        // $optimizerChain = OptimizerChainFactory::create();
 
-        // Create a temporary file for the optimized image
-        $tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');        
+        // // Create a temporary file for the optimized image
+        // $tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');
 
-        // Optimize the image and save it to the temporary path
-        $optimizerChain->optimize($path, $tempPath);
+        // // Optimize the image and save it to the temporary path
+        // $optimizerChain->optimize($path, $tempPath);
 
 
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
-        return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
+        return response()->file($path, $headers);
    }
-   
+
    public function Optimize_testing($image){
 
     // Original image path
     $imageUrl = Storage::disk('public')->path('images/products/' . $image);
-    
+
     // Check if the original image exists
     if (!file_exists($imageUrl)) {
         return response()->json(['error' => 'Original image does not exist.'], 404);
@@ -191,7 +191,7 @@ class WebsiteImageController extends Controller
     //     $headers = array(
     //         'Content-Type'        => 'image/jpg',
     //         'Content-Description' => $request->image
-    //       ); 
+    //       );
     //     return response()->file(Storage::disk('public')->path($imageUrl), $headers);
     }
 
@@ -212,7 +212,7 @@ class WebsiteImageController extends Controller
 //     $headers = array(
 //         'Content-Type'        => 'image/jpg',
 //         'Content-Description' => $request->image
-//     ); 
+//     );
 
 //     return response()->file($optimizedImageUrl, $headers);
 // }

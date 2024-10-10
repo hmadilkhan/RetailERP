@@ -3756,9 +3756,9 @@ class InventoryController extends Controller
             $pathToImage = Storage::disk('public')->path('/images/products/' . $request->image);
 
             // Ensure the image exists before proceeding
-            if (Storage::disk('public')->exists($pathToImage)) {
+            if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
                 // Create an optimizer chain
-                $optimizerChain = OptimizerChainFactory::create();
+                //$optimizerChain = OptimizerChainFactory::create();
 
                 //Add specific optimizers with custom options
                 // $optimizerChain->add(new \JpegOptimizer(['quality' => 90])); // Adjust quality for JPEG
@@ -3768,10 +3768,10 @@ class InventoryController extends Controller
                 // $optimizerChain->optimize($pathToImage);
 
          // Create a temporary file for the optimized image
-        $tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');
+        //$tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');
 
         // Optimize the image and save it to the temporary path
-        $optimizerChain->optimize($pathToImage, $tempPath);
+       // $optimizerChain->optimize($pathToImage, $tempPath);
 
 
                 // Set headers for the image response
@@ -3782,7 +3782,7 @@ class InventoryController extends Controller
 
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
-        return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
+        return response()->file($pathToImage, $headers);
 
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
