@@ -117,8 +117,6 @@ class WebsiteImageController extends Controller
 
        }
 
-    //    return $this->Optimize_testing($filename);
-    //    die;
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
@@ -138,62 +136,62 @@ class WebsiteImageController extends Controller
         return response()->file($path, $headers);
    }
 
-   public function Optimize_testing($image){
+//    public function Optimize_testing($image){
 
-    // Original image path
-    $imageUrl = Storage::disk('public')->path('images/products/' . $image);
+//     // Original image path
+//     $imageUrl = Storage::disk('public')->path('images/products/' . $image);
 
-    // Check if the original image exists
-    if (!file_exists($imageUrl)) {
-        return response()->json(['error' => 'Original image does not exist.'], 404);
-    }
+//     // Check if the original image exists
+//     if (!file_exists($imageUrl)) {
+//         return response()->json(['error' => 'Original image does not exist.'], 404);
+//     }
 
-    // // Temporary folder path
-    // $tmpPath = Storage::disk('public')->path('images/optimize_images');
+//     // // Temporary folder path
+//     // $tmpPath = Storage::disk('public')->path('images/optimize_images');
 
-    // // Ensure temporary directory exists
-    // if (!is_dir($tmpPath)) {
-    //     if (!mkdir($tmpPath, 0755, true)) {
-    //         return response()->json(['error' => 'Unable to create temporary directory.'], 500);
-    //     }
-    // }
+//     // // Ensure temporary directory exists
+//     // if (!is_dir($tmpPath)) {
+//     //     if (!mkdir($tmpPath, 0755, true)) {
+//     //         return response()->json(['error' => 'Unable to create temporary directory.'], 500);
+//     //     }
+//     // }
 
-    // Temporary image path
-    // $tmpImagePath = $tmpPath . '/' .$request->image;
+//     // Temporary image path
+//     // $tmpImagePath = $tmpPath . '/' .$request->image;
 
-    // // Copy original image to temporary folder
-    // // Move the image
-    // Storage::disk('public')->move('/images/products/' . $request->image,'images/optimize_images'.$request->image);
+//     // // Copy original image to temporary folder
+//     // // Move the image
+//     // Storage::disk('public')->move('/images/products/' . $request->image,'images/optimize_images'.$request->image);
 
-    // Optimize the image
-    ImageOptimizer::optimize($imageUrl);
-    // $optimizer = OptimizerChainFactory::create();
-    // $optimizer->optimize($imageUrl);
+//     // Optimize the image
+//     ImageOptimizer::optimize($imageUrl);
+//     // $optimizer = OptimizerChainFactory::create();
+//     // $optimizer->optimize($imageUrl);
 
-    // Response headers
-    $headers = [
-        'Content-Type' => 'image/'.strtolower(pathinfo($image,PATHINFO_EXTENSION)),
-    ];
+//     // Response headers
+//     $headers = [
+//         'Content-Type' => 'image/'.strtolower(pathinfo($image,PATHINFO_EXTENSION)),
+//     ];
 
-    // Return the optimized image
-    return response()->file($imageUrl, $headers);
+//     // Return the optimized image
+//     return response()->file($imageUrl, $headers);
 
-    //      // Image URL
-    //      $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
-    //      $imageUrl = '/images/products/'.$request->image;
-    //     //  Image::load(Storage::disk('public')->path($imageUrl))
-    //     //  ->optimize()
-    //     //  ->save($imageName);
-    //       ImageOptimizer::optimize(Storage::disk('public')->path($imageUrl));
+//     //      // Image URL
+//     //      $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
+//     //      $imageUrl = '/images/products/'.$request->image;
+//     //     //  Image::load(Storage::disk('public')->path($imageUrl))
+//     //     //  ->optimize()
+//     //     //  ->save($imageName);
+//     //       ImageOptimizer::optimize(Storage::disk('public')->path($imageUrl));
 
-    //    // if you use a second parameter the package will not modify the original
-    //     // ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
-    //     $headers = array(
-    //         'Content-Type'        => 'image/jpg',
-    //         'Content-Description' => $request->image
-    //       );
-    //     return response()->file(Storage::disk('public')->path($imageUrl), $headers);
-    }
+//     //    // if you use a second parameter the package will not modify the original
+//     //     // ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
+//     //     $headers = array(
+//     //         'Content-Type'        => 'image/jpg',
+//     //         'Content-Description' => $request->image
+//     //       );
+//     //     return response()->file(Storage::disk('public')->path($imageUrl), $headers);
+//     }
 
 // public function Optimize_testing(Request $request) {
 //     // Image URL
@@ -217,32 +215,32 @@ class WebsiteImageController extends Controller
 //     return response()->file($optimizedImageUrl, $headers);
 // }
 
-//    public function optimize(Request $request)
-//     {
-//         // Image URL
-//         $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727867687-1726240292-ker-003.jpg';
+   public function Optimize_testing(Request $request)
+    {
+        // Image URL
+        $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1728562827-kcs234.jpg';
 
-//         // Fetch the image from the provided URL
-//         $imageContents = file_get_contents($imageUrl);
-//         // $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
+        // Fetch the image from the provided URL
+        // $imageContents = file_get_contents($imageUrl);
+        // $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
 
-//         // Store the original image temporarily
-//         // Storage::put($tempPath, $imageContents);
+        // Store the original image temporarily
+        // Storage::put($tempPath, $imageContents);
 
-//         // Optimize the image
-//         $image = Image::make($imageContents);
-//         $image->resize(800, null, function ($constraint) {
-//             $constraint->aspectRatio();
-//         });
+        // Optimize the image
+        $image = Image::make($imageUrl);
+        $image->resize(800, null, function ($constraint) {
+            $constraint->aspectRatio();
+        });
 
-//         // Save optimized image to a new path
-//         $optimizedPath = 'optimized/' . basename($tempPath);
-//         $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
+        // // Save optimized image to a new path
+        // $optimizedPath = 'optimized/' . basename($tempPath);
+        // $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
 
-//         // Remove the temporary file
-//         Storage::delete($tempPath);
+        // // Remove the temporary file
+        // Storage::delete($tempPath);
 
-//         // Show the optimized image
-//         return response()->file(storage_path('app/' . $optimizedPath));
-//     }
+        // Show the optimized image
+        return response()->file($imageUrl);
+    }
 }
