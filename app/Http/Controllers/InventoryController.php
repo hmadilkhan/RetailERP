@@ -3782,7 +3782,7 @@ class InventoryController extends Controller
 
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
-        return response()->file($pathToImage, $headers)->deleteFileAfterSend(true);
+        return response()->file($pathToImage, $headers);
 
         // Return the optimized image as a file response
         // Use deleteFileAfterSend to clean up the temporary file after the response is sent
