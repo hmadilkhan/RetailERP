@@ -3756,7 +3756,7 @@ class InventoryController extends Controller
             $pathToImage = Storage::disk('public')->path('/images/products/' . $request->image);
 
             // Ensure the image exists before proceeding
-            if (Storage::disk('public')->exists($pathToImage)) {
+            if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
                 // Create an optimizer chain
                 //$optimizerChain = OptimizerChainFactory::create();
 
