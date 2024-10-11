@@ -235,7 +235,7 @@ class WebsiteImageController extends Controller
             }
 
                  // Show the optimized image path
-                 return response()->file($imageUrl);
+                 return response()->file($optimizedPath);
         } else {
             throw new \Exception("Image file does not exist: 1724070325.webp");
         }
