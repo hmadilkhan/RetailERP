@@ -220,8 +220,8 @@ class WebsiteImageController extends Controller
    public function Optimize_testing(Request $request)
     {
         // Image URL
-        $imageUrl = Storage::disk('public')->path('images/products/1724070325.jpg');
-        $optimizedPath = Storage::disk('public')->path('images/optimize_images/1724070325.jpg');
+        $imageUrl = Storage::disk('public')->path('images/products/1728559873-1727867426-1725890478-kcs026.jpg');
+        $optimizedPath = Storage::disk('public')->path('images/optimize_images/1728559873-1727867426-1725890478-kcs026.jpg');
 
         // Ensure the source image exists
         if (File::exists($imageUrl)) {
