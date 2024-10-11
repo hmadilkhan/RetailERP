@@ -221,7 +221,7 @@ class WebsiteImageController extends Controller
         if (File::exists($path)) {
             // Copy the image to the new location
             copy($path, $optimizedPath);
-              if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'jpg'){
+              if(in_array(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)),['jpg','jpeg'])){
                     // Now process the copied image
                     $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
               }
@@ -244,7 +244,5 @@ class WebsiteImageController extends Controller
             throw new \Exception("Image file does not exist: {$imageName}");
         }
 
-        // // Remove the temporary file
-        // Storage::delete($tempPath);
     }
 }
