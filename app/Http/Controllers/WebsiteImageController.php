@@ -221,15 +221,14 @@ class WebsiteImageController extends Controller
     {
         // Image URL
         $imageUrl = Storage::disk('public')->path('images/products/1724070325.jpg');
-        $optimizedPath = Storage::disk('public')->path('images/optimize_images/1724070325.webp');
+        $optimizedDir = Storage::disk('public')->path('images/optimize_images');
+        $destinationPath = $optimizedDir . '/1724070325.webp'; // Change to .webp
 
         // Ensure the source image exists
         if (File::exists($imageUrl)) {
-            // Copy the image to the new location
-            copy($imageUrl, $optimizedPath);
 
-            // Now process the copied image
-            $process = new Process(['jpegoptim', '--max=80', $optimizedPath]);
+            // Now process the image to convert to WEBP
+            $process = new Process(['cwebp', '-q', '80', $imageUrl, '-o', $destinationPath]); // Set quality to 80
             $process->run();
 
             // Check if the process was successful
@@ -238,7 +237,7 @@ class WebsiteImageController extends Controller
             }
 
                  // Show the optimized image path
-                 return response()->file($optimizedPath);
+                 return response()->file($destinationPath)->deleteFileAfterSend(true);
         } else {
             throw new \Exception("Image file does not exist: 1724070325.webp");
         }
