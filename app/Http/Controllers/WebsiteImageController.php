@@ -119,7 +119,7 @@ class WebsiteImageController extends Controller
 
        }
 
-       if(in_array($extension,['jpg','jpeg','png'])){
+       if($mode=='prod' && in_array($extension,['jpg','jpeg'])){
          return $this->OptimizeImage($filename,$path);
        }
 
@@ -226,10 +226,10 @@ class WebsiteImageController extends Controller
                     $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
               }
 
-              if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
-                // Now process the copied image
-                $process = new Process(['optipng', '-02', $optimizedPath]);
-              }
+            //   if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
+            //     // Now process the copied image
+            //     $process = new Process(['optipng', '-02', $optimizedPath]);
+            //   }
 
             $process->run();
 
