@@ -220,7 +220,7 @@ class WebsiteImageController extends Controller
    public function Optimize_testing(Request $request)
     {
         // Image URL
-        $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1728562827-kcs234.jpg';
+        $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1724070325.jpg';
 
         // Fetch the image from the provided URL
         // $imageContents = file_get_contents($imageUrl);
