@@ -223,7 +223,7 @@ class WebsiteImageController extends Controller
             copy($path, $optimizedPath);
               if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'jpg'){
                     // Now process the copied image
-                    $process = new Process(['jpegoptim', '--max=50', $optimizedPath]);
+                    $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
               }
 
               if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
