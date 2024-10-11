@@ -223,7 +223,7 @@ class WebsiteImageController extends Controller
             copy($imageUrl, $optimizedPath);
 
             // Now process the copied image
-            $process = new Process(['jpegoptim', '--max=25', $optimizedPath]);
+            $process = new Process(['jpegoptim', '--max=15', $optimizedPath]);
             $process->run();
 
             // Check if the process was successful
