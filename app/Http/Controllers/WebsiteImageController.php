@@ -228,10 +228,32 @@ class WebsiteImageController extends Controller
         // Storage::put($tempPath, $imageContents);
 
         // Optimize the image
-        $image = Image::make($imageUrl);
-        $image->resize(800, null, function ($constraint) {
-            $constraint->aspectRatio();
-        });
+
+        //Here's an example:
+// Optimize JPEG images
+// $jpegImagePath =
+// 'path/to/your/image.jpg';
+// shell_exec("jpegoptim-max=85
+// $jpegImagePath");
+// // Optimize PNG images
+// $pngImagePath = 'path/to/your/image.png';
+// shell_exec("optipng -02 $pngImagePath");
+
+ // Ensure the path is valid and the file exists
+ if (file_exists($imageUrl)) {
+    // Build the command
+    $command = "jpegoptim --max=60 " . escapeshellarg($imageUrl);
+
+    // Execute the command
+    shell_exec($command);
+} else {
+    throw new \Exception("Image file does not exist: {$imageUrl}");
+}
+
+        // $image = Image::make($imageUrl);
+        // $image->resize(800, null, function ($constraint) {
+        //     $constraint->aspectRatio();
+        // });
 
         // // Save optimized image to a new path
         // $optimizedPath = 'optimized/' . basename($tempPath);
