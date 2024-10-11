@@ -3764,7 +3764,7 @@ class InventoryController extends Controller
                 copy($pathToImage, $optimizedPath);
 
                 // Now process the copied image
-                $process = new Process(['jpegoptim', '--max=75', $optimizedPath]);
+                $process = new Process(['jpegoptim', '--max=85', $optimizedPath]);
                 $process->run();
                 // Check if the process was successful
                 if (!$process->isSuccessful()) {
