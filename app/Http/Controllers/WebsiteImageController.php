@@ -214,97 +214,96 @@ class WebsiteImageController extends Controller
    public function OptimizeImage($imageName,$path)
     {
         // Image URL
-        $imageUrl = $path; // Original image path
-        $optimizedPath = Storage::disk('public')->path('images/optimize_images/' . $imageName);
-
-        // Ensure the source image exists
-        if (File::exists($imageUrl)) {
-            // Copy the image to the new location
-            copy($imageUrl, $optimizedPath);
-
-            // Determine the image type and process accordingly
-            $extension = strtolower(pathinfo($imageName, PATHINFO_EXTENSION));
-
-            if ($extension === 'jpg' || $extension === 'jpeg') {
-                // Process the copied JPEG image
-                $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
-            } elseif ($extension === 'png') {
-                // Process the copied PNG image
-                $process = new Process(['optipng', '-02', $optimizedPath]);
-            } else {
-                throw new \Exception("Unsupported image format: {$extension}");
-            }
-
-            // Run the optimization process
-            $process->run();
-
-            // Check if the process was successful
-            if (!$process->isSuccessful()) {
-                // Capture error output if it fails
-                $errorOutput = $process->getErrorOutput();
-                throw new ProcessFailedException($process, $errorOutput);
-            }
-
-            // If it's a PNG or JPEG, convert to WEBP after optimization
-            if ($extension === 'png' || $extension === 'jpg' || $extension === 'jpeg') {
-                $webpPath = Storage::disk('public')->path('images/optimize_images/' . pathinfo($imageName, PATHINFO_FILENAME) . '.webp');
-                $convertProcess = new Process(['cwebp', '-q', '80', $optimizedPath, '-o', $webpPath]);
-                $convertProcess->run();
-
-                // Check if the conversion process was successful
-                if (!$convertProcess->isSuccessful()) {
-                    $errorOutput = $convertProcess->getErrorOutput();
-                    throw new ProcessFailedException($convertProcess, $errorOutput);
-                }
-
-                // Return the WEBP image
-                return response()->file($webpPath)->deleteFileAfterSend(true);
-            }
-
-            // Return the optimized image path
-            return response()->file($optimizedPath)->deleteFileAfterSend(true);
-        } else {
-            throw new \Exception("Image file does not exist: {$imageUrl}");
-        }
-
-
-
-
-        // $imageUrl = $path;
-        // $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$imageName);
+        // $imageUrl = $path; // Original image path
+        // $optimizedPath = Storage::disk('public')->path('images/optimize_images/' . $imageName);
 
         // // Ensure the source image exists
-        // if (File::exists($path)) {
+        // if (File::exists($imageUrl)) {
         //     // Copy the image to the new location
-        //     copy($path, $optimizedPath);
-        //       if(in_array(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)),['jpg','jpeg'])){
-        //             // Now process the copied image
-        //             $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
-        //             $process->run();
-        //             // Check if the process was successful
-        //             if (!$process->isSuccessful()) {
-        //                 throw new ProcessFailedException($process);
-        //             }
-        //       }
+        //     copy($imageUrl, $optimizedPath);
 
-        //       if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
-        //         // Now process the copied image
+        //     // Determine the image type and process accordingly
+        //     $extension = strtolower(pathinfo($imageName, PATHINFO_EXTENSION));
+
+        //     if ($extension === 'jpg' || $extension === 'jpeg') {
+        //         // Process the copied JPEG image
+        //         $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
+        //     } elseif ($extension === 'png') {
+        //         // Process the copied PNG image
         //         $process = new Process(['optipng', '-02', $optimizedPath]);
-        //          // Capture the output and error
-        //         $output = $process->getOutput();
+        //     } else {
+        //         throw new \Exception("Unsupported image format: {$extension}");
+        //     }
+
+        //     // Run the optimization process
+        //     $process->run();
+
+        //     // Check if the process was successful
+        //     if (!$process->isSuccessful()) {
+        //         // Capture error output if it fails
         //         $errorOutput = $process->getErrorOutput();
+        //         throw new ProcessFailedException($process, $errorOutput);
+        //     }
 
-        //         // Check if the process was successful
-        //         if (!$process->isSuccessful()) {
-        //             throw new ProcessFailedException($process, $output . $errorOutput);
+        //     // If it's a PNG or JPEG, convert to WEBP after optimization
+        //     if ($extension === 'png' || $extension === 'jpg' || $extension === 'jpeg') {
+        //         $webpPath = Storage::disk('public')->path('images/optimize_images/' . pathinfo($imageName, PATHINFO_FILENAME) . '.webp');
+        //         $convertProcess = new Process(['cwebp', '-q', '80', $optimizedPath, '-o', $webpPath]);
+        //         $convertProcess->run();
+
+        //         // Check if the conversion process was successful
+        //         if (!$convertProcess->isSuccessful()) {
+        //             $errorOutput = $convertProcess->getErrorOutput();
+        //             throw new ProcessFailedException($convertProcess, $errorOutput);
         //         }
-        //       }
 
-        //     // Show the optimized image path
+        //         // Return the WEBP image
+        //         return response()->file($webpPath)->deleteFileAfterSend(true);
+        //     }
+
+        //     // Return the optimized image path
         //     return response()->file($optimizedPath)->deleteFileAfterSend(true);
         // } else {
-        //     throw new \Exception("Image file does not exist: {$imageName}");
+        //     throw new \Exception("Image file does not exist: {$imageUrl}");
         // }
+
+
+
+
+        $imageUrl = $path;
+        $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$imageName);
+
+        // Ensure the source image exists
+        if (File::exists($path)) {
+            // Copy the image to the new location
+            copy($path, $optimizedPath);
+
+            // Now process the copied image
+            $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
+            $process->run();
+            // Check if the process was successful
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+
+            //   if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
+            //     // Now process the copied image
+            //     $process = new Process(['optipng', '-02', $optimizedPath]);
+            //      // Capture the output and error
+            //     $output = $process->getOutput();
+            //     $errorOutput = $process->getErrorOutput();
+
+            //     // Check if the process was successful
+            //     if (!$process->isSuccessful()) {
+            //         throw new ProcessFailedException($process, $output . $errorOutput);
+            //     }
+            //   }
+
+            // Show the optimized image path
+            return response()->file($optimizedPath)->deleteFileAfterSend(true);
+        } else {
+            throw new \Exception("Image file does not exist: {$imageName}");
+        }
 
     }
 }
