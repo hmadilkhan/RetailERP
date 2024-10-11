@@ -228,7 +228,7 @@ class WebsiteImageController extends Controller
 
               if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
                 // Now process the copied image
-                $process = new Process(['pngquant', '--quality=60-75', '--output', $optimizedPath]);
+                $process = new Process(['optipng', '-02', $optimizedPath]);
               }
 
             $process->run();
