@@ -221,7 +221,7 @@ class WebsiteImageController extends Controller
     {
         // Image URL
         $imageUrl = Storage::disk('public')->path('images/products/1724070325.jpg');
-        $webpPath = Storage::disk('public')->path('images/optimize_image/1724070325.webp');
+        $webpPath = Storage::disk('public')->path('images/optimize_images/1724070325.webp');
 
         // Ensure the source image exists
         if (file_exists($imageUrl)) {
