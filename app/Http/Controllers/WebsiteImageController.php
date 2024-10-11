@@ -220,53 +220,27 @@ class WebsiteImageController extends Controller
    public function Optimize_testing(Request $request)
     {
         // Image URL
-        $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1724070325.jpg';
+        $imageUrl = Storage::disk('public')->path('images/products/1724070325.jpg');
+        $webpPath = Storage::disk('public')->path('images/optimize_image/1724070325.webp');
 
-        // Fetch the image from the provided URL
-        // $imageContents = file_get_contents($imageUrl);
-        // $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
+        // Ensure the source image exists
+        if (file_exists($imageUrl)) {
+            // Create the command to convert to WEBP
+            $process = new Process(['ffmpeg', '-i', $imageUrl, '-quality', '80', $webpPath]);;
+            $process->run();
 
-        // Store the original image temporarily
-        // Storage::put($tempPath, $imageContents);
+            // Check if the process was successful
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
 
-        // Optimize the image
-
-        //Here's an example:
-// Optimize JPEG images
-// $jpegImagePath =
-// 'path/to/your/image.jpg';
-// shell_exec("jpegoptim-max=85
-// $jpegImagePath");
-// // Optimize PNG images
-// $pngImagePath = 'path/to/your/image.png';
-// shell_exec("optipng -02 $pngImagePath");
-
- // Ensure the path is valid and the file exists
- if (file_exists($imageUrl)) {
-    $process = new Process(['jpegoptim', '--max=' . 75, $imageUrl]);
-    $process->run();
-
-    // Check if the process was successful
-    if (!$process->isSuccessful()) {
-        throw new ProcessFailedException($process);
-    }
-} else {
-    throw new \Exception("Image file does not exist: {$imageUrl}");
-}
-
-        // $image = Image::make($imageUrl);
-        // $image->resize(800, null, function ($constraint) {
-        //     $constraint->aspectRatio();
-        // });
-
-        // // Save optimized image to a new path
-        // $optimizedPath = 'optimized/' . basename($tempPath);
-        // $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
+                 // Show the optimized image path
+                 return response()->file($webpPath);
+        } else {
+            throw new \Exception("Image file does not exist: 1724070325.webp");
+        }
 
         // // Remove the temporary file
         // Storage::delete($tempPath);
-
-        // Show the optimized image
-        return response()->file($imageUrl);
     }
 }
