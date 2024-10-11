@@ -225,8 +225,11 @@ class WebsiteImageController extends Controller
 
         // Ensure the source image exists
         if (File::exists($imageUrl)) {
-            // Optimize the JPEG image using jpegoptim
-            $process = new Process(['jpegoptim', '--max=80', $imageUrl, '--dest=' . $optimizedPath]);
+            // Copy the image to the new location
+            copy($imageUrl, $optimizedPath);
+
+            // Now process the copied image
+            $process = new Process(['jpegoptim', '--max=80', $optimizedPath]);
             $process->run();
 
             // Check if the process was successful
