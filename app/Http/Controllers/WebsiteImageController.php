@@ -119,7 +119,9 @@ class WebsiteImageController extends Controller
 
        }
 
-       return $this->OptimizeImage($filename);
+       if($mode == 'prod'){
+         return $this->OptimizeImage($filename);
+       }
 
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
