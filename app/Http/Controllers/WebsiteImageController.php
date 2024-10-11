@@ -227,9 +227,13 @@ class WebsiteImageController extends Controller
         // Ensure the source image exists
         if (File::exists($imageUrl)) {
 
-            // Now process the image to convert to WEBP
-            $process = new Process(['cwebp', '-q', '80', $imageUrl, '-o', $destinationPath]); // Set quality to 80
+            // Optimize the JPEG image using jpegoptim
+            $process = new Process(['jpegoptim', '--max=80', $imageUrl, '--dest=' . $destinationPath]);
             $process->run();
+
+            // // Now process the image to convert to WEBP
+            // $process = new Process(['cwebp', '-q', '80', $imageUrl, '-o', $destinationPath]); // Set quality to 80
+            // $process->run();
 
             // Check if the process was successful
             if (!$process->isSuccessful()) {
