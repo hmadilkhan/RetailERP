@@ -119,22 +119,14 @@ class WebsiteImageController extends Controller
 
        }
 
+       return $this->OptimizeImage($filename);
+
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
                        );
 
-        // $optimizerChain = OptimizerChainFactory::create();
 
-        // // Create a temporary file for the optimized image
-        // $tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');
-
-        // // Optimize the image and save it to the temporary path
-        // $optimizerChain->optimize($path, $tempPath);
-
-
-        // Return the optimized image as a file response
-        // Use deleteFileAfterSend to clean up the temporary file after the response is sent
         return response()->file($path, $headers);
    }
 
@@ -217,11 +209,11 @@ class WebsiteImageController extends Controller
 //     return response()->file($optimizedImageUrl, $headers);
 // }
 
-   public function Optimize_testing(Request $request)
+   public function OptimizeImage($imageName)
     {
         // Image URL
-        $imageUrl = Storage::disk('public')->path('images/products/1728559873-1727867426-1725890478-kcs026.jpg');
-        $optimizedPath = Storage::disk('public')->path('images/optimize_images/1728559873-1727867426-1725890478-kcs026.jpg');
+        $imageUrl = Storage::disk('public')->path('images/products/'.$imageName);
+        $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$imageName);
 
         // Ensure the source image exists
         if (File::exists($imageUrl)) {
