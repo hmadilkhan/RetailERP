@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use File;
 use Illuminate\Support\Facades\Storage;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
-use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
-use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
+// use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+// use Spatie\ImageOptimizer\OptimizerChainFactory;
+// use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
+// use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Image;
 
 class WebsiteImageController extends Controller
@@ -241,11 +243,13 @@ class WebsiteImageController extends Controller
 
  // Ensure the path is valid and the file exists
  if (file_exists($imageUrl)) {
-    // Build the command
-    $command = "jpegoptim --max=60 " . escapeshellarg($imageUrl);
+    $process = new Process(['jpegoptim', '--max=' . 75, $imageUrl]);
+    $process->run();
 
-    // Execute the command
-    shell_exec($command);
+    // Check if the process was successful
+    if (!$process->isSuccessful()) {
+        throw new ProcessFailedException($process);
+    }
 } else {
     throw new \Exception("Image file does not exist: {$imageUrl}");
 }
