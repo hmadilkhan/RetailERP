@@ -222,7 +222,7 @@ class WebsiteImageController extends Controller
         // Image URL
         $imageUrl = Storage::disk('public')->path('images/products/1724070325.jpg');
         $optimizedDir = Storage::disk('public')->path('images/optimize_images');
-        $destinationPath = $optimizedDir . '/1724070325.webp'; // Change to .webp
+        $destinationPath = $optimizedDir . '/1724070325.jpg';
 
         // Ensure the source image exists
         if (File::exists($imageUrl)) {
