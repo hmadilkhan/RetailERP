@@ -119,7 +119,7 @@ class WebsiteImageController extends Controller
 
        }
 
-       if($mode == 'prod' && in_array($extension,['jpg','jpeg'])){
+       if(in_array($extension,['jpg','jpeg','png'])){
          return $this->OptimizeImage($filename,$path);
        }
 
@@ -224,22 +224,28 @@ class WebsiteImageController extends Controller
               if(in_array(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)),['jpg','jpeg'])){
                     // Now process the copied image
                     $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
+                    $process->run();
+                    // Check if the process was successful
+                    if (!$process->isSuccessful()) {
+                        throw new ProcessFailedException($process);
+                    }
               }
 
-            //   if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
-            //     // Now process the copied image
-            //     $process = new Process(['optipng', '-02', $optimizedPath]);
-            //   }
+              if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
+                // Now process the copied image
+                $process = new Process(['optipng', '-02', $optimizedPath]);
+                 // Capture the output and error
+                $output = $process->getOutput();
+                $errorOutput = $process->getErrorOutput();
 
-            $process->run();
+                // Check if the process was successful
+                if (!$process->isSuccessful()) {
+                    throw new ProcessFailedException($process, $output . $errorOutput);
+                }
+              }
 
-            // Check if the process was successful
-            if (!$process->isSuccessful()) {
-                throw new ProcessFailedException($process);
-            }
-
-                 // Show the optimized image path
-                 return response()->file($optimizedPath)->deleteFileAfterSend(true);
+            // Show the optimized image path
+            return response()->file($optimizedPath)->deleteFileAfterSend(true);
         } else {
             throw new \Exception("Image file does not exist: {$imageName}");
         }
