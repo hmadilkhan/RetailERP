@@ -119,7 +119,7 @@ class WebsiteImageController extends Controller
 
        }
 
-       if($mode == 'prod' && in_array($extension,['jpg','jpeg','png'])){
+       if(in_array($extension,['jpg','jpeg','png'])){
          return $this->OptimizeImage($filename);
        }
 
