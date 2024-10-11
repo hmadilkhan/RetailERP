@@ -241,7 +241,7 @@ class WebsiteImageController extends Controller
                  // Show the optimized image path
                  return response()->file($optimizedPath)->deleteFileAfterSend(true);
         } else {
-            throw new \Exception("Image file does not exist: 1724070325.webp");
+            throw new \Exception("Image file does not exist: {$imageName}");
         }
 
         // // Remove the temporary file
