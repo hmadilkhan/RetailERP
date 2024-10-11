@@ -120,7 +120,7 @@ class WebsiteImageController extends Controller
        }
 
        if($mode == 'prod' && in_array($extension,['jpg','jpeg','png'])){
-         return $this->OptimizeImage($filename);
+         return $this->OptimizeImage($filename,$path);
        }
 
        $headers = array(
@@ -211,16 +211,16 @@ class WebsiteImageController extends Controller
 //     return response()->file($optimizedImageUrl, $headers);
 // }
 
-   public function OptimizeImage($imageName)
+   public function OptimizeImage($imageName,$path)
     {
         // Image URL
-        $imageUrl = Storage::disk('public')->path('images/products/'.$imageName);
+        $imageUrl = $path;
         $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$imageName);
 
         // Ensure the source image exists
-        if (File::exists($imageUrl)) {
+        if (File::exists($path)) {
             // Copy the image to the new location
-            copy($imageUrl, $optimizedPath);
+            copy($path, $optimizedPath);
               if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'jpg'){
                     // Now process the copied image
                     $process = new Process(['jpegoptim', '--max=30', $optimizedPath]);
