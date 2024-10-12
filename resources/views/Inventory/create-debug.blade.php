@@ -21,7 +21,7 @@
   <section class="panels-wells">
    
 
-    <form method="POST" class="form-horizontal" enctype="multipart/form-data" action="{{route('insert')}}" >
+    <form method="POST" class="form-horizontal" enctype="multipart/form-data" action="{{route('insert')}}">
       @csrf
 
       <div class="row">
@@ -930,6 +930,10 @@
       }
     });   
    
+$("#btnSubmit").on('click',function(){
+    $(this).attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+});
+
 
    $("#ap").change(function(){
        if($('#taxrate').val() != ""){
