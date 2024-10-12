@@ -755,7 +755,7 @@
 @endsection
 @section('scriptcode_one')
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
- 
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  
   @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
     <style>
