@@ -930,9 +930,7 @@
       }
     });   
    
-$("#btnSubmit").on('click',function(){
-    $(this).attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
-});
+
 
 
    $("#ap").change(function(){
