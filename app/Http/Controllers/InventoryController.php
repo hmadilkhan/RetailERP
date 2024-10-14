@@ -32,10 +32,12 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
-use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
-use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+// use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+// use Spatie\ImageOptimizer\OptimizerChainFactory;
+// use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
+// use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
 
 
 class InventoryController extends Controller
@@ -3757,22 +3759,17 @@ class InventoryController extends Controller
 
             // Ensure the image exists before proceeding
             if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
-                // Create an optimizer chain
-                //$optimizerChain = OptimizerChainFactory::create();
+                $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$request->image);
+                 // Copy the image to the new location
+                copy($pathToImage, $optimizedPath);
 
-                //Add specific optimizers with custom options
-                // $optimizerChain->add(new \JpegOptimizer(['quality' => 90])); // Adjust quality for JPEG
-                // $optimizerChain->add(new \PngOptimizer(['optimize' => true])); // Example for PNG optimization
-
-                // // Optimize the image in place
-                // $optimizerChain->optimize($pathToImage);
-
-         // Create a temporary file for the optimized image
-        //$tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');
-
-        // Optimize the image and save it to the temporary path
-       // $optimizerChain->optimize($pathToImage, $tempPath);
-
+                // Now process the copied image
+                $process = new Process(['jpegoptim', '--max=85', $optimizedPath]);
+                $process->run();
+                // Check if the process was successful
+                if (!$process->isSuccessful()) {
+                    return  $this->notFoundImage();
+                }
 
                 // Set headers for the image response
                 $headers = array(
@@ -3780,48 +3777,14 @@ class InventoryController extends Controller
                     'Content-Description' => $request->image,
                 );
 
-        // Return the optimized image as a file response
-        // Use deleteFileAfterSend to clean up the temporary file after the response is sent
-        return response()->file($pathToImage, $headers);
+                // Show the optimized image path
+                return response()->file($optimizedPath)->deleteFileAfterSend(true);
 
-        // Return the optimized image as a file response
-        // Use deleteFileAfterSend to clean up the temporary file after the response is sent
-        // return response()->file($tempPath, $headers)->deleteFileAfterSend(true);
-
-                // Return the optimized image as a file response
-                // return response()->file($pathToImage, $headers);
             } else {
-                $headers = array(
-                    'Content-Type'        => 'image/jpg',
-                    'Content-Description' => 'no-image.jpg',
-                );
-                return response()->file(Storage::disk('public')->path('/images/no-image.jpg'), $headers);
+               return  $this->notFoundImage();
             }
         }
-        // if (!empty($request->image)) {
-        //     $headers = array(
-        //         'Content-Type'        => 'image/jpg',
-        //         'Content-Description' => $request->image,
-        //     );
-        //     $pathToImage = storage_path('app/public/images/products/kasheesjewellery/'. $request->image);
-        //     return response()->file(ImageOptimizer::optimize($pathToImage),$headers);
-            // //    return $this->setImageOptimize('/images/products/kasheesjewellery/'.$request->image);
-            //  $img = Image::make(Storage::disk('public')->get('/images/products/kasheesjewellery/'.$request->image));
 
-            // //  Resize and optimize the image
-            //  $img->resize(800, null, function ($constraint) {
-            //      $constraint->aspectRatio();
-            //      $constraint->upsize();
-            //  });
-
-            //  // Return the optimized image as a response
-            //    return $img->response('webp', 85); // Adjust the format and quality as needed
-        // }
-
-            $headers = array(
-                'Content-Type'        => 'image/jpg',
-                'Content-Description' => 'no-image.jpg',
-            );
-        return response()->file(Storage::disk('public')->path('/images/no-image.jpg'), $headers);
+        return  $this->notFoundImage();
     }
 }

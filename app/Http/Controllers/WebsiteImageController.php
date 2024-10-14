@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use File;
 use Illuminate\Support\Facades\Storage;
-use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
-use Spatie\ImageOptimizer\OptimizerChainFactory;
-use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
-use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
+// use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
+// use Spatie\ImageOptimizer\OptimizerChainFactory;
+// use Spatie\ImageOptimizer\Optimizers\Jpegoptim;
+// use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
+use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Image;
 
 class WebsiteImageController extends Controller
@@ -117,83 +119,75 @@ class WebsiteImageController extends Controller
 
        }
 
-    //    return $this->Optimize_testing($filename);
-    //    die;
+       if(in_array($extension,['jpg','jpeg'])){
+         return $this->OptimizeImage($filename,$path);
+       }
+
        $headers = array(
                          'Content-Type'        => 'image/'.$extension,
                          'Content-Description' => $filename
                        );
 
-        // $optimizerChain = OptimizerChainFactory::create();
 
-        // // Create a temporary file for the optimized image
-        // $tempPath = tempnam(sys_get_temp_dir(), 'optimized_image_');
-
-        // // Optimize the image and save it to the temporary path
-        // $optimizerChain->optimize($path, $tempPath);
-
-
-        // Return the optimized image as a file response
-        // Use deleteFileAfterSend to clean up the temporary file after the response is sent
         return response()->file($path, $headers);
    }
 
-   public function Optimize_testing($image){
+//    public function Optimize_testing($image){
 
-    // Original image path
-    $imageUrl = Storage::disk('public')->path('images/products/' . $image);
+//     // Original image path
+//     $imageUrl = Storage::disk('public')->path('images/products/' . $image);
 
-    // Check if the original image exists
-    if (!file_exists($imageUrl)) {
-        return response()->json(['error' => 'Original image does not exist.'], 404);
-    }
+//     // Check if the original image exists
+//     if (!file_exists($imageUrl)) {
+//         return response()->json(['error' => 'Original image does not exist.'], 404);
+//     }
 
-    // // Temporary folder path
-    // $tmpPath = Storage::disk('public')->path('images/optimize_images');
+//     // // Temporary folder path
+//     // $tmpPath = Storage::disk('public')->path('images/optimize_images');
 
-    // // Ensure temporary directory exists
-    // if (!is_dir($tmpPath)) {
-    //     if (!mkdir($tmpPath, 0755, true)) {
-    //         return response()->json(['error' => 'Unable to create temporary directory.'], 500);
-    //     }
-    // }
+//     // // Ensure temporary directory exists
+//     // if (!is_dir($tmpPath)) {
+//     //     if (!mkdir($tmpPath, 0755, true)) {
+//     //         return response()->json(['error' => 'Unable to create temporary directory.'], 500);
+//     //     }
+//     // }
 
-    // Temporary image path
-    // $tmpImagePath = $tmpPath . '/' .$request->image;
+//     // Temporary image path
+//     // $tmpImagePath = $tmpPath . '/' .$request->image;
 
-    // // Copy original image to temporary folder
-    // // Move the image
-    // Storage::disk('public')->move('/images/products/' . $request->image,'images/optimize_images'.$request->image);
+//     // // Copy original image to temporary folder
+//     // // Move the image
+//     // Storage::disk('public')->move('/images/products/' . $request->image,'images/optimize_images'.$request->image);
 
-    // Optimize the image
-    ImageOptimizer::optimize($imageUrl);
-    // $optimizer = OptimizerChainFactory::create();
-    // $optimizer->optimize($imageUrl);
+//     // Optimize the image
+//     ImageOptimizer::optimize($imageUrl);
+//     // $optimizer = OptimizerChainFactory::create();
+//     // $optimizer->optimize($imageUrl);
 
-    // Response headers
-    $headers = [
-        'Content-Type' => 'image/'.strtolower(pathinfo($image,PATHINFO_EXTENSION)),
-    ];
+//     // Response headers
+//     $headers = [
+//         'Content-Type' => 'image/'.strtolower(pathinfo($image,PATHINFO_EXTENSION)),
+//     ];
 
-    // Return the optimized image
-    return response()->file($imageUrl, $headers);
+//     // Return the optimized image
+//     return response()->file($imageUrl, $headers);
 
-    //      // Image URL
-    //      $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
-    //      $imageUrl = '/images/products/'.$request->image;
-    //     //  Image::load(Storage::disk('public')->path($imageUrl))
-    //     //  ->optimize()
-    //     //  ->save($imageName);
-    //       ImageOptimizer::optimize(Storage::disk('public')->path($imageUrl));
+//     //      // Image URL
+//     //      $imageName = 'optimized-image.'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION));
+//     //      $imageUrl = '/images/products/'.$request->image;
+//     //     //  Image::load(Storage::disk('public')->path($imageUrl))
+//     //     //  ->optimize()
+//     //     //  ->save($imageName);
+//     //       ImageOptimizer::optimize(Storage::disk('public')->path($imageUrl));
 
-    //    // if you use a second parameter the package will not modify the original
-    //     // ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
-    //     $headers = array(
-    //         'Content-Type'        => 'image/jpg',
-    //         'Content-Description' => $request->image
-    //       );
-    //     return response()->file(Storage::disk('public')->path($imageUrl), $headers);
-    }
+//     //    // if you use a second parameter the package will not modify the original
+//     //     // ImageOptimizer::optimize($imageUrl, '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/optimize_images/'.$request->image);
+//     //     $headers = array(
+//     //         'Content-Type'        => 'image/jpg',
+//     //         'Content-Description' => $request->image
+//     //       );
+//     //     return response()->file(Storage::disk('public')->path($imageUrl), $headers);
+//     }
 
 // public function Optimize_testing(Request $request) {
 //     // Image URL
@@ -217,32 +211,99 @@ class WebsiteImageController extends Controller
 //     return response()->file($optimizedImageUrl, $headers);
 // }
 
-//    public function optimize(Request $request)
-//     {
-//         // Image URL
-//         $imageUrl = '/home/u828600220/domains/sabsoft.com.pk/public_html/Retail/storage/images/products/1727867687-1726240292-ker-003.jpg';
+   public function OptimizeImage($imageName,$path)
+    {
+        // Image URL
+        // $imageUrl = $path; // Original image path
+        // $optimizedPath = Storage::disk('public')->path('images/optimize_images/' . $imageName);
 
-//         // Fetch the image from the provided URL
-//         $imageContents = file_get_contents($imageUrl);
-//         // $tempPath = 'tmp/' . uniqid() . '.jpg'; // Temporary path for the image
+        // // Ensure the source image exists
+        // if (File::exists($imageUrl)) {
+        //     // Copy the image to the new location
+        //     copy($imageUrl, $optimizedPath);
 
-//         // Store the original image temporarily
-//         // Storage::put($tempPath, $imageContents);
+        //     // Determine the image type and process accordingly
+        //     $extension = strtolower(pathinfo($imageName, PATHINFO_EXTENSION));
 
-//         // Optimize the image
-//         $image = Image::make($imageContents);
-//         $image->resize(800, null, function ($constraint) {
-//             $constraint->aspectRatio();
-//         });
+        //     if ($extension === 'jpg' || $extension === 'jpeg') {
+        //         // Process the copied JPEG image
+        //         $process = new Process(['jpegoptim', '--max=40', $optimizedPath]);
+        //     } elseif ($extension === 'png') {
+        //         // Process the copied PNG image
+        //         $process = new Process(['optipng', '-02', $optimizedPath]);
+        //     } else {
+        //         throw new \Exception("Unsupported image format: {$extension}");
+        //     }
 
-//         // Save optimized image to a new path
-//         $optimizedPath = 'optimized/' . basename($tempPath);
-//         $image->save(storage_path('app/' . $optimizedPath), 80); // Save with 80% quality
+        //     // Run the optimization process
+        //     $process->run();
 
-//         // Remove the temporary file
-//         Storage::delete($tempPath);
+        //     // Check if the process was successful
+        //     if (!$process->isSuccessful()) {
+        //         // Capture error output if it fails
+        //         $errorOutput = $process->getErrorOutput();
+        //         throw new ProcessFailedException($process, $errorOutput);
+        //     }
 
-//         // Show the optimized image
-//         return response()->file(storage_path('app/' . $optimizedPath));
-//     }
+        //     // If it's a PNG or JPEG, convert to WEBP after optimization
+        //     if ($extension === 'png' || $extension === 'jpg' || $extension === 'jpeg') {
+        //         $webpPath = Storage::disk('public')->path('images/optimize_images/' . pathinfo($imageName, PATHINFO_FILENAME) . '.webp');
+        //         $convertProcess = new Process(['cwebp', '-q', '80', $optimizedPath, '-o', $webpPath]);
+        //         $convertProcess->run();
+
+        //         // Check if the conversion process was successful
+        //         if (!$convertProcess->isSuccessful()) {
+        //             $errorOutput = $convertProcess->getErrorOutput();
+        //             throw new ProcessFailedException($convertProcess, $errorOutput);
+        //         }
+
+        //         // Return the WEBP image
+        //         return response()->file($webpPath)->deleteFileAfterSend(true);
+        //     }
+
+        //     // Return the optimized image path
+        //     return response()->file($optimizedPath)->deleteFileAfterSend(true);
+        // } else {
+        //     throw new \Exception("Image file does not exist: {$imageUrl}");
+        // }
+
+
+
+
+        $imageUrl = $path;
+        $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$imageName);
+
+        // Ensure the source image exists
+        if (File::exists($path)) {
+            // Copy the image to the new location
+            copy($path, $optimizedPath);
+
+            // Now process the copied image
+            $process = new Process(['jpegoptim', '--max=75', $optimizedPath]);
+            $process->run();
+            // Check if the process was successful
+            if (!$process->isSuccessful()) {
+                throw new ProcessFailedException($process);
+            }
+
+            //   if(strtolower(pathinfo($imageName,PATHINFO_EXTENSION)) == 'png'){
+            //     // Now process the copied image
+            //     $process = new Process(['optipng', '-02', $optimizedPath]);
+            //      // Capture the output and error
+            //     $output = $process->getOutput();
+            //     $errorOutput = $process->getErrorOutput();
+
+            //     // Check if the process was successful
+            //     if (!$process->isSuccessful()) {
+            //         throw new ProcessFailedException($process, $output . $errorOutput);
+            //     }
+            //   }
+
+            // Show the optimized image path
+            return response()->file($optimizedPath)->deleteFileAfterSend(true);
+        } else {
+            throw new \Exception("Image file does not exist: {$imageName}");
+        }
+
+    }
 }

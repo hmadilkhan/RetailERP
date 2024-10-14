@@ -476,7 +476,7 @@
          </div>
          <div class="row m-t-30">
               <div class="col-lg-12 col-md-12 text-center">
-                  <button class="btn btn-lg btn-circle btn-primary m-b-10" type="submit">Save Changes</button>
+                  <button class="btn btn-lg btn-circle btn-primary m-b-10" type="submit" id="btn_submit_save_changes">Save Changes</button>
              </div>
            </div>
 </form>
@@ -617,6 +617,7 @@
 @endsection
 @section('scriptcode_one')
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 @endsection
 @section('scriptcode_three')
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
@@ -729,9 +730,12 @@ $("#showProductWebsite").on('click',function(){
 			    contentType: false,
 			    cache: false,
 			    processData: false,
+                beforeSend:function(){
+                  $("#btn_submit_save_changes").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+                },
 				success: function(data,statusText,getStatus)
 				{
-				  console.log("",data); // show response from the php script.
+				  //console.log("",data); // show response from the php script.
 				  if(data == 1)
 				  {
 					  location.reload();
