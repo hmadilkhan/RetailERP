@@ -883,6 +883,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/fbr-report', [ReportController::class, 'fbrReport']);
     Route::get('/invoice-report', [ReportController::class, 'invoiceReport']);
     Route::get('/sales-invoices-report', [ReportController::class, 'salesInvoicesReport']);
+    Route::get('/sales-invoices-report-excel', [ReportController::class, 'salesInvoicesReportExcel']);
     Route::get('/factory-operation-report', [ReportController::class, 'factoryOperationReport']);
     Route::get('/inventory-image-report', [ReportController::class, 'inventoryImageReport']);
     Route::get('/order-booking-report', [ReportController::class, 'orderBookingReport']);
