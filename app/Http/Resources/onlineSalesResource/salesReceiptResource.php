@@ -19,7 +19,7 @@ class salesReceiptResource extends JsonResource
     public function toArray($request)
     {
         return [
-        	"id"                        =>$this->id, 
+        	"id"                        =>$this->id,
         	"receipt_no"                =>$this->receipt_no,
         	"order_statusId"            =>$this->status,
         	"order_estimate_time"       =>$this->order_estimate_time,
@@ -44,7 +44,7 @@ class salesReceiptResource extends JsonResource
 			                                                                          ->where('service_provider_orders.receipt_id',$this->id)
 			                                                                          ->get()),
 			"customer"                  =>new CustomerResource(DB::table('customers')->join('customer_addresses','customer_addresses.customer_id','customers.id')->where(['customers.id'=>$this->customer_id,'customer_addresses.id'=>$this->cust_location_id])->select('customers.name','customers.mobile','customer_addresses.address','customer_addresses.landmark')->first()),
-			"products"                  =>ProductResource::collection(DB::table('inventory_general')
+			"products"                  =>ProductResource::customCollection(DB::table('inventory_general')
 			                                                              ->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')
 																		  ->where('sales_receipt_details.receipt_id',$this->id)
 																		  ->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code',
@@ -53,12 +53,12 @@ class salesReceiptResource extends JsonResource
 																		  'sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id',
 																		  'sales_receipt_details.discount_value','sales_receipt_details.discount_code','sales_receipt_details.group_id',
 																		  'sales_receipt_details.actual_price','inventory_general.image','inventory_general.url')
-																		  ->get()),
-			
-			
+																		  ->get(),$this->website_type,$this->website_id),
+
+
 			// ->where('sales_receipt_details.mode','inventory-general')
 // 			DB::table('inventory_general')->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')->where('sales_receipt_details.receipt_id',$this->id)->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code','sales_receipt_details.item_name','sales_receipt_details.total_qty','sales_receipt_details.item_price','sales_receipt_details.total_amount','sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id','sales_receipt_details.discount_value','sales_receipt_details.discount_code','sales_receipt_details.actual_price','inventory_general.image')->get()
-			
+
 			/*DB::table('inventory_general')->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')->where('sales_receipt_details.receipt_id',$this->id)->where('sales_receipt_details.mode','inventory-general')->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code','sales_receipt_details.item_name','sales_receipt_details.total_qty','sales_receipt_details.total_amount','sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id','sales_receipt_details.group_id','sales_receipt_details.actual_price')->get()*/
 		];
     }
