@@ -2563,7 +2563,7 @@ class ReportController extends Controller
             $details = $report->sales_details($request->terminalid, $request->fromdate, $request->todate, $request->branch);
 
             foreach ($details as $key => $value) {
-                $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->paidByCustomer) - ($value->cashOut + $value->Expenses + $value->Discount  + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
+                $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash) - ($value->cashOut + $value->Expenses + $value->Discount + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
                 if (session("company_id") == 102) {
                     $cashinhand = $cashinhand - $value->bal;
                 }
@@ -2588,7 +2588,6 @@ class ReportController extends Controller
                 $totalhand = $totalhand + $cashinhand;
                 $totalclosing = $totalclosing + $value->closingBal;
                 $totalbalance = $totalbalance + $balance;
-
 
                 $pdf->SetFont('Arial', '', 9);
                 $pdf->setFillColor(232, 232, 232);
