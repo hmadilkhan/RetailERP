@@ -451,7 +451,7 @@ class order extends Model
 				if (!empty($mode)) {
 					$query->where("sales_receipts.order_mode_id", '=', empty($mode) ? '' : $mode);
 				}
-				// ->whereBetween('sales_receipts.date', [$first, $second]);        
+				// ->whereBetween('sales_receipts.date', [$first, $second]);
 			});
 		if (!empty($first)) {
 			$data->where("sales_receipts.date", '>=', $first);
@@ -737,7 +737,7 @@ class order extends Model
 			->join('branch', 'branch.branch_id', 'sales_receipts.branch')
 			->join('company', 'company.company_id', 'branch.company_id')
 			->join('website_details', 'website_details.id', 'sales_receipts.website_id')
-			->select('sales_receipts.*', 'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'branch.branch_name', 'company.name as company_name')
+			->select('sales_receipts.*', 'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.type as website_type', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'branch.branch_name', 'company.name as company_name')
 			->whereRaw('sales_receipts.url_orderid = "' . $id . '" ' . $filter)
 			->get();
 	}
