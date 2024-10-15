@@ -10,7 +10,7 @@
 			<div class="modal-body">
                 <div class="list-group">
                     <a href="" id="linkVariableProd" class="list-group-item list-group-item-action">Create Variable Product</a>
-                    <a href="" id="linkDeal" class="list-group-item list-group-item-action disabled">Create Deal</a>
+                    <a href="" id="linkDeal" class="list-group-item list-group-item-action">Create Deal</a>
                   </div>
 			</div>
 			<div class="modal-footer">
