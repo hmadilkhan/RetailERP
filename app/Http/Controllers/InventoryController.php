@@ -222,8 +222,8 @@ class InventoryController extends Controller
             // } else {
             $transFormation = [];
             if (!isset($request->actual_image_size)) {
-                $transFormation['width']  = 400;
-                $transFormation['height'] = 400;
+                // $transFormation['width']  = 400;
+                // $transFormation['height'] = 400;
             }
             $returnImageValue = $this->uploads($request->file('image'), "images/products/", "", $transFormation);
             $imageName = $returnImageValue['fileName'];
