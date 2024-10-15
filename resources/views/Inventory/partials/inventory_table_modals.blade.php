@@ -1,3 +1,29 @@
+<div class="modal fade modal-flex" id="productSetting-modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-md" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Choose Action</h4>
+			</div>
+			<div class="modal-body">
+                <div class="list-group">
+                    <a href="" id="linkVariableProd" class="list-group-item list-group-item-action">Create Variable Product</a>
+                    <a href="" id="linkDeal" class="list-group-item list-group-item-action">Create Deal</a>
+                  </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" data-dismiss="modal" class="btn btn-default waves-effect waves-light f-right">
+					Close
+				</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
 <div class="modal fade modal-flex" id="website-detail-modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">
@@ -25,7 +51,7 @@
 
 		</div>
 	</div>
-</div>   
+</div>
 
 <div class="modal fade modal-flex" id="brand-detail-modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-md" role="document">
@@ -54,7 +80,7 @@
 
 		</div>
 	</div>
-</div>       
+</div>
 <div class="modal fade modal-flex justify-content-center"  style=" background: transparent;position: absolute;float: left;left: 50%;top: 50%;transform: translate(-50%, -50%);" id="loader-modal" role="document"  >
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">
@@ -184,7 +210,7 @@
 	</div>
 </div>
 </div>
-		
+
 <div class="modal fade modal-flex" id="sp-modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">
@@ -228,7 +254,7 @@
 			<div class="modal-body">
 				<form id="createDealForm" method="post">
 					@csrf
-					<input type="hidden" name="inventory_id" id="inventory_id"> 
+					<input type="hidden" name="inventory_id" id="inventory_id">
 					<input type="hidden" name="inventory_name" id="inventory_name">
 				<div class="row">
 					<div class="col-md-4">
@@ -248,14 +274,14 @@
 						   </select>
 						</div>
 						<span id="group_type_alert" class="text-danger"></span>
-					</div>                                
+					</div>
 					<div class="col-md-4">
 						<div class="form-group">
 						   <label>Selection Limited</label>
 						   <input type="number" min="0" value="0" class="form-control" placeholder="Selection Limited" name="selection_limited" id="selection_limited" disabled>
 						</div>
-					</div>   
-					
+					</div>
+
 				</div>
 				<div class="row">
 					<div class="col-md-6">
@@ -268,7 +294,7 @@
 							   @endforeach
 						   </select>
 						</div>
-					</div> 
+					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 						   <label>Products</label>
@@ -276,9 +302,9 @@
 							   <option value="">Select</option>
 						   </select>
 						</div>
-					</div>                                 
+					</div>
 				</div>
-			  </form>    
+			  </form>
 			</div>
 			<div class="modal-footer">
 				<button type="button" id="btn_addDeal" class="btn btn-success waves-effect waves-light">Submit</button>
@@ -300,7 +326,7 @@
 			<div class="modal-body">
 				<form id="editDealForm" method="post">
 					@csrf
-					<input type="hidden" name="inventory_id" id="inventory_id_edit"> 
+					<input type="hidden" name="inventory_id" id="inventory_id_edit">
 					<input type="hidden" name="group_id" id="group_id">
 				<div class="row">
 					<div class="col-md-4">
@@ -320,14 +346,14 @@
 						   </select>
 						</div>
 						<span id="group_type_alert" class="text-danger"></span>
-					</div>                                
+					</div>
 					<div class="col-md-4">
 						<div class="form-group">
 						   <label>Selection Limited</label>
 						   <input type="number" min="0" value="0" class="form-control" placeholder="Selection Limited" name="selection_limited_edit" id="selection_limited_edit" disabled>
 						</div>
-					</div>   
-					
+					</div>
+
 				</div>
 				<div class="row">
 					<div class="col-md-6">
@@ -340,7 +366,7 @@
 							   @endforeach
 						   </select>
 						</div>
-					</div> 
+					</div>
 					<div class="col-md-6">
 						<div class="form-group">
 						   <label>Products</label>
@@ -348,18 +374,18 @@
 							   <option value="">Select</option>
 						   </select>
 						</div>
-					</div>                                 
+					</div>
 				</div>
-			  </form>    
+			  </form>
 			</div>
 			<div class="modal-footer">
 				<button type="button" id="btn_removeDeal" class="btn btn-danger waves-effect waves-light m-r-2">Remove</button>
-				
+
 				<button type="button" id="btn_updateDeal" class="btn btn-success waves-effect waves-light">Save Changes</button>
 			</div>
 		</div>
 	</div>
-</div>	      
+</div>
 
 <div class="modal fade modal-flex" id="tags-detail-modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-md" role="document">
@@ -388,7 +414,7 @@
 
 		</div>
 	</div>
-</div> 
+</div>
 <div class="modal fade modal-flex" id="details-modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">

@@ -13,13 +13,13 @@ use DB,Session;
 
 class InventoryDealController extends Controller
 {
-    
+
 
     public function __construct()
     {
         $this->middleware('auth');
-    }    
-    
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -27,18 +27,18 @@ class InventoryDealController extends Controller
      */
     public function index()
     {
-        
+
         $DealProducts = DB::table('inventory_general')->select('id','product_name')->where(['is_deal'=>1,'company_id'=>session('company_id')])->get();
-        
+
         $InventGroups = AddonCategory::with("addons")->where(["company_id"=>session("company_id"),'mode'=>'groups'])->get();
 
         $getRecord2   =  Inventory::with("deals","deals.inventoryGroup","deals.getDeal_details")
 						->where("company_id",session('company_id'))->where("is_deal",1)->get();
 						// return $getRecord2;
-                        //   return     $getRecord2;              
+                        //   return     $getRecord2;
         return view('inventory-deal.index',compact('DealProducts','InventGroups','getRecord2'));
     }
-    
+
     public function getGroups_values(Request $request){
         return Addon::where("addon_category_id",$request->id)->get();
     }
@@ -52,9 +52,9 @@ class InventoryDealController extends Controller
     {
 
         $DealProducts = DB::table('inventory_general')->select('id','product_name')->where(['is_deal'=>1,'company_id'=>session('company_id')])->get();
-        
-        $InventGroups = AddonCategory::with("addons")->where(["company_id"=>session("company_id"),'mode'=>'groups'])->get();        
-        
+
+        $InventGroups = AddonCategory::with("addons")->where(["company_id"=>session("company_id"),'mode'=>'groups'])->get();
+
         return view('inventory-deal.create',compact('DealProducts','InventGroups'));
     }
 
@@ -67,20 +67,20 @@ class InventoryDealController extends Controller
     public function store(Request $request)
     {
 		try{
-		    
+
 		    $rules = [
 		               'deal' => 'required',
 		               'group'=> 'required',
 		             ];
-		             
-		    $this->validate($request,$rules);           
-	
+
+		    $this->validate($request,$rules);
+
 			$count = InventoryDealGeneral::where(['inventory_deal_id'=>$request->deal,'group_id'=>$request->group])->count();
-            
+
             if($count > 0){
                 return redirect()->route('listInventDeal')->withInput($request->input());
             }
-            
+
             $result = InventoryDealGeneral::create([
                                 'inventory_deal_id' => $request->deal,
                                 'group_id'          => $request->group,
@@ -88,7 +88,7 @@ class InventoryDealController extends Controller
                                 'created_at'        => date("Y-m-d H:i:s"),
                                 'updated_at'        => date("Y-m-d H:i:s"),
                           ]);
-            
+
             if($result){
                 $getProducts = $request->products;
                 foreach($getProducts as $val){
@@ -96,24 +96,24 @@ class InventoryDealController extends Controller
                                                     'inventory_general_id'  => $result->id,
                                                     'sub_group_id'          => $val,
                                                     'status'                => 1,
-                                              ]);                    
+                                              ]);
                 }
-                
+
                 Session::flash('success','Success!');
             }else{
                 Session::flash('success','Success!');
-            }              
-            
+            }
+
           return redirect()->route('listInventDeal');
-           
+
 		}catch(Exception $e){
 			return redirect()->route('listInventDeal')->with('error', "Error : ".$e->getMessage());
 		}
     }
-    
+
     public function get_deal_detail(Request $request){
-        
-        return InventoryDealGeneral::with('getDeal_details')->where('inventory_deal_id',$request->id)->get();   
+
+        return InventoryDealGeneral::with('getDeal_details')->where('inventory_deal_id',$request->id)->get();
     }
 
 
@@ -124,13 +124,13 @@ class InventoryDealController extends Controller
 
             $dealId =  $request['deal'];
             $request = $request->except(['_token','deal']);
-            
-            $dealGeneral = InventoryDealGeneral::where('inventory_deal_id',$dealId)->where('status',1)->whereIn('group_id',array_keys($request))->get(); 
+
+            $dealGeneral = InventoryDealGeneral::where('inventory_deal_id',$dealId)->where('status',1)->whereIn('group_id',array_keys($request))->get();
             if($dealGeneral != null){
                $getGroup_key = array_keys($request);
-               
+
                 foreach($dealGeneral as $val){
-                    
+
                     if(InventoryDealDetail::where('inventory_general_id',$val->id)->update(['status'=>0])){
                         // $getValues_group = explode(',',$request[$val->group_id]);
                         // return $getValues_group[0];
@@ -145,18 +145,18 @@ class InventoryDealController extends Controller
                                                               ]);
                                 }
                           }else{
-                             InventoryDealGeneral::where('id',$val->id)->update(['status'=>0]); 
+                             InventoryDealGeneral::where('id',$val->id)->update(['status'=>0]);
                           }
 
                     }
                 }
-                
+
                 return redirect()->route('listInventDeal')->with('success', "Success!");
-                
+
             }else{
-               	return redirect()->route('listInventDeal')->with('error', "Error : Server Issue"); 
+               	return redirect()->route('listInventDeal')->with('error', "Error : Server Issue");
             }
-        
+
 		}catch(Exception $e){
 			return redirect()->route('listInventDeal')->with('error', "Error : ".$e->getMessage());
 		}
@@ -166,14 +166,14 @@ class InventoryDealController extends Controller
     public function destroy(Request $request)
     {
         try{
-            
+
             if(!empty($request->mode)){
     			if(InventoryDealGeneral::where(["inventory_deal_id"=>$request->id,"group_id"=>$request->mode])->update(['status'=>0,'updated_at'=>date('Y-m-d H:i:s')])){
     			    Session::flash('success','Success!');
     			}else{
     			    Session::flash('error','Error!');
-    			}                
-                
+    			}
+
             }else{
     			if(InventoryDealGeneral::where("inventory_deal_id",$request->id)->update(['status'=>0,'updated_at'=>date('Y-m-d H:i:s')])){
     			    Session::flash('success','Success!');
@@ -181,7 +181,7 @@ class InventoryDealController extends Controller
     			    Session::flash('error','Error!');
     			}
             }
-            
+
 			return redirect()->route('listInventDeal');
 		}catch(Exception $e){
 			return redirect()->route('listInventDeal')->with('error', "Error : ".$e->getMessage());

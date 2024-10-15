@@ -222,8 +222,8 @@ class InventoryController extends Controller
             // } else {
             $transFormation = [];
             if (!isset($request->actual_image_size)) {
-                $transFormation['width']  = 400;
-                $transFormation['height'] = 400;
+                // $transFormation['width']  = 400;
+                // $transFormation['height'] = 400;
             }
             $returnImageValue = $this->uploads($request->file('image'), "images/products/", "", $transFormation);
             $imageName = $returnImageValue['fileName'];
@@ -3154,12 +3154,12 @@ class InventoryController extends Controller
             'department'        => $inventory->department(),
             'generalItem'       => $check_exists,
             'dealHead'          => DB::table('inventory_deal_general')
-                ->where('inventory_deal_id', $request->id)
-                ->where('status', 1)
-                // ->join('addon_categories','addon_categories.id','inventory_deal_general.group_id')
-                // ->select('inventory_deal_general.*','addon_categories.name','addon_categories.type as group_type','addon_categories.addon_limit as selection_limit')
-                ->orderBy('priority', 'DESC')
-                ->get(),
+                                        ->where('inventory_deal_id', $request->id)
+                                        ->where('status', 1)
+                                        // ->join('addon_categories','addon_categories.id','inventory_deal_general.group_id')
+                                        // ->select('inventory_deal_general.*','addon_categories.name','addon_categories.type as group_type','addon_categories.addon_limit as selection_limit')
+                                        ->orderBy('priority', 'DESC')
+                                        ->get(),
 
             'dealChild'        => DB::table('inventory_deal_details')->whereIn(
                 'inventory_general_id',
@@ -3282,6 +3282,11 @@ class InventoryController extends Controller
                         'product_quantity'      => $getQunatity[$i],
                     ]);
                 }
+
+                DB::table('inventory_general')
+                  ->where('company_id',session('company_id'))
+                  ->where('id',$request->finishgood)
+                  ->update(['is_deal'=>1]);
             }
             return response()->json(["status" => 200]);
         } catch (\Exception $e) {
