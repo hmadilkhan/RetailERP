@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Storage;
 // use Spatie\ImageOptimizer\Optimizer\PngOptimizer;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
-use Image;
+// use Image;
 
 class WebsiteImageController extends Controller
 {
