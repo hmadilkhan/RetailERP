@@ -100,7 +100,7 @@
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item waves-light waves-effect" id="btn_unlinkWebsiteProduct">
                                     <i class="icofont icofont-company"></i>&nbsp;UnLink Website</a>
-                                <div class="dropdown-divider"></div>                               
+                                <div class="dropdown-divider"></div>
                                 <a class="dropdown-item waves-light waves-effect" id="btn_change_brand" data-toggle="modal"
                                     data-target="#brand-detail-modal"><i class="icofont icofont-company"></i>&nbsp;Link
                                     Brand</a>
@@ -1700,7 +1700,7 @@
             // 			  data:{_token:'{{ csrf_token() }}',id:$(this).val()},
             // 			  cache: false,
             // 			  success: function(resp){
-            // 			    if(resp != null){     
+            // 			    if(resp != null){
             // 				 $("#products_md").empty();
 
             // 				 if($("#products_md").attr('disabled')){
@@ -1709,11 +1709,11 @@
 
             //     			   $.each(resp,function(i,v){
             //     			       $("#products_md").append('<option value="'+v.id+'">'+v.product_name+'</option>');
-            //     			   })	 
+            //     			   })
             // 			    }
 
             // 			  }
-            // 			});		    
+            // 			});
 
         });
 
@@ -1925,15 +1925,15 @@
                                     swal('Error!',resp,'error');
                                 }
                             }
-                        })                  
+                        })
                 }else{
                     swal("Cancel!","All products are safe:)","error");
                     rem_id = [];
                 }
 
-            });                
-           } 
-    })    
+            });
+           }
+    })
 
     function UnLinkwebsite(productId,websiteId,websiteName){
         swal({
@@ -1953,8 +1953,8 @@
                     swal("Cancel!","All products are safe:)","error");
                 }
 
-            });   
-    }  
+            });
+    }
 
     function UnLinkwebsite_ajax(websiteId,productId){
         $.ajax({
@@ -1984,6 +1984,12 @@
         })
     }
 
+
+    function productSetting(id){
+      $("#productSetting-modal").modal('show');
+      $("#linkVariableProd").attr('href','/inventory/'+id+'/deal-products');
+      $("#linkDeal").attr('href','/inventory/'+id+'/variable-products');
+    }
     </script>
 
 @endsection

@@ -76,14 +76,18 @@
                     <td>{{ $inventory->stock }}</td>
                     <td>{{ $inventory->name }}</td>
                     <td>
-                        @if ($inventory->is_deal == 1)
+                        {{-- @if ($inventory->is_deal == 1)
                             <a href='/inventory/{{ $inventory->id }}/deal-products' class='m-r-1'
                                 title='Create Deal Product'><i class='icofont icofont-plus text-success'></i></a>
                         @else
                             <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
                                 title='Create Variable & Addon Product'><i
                                     class='icofont icofont-plus text-success'></i></a>
-                        @endif
+                        @endif --}}
+                        <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class='m-r-1'
+                            title='Make a Deal & Variable Product'><i
+                                class='icofont icofont-plus text-success'></i></a>
+
                         <a onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
                             class='p-r-10 f-18 text-success' data-toggle='tooltip' data-placement='top'
                             title='Print Barcode' data-original-title='Barcode'><i
