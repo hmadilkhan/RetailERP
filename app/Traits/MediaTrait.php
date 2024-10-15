@@ -25,7 +25,7 @@ trait MediaTrait
 
                     // // resize to 300 x 200 pixel
                     // $image->resize($transformation["width"], $transformation["height"]);
-                $image = Image::make($file)->resize($transformation["width"], $transformation["height"], function ($constraint) {
+                $image = Image::make($file)->resize(400,400, function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 })->encode();
