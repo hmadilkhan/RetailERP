@@ -5,6 +5,7 @@ namespace App\Traits;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Image;
+use Intervention\Image\ImageManager;
 trait MediaTrait
 
 {
@@ -17,10 +18,17 @@ trait MediaTrait
 
             // Resize the image to 400x400 pixels
             if (!empty($transformation)) {
-                $image = Image::make(File::get($file))->resize($transformation["width"], $transformation["height"], function ($constraint) {
-                    $constraint->aspectRatio();
-                    $constraint->upsize();
-                })->encode();
+                    // create new image instance
+                    $image = ImageManager::imagick()->read($file);
+
+                    // resize to 300 x 200 pixel
+                    $image->resize($transformation["width"], $transformation["height"]);
+
+
+                // $image = Image::make(File::get($file))->resize($transformation["width"], $transformation["height"], function ($constraint) {
+                //     $constraint->aspectRatio();
+                //     $constraint->upsize();
+                // })->encode();
             }
             // return response()->json(["filename" => $fileName]);
             Storage::disk('public')->put($path . $fileName, !empty($transformation) ? $image : File::get($file));
