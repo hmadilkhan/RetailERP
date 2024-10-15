@@ -173,7 +173,7 @@ class InventoryController extends Controller
             'ap'            => 'required',
             'product_mode'  => 'required',
             // 'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
-            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
 
         ];
 
@@ -225,7 +225,7 @@ class InventoryController extends Controller
                 $transFormation['width']  = 400;
                 $transFormation['height'] = 400;
             }
-            $returnImageValue = $this->uploads($image, "images/products/", "", $transFormation);
+            $returnImageValue = $this->uploads($request->file('image'), "images/products/", "", $transFormation);
             $imageName = $returnImageValue['fileName'];
 
             // }
