@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Image;
+use Intervention\Image\Facades\Image;
 use Carbon\gd;
 use Intervention\Image\ImageManager;
 trait MediaTrait
@@ -24,7 +24,7 @@ trait MediaTrait
 
                     // // resize to 300 x 200 pixel
                     // $image->resize($transformation["width"], $transformation["height"]);
-                $image = Image::make(File::get($file))->resize($transformation["width"], $transformation["height"], function ($constraint) {
+                $image = Image::make($file)->resize($transformation["width"], $transformation["height"], function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 })->encode();
