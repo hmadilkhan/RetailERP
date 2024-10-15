@@ -427,6 +427,45 @@ class report extends Model
         return $result;
     }
 
+    public function sales_details_excel_query($terminal, $fromdate, $todate)
+    {
+        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,
+		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,
+		IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,
+		(Select date from sales_closing where opening_id = a.opening_id) as closingDate,
+		(Select time from sales_closing where opening_id = a.opening_id) as closingTime,
+		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,
+		IFNULL((SELECT SUM(a.total_amount) as sales from sales_receipts a where opening_id = a.opening_id and a.order_mode_id = 3),0) as Delivery,
+		IFNULL((SELECT SUM(a.total_amount) as sales from sales_receipts a where opening_id = a.opening_id and a.order_mode_id = 4),0) as Online,
+        IFNULL((SELECT SUM(a.total_amount) as sales from sales_receipts a where opening_id = a.opening_id and a.order_mode_id = 2),0) as booking,
+		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1),0) as Cash, 
+		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2),0) as CreditCard, 
+		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3),0) as CustomerCredit,
+		(SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,
+		IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id)),0) as Discount,
+		IFNULL((SELECT SUM(delivery_charges) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id)),0) as Delivery,
+		IFNULL((SELECT SUM(net_amount) FROM `expenses` where opening_id = a.opening_id),0) as Expenses,
+		IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,
+        IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.void_receipt = 1),0) as voidSales,
+		IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,
+		IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,
+		IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,
+		IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 1),0) as CardReturn,
+		IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 4 and received = 1),0) as ChequeReturn,
+		(Select SUM(receive_amount) from sales_account_general where receipt_id IN 
+		(SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3)) as paidByCustomer,
+		IFNULL((SELECT SUM(promo_code) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id )),0) as promo,
+		IFNULL((SELECT SUM(coupon) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id )),0) as coupon,
+		IFNULL((SELECT SUM(sales_tax_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id )),0) as sale_tax,
+		IFNULL((SELECT SUM(service_tax_amount) FROM sales_account_subdetails where receipt_id IN(Select id from sales_receipts where opening_id = a.opening_id )),0) as service_tax,
+        (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 1 and total_amount = 0 ) AS order_delivered_cash,
+        (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 2 and total_amount = 0 ) AS order_delivered_card,
+        (SELECT SUM(credit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 0) as adv_booking_cash,
+        (SELECT SUM(credit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 0) as adv_booking_card
+		FROM sales_opening a where a.terminal_id = ? and a.date BETWEEN ? and ? order by a.date ASC", [$terminal, $fromdate, $todate]);
+        return $result;
+    }
+
     public  function  get_terminals_byid($terminalid)
     {
         $result = DB::select('SELECT * FROM terminal_details WHERE terminal_id = ?', [$terminalid]);

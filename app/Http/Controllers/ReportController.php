@@ -34,6 +34,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\IsdbDatewiseExport;
 use App\Exports\ConsolidatedIsdbDatewiseExport;
 use App\Exports\OrderReportExport;
+use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExport;
 use App\Services\OrderService;
 use Mail;
@@ -549,6 +550,19 @@ class ReportController extends Controller
         $branch = Branch::findOrFail($request->branchid);
         // return Excel::download(new StockReport($details,$branch->branch_name), 'products.xlsx');
         return Excel::download(new StockReportExport($details, $branch->branch_name), "Stock Report.xlsx");
+    }
+
+    public function getSalesDeclarationExport(Request $request, report $report)
+    {
+        $branch = Branch::findOrFail($request->branchid);
+        $terminal = $request->terminal;
+        $datearray = [
+            "from" => $request->fromdate,
+            "to" => $request->todate,
+        ];
+        $details =  $report->sales_details_excel_query($request->terminal, $request->fromdate, $request->todate, $request->branch);
+        $details =  collect($details);
+        return Excel::download(new SalesDeclarationExport($details,$branch,$datearray,$terminal), "Sales Declaration Report.xlsx");
     }
 
     public function getReceiptCount(Request $request)
