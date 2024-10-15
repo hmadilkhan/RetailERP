@@ -554,7 +554,7 @@ class ReportController extends Controller
 
     public function getSalesDeclarationExport(Request $request, report $report)
     {
-        $branch = Branch::findOrFail($request->branch);
+        $branch = Branch::with("company")->where("branch_id",$request->branch)->first();
         $terminal = $request->terminal;
         $datearray = [
             "from" => $request->fromdate,
