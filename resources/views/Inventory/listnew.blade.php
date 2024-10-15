@@ -1987,8 +1987,8 @@
 
     function productSetting(id){
       $("#productSetting-modal").modal('show');
-      $("#linkVariableProd").attr('href','/inventory/'+id+'/deal-products');
-      $("#linkDeal").attr('href','/inventory/'+id+'/variable-products');
+      $("#linkVariableProd").attr('href','/inventory/'+id+'/variable-products');
+      $("#linkDeal").attr('href','/inventory/'+id+'/deal-products');
     }
     </script>
 
