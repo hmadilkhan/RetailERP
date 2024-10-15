@@ -4,7 +4,7 @@ namespace App\Traits;
 
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Image;
 // use Carbon\gd;
 use Intervention\Image\ImageManager;
 trait MediaTrait
