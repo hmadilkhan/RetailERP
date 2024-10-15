@@ -17,7 +17,7 @@ trait MediaTrait
 
             // Resize the image to 400x400 pixels
             if (!empty($transformation)) {
-                $image = Image::make($file)->resize($transformation["width"], $transformation["height"], function ($constraint) {
+                $image = Image::make(File::get($file))->resize($transformation["width"], $transformation["height"], function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 })->encode();
