@@ -557,10 +557,10 @@ class ReportController extends Controller
         $branch = Branch::with("company")->where("branch_id",$request->branch)->first();
         $terminal = $request->terminal;
         $datearray = [
-            "from" => $request->fromdate,
-            "to" => $request->todate,
+            "from" => $request->from,
+            "to" => $request->to,
         ];
-        $details =  $report->sales_details_excel_query($request->terminal, $request->fromdate, $request->todate, $request->branch);
+        $details =  $report->sales_details_excel_query($request->terminal, $request->from, $request->to);
         $details =  collect($details);
         return Excel::download(new SalesDeclarationExport($details,$branch,$datearray,$terminal), "Sales Declaration Report.xlsx");
     }

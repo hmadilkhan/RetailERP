@@ -38,10 +38,13 @@ class SalesDeclarationExport implements FromView,WithColumnWidths,WithTitle,With
             'E' => 15,
             'F' => 15,
             'G' => 20,
-            'H' => 10,
-            'I' => 15,
-            'J' => 15,
-            'K' => 15,
+            'H' => 20,
+            'I' => 20,
+            'J' => 20,
+            'K' => 20,
+            'O' => 20,
+            'R' => 20,
+            'U' => 30,
             // 'G' => 20,
         ];
     }

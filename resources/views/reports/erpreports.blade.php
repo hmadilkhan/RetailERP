@@ -583,7 +583,8 @@
                 value: 1,
                 showDateFilter: true,
                 showBranch: true,
-                showTerminal: true
+                showTerminal: true,
+                showExcelButton:true,
             }]);
         });
 
@@ -850,6 +851,9 @@
 
         function showCategory() {
             $('#dvcategory').css("display", "block");
+        }
+        function showExcelButton() {
+            $('#btnExcel').css("display", "block");
         }
         showdepartments();
 
