@@ -798,15 +798,24 @@
         function getExcelData() {
             let from = $('#datefrom').val();
             let to = $('#dateto').val();
+            let branch = $('#branch').val();
             let terminal = $('#terminal').val();
 
-            if ($('#txtitemsale').val() == 1) {
-                window.location = "{{ url('export-isdb') }}?from=" + from + "&to=" + to + "&terminal=" + terminal;
+            if ($('#txtsaledec').val() == 1) {
+                window.location = "{{ url('reports/excel-export-sales-declartion') }}"+"/" + date + "/" + todate +"/" + branch + "/" + terminal;
             }
 
-            if ($('#txtfbrreport').val() == 1) {
-                window.location = "{{ url('export-fbr') }}?from=" + from + "&to=" + to + "&terminal=" + terminal;
-            }
+            // if ($('#txtitemsale').val() == 1) {
+            //     window.location = "{{ url('export-isdb') }}?from=" + from + "&to=" + to + "&terminal=" + terminal;
+            // }
+
+            // if ($('#txtitemsale').val() == 1) {
+            //     window.location = "{{ url('export-isdb') }}?from=" + from + "&to=" + to + "&terminal=" + terminal;
+            // }
+
+            // if ($('#txtfbrreport').val() == 1) {
+            //     window.location = "{{ url('export-fbr') }}?from=" + from + "&to=" + to + "&terminal=" + terminal;
+            // }
         }
 
         $('#dvcustomeraging').on('click', function() {
