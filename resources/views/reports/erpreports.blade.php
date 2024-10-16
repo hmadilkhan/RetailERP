@@ -802,7 +802,7 @@
             let terminal = $('#terminal').val();
 
             if ($('#txtsaledec').val() == 1) {
-                window.location = "{{ url('reports/excel-export-sales-declartion') }}"+"/" + date + "/" + todate +"/" + branch + "/" + terminal;
+                window.location = "{{ url('reports/excel-export-sales-declartion') }}"+"/" + from + "/" + to +"/" + branch + "/" + terminal;
             }
 
             // if ($('#txtitemsale').val() == 1) {
