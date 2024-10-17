@@ -31,6 +31,7 @@ class DateWiseStockCommand extends Command
     {
         $branch = 283;
         $date = date("Y-m-d");
+        $yesterday = date('Y-m-d',strtotime("-1 days"));
         // This change will add to 04-10-2024 and starts run on 05-10-2024
         $branches = Branch::where("company_id",102)->get();
         
@@ -43,6 +44,7 @@ class DateWiseStockCommand extends Command
                     "product_id" =>  $stock->product_id,
                     "opening_stock" => $stock->stock,
                 ]);
+                DailyStock::where(DB::raw('Date(created_at)'),$yesterday)->where("product_id",$stock->product_id)->update(["closing_stock" => $stock->stock]);
             }
         }
 

@@ -36,6 +36,7 @@ use App\Exports\ConsolidatedIsdbDatewiseExport;
 use App\Exports\OrderReportExport;
 use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExport;
+use App\Models\DailyStock;
 use App\Services\OrderService;
 use Mail;
 use \Illuminate\Support\Arr;
