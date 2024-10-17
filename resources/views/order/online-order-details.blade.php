@@ -120,7 +120,7 @@
                                 <h3><a href="#" class="code{{ $key }} text-dark fw-bold">({{ $item->item_code }}) </a> <a href="#" class="name{{ $key }} text-dark font-size-24">
                                     {{ $item->product_name }}
                                 @if($item->prod_variation != null)
-                                     ({{ $item->prod_variation->variable_name }})
+                                     {{-- ({{ $item->prod_variation->variable_name }}) --}}
                                 @endif
                                 </a></h3>
                             </div>
@@ -129,7 +129,7 @@
 
 
 
-                            @if($item->prod_variation != null)
+                            {{-- @if($item->prod_variation != null)
                             <br>
                            <div class="">
                                <h5 class="font-size-18">Variation</h5>
@@ -141,7 +141,9 @@
                                     @foreach($variation->values as $variation_val)
                                       <tr>
                                         <th>{{ $variation_val->name }}</th>
-                                        <td>{{-- $variation_val->price --}}</td>
+                                        <td>{{-- $variation_val->price --}}
+
+                                        {{-- </td>
                                       </tr>
                                     @endforeach
                                     </table>
@@ -149,7 +151,7 @@
                                 </div>
                               @endforeach
                               </div>
-                            @endif
+                            @endif --}}
 
 
                             @if(count($item->prod_addons) > 0)
