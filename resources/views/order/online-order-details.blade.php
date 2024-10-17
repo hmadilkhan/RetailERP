@@ -136,12 +136,12 @@
                                        <div class="">
                                           @foreach($item->prod_variation as $variation)
                                             <div>
-                                                <h5 class="text-muted font-size-18">{{ $variation->name }}</h5>
+                                                <h5 class="text-muted font-size-18 m-t-1 m-b-0">{{ $variation->name }}</h5>
                                                @if(count($variation->values) > 0)
                                                 @foreach($variation->values as $variation_val)
                                                     <strong class="m-l-2">{{ $variation_val->variate_name }}</strong>
                                                     @foreach($variation_val->variation as $sbvariat_val)
-                                                    <h5 class="text-muted font-size-18">{{ $sbvariat_val->name }}</h5>
+                                                    <h5 class="text-muted font-size-18 m-t-1 m-b-0">{{ $sbvariat_val->name }}</h5>
                                                       @foreach($sbvariat_val->values as $sbvariatval_val)
                                                       <strong class="m-l-2">{{ $sbvariatval_val->name }}</strong>
                                                       @endforeach
