@@ -17,6 +17,7 @@ class StockReport extends Component
     public $from = '';
     public $to = '';
     public $branch = '';
+    public $stocks;
 
     public function mount()
     {
@@ -26,9 +27,16 @@ class StockReport extends Component
 
     public function submitForm($from, $to, $branch)
     {
+
         $this->from = $from;
         $this->to = $to;
         $this->branch = $branch;
+
+        $stockAdjustmentService = new StockAdjustmentService ();
+        $this->stocks = $stockAdjustmentService->stockReport($this->from, $this->to, $this->branch);
+        
+        // Reapply filters and reset pagination
+        $this->applyFilters();
     }
 
     public function applyFilters()
@@ -47,8 +55,8 @@ class StockReport extends Component
 
     public function render(BranchService $branchService, StockAdjustmentService $stockAdjustmentService)
     {
-        $stocks = $stockAdjustmentService->stockReport($this->from, $this->to);
+        $this->stocks = $stockAdjustmentService->stockReport($this->from, $this->to, $this->branch);
         $branches = $branchService->getBranches();
-        return view('livewire.stock-report', compact('branches', 'stocks'));
+        return view('livewire.stock-report', compact('branches'));
     }
 }

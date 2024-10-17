@@ -36,7 +36,7 @@ class DateWiseStockCommand extends Command
         $branches = Branch::where("company_id",102)->get();
         
         foreach ($branches as $key => $branch) {
-            $stocks = InventoryStock::where("branch_id", $branch->branch_id)->where("status_id", 1)->groupBy("product_id")->select("product_id", DB::raw('SUM(inventory_stock.balance) As stock'))->get();
+            $stocks = InventoryStock::where("branch_id", $branch->branch_id)->groupBy("product_id")->select("product_id", DB::raw('SUM(inventory_stock.balance) As stock'))->get();
             foreach ($stocks as $key => $stock) {
                 DailyStock::insert([
                     "company_id" => 102,

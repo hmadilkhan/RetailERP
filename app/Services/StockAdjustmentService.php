@@ -47,8 +47,12 @@ class StockAdjustmentService
         return $query;
     }
 
-    public function stockReport($from,$to)
+    public function stockReport($from, $to, $branch)
     {
+        if ($branch == "") {
+            $branch = 283;
+        }
+        $closingDate = date("Y-m-d", strtotime("+1 day"));
         return DB::select("WITH opening_stock_cte AS (
     SELECT 
         product_id, 
@@ -58,7 +62,7 @@ class StockAdjustmentService
         daily_stock
     WHERE 
         Date(created_at) = '$from'
-        AND branch_id = 283
+        AND branch_id = $branch
     GROUP BY 
         product_id, Date(created_at)
 ),
@@ -70,8 +74,8 @@ closing_stock_cte AS (
     FROM 
         daily_stock
     WHERE 
-        Date(created_at) = '$to'
-        AND branch_id = 283
+        Date(created_at) = '$closingDate'
+        AND branch_id = $branch
     GROUP BY 
         product_id, Date(created_at)
 ),
@@ -88,12 +92,14 @@ sales_cte AS (
             FROM sales_opening 
             WHERE date BETWEEN '$from' AND '$to'
         )
-        AND sr.branch = 283 AND sr.order_mode_id != 2 and sr.is_sale_return = 0
+        AND sr.branch = $branch AND sr.order_mode_id != 2 and sr.is_sale_return = 0
     GROUP BY 
         srd.item_code
 )
 SELECT 
     ds1.product_id,
+    inv.item_code,
+    inv.product_name,
     os.opening_date,
     os.opening_stock,
     cs.closing_date,
@@ -101,36 +107,17 @@ SELECT
     COALESCE(sales.sales, 0) AS sales
 FROM 
     daily_stock ds1
+JOIN inventory_general inv ON inv.id = ds1.product_id
 JOIN opening_stock_cte os ON ds1.product_id = os.product_id
-JOIN closing_stock_cte cs ON ds1.product_id = cs.product_id
+LEFT JOIN closing_stock_cte cs ON ds1.product_id = cs.product_id
 LEFT JOIN sales_cte sales ON ds1.product_id = sales.product_id
 WHERE 
     Date(ds1.created_at) BETWEEN '$from' AND '$to'
-    AND ds1.branch_id = 283
+    AND ds1.branch_id = $branch
 GROUP BY 
     ds1.product_id, os.opening_date, cs.closing_date
 Order By 
 	sales.sales DESC
 ");
-        // return DB::select("SELECT 
-        //                     product_id,
-        //                     MIN(Date(created_at)) AS opening_date,
-        //                     (SELECT SUM(total_qty) FROM `sales_receipt_details` where receipt_id IN (Select id from sales_receipts where opening_id IN ( Select opening_id from sales_opening where date between  '2024-09-23' AND '2024-09-24') and branch = 283 ) and item_code = product_id) as sales,
-        //                     (SELECT opening_stock FROM daily_stock ds2 
-        //                     WHERE ds2.product_id = ds1.product_id 
-        //                     AND Date(ds2.created_at) = MIN(Date(ds1.created_at))) AS opening_stock,
-                            
-        //                     MAX(Date(created_at)) AS closing_date,
-        //                     (SELECT opening_stock FROM daily_stock ds2 
-        //                     WHERE ds2.product_id = ds1.product_id 
-        //                     AND Date(ds2.created_at) = MAX(Date(ds1.created_at))) AS closing_stock
-        //                 FROM 
-        //                     daily_stock ds1
-        //                 WHERE 
-        //                     Date(created_at) BETWEEN '2024-09-23' AND '2024-09-24'  -- Replace with the date range
-        //                 AND
-        //                     branch_id = 283
-        //                 GROUP BY 
-        //                     product_id");
     }
 }
