@@ -88,7 +88,7 @@ sales_cte AS (
             FROM sales_opening 
             WHERE date BETWEEN '$from' AND '$to'
         )
-        AND sr.branch = 283 AND sr.order_mode_id != 2
+        AND sr.branch = 283 AND sr.order_mode_id != 2 and sr.is_sale_return = 0
     GROUP BY 
         srd.item_code
 )

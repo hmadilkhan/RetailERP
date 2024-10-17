@@ -90,7 +90,7 @@
                         <td style="text-align: center;" >
                             {{ date('d M Y', strtotime($value->date)) . ' ' . date('h:i a', strtotime($value->time)) }}
                         </td>
-                        <td style="text-align: center;" >{{ number_format($value->opening_id, 0) }}</td>
+                        <td style="text-align: center;" >{{ $value->opening_id }}</td>
                         <td style="text-align: center;">{{ number_format($value->bal, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->Cash, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->CreditCard, 0) }}</td>
