@@ -267,7 +267,7 @@
 
 
 
-                                        @if($item->prod_variation != null)
+                                        {{-- @if($item->prod_variation != null)
                                         <br>
                                        <div class="">
                                            <h5 class="font-size-18">Variation</h5>
@@ -279,7 +279,7 @@
                                                 @foreach($variation->values as $variation_val)
                                                   <tr>
                                                     <th>{{ $variation_val->name }}</th>
-                                                    <td>{{-- $variation_val->price --}}</td>
+                                                    <td>{{ $variation_val->price }}</td>
                                                   </tr>
                                                 @endforeach
                                                 </table>
@@ -287,7 +287,7 @@
                                             </div>
                                           @endforeach
                                           </div>
-                                        @endif
+                                        @endif --}}
 
 
                                         @if(count($item->prod_addons) > 0)
