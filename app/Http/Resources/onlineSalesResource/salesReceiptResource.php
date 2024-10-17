@@ -25,6 +25,7 @@ class salesReceiptResource extends JsonResource
         	"order_estimate_time"       =>$this->order_estimate_time,
 			"company_name"              =>str_replace(' ','',strtolower($this->company_name)),
         	"order_status"              =>$this->status_name,
+            "website_type"              =>$this->website_type
         	"website_name"              =>$this->website_name,
 			"url_orderid"               =>$this->url_orderid,
 			"branch"                    =>$this->branch_name,
