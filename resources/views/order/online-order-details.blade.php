@@ -145,10 +145,12 @@
                                             </div>
                                           @endforeach
                                           </div>
+                                          <hr/>
                                         @endif
 
                                 <div>
                                     <div class="row">
+
                                         <div class="col-md-4">
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Price</p>
