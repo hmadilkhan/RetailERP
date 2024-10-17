@@ -44,7 +44,7 @@ class DateWiseStockCommand extends Command
                     "product_id" =>  $stock->product_id,
                     "opening_stock" => $stock->stock,
                 ]);
-                DailyStock::where(DB::raw('Date(created_at)'),$yesterday)->where("product_id",$stock->product_id)->update(["closing_stock" => $stock->stock]);
+                DailyStock::where(DB::raw('Date(created_at)'),$yesterday)->where("branch_id", $branch->branch_id)->where("product_id",$stock->product_id)->update(["closing_stock" => $stock->stock]);
             }
         }
 

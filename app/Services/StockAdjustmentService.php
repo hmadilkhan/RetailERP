@@ -52,7 +52,7 @@ class StockAdjustmentService
         if ($branch == "") {
             $branch = 283;
         }
-        $closingDate = date("Y-m-d", strtotime("+1 day"));
+        $closingDate = date("Y-m-d", strtotime("+1 day",strtotime($from)));
         return DB::select("WITH opening_stock_cte AS (
     SELECT 
         product_id, 
