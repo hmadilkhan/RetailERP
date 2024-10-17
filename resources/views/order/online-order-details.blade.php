@@ -152,28 +152,6 @@
                                           </div>
                                         @endif
 
-
-                                        @if(count($item->prod_addons) > 0)
-                                        <br>
-                                       <div class="">
-                                           <h5 class="font-size-18">Addon</h5>
-                                          @foreach($item->prod_addons as $addon)
-                                            <div>
-                                                <h5 class="text-muted font-size-18">{{ $addon->name }}</h5>
-                                               @if(count($addon->values) > 0)
-                                                 <table class="table">
-                                                @foreach($addon->values as $addon_val)
-                                                  <tr>
-                                                    <th>{{ $addon_val->name }}</th>
-                                                    <td>{{ $addon_val->price }}</td>
-                                                  </tr>
-                                                @endforeach
-                                                </table>
-                                               @endif
-                                            </div>
-                                          @endforeach
-                                          </div>
-                                        @endif
                                 <div>
                                     <div class="row">
                                         <div class="col-md-4">
