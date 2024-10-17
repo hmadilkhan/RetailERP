@@ -134,7 +134,6 @@
                                         @if($item->prod_variation != null)
                                         <br>
                                        <div class="">
-                                           <h5 class="font-size-18">Variation</h5>
                                           @foreach($item->prod_variation as $variation)
                                             <div>
                                                 <h5 class="text-muted font-size-18">{{ $variation->name }}</h5>
