@@ -73,7 +73,7 @@
              @endif
            <?php //print_r($orders->products) ?>
 
-            @if($orders->website_type != 'restaurant')
+         @if($orders->website_type != 'restaurant')
             @foreach($orders->products as $key => $item)
 
             <div class="card border shadow-none">
@@ -138,14 +138,9 @@
                                             <div>
                                                 <h5 class="text-muted font-size-18">{{ $variation->name }}</h5>
                                                @if(count($variation->values) > 0)
-                                                 <table class="table">
                                                 @foreach($variation->values as $variation_val)
-                                                  <tr>
-                                                    <th>{{ $variation_val->variate_name }}</th>
-                                                    <td>{{-- $variation_val->price --}}</td>
-                                                  </tr>
+                                                    <strong>{{ $variation_val->variate_name }}</strong>
                                                 @endforeach
-                                                </table>
                                                @endif
                                             </div>
                                           @endforeach
