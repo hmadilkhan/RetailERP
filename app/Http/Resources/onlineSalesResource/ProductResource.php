@@ -5,7 +5,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 // use App\Models\InventoryPos;
 use App\Http\Resources\onlineSalesResource\POSProductVariationResource;
-use App\Http\Resources\Api\onlineSalesResource\ProductRetailVariationResource;
+use App\Http\Resources\onlineSalesResource\ProductRetailVariationResource;
 use App\Http\Resources\onlineSalesResource\ProductAddonResource;
 use App\Http\Resources\onlineSalesResource\ProductDealHeadResource;
 
