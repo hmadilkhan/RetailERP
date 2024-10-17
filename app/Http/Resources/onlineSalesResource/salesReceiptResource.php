@@ -48,6 +48,7 @@ class salesReceiptResource extends JsonResource
 			"products"                  =>ProductResource::customCollection(DB::table('inventory_general')
 			                                                              ->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')
 																		  ->where('sales_receipt_details.receipt_id',$this->id)
+                                                                          ->where('sales_receipt_details.mode','inventory_general')
 																		  ->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code',
 																		  'sales_receipt_details.item_name','sales_receipt_details.total_qty',
 																		  'sales_receipt_details.item_price','sales_receipt_details.total_amount',
