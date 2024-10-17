@@ -5,7 +5,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 // use App\Models\InventoryPos;
 use App\Http\Resources\onlineSalesResource\POSProductVariationResource;
-use App\Http\Resources\Api\onlineSalesResource\ProductRetailVariationResource;
+use App\Http\Resources\onlineSalesResource\ProductRetailVariationResource;
 use App\Http\Resources\onlineSalesResource\ProductAddonResource;
 use App\Http\Resources\onlineSalesResource\ProductDealHeadResource;
 
@@ -33,7 +33,8 @@ class ProductResource extends JsonResource
             "image"              => $this->image,
             "url"                => $this->url,
             "deal"               => new ProductDealHeadResource(DB::table('inventory_deal_general')->whereIn('id',DB::table('sales_receipt_details')->where('parent_item_code',$this->receipt_detail_id)->where('mode','deal-product')->pluck('group_id'))->get(),$this->receipt_id,$this->receipt_detail_id),
-            "prod_variation"     => new POSProductVariationResource(DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'variable-product'])->first()),
+            "prod_variation"     => $this->getVariation(),
+            // "prod_variation"     => new POSProductVariationResource(DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'variable-product'])->first()),
             "prod_addons"        => new ProductAddonResource(DB::table('addon_categories')->whereIn('id',DB::table('addons')->whereIn('id',DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'addon'])->pluck('addon_variation_id'))->pluck('addon_category_id'))->get(),$this->receipt_id,$this->receipt_detail_id),
 
             // ,$this->receipt_id,$this->item_code

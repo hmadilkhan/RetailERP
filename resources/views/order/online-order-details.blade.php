@@ -68,7 +68,9 @@
 			</div>
 		</div>
         <div class="col-xl-8">
-
+             @if(Auth::user()->username == 'uzair.velveteen')
+                    <?php print_r($orders->products) ?>
+             @endif
            <?php //print_r($orders->products) ?>
 		 @foreach($orders->products as $key => $item)
 

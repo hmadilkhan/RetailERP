@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Resources\onlineSalesResource;
 
-use App\Http\Resources\Api\onlineSalesResource\POSProductRetailVariationResource;
+use App\Http\Resources\onlineSalesResource\POSProductRetailVariationResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
