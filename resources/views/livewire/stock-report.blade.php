@@ -57,8 +57,8 @@
                     </div>
                 </div>
             </div>
-            <div class="project-table">
-                <table wire:loading.remove
+            <div class="project-table" wire:loading.remove>
+                <table 
                     class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
                     <thead>
                         <tr>
@@ -124,12 +124,12 @@
 
                 let from = $('#from').val();
                 let to = $('#to').val(); 
-                let code = $('#code').val(); 
-                let name = $('#name').val(); 
+                // let code = $('#code').val(); 
+                // let name = $('#name').val(); 
                 let branch = $('#branch').val(); 
 
                 // Call Livewire component method on form submission
-                @this.call('submitForm', from, to,code,name,branch);
+                @this.call('submitForm', from, to,branch);
             });
             Livewire.hook('morph.updating', ({
                 component,
