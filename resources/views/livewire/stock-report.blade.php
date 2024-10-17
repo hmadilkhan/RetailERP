@@ -49,16 +49,15 @@
 
     <div class="card">
         <div class="card-block">
-            {{-- <div wire:loading.class="d-flex flex-column" wire:loading>
+            <div wire:loading.class="d-flex flex-column" wire:loading>
                 <div
                     class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
                     <div class='spinner-border text-dark' role='status'>
                         <span class='visually-hidden'>Loading...</span>
                     </div>
                 </div>
-            </div> --}}
-            {{-- wire:loading.remove --}}
-            <div class="project-table">
+            </div>
+            <div class="project-table" wire:loading.remove>
                 <table 
                     class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
                     <thead>
