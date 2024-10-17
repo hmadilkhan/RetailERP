@@ -139,7 +139,7 @@
                                                 <h5 class="text-muted font-size-18">{{ $variation->name }}</h5>
                                                @if(count($variation->values) > 0)
                                                 @foreach($variation->values as $variation_val)
-                                                    <strong>{{ $variation_val->variate_name }}</strong>
+                                                    <strong class="m-l-2">{{ $variation_val->variate_name }}</strong>
                                                 @endforeach
                                                @endif
                                             </div>
