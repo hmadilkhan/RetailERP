@@ -1,7 +1,7 @@
 <?php
 namespace App\Http\Resources\onlineSalesResource;
 
-use App\Http\Resources\Api\onlineSalesResource\POSProductVariationResource;
+use App\Http\Resources\Api\onlineSalesResource\POSProductRetailVariationResource;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\DB;
 
@@ -35,7 +35,7 @@ class ProductRetailVariationResource extends JsonResource
         return [
 			"id"            => $this->item_code,
 			"name"          => $this->item_name,
-            "values"        => POSProductVariationResource::collection(DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'variable-product'])->get())
+            "values"        => POSProductRetailVariationResource::collection(DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'variable-product'])->get())
 		];
 
 // 		array_push($exportArray,$data);
