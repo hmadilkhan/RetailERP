@@ -132,7 +132,6 @@
 
 
                                         @if($item->prod_variation != null)
-                                        <br>
                                        <div class="">
                                           @foreach($item->prod_variation as $variation)
                                             <div>
