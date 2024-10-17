@@ -248,7 +248,6 @@ class OrderController extends Controller
             $orders = json_encode($orders);
             $orders = json_decode($orders);
         }
-        return $orders;
         // return response()->json($orders);
         // die();
         //  $data = ["products"=>$products];
