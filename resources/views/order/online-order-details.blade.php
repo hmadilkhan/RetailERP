@@ -108,7 +108,7 @@
                                         </a>
                                          @else --}}
                                          @php $image = asset('storage/images/no-image.png') @endphp
-                                        @if(File::exists('/images/products/'.$item->image))
+                                        @if(File::exists('storage/images/products/'.$item->image))
                                         @php $image = route('imageOptimize',$item->image) @endphp
                                         @endif
                                         <a href="{{ $image }}" data-fancybox data-caption="Single Image">
@@ -243,7 +243,7 @@
                                         </a>
                                          @else --}}
                                          @php $image = asset('storage/images/no-image.png') @endphp
-                                        @if(File::exists('/images/products/'.$item->image))
+                                        @if(File::exists('storage/images/products/'.$item->image))
                                         @php $image = route('imageOptimize',$item->image) @endphp
                                         @endif
                                         <a href="{{ $image }}" data-fancybox data-caption="Single Image">
