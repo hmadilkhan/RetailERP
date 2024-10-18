@@ -298,9 +298,13 @@ class WebsiteImageController extends Controller
             //         throw new ProcessFailedException($process, $output . $errorOutput);
             //     }
             //   }
-
+            $headers = array(
+                'Content-Type'        => 'image/'.strtolower(pathinfo($imageName,PATHINFO_EXTENSION)),
+                'Content-Description' => $imageName,
+                'Cache-Control'       => 'public, max-age=172800',
+              );
             // Show the optimized image path
-            return response()->file($optimizedPath)->deleteFileAfterSend(true);
+            return response()->file($optimizedPath,$headers)->deleteFileAfterSend(true);
         } else {
             throw new \Exception("Image file does not exist: {$imageName}");
         }
