@@ -25,6 +25,7 @@ class salesReceiptResource extends JsonResource
         	"order_estimate_time"       =>$this->order_estimate_time,
 			"company_name"              =>str_replace(' ','',strtolower($this->company_name)),
         	"order_status"              =>$this->status_name,
+            "website_type"              =>$this->website_type,
         	"website_name"              =>$this->website_name,
 			"url_orderid"               =>$this->url_orderid,
 			"branch"                    =>$this->branch_name,
@@ -47,6 +48,7 @@ class salesReceiptResource extends JsonResource
 			"products"                  =>ProductResource::customCollection(DB::table('inventory_general')
 			                                                              ->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')
 																		  ->where('sales_receipt_details.receipt_id',$this->id)
+                                                                          ->where('sales_receipt_details.mode','inventory-general')
 																		  ->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code',
 																		  'sales_receipt_details.item_name','sales_receipt_details.total_qty',
 																		  'sales_receipt_details.item_price','sales_receipt_details.total_amount',
