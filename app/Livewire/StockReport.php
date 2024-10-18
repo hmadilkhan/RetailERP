@@ -17,14 +17,15 @@ class StockReport extends Component
     public $from = '';
     public $to = '';
     public $branch = '';
-    public $stocks;
+    public $stocks = [];
 
     public function mount()
     {
         $stockAdjustmentService = new StockAdjustmentService ();
         $this->from = date("Y-m-d");
         $this->to = date("Y-m-d");
-        $this->stocks = $stockAdjustmentService->stockReport($this->from, $this->to, $this->branch);
+        // $this->stocks = $stockAdjustmentService->getStockReport($this->from, $this->to, $this->branch);
+        // dd($this->stocks);
     }
 
     public function submitForm($from, $to, $branch)
@@ -34,8 +35,8 @@ class StockReport extends Component
         $this->to = $to;
         $this->branch = $branch;
         $stockAdjustmentService = new StockAdjustmentService ();
-        $this->stocks = $stockAdjustmentService->stockReport($this->from, $this->to, $this->branch);
-        // dd($this->stocks);
+        $this->stocks = $stockAdjustmentService->getStockReport($this->from, $this->to, $this->branch);
+        // dd($this->stocks["opening"]);
         // Reapply filters and reset pagination
         // $this->applyFilters();
     }
