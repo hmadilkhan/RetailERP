@@ -1221,8 +1221,8 @@ function readURL_multiple(input, containerId) {
             const file = input.files[i];
             const fileExtension = file.name.split('.').pop().toLowerCase();
 
-            // Validate file size (1MB = 1,024 * 1,024 bytes)
-            if (file.size > 1 * 1024 * 1024) {
+            // Validate file size (5MB = 1,024 * 1,024 bytes)
+            if (file.size > 5 * 1024 * 1024) {
                 hasError = true;
                 swal('Error! File Format','The file '+file.name+' exceeds the 1MB size limit.','error');
                 continue;
