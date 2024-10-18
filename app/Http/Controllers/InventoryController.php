@@ -3780,10 +3780,11 @@ class InventoryController extends Controller
                 $headers = array(
                     'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)), // Assuming it's a JPEG, you can change as per your image type
                     'Content-Description' => $request->image,
+                     'Cache-Control'      => 'public, max-age=172800',
                 );
 
                 // Show the optimized image path
-                return response()->file($optimizedPath)->deleteFileAfterSend(true);
+                return response()->file($optimizedPath,$headers)->deleteFileAfterSend(true);
 
             } else {
                return  $this->notFoundImage();
