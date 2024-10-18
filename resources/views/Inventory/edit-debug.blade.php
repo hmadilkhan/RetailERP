@@ -12,7 +12,7 @@
      <h4>Edit Inventory</h4>
      <br/>
      <a href="{{ route('invent-list') }}">
-         <i class="text-primary text-center icofont icofont-arrow-left m-t-10 f-18" 
+         <i class="text-primary text-center icofont icofont-arrow-left m-t-10 f-18"
          data-toggle="tooltip" data-placement="top" title="" data-original-title="Back to list ">
              Back to list</i>
      </a>
@@ -35,7 +35,7 @@
                   <h4 class="">Product Detail</h4>
                   </div>
                 <div class="card-block p-2 p-t-0">
-                  <div class="row"> 
+                  <div class="row">
                   <div class="col-md-6">
             <div class="form-group {{ $errors->has('depart') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Department<span class="text-danger m-l-5">*</span></label>
@@ -48,7 +48,7 @@
                                   <option {{ $departmentValue == $val->department_id ? 'selected' : ''}} value="{{$val->department_id}}">{{$val->department_name}}</option>
                               @endforeach
                        @endif
-                    </select> 
+                    </select>
                    @if ($errors->has('depart'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
@@ -65,16 +65,16 @@
                                @foreach($subdepartment as $val)
                                   <option {{ $subDepartment == $val->sub_department_id ? 'selected' : null }} value="{{$val->sub_department_id}}">{{$val->sub_depart_name}}</option>
                                @endforeach
-                           @endif                       
-                    </select> 
+                           @endif
+                    </select>
                     @if ($errors->has('subDepart'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
-              </div>   
-              </div>                      
+              </div>
+              </div>
                   </div>
-                  
-                  <div class="row">      
+
+                  <div class="row">
                 <div class="col-lg-6 col-md-6">
                   <div  id="itemcode" class="form-group {{ $errors->has('code') ? 'has-danger' : '' }} ">
                       <label class="form-control-label"><i class="icofont icofont-barcode"></i>&nbsp;Product Code <span class="text-danger">*</span></label>
@@ -95,9 +95,9 @@
                       <div class="form-control-feedback" id="nameerror">Required field can not be blank.</div>
                     @endif
               </div>
-             </div>                      
-     </div> 
-     
+             </div>
+     </div>
+
      <div class="row">
              <div class="col-md-3">
               <div class="form-group {{ $errors->has('uom') ? 'has-danger' : '' }}">
@@ -111,7 +111,7 @@
                                   <option {{ $uomValue == $val->uom_id ? 'selected' : '' }} value="{{$val->uom_id}}">{{$val->name}}</option>
                               @endforeach
                        @endif
-                    </select> 
+                    </select>
                     @if ($errors->has('uom'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
@@ -123,11 +123,11 @@
              <input class="form-control" type="text" onkeypress="return myfunction(event);"
                     name="weight" id="weight" value="{{ old('weight') ? old('weight') : $data[0]->weight_qty }}" placeholder=" Weight / Packet" />
              @if ($errors->has('weight'))
-                 <div class="form-control-feedback">Required field can not be blank.</div> 
+                 <div class="form-control-feedback">Required field can not be blank.</div>
              @endif
          </div>
      </div>
-	 
+
 	     <div class="col-md-3">
               <div class="form-group {{ $errors->has('cuom') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Conversion Unit Measure <span class="text-danger">*</span></label>
@@ -140,7 +140,7 @@
                                   <option {{ $cuomValue == $val->uom_id ? 'selected' : ''}} value="{{$val->uom_id}}">{{$val->name}}</option>
                               @endforeach
                        @endif
-                    </select> 
+                    </select>
                     @if ($errors->has('cuom'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
@@ -163,9 +163,9 @@
                     @endif
 
            </div>
-         </div>  
-      </div> 
-      
+         </div>
+      </div>
+
       <div class="row">
         <div class="col-md-6">
               <div class="form-group">
@@ -175,10 +175,10 @@
                   @if ($errors->has('reminder'))
                       <span class="form-control-feedback">Required field can not be blank.</span>
                   @endif
-             </div> 
-		</div>         
-    
-           
+             </div>
+		</div>
+
+
              <div class="col-md-6">
               <div class="form-group {{ $errors->has('description') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Description</label>
@@ -190,7 +190,7 @@
                     @endif
               </div>
             </div>
-        </div>  
+        </div>
 
         <div class="row">
             <div class="col-lg-4 col-md-4">
@@ -207,19 +207,19 @@
                       <i data-toggle="modal" data-target="#createbrand-modal" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Brand"></i>
                         <select class="form-control  select2" data-placeholder="Select Brand" id="brand" name="brand">
                            <option value="">Select</option>
-                            @php $brandOld_val = old('brand') ? old('brand') : $data[0]->brand_id @endphp 
+                            @php $brandOld_val = old('brand') ? old('brand') : $data[0]->brand_id @endphp
                               @foreach($brandList as $val)
                                   <option {{ $brandOld_val == $val->id ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
                               @endforeach
-                        </select> 
+                        </select>
                         @if ($errors->has('brand'))
                           <div class="form-control-feedback">Required field can not be blank.</div>
                         @endif
-                  </div>  
-            </div>      
+                  </div>
+            </div>
         </div>
-        
-        @if(count($websites) > 0)        
+
+        @if(count($websites) > 0)
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
@@ -230,8 +230,8 @@
                 </div>
             </div>
         </div>
-      <div class="{{ count($selectedWebsites->toArray()) > 0 ? '' : 'd-none' }}" id="website-module">    
-        <div class="row">    
+      <div class="{{ count($selectedWebsites->toArray()) > 0 ? '' : 'd-none' }}" id="website-module">
+        <div class="row">
             <div class="col-md-5">
 				<div class="form-group {{ $errors->has('website') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Select Website (Select on where product to show)</label>
@@ -242,18 +242,18 @@
 							  <option {{(in_array($website->id, $selectedWebsites->toArray()) ? 'selected="selected"' : '' )}} value="{{$website->id}}">{{$website->name}}</option>
 						  @endforeach
                        @endif
-                    </select> 
+                    </select>
                     @if ($errors->has('website'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
-				</div>      
+				</div>
             </div>
             <div class="col-lg-3 col-md-3">
 				<div class="form-group {{ $errors->has('priority') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Product Priority</label>
                     <input type="number" class="form-control" name="priority" min="0" value="{{ old('priority') ? old('priority') : $data[0]->priority }}">
               </div>
-			</div>           
+			</div>
 
             <div class="col-lg-3 col-md-4">
 				<div class="form-group {{ $errors->has('tags') ? 'has-danger' : '' }}">
@@ -261,18 +261,18 @@
                   <i data-toggle="modal" data-target="#createtag-modal" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
                     <select class="select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
                        <option value="">Select</option>
-                            @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray() @endphp 
+                            @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray() @endphp
                               @foreach($tagsList as $val)
                                   <option {{ (in_array($val->id,$tagsOld_val)) ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
                               @endforeach
-                    </select> 
+                    </select>
                     @if ($errors->has('tags'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
               </div>
-			</div>	            
+			</div>
         </div>
-        
+
         <div class="row">
             <div class="col-lg-6 col-md-6">
                 <div class="form-group ">
@@ -291,12 +291,12 @@
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
                 </div>
-            </div>        
+            </div>
           </div>
-         </div> 
-       @endif    
-   </div> 
-            
+         </div>
+       @endif
+   </div>
+
 
               </div> <!-- card div close -->
               <div class="card">
@@ -362,9 +362,9 @@
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="op" id="op" value="{{ old('op') ? old('op') : $prices[0]->online_price }}"/>
                 </div>
             </div>
-          </div>    <!--card block-->  
-        </div> <!-- card div close -->             
-          
+          </div>    <!--card block-->
+        </div> <!-- card div close -->
+
        </div>
      </div>
 
@@ -381,17 +381,17 @@
                                   {{-- @php $imageUrl = $data[0]->url @endphp --}}
                                   {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
                                @else --}}
-                                @if(File::exists('storage/images/products/'.$data[0]->image)) 
+                                @if(File::exists('storage/images/products/'.$data[0]->image))
                                     {{-- @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp --}}
                                     @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
-                                @endif                                  
+                                @endif
                                {{-- @endif
                         @else --}}
                         {{-- Storage::disk('public')->exists('images/products/' . $data[0]->image) --}}
-                               {{-- @if(File::exists('storage/images/products/'.$data[0]->image)) 
+                               {{-- @if(File::exists('storage/images/products/'.$data[0]->image))
                                   @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp
                                @endif --}}
-                        {{-- @endif --}} 
+                        {{-- @endif --}}
                             <a href="{{ $imageUrl }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
                                 <img id="simg" src="{{ $imageUrl }}" class="thumb-img width-100" height="380px" alt="{{ empty($data[0]->image) ? $data[0]->image : 'placeholder.jpg' }}">
                                 </a>
@@ -400,18 +400,18 @@
                                             <input type="file" name="image" id="image" class="custom-file-input">
                                             <span class="custom-file-control"></span>
                                         </label>
-                                <div>       
+                                <div>
                                     <label class="pointer"><input type="checkbox" name="actual_image_size" class="" {{ $data[0]->actual_image_size == 1 ? 'checked' : ''}}> You want to actual image size</label>
-                                </div>         
+                                </div>
                             @if ($errors->has('image'))
                                 <span class="form-control-feedback">{{ $errors->first('image') }}</span>
                             @endif
                         </div>
-                </div> 
+                </div>
             </div>
 
             {{-- @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs'])) --}}
-        
+
         <div class="d-none" id="prodAdvans_Media">
         <div class="card">
                <div class="card-header">
@@ -457,8 +457,8 @@
                <div class="card-header">
                <h4 >Product Video</h4>
                </div>
-               <div class="card-block p-2 p-t-0"> 
-               <div id="videoPreviewBox"></div>                 
+               <div class="card-block p-2 p-t-0">
+               <div id="videoPreviewBox"></div>
                 <div class="form-group">
                     <br/>
                      <label for="productvideo" class="custom-file">
@@ -468,10 +468,10 @@
                 </div>
                 </div>
                 </div>
-            
+
         </div>
      {{-- @endif                            --}}
-         </div>  
+         </div>
 
          </div>
          <div class="row m-t-30">
@@ -484,8 +484,8 @@
       </div>
 
 
-   
-            
+
+
                   </div>
                </div>
 
@@ -503,19 +503,19 @@
                       <div class="modal-body">
                         <div class="row">
                               <div class="col-md-12">
-                               <div class="form-group"> 
+                               <div class="form-group">
                                  <label class="form-control-label">Tag:</label>
                                   <input type="text" name="tag_md" id="tag_md" class="form-control" />
                                  </div>
                                </div>
-                           </div>   
+                           </div>
                       </div>
                       <div class="modal-footer">
                          <button type="button" id="btn_tag_md" class="btn btn-success waves-effect waves-light" onClick="insertProduct_attribute('tag')">Add</button>
                       </div>
                    </div>
                 </div>
-             </div>                  
+             </div>
 
 
           <div class="modal fade modal-flex" id="uom-modal" tabindex="-1" role="dialog">
@@ -620,7 +620,7 @@
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 @endsection
 @section('scriptcode_three')
-<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 	<script type="text/javascript">
@@ -628,7 +628,7 @@
        @if(old('description'))
           $("#description").val("{{ old('description') }}")
        @else
-          $("#description").val('{{ $data[0]->product_description }}');   
+          $("#description").val('{{ $data[0]->product_description }}');
        @endif
 
        $(".select2").select2();
@@ -639,7 +639,7 @@ $(document).on('click', '[data-toggle="lightbox"]', function(event) {
  $(this).ekkoLightbox();
 });
 
-$(document).ready(function(){   
+$(document).ready(function(){
     @if(count($selectedWebsites->toArray()) > 0 )
     $("#showProductWebsite").trigger('click');
     $("#showProductWebsite").attr('checked',true);
@@ -653,12 +653,12 @@ function removeImage(id, img) {
     let newValue = img;
 
     if (currentValue.length) {
-        currentValue.push(newValue); 
+        currentValue.push(newValue);
     } else {
-        currentValue = [newValue]; 
+        currentValue = [newValue];
     }
 
-    input.val(currentValue.join(', ')); 
+    input.val(currentValue.join(', '));
 }
 
 function removeImageUrl(id,img){
@@ -668,41 +668,41 @@ function removeImageUrl(id,img){
     let newValue = img;
 
     if (currentValue.length) {
-        currentValue.push(newValue); 
+        currentValue.push(newValue);
     } else {
-        currentValue = [newValue]; 
+        currentValue = [newValue];
     }
 
-    input.val(currentValue.join(', ')); 
+    input.val(currentValue.join(', '));
 }
 
 $("#showProductWebsite").on('click',function(){
-    
+
     if($(this).is(':checked')==true){
         if($("#website-module").hasClass('d-none')){
             $("#website-module").removeClass('d-none');
         }
-        
-        
+
+
         if($("#prodAdvans_Media").hasClass('d-none')){
             $("#prodAdvans_Media").removeClass('d-none');
-        }        
+        }
     }
-    
+
     if($(this).is(':checked')==false){
         if(!$("#website-module").hasClass('d-none')){
             $("#website-module").addClass('d-none');
         }
-        
+
         if(!$("#prodAdvans_Media").hasClass('d-none')){
             $("#prodAdvans_Media").addClass('d-none');
-        }         
-    }    
+        }
+    }
 })
 
 
     $("#website").on('change',function(){
-      if($(this).val() != ''){    
+      if($(this).val() != ''){
         if($("#prodAdvans_Media").hasClass('d-none')){
             $("#prodAdvans_Media").removeClass('d-none')
         }
@@ -711,12 +711,12 @@ $("#showProductWebsite").on('click',function(){
             $("#prodAdvans_Media").addClass('d-none')
         }
       }
-    });   
+    });
 
 
       CKEDITOR.replace( 'summary-ckeditor' );
 	  var rem_id = [];
-	  
+
 	  $( '#inventoryupdate').submit( function(e){
 		  e.preventDefault();
 		  var form = $(this);
@@ -740,15 +740,15 @@ $("#showProductWebsite").on('click',function(){
 				  {
 					  location.reload();
 				  }
-				  
-		
+
+
 				}
 			});
 		});
-		
+
 		function sunmiCloud(){
 			rem_id.push($("#id").val());
-			// console.log(rem_id)		
+			// console.log(rem_id)
 			$.ajax({
 				url: "{{url('/sunmi-cloud')}}",
 				type: "POST",
@@ -761,7 +761,7 @@ $("#showProductWebsite").on('click',function(){
 			});
 		}
 		const characters ='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-		
+
 		function generateString(length) {
 			let result = '';
 			const charactersLength = characters.length;
@@ -770,19 +770,19 @@ $("#showProductWebsite").on('click',function(){
 			}
 			return result;
 		}
-		
+
 		function getCurrentUnixTimestamp() {
 			return Math.floor(Date.now() / 1000);
 		}
-		
+
 		function sendToSunmi(productList){
 			let random = generateString(7);
 			let timestamp = getCurrentUnixTimestamp();
 			let string = 'app_id=KV1LI73MXVBAQ&product_list='+productList+'&random='+random+'&shop_id=1&timestamp='+timestamp+'&key=0XsVp45yO0vJlEbWsPPQ';
 			var hash = MD5.generate(string);
 			let sign = hash.toUpperCase();
-			
-			
+
+
 			$.ajax({
 			  url: "https://store.sunmi.com/openapi/product/update",
 			  method : "POST",
@@ -878,8 +878,36 @@ $("#showProductWebsite").on('click',function(){
 
      };
 
+     function readURL(input, id) {
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
 
-     function readURL(input,id) {
+        // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+        if (file.size > 5 * 1024 * 1024) {
+            swal("Error!","File size must be less than 5MB.","error");
+            input.value = ""; // Clear the input
+            return;
+        }
+
+        // Validate file type
+        const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+        var fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!SUPPORTED_EXTENSIONS.includes(fileExtension)) {
+            swal("Error!","Only JPG, JPEG, PNG, and WEBP files are allowed.","error");
+            input.value = ""; // Clear the input
+            return;
+        }
+
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            $('#' + id).attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(file);
+    }
+}
+    /* function readURL(input,id) {
          if (input.files && input.files[0]) {
              var reader = new FileReader();
 
@@ -889,10 +917,10 @@ $("#showProductWebsite").on('click',function(){
 
              reader.readAsDataURL(input.files[0]);
          }
-     }
-     
+     }*/
+
     $("#website").on('change',function(){
-      if($(this).val() != ''){    
+      if($(this).val() != ''){
         if($("#prodAdvans_Media").hasClass('d-none')){
             $("#prodAdvans_Media").removeClass('d-none')
         }
@@ -901,8 +929,8 @@ $("#showProductWebsite").on('click',function(){
             $("#prodAdvans_Media").addClass('d-none')
         }
       }
-    });      
-     
+    });
+
     subDepart();
     function subDepart(){
       var depart = '{{$data[0]->sub_department_id}}';
@@ -915,11 +943,11 @@ $("#showProductWebsite").on('click',function(){
           $('#subDepart').append($('<option>').text('Select City').attr('value', ''));
              $.each(result, function (i, value) {
               if(value.sub_department_id == depart){
-                $('#subDepart').append($('<option selected>').text(value.sub_depart_name).attr('value', value.sub_department_id)); 
+                $('#subDepart').append($('<option selected>').text(value.sub_depart_name).attr('value', value.sub_department_id));
               }else{
-                $('#subDepart').append($('<option>').text(value.sub_depart_name).attr('value', value.sub_department_id)); 
+                $('#subDepart').append($('<option>').text(value.sub_depart_name).attr('value', value.sub_department_id));
               }
-              
+
             });
           }
         });
@@ -933,7 +961,7 @@ $("#showProductWebsite").on('click',function(){
           $('#subDepart').empty();
           $('#subDepart').append($('<option>').text('Select City').attr('value', ''));
              $.each(result, function (i, value) {
-              $('#subDepart').append($('<option>').text(value.sub_depart_name).attr('value', value.sub_department_id)); 
+              $('#subDepart').append($('<option>').text(value.sub_depart_name).attr('value', value.sub_department_id));
             });
           }
         });
@@ -1158,18 +1186,18 @@ $("#showProductWebsite").on('click',function(){
           return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32   || ( k >= 40 && k <= 42) || (k >= 48 && k <= 57));
 
       }
-	  
+
 	    function isNumberKey(evt)
        {
           var charCode = (evt.which) ? evt.which : evt.keyCode;
-          if (charCode != 46 && charCode > 31 
+          if (charCode != 46 && charCode > 31
             && (charCode < 48 || charCode > 57))
              return false;
 
           return true;
        }
-	   
-	   // ALLOW ONLY DECIMAL VALUE IN IN WEIGHT QTY   
+
+	   // ALLOW ONLY DECIMAL VALUE IN IN WEIGHT QTY
 function myfunction(e) {
   return e.charCode === 0 || ((e.charCode >= 48 && e.charCode <= 57) || (e.charCode == 46 && document.getElementById("test").value.indexOf('.') < 0));
 }
@@ -1221,7 +1249,7 @@ function readURL_multiple(input, containerId) {
 
         // Update the image container
         updateImageContainer(container);
-        
+
         // Reset the file input to allow selecting the same files again
         // input.value = '';
     }
@@ -1287,7 +1315,7 @@ function updateFileInput() {
     const fileInput = document.getElementById('prodgallery');
     // Create a new DataTransfer object
     const dataTransfer = new DataTransfer();
-    
+
     // Add files to the DataTransfer object
     filesArray.forEach(file => dataTransfer.items.add(file));
 
@@ -1356,14 +1384,14 @@ function handleVideo(input, containerId) {
                                $('#'+id+'_md').val(null);
                                $("#create"+id+"-modal").modal('hide');
                         }else{
-                            swal('Error!',resp,'error'); 
+                            swal('Error!',resp,'error');
                         }
                     },error:function(errorResp){
                         swal('Error!',errorResp,'error');
                     }
                   });
             }
-     }            
+     }
   </script>
 
   @endsection
