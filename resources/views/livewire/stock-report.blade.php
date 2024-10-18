@@ -56,8 +56,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="card-block" wire:loading.remove>
             <table class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline"
-                wire:loading.remove>
+                >
                 <thead>
                     <tr>
                         <th>Product Id</th>
@@ -110,9 +112,6 @@
                     @endif
                 </tbody>
             </table>
-            {{-- @if (!empty($stocks))
-                {{ $stocks->links() }}
-            @endif --}}
         </div>
     </div>
 </section>
