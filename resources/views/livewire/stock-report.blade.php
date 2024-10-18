@@ -56,7 +56,7 @@
                     </div>
                 </div>
             </div>
-            <div class="project-table" wire:loading.remove>
+            <div class="" wire:loading.remove>
                 <table class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
                     <thead>
                         <tr>
