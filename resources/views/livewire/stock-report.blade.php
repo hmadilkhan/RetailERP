@@ -78,9 +78,9 @@
                             @foreach ($stocks as $stock)
                                 @php
                                     // Find corresponding sales for this product_id
-                                    $sales = $stocks['sales']->firstWhere('product_id', $stock->product_id);
-                                    $salesAmount = $sales ? $sales->sales : 0; // Default to 0 if no sales found
-                                    $closing = $stocks['closing']->firstWhere('product_id', $stock->product_id);
+                                    // $sales = $stocks['sales']->firstWhere('product_id', $stock->product_id);
+                                    // $salesAmount = $sales ? $sales->sales : 0; // Default to 0 if no sales found
+                                    // $closing = $stocks['closing']->firstWhere('product_id', $stock->product_id);
                                 @endphp
                                 <tr>
                                     <td>{{ $stock->product_id }}</td>
