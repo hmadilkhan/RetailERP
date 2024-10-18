@@ -53,6 +53,7 @@ use App\Http\Controllers\VariationController;
 use App\Http\Controllers\VariationProductController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
+use App\Livewire\Customers\CustomerList;
 use App\Livewire\Inventory\Inventory;
 use App\Livewire\StockAdjustment\ListAdjustment;
 use App\Livewire\StockReport;
@@ -98,6 +99,7 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
 Route::get('/view-inventory', ViewInventory::class);
 Route::get('/view-adjustments', ListAdjustment::class);
 Route::get('/stock-report', StockReport::class);
+Route::get('/customers-list', CustomerList::class);
 
 Route::resource('addons', AddonController::class);
 Route::resource('addon-category', AddonCategoryController::class);

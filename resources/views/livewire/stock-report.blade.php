@@ -56,64 +56,44 @@
                     </div>
                 </div>
             </div>
-            <div class="" wire:loading.remove>
-                <table class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
-                    <thead>
-                        <tr>
-                            <th>Product Id</th>
-                            <th>Item Code</th>
-                            <th>Product Name</th>
-                            <th>Opening Date</th>
-                            <th>Opening Stock</th>
-                            <th>Sales</th>
-                            <th>Closing Stock</th>
-                            <th>Closing Date</th>
-                            {{-- <th>Stock</th> --}}
-                            {{-- <th>Narration</th> --}}
-                            {{-- <th>Action</th> --}}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @if (!empty($stocks))
-                            @foreach ($stocks as $stock)
-                                @php
-                                    // Find corresponding sales for this product_id
-                                    // $sales = $stocks['sales']->firstWhere('product_id', $stock->product_id);
-                                    // $salesAmount = $sales ? $sales->sales : 0; // Default to 0 if no sales found
-                                    // $closing = $stocks['closing']->firstWhere('product_id', $stock->product_id);
-                                @endphp
-                                <tr>
-                                    <td>{{ $stock->product_id }}</td>
-                                    <td>{{ $stock->item_code }}</td>
-                                    <td>{{ $stock->product_name }}</td>
-                                    <td>{{ $stock->opening_date }}</td>
-                                    <td>{{ $stock->opening_stock }}</td>
-                                    <td>{{ $stock->sales }}</td>
-                                    <td>{{ $stock->closing_stock }}</td>
-                                    <td>{{ $stock->closing_date }}</td>
-                                    {{-- <td>{{ $salesAmount }}</td>
-                                    <td>{{ !empty($closing) ? $closing->closing_date : '-' }}</td>
-                                    <td>{{ $stock->->closing_stock : '-' }}</td> --}}
-                                    {{-- <td>{{ $stock->product_id }}</td>
-                                    <td>{{ $stock->opening_date }}</td>
-                                    <td>{{ $stock->opening_stock }}</td> --}}
-                                    {{-- <td>{{ $stock->sales }}</td>
-                                    <td>{{ $stock->closing_stock }}</td>
-                                    <td>{{ $stock->closing_date }}</td> --}}
-
-                                </tr>
-                            @endforeach
-                        @else
+        </div>
+        <div class="card-block" wire:loading.remove>
+            <table class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
+                <thead>
+                    <tr>
+                        <th>Product Id</th>
+                        <th>Item Code</th>
+                        <th>Product Name</th>
+                        <th>Opening Date</th>
+                        <th>Opening Stock</th>
+                        <th>Sales</th>
+                        <th>Closing Stock</th>
+                        <th>Closing Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!empty($stocks))
+                        @foreach ($stocks as $stock)
                             <tr>
-                                <td colspan="8" class="text-center">No record found</td>
+                                <td>{{ $stock->product_id }}</td>
+                                <td>{{ $stock->item_code }}</td>
+                                <td>{{ $stock->product_name }}</td>
+                                <td>{{ $stock->opening_date }}</td>
+                                <td>{{ $stock->opening_stock }}</td>
+                                <td>{{ $stock->sales }}</td>
+                                <td>{{ $stock->closing_stock }}</td>
+                                <td>{{ $stock->closing_date }}</td>
                             </tr>
-                        @endif
-                    </tbody>
-                </table>
-            </div>
-            {{-- @if (!empty($stocks))
-                {{ $stocks->links() }}
-            @endif --}}
+                        @endforeach
+                    @else
+                        <tr>
+                            <td colspan="8" class="text-center">No record found</td>
+                        </tr>
+                    @endif
+                </tbody>
+            </table>
+            <!-- Pagination Links -->
+            {{ $stocks->links() }}
         </div>
     </div>
 </section>

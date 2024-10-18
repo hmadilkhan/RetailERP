@@ -228,12 +228,6 @@ class StockAdjustmentService
             ->where('sr.order_mode_id', '!=', 2)
             ->where('sr.is_sale_return', '=', 0)
             ->groupBy('srd.item_code');
-        // dd($salesCte);
-        // return [
-        //     "opening" => $openingStockCte,
-        //     "closing" => $closingStockCte,
-        //     "sales" => $salesCte,
-        // ];
         // Main query
         return DB::table('daily_stock as ds1')
             ->join('inventory_general as inv', 'inv.id', '=', 'ds1.product_id')
@@ -262,8 +256,6 @@ class StockAdjustmentService
             ->orderBy('sales', 'DESC')
 
             // Paginate the result
-            // ->paginate(10); // Adjust the number of results per page as needed
-            ->get();
-        // ->toSql();
+            ->paginate(50); // Adjust the number of results per page as needed
     }
 }

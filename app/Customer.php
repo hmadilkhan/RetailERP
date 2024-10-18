@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Models\Customer as ModelsCustomer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -83,6 +84,45 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             INNER JOIN branch d ON d.branch_id = a.branch_id
             WHERE a.status_id IN(1,2) ' . $webfilter);
         return $customers;
+    }
+
+    public function getCustomersForLivewire($id = "", $name, $status)
+    {
+        $query = ModelsCustomer::query();
+        $query->with("branch", "userauthorization", "userauthorization.branch");
+
+        // Add the custom balance calculation
+        $query->selectRaw(
+            '
+                customers.*, 
+                ABS(
+                    IFNULL(SUM(customer_account.total_amount - customer_account.credit), 0) + 
+                    IFNULL((SELECT SUM(debit) FROM customer_account WHERE cust_id = customers.id AND receipt_no = 0), 0) - 
+                    IFNULL((SELECT SUM(credit) FROM customer_account WHERE cust_id = customers.id AND receipt_no = 0), 0)
+                ) AS balance'
+        )
+            ->leftJoin('customer_account', 'customer_account.cust_id', '=', 'customers.id')
+            ->groupBy('customers.id');
+
+        if (session("roleId") == 2) {
+            $query->where("company_id", session("company_id"));
+        } else {
+            $query->whereHas("userauthorization", function ($q) {
+                $q->where('branch_id', session("branch"));
+            });
+        }
+
+        if (!empty($id)) {
+            $query->where("id", $id);
+        }
+        if (!empty($name)) {
+            $query->where('name', 'LIKE', "%{$name}%");
+        }
+        if (!empty($status)) {
+            $query->where('status_id', $status);
+        }
+
+        return $query->paginate(10);
     }
 
     public function getcustomersForReceipt($id = "", $company, $branch)
