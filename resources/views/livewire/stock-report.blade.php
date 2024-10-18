@@ -75,7 +75,7 @@
                     </thead>
                     <tbody>
                         @if (!empty($stocks))
-                            @foreach ($stocks['opening'] as $stock)
+                            @foreach ($stocks as $stock)
                                 @php
                                     // Find corresponding sales for this product_id
                                     $sales = $stocks['sales']->firstWhere('product_id', $stock->product_id);
