@@ -301,7 +301,7 @@ class WebsiteImageController extends Controller
             $headers = array(
                 'Content-Type'        => 'image/'.strtolower(pathinfo($imageName,PATHINFO_EXTENSION)),
                 'Content-Description' => $imageName,
-                'Cache-Control'       => 'public, max-age=172800',
+                'Cache-Control'       => 'public, max-age=604800',
               );
             // Show the optimized image path
             return response()->file($optimizedPath,$headers)->deleteFileAfterSend(true);
