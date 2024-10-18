@@ -4937,7 +4937,7 @@ class ReportController extends Controller
             // }
             //    print_r(json_encode($item));
             //     exit();
-            $imagePath = ($item->inventory->url != "" ? $item->inventory->url : (asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg'))));
+            $imagePath = (asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg')));
 
             // Set up image path (replace with your actual image path)
             list($width, $height) = getimagesize($imagePath);
