@@ -236,17 +236,17 @@ class custom_helper
     {
         $imageUrl = asset('storage/images/no-image.png');
 
-        if (in_array(session('company_id'), [95, 102, 104])) {
-            if ($url != "" or $url != null) {
-                $imageUrl = $url;
-            } elseif (!empty($image)) {
-                $imageUrl = asset('storage/images/products/' . $image);
-            }
-        } else {
+        // if (in_array(session('company_id'), [95, 102, 104])) {
+        //     if ($url != "" or $url != null) {
+        //         $imageUrl = $url;
+        //     } elseif (!empty($image)) {
+        //         $imageUrl = asset('storage/images/products/' . $image);
+        //     }
+        // } else {
             if (!empty($image)) {
                 $imageUrl = asset('storage/images/products/' . $image);
             }
-        }
+        // }
 
         return $imageUrl;
     }
