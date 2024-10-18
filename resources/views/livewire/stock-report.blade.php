@@ -61,6 +61,8 @@
                     <thead>
                         <tr>
                             <th>Product Id</th>
+                            <th>Item Code</th>
+                            <th>Product Name</th>
                             <th>Opening Date</th>
                             <th>Opening Stock</th>
                             <th>Sales</th>
@@ -82,11 +84,16 @@
                                 @endphp
                                 <tr>
                                     <td>{{ $stock->product_id }}</td>
+                                    <td>{{ $stock->item_code }}</td>
+                                    <td>{{ $stock->product_name }}</td>
                                     <td>{{ $stock->opening_date }}</td>
                                     <td>{{ $stock->opening_stock }}</td>
-                                    <td>{{ $salesAmount }}</td>
+                                    <td>{{ $stock->sales }}</td>
+                                    <td>{{ $stock->closing_stock }}</td>
+                                    <td>{{ $stock->closing_date }}</td>
+                                    {{-- <td>{{ $salesAmount }}</td>
                                     <td>{{ !empty($closing) ? $closing->closing_date : '-' }}</td>
-                                    <td>{{ $stock->->closing_stock : '-' }}</td>
+                                    <td>{{ $stock->->closing_stock : '-' }}</td> --}}
                                     {{-- <td>{{ $stock->product_id }}</td>
                                     <td>{{ $stock->opening_date }}</td>
                                     <td>{{ $stock->opening_stock }}</td> --}}
@@ -98,7 +105,7 @@
                             @endforeach
                         @else
                             <tr>
-                                <td colspan="8">No record found</td>
+                                <td colspan="8" class="text-center">No record found</td>
                             </tr>
                         @endif
                     </tbody>
