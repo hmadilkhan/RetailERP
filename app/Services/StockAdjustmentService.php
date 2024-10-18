@@ -207,13 +207,13 @@ class StockAdjustmentService
             ->select('product_id', DB::raw('MIN(Date(created_at)) as opening_date'), 'opening_stock','closing_stock')
             ->whereDate('created_at', '=', $from)
             ->where('branch_id', '=', $branch)
-            ->groupBy('product_id', DB::raw('Date(created_at)'))->get();
+            ->groupBy('product_id', DB::raw('Date(created_at)'));
 
         $closingStockCte = DB::table('daily_stock')
             ->select('product_id', DB::raw('MAX(Date(created_at)) as closing_date'), 'opening_stock as closing_stock')
             ->whereDate('created_at', '=', $closingDate)
             ->where('branch_id', '=', $branch)
-            ->groupBy('product_id', DB::raw('Date(created_at)'))->get();
+            ->groupBy('product_id', DB::raw('Date(created_at)'));
         // dd($closingStockCte);
 
         $salesCte = DB::table('sales_receipt_details as srd')
@@ -227,7 +227,7 @@ class StockAdjustmentService
             ->where('sr.branch', '=', $branch)
             ->where('sr.order_mode_id', '!=', 2)
             ->where('sr.is_sale_return', '=', 0)
-            ->groupBy('srd.item_code')->get();
+            ->groupBy('srd.item_code');
         // dd($salesCte);
         // return [
         //     "opening" => $openingStockCte,
