@@ -78,15 +78,15 @@
                                     // Find corresponding sales for this product_id
                                     $sales = $stocks['sales']->firstWhere('product_id', $stock->product_id);
                                     $salesAmount = $sales ? $sales->sales : 0; // Default to 0 if no sales found
-                                    // $closing = $stocks['closing']->firstWhere('product_id', $stock->product_id);
+                                    $closing = $stocks['closing']->firstWhere('product_id', $stock->product_id);
                                 @endphp
                                 <tr>
                                     <td>{{ $stock->product_id }}</td>
                                     <td>{{ $stock->opening_date }}</td>
                                     <td>{{ $stock->opening_stock }}</td>
                                     <td>{{ $salesAmount }}</td>
-                                    <td>{{ date("Y-m-d",strtotime($stock->opening_date,strtotime("+1 days")))  }}</td>
-                                    <td>{{ $stock->closing_stock  }}</td>
+                                    <td>{{ !empty($closing) ? $closing->closing_date : '-' }}</td>
+                                    <td>{{ $stock->->closing_stock : '-' }}</td>
                                     {{-- <td>{{ $stock->product_id }}</td>
                                     <td>{{ $stock->opening_date }}</td>
                                     <td>{{ $stock->opening_stock }}</td> --}}
