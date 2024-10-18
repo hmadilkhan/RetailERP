@@ -3,7 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Facades\DB;
-use URL;
+use URL,File;
 
 class custom_helper
 {
@@ -243,7 +243,8 @@ class custom_helper
         //         $imageUrl = asset('storage/images/products/' . $image);
         //     }
         // } else {
-            if (!empty($image)) {
+            if (!empty($image) && File::exists('storage/images/products/' . $image)) {
+
                 $imageUrl = asset('storage/images/products/' . $image);
             }
         // }
