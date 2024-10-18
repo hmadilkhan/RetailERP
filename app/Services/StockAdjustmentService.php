@@ -207,13 +207,13 @@ class StockAdjustmentService
             ->select('product_id', DB::raw('MIN(Date(created_at)) as opening_date'), 'opening_stock','closing_stock')
             ->whereDate('created_at', '=', $from)
             ->where('branch_id', '=', $branch)
-            ->groupBy('product_id', DB::raw('Date(created_at)'))->get();
+            ->groupBy('product_id', DB::raw('Date(created_at)'));
 
-        // $closingStockCte = DB::table('daily_stock')
-        //     ->select('product_id', DB::raw('MAX(Date(created_at)) as closing_date'), 'opening_stock as closing_stock')
-        //     ->whereDate('created_at', '=', $closingDate)
-        //     ->where('branch_id', '=', $branch)
-        //     ->groupBy('product_id', DB::raw('Date(created_at)'))->get();
+        $closingStockCte = DB::table('daily_stock')
+            ->select('product_id', DB::raw('MAX(Date(created_at)) as closing_date'), 'opening_stock as closing_stock')
+            ->whereDate('created_at', '=', $closingDate)
+            ->where('branch_id', '=', $branch)
+            ->groupBy('product_id', DB::raw('Date(created_at)'));
         // dd($closingStockCte);
 
         $salesCte = DB::table('sales_receipt_details as srd')
@@ -227,42 +227,43 @@ class StockAdjustmentService
             ->where('sr.branch', '=', $branch)
             ->where('sr.order_mode_id', '!=', 2)
             ->where('sr.is_sale_return', '=', 0)
-            ->groupBy('srd.item_code')->get();
+            ->groupBy('srd.item_code');
         // dd($salesCte);
-        return [
-            "opening" => $openingStockCte,
-            "sales" => $salesCte,
-        ];
+        // return [
+        //     "opening" => $openingStockCte,
+        //     "closing" => $closingStockCte,
+        //     "sales" => $salesCte,
+        // ];
         // Main query
-        // return DB::table('daily_stock as ds1')
-        //     ->join('inventory_general as inv', 'inv.id', '=', 'ds1.product_id')
-        //     ->leftJoinSub($openingStockCte, 'opening_stock_cte', 'ds1.product_id', '=', 'opening_stock_cte.product_id')
-        //     // ->leftJoinSub($closingStockCte, 'closing_stock_cte', 'ds1.product_id', '=', 'closing_stock_cte.product_id')
-        //     ->leftJoinSub($salesCte, 'sales_cte', 'ds1.product_id', '=', 'sales_cte.product_id')
+        return DB::table('daily_stock as ds1')
+            ->join('inventory_general as inv', 'inv.id', '=', 'ds1.product_id')
+            ->leftJoinSub($openingStockCte, 'opening_stock_cte', 'ds1.product_id', '=', 'opening_stock_cte.product_id')
+            ->leftJoinSub($closingStockCte, 'closing_stock_cte', 'ds1.product_id', '=', 'closing_stock_cte.product_id')
+            ->leftJoinSub($salesCte, 'sales_cte', 'ds1.product_id', '=', 'sales_cte.product_id')
 
-        //     // Select fields
-        //     ->select(
-        //         'ds1.product_id',
-        //         'inv.item_code',
-        //         'inv.product_name',
-        //         'opening_stock_cte.opening_date',
-        //         'opening_stock_cte.opening_stock',
-        //         // 'closing_stock_cte.closing_date',
-        //         // 'closing_stock_cte.closing_stock',
-        //         DB::raw('COALESCE(sales_cte.sales, 0) as sales')
-        //     )
+            // Select fields
+            ->select(
+                'ds1.product_id',
+                'inv.item_code',
+                'inv.product_name',
+                'opening_stock_cte.opening_date',
+                'opening_stock_cte.opening_stock',
+                'closing_stock_cte.closing_date',
+                'closing_stock_cte.closing_stock',
+                DB::raw('COALESCE(sales_cte.sales, 0) as sales')
+            )
 
-        //     // Conditions and Grouping
-        //     ->whereBetween(DB::raw('Date(ds1.created_at)'), [$from, $to])
-        //     ->where('ds1.branch_id', '=', $branch)
-        //     ->groupBy('ds1.product_id', 'opening_stock_cte.opening_date')//'closing_stock_cte.closing_date'
+            // Conditions and Grouping
+            ->whereBetween(DB::raw('Date(ds1.created_at)'), [$from, $to])
+            ->where('ds1.branch_id', '=', $branch)
+            ->groupBy('ds1.product_id', 'opening_stock_cte.opening_date')//'closing_stock_cte.closing_date'
 
-        //     // Order by Sales DESC
-        //     ->orderBy('sales', 'DESC')
+            // Order by Sales DESC
+            ->orderBy('sales', 'DESC')
 
-        //     // Paginate the result
-        //     // ->paginate(10); // Adjust the number of results per page as needed
-        //     ->get();
+            // Paginate the result
+            // ->paginate(10); // Adjust the number of results per page as needed
+            ->get();
         // ->toSql();
     }
 }
