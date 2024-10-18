@@ -262,8 +262,8 @@ class StockAdjustmentService
             ->orderBy('sales', 'DESC')
 
             // Paginate the result
-            // ->paginate(10); // Adjust the number of results per page as needed
-            ->get();
+            ->paginate(10); // Adjust the number of results per page as needed
+            // ->get();
         // ->toSql();
     }
 }
