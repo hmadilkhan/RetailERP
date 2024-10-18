@@ -34,8 +34,7 @@
                         <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                             <label class="form-control-label"></label>
                             <button id="submit-button" type="button" data-placement="bottom"
-                                class="btn btn-success  waves-effect waves-light mt-4"
-                                >Search</button>
+                                class="btn btn-success  waves-effect waves-light mt-4">Search</button>
                             <button type="button" data-placement="bottom"
                                 class="btn btn-warning  waves-effect waves-light mt-4 text-white"
                                 wire:click="clear()">Clear</button>
@@ -58,8 +57,7 @@
                 </div>
             </div>
             <div class="project-table" wire:loading.remove>
-                <table 
-                    class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
+                <table class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
                     <thead>
                         <tr>
                             <th>Product Id</th>
@@ -75,14 +73,26 @@
                     </thead>
                     <tbody>
                         @if (!empty($stocks))
-                            @foreach ($stocks as $stock)
+                            @foreach ($stocks['opening'] as $stock)
+                                @php
+                                    // Find corresponding sales for this product_id
+                                    $sales = $stocks['sales']->firstWhere('product_id', $stock->product_id);
+                                    $salesAmount = $sales ? $sales->sales : 0; // Default to 0 if no sales found
+                                    $closing = $stocks['closing']->firstWhere('product_id', $stock->product_id);
+                                @endphp
                                 <tr>
                                     <td>{{ $stock->product_id }}</td>
                                     <td>{{ $stock->opening_date }}</td>
                                     <td>{{ $stock->opening_stock }}</td>
-                                    <td>{{ $stock->sales}}</td>
+                                    <td>{{ $salesAmount }}</td>
+                                    <td>{{ !empty($closing) ? $closing->closing_date : '-' }}</td>
+                                    <td>{{ !empty($closing) ? $closing->closing_stock : '-' }}</td>
+                                    {{-- <td>{{ $stock->product_id }}</td>
+                                    <td>{{ $stock->opening_date }}</td>
+                                    <td>{{ $stock->opening_stock }}</td> --}}
+                                    {{-- <td>{{ $stock->sales }}</td>
                                     <td>{{ $stock->closing_stock }}</td>
-                                    <td>{{ $stock->closing_date }}</td>
+                                    <td>{{ $stock->closing_date }}</td> --}}
 
                                 </tr>
                             @endforeach
@@ -123,13 +133,13 @@
                 e.preventDefault();
 
                 let from = $('#from').val();
-                let to = $('#to').val(); 
+                let to = $('#to').val();
                 // let code = $('#code').val(); 
                 // let name = $('#name').val(); 
-                let branch = $('#branch').val(); 
+                let branch = $('#branch').val();
 
                 // Call Livewire component method on form submission
-                @this.call('submitForm', from, to,branch);
+                @this.call('submitForm', from, to, branch);
             });
             Livewire.hook('morph.updating', ({
                 component,
