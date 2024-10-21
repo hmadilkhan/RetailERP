@@ -572,7 +572,7 @@ class ReportController extends Controller
             "from" => $request->from,
             "to" => $request->to,
         ];
-        $details =  $report->sales_details_excel_query($request->terminal, $request->from, $request->to);
+        $details =  $report->sales_details_excel_query($request->branch,$request->terminal, $request->from, $request->to);
         $details =  collect($details);
         return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal), "Sales Declaration Report.xlsx");
     }

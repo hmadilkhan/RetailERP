@@ -427,11 +427,17 @@ class report extends Model
         return $result;
     }
 
-    public function sales_details_excel_query($terminal, $fromdate, $todate)
+    public function sales_details_excel_query($branch,$terminal, $fromdate, $todate)
     {
         $filter = "";
+        $branchFilter = "";
+        if ($branch == "all") {
+            $branchFilter = "(Select branch_id from branch where company_id = ".session('company_id').")";
+        }else{
+            $branchFilter = "(Select branch_id from branch where vbranch_id = ".session('branch').")";
+        }
         if ($terminal == 0) {
-            $filter = " a.terminal_id IN (select terminal_id from terminal_details where branch_id IN (Select branch_id from branch where company_id = ".session('company_id')."))";
+            $filter = " a.terminal_id IN (select terminal_id from terminal_details where branch_id IN $branchFilter )";
         }else{
             $filter = " a.terminal_id = ".$terminal;
         }
