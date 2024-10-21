@@ -36,6 +36,7 @@ use App\Exports\ConsolidatedIsdbDatewiseExport;
 use App\Exports\OrderReportExport;
 use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExport;
+use App\Models\Company;
 use App\Models\DailyStock;
 use App\Services\OrderService;
 use Mail;
@@ -555,15 +556,19 @@ class ReportController extends Controller
 
     public function getSalesDeclarationExport(Request $request, report $report)
     {
-        $branch = "";
+        // $branch = "";
+        $companyName = Company::where("id",session("company_id"))->first();
+        $companyName = $companyName->name;
+        $branchName  = "";
         if ($request->branch == "all") {
             $branch = Branch::with("company")->where("company_id", session('company_id'))->get();
+            $branchName = "All Branches";
         }else{
             $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
+            $branchName = $branch->branch_name;
         }
 
         if (is_null($request->terminal)) {
-            // Handle the case when terminal is not provided
             $terminal = 0;
         }else{
             $terminal = $request->terminal;
@@ -574,7 +579,7 @@ class ReportController extends Controller
         ];
         $details =  $report->sales_details_excel_query($request->branch,$request->terminal, $request->from, $request->to);
         $details =  collect($details);
-        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal), "Sales Declaration Report.xlsx");
+        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal,$companyName,$branchName), "Sales Declaration Report.xlsx");
     }
 
     public function getReceiptCount(Request $request)
