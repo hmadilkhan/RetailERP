@@ -434,7 +434,7 @@ class report extends Model
         if ($branch == "all") {
             $branchFilter = "(Select branch_id from branch where company_id = ".session('company_id').")";
         }else{
-            $branchFilter = "(Select branch_id from branch where vbranch_id = ".session('branch').")";
+            $branchFilter = "(Select branch_id from branch where branch_id = ".session('branch').")";
         }
         if ($terminal == 0) {
             $filter = " a.terminal_id IN (select terminal_id from terminal_details where branch_id IN $branchFilter )";
