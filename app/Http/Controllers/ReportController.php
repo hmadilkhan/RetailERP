@@ -557,7 +557,7 @@ class ReportController extends Controller
     public function getSalesDeclarationExport(Request $request, report $report)
     {
         // $branch = "";
-        $companyName = Company::where("id",session("company_id"))->first();
+        $companyName = Company::where("company_id",session("company_id"))->first();
         $companyName = $companyName->name;
         $branchName  = "";
         if ($request->branch == "all") {
