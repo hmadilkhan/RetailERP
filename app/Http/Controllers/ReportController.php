@@ -36,6 +36,7 @@ use App\Exports\ConsolidatedIsdbDatewiseExport;
 use App\Exports\OrderReportExport;
 use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExport;
+use App\Models\Company;
 use App\Models\DailyStock;
 use App\Services\OrderService;
 use Mail;
@@ -555,15 +556,30 @@ class ReportController extends Controller
 
     public function getSalesDeclarationExport(Request $request, report $report)
     {
-        $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
-        $terminal = $request->terminal;
+        // $branch = "";
+        $companyName = Company::where("company_id",session("company_id"))->first();
+        $companyName = $companyName->name;
+        $branchName  = "";
+        if ($request->branch == "all") {
+            $branch = Branch::with("company")->where("company_id", session('company_id'))->get();
+            $branchName = "All Branches";
+        }else{
+            $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
+            $branchName = $branch->branch_name;
+        }
+
+        if (is_null($request->terminal)) {
+            $terminal = 0;
+        }else{
+            $terminal = $request->terminal;
+        }
         $datearray = [
             "from" => $request->from,
             "to" => $request->to,
         ];
-        $details =  $report->sales_details_excel_query($request->terminal, $request->from, $request->to);
+        $details =  $report->sales_details_excel_query($request->branch,$request->terminal, $request->from, $request->to);
         $details =  collect($details);
-        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal), "Sales Declaration Report.xlsx");
+        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal,$companyName,$branchName), "Sales Declaration Report.xlsx");
     }
 
     public function getReceiptCount(Request $request)
@@ -2508,14 +2524,14 @@ class ReportController extends Controller
                 $totalclosing = 0;
                 $totalbalance = 0;
                 $totalsalesreturn = 0;
-                
+
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(275, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
                 $details = $report->sales_details($values->terminal_id, $request->fromdate, $request->todate, $request->branch);
 
                 foreach ($details as $value) {
-                    $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash) - ($value->cashOut + $value->Expenses + $value->Discount + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
+                    $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash) - ($value->cashOut + $value->Expenses + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
                     if (session("company_id") == 102) {
                         $cashinhand = $cashinhand - $value->bal;
                     }
@@ -2601,7 +2617,7 @@ class ReportController extends Controller
             $details = $report->sales_details($request->terminalid, $request->fromdate, $request->todate, $request->branch);
 
             foreach ($details as $key => $value) {
-                $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash) - ($value->cashOut + $value->Expenses + $value->Discount + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
+                $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash) - ($value->cashOut + $value->Expenses + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
                 if (session("company_id") == 102) {
                     $cashinhand = $cashinhand - $value->bal;
                 }

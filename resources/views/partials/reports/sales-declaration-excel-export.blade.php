@@ -2,7 +2,7 @@
     <table id="widget-product-list" class="table table-striped nowrap dt-responsive nowrap" width="100%" cellspacing="0">
         <tr>
             <td colspan="8" style="font-size:18px;font-weight:bold;">
-                {{ $branch->company->name . ' - ' . $branch->branch_name . ' (' . $branch->code . ')' }}</td>
+                {{ $companyname . ' - ' . $branchname }}</td>
         </tr>
         <tr>
             <td colspan="8" style="font-size:18px;font-weight:bold;">From {{ $dates['from'] }} To {{ $dates['to'] }}
@@ -12,6 +12,8 @@
         <thead>
             <tr>
                 <th style="background-color: #1a4567;color:white;text-align: center;">DateTime</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Branch</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Terminal</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Opening Id</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Shift Opening</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Cash Sales</th>
@@ -63,7 +65,7 @@
                 @foreach ($record as $value)
                     <?php
                     $totalItem++;
-                    $cashInHand = $value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash - ($value->cashOut + $value->Expenses + $value->Discount + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon;
+                    $cashInHand = $value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash - ($value->cashOut + $value->Expenses + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon;
                     $balance = (float) $value->closingBal - (float) $cashInHand;
                     $totalCashWithCard = $cashInHand + $value->CreditCard + $value->adv_booking_card + $value->order_delivered_card;
                     $totalOpenings += $value->bal;
@@ -90,6 +92,8 @@
                         <td style="text-align: center;" >
                             {{ date('d M Y', strtotime($value->date)) . ' ' . date('h:i a', strtotime($value->time)) }}
                         </td>
+                        <td style="text-align: center;" >{{ $value->branch_name }}</td>
+                        <td style="text-align: center;" >{{ $value->terminal_name }}</td>
                         <td style="text-align: center;" >{{ $value->opening_id }}</td>
                         <td style="text-align: center;">{{ number_format($value->bal, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->Cash, 0) }}</td>

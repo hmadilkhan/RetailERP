@@ -18,13 +18,17 @@ class SalesDeclarationExport implements FromView,WithColumnWidths,WithTitle,With
 	protected $branch;
 	protected $dates;
 	protected $terminal;
+	protected $companyname;
+	protected $branchname;
 
-    public function __construct(object $queryRecord,object $branch,array $dates,string $terminal)
+    public function __construct(object $queryRecord,object $branch,array $dates,string $terminal,string $companyname,string $branchname)
     {
         $this->queryRecord = $queryRecord;
         $this->branch = $branch;
         $this->dates = $dates;
         $this->terminal = $terminal;
+        $this->companyname = $companyname;
+        $this->branchname = $branchname;
     }
 
     public function columnWidths(): array
@@ -55,7 +59,9 @@ class SalesDeclarationExport implements FromView,WithColumnWidths,WithTitle,With
         $branch = $this->branch;
         $dates = $this->dates;
         $mode = $this->terminal;
-        return view("partials.reports.sales-declaration-excel-export",compact("record","branch","dates","mode"));
+        $companyname = $this->companyname;
+        $branchname = $this->branchname;
+        return view("partials.reports.sales-declaration-excel-export",compact("record","branch","dates","mode","companyname","branchname"));
     }
 	
 	public function title(): string
