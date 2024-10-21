@@ -10,7 +10,7 @@
 
 
 
-<section class="panels-wells p-t-15">
+<section class="panels-wells p-t-20">
     <h3>Product Name :{{ $generalItem[0]->product_name }}</h3>
 
     <a href="{{ route('invent-list') }}">
