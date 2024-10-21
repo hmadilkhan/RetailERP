@@ -435,7 +435,7 @@ class report extends Model
         }else{
             $filter = " a.terminal_id = ".$terminal;
         }
-        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,
+        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,c.branch_name,b.terminal_name,
 		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,
 		IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,
 		(Select date from sales_closing where opening_id = a.opening_id) as closingDate,
