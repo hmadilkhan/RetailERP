@@ -59,6 +59,8 @@ class SalesDeclarationExport implements FromView,WithColumnWidths,WithTitle,With
         $branch = $this->branch;
         $dates = $this->dates;
         $mode = $this->terminal;
+        $companyname = $this->companyname;
+        $branchname = $this->branchname;
         return view("partials.reports.sales-declaration-excel-export",compact("record","branch","dates","mode","companyname","branchname"));
     }
 	
