@@ -555,7 +555,7 @@ class ReportController extends Controller
 
     public function getSalesDeclarationExport(Request $request, report $report)
     {
-        $branch = Branch::with("company")->where("branch_id",$request->branch)->first();
+        $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
         $terminal = $request->terminal;
         $datearray = [
             "from" => $request->from,
@@ -563,7 +563,7 @@ class ReportController extends Controller
         ];
         $details =  $report->sales_details_excel_query($request->terminal, $request->from, $request->to);
         $details =  collect($details);
-        return Excel::download(new SalesDeclarationExport($details,$branch,$datearray,$terminal), "Sales Declaration Report.xlsx");
+        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal), "Sales Declaration Report.xlsx");
     }
 
     public function getReceiptCount(Request $request)
@@ -2486,6 +2486,29 @@ class ReportController extends Controller
         if ($request->terminalid == 0) {
             $terminals = $report->getTerminals($request->branch);
             foreach ($terminals as $values) {
+                $cashinhand = 0;
+
+                //variables for total
+                $totalop = 0;
+                $totalcash = 0;
+                $totalcard = 0;
+                $totalcredit = 0;
+                $totalsales = 0;
+                $totaldiscount = 0;
+                $totaldelivery = 0;
+                $totalexpenses = 0;
+                $totalpromo = 0;
+                $totalcoupon = 0;
+                $totalsaletax = 0;
+                $totalservicetax = 0;
+                $totalcashin = 0;
+                $totalcashout = 0;
+                $totalpaid = 0;
+                $totalhand = 0;
+                $totalclosing = 0;
+                $totalbalance = 0;
+                $totalsalesreturn = 0;
+                
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(275, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');

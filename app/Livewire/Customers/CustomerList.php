@@ -16,15 +16,30 @@ class CustomerList extends Component
     public $id;
     public $name;
     public $status = 1;
+    public $checkboxValue;
+    public $checkboxText = "Show In-Active";
 
     public function applyFilter()
     {
-        
+        // Reset the pagination when filters change
+        $this->resetPage();
+    }
+
+    public function updatedCheckboxValue()
+    {
+        // $this->status = 1;
+        if ($this->status == 1) {
+            $this->status = 2;
+        }else{
+            $this->status = 1;
+        }
+        dd($this->status);
     }
 
     public function render(Customer $customer)
     {
-        $customers = $customer->getCustomersForLivewire($this->id, $this->name,$this->status);
+       
+        $customers = $customer->getCustomersForLivewire($this->id, $this->name, $this->status);
         return view('livewire.customers.customer-list', compact('customers'));
     }
 }
