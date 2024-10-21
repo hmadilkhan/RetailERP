@@ -21,7 +21,7 @@
   <section class="panels-wells">
 
 
-    <form method="POST" class="form-horizontal" enctype="multipart/form-data" action="{{route('insert')}}">
+    <form method="POST" id="inventCreateForm" class="form-horizontal" enctype="multipart/form-data" action="{{route('insert')}}">
       @csrf
 
       <div class="row">
@@ -892,6 +892,10 @@
      }
    }
    $(".select2").select2();
+
+   $('#inventCreateForm').on('submit', function() {
+                $('#btnSubmit').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+   });
 
        $("#btn_uom").on('click',function(){
         $('#txtuom').val('');
