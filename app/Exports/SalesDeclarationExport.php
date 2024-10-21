@@ -19,7 +19,7 @@ class SalesDeclarationExport implements FromView,WithColumnWidths,WithTitle,With
 	protected $dates;
 	protected $terminal;
 
-    public function __construct(object $queryRecord,array $branch,array $dates,string $terminal)
+    public function __construct(object $queryRecord,object $branch,array $dates,string $terminal)
     {
         $this->queryRecord = $queryRecord;
         $this->branch = $branch;
