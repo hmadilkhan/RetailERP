@@ -429,6 +429,12 @@ class report extends Model
 
     public function sales_details_excel_query($terminal, $fromdate, $todate)
     {
+        $filter = "";
+        if ($terminal == 0) {
+            $filter = " a.terminal_id IN (select terminal_id from terminal_details where branch_id IN (Select branch_id from branch where company_id = ".session('company_id')."))";
+        }else{
+            $filter = " a.terminal_id = ".$terminal;
+        }
         $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,
 		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,
 		IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,
@@ -462,7 +468,10 @@ class report extends Model
         (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 2 and total_amount = 0 ) AS order_delivered_card,
         (SELECT SUM(credit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 0) as adv_booking_cash,
         (SELECT SUM(credit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 0) as adv_booking_card
-		FROM sales_opening a where a.terminal_id = ? and a.date BETWEEN ? and ? order by a.date ASC", [$terminal, $fromdate, $todate]);
+        FROM sales_opening a INNER join terminal_details b on b.terminal_id = a.terminal_id 
+        INNER join branch c on c.branch_id = b.branch_id 
+        where  ".$filter  ."
+        and a.date BETWEEN ? and ? order by c.branch_id,b.terminal_id,a.date ASC", [$fromdate, $todate]);
         return $result;
     }
 

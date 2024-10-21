@@ -555,8 +555,19 @@ class ReportController extends Controller
 
     public function getSalesDeclarationExport(Request $request, report $report)
     {
-        $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
-        $terminal = $request->terminal;
+        $branch = "";
+        if ($request->branch == "all") {
+            $branch = Branch::with("company")->where("company_id", session('company_id'))->get();
+        }else{
+            $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
+        }
+
+        if (is_null($request->terminal)) {
+            // Handle the case when terminal is not provided
+            $terminal = 0;
+        }else{
+            $terminal = $request->terminal;
+        }
         $datearray = [
             "from" => $request->from,
             "to" => $request->to,
@@ -2508,7 +2519,7 @@ class ReportController extends Controller
                 $totalclosing = 0;
                 $totalbalance = 0;
                 $totalsalesreturn = 0;
-                
+
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(275, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
