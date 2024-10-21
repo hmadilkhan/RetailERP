@@ -318,7 +318,7 @@ class order extends Model
 				$query->where("sales_receipts.web", "=", $request->category);
 			})
 			// ->where("sales_receipts.web", "=", 0)
-			->selectRaw("COUNT(sales_receipts.id) as totalorders,sales_order_status.order_status_name")
+			->selectRaw("COUNT(sales_receipts.id) as totalorders,sales_order_status.order_status_name,SUM(sales_receipts.total_amount) as sales")
 			->groupBy("status")
 			->get();
 	}

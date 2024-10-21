@@ -165,12 +165,21 @@
 
 
     $("#pendingorders").html("{{ count($pending) > 0 ? $pending[0]->totalorders : 0 }}");
+    $("#totalpendingamount").html("Rs. {{ count($pending) > 0 ? number_format($pending[0]->sales,0) : 0 }}");
     $("#processingorders").html("{{ count($processing) > 0 ? $processing[0]->totalorders : 0 }}");
+    $("#totalprocessingamount").html("Rs. {{ count($processing) > 0 ? number_format($processing[0]->sales,0) : 0 }}");
     $("#voidorders").html("{{ count($voidOrders) > 0 ? $voidOrders[0]->totalorders : 0 }}");
+    $("#totalvoidamount").html("Rs. {{ count($voidOrders) > 0 ? number_format($voidOrders[0]->sales,0) : 0 }}");
     $("#deliveredorders").html("{{ count($deliveredOrders) > 0 ? $deliveredOrders[0]->totalorders : 0 }}");
+    $("#totaldeliveredamount").html("Rs. {{ count($deliveredOrders) > 0 ? number_format($deliveredOrders[0]->sales,0) : 0 }}");
     $("#dispatchorders").html("{{ count($dispatchOrders) > 0 ? $dispatchOrders[0]->totalorders : 0 }}");
+    $("#totaldispatchamount").html("Rs. {{ count($dispatchOrders) > 0 ? number_format($dispatchOrders[0]->sales,0) : 0 }}");
     $("#salesreturnorders").html("{{ count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->totalorders : 0 }}");
+    $("#totalsalesreturnamount").html("Rs. {{ count($salesReturnOrders) > 0 ? number_format($salesReturnOrders[0]->sales,0) : 0 }}");
     $("#totalorders").html(
         "{{ (count($processing) > 0 ? $processing[0]->totalorders : 0) + (count($voidOrders) > 0 ? $voidOrders[0]->totalorders : 0) + (count($deliveredOrders) > 0 ? $deliveredOrders[0]->totalorders : 0) + (count($pending) > 0 ? $pending[0]->totalorders : 0) + (count($dispatchOrders) > 0 ? $dispatchOrders[0]->totalorders : 0) + (count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->totalorders : 0)  }}" 
+    );
+    $("#totalamount").html(
+        "Rs. {{ number_format((count($processing) > 0 ? $processing[0]->sales : 0) + (count($voidOrders) > 0 ? $voidOrders[0]->sales : 0) + (count($deliveredOrders) > 0 ? $deliveredOrders[0]->sales : 0) + (count($pending) > 0 ? $pending[0]->sales : 0) + (count($dispatchOrders) > 0 ? $dispatchOrders[0]->sales : 0) + (count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->sales : 0),0)  }}" 
     );
 </script>

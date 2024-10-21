@@ -237,7 +237,7 @@
                     <div class="card dashboard-product">
                         <span>Total Orders</span>
                         <h2 class="dashboard-total-products" id="totalorders">0</h2>
-                        <span class="label label-info">Orders</span>
+                        <span class="label label-lg label-info fs-5" id="totalamount">Orders</span>
                         <div class="side-box">
                             <i class="ti-package text-warning-color"></i>
                         </div>
@@ -247,7 +247,7 @@
                     <div class="card dashboard-product">
                         <span>Pending Orders</span>
                         <h2 class="dashboard-total-products" id="pendingorders">0</h2>
-                        <span class="label label-danger">Pending</span>
+                        <span class="label label-lg label-danger fs-5" id="totalpendingamount">Pending</span>
                         <div class="side-box">
                             <i class="ti-package text-warning-color"></i>
                         </div>
@@ -257,7 +257,7 @@
                     <div class="card dashboard-product">
                         <span>Processing Orders</span>
                         <h2 class="dashboard-total-products" id="processingorders">0</h2>
-                        <span class="label label-warning">Processing</span>
+                        <span class="label label-lg label-warning fs-5" id="totalprocessingamount">Processing</span>
                         <div class="side-box">
                             <i class="ti-package text-warning-color"></i>
                         </div>
@@ -267,7 +267,7 @@
                     <div class="card dashboard-product">
                         <span>Void Orders</span>
                         <h2 class="dashboard-total-products" id="voidorders">0</h2>
-                        <span class="label label-danger">Void</span>
+                        <span class="label label-lg label-danger fs-5" id="totalvoidamount">Void</span>
                         <div class="side-box">
                             <i class="ti-package text-warning-color"></i>
                         </div>
@@ -278,7 +278,7 @@
                     <div class="card dashboard-product">
                         <span>Dispatch Orders</span>
                         <h2 class="dashboard-total-products" id="dispatchorders">0</h2>
-                        <span class="label label-info">Dispatch</span>
+                        <span class="label label-lg label-info fs-5" id="totaldispatchamount">Dispatch</span>
                         <div class="side-box">
                             <i class="ti-package text-info-color"></i>
                         </div>
@@ -289,7 +289,7 @@
                     <div class="card dashboard-product">
                         <span>Sales Return</span>
                         <h2 class="dashboard-total-products" id="salesreturnorders">0</h2>
-                        <span class="label label-danger">Sales Return</span>
+                        <span class="label label-lg label-danger fs-5" id="totalsalesreturnamount">Sales Return</span>
                         <div class="side-box">
                             <i class="ti-package text-warning-color"></i>
                         </div>
@@ -300,7 +300,7 @@
                     <div class="card dashboard-product">
                         <span>Delivered Orders</span>
                         <h2 class="dashboard-total-products" id="deliveredorders">0</h2>
-                        <span class="label label-success">Delivered</span>
+                        <span class="label label-lg label-success fs-5" id="totaldeliveredamount">Delivered</span>
                         <div class="side-box">
                             <i class="ti-package text-warning-color"></i>
                         </div>
