@@ -12,6 +12,8 @@
         <thead>
             <tr>
                 <th style="background-color: #1a4567;color:white;text-align: center;">DateTime</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Branch</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Terminal</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Opening Id</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Shift Opening</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Cash Sales</th>
@@ -91,6 +93,8 @@
                             {{ date('d M Y', strtotime($value->date)) . ' ' . date('h:i a', strtotime($value->time)) }}
                         </td>
                         <td style="text-align: center;" >{{ $value->opening_id }}</td>
+                        <td style="text-align: center;" >{{ $value->branch_name }}</td>
+                        <td style="text-align: center;" >{{ $value->terminal_name }}</td>
                         <td style="text-align: center;">{{ number_format($value->bal, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->Cash, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->CreditCard, 0) }}</td>
