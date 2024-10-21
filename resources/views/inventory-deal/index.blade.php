@@ -1,7 +1,7 @@
 @extends('layouts.master-layout')
 @section('title', 'Inventory Deals')
 @section('content')
-    <section class="panels-wells p-t-20">
+    <section class="panels-wells p-t-15">
 
         @if (Session::has('success'))
             <div class="row">
