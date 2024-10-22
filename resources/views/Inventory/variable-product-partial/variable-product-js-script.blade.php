@@ -190,7 +190,6 @@
 
 
   function readURL(input, id) {
-    alert()
     if (input.files && input.files[0]) {
         var file = input.files[0];
 

@@ -268,17 +268,35 @@
         }
 
 
-        function readURL(input,id) {
-            if (input.files && input.files[0]) {
-                var reader = new FileReader();
+        function readURL(input, id) {
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
 
-                reader.onload = function(e) {
-                    $('#'+id).attr('src', e.target.result);
-                }
-
-                reader.readAsDataURL(input.files[0]);
-            }
+        // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+        if (file.size > 5 * 1024 * 1024) {
+            swal("Error!","File size must be less than 5MB.","error");
+            input.value = ""; // Clear the input
+            return;
         }
+
+        // Validate file type
+        const SUPPORTED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'];
+        var fileExtension = file.name.split('.').pop().toLowerCase();
+        if (!SUPPORTED_EXTENSIONS.includes(fileExtension)) {
+            swal("Error!","Only JPG, JPEG, PNG, and WEBP files are allowed.","error");
+            input.value = ""; // Clear the input
+            return;
+        }
+
+        var reader = new FileReader();
+
+        reader.onload = function(e) {
+            $('#' + id).attr('src', e.target.result);
+        }
+
+        reader.readAsDataURL(file);
+    }
+  }
 
         $("#productImage").change(function() {
             readURL(this,'productImages_preview');
