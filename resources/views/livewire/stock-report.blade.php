@@ -108,9 +108,9 @@
                                 @if (count($moreDetails[$index]['stock']) > 0)
                                     @foreach ($moreDetails[$index]['stock'] as $stockDetail)
                                         <tr>
-                                            <td>{{ $stockDetail->id }}</td>
-                                            <td>{{ $stockDetail->grn_number }}</td>
-                                            <td>{{ $stockDetail->quantity }}</td>
+                                            <td>{{ $stockDetail->stock_id }}</td>
+                                            <td>{{ $stockDetail->grn_id }}</td>
+                                            <td>{{ $stockDetail->qty }}</td>
                                             <td colspan="2">{{ $stockDetail->balance }}</td>
                                             <td>{{ $stockDetail->date }}</td>
                                             <td colspan="2">{{ $stockDetail->narration }}</td>
