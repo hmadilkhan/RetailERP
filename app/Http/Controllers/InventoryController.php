@@ -2686,16 +2686,17 @@ class InventoryController extends Controller
             // $request->productImage->move(public_path('assets/images/products/'), $imageName);
         }
         $items = [
-            'item_code' => $request->item_code,
-            'priority'  => empty($request->item_priority) ?? 0,
-            'attribute' => $request->attribute,
-            'item_name' => $request->item_name,
-            'product_id' => $request->finishgood,
-            'uom' => $request->uom,
-            'branch_id' => session("branch"),
-            'image' => $imageName,
-            'quantity' => 1,
-            'status_id' => 1,
+            'item_code'           => $request->item_code,
+            'priority'            => empty($request->item_priority) ?? 0,
+            'attribute'           => $request->attribute,
+            'item_name'           => $request->item_name,
+            'product_id'          => $request->finishgood,
+            'uom'                 => $request->uom,
+            'branch_id'           => session("branch"),
+            'image'               => $imageName,
+            'quantity'            => 1,
+            'status_id'           => 1,
+            'is_hidden_attribute' => isset($request->attribute_mode) ? 1 : 0,
         ];
 
         $itemid = $posProducts->insert('pos_products_gen_details', $items);

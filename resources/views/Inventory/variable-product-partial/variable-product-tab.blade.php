@@ -25,8 +25,7 @@
 
                     <i id="btn_attr_create" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="Add Attribute" ></i>
                     <label class="switch m-r-1">
-                        <input type="checkbox" title="" data-original-title="You want attribute name show on website"
-                        onclick="switchMode(this)">
+                        <input type="checkbox" title="" name="attribute_mode" data-original-title="You want attribute name show on website">
                         <span class="slider round"></span>
 
                       </label>
