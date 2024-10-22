@@ -22,30 +22,35 @@
 
                 <div class="form-group">
                     <label class="form-control-label">Attribute<span class="text-danger">*</span></label>
-                    
+
                     <i id="btn_attr_create" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="Add Attribute" ></i>
-                    
+                    <label class="switch m-r-1">
+                        <input type="checkbox" title="" data-original-title="You want attribute name show on website"
+                        onclick="switchMode(this)">
+                        <span class="slider round"></span>
+
+                      </label>
                     <select class="form-control select2 @error('attribute') 'has-danger' @enderror" placeholder="Attribute" name="attribute" id="attribute">
                         <option value="">Select</option>
                               @foreach($attributes as $val)
                                   <option selected="selected" value="{{$val->id}}">{{$val->name}}</option>
-                              @endforeach                        
-                    </select>    
+                              @endforeach
+                    </select>
                     @error('attribute')
                       <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-                
+
                 <div class="form-group {{ $errors->has('item_name') || $errors->has('item_name') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Item Name <span class="text-danger">*</span></label>
                     <input type="text" name="item_name" id="item_name" class="form-control"  value="{{ old('item_name') }}" />
                     @if ($errors->has('item_name'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
-                    
+
                     @if($errors->has('variable_product_name_error'))
                         <div class="form-control-feedback">{{ $errors->get('variable_product_name_error') }}</div>
-                    @endif                    
+                    @endif
 
                 </div>
 
@@ -71,7 +76,7 @@
                                 @endif
                               @endforeach
                        @endif
-                    </select> 
+                    </select>
                     @if ($errors->has('uom'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
@@ -84,9 +89,9 @@
                       <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>
-            </div>              
-            
-            
+            </div>
+
+
             <div class="col-md-6">
                <label for="productImage" class="form-control-label">Product Image</label>
              <a href="#">
@@ -94,7 +99,7 @@
                         </a>
 
                     <div class="form-group {{ $errors->has('productImage') ? 'has-danger' : '' }} m-t-10">
-                                
+
 
                                     <label for="productImage" class="custom-file">
                                                 <input type="file" name="productImage" id="productImage" class="custom-file-input" multiple>
@@ -103,16 +108,16 @@
                                 @if ($errors->has('productImage'))
                                     <div class="form-control-feedback">{{ $errors->first('productImage') }}</div>
                                 @endif
-                              </div> 
-                
-              </div>            
+                              </div>
+
+              </div>
 		 </div>
 		 <button type="submit" class="btn btn-success f-right m-t-2 btn-lg">Create</button>
-		</form> 
-		 
+		</form>
+
          </div>
       </div>
-      
+
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">Variable Products List</h5>
@@ -153,17 +158,17 @@
                             <td>{{$value->item_code}} | {{$value->item_name}} </td>
                             <td >{{ $value->attribute }}</td>
                             <td id="cell-3-{{ $value->pos_item_id }}">
-                                
+
                                   @foreach($inventoryVariations as $variation)
                                      @if($variation->product_id == $value->pos_item_id)
                                            <label class="badge badge-bg-success badge-lg pointer" id="lable-variation-{{ $variation->id }}" onclick="editVariationValue({{ $variation->id }},{{ $variation->variation_id }},{{ $variation->product_id }},'{{ $variation->item_name}}','{{ $variation->name}}','{{ $variation->type}}','{{ $variation->addon_limit}}')"> {{ $variation->name }} </label>
                                          @foreach($variationProductCount as $count)
                                               @if($count->addon_category_id == $variation->variation_id)
                                                <span class="badge badge-black badge-header3">{{ $count->countProduct }}</span>
-                                              @endif 
-                                         @endforeach 
+                                              @endif
+                                         @endforeach
                                          <br/>
-                                     @endif           
+                                     @endif
                                   @endforeach
                             </td>
                             <td >{{$value->uomname}}</td>
@@ -171,13 +176,13 @@
                             <td >{{$value->online_price}}</td>
                             <td >{{$value->priority}}</td>
                             <td class="action-icon">
-                                
-                                <i class="icofont icofont-plus text-success pointer m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" onclick="createVariation({{ $value->pos_item_id }},'{{ $value->item_name }}')"></i>                                
+
+                                <i class="icofont icofont-plus text-success pointer m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" onclick="createVariation({{ $value->pos_item_id }},'{{ $value->item_name }}')"></i>
 
                                 <a  class="m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit({{$value->pos_item_id}},{{$value->product_id}},'{{$value->item_code}}','{{$value->item_name}}','{{$value->online_price}}','{{$value->uom_id}}','{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}',{{$value->priority}})" ></i> </a>
 
                                 <i class="icofont icofont-ui-delete text-danger m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" onclick="remove('{{$value->item_name}}','{{$value->pos_item_id}}')"></i>
-                               
+
                                 <i class="icofont icofont-share-alt text-primary f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy Variable Product" onclick="copyVariableProduct_modal({{$value->pos_item_id}},'{{$value->item_name}}',{{$value->product_id}})"></i>
                             </td>
 
@@ -188,7 +193,7 @@
                 </table>
             </div>
         </div>
-        
+
  <div class="modal fade modal-flex" id="create-attribute-modal" tabindex="-1" role="dialog">
                <div class="modal-dialog modal-md" role="document">
                   <div class="modal-content">
@@ -201,20 +206,20 @@
                      <div class="modal-body">
                        <div class="row">
                              <div class="col-md-12">
-                              <div class="form-group"> 
+                              <div class="form-group">
                                 <label class="form-control-label">Attribute Name:</label>
                                  <input type="text"  name="attribute_txt" id="attribute_txt" class="form-control" placeholder="Attribute Name"/>
                                 </div>
                               </div>
-                          </div>   
+                          </div>
                      </div>
                      <div class="modal-footer">
                         <button type="button" class="btn btn-success waves-effect waves-light" onClick="add_attribute()">Create</button>
                      </div>
                   </div>
                </div>
-            </div>         
-        
+            </div>
+
  <div class="modal fade modal-flex" id="uom-modal" tabindex="-1" role="dialog">
                <div class="modal-dialog modal-md" role="document">
                   <div class="modal-content">
@@ -227,20 +232,20 @@
                      <div class="modal-body">
                        <div class="row">
                              <div class="col-md-12">
-                              <div class="form-group"> 
+                              <div class="form-group">
                                 <label class="form-control-label">Unit of Measure:</label>
                                  <input type="text"  name="txtuom" id="txtuom" class="form-control" />
                                 </div>
                               </div>
-                          </div>   
+                          </div>
                      </div>
                      <div class="modal-footer">
                         <button type="button" id="btn_bank" class="btn btn-success waves-effect waves-light" onClick="adduom()">Add</button>
                      </div>
                   </div>
                </div>
-            </div> 
-            
+            </div>
+
 
 <div class="modal fade modal-flex" id="update-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-md" role="document">
@@ -281,7 +286,7 @@
                                         @endforeach
                                     @endif
                                 </select>
-                                
+
                             </div>
 
                             <div class="form-group">
@@ -308,7 +313,7 @@
 								</label>
 								<span class="text-danger" id="item_image_vpmd_alert"></span>
 					        </div>
-					
+
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary waves-effect waves-light" id="btn_variableProduct_update">
@@ -318,8 +323,8 @@
 				</form>
             </div>
         </div>
-    </div>  
-    
+    </div>
+
     <div class="modal fade modal-flex" id="copy-variable-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -336,7 +341,7 @@
     		        <input type="hidden" id="generalInventoryId_cpymd">
                  <div class="modal-body">
                     <h3 id="copy-variableName"></h3>
-                    
+
                     <div class="row">
                     <div class="col-md-6">
                      <div class="form-group">
@@ -348,26 +353,26 @@
                                    @endforeach
                                </select>
                                <span class="text-danger" id="department_variableTab_alert"></span>
-                            </div>                                            
-                     </div> 
+                            </div>
+                     </div>
                      <div class="col-md-6">
                          <div class="form-group">
                            <label>Sub-Department</label>
                            <select class="select2" data-placeholder="Select Depatrment" id="subDepartment_variableTab" disabled></select>
-                           <span class="text-danger" id="subDepartment_variableTab_alert"></span>                       
+                           <span class="text-danger" id="subDepartment_variableTab_alert"></span>
                         </div>
                     </div>
-                  </div>    
-                    
+                  </div>
+
                     <table class="table" id="tbl_variablecpymd" width="100%">
                         <thead>
                             <tr>
-                              <th>Item Name</th>    
+                              <th>Item Name</th>
                            </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
-                   
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success waves-effect waves-light" id="btn_past_variableTogeneral">Past</button>
@@ -375,9 +380,9 @@
 				</form>
             </div>
         </div>
-    </div>       
-    
-    
+    </div>
+
+
     <div class="modal fade modal-flex" id="copy-variation-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -396,19 +401,19 @@
     		        <input type="hidden" id="variationName_cpymd">
     		        <input type="hidden" id="variationType_cpymd">
     		        <input type="hidden" id="selection_limited_cpymd">
-    		        
+
                  <div class="modal-body">
                     <h3 id="copy-variationName"></h3>
-                    
+
                     <table id="tbl_cpymd" class="table" width="100%">
                         <thead>
                             <tr>
-                              <th>Item Name</th>    
+                              <th>Item Name</th>
                            </tr>
                         </thead>
                         <tbody></tbody>
                     </table>
-                   
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-success waves-effect waves-light" id="btn_past_variation">Past</button>
@@ -416,9 +421,9 @@
 				</form>
             </div>
         </div>
-    </div>           
-            
-            
+    </div>
+
+
 <div class="modal fade modal-flex" id="createVariation-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -434,11 +439,11 @@
     		        <input type="hidden" name="item_id" id="itemId_md">
     		        <input type="hidden" name="mode" id="mode_md">
     		        <input type="hidden" name="variation_id" id="variationId_md">
-    		        
+
                   <div class="modal-body">
-                    
+
                     <div id="createVariationModal_alert"></div>
-						        
+
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -457,17 +462,17 @@
                                        </select>
                                     </div>
                                     <span id="variation_type_alert" class="text-danger"></span>
-                                </div>                                
+                                </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                        <label>Selection Limited</label>
                                        <input type="number" min="0" value="0" class="form-control" placeholder="Selection Limited" name="selection_limited" id="selection_limited" disabled>
                                        <span id="selection_limited_alert" class="text-danger"></span>
                                     </div>
-                                </div>   
-                                
+                                </div>
+
                             </div>
-                            
+
                             <table class="table" id="table_variationLists_md">
                                 <thead>
                                     <tr>
@@ -481,33 +486,33 @@
                                                    @endforeach
                                                </select>
                                                <span id="department_md_alert" class="text-danger"></span>
-                                            </div>                                            
+                                            </div>
                                         </th>
                                         <th>
                                             <div class="form-group">
                                                <label>Sub-Department</label>
                                                <select class="select2" data-placeholder="Select Sub-Depatrment" id="subDepartment_md"></select>
                                                <span id="subDepartment_md_alert" class="text-danger"></span>
-                                            </div>                                            
-                                        </th>                                        
+                                            </div>
+                                        </th>
                                         <th>
                                             <div class="form-group">
                                                <label>Products</label>
                                                <select class="select2" data-placeholder="Select Products" id="product_md" disabled>
                                                    <option value="">Select</option>
                                                </select>
-                                            </div>                                            
+                                            </div>
                                         </th>
                                         <th>
                                             <div class="form-group">
                                                <label>Price</label>
                                                <input type="text" id="price_md" class="form-control">
                                                <span id="price_md_alert" class="text-danger"></span>
-                                            </div>                                            
+                                            </div>
                                         </th>
                                         <th>
                                            <div class="form-group">
-                                               <button type="button" onclick="modal_add_variation()" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" class="btn btn-default">   
+                                               <button type="button" onclick="modal_add_variation()" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" class="btn btn-default">
                                             <i class="icofont icofont-plus text-success pointer f-18"></i> </button>
                                            </div>
                                         </th>
@@ -522,11 +527,11 @@
                     </div>
                     <div class="f-right">
                     <button type="button" class="btn btn-danger waves-effect waves-light m-r-2 d-none" id="btn_remove_variation">Remove</button>
-                    
+
                     <button type="button" class="btn btn-primary waves-effect waves-light" id="btn_submit_variation">Submit</button>
                     </div>
                 </div>
 				</form>
             </div>
         </div>
-    </div>            
+    </div>
