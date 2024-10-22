@@ -201,7 +201,7 @@ class StockAdjustmentService
         if ($branch == "") {
             $branch = 283;
         }
-        $closingDate = date("Y-m-d", strtotime("+1 day", strtotime($from)));
+        $closingDate = date("Y-m-d", strtotime("+1 day", strtotime($to)));
         // Define the CTEs using withExpression()
         $openingStockCte = DB::table('daily_stock')
             ->select('product_id', DB::raw('MIN(Date(created_at)) as opening_date'), 'opening_stock','closing_stock')
