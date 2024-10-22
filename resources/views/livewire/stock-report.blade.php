@@ -73,8 +73,9 @@
                 </thead>
                 <tbody>
                     @if (!empty($stocks))
-                        @foreach ($stocks as $stock)
-                            <tr>
+                        @foreach ($stocks as $index => $stock)
+                            <tr id="row-{{ $stock->product_id }}" style="cursor:pointer;"
+                                wire:click="$dispatch('loadMoreDetails',{productId: {{ $stock->product_id }},index: {{ $index }} })">
                                 <td>{{ $stock->product_id }}</td>
                                 <td>{{ $stock->item_code }}</td>
                                 <td>{{ $stock->product_name }}</td>
@@ -82,8 +83,46 @@
                                 <td>{{ $stock->opening_stock }}</td>
                                 <td>{{ $stock->sales }}</td>
                                 <td>{{ $stock->closing_stock }}</td>
-                                <td>{{ $stock->closing_date }}</td>
+                                <td>{{ $stock->closing_date }}/{{ isset($moreDetailsVisible[$index]) && $moreDetailsVisible[$index] == true ? 1 : 0 }}
+                                </td>
                             </tr>
+                            @if (isset($moreDetails[$index]))
+                                <tr></tr>
+                                <tr>
+                                    <td colspan="8">
+                                        <div>
+                                            <!-- Display additional details for the selected stock -->
+                                            <strong>Stock Details:</strong>
+                                            {{-- {{ $moreDetails[$index]['additional_info'] }} --}}
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="m-4 p-4 bg-light">
+                                    <th>Stock Id</th>
+                                    <th>GRN #</th>
+                                    <th>Qty</th>
+                                    <th colspan="2">Balance</th>
+                                    <th>Date</th>
+                                    <th colspan="2">Narartion</th>
+                                </tr>
+                                @if (count($moreDetails[$index]['stock']) > 0)
+                                    @foreach ($moreDetails[$index]['stock'] as $stockDetail)
+                                        <tr>
+                                            <td>{{ $stockDetail->id }}</td>
+                                            <td>{{ $stockDetail->grn_number }}</td>
+                                            <td>{{ $stockDetail->quantity }}</td>
+                                            <td colspan="2">{{ $stockDetail->balance }}</td>
+                                            <td>{{ $stockDetail->date }}</td>
+                                            <td colspan="2">{{ $stockDetail->narration }}</td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td class="text-center" colspan="8">No Record Found</td>
+                                    </tr>
+                                @endif
+                                <tr></tr>
+                            @endif
                         @endforeach
                     @else
                         <tr>

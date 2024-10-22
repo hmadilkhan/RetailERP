@@ -3,45 +3,32 @@
 namespace App\Livewire;
 
 use App\Models\InventoryStock;
-use App\Services\BranchService;
-use App\Services\StockAdjustmentService;
 use Livewire\Attributes\On;
-use Livewire\Attributes\Title;
 use Livewire\Component;
-use Livewire\WithPagination;
 
-class StockReport extends Component
+class StockReportDetail extends Component
 {
-    use WithPagination;
-
-    #[Title("Stock Adjustment")]
+    public $index;
+    public $branch = '';
+    public $from;
+    public $to;
+    public $moreDetails = [];
+    public $moreDetailsVisible = [];
 
     protected $listeners = ['loadMoreDetails'];
 
-    public $from = '';
-    public $to = '';
-    public $branch = '';
-    public $moreDetails = [];
-    public $moreDetailsVisible = [];
-    // public $stocks = [];
-
-    public function mount()
-    {
-        $this->from = date("Y-m-d");
-        $this->to = date("Y-m-d");
-    }
-
    
     // Listener for toggling the visibility of more details
-    public function toggleDetails($productId,$index)
+    public function toggleDetails($productId, $index)
     {
+        $this->index = $index;
         // Check if the visibility state is already set for the row
         if (isset($this->moreDetailsVisible[$index])) {
             // Toggle visibility
             $this->moreDetailsVisible[$index] = !$this->moreDetailsVisible[$index];
         } else {
             // Load additional details for the first time and set visibility to true
-            $this->loadMoreDetails($productId,$index);
+            $this->loadMoreDetails($productId, $index);
             $this->moreDetailsVisible[$index] = true;
         }
     }
@@ -65,32 +52,8 @@ class StockReport extends Component
         // dd($productId);
     }
 
-    public function submitForm($from, $to, $branch)
+    public function render()
     {
-
-        $this->from = $from;
-        $this->to = $to;
-        $this->branch = $branch;
-    }
-
-    public function applyFilters()
-    {
-        // Reset the pagination when filters change
-        $this->resetPage();
-    }
-
-    public function clear()
-    {
-        $this->from = null;
-        $this->to = null;
-        $this->branch = null;
-        $this->applyFilters();
-    }
-
-    public function render(BranchService $branchService, StockAdjustmentService $stockAdjustmentService)
-    {
-        $stocks = $stockAdjustmentService->getStockReport($this->from, $this->to, $this->branch);
-        $branches = $branchService->getBranches();
-        return view('livewire.stock-report', compact('branches', 'stocks'));
+        return view('livewire.stock-report-detail');
     }
 }
