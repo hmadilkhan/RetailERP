@@ -259,7 +259,7 @@
 				@csrf
                 <div class="modal-body">
                             <div class="form-group">
-                                <label class="form-control-label">Item Code:</label>
+                                <label class="form-control-label">Item Code <span class="text-danger">*</span></label>
                                 <a href="javascript:void(0)" class="f-right text-primary" data-toggle="tooltip" data-placement="top" title="Auto Code Generate"
                                 onclick="autoCodeGenerate({{ $generalItem[0]->id }},'item_code_vpmd')" >Auto Generate</a>
                                 <input type="text" name="item_code" id="item_code_vpmd" class="form-control"  />
@@ -284,7 +284,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-control-label">Item Name:</label>
+                                <label class="form-control-label">Item Name <span class="text-danger">*</span></label>
                                 <input type="text" name="item_name" id="item_name_vpmd" class="form-control"  />
                                 <input type="hidden" name="finishgood" id="finishgood_vpmd" class="form-control"  />
                                 <input type="hidden" name="item_id" id="item_id_vpmd" class="form-control"  />
@@ -293,7 +293,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-control-label">Select Unit Of measure</label>
+                                <label class="form-control-label">Select Unit Of measure <span class="text-danger">*</span></label>
                                 <select name="uom" id="uom_vpmd" data-placeholder="Select unit of measure" class="form-control select2"  >
                                     <option value="">Select Unit Of measure</option>
                                     @if($uom)
@@ -306,7 +306,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label class="form-control-label">Price:</label>
+                                <label class="form-control-label">Price <span class="text-danger">*</span></label>
                                 <input type="number" min="0" name="price" id="price_vpmd" class="form-control"  />
                                 <span id="price_alert_vpmd" class="text-danger"></span>
                             </div>
