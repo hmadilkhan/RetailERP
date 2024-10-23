@@ -153,7 +153,7 @@
                             <td class="d-none">{{ $value->priority }}</td>
                             <td class="text-center">
                               <a href="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" data-fancybox data-caption="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
-                                <img width="32" height="32" src="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
+                                <img width="64" height="64" src="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
                               </a>
                             </td>
                             <td>{{$value->item_code}} | {{$value->item_name}} </td>
