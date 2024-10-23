@@ -267,6 +267,23 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="form-control-label">Attribute<span class="text-danger">*</span></label>
+
+                                <i id="btn_attr_create" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="Add Attribute" ></i>
+                                <label class="switch f-right m-r-1">
+                                    <input type="checkbox" title="" name="attribute_mode_vpmd" data-toggle="tooltip" data-placement="top" data-original-title="You want attribute name show on website">
+                                    <span class="slider round"></span>
+
+                                  </label>
+                                <select class="form-control select2" placeholder="Attribute" name="attribute" id="attribute_vpmd">
+                                    <option value="">Select</option>
+                                          @foreach($attributes as $val)
+                                              <option selected="selected" value="{{$val->id}}">{{$val->name}}</option>
+                                          @endforeach
+                                </select>
+                            </div>
+
+                            <div class="form-group">
                                 <label class="form-control-label">Item Name:</label>
                                 <input type="text" name="item_name" id="item_name_vpmd" class="form-control"  />
                                 <input type="hidden" name="finishgood" id="finishgood_vpmd" class="form-control"  />
