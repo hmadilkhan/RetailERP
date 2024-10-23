@@ -391,7 +391,7 @@
             $('#uom_vpmd').val(uomId).change();
 			$("#modal_previewImage_vpmd").attr("src",src);
 			$("#prevImageName_vpmd").val(image);
-            $("#attribute_vpmd").val(attribute).trigger('onchange');
+            $("#attribute_vpmd").val(attribute).trigger('change');
 
             if(attr_mode != 0){
                 $("#attribute_mode_vpmd").prop('checked', true);
