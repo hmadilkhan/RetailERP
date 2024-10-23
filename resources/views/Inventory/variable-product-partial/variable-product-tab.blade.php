@@ -319,7 +319,7 @@
                                 <span id="priority_alert_vpmd" class="text-danger"></span>
                             </div>
 
-							<a href="#">
+							<a id="modal_previewImageFancy_vpmd" href="{{ asset('storage/images/placeholder.jpg') }}" data-fancybox data-caption="placeholder.jpg">
 								<img id="modal_previewImage_vpmd" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 							</a>
 							<div class="form-group{{ $errors->has('updateproduct') ? 'has-danger' : '' }} ">
