@@ -2838,9 +2838,11 @@ class InventoryController extends Controller
             $items = [
                 'item_code' => $request->item_code,
                 'item_name' => $request->item_name,
-                'quantity' => 1,
-                'uom' => $request->uom,
-                'priority' => $request->priority,
+                'quantity'  => 1,
+                'uom'       => $request->uom,
+                'priority'  => $request->priority,
+                'attribute' => $request->attribute,
+                'is_hidden_attribute' => isset($request->attribute_mode) ? 1 : 0,
             ];
 
             if ($imageName != null) {
