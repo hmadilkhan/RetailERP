@@ -178,7 +178,7 @@
 
                                 <i class="icofont icofont-plus text-success pointer m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" onclick="createVariation({{ $value->pos_item_id }},'{{ $value->item_name }}')"></i>
 
-                                <a  class="m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit({{$value->pos_item_id}},{{$value->product_id}},'{{$value->item_code}}','{{$value->item_name}}','{{$value->online_price}}','{{$value->uom_id}}','{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}',{{$value->priority}},{{ $value->attribute }},{{ $value->is_hidden_attribute }})" ></i> </a>
+                                <a  class="m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit({{$value->pos_item_id}},{{$value->product_id}},'{{$value->item_code}}','{{$value->item_name}}','{{$value->online_price}}','{{$value->uom_id}}','{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}',{{$value->priority}},{{ $value->attribute_id }},{{ $value->is_hidden_attribute }})" ></i> </a>
 
                                 <i class="icofont icofont-ui-delete text-danger m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" onclick="remove('{{$value->item_name}}','{{$value->pos_item_id}}')"></i>
 
