@@ -24,12 +24,12 @@ class posProducts extends Model
         $result = DB::select('SELECT COUNT(pos_item_id) AS counts FROM pos_products_gen_details WHERE branch_id = '.session('branch').' and status_id = 1 and item_name = ? and product_id = ?',[$itemname,$prod_code]);
         return $result;
     }
-    
+
     public function exsist_chk_itemcode_notEqualItemId($item_code,$item_id)
     {
         $result = DB::select('SELECT COUNT(pos_item_id) AS counts FROM pos_products_gen_details WHERE branch_id = '.session('branch').' and item_code = ? and pos_item_id != ?',[$item_code,$item_id]);
         return $result;
-    }    
+    }
 
     public function insert($table,$items){
 
@@ -39,7 +39,7 @@ class posProducts extends Model
 
     public function getposproducts()
     {
-        $result = DB::select('SELECT a.pos_item_id, a.item_code, a.item_name, a.image, c.branch_name, d.product_name, e.department_name, f.status_name, b.*, a.quantity,a.uom ,g.uom_id,g.name as uomname FROM pos_products_gen_details a 
+        $result = DB::select('SELECT a.pos_item_id, a.item_code, a.item_name, a.image, c.branch_name, d.product_name, e.department_name, f.status_name, b.*, a.quantity,a.uom ,g.uom_id,g.name as uomname FROM pos_products_gen_details a
 			INNER JOIN pos_product_price b on b.pos_item_id = a.pos_item_id AND a.status_id = b.status_id
 			INNER JOIN branch c ON c.branch_id = a.branch_id
 			INNER JOIN inventory_general d ON d.id = a.product_id
@@ -47,13 +47,13 @@ class posProducts extends Model
 			INNER JOIN accessibility_mode f ON f.status_id = a.status_id
 			LEFT JOIN inventory_uom g ON g.uom_id = a.uom
 			WHERE a.status_id = 1 AND b.status_id = 1 AND a.branch_id = ? order by a.pos_item_id DESC',[session("branch")]);
-        return $result;  
+        return $result;
     }
-    
+
     // get pos product filter by inventory general id
     public function getposproducts_filter_by_productId($productId)
     {
-        $result = DB::select('SELECT a.pos_item_id,a.priority, a.item_code,a.product_id, a.item_name, a.image, c.branch_name, d.product_name, e.department_name, f.status_name, b.*, a.quantity,a.uom ,g.uom_id,g.name as uomname, h.name as attribute FROM pos_products_gen_details a 
+        $result = DB::select('SELECT a.pos_item_id,a.priority, a.item_code,a.product_id, a.item_name, a.image,a.attribute,a.is_hidden_attribute, c.branch_name, d.product_name, e.department_name, f.status_name, b.*, a.quantity,a.uom ,g.uom_id,g.name as uomname, h.name as attribute FROM pos_products_gen_details a
 			INNER JOIN pos_product_price b on b.pos_item_id = a.pos_item_id AND a.status_id = b.status_id
 			INNER JOIN branch c ON c.branch_id = a.branch_id
 			INNER JOIN inventory_general d ON d.id = a.product_id
@@ -62,14 +62,14 @@ class posProducts extends Model
 			LEFT JOIN inventory_uom g ON g.uom_id = a.uom
 			Left JOIN attributes h ON h.id = a.attribute
 			WHERE a.status_id = 1 AND b.status_id = 1 AND a.branch_id = ? and a.product_id = ? order by a.priority DESC',[session("branch"),$productId]);
-        return $result;  
-    }    
+        return $result;
+    }
 
     public function update_pos_price($id,$items){
         $result = DB::table('pos_product_price')->where('price_id', $id)->update($items);
         return $result;
     }
-	
+
 	public function getuom(){
         $result = DB::table('inventory_uom')->get();
         return $result;
@@ -78,14 +78,14 @@ class posProducts extends Model
 
     public function inactiveposproducts()
     {
-        // $result = DB::select('SELECT a.item_id, b.sub_id, a.item_name, a.image, c.branch_name, e.department_name, b.price, f.status_name FROM pos_products_gen_details a 
+        // $result = DB::select('SELECT a.item_id, b.sub_id, a.item_name, a.image, c.branch_name, e.department_name, b.price, f.status_name FROM pos_products_gen_details a
 			// INNER JOIN pos_products_sub_details b ON b.item_id = a.item_id
 			// INNER JOIN branch c ON c.branch_id = a.branch_id
 			// INNER JOIN inventory_general d ON d.id = a.product_id
 			// INNER JOIN inventory_department e ON e.department_id = d.department_id
 			// INNER JOIN accessibility_mode f ON f.status_id = b.status_id
 			// WHERE b.status_id = 2');
-		$result = DB::select('SELECT a.pos_item_id, a.item_code, a.item_name, a.image, c.branch_name, d.product_name, e.department_name, f.status_name, b.*, a.quantity FROM pos_products_gen_details a 
+		$result = DB::select('SELECT a.pos_item_id, a.item_code, a.item_name, a.image, c.branch_name, d.product_name, e.department_name, f.status_name, b.*, a.quantity FROM pos_products_gen_details a
 			INNER JOIN pos_product_price b on b.pos_item_id = a.pos_item_id AND a.status_id = b.status_id
 			INNER JOIN branch c ON c.branch_id = a.branch_id
 			INNER JOIN inventory_general d ON d.id = a.product_id
