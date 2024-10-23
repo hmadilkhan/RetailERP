@@ -1,37 +1,70 @@
 <div>
-    @if (isset($moreDetails[$index]))
-        <tr>
-            <td colspan="8">
-                <div>
-                    <!-- Display additional details for the selected stock -->
-                    <strong>Stock Details:</strong>
-                    {{-- {{ $moreDetails[$index]['additional_info'] }} --}}
+    <style>
+        @media (min-width: 992px) {
+            .modal-xlg {
+                max-width: 900px;
+            }
+        }
+    </style>
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade in " id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog  modal-xlg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">{{ $name }}</h5>
                 </div>
-            </td>
-        </tr>
-        <tr class="m-4 p-4 bg-light">
-            <th>Stock Id</th>
-            <th>GRN #</th>
-            <th>Qty</th>
-            <th colspan="2">Balance</th>
-            <th>Date</th>
-            <th colspan="2">Narartion</th>
-        </tr>
-        @if (count($moreDetails[$index]['stock']) > 0)
-            @foreach ($moreDetails[$index]['stock'] as $stockDetail)
-                <tr>
-                    <td>{{ $stockDetail->id }}</td>
-                    <td>{{ $stockDetail->grn_number }}</td>
-                    <td>{{ $stockDetail->quantity }}</td>
-                    <td colspan="2">{{ $stockDetail->balance }}</td>
-                    <td>{{ $stockDetail->date }}</td>
-                    <td colspan="2">{{ $stockDetail->narration }}</td>
-                </tr>
-            @endforeach
-        @else
-            <tr>
-                <td class="text-center" colspan="8">No Record Found</td>
-            </tr>
-        @endif
-    @endif
+                <div class="modal-body">
+                    <div class="">
+                        <h5>Stock Details : </h5>
+                        <table class="table table-bordered mt-3">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Stock Id</th>
+                                    <th>GRN #</th>
+                                    <th>Qty</th>
+                                    <th colspan="2">Balance</th>
+                                    <th colspan="2">Narration</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!empty($details))
+                                    @foreach ($details as $stockDetail)
+                                        <tr>
+                                            <td>{{ date('d M y', strtotime($stockDetail->date)) }}</td>
+                                            <td>{{ $stockDetail->stock_id }}</td>
+                                            <td>{{ $stockDetail->grn_id }}</td>
+                                            <td>{{ $stockDetail->qty }}</td>
+                                            <td colspan="2">{{ $stockDetail->balance }}</td>
+                                            <td colspan="2">{{ $stockDetail->narration }}</td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td class="text-center" colspan="8">No Record Found</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-dismiss="modal"
+                        wire:click="$dispatch('hide-delete-modal')">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @script
+        <script>
+            window.addEventListener('show-delete-modal', event => {
+                $('#deleteModal').modal('show');
+            });
 
+            window.addEventListener('hide-delete-modal', event => {
+                $('#deleteModal').modal('hide');
+            });
+        </script>
+    @endscript
+</div>
