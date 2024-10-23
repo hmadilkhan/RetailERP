@@ -396,7 +396,6 @@
             if(attr_mode != 0){
                 $("#attribute_mode_vpmd").prop('checked', true);
             }
-			//console.log(src)
         }
 
 
