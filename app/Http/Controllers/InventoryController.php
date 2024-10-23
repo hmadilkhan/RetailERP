@@ -2702,6 +2702,11 @@ class InventoryController extends Controller
         $itemid = $posProducts->insert('pos_products_gen_details', $items);
 
         if ($itemid) {
+
+            if(isset($request->attribute_mode)){
+                $posProducts->update_pos_gendetails_finishgoodId($request->finishgood,['is_hidden_attribute' => isset($request->attribute_mode) ? 1 : 0]);
+            }
+
             $items = [
                 'online_price' => $request->item_price,
                 'retail_price' => $request->item_price,
@@ -2850,6 +2855,10 @@ class InventoryController extends Controller
             }
 
             $update = $posProducts->update_pos_gendetails($request->item_id, $items);
+
+            if(isset($request->attribute_mode)){
+                $posProducts->update_pos_gendetails_finishgoodId($request->finishgood,['is_hidden_attribute' => isset($request->attribute_mode) ? 1 : 0]);
+            }
 
             //get id and change status to inactive
             $id = $posProducts->getid($request->item_id);
