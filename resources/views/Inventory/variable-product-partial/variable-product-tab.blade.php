@@ -32,7 +32,7 @@
                     <select class="form-control select2 @error('attribute') 'has-danger' @enderror" placeholder="Attribute" name="attribute" id="attribute">
                         <option value="">Select</option>
                               @foreach($attributes as $val)
-                                  <option selected="selected" value="{{$val->id}}">{{$val->name}}</option>
+                                  <option value="{{$val->id}}">{{$val->name}}</option>
                               @endforeach
                     </select>
                     @error('attribute')
@@ -278,7 +278,7 @@
                                 <select class="form-control select2" placeholder="Attribute" name="attribute" id="attribute_vpmd">
                                     <option value="">Select</option>
                                           @foreach($attributes as $val)
-                                              <option selected="selected" value="{{$val->id}}">{{$val->name}}</option>
+                                              <option value="{{$val->id}}">{{$val->name}}</option>
                                           @endforeach
                                 </select>
                             </div>
