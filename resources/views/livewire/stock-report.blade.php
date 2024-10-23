@@ -25,9 +25,9 @@
                             <label class="form-control-label">Select Branch</label>
                             <select id="branch" name="branch" data-placeholder="Select Branch"
                                 class="f-right select2">
-                                <option selected value="">Select Branch</option>
-                                @foreach ($branches as $branch)
-                                    <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
+                                {{-- <option selected value="">Select Branch</option> --}}
+                                @foreach ($branches as $branchvalue)
+                                    <option value="{{ $branchvalue->branch_id }}">{{ $branchvalue->branch_name }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -69,13 +69,15 @@
                         <th>Sales</th>
                         <th>Closing Stock</th>
                         <th>Closing Date</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if (!empty($stocks))
                         @foreach ($stocks as $index => $stock)
-                            <tr id="row-{{ $stock->product_id }}" style="cursor:pointer;"
-                                wire:click="$dispatch('loadMoreDetails',{productId: {{ $stock->product_id }},index: {{ $index }} })">
+                            <tr id="row-{{ $stock->product_id }}" style="cursor:pointer;" data-bs-toggle="collapse"
+                                data-bs-target="#collapse-{{ $stock->product_id }}">
+                                {{-- wire:click="$dispatch('loadMoreDetails',{productId: {{ $stock->product_id }},index: {{ $index }} })" --}}
                                 <td>{{ $stock->product_id }}</td>
                                 <td>{{ $stock->item_code }}</td>
                                 <td>{{ $stock->product_name }}</td>
@@ -83,46 +85,11 @@
                                 <td>{{ $stock->opening_stock }}</td>
                                 <td>{{ $stock->sales }}</td>
                                 <td>{{ $stock->closing_stock }}</td>
-                                <td>{{ $stock->closing_date }}/{{ isset($moreDetailsVisible[$index]) && $moreDetailsVisible[$index] == true ? 1 : 0 }}
-                                </td>
+                                <td>{{ $stock->closing_date }}</td>
+                                <td
+                                    wire:click="$dispatch('showStockModal', {productId: {{ $stock->product_id }},branch: {{ $branch }},from: '{{ $from }}',to: '{{ $to }}',name: '{{ $stock->product_name }}' })">
+                                    <i class="icofont icofont-view text-primary"></i>View</td>
                             </tr>
-                            @if (isset($moreDetails[$index]))
-                                <tr></tr>
-                                <tr>
-                                    <td colspan="8">
-                                        <div>
-                                            <!-- Display additional details for the selected stock -->
-                                            <strong>Stock Details:</strong>
-                                            {{-- {{ $moreDetails[$index]['additional_info'] }} --}}
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="m-4 p-4 bg-light">
-                                    <th>Stock Id</th>
-                                    <th>GRN #</th>
-                                    <th>Qty</th>
-                                    <th colspan="2">Balance</th>
-                                    <th>Date</th>
-                                    <th colspan="2">Narartion</th>
-                                </tr>
-                                @if (count($moreDetails[$index]['stock']) > 0)
-                                    @foreach ($moreDetails[$index]['stock'] as $stockDetail)
-                                        <tr>
-                                            <td>{{ $stockDetail->stock_id }}</td>
-                                            <td>{{ $stockDetail->grn_id }}</td>
-                                            <td>{{ $stockDetail->qty }}</td>
-                                            <td colspan="2">{{ $stockDetail->balance }}</td>
-                                            <td>{{ $stockDetail->date }}</td>
-                                            <td colspan="2">{{ $stockDetail->narration }}</td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td class="text-center" colspan="8">No Record Found</td>
-                                    </tr>
-                                @endif
-                                <tr></tr>
-                            @endif
                         @endforeach
                     @else
                         <tr>
@@ -135,6 +102,7 @@
             {{ $stocks->links() }}
         </div>
     </div>
+    @livewire('stock-report-detail')
 </section>
 @script
     <script>

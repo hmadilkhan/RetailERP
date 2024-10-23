@@ -204,13 +204,13 @@ class StockAdjustmentService
         $closingDate = date("Y-m-d", strtotime("+1 day", strtotime($to)));
         // Define the CTEs using withExpression()
         $openingStockCte = DB::table('daily_stock')
-            ->select('product_id', DB::raw('MIN(Date(created_at)) as opening_date'), 'opening_stock','closing_stock')
+            ->select('product_id', DB::raw('MIN(Date(created_at)) as opening_date'), 'opening_stock','branch_id')
             ->whereDate('created_at', '=', $from)
             ->where('branch_id', '=', $branch)
             ->groupBy('product_id', DB::raw('Date(created_at)'));
 
         $closingStockCte = DB::table('daily_stock')
-            ->select('product_id', DB::raw('MAX(Date(created_at)) as closing_date'), 'opening_stock as closing_stock')
+            ->select('product_id', DB::raw('MAX(Date(created_at)) as closing_date'), 'opening_stock as closing_stock','branch_id')
             ->whereDate('created_at', '=', $closingDate)
             ->where('branch_id', '=', $branch)
             ->groupBy('product_id', DB::raw('Date(created_at)'));

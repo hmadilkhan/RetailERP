@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Branch;
 use App\Models\InventoryStock;
 use App\Services\BranchService;
 use App\Services\StockAdjustmentService;
@@ -20,57 +21,22 @@ class StockReport extends Component
 
     public $from = '';
     public $to = '';
-    public $branch = '';
-    public $moreDetails = [];
-    public $moreDetailsVisible = [];
-    // public $stocks = [];
+    public $branch = "";
 
     public function mount()
     {
+        $branchselect = Branch::where("company_id",session("company_id"))->first();
         $this->from = date("Y-m-d");
         $this->to = date("Y-m-d");
-    }
-
-   
-    // Listener for toggling the visibility of more details
-    public function toggleDetails($productId,$index)
-    {
-        // Check if the visibility state is already set for the row
-        if (isset($this->moreDetailsVisible[$index])) {
-            // Toggle visibility
-            $this->moreDetailsVisible[$index] = !$this->moreDetailsVisible[$index];
-        } else {
-            // Load additional details for the first time and set visibility to true
-            $this->loadMoreDetails($productId,$index);
-            $this->moreDetailsVisible[$index] = true;
-        }
-    }
-
-    #[On('loadMoreDetails')]
-    public function loadMoreDetails($productId, $index)
-    {
-        if ($this->branch == "") {
-            $this->branch = 283;
-        }
-        // Query additional details based on the stockId
-        $stock = InventoryStock::where("product_id", $productId)->where("branch_id", $this->branch)->whereBetween("date", [$this->from, $this->to])->get(); // Replace with your actual query logic
-
-        // Load additional information (this could be another related query)
-        $additionalDetails = [
-            'stock' => $stock, // Replace with actual data
-        ];
-
-        // Store additional details in the array for the given index
-        $this->moreDetails[$index] = $additionalDetails;
-        // dd($productId);
+        $this->branch =  $branchselect->branch_id;
     }
 
     public function submitForm($from, $to, $branch)
     {
-
         $this->from = $from;
         $this->to = $to;
         $this->branch = $branch;
+        // dd($branch);
     }
 
     public function applyFilters()
@@ -91,6 +57,7 @@ class StockReport extends Component
     {
         $stocks = $stockAdjustmentService->getStockReport($this->from, $this->to, $this->branch);
         $branches = $branchService->getBranches();
-        return view('livewire.stock-report', compact('branches', 'stocks'));
+        $branch = $this->branch;
+        return view('livewire.stock-report', compact('branches', 'stocks','branch'));
     }
 }
