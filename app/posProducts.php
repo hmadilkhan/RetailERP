@@ -101,7 +101,7 @@ class posProducts extends Model
     }
 
     public function update_pos_gendetails_finishgoodId($productId,$items){
-        $result = DB::table('pos_products_gen_details')->where('product_id', $productId)->update($items);
+        $result = DB::table('pos_products_gen_details')->where('status_id',1)->where('product_id', $productId)->update($items);
         return $result;
     }
 
