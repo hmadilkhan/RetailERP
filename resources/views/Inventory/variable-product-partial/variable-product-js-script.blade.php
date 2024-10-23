@@ -378,7 +378,9 @@
                         });
         }
 
-        function edit(id,fnhgood,code,name,price,uomId,src,image,priority){
+        function edit(id,fnhgood,code,name,price,uomId,src,image,priority,attribute,attr_mode){
+            $("#attribute_mode_vpmd").prop('checked', false);
+
             $('#update-modal').modal('show');
             $('#finishgood_vpmd').val(fnhgood);
             $('#item_id_vpmd').val(id);
@@ -389,6 +391,11 @@
             $('#uom_vpmd').val(uomId).change();
 			$("#modal_previewImage_vpmd").attr("src",src);
 			$("#prevImageName_vpmd").val(image);
+            $("#attribute_vpmd").val(attribute).change();
+
+            if(attr_mode != 0){
+                $("#attribute_mode_vpmd").prop('checked', true);
+            }
 			//console.log(src)
         }
 
