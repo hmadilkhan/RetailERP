@@ -1078,6 +1078,11 @@ input+.slider:before {
         $("#create-attribute-modal").modal("show");
     });
 
+    $("#btn_attr_create_vpmd").on('click',function(){
+        $('#attribute_txt').val('');
+        $("#create-attribute-modal").modal("show");
+    });
+
    function add_attribute(){
            if ($('#attribute_txt').val() == "") {
              swal({
@@ -1109,6 +1114,9 @@ input+.slider:before {
 
                               $("#attribute").append(
                                 "<option value='"+resp[count].id+"'>"+resp[count].name+"</option>");
+                                $("#attribute_vpmd").append(
+                                    "<option value='"+resp[count].id+"'>"+resp[count].name+"</option>");
+
                         }else{
                              swal({
                                     title: "Error!",
