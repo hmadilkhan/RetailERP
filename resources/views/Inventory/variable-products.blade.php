@@ -547,7 +547,7 @@ input+.slider:before {
             $('#uom_vpmd').val(uomId).change();
 			$("#modal_previewImage_vpmd").attr("src",src);
 			$("#prevImageName_vpmd").val(image);
-
+            $("#modal_previewImageFancy_vpmd").attr('href',src);
             $("#attribute_vpmd").val(attribute).change();
 
             if(attr_mode != 0){
