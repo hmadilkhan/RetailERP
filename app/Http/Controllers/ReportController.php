@@ -5524,7 +5524,7 @@ class ReportController extends Controller
         // return $request;
         $hourRanges = [];
         // Get the orders grouped by hour
-        $orders = DB::table('sales')
+        $orders = DB::table('sales_receipts')
             ->select(DB::raw('HOUR(time) as hour, COUNT(*) as total_orders'))
             ->groupBy(DB::raw('HOUR(time)'))
             ->whereBetween("date", [$request->from, $request->to])
