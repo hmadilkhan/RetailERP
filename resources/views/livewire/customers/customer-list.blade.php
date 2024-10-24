@@ -74,7 +74,14 @@
         </div>
         <div class="card-block" wire:loading.remove>
             <div class="row">
-                <div class="col-md-10"></div>
+                <div class="col-md-3">
+                    <select id="pageNo" class="form-control" wire:model="pageNo" style="width:50px;">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                    </select>
+                </div>
+                <div class="col-md-7"></div>
                 <div class="col-md-2 text-end">
                     <input type="text" class="form-control" wire:model.defer="name"
                         wire:keydown.debounce.500ms="applyFilter()" placeholder="Search Customer" />
@@ -189,12 +196,15 @@
         });
         $("#statuscheckbox").change(function() {
             if ($(this).prop('checked')) {
-                @this.set('status', 2);0
+                @this.set('status', 2);
                 @this.set('checkboxText', 'Show Active Items');
             } else {
                 @this.set('status', 1);
                 @this.set('checkboxText', 'Show In-Active Items');
             }
         })
+        $("#pageNo").change(function() {
+            @this.set('pageNo', $(this).val());
+        });
     </script>
 @endscript

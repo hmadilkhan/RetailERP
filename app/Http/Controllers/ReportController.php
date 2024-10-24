@@ -5518,4 +5518,9 @@ class ReportController extends Controller
         $permission = $report->terminalPermission($values->terminal_id);
         return $request;
     }
+
+    public function orderTimingsSummary(Request $request)
+    {
+        return $request;
+    }
 }

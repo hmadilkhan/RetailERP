@@ -86,7 +86,7 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
         return $customers;
     }
 
-    public function getCustomersForLivewire($id = "", $name, $status)
+    public function getCustomersForLivewire($id = "", $name, $status,$page)
     {
         $query = ModelsCustomer::query();
         $query->with("branch", "userauthorization", "userauthorization.branch");
@@ -122,7 +122,7 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             $query->where('status_id', $status);
         }
 
-        return $query->paginate(10);
+        return $query->paginate($page);
     }
 
     public function getcustomersForReceipt($id = "", $company, $branch)

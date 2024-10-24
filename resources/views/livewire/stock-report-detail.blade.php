@@ -48,6 +48,39 @@
                             </tbody>
                         </table>
                     </div>
+                    <div class="">
+                        <h5>Sales Details : </h5>
+                        <table class="table table-bordered mt-3">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Order#</th>
+                                    <th>Receipt#</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (!empty($sales))
+                                    @foreach ($sales as $sale)
+                                        <tr>
+                                            <td>{{ date('d M y', strtotime($sale->date)) }}</td>
+                                            <td>{{ $sale->receipt_id }}</td>
+                                            <td>{{ $sale->receipt_no }}</td>
+                                            <td>{{ $sale->total_amount }}</td>
+                                            <td>{{ $sale->order_status_name }}</td>
+                                            <td class="text-center"><a href="{{url('order-detail',$sale->receipt_id)}}"><i class="icofont icofont-eye-alt icofont-1x text-info mx-2" ></i></a></td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td class="text-center" colspan="8">No Record Found</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-dismiss="modal"
