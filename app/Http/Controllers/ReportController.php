@@ -5627,7 +5627,7 @@ class ReportController extends Controller
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(70, 7, 'Time', 'B', 0, 'C', 1);
-        $pdf->Cell(60, 7, 'Total Orders', 'B', 0, 'L', 1);
+        $pdf->Cell(60, 7, 'Total Orders', 'B', 0, 'C', 1);
         $pdf->Cell(60, 7, 'Total Amount', 'B', 1, 'C', 1);
 
         $pdf->setFillColor(255, 255, 255);
@@ -5642,7 +5642,7 @@ class ReportController extends Controller
 
             $pdf->SetFont('Arial', '', 10);
 
-            $pdf->Cell(70, 6, $value["hour_range"], 0, 0, 'L', 1);
+            $pdf->Cell(70, 6, $value["hour_range"], 0, 0, 'C', 1);
             $pdf->Cell(60, 6, number_format($value["total_orders"]), 0, 0, 'C', 1);
             $pdf->Cell(60, 6, number_format($value["total_amount"]), 0, 1, 'C', 1);
         }
