@@ -5605,6 +5605,10 @@ class ReportController extends Controller
 
             $hourRanges = [];
 
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(190, 10,  "Branch : " . $branch->branch_name, 0, 1, 'L');
+
 
             // Get the orders grouped by hour
             $orders = DB::table('sales_receipts')
