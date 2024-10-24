@@ -3637,8 +3637,8 @@ class InventoryController extends Controller
                 "company_id"         => session("company_id"),
                 "type"               => $request->addon_type,
                 "is_required"        => isset($request->is_required) ? 1 : 0,
-                "mode"                 => 'addons',
-                "priority"           => $request->priority,
+                "mode"               => 'addons',
+                "priority"           => empty($request->priority) ? 0 : $request->priority,
                 "addon_limit"        => isset($request->selection_limit) ? $request->selection_limit : 0,
             ]);
 
