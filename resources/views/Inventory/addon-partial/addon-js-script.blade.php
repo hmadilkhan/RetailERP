@@ -206,7 +206,11 @@ let table_row_editAddonmdId = [];
     			  method : "POST",
     			  data:$("#createAddonTabForm").serialize(),
     			  dataType:'json',
+                  beforeSend:function(){
+                    $('#btn_save_addon').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+                  },
     			  success: function(resp){
+                    $('#btn_save_addon').prop('disabled', false).html('Create');
     			    if(resp.status == 200){
     			        formClearValue_AddonTab();
     			        swal("Success", "", "success");
