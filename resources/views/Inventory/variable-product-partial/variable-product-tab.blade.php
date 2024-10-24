@@ -152,7 +152,9 @@
                         <tr id="tr-{{ $value->pos_item_id }}">
                             <td class="d-none">{{ $value->priority }}</td>
                             <td class="text-center">
-                                <img width="42" height="42" src="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
+                              <a href="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" data-fancybox data-caption="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                                <img width="64" height="64" src="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
+                              </a>
                             </td>
                             <td>{{$value->item_code}} | {{$value->item_name}} </td>
                             <td >{{ $value->attribute }}</td>
@@ -269,7 +271,7 @@
                             <div class="form-group">
                                 <label class="form-control-label">Attribute<span class="text-danger">*</span></label>
 
-                                <i id="btn_attr_create" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="Add Attribute" ></i>
+                                <i id="btn_attr_create_vpmd" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="Add Attribute" ></i>
                                 <label class="switch f-right m-r-1">
                                     <input type="checkbox" title="" name="attribute_mode" id="attribute_mode_vpmd" data-toggle="tooltip" data-placement="top" data-original-title="You want attribute name show on website">
                                     <span class="slider round"></span>
@@ -317,7 +319,7 @@
                                 <span id="priority_alert_vpmd" class="text-danger"></span>
                             </div>
 
-							<a href="#">
+							<a id="modal_previewImageFancy_vpmd" href="{{ asset('storage/images/placeholder.jpg') }}" data-fancybox data-caption="placeholder.jpg">
 								<img id="modal_previewImage_vpmd" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
 							</a>
 							<div class="form-group{{ $errors->has('updateproduct') ? 'has-danger' : '' }} ">

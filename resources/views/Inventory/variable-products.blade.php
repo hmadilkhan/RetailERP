@@ -44,6 +44,10 @@
 
 @section('scriptcode_one')
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+ <link
+  rel="stylesheet"
+  href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css"
+/>
 @endsection
 
 @section('css_code')
@@ -121,6 +125,7 @@ input+.slider:before {
 @section('scriptcode_three')
 
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js"></script>
 
 <script type="text/javascript">
 
@@ -529,7 +534,9 @@ input+.slider:before {
                         });
         }
 
-        function edit(id,fnhgood,code,name,price,uomId,src,image,priority){
+        function edit(id,fnhgood,code,name,price,uomId,src,image,priority,attribute,attr_mode){
+            $("#attribute_mode_vpmd").prop('checked', false);
+
             $('#update-modal').modal('show');
             $('#finishgood_vpmd').val(fnhgood);
             $('#item_id_vpmd').val(id);
@@ -540,9 +547,13 @@ input+.slider:before {
             $('#uom_vpmd').val(uomId).change();
 			$("#modal_previewImage_vpmd").attr("src",src);
 			$("#prevImageName_vpmd").val(image);
+            $("#modal_previewImageFancy_vpmd").attr('href',src);
+            $("#attribute_vpmd").val(attribute).change();
 
+            if(attr_mode != 0){
+                $("#attribute_mode_vpmd").prop('checked', true);
+            }
 			$("#item_image_vpmd_alert").text('');
-			//console.log(src)
         }
 
 
@@ -1067,6 +1078,11 @@ input+.slider:before {
         $("#create-attribute-modal").modal("show");
     });
 
+    $("#btn_attr_create_vpmd").on('click',function(){
+        $('#attribute_txt').val('');
+        $("#create-attribute-modal").modal("show");
+    });
+
    function add_attribute(){
            if ($('#attribute_txt').val() == "") {
              swal({
@@ -1098,6 +1114,9 @@ input+.slider:before {
 
                               $("#attribute").append(
                                 "<option value='"+resp[count].id+"'>"+resp[count].name+"</option>");
+                                $("#attribute_vpmd").append(
+                                    "<option value='"+resp[count].id+"'>"+resp[count].name+"</option>");
+
                         }else{
                              swal({
                                     title: "Error!",

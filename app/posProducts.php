@@ -100,6 +100,11 @@ class posProducts extends Model
         return $result;
     }
 
+    public function update_pos_gendetails_finishgoodId($productId,$items){
+        $result = DB::table('pos_products_gen_details')->where('status_id',1)->where('product_id', $productId)->update($items);
+        return $result;
+    }
+
     public function getoldprice($itemid)
     {
         $result = DB::select('SELECT MAX(price) AS price FROM pos_products_sub_details WHERE item_id = ? AND status_id = 1',[$itemid]);
