@@ -156,7 +156,14 @@
                             <h4 class="text-sm-center">Website Items Summary</h4>
                         </div>
                     </div>
+                    <div id="dvordertimingsummary" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
+                            title="Website Items Summary">
+                            <h4 class="text-sm-center">Orders Timing Summary</h4>
+                        </div>
+                    </div>
                 </div>
+
 
 
             </div>
@@ -235,6 +242,7 @@
                     <input type="hidden" value="0" id="txtbookingorderreport" />
                     <input type="hidden" value="0" id="txtsalespersonreport" />
                     <input type="hidden" value="0" id="txtwebsiteitemssummary" />
+                    <input type="hidden" value="0" id="txtordertimingsummary" />
 
 
 
@@ -479,7 +487,7 @@
                 '#txttype', '#txtitemsale', '#txtstockadjustment',
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
-                '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport'
+                '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport','#txtordertimingsummary'
             ];
 
             fields.forEach(field => {
@@ -695,10 +703,19 @@
         });
 
         $('#dvwebsiteitemssummary').on('click', function() {
-            handleButtonClick('#dvsalespersonreport', 'Website Items Summary', [{
+            handleButtonClick('#dvwebsiteitemssummary', 'Website Items Summary', [{
                 field: '#txtwebsiteitemssummary',
                 value: 1,
                 showDateFilter: true,
+            }]);
+        });
+
+        $('#dvordertimingsummary').on('click', function() {
+            handleButtonClick('#txtordertimingsummary', 'Order Timing Summary', [{
+                field: '#txtordertimingsummary',
+                value: 1,
+                showDateFilter: true,
+                showBranch: true,
             }]);
         });
 
@@ -792,6 +809,9 @@
             }
             if ($('#txtwebsiteitemssummary').val() == 1) {
                 window.location = "{{ url('website-items-summary') }}?fromdate=" + date + "&todate=" + todate ;
+            }
+            if ($('#txtordertimingsummary').val() == 1) {
+                window.location = "{{ url('order-timings-summary') }}?fromdate=" + date + "&todate=" + todate + "&branch=" + branch ;
             }
         }
 

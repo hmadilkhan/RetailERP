@@ -18,10 +18,16 @@ class CustomerList extends Component
     public $status = 1;
     public $checkboxValue;
     public $checkboxText = "Show In-Active";
+    public $pageNo = 10;
 
     public function applyFilter()
     {
         // Reset the pagination when filters change
+        $this->resetPage();
+    }
+
+    public function updatedPageNo()
+    {
         $this->resetPage();
     }
 
@@ -39,7 +45,7 @@ class CustomerList extends Component
     public function render(Customer $customer)
     {
        
-        $customers = $customer->getCustomersForLivewire($this->id, $this->name, $this->status);
+        $customers = $customer->getCustomersForLivewire($this->id, $this->name, $this->status,$this->pageNo);
         return view('livewire.customers.customer-list', compact('customers'));
     }
 }

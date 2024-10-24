@@ -304,11 +304,18 @@ $closingBalance = round($heads[0]->closingBal);
                             {{ number_format($heads[0]->expenses, 0) }}</td>
                     </tr>
                 @endif
-                @if (isset($result[0]->delivery) && $result[0]->delivery == 1)
+                @if (isset($result[0]->fbr_sync) && $result[0]->fbr_sync == 1)
                     <tr id="expense" style="cursor: pointer;">
-                        <td style="width:500px">COD (DELIVERY)</td>
+                        <td style="width:500px">FBR (TAX)</td>
                         <td id="totalCost" style="width:500px" class="text-end">{{ session('currency') }}
-                            {{ number_format($heads[0]->Delivery, 0) }}</td>
+                            {{ number_format($heads[0]->fbr, 0) }}</td>
+                    </tr>
+                @endif
+                @if (isset($result[0]->srb_sync) && $result[0]->srb_sync == 1)
+                    <tr id="expense" style="cursor: pointer;">
+                        <td style="width:500px">SRB (TAX)</td>
+                        <td id="totalCost" style="width:500px" class="text-end">{{ session('currency') }}
+                            {{ number_format($heads[0]->srb, 0) }} </td>
                     </tr>
                 @endif
                 <tr class="f-24 form-control-label">

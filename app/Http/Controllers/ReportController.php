@@ -557,29 +557,29 @@ class ReportController extends Controller
     public function getSalesDeclarationExport(Request $request, report $report)
     {
         // $branch = "";
-        $companyName = Company::where("company_id",session("company_id"))->first();
+        $companyName = Company::where("company_id", session("company_id"))->first();
         $companyName = $companyName->name;
         $branchName  = "";
         if ($request->branch == "all") {
             $branch = Branch::with("company")->where("company_id", session('company_id'))->get();
             $branchName = "All Branches";
-        }else{
+        } else {
             $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
             $branchName = $branch->branch_name;
         }
 
         if (is_null($request->terminal)) {
             $terminal = 0;
-        }else{
+        } else {
             $terminal = $request->terminal;
         }
         $datearray = [
             "from" => $request->from,
             "to" => $request->to,
         ];
-        $details =  $report->sales_details_excel_query($request->branch,$request->terminal, $request->from, $request->to);
+        $details =  $report->sales_details_excel_query($request->branch, $request->terminal, $request->from, $request->to);
         $details =  collect($details);
-        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal,$companyName,$branchName), "Sales Declaration Report.xlsx");
+        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal, $companyName, $branchName), "Sales Declaration Report.xlsx");
     }
 
     public function getReceiptCount(Request $request)
@@ -5517,5 +5517,164 @@ class ReportController extends Controller
         $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category);
         $permission = $report->terminalPermission($values->terminal_id);
         return $request;
+    }
+
+    public function orderTimingsSummary(Request $request, Vendor $vendor)
+    {
+
+        $branches = Branch::query();
+        if ($request->branch == "all") {
+            $branches->where("company_id", session("company_id"));
+        } else {
+            $branches->where("branch_id", $request->branch);
+        }
+        $branches = $branches->get();
+
+
+
+        $company = $vendor->company(session('company_id'));
+
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
+
+        $pdf = new pdfClass();
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        //first row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        //second row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+
+        //third row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        //forth row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company[0]->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        //fifth row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        //sixth row
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        //filter section
+        $fromdate = date('F-d-Y', strtotime($request->fromdate));
+        $todate = date('F-d-Y', strtotime($request->todate));
+
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromdate . ' through ' . $todate, 0, 1, 'C');
+
+        //report name
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'Order Timing Summary', 'B,T', 1, 'L');
+        $pdf->ln(1);
+
+        foreach ($branches as $key => $branch) {
+
+            $hourRanges = [];
+
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(190, 10,  "Branch : " . $branch->branch_name, 0, 1, 'L');
+
+            $modes = DB::table('sales_order_mode')->whereIn("order_mode_id",DB::table("sales_receipts")->whereBetween("date", [$request->fromdate, $request->todate])->where("branch", [$branch->branch_id])->groupBy("order_mode_id")->pluck("order_mode_id"))->get();
+            foreach ($modes as $key => $mode) {
+
+                $pdf->ln(2);
+                $pdf->SetFont('Arial', 'B', 12);
+                $pdf->setFillColor(128, 128, 128);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(190, 5, $mode->order_mode, 0, 1, 'C', 1);
+
+
+                // Get the orders grouped by hour
+                $orders = DB::table('sales_receipts')
+                    ->select(DB::raw('HOUR(time) as hour, COUNT(*) as total_orders,SUM(total_amount) as total_amount'))
+                    ->groupBy(DB::raw('HOUR(time)'))
+                    ->whereBetween("date", [$request->fromdate, $request->todate])
+                    ->where("branch", [$branch->branch_id])
+                    ->where("order_mode_id", [$mode->order_mode_id])
+                    ->orderBy('hour')
+                    ->get();
+
+                for ($i = 0; $i < 24; $i++) {
+                    $startTime = Carbon::createFromTime($i)->format('g:i A');
+                    $endTime = Carbon::createFromTime($i, 59)->format('g:i A');
+
+                    $hourRanges[] = [
+                        'hour' => $i,
+                        'hour_range' => $startTime . ' - ' . $endTime,
+                        'total_orders' => 0, // Default to 0 orders
+                        'total_amount' => 0, // Default to 0 orders
+                    ];
+                }
+
+                // Merge the query results into the hour range array
+                $peakOrders = collect($hourRanges)->map(function ($range) use ($orders) {
+                    $matchingOrder = $orders->firstWhere('hour', $range['hour']);
+                    if ($matchingOrder) {
+                        $range['total_orders'] = $matchingOrder->total_orders;
+                        $range['total_amount'] = $matchingOrder->total_amount;
+                    }
+                    return $range;
+                });
+
+                // TABLE HEADERS
+                $pdf->SetFont('Arial', 'B', 10);
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(70, 7, 'Time', 'B', 0, 'L', 1);
+                $pdf->Cell(60, 7, 'Total Orders', 'B', 0, 'C', 1);
+                $pdf->Cell(60, 7, 'Total Amount', 'B', 1, 'C', 1);
+
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
+                foreach ($peakOrders as $value) {
+
+                    $pdf->SetFont('Arial', '', 11);
+
+                    $pdf->Cell(70, 6, $value["hour_range"], 0, 0, 'L', 1);
+                    $pdf->Cell(60, 6, number_format($value["total_orders"]), 0, 0, 'C', 1);
+                    $pdf->Cell(60, 6, number_format($value["total_amount"]), 0, 1, 'C', 1);
+                }
+
+                $pdf->ln(10);
+            } // Order Mode Loop end
+        } // Branch loop end
+
+        //save file
+        $pdf->Output('order_timing_summart.pdf', 'I');
     }
 }

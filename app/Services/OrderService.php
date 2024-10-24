@@ -3,9 +3,9 @@
 namespace App\Services;
 
 use App\Models\Branch;
-use App\Models\Order;
 use App\Models\OrderStatus;
 use App\Models\ServiceProvider;
+use Illuminate\Support\Facades\DB;
 
 class OrderService
 {
@@ -38,5 +38,10 @@ class OrderService
     public function getOrderStatus()
     {
         return OrderStatus::all();
+    }
+
+    public function getOrderDetailsFromItems($from,$to,$branch,$productId)
+    {
+        return DB::select("SELECT * FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id and b.date between ? and ? and b.branch = ? INNER JOIN sales_order_status c on c.order_status_id = b.status where a.item_code = ? group by receipt_id",[$from,$to,$branch,$productId]);
     }
 }
