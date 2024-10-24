@@ -5519,7 +5519,7 @@ class ReportController extends Controller
         return $request;
     }
 
-    public function orderTimingsSummary(Request $request)
+    public function orderTimingsSummary(Request $request, Vendor $vendor)
     {
         $hourRanges = [];
         // Get the orders grouped by hour
