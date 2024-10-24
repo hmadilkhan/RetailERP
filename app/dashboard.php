@@ -214,7 +214,7 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 1 and total_amount = 0) AS order_delivered_cash,
         (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 2) AS order_delivered_card,
         (SELECT SUM(sales_tax_amount) FROM `sales_account_subdetails` where receipt_id IN (Select id from sales_receipts where terminal_id = a.terminal_id and opening_id = a.opening_id)) as fbr,
-        (SELECT SUM(srb) FROM `sales_account_subdetails` where receipt_id IN (Select id from sales_receipts where terminal_id = a.terminal_id and opening_id = a.opening_id)) as srb 
+        (SELECT SUM(srb) FROM `sales_account_subdetails` where receipt_id IN (Select id from sales_receipts where terminal_id = a.terminal_id and opening_id = a.opening_id)) as srb, 
         (SELECT IFNULL(SUM(net_amount),0) FROM `expenses` where terminal_id = a.terminal_id and opening_id = a.opening_id) as expenses  FROM sales_opening a where a.status = 2 and a.opening_id = ?", [$openingId]);
 
 
