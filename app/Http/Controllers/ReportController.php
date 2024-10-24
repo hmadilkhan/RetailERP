@@ -5609,7 +5609,7 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10,  "Branch : " . $branch->branch_name, 0, 1, 'L');
 
-            $modes = DB::table('sales_receipts')->whereBetween("date", [$request->fromdate, $request->todate])->where("branch", [$branch->branch_id])->get();
+            $modes = DB::table('sales_order_mode')->whereIn("order_mode_id",DB::table("sales_receipts")->whereBetween("date", [$request->fromdate, $request->todate])->where("branch", [$branch->branch_id])->groupBy("order_mode_id")->pluck("order_mode_id"))->get();
             foreach ($modes as $key => $mode) {
 
                 $pdf->ln(2);
