@@ -557,29 +557,29 @@ class ReportController extends Controller
     public function getSalesDeclarationExport(Request $request, report $report)
     {
         // $branch = "";
-        $companyName = Company::where("company_id",session("company_id"))->first();
+        $companyName = Company::where("company_id", session("company_id"))->first();
         $companyName = $companyName->name;
         $branchName  = "";
         if ($request->branch == "all") {
             $branch = Branch::with("company")->where("company_id", session('company_id'))->get();
             $branchName = "All Branches";
-        }else{
+        } else {
             $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
             $branchName = $branch->branch_name;
         }
 
         if (is_null($request->terminal)) {
             $terminal = 0;
-        }else{
+        } else {
             $terminal = $request->terminal;
         }
         $datearray = [
             "from" => $request->from,
             "to" => $request->to,
         ];
-        $details =  $report->sales_details_excel_query($request->branch,$request->terminal, $request->from, $request->to);
+        $details =  $report->sales_details_excel_query($request->branch, $request->terminal, $request->from, $request->to);
         $details =  collect($details);
-        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal,$companyName,$branchName), "Sales Declaration Report.xlsx");
+        return Excel::download(new SalesDeclarationExport($details, $branch, $datearray, $terminal, $companyName, $branchName), "Sales Declaration Report.xlsx");
     }
 
     public function getReceiptCount(Request $request)
@@ -5521,6 +5521,37 @@ class ReportController extends Controller
 
     public function orderTimingsSummary(Request $request)
     {
-        return $request;
+        // return $request;
+        $hourRanges = [];
+        // Get the orders grouped by hour
+        $orders = DB::table('sales')
+            ->select(DB::raw('HOUR(time) as hour, COUNT(*) as total_orders'))
+            ->groupBy(DB::raw('HOUR(time)'))
+            ->whereBetween("date", [$request->from, $request->to])
+            ->where("branch", [$request->branch])
+            ->orderBy('hour')
+            ->get();
+
+        for ($i = 0; $i < 24; $i++) {
+            $startTime = Carbon::createFromTime($i)->format('g:i A');
+            $endTime = Carbon::createFromTime($i, 59)->format('g:i A');
+
+            $hourRanges[] = [
+                'hour' => $i,
+                'hour_range' => $startTime . ' - ' . $endTime,
+                'total_orders' => 0, // Default to 0 orders
+            ];
+        }
+
+        // Merge the query results into the hour range array
+        $peakOrders = collect($hourRanges)->map(function ($range) use ($orders) {
+            $matchingOrder = $orders->firstWhere('hour', $range['hour']);
+            if ($matchingOrder) {
+                $range['total_orders'] = $matchingOrder->total_orders;
+            }
+            return $range;
+        });
+
+        return $peakOrders;
     }
 }
