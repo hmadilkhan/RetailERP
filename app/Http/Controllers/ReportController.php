@@ -5521,46 +5521,25 @@ class ReportController extends Controller
 
     public function orderTimingsSummary(Request $request, Vendor $vendor)
     {
-        $hourRanges = [];
-        // Get the orders grouped by hour
-        $orders = DB::table('sales_receipts')
-            ->select(DB::raw('HOUR(time) as hour, COUNT(*) as total_orders,SUM(total_amount) as total_amount'))
-            ->groupBy(DB::raw('HOUR(time)'))
-            ->whereBetween("date", [$request->fromdate, $request->todate])
-            ->where("branch", [$request->branch])
-            ->orderBy('hour')
-            ->get();
 
-        for ($i = 0; $i < 24; $i++) {
-            $startTime = Carbon::createFromTime($i)->format('g:i A');
-            $endTime = Carbon::createFromTime($i, 59)->format('g:i A');
-
-            $hourRanges[] = [
-                'hour' => $i,
-                'hour_range' => $startTime . ' - ' . $endTime,
-                'total_orders' => 0, // Default to 0 orders
-                'total_amount' => 0, // Default to 0 orders
-            ];
+        $branches = Branch::query();
+        if ($request->branch == "all") {
+            $branches->where("company_id", session("company_id"));
+        } else {
+            $branches->where("branch_id", $request->branch);
         }
+        $branches = $branches->get();
 
-        // Merge the query results into the hour range array
-        $peakOrders = collect($hourRanges)->map(function ($range) use ($orders) {
-            $matchingOrder = $orders->firstWhere('hour', $range['hour']);
-            if ($matchingOrder) {
-                $range['total_orders'] = $matchingOrder->total_orders;
-                $range['total_amount'] = $matchingOrder->total_amount;
-            }
-            return $range;
-        });
+
 
         $company = $vendor->company(session('company_id'));
 
-        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
-            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
-            \QrCode::size(200)
-                ->format('png')
-                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
-        }
+        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+        //     \QrCode::size(200)
+        //         ->format('png')
+        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        // }
 
         $pdf = new pdfClass();
 
@@ -5574,12 +5553,12 @@ class ReportController extends Controller
         $pdf->Cell(50, 0, "", 0, 1, 'L');
 
         //second row
-        $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
-        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
-        $pdf->Cell(50, 0, "", 0, 1, 'R');
-        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+        // $pdf->SetFont('Arial', 'B', 14);
+        // $pdf->Cell(35, 0, '', 0, 0);
+        // $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        // $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        // $pdf->Cell(50, 0, "", 0, 1, 'R');
+        // $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
 
         //third row
         $pdf->SetFont('Arial', '', 10);
@@ -5622,36 +5601,65 @@ class ReportController extends Controller
         $pdf->Cell(190, 10, 'Order Timing Summary', 'B,T', 1, 'L');
         $pdf->ln(1);
 
-        // TABLE HEADERS
-        $pdf->SetFont('Arial', 'B', 10);
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(70, 7, 'Time', 'B', 0, 'L', 1);
-        $pdf->Cell(60, 7, 'Total Orders', 'B', 0, 'C', 1);
-        $pdf->Cell(60, 7, 'Total Amount', 'B', 1, 'C', 1);
+        foreach ($branches as $key => $branch) {
 
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
-        foreach ($peakOrders as $value) {
-            // $totalCount++;
+            $hourRanges = [];
 
-            // $totalqty += $value->qty;
-            // $totalamount = $totalamount + $value->amount;
-            // $totalcost = $totalcost + $value->cost;
-            // $totalmargin = $totalmargin + ($value->amount - $value->cost);
 
-            $pdf->SetFont('Arial', '', 11);
+            // Get the orders grouped by hour
+            $orders = DB::table('sales_receipts')
+                ->select(DB::raw('HOUR(time) as hour, COUNT(*) as total_orders,SUM(total_amount) as total_amount'))
+                ->groupBy(DB::raw('HOUR(time)'))
+                ->whereBetween("date", [$request->fromdate, $request->todate])
+                ->where("branch", [$branch->branch_id])
+                ->orderBy('hour')
+                ->get();
 
-            $pdf->Cell(70, 6, $value["hour_range"], 0, 0, 'L', 1);
-            $pdf->Cell(60, 6, number_format($value["total_orders"]), 0, 0, 'C', 1);
-            $pdf->Cell(60, 6, number_format($value["total_amount"]), 0, 1, 'C', 1);
+            for ($i = 0; $i < 24; $i++) {
+                $startTime = Carbon::createFromTime($i)->format('g:i A');
+                $endTime = Carbon::createFromTime($i, 59)->format('g:i A');
+
+                $hourRanges[] = [
+                    'hour' => $i,
+                    'hour_range' => $startTime . ' - ' . $endTime,
+                    'total_orders' => 0, // Default to 0 orders
+                    'total_amount' => 0, // Default to 0 orders
+                ];
+            }
+
+            // Merge the query results into the hour range array
+            $peakOrders = collect($hourRanges)->map(function ($range) use ($orders) {
+                $matchingOrder = $orders->firstWhere('hour', $range['hour']);
+                if ($matchingOrder) {
+                    $range['total_orders'] = $matchingOrder->total_orders;
+                    $range['total_amount'] = $matchingOrder->total_amount;
+                }
+                return $range;
+            });
+
+            // TABLE HEADERS
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(70, 7, 'Time', 'B', 0, 'L', 1);
+            $pdf->Cell(60, 7, 'Total Orders', 'B', 0, 'C', 1);
+            $pdf->Cell(60, 7, 'Total Amount', 'B', 1, 'C', 1);
+
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+            foreach ($peakOrders as $value) {
+
+                $pdf->SetFont('Arial', '', 11);
+
+                $pdf->Cell(70, 6, $value["hour_range"], 0, 0, 'L', 1);
+                $pdf->Cell(60, 6, number_format($value["total_orders"]), 0, 0, 'C', 1);
+                $pdf->Cell(60, 6, number_format($value["total_amount"]), 0, 1, 'C', 1);
+            }
+
+            $pdf->ln(10);
         }
-
-        $pdf->ln(10);
 
         //save file
         $pdf->Output('order_timing_summart.pdf', 'I');
-
-
     }
 }
