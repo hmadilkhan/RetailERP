@@ -5640,7 +5640,7 @@ class ReportController extends Controller
             // $totalcost = $totalcost + $value->cost;
             // $totalmargin = $totalmargin + ($value->amount - $value->cost);
 
-            $pdf->SetFont('Arial', '', 10);
+            $pdf->SetFont('Arial', '', 12);
 
             $pdf->Cell(70, 6, $value["hour_range"], 0, 0, 'C', 1);
             $pdf->Cell(60, 6, number_format($value["total_orders"]), 0, 0, 'C', 1);
