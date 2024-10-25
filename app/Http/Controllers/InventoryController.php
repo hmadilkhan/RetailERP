@@ -3832,6 +3832,21 @@ class InventoryController extends Controller
             // Define the path to the image
             $pathToImage = Storage::disk('public')->path('/images/products/' . $request->image);
 
+            if(!in_array(strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),['jpg','jpeg'])){
+                if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
+                    // Set headers for the image response
+                        $headers = array(
+                            'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
+                            'Content-Description' => $request->image,
+                            'Cache-Control'      => 'public, max-age=604800',
+                        );
+
+                        return response()->file($pathToImage,$headers);
+                }else{
+                    return  $this->notFoundImage();
+                }
+            }
+
             // Ensure the image exists before proceeding
             if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
                 $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$request->image);
