@@ -2630,7 +2630,6 @@ class InventoryController extends Controller
     public function get_variableProduct(Request $request)
     {
 
-
     //    $get = DB::table('inventory_variations')
     //                 ->whereIn('product_id',DB::table('pos_products_gen_details')
     //                                             ->where('product_id',$request->id)
@@ -2641,19 +2640,48 @@ class InventoryController extends Controller
     //                 ->where('variation_id',$request->variationId)
     //                 ->pluck('product_id');  // get pos product id already exists this variation ($request->variationId)
 
-       $posProductsQuery = DB::table('pos_products_gen_details')
-                            ->where('branch_id', session('branch'))
-                            ->where('product_id', $request->id)
-                            ->where('status_id', 1)
-                            ->get();
+    //    $posProductsQuery = DB::table('pos_products_gen_details')
+    //                         ->where('branch_id', session('branch'))
+    //                         ->where('product_id', $request->id)
+    //                         ->where('status_id', 1)
+    //                         ->get();
 
-        // // If $get is not empty, apply the not-in condition
-        // if ($get->isNotEmpty()) {
-        //    return $posProductsQuery->whereNotIn('product_id', $get);
-        // }
+        $getVariation = DB::table('inventory_variations')
+                            ->where('id', $request->variationId)
+                            ->where('company_id', session('company_id'))
+                            ->first();
 
-        // Execute the query and get the results
-        return $posProductsQuery;
+            if ($getVariation) {
+            $getSameNameVariationId = DB::table('inventory_variations')
+                            ->where('name', $getVariation->name)
+                            ->where('company_id', session('company_id'))
+                            ->pluck('id');
+
+            if ($getSameNameVariationId->isNotEmpty()) {
+            $get = DB::table('inventory_variations')
+                ->whereIn('product_id', DB::table('pos_products_gen_details')
+                                            ->where('product_id', $request->id)
+                                            ->where('branch_id', session('branch'))
+                                            ->where('status_id', 1)
+                                            ->pluck('pos_item_id'))
+                ->whereIn('variation_id', $getSameNameVariationId)
+                ->pluck('product_id');
+            }
+            }
+
+            $posProductsQuery = DB::table('pos_products_gen_details')
+                    ->where('branch_id', session('branch'))
+                    ->where('product_id', $request->id)
+                    ->where('status_id', 1)
+                    ->get();
+
+            // Apply the not-in condition if $get has results
+            if (isset($get) && $get->isNotEmpty()) {
+            $posProductsQuery = $posProductsQuery->whereNotIn('product_id', $get);
+            }
+
+            // Return the filtered query
+            return $posProductsQuery;
 
     }
 
