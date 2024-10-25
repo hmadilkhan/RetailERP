@@ -56,8 +56,7 @@
                         <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                             <label class="form-control-label"></label>
                             <button id="submit-button" type="button" data-placement="bottom"
-                                class="btn btn-success  waves-effect waves-light mt-4"
-                                >Search</button>
+                                class="btn btn-success  waves-effect waves-light mt-4">Search</button>
                             <button type="button" data-placement="bottom"
                                 class="btn btn-warning  waves-effect waves-light mt-4 text-white"
                                 wire:click="clear()">Clear</button>
@@ -70,8 +69,8 @@
     </div>
 
     <div class="card">
-        <div class="card-block">
-            <div wire:loading.class="d-flex flex-column" wire:loading>
+        <div class="card-block" wire:loading>
+            <div wire:loading.class="d-flex flex-column" >
                 <div
                     class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
                     <div class='spinner-border text-dark' role='status'>
@@ -79,9 +78,10 @@
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="card-block" wire:loading.remove>
             <div class="project-table">
-                <table wire:loading.remove
-                    class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
+                <table class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
                     <thead>
                         <tr>
                             <th>Ref#</th>
@@ -99,17 +99,18 @@
                         @if (!empty($stocks))
                             @foreach ($stocks as $stock)
                                 <tr>
-                                    <td>{{ $stock->productstock->grn_id }}</td>
+                                    <td>{{ !empty($stock->productstock) ? $stock->productstock->grn_id : 0 }}</td>
                                     <td>{{ date('d-m-Y', strtotime($stock->date)) }}</td>
                                     <td>{{ $stock->products->item_code }}</td>
                                     <td>{{ $stock->products->product_name }}</td>
                                     <td>{{ $stock->qty }}</td>
                                     {{-- <td>{{ $stock->stock }}</td> --}}
-                                    <td>{{ $stock->productstock->grn->user->fullname }}</td>
+                                    <td>{{ !empty($stock->productstock) ? $stock->productstock->grn->user->fullname : '-' }}
+                                    </td>
                                     <td>{{ $stock->narration }}</td>
                                     <td>
                                         <a target="_blank"
-                                            href="{{ route('stock.adjustment.voucher', $stock->productstock->grn_id) }}"
+                                            href="{{ route('stock.adjustment.voucher', !empty($stock->productstock) ? $stock->productstock->grn_id : '') }}"
                                             class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top"
                                             title="" data-original-title="View"><i
                                                 class="icofont icofont-printer"></i></a>
@@ -153,13 +154,13 @@
                 e.preventDefault();
 
                 let from = $('#from').val();
-                let to = $('#to').val(); 
-                let code = $('#code').val(); 
-                let name = $('#name').val(); 
-                let branch = $('#branch').val(); 
+                let to = $('#to').val();
+                let code = $('#code').val();
+                let name = $('#name').val();
+                let branch = $('#branch').val();
 
                 // Call Livewire component method on form submission
-                @this.call('submitForm', from, to,code,name,branch);
+                @this.call('submitForm', from, to, code, name, branch);
             });
 
             // $('#from').on('change', function(e) {

@@ -307,6 +307,17 @@
                     </div>
                 </div>
 
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                    <div class="card dashboard-product">
+                        <span id="labeltaxname">FBR/SRB Orders</span>
+                        <h2 class="dashboard-total-products" id="totaltaxorders">0</h2>
+                        <span class="label label-lg label-primary fs-5" id="totaltaxamount">FBR/SRB Amount</span>
+                        <div class="side-box">
+                            <i class="ti-package text-primary-color"></i>
+                        </div>
+                    </div>
+                </div>
+
                 {{-- <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
                     <div class="card dashboard-product">
                         <span>Cancel Orders</span>
