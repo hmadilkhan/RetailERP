@@ -2629,7 +2629,30 @@ class InventoryController extends Controller
 
     public function get_variableProduct(Request $request)
     {
-        return DB::table('pos_products_gen_details')->where('branch_id', session('branch'))->where('product_id', $request->id)->where('status_id', 1)->get();
+       $get = DB::table('inventory_variations')
+                    ->whereIn('product_id',DB::table('pos_products_gen_details')
+                                                ->where('product_id',$request->id)
+                                                ->where('branch_id', session('branch'))
+                                                ->where('status_id',1)
+                                                ->pluck('post_item_id')
+                                )
+                    ->where('variation_id',$request->variationId)
+                    ->pluck('product_id');  // get pos product id already exists this variation ($request->variationId)
+
+       $posProductsQuery = DB::table('pos_products_gen_details')
+                            ->where('branch_id', session('branch'))
+                            ->where('product_id', $request->id)
+                            ->where('status_id', 1)
+                            ->get();
+
+        // If $get is not empty, apply the not-in condition
+        if ($get->isNotEmpty()) {
+            $posProductsQuery->whereNotIn('product_id', $get);
+        }
+
+        // Execute the query and get the results
+        return $posProductsQuery->get();
+
     }
 
     public function get_generalItem(Request $request)

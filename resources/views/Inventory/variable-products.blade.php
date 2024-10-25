@@ -172,7 +172,7 @@ input+.slider:before {
             $.ajax({
                 url: "{{ route('getVariableProduct') }}",
                 type: 'POST',
-                data:{_token:"{{ csrf_token() }}",id:$("input[name='finishgood']").val()},
+                data:{_token:"{{ csrf_token() }}",id:$("input[name='finishgood']").val(),variationId:$("#variationId_md").val()},
                 success:function(resp){
                    if(resp == null){
                        close_copyModal();
