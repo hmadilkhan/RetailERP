@@ -2636,12 +2636,12 @@ class InventoryController extends Controller
 
         if($getVariation) {
             // Get variations with the same name
-            $getSameNameVariationIds = DB::table('addon_categories')
-                                    ->where('name', $getVariation->name)
-                                    ->where('company_id', session('company_id'))
-                                    ->pluck('id');
+            $getSameNameVariationId = DB::table('addon_categories')
+                                        ->where('name', $getVariation->name)
+                                        ->where('company_id', session('company_id'))
+                                        ->pluck('id');
 
-            if ($getSameNameVariationIds->isNotEmpty()) {
+            if ($getSameNameVariationId->isNotEmpty()) {
             // Get product IDs for variations with the same name
             $existingProductIds = DB::table('inventory_variations')
                                     ->whereIn('product_id', DB::table('pos_products_gen_details')
@@ -2649,7 +2649,7 @@ class InventoryController extends Controller
                                                         ->where('branch_id', session('branch'))
                                                         ->where('status_id', 1)
                                                         ->pluck('pos_item_id'))
-                                    ->whereIn('variation_id', $getSameNameVariationIds)
+                                    ->whereIn('variation_id', $getSameNameVariationId)
                                     ->pluck('product_id');
             }
             }
