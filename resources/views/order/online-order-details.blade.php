@@ -73,7 +73,7 @@
              @endif
            <?php //print_r($orders->products) ?>
 
-         @if($orders->website_type != 'restaurant')
+
             @foreach($orders->products as $key => $item)
 
             <div class="card border shadow-none">
@@ -153,123 +153,7 @@
                                           <hr/>
                                         @endif
 
-                                <div>
-                                    <div class="row">
-
-                                        <div class="col-md-4">
-                                            <div class="mt-3">
-                                                <p class="text-muted mb-2">Price</p>
-                                                @if($item->discount_value != 0)
-                                                <h5 class="mb-0 mt-2"><del>{{session("currency")." ".number_format($item->actual_price,0) }}</del></h5>
-                                                @endif
-                                                <h5 class="mb-0 mt-2">{{session("currency")." ".number_format($item->item_price,0) }}</h5>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-5">
-                                            <div class="mt-3">
-                                                <p class="text-muted mb-2">Quantity</p>
-                                                <div class="d-inline-flex">
-                                                        <h5>{{ number_format($item->total_qty,0) }}</h5>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mt-3">
-                                                <p class="text-muted mb-2">Total</p>
-                                                <h5>{{ session("currency")." ".(number_format($item->webcart_amount,0)) }}</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                        <!-- end card -->
-
-                      @endforeach
-
-            @else
-            @foreach($orders->products as $key => $item)
-
-            <div class="card border shadow-none">
-                            <div class="card-body">
-                                <div class="d-flex align-items-start border-bottom pb-3">
-                                    <div class="me-4">
-                                        {{-- @if(session('company_id') == 102)
-                                          @php  $imageShow = asset('storage/images/placeholder.jpg') @endphp
-                                         @if($item->image != '')
-                                          @php
-                                              $getImage_id = $item->image;
-                                              $getExtension = pathinfo($getImage_id,PATHINFO_EXTENSION);
-
-                                                $extensionCount =  0;
-                                                if(!empty($getExtension)){
-                                                    if(substr_count($item->url, $getExtension) != substr_count($getImage_id, $getExtension) ){
-                                                     $extensionCount = $item->url != '' ? substr_count($item->url, $getExtension) : 0;
-                                                    }
-                                                }
-
-                                                if(!Str::contains($item->image,$orders->company_name)){
-                                                    $getImage_id = $orders->company_name.'/'.$item->image;
-                                                    // if($extensionCount > 1){
-                                                    //     $getImage_id .= '.'.$getExtension;
-                                                    // }
-                                                }
-                                             $imageShow = !empty(Cloudinary::getUrl($getImage_id)) ? 'https://res.cloudinary.com/dl2e24m08/image/upload/f_webp,q_auto/'.$getImage_id.($extensionCount > 1 ? '.'.$getExtension : '') : asset('storage/images/placeholder.jpg')
-                                            @endphp
-                                         @endif
-                                        <a href="{{ $imageShow }}" data-fancybox data-caption="Single Image">
-                                         <img src="{{ $imageShow }}" alt="" class="avatar-lg rounded">
-                                        </a>
-                                         @else --}}
-                                         @php $image = asset('storage/images/no-image.png') @endphp
-                                        @if(File::exists('storage/images/products/'.$item->image))
-                                        @php $image = route('imageOptimize',$item->image) @endphp
-                                        @endif
-                                        <a href="{{ $image }}" data-fancybox data-caption="Single Image">
-                                         <img src="{{ $image }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
-                                        </a>
-                                         {{-- @endif --}}
-                                        </div>
-                                    <div class="flex-grow-1 align-self-center overflow-hidden">
-                                        <div>
-                                            <!-- text-truncate  -->
-                                            <h3><a href="#" class="code{{ $key }} text-dark fw-bold">({{ $item->item_code }}) </a> <a href="#" class="name{{ $key }} text-dark font-size-24">
-                                                {{ $item->product_name }}
-                                            {{-- @if($item->prod_variation != null)
-                                                 ({{ $item->prod_variation->variable_name }})
-                                            @endif --}}
-                                            </a></h3>
-                                        </div>
-                                    </div>
-                                </div>
-
-
-
-                                        {{-- @if($item->prod_variation != null)
-                                        <br>
-                                       <div class="">
-                                           <h5 class="font-size-18">Variation</h5>
-                                          @foreach($item->prod_variation->variation as $variation)
-                                            <div>
-                                                <h5 class="text-muted font-size-18">{{ $variation->name }}</h5>
-                                               @if(count($variation->values) > 0)
-                                                 <table class="table">
-                                                @foreach($variation->values as $variation_val)
-                                                  <tr>
-                                                    <th>{{ $variation_val->name }}</th>
-                                                    <td>{{ $variation_val->price }}</td>
-                                                  </tr>
-                                                @endforeach
-                                                </table>
-                                               @endif
-                                            </div>
-                                          @endforeach
-                                          </div>
-                                        @endif --}}
-
-
-                                        @if(count($item->prod_addons) > 0)
+                                     @if(count($item->prod_addons) > 0)
                                         <br>
                                        <div class="">
                                            <h5 class="font-size-18">Addon</h5>
@@ -290,8 +174,10 @@
                                           @endforeach
                                           </div>
                                         @endif
+
                                 <div>
                                     <div class="row">
+
                                         <div class="col-md-4">
                                             <div class="mt-3">
                                                 <p class="text-muted mb-2">Price</p>
@@ -323,8 +209,6 @@
                         <!-- end card -->
 
                       @endforeach
-
-            @endif
 
 
         </div>
