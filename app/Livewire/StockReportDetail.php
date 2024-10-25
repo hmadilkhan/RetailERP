@@ -21,7 +21,7 @@ class StockReportDetail extends Component
 
         $this->dispatch('show-delete-modal');
         $this->name = $name;
-        $this->details = InventoryStock::where("product_id", 833630)->where("branch_id", $branch)->whereBetween("date", [$from, $to])->get();
+        $this->details = InventoryStock::where("product_id", $productId)->where("branch_id", $branch)->whereBetween("date", [$from, $to])->get();
         $this->sales = $orderService->getOrderDetailsFromItems($from,$to,$branch,$productId);
     }
 
