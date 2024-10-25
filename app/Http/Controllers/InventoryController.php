@@ -2663,7 +2663,7 @@ class InventoryController extends Controller
 
             // Filter out existing product IDs if any
             if (isset($existingProductIds) && $existingProductIds->isNotEmpty()) {
-            $posProductsQuery = $posProductsQuery->whereNotIn('product_id', $existingProductIds);
+                 $posProductsQuery = $posProductsQuery->whereNotIn('product_id', $existingProductIds);
             }
 
             // Return the final query result
