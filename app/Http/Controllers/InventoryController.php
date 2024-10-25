@@ -2631,15 +2631,15 @@ class InventoryController extends Controller
     {
 
 
-       $get = DB::table('inventory_variations')
-                    ->whereIn('product_id',DB::table('pos_products_gen_details')
-                                                ->where('product_id',$request->id)
-                                                ->where('branch_id', session('branch'))
-                                                ->where('status_id',1)
-                                                ->pluck('pos_item_id')
-                                )
-                    ->where('variation_id',$request->variationId)
-                    ->pluck('product_id');  // get pos product id already exists this variation ($request->variationId)
+    //    $get = DB::table('inventory_variations')
+    //                 ->whereIn('product_id',DB::table('pos_products_gen_details')
+    //                                             ->where('product_id',$request->id)
+    //                                             ->where('branch_id', session('branch'))
+    //                                             ->where('status_id',1)
+    //                                             ->pluck('pos_item_id')
+    //                             )
+    //                 ->where('variation_id',$request->variationId)
+    //                 ->pluck('product_id');  // get pos product id already exists this variation ($request->variationId)
 
        $posProductsQuery = DB::table('pos_products_gen_details')
                             ->where('branch_id', session('branch'))
