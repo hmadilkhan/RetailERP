@@ -2647,11 +2647,11 @@ class InventoryController extends Controller
 
         // If $get is not empty, apply the not-in condition
         if ($get->isNotEmpty()) {
-            $posProductsQuery->whereNotIn('product_id', $get);
+           return $posProductsQuery->whereNotIn('product_id', $get);
         }
 
         // Execute the query and get the results
-        return $posProductsQuery->get();
+        return $posProductsQuery;
 
     }
 
