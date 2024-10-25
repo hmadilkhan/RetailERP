@@ -433,7 +433,7 @@ class order extends Model
 			})
 			->pluck("id");
 
-		return DB::table("sales_account_subdetails")->whereIn("receipt_id", $ids)->whereNotNull("srb")->orWhere("sales_tax_amount","!=",0)->selectRaw("COUNT(receipt_id) as totalorders,SUM(srb) as srbtaxamount,SUM(sales_tax_amount) as fbrtaxamount")->get();
+		return DB::table("sales_account_subdetails")->whereIn("receipt_id", $ids)->selectRaw("COUNT(receipt_id) as totalorders,SUM(srb) as srbtaxamount,SUM(sales_tax_amount) as fbrtaxamount")->get();
 	}
 
 	public function getPOSOrders($first, $second, $status, $customer, $receipt, $mode, $branch, $terminal, $payMode)

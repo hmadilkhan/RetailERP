@@ -184,6 +184,6 @@
     $("#totalamount").html(
         "Rs. {{ number_format((count($processing) > 0 ? $processing[0]->sales : 0) + (count($voidOrders) > 0 ? $voidOrders[0]->sales : 0) + (count($deliveredOrders) > 0 ? $deliveredOrders[0]->sales : 0) + (count($pending) > 0 ? $pending[0]->sales : 0) + (count($dispatchOrders) > 0 ? $dispatchOrders[0]->sales : 0) + (count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->sales : 0),0)  }}" 
     );
-    $("#totaltaxorders").html("{{count($totaltax) > 0 ? $totaltax[0]->totalorders : 0}}");
+    $("#totaltaxorders").html("{{count($totaltax) > 0 && $totaltax[0]->srbtaxamount > 0 ? $totaltax[0]->totalorders : 0}}");
     $("#totaltaxamount").html("Rs. {{count($totaltax) > 0 ? $totaltax[0]->srbtaxamount : 0}}");
 </script>
