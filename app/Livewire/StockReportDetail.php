@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\InventoryStock;
 use App\Services\OrderService;
+use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\On;
 use Livewire\Component;
 
@@ -21,7 +22,7 @@ class StockReportDetail extends Component
 
         $this->dispatch('show-delete-modal');
         $this->name = $name;
-        $this->details = InventoryStock::where("product_id", $productId)->where("branch_id", $branch)->whereBetween("date", [$from, $to])->get();
+        $this->details = InventoryStock::where("product_id", $productId)->where("branch_id", $branch)->whereBetween(DB::raw('DATE(date)'), [$from, $to])->get();
         $this->sales = $orderService->getOrderDetailsFromItems($from,$to,$branch,$productId);
     }
 

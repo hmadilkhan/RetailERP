@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\department;
 use App\Models\Branch;
 use App\Models\StockReport;
 use Illuminate\Support\Facades\DB;
@@ -196,7 +197,7 @@ class StockAdjustmentService
         // ");
     }
 
-    public function getStockReport($from, $to, $branch)
+    public function getStockReport($from, $to, $branch, $department,$subdepartment)
     {
         if ($branch == "") {
             $branch = 283;
@@ -204,13 +205,13 @@ class StockAdjustmentService
         $closingDate = date("Y-m-d", strtotime("+1 day", strtotime($to)));
         // Define the CTEs using withExpression()
         $openingStockCte = DB::table('daily_stock')
-            ->select('product_id', DB::raw('MIN(Date(created_at)) as opening_date'), 'opening_stock','branch_id')
+            ->select('product_id', DB::raw('MIN(Date(created_at)) as opening_date'), 'opening_stock', 'branch_id')
             ->whereDate('created_at', '=', $from)
             ->where('branch_id', '=', $branch)
             ->groupBy('product_id', DB::raw('Date(created_at)'));
 
         $closingStockCte = DB::table('daily_stock')
-            ->select('product_id', DB::raw('MAX(Date(created_at)) as closing_date'), 'opening_stock as closing_stock','branch_id')
+            ->select('product_id', DB::raw('MAX(Date(created_at)) as closing_date'), 'opening_stock as closing_stock', 'branch_id')
             ->whereDate('created_at', '=', $closingDate)
             ->where('branch_id', '=', $branch)
             ->groupBy('product_id', DB::raw('Date(created_at)'));
@@ -231,6 +232,8 @@ class StockAdjustmentService
         // Main query
         return DB::table('daily_stock as ds1')
             ->join('inventory_general as inv', 'inv.id', '=', 'ds1.product_id')
+            ->join('inventory_department as dept', 'dept.department_id', '=', 'inv.department_id')
+            ->join('inventory_sub_department as sdept', 'sdept.sub_department_id', '=', 'inv.sub_department_id')
             ->leftJoinSub($openingStockCte, 'opening_stock_cte', 'ds1.product_id', '=', 'opening_stock_cte.product_id')
             ->leftJoinSub($closingStockCte, 'closing_stock_cte', 'ds1.product_id', '=', 'closing_stock_cte.product_id')
             ->leftJoinSub($salesCte, 'sales_cte', 'ds1.product_id', '=', 'sales_cte.product_id')
@@ -240,6 +243,8 @@ class StockAdjustmentService
                 'ds1.product_id',
                 'inv.item_code',
                 'inv.product_name',
+                'dept.department_name',
+                'sdept.sub_depart_name',
                 'opening_stock_cte.opening_date',
                 'opening_stock_cte.opening_stock',
                 'closing_stock_cte.closing_date',
@@ -250,7 +255,13 @@ class StockAdjustmentService
             // Conditions and Grouping
             ->whereBetween(DB::raw('Date(ds1.created_at)'), [$from, $to])
             ->where('ds1.branch_id', '=', $branch)
-            ->groupBy('ds1.product_id', 'opening_stock_cte.opening_date')//'closing_stock_cte.closing_date'
+            ->when($department != "" && $department != "all", function ($query) use ($department) {
+                $query->where("inv.department_id", $department);
+            })
+            ->when($subdepartment != "", function ($query) use ($department,$subdepartment) {
+                $query->where("inv.sub_department_id", $subdepartment);
+            })
+            ->groupBy('ds1.product_id', 'opening_stock_cte.opening_date') //'closing_stock_cte.closing_date'
 
             // Order by Sales DESC
             ->orderBy('sales', 'DESC')

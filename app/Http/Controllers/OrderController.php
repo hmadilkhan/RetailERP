@@ -135,14 +135,15 @@ class OrderController extends Controller
         $orders = $order->getNewPOSOrdersQuery($request);
         // return $orders;
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
-        // return $request;
+        $totaltax = $order->getTotalTax($request);
+        // return $totaltax;
         // return $totalorders;
         // $filteredArray = Arr::where($totalorders->toArray(), function ($value, $key) {
         // return $value->order_status_name == "Void";
         // });
         // $collection = collect($totalorders);
         // return $collection->filter(fn ($item) => $item->order_status_name == "Void")->values()->all();
-        return view('partials.orders_table', compact('orders', 'totalorders'));
+        return view('partials.orders_table', compact('orders', 'totalorders','totaltax'));
     }
 
 

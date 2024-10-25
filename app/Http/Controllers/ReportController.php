@@ -35,10 +35,12 @@ use App\Exports\IsdbDatewiseExport;
 use App\Exports\ConsolidatedIsdbDatewiseExport;
 use App\Exports\OrderReportExport;
 use App\Exports\SalesDeclarationExport;
+use App\Exports\StockReportExcelExport;
 use App\Exports\StockReportExport;
 use App\Models\Company;
 use App\Models\DailyStock;
 use App\Services\OrderService;
+use App\Services\StockAdjustmentService;
 use Mail;
 use \Illuminate\Support\Arr;
 use App\stock;
@@ -552,6 +554,19 @@ class ReportController extends Controller
         $branch = Branch::findOrFail($request->branchid);
         // return Excel::download(new StockReport($details,$branch->branch_name), 'products.xlsx');
         return Excel::download(new StockReportExport($details, $branch->branch_name), "Stock Report.xlsx");
+    }
+
+    
+
+    public function dailyStockReportExport(Request $request, StockAdjustmentService $stockAdjustmentService)
+    {
+        $details = $stockAdjustmentService->getStockReport($request->from, $request->to, $request->branch, $request->department,$request->subdepartment);
+        $branch = Branch::findOrFail($request->branch);
+        $datearray = [
+            "from" => $request->fromdate,
+            "to" => $request->todate,
+        ];
+        return Excel::download(new StockReportExcelExport($details, $branch->branch_name,$datearray), "Daily Stock Report.xlsx");
     }
 
     public function getSalesDeclarationExport(Request $request, report $report)
