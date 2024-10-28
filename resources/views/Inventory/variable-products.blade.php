@@ -174,7 +174,7 @@ input+.slider:before {
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",id:$("input[name='finishgood']").val(),variationId:$("#variationId_md").val()},
                 success:function(resp){
-                    console.log(resp)
+                    console.log(resp == null ? 1 : 0)
                    if(resp == null){
                        close_copyModal();
                    }else{

@@ -2652,7 +2652,6 @@ class InventoryController extends Controller
                                                                 ->pluck('pos_item_id'))
                                             ->whereIn('variation_id', $getSameNameVariationId)
                                             ->pluck('product_id');
-                    //return $existingProductIds;
                 }
         }
 
