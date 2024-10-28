@@ -337,16 +337,16 @@ class WebsiteController extends Controller
         $path = $this->create_folder('sliders/' . session('company_id'), $request->website);
 
         if ($path == false) {
-            return response()->json('Image not uploaded.', 500);
+            return response()->json('slider not uploaded.', 500);
         }
 
         if (!$image->move($path, $imageName)) {
-            return response()->json('Image not uploaded.', 500);
+            return response()->json('slider not uploaded.', 500);
         }
 
         if($mobile_slide != null){
             if(!$mobile_slide->move($path, $mobile_slideName)){
-                return response()->json('Image not uploaded.', 500);
+                return response()->json('mobile slider not uploaded.', 500);
             }
         }
 
