@@ -149,22 +149,22 @@ class Inventory_DepartmentController extends Controller
                 $imageName = !empty($file) ? $file["fileName"] : "";
             }
 
-            if (!empty($request->file('banner_image'))) { //department banner 
+            if (!empty($request->file('banner_image'))) { //department banner
                 $rules['banner_image'] = 'image|mimes:jpeg,png,jpg,webp|max:1024';
                 $file = $this->uploads($request->file('banner_image'), "images/department/");
                 $bannerImageName = !empty($file) ? $file["fileName"] : "";
             }
 
-            if (!empty($request->file('mobile_banner'))) { //department banner 
+            if (!empty($request->file('mobile_banner'))) { //department banner
                 $rules['mobile_banner'] = 'image|mimes:jpeg,png,jpg,webp|max:1024';
                 $file = $this->uploads($request->file('mobile_banner'), "images/department/");
                 $mobile_bannerName = !empty($file) ? $file["fileName"] : "";
-            }            
+            }
 
-            $this->validate($request, $rules); // validation module 
+            $this->validate($request, $rules); // validation module
 
 
-            //department form details save array value 
+            //department form details save array value
             $data = [
                 'company_id'               => session('company_id'),
                 'code'                     => $request->get('department_code'),
@@ -181,10 +181,10 @@ class Inventory_DepartmentController extends Controller
                 'website_mode'             => isset($request->showWebsite) ? 1 : 0
             ];
 
-            // department save to database 
+            // department save to database
             $result = $invent_department->insert_dept($data);
             if ($result) {  //checking condition department issaved to database show the success message
-                if (!empty($request->sections)) { //department section module 
+                if (!empty($request->sections)) { //department section module
                     foreach ($request->sections as $value) {
                         $invent_department->insert_section(['department_id' => $result, 'section_id' => $value, 'created_at' => date('Y-m-d H:i:s')]);
                     }
@@ -209,7 +209,7 @@ class Inventory_DepartmentController extends Controller
 
                 // }
                 // $msg = "ID # ".$result.", Name : ".$request->get('deptname');
-                // $helper->sendPushNotification("New Department Added",$msg); 
+                // $helper->sendPushNotification("New Department Added",$msg);
                 // return response()->json(array("state" => 0, "msg" => '', "contrl" => ''));
 
             } else { //checking condition department is not to save database error condition true
@@ -290,8 +290,8 @@ class Inventory_DepartmentController extends Controller
             if ($get != null) {
                 $this->removeImage("images/department/", $get->mobile_banner);
             }
-        }       
-        
+        }
+
         $column = [
                     'sub_depart_name' => $request->sdepart,
                     'website_sub_department_name' =>(!empty($request->website_department_name) ? $request->website_department_name : $request->sdepart),
@@ -304,12 +304,12 @@ class Inventory_DepartmentController extends Controller
 
         if ($bannerImageName != null) {
             $column['banner'] = $bannerImageName;
-        } 
+        }
 
         if ($mobile_banner != null) {
             $column['mobile_banner'] = $mobile_banner;
-        } 
-        
+        }
+
         if ($request->get('code') != null) {
             $column['code'] = $request->get('code');
         }
@@ -358,13 +358,13 @@ class Inventory_DepartmentController extends Controller
     public function update(Request $request, inventory_department $invent_department)
     {
         /*$result = $invent_department->modify(['department_name'=>$request->deptname],$request->hidd_id);
-              
+
                 if($invent_department->check_sdept($request->hidd_id)){
                    $invent_department->remove_sbdept($request->hidd_id);
                  }
                  $subdpt_value = explode(",",$request->subdpt);
                 for($i=0;$i<count($subdpt_value);$i++){
-                    
+
                     $result = $invent_department->insert_sdept(['department_id'=>$request->hidd_id,'sub_depart_name'=>$subdpt_value[$i]]);
                 }*/
 
@@ -398,8 +398,8 @@ class Inventory_DepartmentController extends Controller
                     ->join('inventory_general', 'website_products.inventory_id', '=', 'inventory_general.id')
                     ->where('inventory_general.department_id', $request->id)
                     ->where('inventory_general.status', 2)
-                    ->update(['website_products.status' => 0, 'website_products.updated_at' => date("Y-m-d H:i:s")]);                 
-                DB::table('inventory_department_sections')->where('department_id',$request->id)->delete();    
+                    ->update(['website_products.status' => 0, 'website_products.updated_at' => date("Y-m-d H:i:s")]);
+                DB::table('inventory_department_sections')->where('department_id',$request->id)->delete();
                 DB::commit();
                 return response()->json(["status" => 200, "message" => "Department Deleted successfully."]);
             }
@@ -419,7 +419,7 @@ class Inventory_DepartmentController extends Controller
             return response()->json($e->getMessage(),500);
         }
 
-    }    
+    }
 
     public function adddepartment(inventory_department $in_depart, Request $request)
     {
@@ -427,7 +427,8 @@ class Inventory_DepartmentController extends Controller
         if ($exsist[0]->counter == 0) {
             $items = [
                 'company_id' => session('company_id'),
-                'department_name' => $request->departname,
+                'department_name'         => $request->departname,
+                'website_department_name' => $request->departname,
                 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->departname)),
                 'date' => date('Y-m-d'),
                 'time' => date('H:i:s')
@@ -450,18 +451,18 @@ class Inventory_DepartmentController extends Controller
 
             if (!empty($request->file('subdepartImage'))) {
                 $file = $this->uploads($request->file('subdepartImage'), "images/department/");
-                $imageName = !empty($file) ? $file["fileName"] : "";                  
+                $imageName = !empty($file) ? $file["fileName"] : "";
             }
 
             if (!empty($request->file('subdepartBanner'))) {
                 $file = $this->uploads($request->file('subdepartBanner'), "images/department/");
-                $bannerImageName = !empty($file) ? $file["fileName"] : "";               
-            }  
-            
+                $bannerImageName = !empty($file) ? $file["fileName"] : "";
+            }
+
             if (!empty($request->file('mobile_banner_sbdepart'))) {
                 $file = $this->uploads($request->file('mobile_banner_sbdepart'), "images/department/");
-                $mobile_banner = !empty($file) ? $file["fileName"] : "";               
-            }             
+                $mobile_banner = !empty($file) ? $file["fileName"] : "";
+            }
 
             $items = [
                 'code'                         => $request->code,
@@ -561,7 +562,7 @@ class Inventory_DepartmentController extends Controller
 
         if ($mobile_banner != null) {
             $items['mobile_banner'] = $mobile_banner;
-        }       
+        }
 
         if (isset($request->showWebsite)) {
             $items['meta_title']       = $request->metatitle;

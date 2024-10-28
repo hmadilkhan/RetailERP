@@ -172,13 +172,14 @@ input+.slider:before {
             $.ajax({
                 url: "{{ route('getVariableProduct') }}",
                 type: 'POST',
-                data:{_token:"{{ csrf_token() }}",id:$("input[name='finishgood']").val()},
+                data:{_token:"{{ csrf_token() }}",id:$("input[name='finishgood']").val(),variationId:$("#variationId_md").val()},
                 success:function(resp){
+                    // console.log(resp)
                    if(resp == null){
                        close_copyModal();
                    }else{
-                    $('#tbl_cpymd tbody').empty();
                     var datatable = $('#tbl_cpymd').DataTable();
+                    $('#tbl_cpymd tbody').empty();
                     $.each(resp, function( index, value ) {
                         if($("#itemId_md").val() != value.pos_item_id){
                             datatable.row.add(['<label class="pointer"> <input type="checkbox" value="'+value.pos_item_id+'" class="form-control m-r-1" name="tble_chk_cpymd">'+value.item_name+'</label>']);
@@ -567,13 +568,22 @@ input+.slider:before {
             if($("#item_code_vpmd").val() == ''){
                 process = false;
                 $("#item_code_vpmd").focus();
-                $("#item_code_alert_vpmd").text('Enter item code is required!');
+                $("#item_code_alert").text('Enter item code is required!');
+                swal('Error!','Enter item code is required!','error');
             }
 
             if($("#item_name_vpmd").val() == ''){
                 process = false;
                 $("#item_name_vpmd").focus();
                 $("#item_name_alert_vpmd").text('Enter item name is required!');
+                swal('Error!','Enter item name is required!','error');
+            }
+
+            if($("#attribute_vpmd").val() == ''){
+                process = false;
+                $("#attribute_vpmd").focus();
+                $("#attribute_alert").text('Select attribute field is required');
+                swal('Error!','Select attribute field is required!','error');
             }
 
             if(process){

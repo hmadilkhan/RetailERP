@@ -322,26 +322,32 @@ class WebsiteController extends Controller
         $rules = [
             'website'       => 'required',
             'image'         => 'required|mimes:jpg,jpeg,png,webp|max:1024',
-            'mobile_slide'  => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+            'mobile_slide'  => 'nullable|mimes:jpg,jpeg,png,webp|max:1024'
         ];
 
         $this->validate($request, $rules);
 
         $image             = $request->file('image');
-        $imageName         = time() . '.' . strtolower(pathinfo($image->getClientOriginalExtension(),PATHINFO_EXTENSION));
-        $mobile_slide      = $request->file('mobile_slide');
-        $mobile_slideName  = 'mobile_size'.time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));
+        $imageName         = time() . '.' . strtolower($image->getClientOriginalExtension());
+        $mobile_slide      = $request->file('mobile_slide') ?? null;
+        $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower($mobile_slide->getClientOriginalExtension());
         $productSlug       = null;
         $invent_department = null;
 
         $path = $this->create_folder('sliders/' . session('company_id'), $request->website);
 
         if ($path == false) {
-            return response()->json('Image not uploaded.', 500);
+            return response()->json('slider not uploaded.', 500);
         }
 
-        if (!$image->move($path, $imageName) || !$mobile_slide->move($path, $mobile_slideName)) {
-            return response()->json('Image not uploaded.', 500);
+        if (!$image->move($path, $imageName)) {
+            return response()->json('slider not uploaded.', 500);
+        }
+
+        if($mobile_slide != null){
+            if(!$mobile_slide->move($path, $mobile_slideName)){
+                return response()->json('mobile slider not uploaded.', 500);
+            }
         }
 
         if (!empty($request->product)) {

@@ -2629,7 +2629,65 @@ class InventoryController extends Controller
 
     public function get_variableProduct(Request $request)
     {
-        return DB::table('pos_products_gen_details')->where('branch_id', session('branch'))->where('product_id', $request->id)->where('status_id', 1)->get();
+        $getVariation = DB::table('addon_categories')
+                            ->where('id', $request->variationId)
+                            ->where('company_id', session('company_id'))
+                            ->first();
+
+        if($getVariation) {
+            // Get variations with the same name
+            $getSameNameVariationId = DB::table('addon_categories')
+                                        ->where('name', $getVariation->name)
+                                        ->where('company_id', session('company_id'))
+                                        ->pluck('id');
+
+            if ($getSameNameVariationId->isNotEmpty()) {
+            // Get product IDs for variations with the same name
+            $existingProductIds = DB::table('inventory_variations')
+                                    ->whereIn('product_id', DB::table('pos_products_gen_details')
+                                                        ->where('product_id', $request->id)
+                                                        ->where('branch_id', session('branch'))
+                                                        ->where('status_id', 1)
+                                                        ->pluck('pos_item_id'))
+                                    ->whereIn('variation_id', $getSameNameVariationId)
+                                    ->pluck('product_id');
+            }
+            }
+
+            // Query for POS products
+            $posProductsQuery = DB::table('pos_products_gen_details')
+                        ->where('branch_id', session('branch'))
+                        ->where('product_id', $request->id)
+                        ->where('status_id', 1)
+                        ->get();
+
+            // Filter out existing product IDs if any
+            if (isset($existingProductIds) && $existingProductIds->isNotEmpty()) {
+                 $posProductsQuery = $posProductsQuery->whereNotIn('product_id', $existingProductIds);
+            }
+
+            // Return the final query result
+            return $posProductsQuery;
+
+
+    //    $get = DB::table('inventory_variations')
+    //                 ->whereIn('product_id',DB::table('pos_products_gen_details')
+    //                                             ->where('product_id',$request->id)
+    //                                             ->where('branch_id', session('branch'))
+    //                                             ->where('status_id',1)
+    //                                             ->pluck('pos_item_id')
+    //                             )
+    //                 ->where('variation_id',$request->variationId)
+    //                 ->pluck('product_id');  // get pos product id already exists this variation ($request->variationId)
+
+    //    $posProductsQuery = DB::table('pos_products_gen_details')
+    //                         ->where('branch_id', session('branch'))
+    //                         ->where('product_id', $request->id)
+    //                         ->where('status_id', 1)
+    //                         ->get();
+
+
+
     }
 
     public function get_generalItem(Request $request)
@@ -3773,6 +3831,21 @@ class InventoryController extends Controller
        if (!empty($request->image)) {
             // Define the path to the image
             $pathToImage = Storage::disk('public')->path('/images/products/' . $request->image);
+
+            if(!in_array(strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),['jpg','jpeg'])){
+                if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
+                    // Set headers for the image response
+                        $headers = array(
+                            'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
+                            'Content-Description' => $request->image,
+                            'Cache-Control'      => 'public, max-age=604800',
+                        );
+
+                        return response()->file($pathToImage,$headers);
+                }else{
+                    return  $this->notFoundImage();
+                }
+            }
 
             // Ensure the image exists before proceeding
             if (Storage::disk('public')->exists('/images/products/' .$request->image)) {

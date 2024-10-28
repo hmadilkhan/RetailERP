@@ -283,6 +283,7 @@
                                               <option value="{{$val->id}}">{{$val->name}}</option>
                                           @endforeach
                                 </select>
+                                <span id="attribute_alert" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">
