@@ -2641,19 +2641,20 @@ class InventoryController extends Controller
                                         ->where('status', 1)
                                         ->where('company_id', session('company_id'))
                                         ->pluck('id');
-               return $getSameNameVariationId;
-            if ($getSameNameVariationId->isNotEmpty()) {
-            // Get product IDs for variations with the same name
-            $existingProductIds = DB::table('inventory_variations')
-                                    ->whereIn('product_id', DB::table('pos_products_gen_details')
-                                                        ->where('product_id', $request->id)
-                                                        ->where('branch_id', session('branch'))
-                                                        ->where('status_id', 1)
-                                                        ->pluck('pos_item_id'))
-                                    ->whereIn('variation_id', $getSameNameVariationId)
-                                    ->pluck('product_id');
-            }
-            }
+
+                if ($getSameNameVariationId->isNotEmpty()) {
+                // Get product IDs for variations with the same name
+                   $existingProductIds = DB::table('inventory_variations')
+                                            ->whereIn('product_id', DB::table('pos_products_gen_details')
+                                                                ->where('product_id', $request->id)
+                                                                ->where('branch_id', session('branch'))
+                                                                ->where('status_id', 1)
+                                                                ->pluck('pos_item_id'))
+                                            ->whereIn('variation_id', $getSameNameVariationId)
+                                            ->pluck('product_id');
+                    return $existingProductIds;
+                }
+        }
 
             // Query for POS products
             $posProductsQuery = DB::table('pos_products_gen_details')
