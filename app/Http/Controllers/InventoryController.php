@@ -2668,7 +2668,7 @@ class InventoryController extends Controller
             }
 
             // Return the final query result
-            return $posProductsQuery;
+            return $posProductsQuery ?? null;
 
 
     //    $get = DB::table('inventory_variations')
