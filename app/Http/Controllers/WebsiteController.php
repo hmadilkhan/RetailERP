@@ -329,8 +329,8 @@ class WebsiteController extends Controller
 
         $image             = $request->file('image');
         $imageName         = time() . '.' . strtolower(pathinfo($image->getClientOriginalExtension(),PATHINFO_EXTENSION));
-        $mobile_slide      = $request->file('mobile_slide');
-        $mobile_slideName  = 'mobile_size'.time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));
+        $mobile_slide      = $request->file('mobile_slide') ?? null;
+        $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));
         $productSlug       = null;
         $invent_department = null;
 
@@ -340,8 +340,14 @@ class WebsiteController extends Controller
             return response()->json('Image not uploaded.', 500);
         }
 
-        if (!$image->move($path, $imageName) || !$mobile_slide->move($path, $mobile_slideName)) {
+        if (!$image->move($path, $imageName)) {
             return response()->json('Image not uploaded.', 500);
+        }
+
+        if($mobile_slide != null){
+            if(!$mobile_slide->move($path, $mobile_slideName)){
+                return response()->json('Image not uploaded.', 500);
+            }
         }
 
         if (!empty($request->product)) {
