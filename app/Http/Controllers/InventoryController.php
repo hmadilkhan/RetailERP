@@ -2652,7 +2652,7 @@ class InventoryController extends Controller
                                                                 ->pluck('pos_item_id'))
                                             ->whereIn('variation_id', $getSameNameVariationId)
                                             ->pluck('product_id');
-                    return $existingProductIds;
+                    //return $existingProductIds;
                 }
         }
 
@@ -2665,7 +2665,7 @@ class InventoryController extends Controller
 
             // Filter out existing product IDs if any
             if (isset($existingProductIds) && $existingProductIds->isNotEmpty()) {
-                 $posProductsQuery = $posProductsQuery->whereNotIn('product_id', $existingProductIds);
+                 $posProductsQuery = $posProductsQuery->whereNotIn('pos_item_id', $existingProductIds);
             }
 
             // Return the final query result
