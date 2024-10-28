@@ -569,18 +569,21 @@ input+.slider:before {
                 process = false;
                 $("#item_code_vpmd").focus();
                 $("#item_code_alert").text('Enter item code is required!');
+                swal('Error!','Enter item code is required!','error');
             }
 
             if($("#item_name_vpmd").val() == ''){
                 process = false;
                 $("#item_name_vpmd").focus();
                 $("#item_name_alert_vpmd").text('Enter item name is required!');
+                swal('Error!','Enter item name is required!','error');
             }
 
             if($("#attribute_vpmd").val() == ''){
                 process = false;
                 $("#attribute_vpmd").focus();
                 $("#attribute_alert").text('Select attribute field is required');
+                swal('Error!','Select attribute field is required!','error');
             }
 
             if(process){
