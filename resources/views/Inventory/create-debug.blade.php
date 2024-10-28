@@ -700,7 +700,7 @@
                     </div>
                </div>
                <div class="modal-footer">
-                  <button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light" onClick="adddepartment()">Add Department</button>
+                  <button type="button" class="btn btn-success waves-effect waves-light" onClick="adddepartment()">Add Department</button>
                </div>
             </div>
          </div>
@@ -746,7 +746,7 @@
                     </div>
                </div>
                <div class="modal-footer">
-                  <button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light" onClick="addsubdepart()">Add Sub Department</button>
+                  <button type="button" class="btn btn-success waves-effect waves-light" onClick="addsubdepart()">Add Sub Department</button>
                </div>
             </div>
          </div>
