@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\SalesOpening;
+use Carbon\Carbon;
 
 class order extends Model
 {
@@ -323,6 +324,48 @@ class order extends Model
 			->get();
 	}
 
+	public function orderTimingGraph($request)
+	{
+		// Get the orders grouped by hour
+		$orders = DB::table('sales_receipts')
+			->select(DB::raw('HOUR(time) as hour, COUNT(*) as total_orders,SUM(total_amount) as total_amount'))
+			->groupBy(DB::raw('HOUR(time)'))
+			->whereBetween("date", [$request->first, $request->second])
+		
+			->when(!empty($request->branch) &&  $request->branch[0] != 'all', function ($query) use ($request) {
+				$query->whereIn('sales_receipts.branch', $request->branch);
+			})
+			->when(!empty($request->branch) && $request->branch[0] == "all", function ($query) {
+				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+			})
+			->orderBy('hour')
+			->get();
+	
+		for ($i = 0; $i < 24; $i++) {
+			$startTime = Carbon::createFromTime($i)->format('g:i A');
+			$endTime = Carbon::createFromTime($i, 59)->format('g:i A');
+
+			$hourRanges[] = [
+				'hour' => $i,
+				'hour_range' => $startTime . ' - ' . $endTime,
+				'total_orders' => 0, // Default to 0 orders
+				'total_amount' => 0, // Default to 0 orders
+			];
+		}
+
+		// Merge the query results into the hour range array
+		$peakOrders = collect($hourRanges)->map(function ($range) use ($orders) {
+			$matchingOrder = $orders->firstWhere('hour', $range['hour']);
+			if ($matchingOrder) {
+				$range['total_orders'] = $matchingOrder->total_orders;
+				$range['total_amount'] = $matchingOrder->total_amount;
+			}
+			return $range;
+		});
+
+		return $peakOrders;
+	}
+
 	public function getTotalNofOrdersByStatusQuery($request)
 	{
 		if ($request->branch == "all") {
@@ -431,7 +474,18 @@ class order extends Model
 				// $query->whereBetween("sales_receipts.delivery_date", [date("Ymd",strtotime($request->deli_from)), date("Ymd",strtotime($request->deli_to))]);
 				$query->whereBetween(DB::raw('DATE(sales_receipts.order_delivery_date)'), [$request->deli_from, $request->deli_to]);
 			})
+			->when($request->branch != "" && $request->branch != "all", function ($query) use ($request) {
+				$query->where('sales_receipts.branch', $request->branch);
+			})
+			->when($request->branch == "" && $request->branch != "all", function ($query) use ($request) {
+				$query->where('sales_receipts.branch', session('branch'));
+			})
+			->when($request->branch == "all", function ($query) use ($request) {
+				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+			})
 			->pluck("id");
+			// ->toSql();
+			// return $ids;
 
 		return DB::table("sales_account_subdetails")->whereIn("receipt_id", $ids)->selectRaw("COUNT(receipt_id) as totalorders,SUM(srb) as srbtaxamount,SUM(sales_tax_amount) as fbrtaxamount")->get();
 	}
@@ -1108,4 +1162,6 @@ class order extends Model
 	{
 		return DB::table("service_provider_details")->where("branch_id", session("branch"))->where("categor_id", 1)->where("status_id", 1)->get();
 	}
+
+	
 }

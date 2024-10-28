@@ -136,6 +136,8 @@ class OrderController extends Controller
         // return $orders;
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
         $totaltax = $order->getTotalTax($request);
+        $orderTimingGraph = $order->orderTimingGraph($request);
+        $height = $request->height != "" ? $request->height : 50;
         // return $totaltax;
         // return $totalorders;
         // $filteredArray = Arr::where($totalorders->toArray(), function ($value, $key) {
@@ -143,7 +145,7 @@ class OrderController extends Controller
         // });
         // $collection = collect($totalorders);
         // return $collection->filter(fn ($item) => $item->order_status_name == "Void")->values()->all();
-        return view('partials.orders_table', compact('orders', 'totalorders','totaltax'));
+        return view('partials.orders_table', compact('orders', 'totalorders','totaltax','orderTimingGraph','height'));
     }
 
 

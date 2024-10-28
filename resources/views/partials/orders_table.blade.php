@@ -25,7 +25,8 @@
             @if ($orders->isNotEmpty())
                 @foreach ($orders as $key => $order)
                     <tr class="{{ $order->is_sale_return == 1 ? 'table-danger' : '' }}">
-                        <td>{{ ($order->web == 1 ? strtoupper($order->url_orderid) : $order->machine_terminal_count ) }}</td>
+                        <td>{{ $order->web == 1 ? strtoupper($order->url_orderid) : $order->machine_terminal_count }}
+                        </td>
                         <td>{{ $order->id }}</td>
                         <td>
                             <div class="btn-group dropend border border-black">
@@ -48,7 +49,9 @@
                             </div>
                         </td>
                         <td>{{ date('h:i a', strtotime($order->time)) }}</td>
-                        <td class="text-center"><label class="label {{($order->web == 1 ? 'label-warning' : 'label-info' )}}"> {{ ($order->web == 1 ? 'Website' : 'POS' ) }}</label></td>
+                        <td class="text-center"><label
+                                class="label {{ $order->web == 1 ? 'label-warning' : 'label-info' }}">
+                                {{ $order->web == 1 ? 'Website' : 'POS' }}</label></td>
                         <td>{{ $order->branch_name }}</td>
                         <td>{{ $order->terminal_name }}</td>
                         <td>{{ $order->receipt_no }}</td>
@@ -97,7 +100,8 @@
                                                         class='icofont icofont-business-man mx-2' data-toggle='tooltip'
                                                         data-placement='top' title=''
                                                         data-original-title='Assign Sales Person'></i>Assign Sales
-                                                    Person </a></li>
+                                                    Person </a>
+                                            </li>
                                         @endif
                                     @endif
                                     @if ($order->status != 12 && (session('roleId') != 20 && session('roleId') != 19))
@@ -161,29 +165,116 @@
         $deliveredOrders = $collection->filter(fn($item) => $item->order_status_name == 'Delivered')->values()->all();
         $dispatchOrders = $collection->filter(fn($item) => $item->order_status_name == 'Dispatch')->values()->all();
         $salesReturnOrders = $collection->filter(fn($item) => $item->order_status_name == 'Sales Return')->values()->all();
-
-        // $taxorders = (count($totaltax) > 0 ? $totaltax[0] : 0);
     @endphp
 
 
     $("#pendingorders").html("{{ count($pending) > 0 ? $pending[0]->totalorders : 0 }}");
-    $("#totalpendingamount").html("Rs. {{ count($pending) > 0 ? number_format($pending[0]->sales,0) : 0 }}");
+    $("#totalpendingamount").html("Rs. {{ count($pending) > 0 ? number_format($pending[0]->sales, 0) : 0 }}");
     $("#processingorders").html("{{ count($processing) > 0 ? $processing[0]->totalorders : 0 }}");
-    $("#totalprocessingamount").html("Rs. {{ count($processing) > 0 ? number_format($processing[0]->sales,0) : 0 }}");
+    $("#totalprocessingamount").html("Rs. {{ count($processing) > 0 ? number_format($processing[0]->sales, 0) : 0 }}");
     $("#voidorders").html("{{ count($voidOrders) > 0 ? $voidOrders[0]->totalorders : 0 }}");
-    $("#totalvoidamount").html("Rs. {{ count($voidOrders) > 0 ? number_format($voidOrders[0]->sales,0) : 0 }}");
+    $("#totalvoidamount").html("Rs. {{ count($voidOrders) > 0 ? number_format($voidOrders[0]->sales, 0) : 0 }}");
     $("#deliveredorders").html("{{ count($deliveredOrders) > 0 ? $deliveredOrders[0]->totalorders : 0 }}");
-    $("#totaldeliveredamount").html("Rs. {{ count($deliveredOrders) > 0 ? number_format($deliveredOrders[0]->sales,0) : 0 }}");
+    $("#totaldeliveredamount").html(
+        "Rs. {{ count($deliveredOrders) > 0 ? number_format($deliveredOrders[0]->sales, 0) : 0 }}");
     $("#dispatchorders").html("{{ count($dispatchOrders) > 0 ? $dispatchOrders[0]->totalorders : 0 }}");
-    $("#totaldispatchamount").html("Rs. {{ count($dispatchOrders) > 0 ? number_format($dispatchOrders[0]->sales,0) : 0 }}");
+    $("#totaldispatchamount").html(
+        "Rs. {{ count($dispatchOrders) > 0 ? number_format($dispatchOrders[0]->sales, 0) : 0 }}");
     $("#salesreturnorders").html("{{ count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->totalorders : 0 }}");
-    $("#totalsalesreturnamount").html("Rs. {{ count($salesReturnOrders) > 0 ? number_format($salesReturnOrders[0]->sales,0) : 0 }}");
+    $("#totalsalesreturnamount").html(
+        "Rs. {{ count($salesReturnOrders) > 0 ? number_format($salesReturnOrders[0]->sales, 0) : 0 }}");
     $("#totalorders").html(
-        "{{ (count($processing) > 0 ? $processing[0]->totalorders : 0) + (count($voidOrders) > 0 ? $voidOrders[0]->totalorders : 0) + (count($deliveredOrders) > 0 ? $deliveredOrders[0]->totalorders : 0) + (count($pending) > 0 ? $pending[0]->totalorders : 0) + (count($dispatchOrders) > 0 ? $dispatchOrders[0]->totalorders : 0) + (count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->totalorders : 0)  }}" 
+        "{{ (count($processing) > 0 ? $processing[0]->totalorders : 0) + (count($voidOrders) > 0 ? $voidOrders[0]->totalorders : 0) + (count($deliveredOrders) > 0 ? $deliveredOrders[0]->totalorders : 0) + (count($pending) > 0 ? $pending[0]->totalorders : 0) + (count($dispatchOrders) > 0 ? $dispatchOrders[0]->totalorders : 0) + (count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->totalorders : 0) }}"
     );
     $("#totalamount").html(
-        "Rs. {{ number_format((count($processing) > 0 ? $processing[0]->sales : 0) + (count($voidOrders) > 0 ? $voidOrders[0]->sales : 0) + (count($deliveredOrders) > 0 ? $deliveredOrders[0]->sales : 0) + (count($pending) > 0 ? $pending[0]->sales : 0) + (count($dispatchOrders) > 0 ? $dispatchOrders[0]->sales : 0) + (count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->sales : 0),0)  }}" 
+        "Rs. {{ number_format((count($processing) > 0 ? $processing[0]->sales : 0) + (count($voidOrders) > 0 ? $voidOrders[0]->sales : 0) + (count($deliveredOrders) > 0 ? $deliveredOrders[0]->sales : 0) + (count($pending) > 0 ? $pending[0]->sales : 0) + (count($dispatchOrders) > 0 ? $dispatchOrders[0]->sales : 0) + (count($salesReturnOrders) > 0 ? $salesReturnOrders[0]->sales : 0), 0) }}"
     );
-    $("#totaltaxorders").html("{{count($totaltax) > 0 && $totaltax[0]->srbtaxamount > 0 ? $totaltax[0]->totalorders : 0}}");
-    $("#totaltaxamount").html("Rs. {{count($totaltax) > 0 ? $totaltax[0]->srbtaxamount : 0}}");
+    $("#totaltaxorders").html(
+        "{{ count($totaltax) > 0 && $totaltax[0]->srbtaxamount > 0 ? $totaltax[0]->totalorders : 0 }}");
+    $("#totaltaxamount").html("Rs. {{ count($totaltax) > 0 ? $totaltax[0]->srbtaxamount : 0 }}");
+    @if (!empty($orderTimingGraph))
+        $(document).ready(function() {
+            /* bar chart */
+            var chBar = document.getElementById("chBar");
+            $("#chBar").empty();
+            xaxis = {!! json_encode($orderTimingGraph->pluck('hour')) !!};
+            data = {!! json_encode($orderTimingGraph->pluck('total_orders')) !!};
+            height = "{{$height}}";
+            
+            if (chBar) {
+                chBar.height = height;
+                new Chart(chBar, {
+                    type: 'bar',
+                    data: {
+                        labels: xaxis,
+                        datasets: [
+                            {
+                                data: data,
+                                backgroundColor: colors[0]
+                            },
+                            // {
+                            //     data: [639, 465, 493, 478, 589, 632, 674],
+                            //     backgroundColor: colors[1]
+                            // }
+                        ]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                display: true // Hide the Y-axis
+                            }],
+                            xAxes: [{
+                                barPercentage: 0.5,
+                                categoryPercentage: 1
+                            }]
+                        }
+                    }
+                });
+            }
+
+             /* bar chart */
+             var chBarOne = document.getElementById("chBarOne");
+            $("#chBarOne").empty();
+            xaxis = {!! json_encode($orderTimingGraph->pluck('hour')) !!};
+            data = {!! json_encode($orderTimingGraph->pluck('total_amount')) !!};
+            height = "{{$height}}";
+            
+            if (chBarOne) {
+                chBarOne.height = height;
+                new Chart(chBarOne, {
+                    type: 'bar',
+                    data: {
+                        labels: xaxis,
+                        datasets: [
+                            {
+                                data: data,
+                                backgroundColor: colors[1]
+                            },
+                            // {
+                            //     data: [639, 465, 493, 478, 589, 632, 674],
+                            //     backgroundColor: colors[1]
+                            // }
+                        ]
+                    },
+                    options: {
+                        legend: {
+                            display: false
+                        },
+                        scales: {
+                            yAxes: [{
+                                display: true // Hide the Y-axis
+                            }],
+                            xAxes: [{
+                                barPercentage: 0.5,
+                                categoryPercentage: 1
+                            }]
+                        }
+                    }
+                });
+            }
+        })
+    @endif
 </script>

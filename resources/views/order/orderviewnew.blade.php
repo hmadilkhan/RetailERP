@@ -196,9 +196,10 @@
                     </div>
                     <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                         <label class="form-control-label">Select Category</label>
-                        <select id="category" name="category" data-placeholder="Select Category" class="f-right select2">
-                            <option value="all" >All</option>
-                            <option value="0" >POS</option>
+                        <select id="category" name="category" data-placeholder="Select Category"
+                            class="f-right select2">
+                            <option value="all">All</option>
+                            <option value="0">POS</option>
                             <option value="1">Website</option>
                         </select>
                     </div>
@@ -227,6 +228,24 @@
                             class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right">
                             <i class="icofont icofont-ui-check"> </i>Fetch
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header p-2">
+                <div class="col-md-6 py-1">
+                    <div class="card">
+                        <div class="card-body">
+                            <canvas id="chBar"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 py-1">
+                    <div class="card">
+                        <div class="card-body">
+                            <canvas id="chBarOne"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -569,8 +588,10 @@
                 "<span class='visually-hidden'>Loading...</span></div></div>"
             )
         }
-
+        var count = 0;
         function fetch_data(page) {
+            count++;
+            
             showLoader("table_data")
             $.ajax({
                 url: "{{ url('get-pos-orders-new') }}" + "?page=" + page,
@@ -594,6 +615,7 @@
                     type: $('#type').val(),
                     salesperson: $('#orderserviceprovider').val(),
                     category: $('#category').val(),
+                    height: (count == 1 ? 100 : 200),
                 },
                 success: function(data) {
                     $('#table_data').empty();
@@ -1015,7 +1037,8 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=excel&salesperson=" + $('#orderserviceprovider').val()+"&category=" + $('#category').val());
+                    "&report=excel&salesperson=" + $('#orderserviceprovider').val() + "&category=" + $(
+                        '#category').val());
             }
         })
 
@@ -1030,7 +1053,8 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=pdf&salesperson=" + $('#orderserviceprovider').val()+"&category=" + $('#category').val());
+                    "&report=pdf&salesperson=" + $('#orderserviceprovider').val() + "&category=" + $(
+                        '#category').val());
             }
 
         })
@@ -1039,12 +1063,17 @@
             $("#" + controlId).val('all').trigger('change.select2')
         }
 
-        $("#category").change(function(){
+        $("#category").change(function() {
             if ($(this).val() == 1) {
                 $("#type").val("datewise").change();
-            }else{
+            } else {
                 $("#type").val("declaration").change();
             }
         })
+
+        var colors = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
+        var xaxis ;
+        var data ;
+
     </script>
 @endsection
