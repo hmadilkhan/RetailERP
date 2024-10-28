@@ -2638,6 +2638,7 @@ class InventoryController extends Controller
             // Get variations with the same name
             $getSameNameVariationId = DB::table('addon_categories')
                                         ->where('name', $getVariation->name)
+                                        ->where('status', 1)
                                         ->where('company_id', session('company_id'))
                                         ->pluck('id');
                return $getSameNameVariationId;
