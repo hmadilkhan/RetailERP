@@ -328,9 +328,9 @@ class WebsiteController extends Controller
         $this->validate($request, $rules);
 
         $image             = $request->file('image');
-        $imageName         = time() . '.' . strtolower(pathinfo($image->getClientOriginalExtension(),PATHINFO_EXTENSION));
+        $imageName         = time() . '.' . strtolower($image->getClientOriginalExtension());
         $mobile_slide      = $request->file('mobile_slide') ?? null;
-        $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower(pathinfo($mobile_slide->getClientOriginalExtension(),PATHINFO_EXTENSION));
+        $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower($mobile_slide->getClientOriginalExtension());
         $productSlug       = null;
         $invent_department = null;
 
