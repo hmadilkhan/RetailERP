@@ -387,7 +387,7 @@ class order extends Model
 			})
 
 			->when($request->first != "" && $request->second != "" && $request->type == "datewise", function ($query) use ($request) {
-				$q->whereBetween("sales_receipts.date", [$request->first, $request->second]);
+				$query->whereBetween("sales_receipts.date", [$request->first, $request->second]);
 			})
 			->when($request->order_no != "", function ($query) use ($request) {
 				$query->where('sales_receipts.id', $request->order_no);
@@ -431,7 +431,10 @@ class order extends Model
 			->when($request->sales_tax != "", function ($query) use ($request) {
 				$query->where("sales_receipts.fbrInvNumber", '!=', "");
 			})
-			->where("sales_receipts.web", "=", 0)
+			->when($request->category != "" && $request->category != "all", function ($query) use ($request) {
+				$query->where("sales_receipts.web", "=", $request->category);
+			})
+			// ->where("sales_receipts.web", "=", 0)
 			->where("sales_receipts.void_receipt", "!=", 1)
 			->selectRaw("COUNT(sales_receipts.id) as totalorders")
 			->orderBy("sales_receipts.id", "desc")
@@ -482,6 +485,36 @@ class order extends Model
 			})
 			->when($request->branch == "all", function ($query) use ($request) {
 				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+			})
+			->when($request->terminal != "" && $request->branch != "all", function ($query) use ($request) {
+				$query->where('sales_receipts.terminal_id', $request->terminal);
+			})
+			->when($request->payMode != "", function ($query) use ($request) {
+				$query->where('sales_receipts.payment_id', $request->payMode);
+			})
+			->when($request->mode != "", function ($query) use ($request) {
+				$query->where('sales_receipts.order_mode_id', $request->mode);
+			})
+			->when($request->receipt != "", function ($query) use ($request) {
+				$query->where('sales_receipts.receipt_no', $request->receipt);
+			})
+			->when($request->customer != "", function ($query) use ($request) {
+				$query->where('sales_receipts.customer_id', $request->customer);
+			})
+			->when($request->status != "", function ($query) use ($request) {
+				$query->where('sales_receipts.status', $request->status);
+			})
+			->when($request->first != "", function ($query) use ($request) {
+				$query->where("sales_receipts.date", '>=', $request->first);
+			})
+			->when($request->second != "", function ($query) use ($request) {
+				$query->where("sales_receipts.date", '<=', $request->second);
+			})
+			->when($request->sales_tax != "", function ($query) use ($request) {
+				$query->where("sales_receipts.fbrInvNumber", '!=', "");
+			})
+			->when($request->category != "" && $request->category != "all", function ($query) use ($request) {
+				$query->where("sales_receipts.web", "=", $request->category);
 			})
 			->pluck("id");
 			// ->toSql();
