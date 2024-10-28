@@ -2984,13 +2984,54 @@ class InventoryController extends Controller
     public function getInventoryVariationProduct_values(Request $request)
     {
 
-        return  Addon::select('addons.id', 'addons.name', 'addons.inventory_product_id', 'addons.price', 'inventory_department.department_name', 'inventory_general.department_id', 'inventory_sub_department.sub_depart_name')
-            ->join('inventory_general', 'inventory_general.id', 'addons.inventory_product_id')
-            ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
-            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_general.sub_department_id')
-            ->where('addons.addon_category_id', $request->id)
-            ->where('addons.status', 1)
-            ->get();
+        $getVariation = DB::table('addon_categories')
+                            ->where('id', $request->id)
+                            ->where('company_id', session('company_id'))
+                            ->first();
+
+        if($getVariation != null) {
+            // Get variations with the same name
+            $getSameNameVariationId = DB::table('addon_categories')
+                                        ->where('name', $getVariation->name)
+                                        ->where('status', 1)
+                                        ->where('company_id', session('company_id'))
+                                        ->pluck('id');
+
+                if ($getSameNameVariationId->isNotEmpty()) {
+                // Get product IDs for variations with the same name
+                   $existingProductIds = DB::table('inventory_variations')
+                                            ->whereIn('product_id', DB::table('pos_products_gen_details')
+                                                                ->where('product_id', $request->fnshGoodProd)
+                                                                ->where('branch_id', session('branch'))
+                                                                ->where('status_id', 1)
+                                                                ->pluck('pos_item_id'))
+                                            ->whereIn('variation_id', $getSameNameVariationId)
+                                            ->pluck('product_id');
+                }
+        }
+
+            // Query for POS products
+            $posProductsQuery = DB::table('pos_products_gen_details')
+                        ->where('branch_id', session('branch'))
+                        ->where('product_id', $request->fnshGoodProd)
+                        ->where('status_id', 1)
+                        ->get();
+
+            // Filter out existing product IDs if any
+            if (isset($existingProductIds) && $existingProductIds->isNotEmpty()) {
+                 $posProductsQuery = $posProductsQuery->whereNotIn('pos_item_id', $existingProductIds);
+            }
+
+
+        $data = Addon::select('addons.id', 'addons.name', 'addons.inventory_product_id', 'addons.price', 'inventory_department.department_name', 'inventory_general.department_id', 'inventory_sub_department.sub_depart_name')
+                    ->join('inventory_general', 'inventory_general.id', 'addons.inventory_product_id')
+                    ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
+                    ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_general.sub_department_id')
+                    ->where('addons.addon_category_id', $request->id)
+                    ->where('addons.status', 1)
+                    ->get();
+
+        return  response()->json(['variationValues'=>$data,'posProdCount'=>$posProductsQuery->count()]);
 
         // return InventoryVariationProduct::where('inventory_variation_products.inventory_variation_id',$request->id)
         //                                    ->where('inventory_variation_products.status',1)
