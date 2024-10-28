@@ -2575,7 +2575,7 @@ class InventoryController extends Controller
 
 
     // -----------------------------------------------------------------
-    // 	Inventroy   product
+    // 	Inventroy variable product
     // -----------------------------------------------------------------
 
     public function createVariableProduct(Request $request, inventory $inventory, posProducts $posProducts)
