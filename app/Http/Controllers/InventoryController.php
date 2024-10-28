@@ -2633,14 +2633,14 @@ class InventoryController extends Controller
                             ->where('id', $request->variationId)
                             ->where('company_id', session('company_id'))
                             ->first();
-          return $getVariation;
-        if($getVariation) {
+
+        if($getVariation != null) {
             // Get variations with the same name
             $getSameNameVariationId = DB::table('addon_categories')
                                         ->where('name', $getVariation->name)
                                         ->where('company_id', session('company_id'))
                                         ->pluck('id');
-
+               return $getSameNameVariationId;
             if ($getSameNameVariationId->isNotEmpty()) {
             // Get product IDs for variations with the same name
             $existingProductIds = DB::table('inventory_variations')
