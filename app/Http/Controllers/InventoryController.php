@@ -3012,15 +3012,23 @@ class InventoryController extends Controller
 
             // Query for POS products
             $posProductsQuery = DB::table('pos_products_gen_details')
-                        ->where('branch_id', session('branch'))
-                        ->where('product_id', $request->fnshGoodProd)
-                        ->where('status_id', 1)
-                        ->get();
+                                    ->where('branch_id', session('branch'))
+                                    ->where('product_id', $request->fnshGoodProd)
+                                    ->where('status_id', 1)
+                                    ->get();
 
             // Filter out existing product IDs if any
             if (isset($existingProductIds) && $existingProductIds->isNotEmpty()) {
                  $posProductsQuery = $posProductsQuery->whereNotIn('pos_item_id', $existingProductIds);
             }
+
+        $variationPriority =  DB::table('inventory_variations')
+                                ->join('addon_categories','addon_categories.id','inventory_variations.variation_id')
+                                ->where('inventory_variations.product_id',$request->posItemId)
+                                ->where('inventory_variations.variation_id','!=',$request->id)
+                                ->where('inventory_variations.status',1)
+                                ->select('inventory_variations.priority','addon_categories.name')
+                                ->get();
 
 
         $data = Addon::select('addons.id', 'addons.name', 'addons.inventory_product_id', 'addons.price', 'inventory_department.department_name', 'inventory_general.department_id', 'inventory_sub_department.sub_depart_name')
@@ -3031,7 +3039,7 @@ class InventoryController extends Controller
                     ->where('addons.status', 1)
                     ->get();
 
-        return  response()->json(['variationValues'=>$data,'posProdCount'=>$posProductsQuery->count()]);
+        return  response()->json(['variationValues'=>$data,'posProdCount'=>$posProductsQuery->count(),'variationPriority'=>$variationPriority]);
 
         // return InventoryVariationProduct::where('inventory_variation_products.inventory_variation_id',$request->id)
         //                                    ->where('inventory_variation_products.status',1)

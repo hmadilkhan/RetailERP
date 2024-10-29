@@ -1003,7 +1003,7 @@ input+.slider:before {
                 dataType:"json",
                 async : 'false',
                 success:function(resp){
-                    // console.log(resp);
+                    console.log(resp.variationPriority);
                 if(resp.variationValues != null){
 
                     $.each(resp.variationValues,function(i,v){
