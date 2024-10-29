@@ -3052,6 +3052,21 @@ class InventoryController extends Controller
 
     }
 
+    public function get_variationPriority(Request $request){
+        $query = DB::table('inventory_variations')
+                    ->join('addon_categories', 'addon_categories.id', '=', 'inventory_variations.variation_id')
+                    ->where('inventory_variations.product_id', $request->posItemId)
+                    ->where('inventory_variations.status', 1)
+                    ->select('inventory_variations.priority', 'addon_categories.name');
+
+        // Agar $request->id hai to condition apply karein
+        if ($request->variationId) {
+           $query->where('inventory_variations.variation_id', '!=', $request->variationId);
+        }
+
+        return response()->json($query->get());
+    }
+
     public function set_variationAllVariableProduct(Request $request)
     {
         try {

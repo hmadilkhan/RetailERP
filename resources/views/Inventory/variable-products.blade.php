@@ -783,6 +783,26 @@ input+.slider:before {
 			});
 		}
 
+       function variationPriority(posProdId,variatId){
+        $.ajax({
+			  url: '{{ route("get_variationPriority") }}',
+			  method : "POST",
+			  data:{_token:'{{ csrf_token() }}',posItemId:posProdId,variationId:variatId},
+			  dataType:'json',
+			  success: function(resp){
+                if(resp != ''){
+                    $("#priority_variation_md").empty();
+                    $("#priority_variation_md").append('<option value="">Select</option>');
+                    $.each(resp,function(i,v){
+                        $("#priority_variation_md").append('<option value="'+v.priority+'">'+v.name+'</option>');
+                    });
+
+                    $("#priority_variation_md").append('<option value="0">Last</option>');
+                }
+			  }
+			});
+       }
+
 	   function createVariation(id,itemName){
 	       $("#modal-title-variation").text('Create Variation');
 	       $("#mode_md").val(0);
@@ -794,6 +814,7 @@ input+.slider:before {
 	       $("#variation_name").val('');
 	       $("#variation_type").val('').trigger('change');
 
+           variationPriority(id,''); // get variation priority
 
 	       $.each(table_row_mdId,function(i,v){
 	           $("#"+v).remove();
@@ -968,6 +989,8 @@ input+.slider:before {
 
 	       $("#btn_submit_variation").text('Update');
 
+           variationPriority(productId,variationId);
+
 	       if($("#btn_submit_variation").hasClass('btn-primary')){
 	           $("#btn_submit_variation").removeClass('btn-primary');
 	           $("#btn_submit_variation").addClass('btn-success');
@@ -999,7 +1022,7 @@ input+.slider:before {
 
                 url: "{{ route('VariableProduct_VariationValues') }}",
                 type: 'POST',
-                data:{_token:'{{ csrf_token() }}',id:variationId,fnshGoodProd:$("input[name='finishgood']").val(),posItemId:productId},
+                data:{_token:'{{ csrf_token() }}',id:variationId,fnshGoodProd:$("input[name='finishgood']").val()},
                 dataType:"json",
                 async : 'false',
                 success:function(resp){
@@ -1016,14 +1039,6 @@ input+.slider:before {
             	         $("#price_md").val('');
             	       }
                   });
-                }
-
-                if(resp.variationPriority != null){
-                    $.each(resp.variationPriority,function(i,v){
-                        $("#priority_variation_md").append('<option value="'+v.priority+'">'+v.name+'</option>');
-                    });
-
-                    $("#priority_variation_md").append('<option value="0">Last</option>');
                 }
 
                  if(resp.posProdCount == 0){

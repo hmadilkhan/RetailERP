@@ -488,6 +488,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::post('/inventory/variable-products/set-variation-all-variable-product', [InventoryController::class, 'set_variationAllVariableProduct'])->name('set_variationAllVariableProduct');
     Route::post('/inventory/variable-products/get-variation-values', [InventoryController::class, 'getInventoryVariationProduct_values'])->name('VariableProduct_VariationValues');
+    Route::post('get-variation-priority', [InventoryController::class,'get_variationPriority'])->name('get_variationPriority');
     Route::post('/inventory/variable-products/store-variation', [InventoryController::class, 'addVariation'])->name('storeVariableProduct_variation');
     Route::post('/inventory/variable-products/update-variation', [InventoryController::class, 'updateVariation'])->name('updateVariableProduct_variation');
     Route::post('/inventory/variable-products/remove-variation', [InventoryController::class, 'removeVariation'])->name('removeVariation_variableProduct');
