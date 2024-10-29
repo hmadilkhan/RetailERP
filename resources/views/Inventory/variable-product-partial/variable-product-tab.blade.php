@@ -464,14 +464,14 @@
                     <div id="createVariationModal_alert"></div>
 
                             <div class="row">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Variation Name <span class="text-danger">*</span></label>
                                         <input type="text" class="form-control" placeholder="Variation Name" name="variation_name" id="variation_name">
                                         <span id="variation_name_alert" class="text-danger"></span>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                        <label>Variation Type <span class="text-danger">*</span></label>
                                        <select class="select2" data-placeholder="Select Type" name="variation_type" id="variation_type">
@@ -482,11 +482,19 @@
                                     </div>
                                     <span id="variation_type_alert" class="text-danger"></span>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group">
                                        <label>Selection Limited</label>
                                        <input type="number" min="0" value="0" class="form-control" placeholder="Selection Limited" name="selection_limited" id="selection_limited" disabled>
                                        <span id="selection_limited_alert" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Priority</label>
+                                        <select id="priority_variation_md" name="priority_variation_md" class="select2" data-placeholder="Select">
+                                          <option value="">Select</option>
+                                        </select>
                                     </div>
                                 </div>
 

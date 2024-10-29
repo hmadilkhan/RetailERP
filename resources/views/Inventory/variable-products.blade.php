@@ -1003,7 +1003,7 @@ input+.slider:before {
                 dataType:"json",
                 async : 'false',
                 success:function(resp){
-                    console.log(resp.variationPriority);
+                    //console.log(resp.variationPriority);
                 if(resp.variationValues != null){
 
                     $.each(resp.variationValues,function(i,v){
@@ -1016,6 +1016,12 @@ input+.slider:before {
             	         $("#price_md").val('');
             	       }
                   });
+                }
+
+                if(resp.variationPriority != null){
+                    $.each(resp.variationPriority,function(i,v){
+                        $("#priority_variation_md").append('<option value="'+v.priority+'">'+v.name+'</option>');
+                    });
                 }
 
                  if(resp.posProdCount == 0){
