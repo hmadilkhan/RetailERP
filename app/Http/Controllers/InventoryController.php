@@ -83,11 +83,11 @@ class InventoryController extends Controller
         //    return $inventories;
         // }
         $inventory = '';
-        if (in_array(Auth::user()->username, ['fn1009'])) {
-            return view('Inventory.inventory', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
-        } else {
+        // if (in_array(Auth::user()->username, ['fn1009'])) {
+        //     return view('Inventory.inventory', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+        // } else {
             return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
-        }
+        // }
         // } else {
         //     $inventory = '';
         //     return view('Inventory.lists', compact('inventory', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
