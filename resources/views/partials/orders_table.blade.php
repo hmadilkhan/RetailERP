@@ -195,69 +195,68 @@
     @if (!empty($orderTimingGraph))
         $(document).ready(function() {
             /* bar chart */
-            var chBar = document.getElementById("chBar");
-            $("#chBar").empty();
-            xaxis = {!! json_encode($orderTimingGraph->pluck('hour')) !!};
+            var chLine = document.getElementById("chLine");
+            $("#chLine").empty();
+            xaxis = {!! json_encode($orderTimingGraph->pluck('hour_range')) !!};
             data = {!! json_encode($orderTimingGraph->pluck('total_orders')) !!};
-            height = "{{$height}}";
-            
-            if (chBar) {
-                chBar.height = height;
-                new Chart(chBar, {
-                    type: 'bar',
-                    data: {
-                        labels: xaxis,
-                        datasets: [
-                            {
-                                data: data,
-                                backgroundColor: colors[0]
-                            },
-                            // {
-                            //     data: [639, 465, 493, 478, 589, 632, 674],
-                            //     backgroundColor: colors[1]
-                            // }
-                        ]
-                    },
+            height = "{{ $height }}";
+
+            var chartData = {
+                labels: xaxis,
+                datasets: [{
+                    data: data,
+                    backgroundColor: 'transparent',
+                    borderColor: colors[0],
+                    borderWidth: 4,
+                    pointBackgroundColor: colors[0]
+                }]
+            };
+            if (chLine) {
+                chLine.height = height;
+                new Chart(chLine, {
+                    type: 'line',
+                    data: chartData,
                     options: {
                         legend: {
                             display: false
                         },
+                        hover: { // Disable hover effects
+                            mode: null
+                        },
+                        tooltips: { // Disable tooltips
+                            enabled: false
+                        },
+                        events: [],
+                        responsiveAnimationDuration: 0,
                         scales: {
-                            yAxes: [{
-                                display: true // Hide the Y-axis
-                            }],
                             xAxes: [{
-                                barPercentage: 0.5,
-                                categoryPercentage: 1
+                                ticks: {
+                                    beginAtZero: true
+                                }
                             }]
-                        }
+                        },
+                        responsive: true
                     }
                 });
             }
 
-             /* bar chart */
-             var chBarOne = document.getElementById("chBarOne");
+            /* bar chart */
+            var chBarOne = document.getElementById("chBarOne");
             $("#chBarOne").empty();
-            xaxis = {!! json_encode($orderTimingGraph->pluck('hour')) !!};
+            xaxis = {!! json_encode($orderTimingGraph->pluck('hour_range')) !!};
             data = {!! json_encode($orderTimingGraph->pluck('total_amount')) !!};
-            height = "{{$height}}";
-            
+            height = "{{ $height }}";
+
             if (chBarOne) {
                 chBarOne.height = height;
                 new Chart(chBarOne, {
                     type: 'bar',
                     data: {
                         labels: xaxis,
-                        datasets: [
-                            {
-                                data: data,
-                                backgroundColor: colors[1]
-                            },
-                            // {
-                            //     data: [639, 465, 493, 478, 589, 632, 674],
-                            //     backgroundColor: colors[1]
-                            // }
-                        ]
+                        datasets: [{
+                            data: data,
+                            backgroundColor: colors[1]
+                        }, ]
                     },
                     options: {
                         legend: {

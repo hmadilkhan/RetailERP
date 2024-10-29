@@ -707,6 +707,7 @@
                 field: '#txtwebsiteitemssummary',
                 value: 1,
                 showDateFilter: true,
+                showExcelButton:true,
             }]);
         });
 
@@ -823,6 +824,10 @@
 
             if ($('#txtsaledec').val() == 1) {
                 window.location = "{{ url('reports/excel-export-sales-declartion') }}"+"/" + from + "/" + to +"/" + branch + "/" + terminal;
+            }
+
+            if ($('#txtwebsiteitemssummary').val() == 1) {
+                window.location = "{{ url('reports/website-items-summary') }}"+"/" + from + "/" + to;
             }
 
             // if ($('#txtitemsale').val() == 1) {
