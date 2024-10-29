@@ -1022,6 +1022,8 @@ input+.slider:before {
                     $.each(resp.variationPriority,function(i,v){
                         $("#priority_variation_md").append('<option value="'+v.priority+'">'+v.name+'</option>');
                     });
+
+                    $("#priority_variation_md").append('<option value="0">Last</option>');
                 }
 
                  if(resp.posProdCount == 0){
