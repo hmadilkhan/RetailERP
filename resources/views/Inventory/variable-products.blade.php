@@ -999,7 +999,7 @@ input+.slider:before {
 
                 url: "{{ route('VariableProduct_VariationValues') }}",
                 type: 'POST',
-                data:{_token:'{{ csrf_token() }}',id:variationId,fnshGoodProd:$("input[name='finishgood']").val()},
+                data:{_token:'{{ csrf_token() }}',id:variationId,fnshGoodProd:$("input[name='finishgood']").val(),posItemId:productId},
                 dataType:"json",
                 async : 'false',
                 success:function(resp){
