@@ -174,7 +174,7 @@ input+.slider:before {
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",id:$("input[name='finishgood']").val(),variationId:$("#variationId_md").val()},
                 success:function(resp){
-                    // console.log(resp)
+                    // console.log(resp == null ? 1 : 0)
                    if(resp == null){
                        close_copyModal();
                    }else{
@@ -783,6 +783,27 @@ input+.slider:before {
 			});
 		}
 
+       function variationPriority(posProdId,variatId){
+        $("#priority_variation_md").empty();
+        $.ajax({
+			  url: '{{ route("get_variationPriority") }}',
+			  method : "POST",
+			  data:{_token:'{{ csrf_token() }}',posItemId:posProdId,variationId:variatId},
+			  dataType:'json',
+			  success: function(resp){
+                if(resp != ''){
+                    // $("#priority_variation_md").empty();
+                    $("#priority_variation_md").append('<option value="">Select</option>');
+                    $.each(resp,function(i,v){
+                        $("#priority_variation_md").append('<option value="'+v.priority+'">'+v.name+'</option>');
+                    });
+
+                    $("#priority_variation_md").append('<option value="0">Last</option>');
+                }
+			  }
+			});
+       }
+
 	   function createVariation(id,itemName){
 	       $("#modal-title-variation").text('Create Variation');
 	       $("#mode_md").val(0);
@@ -794,6 +815,7 @@ input+.slider:before {
 	       $("#variation_name").val('');
 	       $("#variation_type").val('').trigger('change');
 
+           variationPriority(id,''); // get variation priority
 
 	       $.each(table_row_mdId,function(i,v){
 	           $("#"+v).remove();
@@ -968,6 +990,8 @@ input+.slider:before {
 
 	       $("#btn_submit_variation").text('Update');
 
+           variationPriority(productId,variationId);
+
 	       if($("#btn_submit_variation").hasClass('btn-primary')){
 	           $("#btn_submit_variation").removeClass('btn-primary');
 	           $("#btn_submit_variation").addClass('btn-success');
@@ -999,14 +1023,14 @@ input+.slider:before {
 
                 url: "{{ route('VariableProduct_VariationValues') }}",
                 type: 'POST',
-                data:{_token:'{{ csrf_token() }}',id:variationId},
+                data:{_token:'{{ csrf_token() }}',id:variationId,fnshGoodProd:$("input[name='finishgood']").val()},
                 dataType:"json",
                 async : 'false',
                 success:function(resp){
-                    // console.log(resp);
-                if(resp != null){
+                    //console.log(resp.variationPriority);
+                if(resp.variationValues != null){
 
-                    $.each(resp,function(i,v){
+                    $.each(resp.variationValues,function(i,v){
             	       if($("#row_md_"+v.inventory_product_id).length == 0){
             	         $("#table_variationLists_md tbody").append('<tr id="row_md_'+v.inventory_product_id+'"><td>  '+v.department_name+'</td><td>'+v.sub_depart_name+'</td><td id="cel-2-'+v.inventory_product_id+'">'+v.name+'<input type="hidden" name="products[]" value="'+v.inventory_product_id+'"></td><td><input type="hidden" name="price[]" value="'+ v.price+'">'+ v.price+'</td><td><i class="icofont icofont-trash text-danger pointer m-t-2 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove Variation" onclick="modal_remove_variation('+v.inventory_product_id+')"></i></td></tr>');
 
@@ -1017,6 +1041,18 @@ input+.slider:before {
             	       }
                   });
                 }
+
+                 if(resp.posProdCount == 0){
+                    if(!$("#btn_copy_variation").hasClass('d-none')){
+                        $("#btn_copy_variation").addClass('d-none');
+                    }
+                 }
+
+                 if(resp.posProdCount > 0){
+                    if($("#btn_copy_variation").hasClass('d-none')){
+                        $("#btn_copy_variation").removeClass('d-none');
+                    }
+                 }
                 }
             });
 	   }

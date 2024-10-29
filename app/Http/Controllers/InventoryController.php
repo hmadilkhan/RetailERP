@@ -2634,25 +2634,26 @@ class InventoryController extends Controller
                             ->where('company_id', session('company_id'))
                             ->first();
 
-        if($getVariation) {
+        if($getVariation != null) {
             // Get variations with the same name
             $getSameNameVariationId = DB::table('addon_categories')
                                         ->where('name', $getVariation->name)
+                                        ->where('status', 1)
                                         ->where('company_id', session('company_id'))
                                         ->pluck('id');
 
-            if ($getSameNameVariationId->isNotEmpty()) {
-            // Get product IDs for variations with the same name
-            $existingProductIds = DB::table('inventory_variations')
-                                    ->whereIn('product_id', DB::table('pos_products_gen_details')
-                                                        ->where('product_id', $request->id)
-                                                        ->where('branch_id', session('branch'))
-                                                        ->where('status_id', 1)
-                                                        ->pluck('pos_item_id'))
-                                    ->whereIn('variation_id', $getSameNameVariationId)
-                                    ->pluck('product_id');
-            }
-            }
+                if ($getSameNameVariationId->isNotEmpty()) {
+                // Get product IDs for variations with the same name
+                   $existingProductIds = DB::table('inventory_variations')
+                                            ->whereIn('product_id', DB::table('pos_products_gen_details')
+                                                                ->where('product_id', $request->id)
+                                                                ->where('branch_id', session('branch'))
+                                                                ->where('status_id', 1)
+                                                                ->pluck('pos_item_id'))
+                                            ->whereIn('variation_id', $getSameNameVariationId)
+                                            ->pluck('product_id');
+                }
+        }
 
             // Query for POS products
             $posProductsQuery = DB::table('pos_products_gen_details')
@@ -2663,7 +2664,7 @@ class InventoryController extends Controller
 
             // Filter out existing product IDs if any
             if (isset($existingProductIds) && $existingProductIds->isNotEmpty()) {
-                 $posProductsQuery = $posProductsQuery->whereNotIn('product_id', $existingProductIds);
+                 $posProductsQuery = $posProductsQuery->whereNotIn('pos_item_id', $existingProductIds);
             }
 
             // Return the final query result
@@ -2983,13 +2984,62 @@ class InventoryController extends Controller
     public function getInventoryVariationProduct_values(Request $request)
     {
 
-        return  Addon::select('addons.id', 'addons.name', 'addons.inventory_product_id', 'addons.price', 'inventory_department.department_name', 'inventory_general.department_id', 'inventory_sub_department.sub_depart_name')
-            ->join('inventory_general', 'inventory_general.id', 'addons.inventory_product_id')
-            ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
-            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_general.sub_department_id')
-            ->where('addons.addon_category_id', $request->id)
-            ->where('addons.status', 1)
-            ->get();
+        $getVariation = DB::table('addon_categories')
+                            ->where('id', $request->id)
+                            ->where('company_id', session('company_id'))
+                            ->first();
+
+        if($getVariation != null) {
+            // Get variations with the same name
+            $getSameNameVariationId = DB::table('addon_categories')
+                                        ->where('name', $getVariation->name)
+                                        ->where('status', 1)
+                                        ->where('company_id', session('company_id'))
+                                        ->pluck('id');
+
+                if ($getSameNameVariationId->isNotEmpty()) {
+                // Get product IDs for variations with the same name
+                   $existingProductIds = DB::table('inventory_variations')
+                                            ->whereIn('product_id', DB::table('pos_products_gen_details')
+                                                                ->where('product_id', $request->fnshGoodProd)
+                                                                ->where('branch_id', session('branch'))
+                                                                ->where('status_id', 1)
+                                                                ->pluck('pos_item_id'))
+                                            ->whereIn('variation_id', $getSameNameVariationId)
+                                            ->pluck('product_id');
+                }
+        }
+
+            // Query for POS products
+            $posProductsQuery = DB::table('pos_products_gen_details')
+                                    ->where('branch_id', session('branch'))
+                                    ->where('product_id', $request->fnshGoodProd)
+                                    ->where('status_id', 1)
+                                    ->get();
+
+            // Filter out existing product IDs if any
+            if (isset($existingProductIds) && $existingProductIds->isNotEmpty()) {
+                 $posProductsQuery = $posProductsQuery->whereNotIn('pos_item_id', $existingProductIds);
+            }
+
+        $variationPriority =  DB::table('inventory_variations')
+                                ->join('addon_categories','addon_categories.id','inventory_variations.variation_id')
+                                ->where('inventory_variations.product_id',$request->posItemId)
+                                ->where('inventory_variations.variation_id','!=',$request->id)
+                                ->where('inventory_variations.status',1)
+                                ->select('inventory_variations.priority','addon_categories.name')
+                                ->get();
+
+
+        $data = Addon::select('addons.id', 'addons.name', 'addons.inventory_product_id', 'addons.price', 'inventory_department.department_name', 'inventory_general.department_id', 'inventory_sub_department.sub_depart_name')
+                    ->join('inventory_general', 'inventory_general.id', 'addons.inventory_product_id')
+                    ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
+                    ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_general.sub_department_id')
+                    ->where('addons.addon_category_id', $request->id)
+                    ->where('addons.status', 1)
+                    ->get();
+
+        return  response()->json(['variationValues'=>$data,'posProdCount'=>$posProductsQuery->count(),'variationPriority'=>$variationPriority]);
 
         // return InventoryVariationProduct::where('inventory_variation_products.inventory_variation_id',$request->id)
         //                                    ->where('inventory_variation_products.status',1)
@@ -3000,6 +3050,21 @@ class InventoryController extends Controller
         //                                    ->select('inventory_variation_products.*','addons.name','addons.inventory_product_id','addons.price','inventory_department.department_name','inventory_general.department_id','inventory_sub_department.sub_depart_name')
         //                                    ->get();
 
+    }
+
+    public function get_variationPriority(Request $request){
+        $query = DB::table('inventory_variations')
+                    ->join('addon_categories', 'addon_categories.id', '=', 'inventory_variations.variation_id')
+                    ->where('inventory_variations.product_id', $request->posItemId)
+                    ->where('inventory_variations.status', 1)
+                    ->select('inventory_variations.priority', 'addon_categories.name');
+
+        // Agar $request->id hai to condition apply karein
+        if ($request->variationId) {
+           $query->where('inventory_variations.variation_id', '!=', $request->variationId);
+        }
+
+        return response()->json($query->get());
     }
 
     public function set_variationAllVariableProduct(Request $request)
@@ -3075,6 +3140,11 @@ class InventoryController extends Controller
                 return response()->json(["status" => 409, "control" => "variation_name", "msg" => "This " . $request->variation_name . " group name is already taken from product " . $request->item_name]);
             }
 
+            if(!empty($request->priority_variation_md)){
+                $priority = (int) $request->priority_variation_md;
+                $priority++;
+            }
+
             // 			if($count == 0){
             $getAddonCategoryId = AddonCategory::create([
                 "name"               => $request->variation_name,
@@ -3083,7 +3153,8 @@ class InventoryController extends Controller
                 "company_id"         => session("company_id"),
                 "type"               => $request->variation_type,
                 "is_required"        => 1,
-                "mode"                 => 'variations',
+                "priority"           => isset($priority) ? $priority : 0,
+                "mode"               => 'variations',
                 "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
             ]);
 
@@ -3142,6 +3213,10 @@ class InventoryController extends Controller
             InventoryVariation::where('product_id', $request->item_id)->where('variation_id', $request->variation_id)->update(['status' => 0]);
             InventoryVariationProduct::where('inventory_variation_id', $getId_InventoryVariation)->update(['status' => 0]);
 
+            if(!empty($request->priority_variation_md)){
+                $priority = (int) $request->priority_variation_md;
+                $priority++;
+            }
 
             $getAddonCategoryId = AddonCategory::create([
                 "name"               => $request->variation_name,
@@ -3149,8 +3224,9 @@ class InventoryController extends Controller
                 "user_id"            => auth()->user()->id,
                 "company_id"         => session("company_id"),
                 "type"               => $request->variation_type,
+                "priority"           => isset($priority) ? $priority : 0,
                 "is_required"        => 1,
-                "mode"                 => 'variations',
+                "mode"               => 'variations',
                 "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
             ]);
 
