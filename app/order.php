@@ -338,16 +338,46 @@ class order extends Model
 			->when(!empty($request->branch) && $request->branch[0] == "all", function ($query) {
 				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
 			})
+			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
+				$query->whereIn('sales_receipts.terminal_id', $request->terminal);
+			})
+			->when($request->payMode != "", function ($query) use ($request) {
+				$query->where('sales_receipts.payment_id', $request->payMode);
+			})
+			->when($request->mode != "", function ($query) use ($request) {
+				$query->where('sales_receipts.order_mode_id', $request->mode);
+			})
+			->when($request->receipt != "", function ($query) use ($request) {
+				$query->where('sales_receipts.receipt_no', $request->receipt);
+			})
+			->when($request->customer != "", function ($query) use ($request) {
+				$query->where('sales_receipts.customer_id', $request->customer);
+			})
+			->when(!empty($request->status) && $request->status[0] != null, function ($query) use ($request) {
+				$query->whereIn('sales_receipts.status', $request->status);
+			})
+			->when($request->customerNo != "", function ($query) use ($request) {
+				$query->where('customers.mobile', $request->customerNo);
+			})
+			->when($request->sales_tax != "", function ($query) use ($request) {
+				$query->where("sales_receipts.fbrInvNumber", '!=', "");
+			})
+			->when($request->salesperson != "" && $request->salesperson != "all", function ($query) use ($request) {
+				$query->where("sales_receipts.sales_person_id", '=', $request->salesperson);
+			})
+			->when($request->category != "" && $request->category != "all", function ($query) use ($request) {
+				$query->where("sales_receipts.web", "=", $request->category);
+			})
 			->orderBy('hour')
 			->get();
 	
 		for ($i = 0; $i < 24; $i++) {
-			$startTime = Carbon::createFromTime($i)->format('g:i A');
+			$startTime = Carbon::createFromTime($i)->format('g a');
 			$endTime = Carbon::createFromTime($i, 59)->format('g:i A');
 
 			$hourRanges[] = [
 				'hour' => $i,
-				'hour_range' => $startTime . ' - ' . $endTime,
+				'hour_range' => $startTime,
 				'total_orders' => 0, // Default to 0 orders
 				'total_amount' => 0, // Default to 0 orders
 			];

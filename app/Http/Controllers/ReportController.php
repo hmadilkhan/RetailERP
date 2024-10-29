@@ -37,6 +37,7 @@ use App\Exports\OrderReportExport;
 use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExcelExport;
 use App\Exports\StockReportExport;
+use App\Exports\WebsiteItemSummaryExport;
 use App\Models\Company;
 use App\Models\DailyStock;
 use App\Services\OrderService;
@@ -5523,6 +5524,30 @@ class ReportController extends Controller
 
         //save file
         $pdf->Output('website_items_summary.pdf', 'I');
+    }
+
+    public function websiteItemsSummaryExcel(Request $request, report $report)
+    {
+        // $branch = "";
+        $companyName = Company::where("company_id", session("company_id"))->first();
+        $companyName = $companyName->name;
+        $branchName  = "";
+        // if ($request->branch == "all") {
+        //     $branch = Branch::with("company")->where("company_id", session('company_id'))->get();
+        //     $branchName = "All Branches";
+        // } else {
+        //     $branch = Branch::with("company")->where("branch_id", $request->branch)->first();
+        //     $branchName = $branch->branch_name;
+        // }
+
+      
+        $datearray = [
+            "from" => $request->from,
+            "to" => $request->to,
+        ];
+        $details =  $report->getWebsiteItemSummaryQuery($request->from, $request->to);
+        $details =  collect($details);
+        return Excel::download(new WebsiteItemSummaryExport($details, $datearray, $companyName), "Website Items Summary Report.xlsx");
     }
 
     public function salesInvoicesReportExcel(Request $request, report $report)

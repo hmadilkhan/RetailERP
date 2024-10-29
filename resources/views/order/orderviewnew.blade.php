@@ -237,7 +237,7 @@
                 <div class="col-md-6 py-1">
                     <div class="card">
                         <div class="card-body">
-                            <canvas id="chBar"></canvas>
+                            <canvas id="chLine"></canvas>
                         </div>
                     </div>
                 </div>
