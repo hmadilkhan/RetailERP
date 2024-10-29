@@ -784,6 +784,7 @@ input+.slider:before {
 		}
 
        function variationPriority(posProdId,variatId){
+        $("#priority_variation_md").empty();
         $.ajax({
 			  url: '{{ route("get_variationPriority") }}',
 			  method : "POST",
@@ -791,7 +792,7 @@ input+.slider:before {
 			  dataType:'json',
 			  success: function(resp){
                 if(resp != ''){
-                    $("#priority_variation_md").empty();
+                    // $("#priority_variation_md").empty();
                     $("#priority_variation_md").append('<option value="">Select</option>');
                     $.each(resp,function(i,v){
                         $("#priority_variation_md").append('<option value="'+v.priority+'">'+v.name+'</option>');
