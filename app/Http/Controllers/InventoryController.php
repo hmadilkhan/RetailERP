@@ -71,7 +71,7 @@ class InventoryController extends Controller
             })
             ->leftJoin('pos_products_gen_details', function($join) {
                 $join->on('pos_products_gen_details.product_id', '=', 'invent.id')
-                     ->where('pos_products_gen_details.status', '=', 1)
+                     ->where('pos_products_gen_details.status_id', '=', 1)
                      ->groupBy('pos_products_gen_details.product_id');
             })
             ->leftJoin("website_details",'website_details.id','website_products.website_id')
