@@ -2036,6 +2036,7 @@
                                getProduct_attribute();
                         }
                     },error:function(errorResp){
+                        $("#btn_tag_save").attr('disabled',false).html('Add');
                         swal('Error!',errorResp.responseText,'error');
                     }
                   });
