@@ -401,7 +401,7 @@
                     <label>Tags</label>
                     <i onclick="tagCreate()" class="icofont icofont-plus f-right text-success pointer" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
 				   <select id="tags_md" name="tags" class="select2" data-placeholder="Select Tags" multiple>
-					   <option>Select</option>
+					   <option value="">Select</option>
 					   @foreach($tagsList as $val)
 						 <option value="{{ $val->id }}">{{ $val->name }}</option>
 					   @endforeach
@@ -432,7 +432,7 @@
                   <div class="col-md-12">
                    <div class="form-group">
                      <label class="form-control-label">Tag:</label>
-                      <input type="text" name="tagname_md" id="tagname_md" class="form-control" placeholder="Like 'best product'" />
+                      <input type="text" name="tagname_md" id="tagname_md" class="form-control" placeholder="Tag Name like 'Premium'" />
                      </div>
                    </div>
                </div>

@@ -2030,7 +2030,6 @@
                         if(getStatus.status == 200){
                                swal('Success!','','success');
                             //    getProduct_attribute();
-                               $('#tagname_md').val(null);
                         }
                     },error:function(errorResp){
                         swal('Error!',errorResp.responseText,'error');
