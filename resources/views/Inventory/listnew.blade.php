@@ -1995,6 +1995,53 @@
         $("#tags-detail-modal").modal('hide');
         $("#createtag-modal").modal('show');
     }
+
+    function insertProduct_attribute(id){
+           if($('#'+id+'_md').val() == "") {
+             swal({
+                    title: "Error Message",
+                    text: "Required Field can not be blank!",
+                    type: "warning"
+               });
+
+          }else{
+             $.ajax({
+                    url: "{{route('insertProduct_attribute')}}",
+                    type: 'POST',
+                    data:{_token:"{{ csrf_token() }}",
+                       value:$('#'+id+'_md').val(),
+                       control:id,
+                    },success:function(resp,textStatus, getStatus){
+                        if(getStatus.status == 200){
+                               swal('Success!','','success');
+                               getProduct_attribute();
+                               $('#'+id+'_md').val(null);
+                        }else{
+                            swal('Error!',resp,'error');
+                        }
+                    },error:function(errorResp){
+                        swal('Error!',errorResp,'error');
+                    }
+                  });
+            }
+     }
+     function getProduct_attribute(){
+             $.ajax({
+                    url: "{{route('getProduct_attribute')}}",
+                    type: 'POST',
+                    dataType:"json",
+                    data:{_token:"{{ csrf_token() }}",
+                       control:'tag',
+                    },success:function(resp,textStatus, getStatus){
+                        if(resp != null){
+                            $("#tags_md").empty();
+                            $.each(resp,function(i,v){
+                                  $("#tags_md").append($('<option>').text(v.name).attr('value', v.id));
+                            })
+                        }
+                    }
+                  });
+    }
     </script>
 
 @endsection

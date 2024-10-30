@@ -437,7 +437,7 @@
                </div>
           </div>
           <div class="modal-footer">
-             <button type="button" id="btn_tag_md" class="btn btn-success waves-effect waves-light" onClick="insertProduct_attribute('tag')">Add</button>
+             <button type="button" class="btn btn-success waves-effect waves-light" onClick="insertProduct_attribute('tag')">Add</button>
           </div>
        </div>
     </div>
