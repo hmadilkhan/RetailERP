@@ -56,6 +56,89 @@ class InventoryController extends Controller
      */
     public function index(inventory $inventory, Brand $brand)
     {
+
+        if(Auth::user()->username == 'demoadmin'){
+
+            $query = DB::table('inventory_general as invent')
+            ->join('inventory_uom as u','u.uom_id','=','invent.uom_id')
+            ->leftJoin('inventory_department as dept','dept.department_id','=','invent.department_id')
+            ->leftJoin('inventory_sub_department as sdept','sdept.sub_department_id','=','invent.sub_department_id')
+            ->join('inventory_product_mode','inventory_product_mode.product_mode_id','=','invent.product_mode')
+            ->join('inventory_price','inventory_price.product_id','=','invent.id')
+            ->leftJoin('website_products', function($join) {
+                $join->on('website_products.inventory_id', '=', 'invent.id')
+                     ->where('website_products.status', '=', 1);
+            })
+            ->leftJoin('pos_products_gen_details', function($join) {
+                $join->on('pos_products_gen_details.product_id', '=', 'invent.id')
+                     ->where('pos_products_gen_details.status', '=', 1)
+                     ->groupBy('pos_products_gen_details.product_id');
+            })
+            ->leftJoin("website_details",'website_details.id','website_products.website_id')
+            ->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id')
+
+
+            ->where(function ($query) use ($code,$name,$dept,$sdept,$retail_price,$ref,$nonstock) {
+
+                if($nonstock == 0){
+                     $query->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id');
+                     $query->where('inventory_stock.branch_id',session('branch'));
+                     $query->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'));
+                }
+                if($nonstock == 1){
+                    $query->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url');
+                }
+                if($nonstock == 0){
+                    $query->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id');
+                    if(session("roleId") == 2){
+                        $query->whereIn('inventory_stock.branch_id',DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"));
+                    }else{
+                        $query->where('inventory_stock.branch_id',session('branch'));
+                    }
+                }
+
+                if(!empty($code)){
+                    $query->where('invent.item_code', 'like', '%'.$code.'%');
+                }
+                if(!empty($name)){
+                   $query->where('invent.product_name', 'like', '%'.$name.'%');
+                }
+                if(!empty($dept)){
+                   $query->where('invent.department_id', $dept);
+                }
+                if(!empty($sdept) && $sdept != "all"){
+                   $query->where('invent.sub_department_id',$sdept);
+                }
+                if(!empty($retail_price)){
+                   $query->where('inventory_price.retail_price',$retail_price);
+                }
+                if(!empty($ref)){
+                   $query->whereIn('inventory_reference.product_id',$ids);
+                }
+                if($nonstock == 1){
+                    if(session("roleId") == 2){
+                        $query->whereNotIn("invent.id",DB::table("inventory_stock")->whereIn("branch_id",DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"))->pluck("product_id"));
+                    }else{
+                        $query->whereNotIn("invent.id",DB::table("inventory_stock")->where("branch_id",session('branch'))->pluck("product_id"));
+                    }
+
+                }
+            })
+            ->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name')
+            ->where('invent.company_id',session('company_id'))
+            // ->where('website_products.status',1)
+            // ,'website_details.id as website_id','website_details.name as website_name'
+            ->where('invent.status',$status)
+            ->where('inventory_price.status_id',1)
+            // ->where('inventory_stock.branch_id',session('branch'))
+            ->groupBy("invent.id")
+            ->orderBy("invent.id");
+
+            return $query->get();
+
+        }
+
+
         // return  InventoryDepartment::whereIn("department_id",ModelsInventory::whereIn("id",WebsiteProduct::where("website_id",41)->pluck("inventory_id"))->pluck("department_id"))->where('status',1)->select("code","department_id","department_name","website_department_name","slug","image","banner")->orderBy('priority','desc')->get();
         $department    = $inventory->department();
         $subdepartment = ''; //$inventory->subDepartment();
