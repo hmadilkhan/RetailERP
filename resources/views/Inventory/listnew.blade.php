@@ -2021,7 +2021,7 @@
                     type: 'POST',
                     data:{_token:"{{ csrf_token() }}",
                        value:$('#tagname_md').val(),
-                       control:id,
+                       control:'tag',
                        products:rem_id
                     },
                     dataType:'json',
