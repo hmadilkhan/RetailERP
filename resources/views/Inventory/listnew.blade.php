@@ -2012,6 +2012,7 @@
                        value:$('#'+id+'_md').val(),
                        control:id,
                     },
+                    dataType:'json',
                     success:function(resp,textStatus, getStatus){
 
                         if(getStatus.status == 200){
