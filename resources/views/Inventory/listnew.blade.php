@@ -2012,6 +2012,7 @@
                        value:$('#'+id+'_md').val(),
                        control:id,
                     },success:function(resp,textStatus, getStatus){
+                        console.log(res)
                         if(getStatus.status == 200){
                                swal('Success!','','success');
                                getProduct_attribute();
@@ -2037,7 +2038,7 @@
                             $("#tags_md").empty();
                             $.each(resp,function(i,v){
                                   $("#tags_md").append($('<option>').text(v.name).attr('value', v.id));
-                            })
+                            });
                         }
                     }
                   });
