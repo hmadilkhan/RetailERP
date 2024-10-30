@@ -2012,7 +2012,6 @@
                        value:$('#'+id+'_md').val(),
                        control:id,
                     },
-                    dataType:'json',
                     success:function(resp,textStatus, getStatus){
 
                         if(getStatus.status == 200){
@@ -2020,7 +2019,7 @@
                                getProduct_attribute();
                                $('#'+id+'_md').val(null);
                         }else{
-                            swal('Error!',resp,'error');
+                            swal('Error!','','error');
                         }
                     },error:function(errorResp){
                         swal('Error!',errorResp,'error');
