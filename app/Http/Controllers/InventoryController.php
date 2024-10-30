@@ -551,7 +551,26 @@ class InventoryController extends Controller
                 return response()->json('This ' . $request->value . ' brand already exists.', 409);
             }
 
-            return Tag::create(['name' => $request->value, 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)), 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
+             $result = Tag::create([
+                            'name' => $request->value,
+                            'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)),
+                            'company_id' => session('company_id'),
+                            'created_at' => date('Y-m-d H:i:s')
+                        ]);
+            if($result && isset($request->products) && count($request->products) > 0){
+                foreach ($request->products as $productid) {
+                        $existsProduct =  DB::table('inventory_tags')->where('tag_id', $result->id)->where('inventory_id', $productid)->where('status', 1)->count();
+                        if ($existsProduct == 0) {
+                            DB::table('inventory_tags')->insert([
+                                "inventory_id" => $productid,
+                                "tag_id"       => $result->id,
+                                'created_at'   => date("Y-m-d H:i:s")
+                            ]);
+                        }
+                }
+            }
+
+            return ($result) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
         } elseif ($columnName == 'attribute') {
 
             if (Attribute::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {

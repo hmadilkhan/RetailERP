@@ -1888,7 +1888,7 @@
             });
 
            if(rem_id != 0){
-             console.log(rem_id);
+             //console.log(rem_id);
              swal({
                 title: "UnLink Website",
                 text: "Do you want to unlink from website?",
@@ -1992,12 +1992,13 @@
     }
 
     function tagCreate(){
+        $('#tagname_md').val(null);
         $("#tags-detail-modal").modal('hide');
         $("#createtag-modal").modal('show');
     }
 
-    function insertProduct_attribute(id){
-           if($('#'+id+'_md').val() == "") {
+    function insertProduct_attribute(){
+           if($('#tagname_md').val() == "") {
              swal({
                     title: "Error Message",
                     text: "Required Field can not be blank!",
@@ -2005,20 +2006,31 @@
                });
 
           }else{
+
+            $(".chkbx").each(function(index) {
+                if ($(this).is(":checked")) {
+                    // console.log($(this).data('id'))
+                    if (jQuery.inArray($(this).data('id'), rem_id) == -1) {
+                        rem_id.push($(this).data('id'));
+                    }
+                }
+            });
+
              $.ajax({
                     url: "{{route('insertProduct_attribute')}}",
                     type: 'POST',
                     data:{_token:"{{ csrf_token() }}",
-                       value:$('#'+id+'_md').val(),
+                       value:$('#tagname_md').val(),
                        control:id,
+                       products:rem_id
                     },
                     dataType:'json',
                     success:function(resp,textStatus, getStatus){
 
                         if(getStatus.status == 200){
                                swal('Success!','','success');
-                               getProduct_attribute();
-                               $('#'+id+'_md').val(null);
+                            //    getProduct_attribute();
+                               $('#tagname_md').val(null);
                         }
                     },error:function(errorResp){
                         swal('Error!',errorResp.responseText,'error');
@@ -2039,6 +2051,8 @@
                             $.each(resp,function(i,v){
                                   $("#tags_md").append($('<option>').text(v.name).attr('value', v.id));
                             });
+
+
                         }
                     }
                   });

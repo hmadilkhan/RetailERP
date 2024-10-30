@@ -432,13 +432,13 @@
                   <div class="col-md-12">
                    <div class="form-group">
                      <label class="form-control-label">Tag:</label>
-                      <input type="text" name="tag_md" id="tag_md" class="form-control" placeholder="Like 'best product'" />
+                      <input type="text" name="tagname_md" id="tagname_md" class="form-control" placeholder="Like 'best product'" />
                      </div>
                    </div>
                </div>
           </div>
           <div class="modal-footer">
-             <button type="button" class="btn btn-success waves-effect waves-light" onClick="insertProduct_attribute('tag')">Add</button>
+             <button type="button" class="btn btn-success waves-effect waves-light" onClick="insertProduct_attribute()">Add</button>
           </div>
        </div>
     </div>
