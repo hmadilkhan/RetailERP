@@ -80,7 +80,7 @@ class InventoryController extends Controller
             ->where('invent.company_id',session('company_id'))
             // ->where('website_products.status',1)
             // ,'website_details.id as website_id','website_details.name as website_name'
-            ->where('invent.status',$status)
+            ->where('invent.status',1)
             ->where('inventory_price.status_id',1)
             // ->where('inventory_stock.branch_id',session('branch'))
             ->groupBy("invent.id")
