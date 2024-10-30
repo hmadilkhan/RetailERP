@@ -238,7 +238,8 @@
 @endsection
 
 @section('scriptcode_one')
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 @endsection
 
 @section('scriptcode_three')
@@ -2025,11 +2026,14 @@
                        products:rem_id
                     },
                     dataType:'json',
+                    beforeSend:function(){
+                        $("#btn_tag_save").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+                    },
                     success:function(resp,textStatus, getStatus){
-
+                        $("#btn_tag_save").attr('disabled',false).html('Add');
                         if(getStatus.status == 200){
                                swal('Success!','','success');
-                            //    getProduct_attribute();
+                               getProduct_attribute();
                         }
                     },error:function(errorResp){
                         swal('Error!',errorResp.responseText,'error');
