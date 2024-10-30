@@ -365,7 +365,7 @@ public function updateProductName($id,$name)
 
 			}
 		})
-		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name','pos_products_gen_details.pos_item_id')
+		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name',DB::raw('COUNT(pos_products_gen_details.product_id) as pos_product_count'))
 		->where('invent.company_id',session('company_id'))
         // ->where('website_products.status',1)
         // ,'website_details.id as website_id','website_details.name as website_name'
