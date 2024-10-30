@@ -1990,6 +1990,11 @@
       $("#linkVariableProd").attr('href','/inventory/'+id+'/variable-products');
       $("#linkDeal").attr('href','/inventory/'+id+'/deal-products');
     }
+
+    function tagCreate(){
+        $("#tags-detail-modal").modal('hide');
+        $("#createtag-modal").modal('show');
+    }
     </script>
 
 @endsection

@@ -398,6 +398,7 @@
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
+                    <i onclick="tagCreate()" class="icofont icofont-plus f-right text-success pointer" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
 				   <select id="tags_md" name="tags" class="form-control select2" multiple>
 					   <option>Select</option>
 					   @foreach($tagsList as $val)
@@ -415,6 +416,33 @@
 		</div>
 	</div>
 </div>
+
+<div class="modal fade modal-flex" id="createtag-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+             <h4 class="modal-title">Add Tag</h4>
+          </div>
+          <div class="modal-body">
+            <div class="row">
+                  <div class="col-md-12">
+                   <div class="form-group">
+                     <label class="form-control-label">Tag:</label>
+                      <input type="text" name="tag_md" id="tag_md" class="form-control" />
+                     </div>
+                   </div>
+               </div>
+          </div>
+          <div class="modal-footer">
+             <button type="button" id="btn_tag_md" class="btn btn-success waves-effect waves-light" onClick="insertProduct_attribute('tag')">Add</button>
+          </div>
+       </div>
+    </div>
+ </div>
+
 <div class="modal fade modal-flex" id="details-modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">
