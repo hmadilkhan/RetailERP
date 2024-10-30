@@ -541,21 +541,21 @@ class InventoryController extends Controller
         if ($columnName == 'brand') {
 
             if (Brand::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
-                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
+                return response()->json('This ' . $request->value . ' brand already exists.', 409);
             }
 
             return Brand::create(['name' => $request->value, 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)), 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
         } elseif ($columnName == 'tag') {
 
             if (Tag::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
-                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
+                return response()->json('This ' . $request->value . ' brand already exists.', 409);
             }
 
             return Tag::create(['name' => $request->value, 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)), 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
         } elseif ($columnName == 'attribute') {
 
             if (Attribute::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
-                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
+                return response()->json('This ' . $request->value . ' brand already exists.', 409);
             }
 
             return Attribute::create(['name' => $request->value, 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
