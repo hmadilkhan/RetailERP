@@ -76,7 +76,7 @@ class InventoryController extends Controller
             })
             ->leftJoin("website_details",'website_details.id','website_products.website_id')
             ->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id')
-            ->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name')
+            ->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name','pos_products_gen_details.pos_item_id')
             ->where('invent.company_id',session('company_id'))
             // ->where('website_products.status',1)
             // ,'website_details.id as website_id','website_details.name as website_name'
