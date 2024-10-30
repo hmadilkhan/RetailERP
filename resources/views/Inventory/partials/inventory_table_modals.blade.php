@@ -399,7 +399,7 @@
 			<div class="modal-body">
 				<div class="form-group">
                     <i onclick="tagCreate()" class="icofont icofont-plus f-right text-success pointer" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
-				   <select id="tags_md" name="tags" class="form-control select2" data-placeholder="Selects" multiple>
+				   <select id="tags_md" name="tags" class="select2" data-placeholder="Select Tags" multiple>
 					   <option>Select</option>
 					   @foreach($tagsList as $val)
 						 <option value="{{ $val->id }}">{{ $val->name }}</option>
