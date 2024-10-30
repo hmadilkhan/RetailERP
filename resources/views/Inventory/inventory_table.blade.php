@@ -83,10 +83,16 @@
                             {{-- <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
                                 title='Create Variable & Addon Product'><i
                                     class='icofont icofont-plus text-success'></i></a> --}}
-
+                              @if($inventory->pos_product_count != 0)
+                                <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
+                                    title='Create Variable & Addon Product'>
+                                    <i class='icofont icofont-plus text-success'></i>
+                                </a>
+                              @else
                                     <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class='m-r-1'
                                         title='Make a Deal & Variable Product'><i
                                             class='icofont icofont-plus text-success'></i></a>
+                              @endif
                         @endif
 
 
