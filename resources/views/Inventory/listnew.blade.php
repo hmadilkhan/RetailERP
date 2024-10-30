@@ -2012,7 +2012,7 @@
                        value:$('#'+id+'_md').val(),
                        control:id,
                     },success:function(resp,textStatus, getStatus){
-                        console.log(res)
+                        console.log(resp)
                         if(getStatus.status == 200){
                                swal('Success!','','success');
                                getProduct_attribute();
