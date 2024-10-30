@@ -237,6 +237,23 @@
                         @endif
                   </div>
             </div>
+
+            <div class="col-md-4">
+				<div class="form-group {{ $errors->has('tags') ? 'has-danger' : '' }}">
+                  <label class="form-control-label">Tags</label>
+                  <i data-toggle="modal" data-target="#createtag-modal" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
+                    <select class="form-control  select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
+                       <option value="">Select</option>
+                              @php $oldTag = (array) old('tag') @endphp
+                              @foreach($tagsList as $val)
+                                  <option {{ (in_array($val->id,$oldTag)) ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
+                              @endforeach
+                    </select>
+                    @if ($errors->has('tags'))
+                      <div class="form-control-feedback">Required field can not be blank.</div>
+                    @endif
+              </div>
+			</div>
         </div>
 
         <hr/>
@@ -277,22 +294,7 @@
               </div>
 			</div>
 
-            <div class="col-lg-3 col-md-4">
-				<div class="form-group {{ $errors->has('tags') ? 'has-danger' : '' }}">
-                  <label class="form-control-label">Tags</label>
-                  <i data-toggle="modal" data-target="#createtag-modal" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
-                    <select class="form-control  select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
-                       <option value="">Select</option>
-                              @php $oldTag = (array) old('tag') @endphp
-                              @foreach($tagsList as $val)
-                                  <option {{ (in_array($val->id,$oldTag)) ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
-                              @endforeach
-                    </select>
-                    @if ($errors->has('tags'))
-                      <div class="form-control-feedback">Required field can not be blank.</div>
-                    @endif
-              </div>
-			</div>
+
         </div>
 
         <div class="row">
