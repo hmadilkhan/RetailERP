@@ -197,6 +197,7 @@
             /* bar chart */
             var chLine = document.getElementById("chLine");
             $("#chLine").empty();
+            $("#divLineGraph").append("<canvas id='chLine'></canvas>");
             xaxis = {!! json_encode($orderTimingGraph->pluck('hour_range')) !!};
             data = {!! json_encode($orderTimingGraph->pluck('total_orders')) !!};
             height = "{{ $height }}";
@@ -206,9 +207,9 @@
                 datasets: [{
                     data: data,
                     backgroundColor: 'transparent',
-                    borderColor: colors[0],
+                    borderColor: colors[1],
                     borderWidth: 4,
-                    pointBackgroundColor: colors[0]
+                    pointBackgroundColor: colors[1]
                 }]
             };
             if (chLine) {
@@ -224,7 +225,7 @@
                             mode: null
                         },
                         tooltips: { // Disable tooltips
-                            enabled: false
+                            enabled: true
                         },
                         events: [],
                         responsiveAnimationDuration: 0,

@@ -210,41 +210,57 @@
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 f-right">
                         <label class="form-control-label"></label>
                         <button type="button" onclick="clearSearchFields()"
-                            class="btn btn-info waves-effect waves-light m-t-25 m-r-10 f-right">
+                            class="btn btn-info waves-effect waves-light m-t-25 m-r-10 f-right buttons">
                             <i class="icofont icofont-file-pdf"> </i>Clear All
                         </button>
 
                         <button type="button" id="btnExcel"
-                            class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right">
+                            class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right buttons">
                             <i class="icofont icofont-file-excel"> </i>Excel Export
                         </button>
                         @if (session('roleId') != 20 && session('roleId') != 19)
                             <button type="button" id="btnPdf"
-                                class="btn btn-danger waves-effect waves-light m-t-25 m-r-10 f-right">
+                                class="btn btn-danger waves-effect waves-light m-t-25 m-r-10 f-right buttons">
                                 <i class="icofont icofont-file-pdf"> </i>PDF Export
                             </button>
                         @endif
                         <button type="button" id="fetch"
-                            class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right">
+                            class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right buttons">
                             <i class="icofont icofont-ui-check"> </i>Fetch
                         </button>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="card">
+        <div class="card" id="graphDiv">
             <div class="card-header p-2">
                 <div class="col-md-6 py-1">
                     <div class="card">
                         <div class="card-body">
-                            <canvas id="chLine"></canvas>
+                            <div class="loader" style="display:none;">
+                                <div
+                                    class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
+                                    <div class='spinner-border text-dark' role='status'>
+                                        <span class='visually-hidden'>Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <canvas class="graph" id="chLine"></canvas>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 py-1">
                     <div class="card">
                         <div class="card-body">
-                            <canvas id="chBarOne"></canvas>
+                            <div class="loader" style="display:none;">
+                                <div
+                                    class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
+                                    <div class='spinner-border text-dark' role='status'>
+                                        <span class='visually-hidden'>Loading...</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <canvas class="graph" id="chBarOne"></canvas>
                         </div>
                     </div>
                 </div>
@@ -252,7 +268,15 @@
         </div>
         <div class="card">
             <div class="card-header p-2">
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="loader" style="display:none;">
+                    <div
+                        class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
+                        <div class='spinner-border text-dark' role='status'>
+                            <span class='visually-hidden'>Loading...</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
                     <div class="card dashboard-product">
                         <span>Total Orders</span>
                         <h2 class="dashboard-total-products" id="totalorders">0</h2>
@@ -262,7 +286,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
                     <div class="card dashboard-product">
                         <span>Pending Orders</span>
                         <h2 class="dashboard-total-products" id="pendingorders">0</h2>
@@ -272,7 +296,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
                     <div class="card dashboard-product">
                         <span>Processing Orders</span>
                         <h2 class="dashboard-total-products" id="processingorders">0</h2>
@@ -282,7 +306,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
                     <div class="card dashboard-product">
                         <span>Void Orders</span>
                         <h2 class="dashboard-total-products" id="voidorders">0</h2>
@@ -293,7 +317,7 @@
                     </div>
                 </div>
                 {{-- @if (session('company_id') == 102) --}}
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
                     <div class="card dashboard-product">
                         <span>Dispatch Orders</span>
                         <h2 class="dashboard-total-products" id="dispatchorders">0</h2>
@@ -304,7 +328,7 @@
                     </div>
                 </div>
                 {{-- @else --}}
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
                     <div class="card dashboard-product">
                         <span>Sales Return</span>
                         <h2 class="dashboard-total-products" id="salesreturnorders">0</h2>
@@ -315,7 +339,7 @@
                     </div>
                 </div>
                 {{-- @endif --}}
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
                     <div class="card dashboard-product">
                         <span>Delivered Orders</span>
                         <h2 class="dashboard-total-products" id="deliveredorders">0</h2>
@@ -326,7 +350,7 @@
                     </div>
                 </div>
 
-                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6">
+                <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
                     <div class="card dashboard-product">
                         <span id="labeltaxname">FBR/SRB Orders</span>
                         <h2 class="dashboard-total-products" id="totaltaxorders">0</h2>
@@ -589,10 +613,14 @@
             )
         }
         var count = 0;
+
         function fetch_data(page) {
             count++;
-            
+
             showLoader("table_data")
+            $(".loader").css("display", "block");
+            $(".graph").css("display", "none");
+            $(".buttons").prop('disabled', true);
             $.ajax({
                 url: "{{ url('get-pos-orders-new') }}" + "?page=" + page,
                 type: 'GET',
@@ -619,10 +647,16 @@
                 },
                 success: function(data) {
                     $('#table_data').empty();
+                    $(".loader").css("display", "none");
+                    $(".graph").css("display", "block");
+                    $(".buttons").prop('disabled', false);
                     $('#table_data').html(data);
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     $("#table_data").empty();
+                    $(".buttons").prop('disabled', false);
+                    $(".loader").css("display", "none");
+                    $(".graph").css("display", "block");
                 }
             });
         }
@@ -637,6 +671,7 @@
         // });
 
         function clearSearchFields() {
+            $(".buttons").prop("disabled",true);
             $('#paymentmode').val("").change()
             $('#rpdate').val("")
             $('#date').val("")
@@ -649,7 +684,8 @@
             $('#terminal').val("").change()
             $('#order_no').val("")
             $('#sales_tax').val("").change();
-            $('#orderstatus').val("").change()
+            $('#orderstatus').val("").change();
+            $(".buttons").prop("disabled",false);
         }
 
         function assignToServiceProviderModal(receiptId) {
@@ -903,47 +939,6 @@
         function voidReceipt(id) {
             $("#voidId").val(id);
             $("#void-modal").modal("show");
-            // $('.alert-confirm').on('click',function(){
-
-            // swal({
-            // title: "Are you sure?",
-            // text: "Receipt will be void ??!",
-            // type: "warning",
-            // showCancelButton: true,
-            // confirmButtonClass: "btn-danger",
-            // confirmButtonText: "delete it!",
-            // cancelButtonText: "cancel plx!",
-            // closeOnConfirm: false,
-            // closeOnCancel: false
-            // },
-            // function(isConfirm){
-            // if(isConfirm){
-            // $.ajax({
-            // url: "{{ url('make-receipt-void') }}",
-            // type: 'POST',
-            // data:{_token:"{{ csrf_token() }}",id:id},
-            // dataType:"json",
-            // success:function(resp){
-            // if(resp.status == 200){
-            // swal({
-            // title: "Deleted",
-            // text: resp.message,
-            // type: "success"
-            // },function(isConfirm){
-            // if(isConfirm){
-            // fetch_data(1)
-            // window.location="{{ route('vendors.index') }}";
-            // }
-            // });
-            // }
-            // }
-
-            // });
-            // }else {
-            // swal("Cancelled", "Your receipt is safe :)", "error");
-            // }
-            // });
-            // });
         }
 
         function saveVoid() {
@@ -1072,8 +1067,7 @@
         })
 
         var colors = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
-        var xaxis ;
-        var data ;
-
+        var xaxis;
+        var data;
     </script>
 @endsection
