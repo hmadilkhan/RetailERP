@@ -512,7 +512,7 @@ class InventoryController extends Controller
             return Brand::create(['name' => $request->value, 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)), 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
         } elseif ($columnName == 'tag') {
 
-            if (Tag::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
+            if (Tag::where('company_id', session('company_id'))->where('status',1)->where('name', $request->value)->count() > 0) {
                 return response()->json('This ' . $request->value . ' brand already exists.', 409);
             }
 
