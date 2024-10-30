@@ -375,7 +375,7 @@ public function updateProductName($id,$name)
 		->groupBy("invent.id")
 		->orderBy("invent.id");
 
-		return $query->paginate(50);
+		return $query->paginate(20);
 
     }
 
