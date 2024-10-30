@@ -2011,8 +2011,10 @@
                     data:{_token:"{{ csrf_token() }}",
                        value:$('#'+id+'_md').val(),
                        control:id,
-                    },success:function(resp,textStatus, getStatus){
-                        console.log(resp)
+                    },
+                    dataType:'json',
+                    success:function(resp,textStatus, getStatus){
+
                         if(getStatus.status == 200){
                                swal('Success!','','success');
                                getProduct_attribute();
