@@ -1996,37 +1996,7 @@
         $("#createtag-modal").modal('show');
     }
 
-    function insertProduct_attribute(id){
-           if($('#'+id+'_md').val() == "") {
-             swal({
-                    title: "Error Message",
-                    text: "Required Field can not be blank!",
-                    type: "warning"
-               });
 
-          }else{
-             $.ajax({
-                    url: "{{route('insertProduct_attribute')}}",
-                    type: 'POST',
-                    data:{_token:"{{ csrf_token() }}",
-                       value:$('#'+id+'_md').val(),
-                       control:id,
-                    },
-                    success:function(resp,textStatus, getStatus){
-
-                        if(getStatus.status == 200){
-                               swal('Success!','','success');
-                               getProduct_attribute();
-                               $('#'+id+'_md').val(null);
-                        }else{
-                            swal('Error!','','error');
-                        }
-                    },error:function(errorResp){
-                        swal('Error!',errorResp,'error');
-                    }
-                  });
-            }
-     }
      function getProduct_attribute(){
              $.ajax({
                     url: "{{route('getProduct_attribute')}}",

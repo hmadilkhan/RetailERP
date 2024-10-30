@@ -432,7 +432,7 @@
                   <div class="col-md-12">
                    <div class="form-group">
                      <label class="form-control-label">Tag:</label>
-                      <input type="text" name="tag_md" id="tag_md" class="form-control" />
+                      <input type="text" name="tag_md" id="tag_md" class="form-control" placeholder="Like 'best product'" />
                      </div>
                    </div>
                </div>
