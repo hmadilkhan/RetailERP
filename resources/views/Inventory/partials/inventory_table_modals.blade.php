@@ -394,10 +394,11 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title">Tags Change</h4>
+				<h4 class="modal-title">Product link to Tags</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
+                    <label>Tags</label>
                     <i onclick="tagCreate()" class="icofont icofont-plus f-right text-success pointer" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
 				   <select id="tags_md" name="tags" class="select2" data-placeholder="Select Tags" multiple>
 					   <option>Select</option>
