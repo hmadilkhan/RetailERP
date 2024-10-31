@@ -821,6 +821,7 @@
             let to = $('#dateto').val();
             let branch = $('#branch').val();
             let terminal = $('#terminal').val();
+            let type = $('#type').val();
 
             if ($('#txtsaledec').val() == 1) {
                 window.location = "{{ url('reports/excel-export-sales-declartion') }}"+"/" + from + "/" + to +"/" + branch + "/" + terminal;
@@ -828,6 +829,11 @@
 
             if ($('#txtwebsiteitemssummary').val() == 1) {
                 window.location = "{{ url('reports/website-items-summary') }}"+"/" + from + "/" + to;
+            }
+
+            if ($('#txtinvoicereport').val() == 1) {
+                window.location = "{{ url('reports/excel-export-orders-report') }}?fromdate=" + from + "&todate=" + to + "&terminal_id=" +
+                terminal + "&type=" + type + "&report=excel&category=&branch=" + branch;
             }
 
             // if ($('#txtitemsale').val() == 1) {

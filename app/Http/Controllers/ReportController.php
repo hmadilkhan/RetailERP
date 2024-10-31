@@ -5553,9 +5553,8 @@ class ReportController extends Controller
     public function salesInvoicesReportExcel(Request $request, report $report)
     {
         $terminals = $report->getTerminals($request->branch);
-        return $terminals;
-        $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category);
-        $permission = $report->terminalPermission($values->terminal_id);
+        $details = $report->totalSales($request->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category);
+        $permission = $report->terminalPermission($request->terminal_id);
         return $request;
     }
 
