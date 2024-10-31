@@ -32,6 +32,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Exception;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 // use Spatie\LaravelImageOptimizer\Facades\ImageOptimizer;
@@ -562,6 +563,25 @@ class InventoryController extends Controller
         } else {
             return response()->json('Error invalid parameter values.', 500);
         }
+    }
+
+    public function updateProductTags(Request $request){
+       try{
+        if (!empty($request->tags)) {
+            DB::table('inventory_tags')->where("inventory_id",$request->product)->update(['status'=>0]);
+            foreach ($request->tags as $val) {
+                DB::table('inventory_tags')->insert([
+                    "inventory_id" => $request->product,
+                    "tag_id"     => $val,
+                    'created_at'   => date("Y-m-d H:i:s")
+                ]);
+            }
+        }
+
+        return response()->json('Success!',200);
+     }catch(Exception $e){
+        return response()->json($e->getMessage(),500);
+     }
     }
 
     public function setProductAttribute_update(Request $request)
@@ -1116,7 +1136,7 @@ class InventoryController extends Controller
             WebsiteProduct::where("inventory_id", $request->id)->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")]);
         }
 
-        DB::table('inventory_tags')->where("inventory_id", $request->id)->delete();
+        DB::table('inventory_tags')->where("inventory_id", $request->id)->update(['status'=>0]);
         if (!empty($request->tags)) {
             foreach ($request->tags as $val) {
                 DB::table('inventory_tags')->insert([

@@ -1997,6 +1997,10 @@
     function tagCreate(){
         $('#tagname_md').val(null);
         $("#tags-detail-modal").modal('hide');
+        if(crtagprodCode != null){
+            $("#unlinkTag-modal").modal('hide');
+        }
+
         $("#createtag-modal").modal('show');
     }
 
@@ -2099,6 +2103,31 @@
        $("#unlinkTag-modal").modal('show');
 
     }
+
+    $("#btntagSave_unlkmd").on('click',function(){
+         if($("#tags_unlkmd").val() != ''){
+            $.ajax({
+                    url: "{{route('updateProductTags')}}",
+                    type: 'POST',
+                    dataType:"json",
+                    data:{_token:"{{ csrf_token() }}",
+                       tags:$("#tags_unlkmd").val(),
+                       product:crtagprodCode
+                    },beforeSend:function(){
+                        $("#btntagSave_unlkmd").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+                    },success:function(resp,textStatus, getStatus){
+                        if(getStatus.status == 200){
+                            swal('Success!','','success');
+                            $("#unlinkTag-modal").modal('hide');
+                            getProduct_attribute();
+                        }
+                    },error:function(errorResp){
+                        $("#btntagSave_unlkmd").attr('disabled',false).html('Save Changes');
+                        swal('Error!',errorResp.responseText,'error');
+                    }
+                  });
+         }
+    })
 
 
     </script>
