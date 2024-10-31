@@ -491,7 +491,23 @@ class InventoryController extends Controller
 
             return $brand->getBrand();
         } elseif ($columnName == 'tag') {
-
+           if(isset($request->product)){
+            $productId = $request->product;
+            return DB::table('tags as t')
+                        ->leftJoin('inventory_tags as it', function ($join) use ($productId) {
+                            $join->on('t.id', '=', 'it.tag_id')
+                                ->where('it.inventory_id', '=', $productId)
+                                ->where('it.status',1);
+                        })
+                        ->select('t.id', 't.name', 'it.inventory_id')
+                        ->get();
+            // return  DB::table('inventory_tags')
+            //            ->leftJoin('tags','')
+            //            ->where([
+            //                 "inventory_id" => $request->product,
+            //                 "status"       => 1
+            //             ])->get();
+           }
             return Tag::getTags();
         } else {
             return response()->json('Error invalid parameter values.', 500);

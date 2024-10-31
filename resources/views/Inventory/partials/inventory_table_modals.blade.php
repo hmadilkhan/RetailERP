@@ -444,6 +444,34 @@
     </div>
  </div>
 
+ <div class="modal fade modal-flex" id="unlinkTag-modal" tabindex="-1" role="dialog">
+	<div class="modal-dialog modal-md" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title">Product unlink to Tags</h4>
+			</div>
+			<div class="modal-body">
+				<div class="form-group">
+                    <label>Tags</label>
+                    <i onclick="tagCreate()" class="icofont icofont-plus f-right text-success pointer" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
+				   <select id="tags_unlkmd" name="tags" class="select2" data-placeholder="Select Tags" multiple>
+				   </select>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" id="btntagSave_unlkmd" class="btn btn-success waves-effect waves-light f-right">
+					Save
+				</button>
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
 <div class="modal fade modal-flex" id="details-modal" tabindex="-1" role="dialog">
 	<div class="modal-dialog modal-md" role="document">
 		<div class="modal-content">

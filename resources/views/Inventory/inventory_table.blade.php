@@ -117,6 +117,9 @@
                                 Un-link to website</a>
                         @endif
 
+                        <a href="javascript:void(0)" class="dropdown-item waves-light waves-effect" onclick="UnLinkTag({{ $inventory->id }})"
+                            data-toggle='tooltip' data-placement='top' title='' data-original-title='Un-link to tag'>
+                            Un-link to tags</a>
                         </div>
                       </div>
                      @else

@@ -246,6 +246,8 @@
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
+
+     var crtagprodCode = null;
         function initializeLazyLoading() {
             let lazyImages = [].slice.call(document.querySelectorAll("img.lazy-load"));
 
@@ -2017,6 +2019,10 @@
                 }
             });
 
+            if(rem_id == null && crtagprodCode != null){
+                rem_id.push(crtagprodCode);
+            }
+
              $.ajax({
                     url: "{{route('insertProduct_attribute')}}",
                     type: 'POST',
@@ -2034,6 +2040,13 @@
                         if(getStatus.status == 200){
                                swal('Success!','','success');
                                getProduct_attribute();
+                               rem_id = [];
+
+                          $(".chkbx").each(function(index) {
+                            if ($(this).is(":checked")) {
+                                 $(this).prop('checked', false);
+                                }
+                            });
                         }
                     },error:function(errorResp){
                         $("#btn_tag_save").attr('disabled',false).html('Add');
@@ -2061,6 +2074,33 @@
                     }
                   });
     }
+
+    function UnLinkTag(product){
+        crtagprodCode = product;
+        $.ajax({
+                    url: "{{route('getProduct_attribute')}}",
+                    type: 'POST',
+                    dataType:"json",
+                    data:{_token:"{{ csrf_token() }}",
+                       control:'tag',
+                       product:product
+                    },success:function(resp,textStatus, getStatus){
+                        if(resp != null){
+                            $("#tags_unlkmd").empty();
+                            $.each(resp,function(i,v){
+                                  $("#tags_unlkmd").append($('<option '+(v.inventory_id == product ? 'selected' : '' )+'>').text(v.name).attr('value', v.id));
+                            });
+
+
+                        }
+                    }
+                  });
+
+       $("#unlinkTag-modal").modal('show');
+
+    }
+
+
     </script>
 
 @endsection
