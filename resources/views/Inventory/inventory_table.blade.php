@@ -65,7 +65,7 @@
                         </a>
                     </td>
                     <td>{{ $inventory->item_code }}</td>
-                    <td>{{ $inventory->product_name }} {{ isset($inventory->tags) ? '</br><p>'.$inventory->tags.'</p>' : '' }}</td>
+                    <td>{{ $inventory->product_name }} {{ isset($inventory->tags) ? </br><p>$inventory->tags</p> : '' }}</td>
                     <td>{{ $inventory->department_name }}</td>
                     <td>{{ $inventory->sub_depart_name }}</td>
                     <td>{{ $inventory->actual_price }}</td>
