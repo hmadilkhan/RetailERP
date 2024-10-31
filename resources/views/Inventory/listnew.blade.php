@@ -2119,7 +2119,7 @@
                         if(getStatus.status == 200){
                             swal('Success!','','success');
                             $("#unlinkTag-modal").modal('hide');
-                            getProduct_attribute();
+                            window.location = '{{ route("invent-list") }}';
                         }
                     },error:function(errorResp){
                         $("#btntagSave_unlkmd").attr('disabled',false).html('Save Changes');
