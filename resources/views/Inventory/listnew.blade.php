@@ -238,7 +238,8 @@
 @endsection
 
 @section('scriptcode_one')
-    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+ <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 @endsection
 
 @section('scriptcode_three')
@@ -1888,7 +1889,7 @@
             });
 
            if(rem_id != 0){
-             console.log(rem_id);
+             //console.log(rem_id);
              swal({
                 title: "UnLink Website",
                 text: "Do you want to unlink from website?",
@@ -1992,12 +1993,13 @@
     }
 
     function tagCreate(){
+        $('#tagname_md').val(null);
         $("#tags-detail-modal").modal('hide');
         $("#createtag-modal").modal('show');
     }
 
-    function insertProduct_attribute(id){
-           if($('#'+id+'_md').val() == "") {
+    function insertProduct_attribute(){
+           if($('#tagname_md').val() == "") {
              swal({
                     title: "Error Message",
                     text: "Required Field can not be blank!",
@@ -2005,22 +2007,37 @@
                });
 
           }else{
+
+            $(".chkbx").each(function(index) {
+                if ($(this).is(":checked")) {
+                    // console.log($(this).data('id'))
+                    if (jQuery.inArray($(this).data('id'), rem_id) == -1) {
+                        rem_id.push($(this).data('id'));
+                    }
+                }
+            });
+
              $.ajax({
                     url: "{{route('insertProduct_attribute')}}",
                     type: 'POST',
                     data:{_token:"{{ csrf_token() }}",
-                       value:$('#'+id+'_md').val(),
-                       control:id,
-                    },success:function(resp,textStatus, getStatus){
+                       value:$('#tagname_md').val(),
+                       control:'tag',
+                       products:rem_id
+                    },
+                    dataType:'json',
+                    beforeSend:function(){
+                        $("#btn_tag_save").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+                    },
+                    success:function(resp,textStatus, getStatus){
+                        $("#btn_tag_save").attr('disabled',false).html('Add');
                         if(getStatus.status == 200){
                                swal('Success!','','success');
                                getProduct_attribute();
-                               $('#'+id+'_md').val(null);
-                        }else{
-                            swal('Error!',resp,'error');
                         }
                     },error:function(errorResp){
-                        swal('Error!',errorResp,'error');
+                        $("#btn_tag_save").attr('disabled',false).html('Add');
+                        swal('Error!',errorResp.responseText,'error');
                     }
                   });
             }
@@ -2037,7 +2054,9 @@
                             $("#tags_md").empty();
                             $.each(resp,function(i,v){
                                   $("#tags_md").append($('<option>').text(v.name).attr('value', v.id));
-                            })
+                            });
+
+
                         }
                     }
                   });

@@ -56,41 +56,6 @@ class InventoryController extends Controller
      */
     public function index(inventory $inventory, Brand $brand)
     {
-
-        // if(Auth::user()->username == 'demoadmin'){
-
-        //     $query = DB::table('inventory_general as invent')
-        //     ->join('inventory_uom as u','u.uom_id','=','invent.uom_id')
-        //     ->leftJoin('inventory_department as dept','dept.department_id','=','invent.department_id')
-        //     ->leftJoin('inventory_sub_department as sdept','sdept.sub_department_id','=','invent.sub_department_id')
-        //     ->join('inventory_product_mode','inventory_product_mode.product_mode_id','=','invent.product_mode')
-        //     ->join('inventory_price','inventory_price.product_id','=','invent.id')
-        //     ->leftJoin('website_products', function($join) {
-        //         $join->on('website_products.inventory_id', '=', 'invent.id')
-        //              ->where('website_products.status', '=', 1);
-        //     })
-        //     ->leftJoin('pos_products_gen_details', function($join) {
-        //         $join->on('pos_products_gen_details.product_id', '=', 'invent.id')
-        //              ->where('pos_products_gen_details.status_id', '=', 1)
-        //              ->groupBy('pos_products_gen_details.product_id');
-        //     })
-        //     ->leftJoin("website_details",'website_details.id','website_products.website_id')
-        //     ->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id')
-        //     ->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name','pos_products_gen_details.pos_item_id')
-        //     ->where('invent.company_id',session('company_id'))
-        //     // ->where('website_products.status',1)
-        //     // ,'website_details.id as website_id','website_details.name as website_name'
-        //     ->where('invent.status',1)
-        //     ->where('inventory_price.status_id',1)
-        //     // ->where('inventory_stock.branch_id',session('branch'))
-        //     ->groupBy("invent.id")
-        //     ->orderBy("invent.id");
-
-        //     return $query->get();
-
-        // }
-
-
         // return  InventoryDepartment::whereIn("department_id",ModelsInventory::whereIn("id",WebsiteProduct::where("website_id",41)->pluck("inventory_id"))->pluck("department_id"))->where('status',1)->select("code","department_id","department_name","website_department_name","slug","image","banner")->orderBy('priority','desc')->get();
         $department    = $inventory->department();
         $subdepartment = ''; //$inventory->subDepartment();
@@ -541,21 +506,40 @@ class InventoryController extends Controller
         if ($columnName == 'brand') {
 
             if (Brand::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
-                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
+                return response()->json('This ' . $request->value . ' brand already exists.', 409);
             }
 
             return Brand::create(['name' => $request->value, 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)), 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
         } elseif ($columnName == 'tag') {
 
-            if (Tag::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
-                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
+            if (Tag::where('company_id', session('company_id'))->where('status',1)->where('name', $request->value)->count() > 0) {
+                return response()->json('This ' . $request->value . ' brand already exists.', 409);
             }
 
-            return Tag::create(['name' => $request->value, 'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)), 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
+             $result = Tag::create([
+                            'name' => $request->value,
+                            'slug' => preg_replace("/[\s_]/", "-", strtolower($request->value)),
+                            'company_id' => session('company_id'),
+                            'created_at' => date('Y-m-d H:i:s')
+                        ]);
+            if($result && isset($request->products) && count($request->products) > 0){
+                foreach ($request->products as $productid) {
+                        $existsProduct =  DB::table('inventory_tags')->where('tag_id', $result->id)->where('inventory_id', $productid)->where('status', 1)->count();
+                        if ($existsProduct == 0) {
+                            DB::table('inventory_tags')->insert([
+                                "inventory_id" => $productid,
+                                "tag_id"       => $result->id,
+                                'created_at'   => date("Y-m-d H:i:s")
+                            ]);
+                        }
+                }
+            }
+
+            return ($result) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);
         } elseif ($columnName == 'attribute') {
 
             if (Attribute::where('company_id', session('company_id'))->where('name', $request->value)->count() > 0) {
-                return response()->json('Error! This ' . $request->value . ' brand already exists.', 409);
+                return response()->json('This ' . $request->value . ' brand already exists.', 409);
             }
 
             return Attribute::create(['name' => $request->value, 'company_id' => session('company_id'), 'created_at' => date('Y-m-d H:i:s')]) ? response()->json('success', 200) : response()->json('Error record is not saved.', 500);

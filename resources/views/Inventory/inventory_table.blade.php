@@ -76,40 +76,46 @@
                     <td>{{ $inventory->stock }}</td>
                     <td>{{ $inventory->name }}</td>
                     <td>
-                        @if ($inventory->is_deal == 1)
-                            <a href='/inventory/{{ $inventory->id }}/deal-products' class='m-r-1'
-                                title='View Deal Products'><i class='icofont icofont-plus text-success'></i></a>
-                        @else
-                            {{-- <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
-                                title='Create Variable & Addon Product'><i
-                                    class='icofont icofont-plus text-success'></i></a> --}}
-
-                                    <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class='m-r-1'
-                                        title='Make a Deal & Variable Product'><i
-                                            class='icofont icofont-plus text-success'></i></a>
-                        @endif
-
-
-                        <a onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
-                            class='p-r-10 f-18 text-success' data-toggle='tooltip' data-placement='top'
-                            title='Print Barcode' data-original-title='Barcode'><i
-                                class='icofont icofont-barcode'></i></a>
-                        <a onclick='edit_route("{{ $inventory->slug }}")' class='p-r-10 f-18 text-warning'
+                        <div class="dropdown-default">
+                            <button class="btn btn-inverse-default dropdown-toggle waves-effect " type="button" id="dropdown3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><
+                            <div class="dropdown-menu" aria-labelledby="dropdown3" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
+                              @if ($inventory->is_deal == 1)
+                              <a href='/inventory/{{ $inventory->id }}/deal-products' class="dropdown-item waves-light waves-effect"
+                                  title='View Deal Products'>View Deal Products</a>
+                          @else
+                              {{-- <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
+                                  title='Create Variable & Addon Product'><i
+                                      class='icofont icofont-plus text-success'></i></a> --}}
+                                @if($inventory->pos_product_count != 0)
+                                  <a href='/inventory/{{ $inventory->id }}/variable-products' class="dropdown-item waves-light waves-effect"
+                                      title='View Variable and Addon Products'>
+                                      Create Variable & Addon
+                                  </a>
+                                @else
+                                      <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class="dropdown-item waves-light waves-effect"
+                                          title='Make a Deal & Variable Product'>View Variable & Addon</a>
+                                @endif
+                          @endif
+                          <a onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
+                            class="dropdown-item waves-light waves-effect text-success" data-toggle='tooltip' data-placement='top'
+                            title='Print Barcode' data-original-title='Barcode'>Print Barcode</a>
+                        <a onclick='edit_route("{{ $inventory->slug }}")' class="dropdown-item waves-light waves-effect text-warning"
                             data-toggle='tooltip' data-placement='top' title='' data-original-title='Edit'><i
                                 class='icofont icofont-ui-edit'></i></a>
-                        <i class='icofont icofont-ui-delete text-danger f-18 '
+                                <a href="javascript:void(0)" class='dropdown-item waves-light waves-effect text-danger'
                             onclick='deleteCall("{{ $inventory->id }}")' data-id='value.id' data-toggle='tooltip'
-                            data-placement='top' title='' data-original-title='Delete'></i>
-                        &nbsp;<i
-                            onclick='assignToVendorModal("{{ $inventory->id }}") class="icofont icofont icofont-business-man #3A6EFF" data-toggle='tooltip'
-                            data-placement='top' title='' data-original-title='Assign To Vendors'></i>
+                            data-placement='top' title='' data-original-title='Delete'>Delete</a>
+                        <a href="javascript:void(0)" onclick='assignToVendorModal("{{ $inventory->id }}") class="dropdown-item waves-light waves-effect #3A6EFF" data-toggle='tooltip'
+                            data-placement='top' title='' data-original-title='Assign To Vendors'> Assign To Vendors</a>
 
                             @if ($inventory->website_id != '')
-                                 <a href="javascript:void(0)" class="text-info" onclick="UnLinkwebsite({{ $inventory->id }},{{$inventory->website_id}},'{{ $inventory->website_name }}')"
+                                 <a href="javascript:void(0)" class="dropdown-item waves-light waves-effect text-info" onclick="UnLinkwebsite({{ $inventory->id }},{{$inventory->website_id}},'{{ $inventory->website_name }}')"
                                     data-toggle='tooltip' data-placement='top' title='' data-original-title='Unlink for {{$inventory->website_name }} website'>
-                                    <i class="icofont icofont-link"></i></a>
+                                    Un-link to website</a>
                             @endif
 
+                            </div>
+                          </div>
                     </td>
                 </tr>
             @endforeach

@@ -394,13 +394,14 @@
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-				<h4 class="modal-title">Tags Change</h4>
+				<h4 class="modal-title">Product link to Tags</h4>
 			</div>
 			<div class="modal-body">
 				<div class="form-group">
+                    <label>Tags</label>
                     <i onclick="tagCreate()" class="icofont icofont-plus f-right text-success pointer" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
-				   <select id="tags_md" name="tags" class="form-control select2" data-placeholder="Selects" multiple>
-					   <option>Select</option>
+				   <select id="tags_md" name="tags" class="select2" data-placeholder="Select Tags" multiple>
+					   <option value="">Select</option>
 					   @foreach($tagsList as $val)
 						 <option value="{{ $val->id }}">{{ $val->name }}</option>
 					   @endforeach
@@ -431,13 +432,13 @@
                   <div class="col-md-12">
                    <div class="form-group">
                      <label class="form-control-label">Tag:</label>
-                      <input type="text" name="tag_md" id="tag_md" class="form-control" />
+                      <input type="text" name="tagname_md" id="tagname_md" class="form-control" placeholder="Tag Name like 'Premium'" />
                      </div>
                    </div>
                </div>
           </div>
           <div class="modal-footer">
-             <button type="button" class="btn btn-success waves-effect waves-light" onClick="insertProduct_attribute('tag')">Add</button>
+             <button type="button" id="btn_tag_save" class="btn btn-success waves-effect waves-light" onClick="insertProduct_attribute()">Add</button>
           </div>
        </div>
     </div>
