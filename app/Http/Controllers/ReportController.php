@@ -3091,7 +3091,7 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, 'B.Amount', 'B', 1, 'R', 1);
             }
 
-            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type);
+            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type,"all");
             $permission = $report->terminalPermission($request->terminalid);
             foreach ($details as $value) {
 
