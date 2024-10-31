@@ -77,7 +77,7 @@
                     <td>{{ $inventory->name }}</td>
                     <td>
                         <div class="dropdown-default">
-                            <button class="btn btn-inverse-default dropdown-toggle waves-effect " type="button" id="dropdown3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><Success</button><
+                            <button class="btn btn-inverse-default dropdown-toggle waves-effect " type="button" id="dropdown3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button><
                             <div class="dropdown-menu" aria-labelledby="dropdown3" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
                               @if ($inventory->is_deal == 1)
                               <a href='/inventory/{{ $inventory->id }}/deal-products' class="dropdown-item waves-light waves-effect"
