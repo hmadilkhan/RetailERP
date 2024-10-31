@@ -317,7 +317,10 @@ public function updateProductName($id,$name)
         })
         ->leftJoin("website_details",'website_details.id','website_products.website_id')
 		->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id')
-        ->leftJoin('inventory_tags as itag', 'itag.inventory_id', '=', 'invent.id',"inventory_tags.status","=","1")
+        ->leftJoin('inventory_tags as itag', function ($join) {
+                    $join->on('itag.inventory_id', '=', 'invent.id')
+                        ->where('itag.status', '=', 1);
+        })
         ->leftJoin('tags as t', 't.id', '=', 'itag.tag_id')
 
 
