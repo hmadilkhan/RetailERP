@@ -100,25 +100,25 @@
                             @endif
                       @endif
                       <a onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
-                        class="dropdown-item waves-light waves-effect" data-toggle='tooltip' data-placement='top'
+                        class="dropdown-item waves-light waves-effect" data-toggle='tooltip' data-placement='left'
                         title='Print Barcode' data-original-title='Barcode'>Print Barcode</a>
                     <a onclick='edit_route("{{ $inventory->slug }}")' class="dropdown-item waves-light waves-effect"
-                        data-toggle='tooltip' data-placement='top' title='' data-original-title='Edit'>Edit</a>
+                        data-toggle='tooltip' data-placement='left' title='' data-original-title='Edit'>Edit</a>
 
                     <a href="javascript:void(0)" class='dropdown-item waves-light waves-effect'
                         onclick='deleteCall("{{ $inventory->id }}")' data-id='value.id' data-toggle='tooltip'
-                        data-placement='top' title='' data-original-title='Delete'>Delete</a>
+                        data-placement='left' title='' data-original-title='Delete'>Delete</a>
                     <a href="javascript:void(0)" onclick='assignToVendorModal("{{ $inventory->id }}")' class="dropdown-item waves-light waves-effect #3A6EFF" data-toggle='tooltip'
-                        data-placement='top' title='' data-original-title='Assign To Vendors'> Assign To Vendors</a>
+                        data-placement='left' title='' data-original-title='Assign To Vendors'> Assign To Vendors</a>
 
                         @if ($inventory->website_id != '')
                              <a href="javascript:void(0)" class="dropdown-item waves-light waves-effect" onclick="UnLinkwebsite({{ $inventory->id }},{{$inventory->website_id}},'{{ $inventory->website_name }}')"
-                                data-toggle='tooltip' data-placement='top' title='' data-original-title='Unlink for {{$inventory->website_name }} website'>
+                                data-toggle='tooltip' data-placement='left' title='' data-original-title='Unlink for {{$inventory->website_name }} website'>
                                 Un-link to website</a>
                         @endif
 
                         <a href="javascript:void(0)" class="dropdown-item waves-light waves-effect" onclick="UnLinkTag({{ $inventory->id }})"
-                            data-toggle='tooltip' data-placement='top' title='' data-original-title='Un-link to tag'>
+                            data-toggle='tooltip' data-placement='left' title='' data-original-title='Un-link to tag'>
                             Un-link to tags</a>
                         </div>
                       </div>
