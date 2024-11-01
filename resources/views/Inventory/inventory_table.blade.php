@@ -112,7 +112,7 @@
                         class="dropdown-item waves-light waves-effect" data-toggle='tooltip' data-placement='left'
                         title='Print Barcode' data-original-title='Barcode'>Print Barcode</a>
 
-                    <a href="javascript:void(0)" onclick='assignToVendorModal("{{ $inventory->id }}")' class="dropdown-item waves-light waves-effect #3A6EFF" data-toggle='tooltip'
+                    <a href="javascript:void(0)" onclick='assignToVendorModal("{{ $inventory->id }}")' class="dropdown-item waves-light waves-effect" data-toggle='tooltip'
                         data-placement='left' title='' data-original-title='Assign To Vendors'> Assign To Vendors</a>
 
                         @if ($inventory->website_id != '')
