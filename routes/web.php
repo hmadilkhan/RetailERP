@@ -909,6 +909,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('reports/website-items-summary/{from}/{to}',  [ReportController::class, 'websiteItemsSummaryExcel'])->name('websiteItemsSummary');
     Route::get('raw-usage-report',  [ReportController::class, 'rawUsage'])->name('raw.usage');
     Route::get('generate-daily-usage/{from}/{to}',  [ReportController::class, 'generateDailyUsage'])->name('generate.raw.usage');
+    Route::get('testDeclarationEmail',  [ReportController::class, 'testDeclarationEmail'])->name('testDeclarationEmail');
 
     //SMS
     Route::get('/view-sms', [SMSController::class, 'view']);

@@ -10,6 +10,7 @@ use App\salary;
 use App\Vendor;
 use App\inventory;
 use App\Customer;
+use App\dashboard;
 use App\expense;
 use App\Models\Order as OrderModel;
 use App\Models\ServiceProviderOrders;
@@ -38,6 +39,7 @@ use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExcelExport;
 use App\Exports\StockReportExport;
 use App\Exports\WebsiteItemSummaryExport;
+use App\Mail\DeclarationEmail;
 use App\Models\Company;
 use App\Models\DailyStock;
 use App\Services\OrderService;
@@ -46,6 +48,7 @@ use Mail;
 use \Illuminate\Support\Arr;
 use App\stock;
 use App\Traits\MediaTrait;
+use App\userDetails;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 
@@ -4615,17 +4618,43 @@ class ReportController extends Controller
         //     asset('assets/pdf/' . $from . '_' . trim($report->branch_id) . '_FBR_Report.pdf'),
         // ];
         $files = $this->filesArray;
+        
+        // Mail::send('emails.automaticemail', $data, function ($message) use ($data, $files) {
+        //     $message->to($data["email"], "Sabify")
+        //         ->cc(['hmadilkhan@gmail.com'])
+        //         // ->cc(['adil.khan@sabsons.com.pk','faizan.akram@sabsons.com.pk'])
+        //         ->subject($data["title"]);
 
-        Mail::send('emails.automaticemail', $data, function ($message) use ($data, $files) {
-            $message->to($data["email"], "Sabify")
-                ->cc(['hmadilkhan@gmail.com'])
-                // ->cc(['adil.khan@sabsons.com.pk','faizan.akram@sabsons.com.pk'])
-                ->subject($data["title"]);
+        //     foreach ($files as $file) {
+        //         $message->attach($file);
+        //     }
+        // });
+    }
 
-            foreach ($files as $file) {
-                $message->attach($file);
-            }
-        });
+    public function testDeclarationEmail(Request $request, dashboard $dash, userDetails $users)
+    {
+        $request->terminal = 331;
+        $request->openingId = 18786;
+        $permissions = $users->getPermission($request->terminal);
+        $terminal_name = $users->getTerminalName($request->terminal);
+        $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->openingId);
+        $data = [];
+        $data["permissions"] =  $permissions;
+        $data["terminal"] =  $terminal_name;
+        $data["heads"]  =  $heads;
+
+        $branchName = $terminal_name[0]->branch_name;
+        $subject = "Sales Declaration Email of ".$terminal_name[0]->branch_name." (".$terminal_name[0]->terminal_name.") ";
+        $declarationNo =  $heads[0]->opening_id;
+        
+        // return $data;
+
+        // return view("emails.declartion_email",[
+        //     'branchName' => "Snowhite Gymkhana",
+        //     'declaration' => 1234567,
+        //     'salesData' => $data,
+        // ]);
+        Mail::to('humayunshamimbarry@gmail.com')->send(new DeclarationEmail( $branchName,$subject,$declarationNo,$data));
     }
 
     public function rawUsage(Request $request, Report $report)
