@@ -65,7 +65,7 @@
                         </a>
                     </td>
                     <td>{{ $inventory->item_code }}</td>
-                    <td>{{ $inventory->product_name }} @if(isset($inventory->tags)) <hr/><p class="text-muted p-t-0"><span>Tags:</span></br> {{ $inventory->tags }} </p> @endif </td>
+                    <td>{{ $inventory->product_name }} @if(isset($inventory->tags))<p class="text-muted p-t-0"><span>Tags:</span></br> {{ $inventory->tags }} </p> @endif </td>
                     <td>{{ $inventory->department_name }}</td>
                     <td>{{ $inventory->sub_depart_name }}</td>
                     <td>{{ $inventory->actual_price }}</td>
