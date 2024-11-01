@@ -2042,15 +2042,24 @@
                     success:function(resp,textStatus, getStatus){
                         $("#btn_tag_save").attr('disabled',false).html('Add');
                         if(getStatus.status == 200){
-                               swal('Success!','','success');
-                               getProduct_attribute();
-                               rem_id = [];
-
-                          $(".chkbx").each(function(index) {
-                            if ($(this).is(":checked")) {
-                                 $(this).prop('checked', false);
-                                }
+                            $("#createtag-modal").modal('hide');
+                             swal({
+                                    title: "Success!",
+                                    text: "",
+                                    type: "success"
+                                }, function(isConfirm) {
+                                    if (isConfirm) {
+                                        window.location = "{{ route('invent-list') }}";
+                                        swal('Wait Please','','info')
+                                    }
                             });
+
+                            //    rem_id = [];
+                        //   $(".chkbx").each(function(index) {
+                        //     if ($(this).is(":checked")) {
+                        //          $(this).prop('checked', false);
+                        //         }
+                        //     });
                         }
                     },error:function(errorResp){
                         $("#btn_tag_save").attr('disabled',false).html('Add');
