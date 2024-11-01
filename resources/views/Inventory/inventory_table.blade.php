@@ -59,7 +59,7 @@
                     <td>
                         <a href="{{ Custom_Helper::getProductImageUrl($inventory) }}"
                             data-toggle="lightbox" data-footer=''>
-                            <img width="12" height="12" data-modal="modal-12" src="{{asset('storage/images/no-image.png')}}"
+                            <img width="16" height="16" data-modal="modal-12" src="{{asset('storage/images/no-image.png')}}"
                             data-src="{{ Custom_Helper::getProductImageUrl($inventory) }}"
                                 class='d-inline-block img-circle lazy-load' alt='' >
                         </a>
