@@ -383,7 +383,7 @@
                                   {{-- @php $imageUrl = $data[0]->url @endphp --}}
                                   {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
                                @else --}}
-                                @if(File::exists('storage/images/products/'.$data[0]->image))
+                                @if(!empty($data[0]->image) && File::exists('storage/images/products/'.$data[0]->image))
                                     {{-- @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp --}}
                                     @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
                                 @endif

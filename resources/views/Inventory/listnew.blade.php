@@ -240,6 +240,13 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+
+ {{-- <style>
+    .trCheckBoxAlign{
+        text-align: center;
+        vertical-align: middle;
+    }
+ </style> --}}
 @endsection
 
 @section('scriptcode_three')
@@ -2042,15 +2049,24 @@
                     success:function(resp,textStatus, getStatus){
                         $("#btn_tag_save").attr('disabled',false).html('Add');
                         if(getStatus.status == 200){
-                               swal('Success!','','success');
-                               getProduct_attribute();
-                               rem_id = [];
-
-                          $(".chkbx").each(function(index) {
-                            if ($(this).is(":checked")) {
-                                 $(this).prop('checked', false);
-                                }
+                            $("#createtag-modal").modal('hide');
+                             swal({
+                                    title: "Success!",
+                                    text: "",
+                                    type: "success"
+                                }, function(isConfirm) {
+                                    if (isConfirm) {
+                                        window.location = "{{ route('invent-list') }}";
+                                        swal('Wait Please','','info')
+                                    }
                             });
+
+                            //    rem_id = [];
+                        //   $(".chkbx").each(function(index) {
+                        //     if ($(this).is(":checked")) {
+                        //          $(this).prop('checked', false);
+                        //         }
+                        //     });
                         }
                     },error:function(errorResp){
                         $("#btn_tag_save").attr('disabled',false).html('Add');

@@ -46,7 +46,7 @@
                   }
               @endphp --}}
                 <tr>
-                    <td>
+                    <td style="text-align:center;vertical-align: middle;">
                         <div class='rkmd-checkbox checkbox-rotate'>
                             <label class='input-checkbox checkbox-primary'>
                                 <input type='checkbox' id='checkbox32{{ $inventory->id }}' class='chkbx'
@@ -59,13 +59,13 @@
                     <td>
                         <a href="{{ Custom_Helper::getProductImageUrl($inventory) }}"
                             data-toggle="lightbox" data-footer=''>
-                            <img width="12" height="12" data-modal="modal-12" src="{{asset('storage/images/no-image.png')}}"
+                            <img width="16" height="16" data-modal="modal-12" src="{{asset('storage/images/no-image.png')}}"
                             data-src="{{ Custom_Helper::getProductImageUrl($inventory) }}"
                                 class='d-inline-block img-circle lazy-load' alt='' >
                         </a>
                     </td>
                     <td>{{ $inventory->item_code }}</td>
-                    <td>{{ $inventory->product_name }} @if(isset($inventory->tags)) <hr/><p class="text-muted p-t-0"><span>Tags:</span></br> {{ $inventory->tags }} </p> @endif </td>
+                    <td>{{ $inventory->product_name }} @if(isset($inventory->tags))<p class="text-muted p-t-0">(<span>Tags:</span> {{ $inventory->tags }} )</p> @endif </td>
                     <td>{{ $inventory->department_name }}</td>
                     <td>{{ $inventory->sub_depart_name }}</td>
                     <td>{{ $inventory->actual_price }}</td>
@@ -83,7 +83,7 @@
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                         <div class="dropdown-menu" aria-labelledby="dropdown3" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
 
-                            <a onclick='edit_route("{{ $inventory->slug }}")' class="dropdown-item waves-light waves-effect"
+                            <a href="javascript:void(0)" onclick='edit_route("{{ $inventory->slug }}")' class="dropdown-item waves-light waves-effect"
                                 data-toggle='tooltip' data-placement='left' title='' data-original-title='Edit'>Edit</a>
 
                             <a href="javascript:void(0)" class='dropdown-item waves-light waves-effect'
@@ -108,11 +108,11 @@
                                       title='Make a Deal & Variable Product'>View Variable & Addon</a>
                             @endif
                           @endif
-                      <a onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
+                      <a href="javascript:void(0)" onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
                         class="dropdown-item waves-light waves-effect" data-toggle='tooltip' data-placement='left'
                         title='Print Barcode' data-original-title='Barcode'>Print Barcode</a>
 
-                    <a href="javascript:void(0)" onclick='assignToVendorModal("{{ $inventory->id }}")' class="dropdown-item waves-light waves-effect #3A6EFF" data-toggle='tooltip'
+                    <a href="javascript:void(0)" onclick='assignToVendorModal("{{ $inventory->id }}")' class="dropdown-item waves-light waves-effect" data-toggle='tooltip'
                         data-placement='left' title='' data-original-title='Assign To Vendors'> Assign To Vendors</a>
 
                         @if ($inventory->website_id != '')
