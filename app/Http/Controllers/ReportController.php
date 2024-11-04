@@ -560,17 +560,17 @@ class ReportController extends Controller
         return Excel::download(new StockReportExport($details, $branch->branch_name), "Stock Report.xlsx");
     }
 
-    
+
 
     public function dailyStockReportExport(Request $request, StockAdjustmentService $stockAdjustmentService)
     {
-        $details = $stockAdjustmentService->getStockReport($request->from, $request->to, $request->branch, $request->department,$request->subdepartment);
+        $details = $stockAdjustmentService->getStockReport($request->from, $request->to, $request->branch, $request->department, $request->subdepartment);
         $branch = Branch::findOrFail($request->branch);
         $datearray = [
             "from" => $request->fromdate,
             "to" => $request->todate,
         ];
-        return Excel::download(new StockReportExcelExport($details, $branch->branch_name,$datearray), "Daily Stock Report.xlsx");
+        return Excel::download(new StockReportExcelExport($details, $branch->branch_name, $datearray), "Daily Stock Report.xlsx");
     }
 
     public function getSalesDeclarationExport(Request $request, report $report)
@@ -3000,7 +3000,7 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
-                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type,"all");
+                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, "all");
                 $permission = $report->terminalPermission($values->terminal_id);
 
                 $pdf->SetFont('Arial', 'B', 10);
@@ -3094,7 +3094,7 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, 'B.Amount', 'B', 1, 'R', 1);
             }
 
-            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type,"all");
+            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, "all");
             $permission = $report->terminalPermission($request->terminalid);
             foreach ($details as $value) {
 
@@ -4618,7 +4618,7 @@ class ReportController extends Controller
         //     asset('assets/pdf/' . $from . '_' . trim($report->branch_id) . '_FBR_Report.pdf'),
         // ];
         $files = $this->filesArray;
-        
+
         // Mail::send('emails.automaticemail', $data, function ($message) use ($data, $files) {
         //     $message->to($data["email"], "Sabify")
         //         ->cc(['hmadilkhan@gmail.com'])
@@ -4633,20 +4633,34 @@ class ReportController extends Controller
 
     public function testDeclarationEmail(Request $request, dashboard $dash, userDetails $users)
     {
-        $request->terminal = 331;
-        $request->openingId = 18786;
-        $permissions = $users->getPermission($request->terminal);
-        $terminal_name = $users->getTerminalName($request->terminal);
-        $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->openingId);
-        $data = [];
-        $data["permissions"] =  $permissions;
-        $data["terminal"] =  $terminal_name;
-        $data["heads"]  =  $heads;
+        $date = date("Y-m-d", strtotime("-1 day"));
+        $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and d.company_id = 4");
+        foreach ($terminals as $key => $terminal) {
+            $settings = DB::table("settings")->where("company_id", $terminal->company_id)->first();
+            $settings = !empty($settings) ? json_decode($settings->data) : '';
+            $currency = !empty($settings) ? $settings->currency : 'Rs.';
+            $opening = SalesOpening::where("terminal_id", $terminal->terminal_id)->where("date", $date)->first();
+            $companyLogo = "https://retail.sabsoft.com.pk/storage/images/company/".$terminal->logo;
+            if (!empty($opening)) {
 
-        $branchName = $terminal_name[0]->branch_name;
-        $subject = "Sales Declaration Email of ".$terminal_name[0]->branch_name." (".$terminal_name[0]->terminal_name.") ";
-        $declarationNo =  $heads[0]->opening_id;
-        
+                $permissions = $users->getPermission($terminal->terminal_id);
+                $terminal_name = $users->getTerminalName($terminal->terminal_id);
+                $heads = $dash->getheadsDetailsFromOpeningIdForClosing($opening->opening_id);
+                if (!empty($heads)) {
+                    $data = [];
+                    $data["permissions"] =  $permissions;
+                    $data["terminal"] =  $terminal_name;
+                    $data["heads"]  =  $heads;
+
+                    $branchName = $terminal_name[0]->branch_name;
+                    $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
+                    $declarationNo =  $heads[0]->opening_id;
+
+                    Mail::to('humayunshamimbarry@gmail.com')->cc("hmadilkhan@gmail.com")->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date,$companyLogo));
+                }
+            }
+        }
+
         // return $data;
 
         // return view("emails.declartion_email",[
@@ -4654,7 +4668,7 @@ class ReportController extends Controller
         //     'declaration' => 1234567,
         //     'salesData' => $data,
         // ]);
-        Mail::to('humayunshamimbarry@gmail.com')->send(new DeclarationEmail( $branchName,$subject,$declarationNo,$data));
+        // Mail::to('hmadilkhan@gmail.com')->send(new DeclarationEmail( $branchName,$subject,$declarationNo,$data));
     }
 
     public function rawUsage(Request $request, Report $report)
@@ -5569,7 +5583,7 @@ class ReportController extends Controller
         //     $branchName = $branch->branch_name;
         // }
 
-      
+
         $datearray = [
             "from" => $request->from,
             "to" => $request->to,
@@ -5677,7 +5691,7 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10,  "Branch : " . $branch->branch_name, 0, 1, 'L');
 
-            $modes = DB::table('sales_order_mode')->whereIn("order_mode_id",DB::table("sales_receipts")->whereBetween("date", [$request->fromdate, $request->todate])->where("branch", [$branch->branch_id])->groupBy("order_mode_id")->pluck("order_mode_id"))->get();
+            $modes = DB::table('sales_order_mode')->whereIn("order_mode_id", DB::table("sales_receipts")->whereBetween("date", [$request->fromdate, $request->todate])->where("branch", [$branch->branch_id])->groupBy("order_mode_id")->pluck("order_mode_id"))->get();
             foreach ($modes as $key => $mode) {
 
                 $pdf->ln(2);
