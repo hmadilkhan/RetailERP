@@ -83,7 +83,7 @@
                         data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Action</button>
                         <div class="dropdown-menu" aria-labelledby="dropdown3" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
 
-                            <a onclick='edit_route("{{ $inventory->slug }}")' class="dropdown-item waves-light waves-effect"
+                            <a href="javascript:void(0)" onclick='edit_route("{{ $inventory->slug }}")' class="dropdown-item waves-light waves-effect"
                                 data-toggle='tooltip' data-placement='left' title='' data-original-title='Edit'>Edit</a>
 
                             <a href="javascript:void(0)" class='dropdown-item waves-light waves-effect'
@@ -108,7 +108,7 @@
                                       title='Make a Deal & Variable Product'>View Variable & Addon</a>
                             @endif
                           @endif
-                      <a onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
+                      <a href="javascript:void(0)" onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
                         class="dropdown-item waves-light waves-effect" data-toggle='tooltip' data-placement='left'
                         title='Print Barcode' data-original-title='Barcode'>Print Barcode</a>
 
