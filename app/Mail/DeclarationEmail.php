@@ -17,16 +17,22 @@ class DeclarationEmail extends Mailable
     public $subjectTitle;
     public $declarationNumber;
     public $salesData;
+    public $currency;
+    public $date;
+    public $logo;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($branchName,$subjectTitle,$declarationNumber,$salesData)
+    public function __construct($branchName,$subjectTitle,$declarationNumber,$salesData,$currency,$date,$logo)
     {
         $this->branchName = $branchName;
         $this->subjectTitle = $subjectTitle;
         $this->declarationNumber = $declarationNumber;
         $this->salesData = $salesData;
+        $this->currency = $currency;
+        $this->date = $date;
+        $this->logo = $logo;
     }
 
     /**
@@ -67,6 +73,9 @@ class DeclarationEmail extends Mailable
                 'branchName' => $this->branchName,
                 'declaration' => $this->declarationNumber,
                 'salesData' => $this->salesData,
+                'currency' => $this->currency,
+                'date' => $this->date,
+                'logo' => $this->logo,
             ]);
     }
 }
