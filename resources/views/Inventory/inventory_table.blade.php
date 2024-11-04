@@ -2,7 +2,7 @@
     <table id="inventtbl" class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
         <thead>
             <tr>
-                <th>
+                <th style="text-align:center;vertical-align: middle;">
                     <div class="rkmd-checkbox checkbox-rotate">
                         <label class="input-checkbox checkbox-primary">
                             <input type="checkbox" id="checkbox32" class="mainchk">
