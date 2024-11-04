@@ -1,5 +1,5 @@
-<div class="project-table ">
-    <table id="inventtbl" class="table table-striped nowrap responsive-table  m-t-10 dataTable no-footer dtr-inline">
+<div class="project-table responsive-table">
+    <table id="inventtbl" class="table table-striped nowrap dt-responsive  m-t-10 dataTable no-footer dtr-inline">
         <thead>
             <tr>
                 <th style="text-align:center;vertical-align: middle;">
