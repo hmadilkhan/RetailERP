@@ -1,4 +1,4 @@
-<div class="project-table ">
+<div class="project-table table-responsive">
     <table id="inventtbl" class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
         <thead>
             <tr>
