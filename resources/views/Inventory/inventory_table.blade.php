@@ -46,7 +46,7 @@
                   }
               @endphp --}}
                 <tr>
-                    <td>
+                    <td class="trCheckBoxAlign">
                         <div class='rkmd-checkbox checkbox-rotate'>
                             <label class='input-checkbox checkbox-primary'>
                                 <input type='checkbox' id='checkbox32{{ $inventory->id }}' class='chkbx'
