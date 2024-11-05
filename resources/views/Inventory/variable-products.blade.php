@@ -179,7 +179,8 @@ input+.slider:before {
                        close_copyModal();
                    }else{
                     var datatable = $('#tbl_cpymd').DataTable();
-                    $('#tbl_cpymd tbody tr').remove();
+                    // Clear all rows in the DataTable
+                    datatable.clear();
                     $.each(resp, function( index, value ) {
                         if($("#itemId_md").val() != value.pos_item_id){
                             datatable.row.add(['<label class="pointer"> <input type="checkbox" value="'+value.pos_item_id+'" class="form-control m-r-1" name="tble_chk_cpymd">'+value.item_name+'</label>']);
