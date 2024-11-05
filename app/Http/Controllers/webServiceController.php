@@ -52,5 +52,6 @@ class WebserviceController extends Controller
                 } // Opening Id not found
             } // Email Not found bracket
         } 
+        return 1;
     }
 }
