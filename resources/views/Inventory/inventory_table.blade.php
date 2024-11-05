@@ -1,8 +1,8 @@
-<div class="project-table ">
+<div class="project-table table-responsive">
     <table id="inventtbl" class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
         <thead>
             <tr>
-                <th>
+                <th style="text-align:center;vertical-align: middle;">
                     <div class="rkmd-checkbox checkbox-rotate">
                         <label class="input-checkbox checkbox-primary">
                             <input type="checkbox" id="checkbox32" class="mainchk">
@@ -100,12 +100,12 @@
                                   class='icofont icofont-plus text-success'></i></a> --}}
                             @if($inventory->pos_product_count != 0)
                               <a href='/inventory/{{ $inventory->id }}/variable-products' class="dropdown-item waves-light waves-effect"
-                                  title='View Variable and Addon Products'>
+                                  title='View Variable and Addon Products' data-toggle='tooltip' data-original-title='View Variable and Addon Products'>
                                   Create Variable & Addon
                               </a>
                             @else
                                   <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class="dropdown-item waves-light waves-effect"
-                                      title='Make a Deal & Variable Product'>View Variable & Addon</a>
+                                      title='Make a Deal & Variable Product' data-toggle='tooltip' data-original-title='Make a Deal & Variable Product'>View Variable & Addon</a>
                             @endif
                           @endif
                       <a href="javascript:void(0)" onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
