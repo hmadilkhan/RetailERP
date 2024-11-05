@@ -4634,32 +4634,41 @@ class ReportController extends Controller
     public function testDeclarationEmail(Request $request, dashboard $dash, userDetails $users)
     {
         $date = date("Y-m-d", strtotime("-1 day"));
-        $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and d.company_id = 4");
+        $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1");
         foreach ($terminals as $key => $terminal) {
-            $settings = DB::table("settings")->where("company_id", $terminal->company_id)->first();
-            $settings = !empty($settings) ? json_decode($settings->data) : '';
-            $currency = !empty($settings) ? $settings->currency : 'Rs.';
-            $opening = SalesOpening::where("terminal_id", $terminal->terminal_id)->where("date", $date)->first();
-            $companyLogo = "https://retail.sabsoft.com.pk/storage/images/company/".$terminal->logo;
-            if (!empty($opening)) {
+            $emails  = DB::table("branch_emails")->where("branch_id", $terminal->branch_id)->pluck("email");
+            if (!empty($emails)) {
+                // $emails = implode(",", $emails->toArray());
 
-                $permissions = $users->getPermission($terminal->terminal_id);
-                $terminal_name = $users->getTerminalName($terminal->terminal_id);
-                $heads = $dash->getheadsDetailsFromOpeningIdForClosing($opening->opening_id);
-                if (!empty($heads)) {
-                    $data = [];
-                    $data["permissions"] =  $permissions;
-                    $data["terminal"] =  $terminal_name;
-                    $data["heads"]  =  $heads;
+                // return implode(",",$emails->toArray());
+                $settings = DB::table("settings")->where("company_id", $terminal->company_id)->first();
+                $settings = !empty($settings) ? json_decode($settings->data) : '';
+                $currency = !empty($settings) ? $settings->currency : 'Rs.';
+                $opening = SalesOpening::where("terminal_id", $terminal->terminal_id)->where("date", $date)->where("status", 2)->first();
+                $companyLogo = "https://retail.sabsoft.com.pk/storage/images/company/" . $terminal->logo;
+                if (!empty($opening)) {
+                    // if (count($emails) == 1) {
+                    //     $emails = $emails[0];
+                    // }
+                    // return $emails;
+                    $permissions = $users->getPermission($terminal->terminal_id);
+                    $terminal_name = $users->getTerminalName($terminal->terminal_id);
+                    $heads = $dash->getheadsDetailsFromOpeningIdForClosing($opening->opening_id);
+                    if (!empty($heads)) {
+                        $data = [];
+                        $data["permissions"] =  $permissions;
+                        $data["terminal"] =  $terminal_name;
+                        $data["heads"]  =  $heads;
 
-                    $branchName = $terminal_name[0]->branch_name;
-                    $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
-                    $declarationNo =  $heads[0]->opening_id;
-
-                    Mail::to('humayunshamimbarry@gmail.com')->cc("hmadilkhan@gmail.com")->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date,$companyLogo));
-                }
-            }
-        }
+                        $branchName = $terminal_name[0]->branch_name;
+                        $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
+                        $declarationNo =  $heads[0]->opening_id;
+                        // print($emails);
+                        Mail::to($emails)->cc(["hmadilkhan@gmail.com","syedrazaali10@gmail.com","humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
+                    } // Details not found
+                } // Opening Id not found
+            } // Email Not found bracket
+        } //foreach loop end
 
         // return $data;
 
@@ -4669,6 +4678,11 @@ class ReportController extends Controller
         //     'salesData' => $data,
         // ]);
         // Mail::to('hmadilkhan@gmail.com')->send(new DeclarationEmail( $branchName,$subject,$declarationNo,$data));
+    }
+
+    public function testLaravelProject()
+    {
+        return 1;
     }
 
     public function rawUsage(Request $request, Report $report)
