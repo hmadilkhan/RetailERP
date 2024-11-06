@@ -5914,8 +5914,8 @@ class ReportController extends Controller
             $pdf->SetTextColor(255, 255, 255);
             $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
             $pdf->Cell(28, 7, 'Receipt No', 'B', 0, 'C', 1);
-            $pdf->Cell(44, 7, 'Customer Name', 'B', 0, 'L', 1);
-            $pdf->Cell(13, 7, 'B.Date', 'B', 0, 'L', 1);//17
+            $pdf->Cell(42, 7, 'Customer Name', 'B', 0, 'L', 1);
+            $pdf->Cell(15, 7, 'B.Date', 'B', 0, 'L', 1);//17
             $pdf->Cell(24, 7, 'B.Amount', 'B', 0, 'C', 1);
             $pdf->Cell(22, 7, 'Advance', 'B', 0, 'C', 1);
             $pdf->Cell(19, 7, 'Received', 'B', 0, 'C', 1);
@@ -5932,8 +5932,8 @@ class ReportController extends Controller
 
                 $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
                 $pdf->Cell(28, 6,$value->receipt_no, 0, 0, 'C', 1); // date("d-m-y", strtotime($value->date))
-                $pdf->Cell(44, 6, $value->name, 0, 0, 'L', 1);
-                $pdf->Cell(13, 6, date("d-m-y", strtotime($value->date)), 0, 0, 'L', 1);
+                $pdf->Cell(42, 6, $value->name, 0, 0, 'L', 1);
+                $pdf->Cell(15, 6, date("d-m-y", strtotime($value->date)), 0, 0, 'L', 1);
                 $pdf->Cell(24, 6, number_format($value->total_amount, 2), 0, 0, 'C', 1);
                 $pdf->Cell(22, 6, number_format($value->paid, 2), 0, 0, 'C', 1);
                 $pdf->Cell(19, 6, number_format($value->receive_amount, 2), 0, 0, 'C', 1);
