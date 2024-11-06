@@ -165,8 +165,11 @@ class Inventory_DepartmentController extends Controller
 
             $this->validate($request, $rules); // validation module
 
-            $priority = !empty($request->priority) ? (int) $request->priority : 0;
-            $priority = $priority != 0 ? $priority + 1 : 0;
+            $priority = 0;
+            if(!empty($request->priority)){
+                $priority = $priority + 1;
+            }
+
 
             //department form details save array value
             $data = [
@@ -546,9 +549,10 @@ class Inventory_DepartmentController extends Controller
             }
         }
 
-        $priority = !empty($request->priority) ? (int) $request->priority : 0;
-        $priority = $priority != 0 ? $priority++ : 0;
-
+        $priority = 0;
+        if(!empty($request->priority)){
+            $priority = $priority + 1;
+        }
 
         $items = [
             'code'                     => $request->editcode,
