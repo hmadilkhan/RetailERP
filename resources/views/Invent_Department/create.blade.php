@@ -100,6 +100,7 @@
                           @foreach($depart as $val)
                            <option {{ in_array($val->priority,$oldPriority) ? 'select' : '' }} value="{{ $val->priority }}">{{ $val->department_name }}</option>
                           @endforeach
+                          <option value="0">Last</option>
                         </select>
                          <span class="form-control-feedback text-danger" id="priority_alert"></span>
                     </div>
