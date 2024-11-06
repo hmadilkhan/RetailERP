@@ -40,9 +40,17 @@ class inventory_department extends Model
   }
 
   // get department record //
-  public static function getdepartment($id)
+  public static function getdepartment($id,$selectedColumn = [])
   {
-    return DB::table("inventory_department")->where(['company_id' => session('company_id') . (empty($id) ? "',department_id=>" . $id . "'" : "")])->where("status", 1)->get();
+    $getRecord = DB::table("inventory_department")
+                    ->where(['company_id' => session('company_id') . (empty($id) ? "',department_id=>" . $id . "'" : "")])
+                    ->where("status", 1)
+                    ->get();
+
+        if(!empty($selectedColumn)){
+            return $getRecord->select($selectedColumn);
+        }
+    return $getRecord;
   }
 
   // get sub-department record //
@@ -58,13 +66,13 @@ class inventory_department extends Model
     return DB::table("inventory_department as dept")->join('inventory_sub_department as sbdpt', 'sbdpt.department_id', '=', 'dept.department_id')->select('dept.department_name as deptname', 'sbdpt.sub_department_id as sb_id', 'sbdpt.sub_depart_name as sbname')->where(['dept.company_id' => session('company_id'), 'dept.department_id' => $id])->get();
   }
 
-  // check record department exists // 
+  // check record department exists //
   public function check_dept($name)
   {
     return count(DB::table("inventory_department")->where(['department_name' => $name, 'company_id' => session('company_id'),'status'=>1])->get()) > 0 ? true : false;
   }
 
-  // check record department id check this name another taken // 
+  // check record department id check this name another taken //
   public function check_depart_code($code)
   {
     return count(DB::table("inventory_department")->where(['code' => $code, 'company_id' => session('company_id'),'status'=>1])->get()) > 0 ? true : false;
@@ -95,7 +103,7 @@ class inventory_department extends Model
   }
 
 
-  // check record sub department exists // 
+  // check record sub department exists //
   public function check_sdept($id, $name, $dept, $code)
   {
     return count(DB::table("inventory_sub_department")->where('sub_department_id', '!=', $id)->where('status','=',1)->where('code', $code)->where('sub_depart_name', $name)->where('department_id', '=', $dept)->get()) > 0 ? true : false;

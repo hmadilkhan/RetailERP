@@ -62,7 +62,7 @@ class Inventory_DepartmentController extends Controller
      */
     public function create()
     {
-        $depart = inventory_department::getdepartment('');
+        $depart = inventory_department::getdepartment('',['priority','department_name']);
         // $sdepart = inventory_department::get_subdepart('');
 
         $sections = Section::getSection();
