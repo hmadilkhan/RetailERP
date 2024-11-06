@@ -18,7 +18,7 @@
   <div class="alert alert-success">{{ Session::get('success') }}</div>
 @endif
 
-@if(Auth::user()->username == 'demoadmin')
+@if(Auth::user()->username == 'uzair.sdb')
    {{ $depart }}
 @endif
 
