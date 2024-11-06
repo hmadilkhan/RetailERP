@@ -178,7 +178,8 @@ class Inventory_DepartmentController extends Controller
                 "mobile_banner"            => $mobile_bannerName,
                 "meta_title"               => $request->metatitle,
                 "meta_description"         => $request->metadescript,
-                'website_mode'             => isset($request->showWebsite) ? 1 : 0
+                'website_mode'             => isset($request->showWebsite) ? 1 : 0,
+                'priority'                 => !empty($request->priority) ? $request->priority : 0
             ];
 
             // department save to database
