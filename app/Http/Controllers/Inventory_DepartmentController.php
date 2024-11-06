@@ -64,7 +64,7 @@ class Inventory_DepartmentController extends Controller
     {
         $depart = inventory_department::getdepartment('',['priority','department_name']);
         // $sdepart = inventory_department::get_subdepart('');
-            return $depart;
+
         $sections = Section::getSection();
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
         return view('Invent_Department.create', compact('depart', 'websites', 'sections'));
