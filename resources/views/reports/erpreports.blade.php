@@ -831,7 +831,8 @@
                 window.location = "{{ url('order-timings-summary') }}?fromdate=" + date + "&todate=" + todate + "&branch=" + branch ;
             }
             if ($('#txtorderamountreceivable').val() == 1) {
-                window.location = "{{ url('order-amount-receivable') }}?fromdate=" + date + "&todate=" + todate + "&branch=" + branch ;
+                window.location = "{{ url('order-amount-receivable') }}?fromdate=" + date + "&todate=" + todate + "&branch=" + branch + "&terminalid=" +
+                terminalid ;
             }
         }
 
