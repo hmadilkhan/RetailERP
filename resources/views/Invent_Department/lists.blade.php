@@ -204,10 +204,9 @@
                                                 <label class="form-control-label">Priority</label>
                                                 <select class="select2" name="priority" id="priority" data-placeholder='Select'>
                                                   <option value="">Select</option>
-                                                  @if($depart)
-                                                  @php $oldPriority = old('priority') @endphp
-                                                  @foreach($depart as $val)
-                                                   <option {{ $val->priority == $oldPriority ? 'select' : '' }} value="{{ $val->priority }}">{{ $val->department_name }}</option>
+                                                  @if($departPriority)
+                                                  @foreach($departPriority as $val)
+                                                   <option value="{{ $val->priority }}">{{ $val->department_name }}</option>
                                                   @endforeach
                                                   <option value="0">Last</option>
                                                   @endif
