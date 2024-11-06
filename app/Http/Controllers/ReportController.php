@@ -5930,12 +5930,12 @@ class ReportController extends Controller
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);
 
-                $pdf->Cell(12, 6, ++$key, 0, 0, 'L', 1);
-                $pdf->Cell(16, 6,$value->receipt_no, 0, 0, 'C', 1); // date("d-m-y", strtotime($value->date))
-                $pdf->Cell(38, 6, $value->name, 0, 0, 'L', 1);
-                $pdf->Cell(17, 6, date("d-m-y", strtotime($value->date)), 0, 0, 'L', 1);
+                $pdf->Cell(15, 6, ++$key, 0, 0, 'L', 1);
+                $pdf->Cell(20, 6,$value->receipt_no, 0, 0, 'C', 1); // date("d-m-y", strtotime($value->date))
+                $pdf->Cell(45, 6, $value->name, 0, 0, 'L', 1);
+                $pdf->Cell(22, 6, date("d-m-y", strtotime($value->date)), 0, 0, 'L', 1);
                 $pdf->Cell(25, 6, number_format($value->total_amount, 2), 0, 0, 'C', 1);
-                $pdf->Cell(25, 6, number_format($value->paid, 2), 0, 0, 'C', 1);
+                $pdf->Cell(20, 6, number_format($value->paid, 2), 0, 0, 'C', 1);
                 $pdf->Cell(15, 6, number_format($value->receive_amount, 2), 0, 0, 'C', 1);
                 $pdf->Cell(15, 6, date("d-m-y", strtotime($value->received_date)), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, $value->payment_mode, 0, 1, 'R', 1);
