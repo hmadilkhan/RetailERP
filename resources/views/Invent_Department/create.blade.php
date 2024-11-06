@@ -96,11 +96,13 @@
                         <label class="form-control-label">Priority</label>
                         <select class="select2" name="priority" id="priority" data-placeholder='Select'>
                           <option value="">Select</option>
-                          @php $oldPriority = (array) old('priority') @endphp
+                          @if($depart)
+                          @php $oldPriority = old('priority') @endphp
                           @foreach($depart as $val)
                            <option {{ in_array($val->priority,$oldPriority) ? 'select' : '' }} value="{{ $val->priority }}">{{ $val->department_name }}</option>
                           @endforeach
                           <option value="0">Last</option>
+                          @endif
                         </select>
                          <span class="form-control-feedback text-danger" id="priority_alert"></span>
                     </div>
