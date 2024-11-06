@@ -5912,8 +5912,8 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->setFillColor(0, 0, 0);
             $pdf->SetTextColor(255, 255, 255);
-            $pdf->Cell(15, 7, 'S.No', 'B', 0, 'C', 1);
-            $pdf->Cell(20, 7, 'Receipt No', 'B', 0, 'C', 1);
+            $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
+            $pdf->Cell(25, 7, 'Receipt No', 'B', 0, 'C', 1);
             $pdf->Cell(45, 7, 'Customer Name', 'B', 0, 'L', 1);
             $pdf->Cell(22, 7, 'Booking Date', 'B', 0, 'L', 1);
             $pdf->Cell(25, 7, 'Booking Amount', 'B', 0, 'C', 1);
@@ -5930,8 +5930,8 @@ class ReportController extends Controller
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);
 
-                $pdf->Cell(15, 6, ++$key, 0, 0, 'L', 1);
-                $pdf->Cell(20, 6,$value->receipt_no, 0, 0, 'C', 1); // date("d-m-y", strtotime($value->date))
+                $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
+                $pdf->Cell(25, 6,$value->receipt_no, 0, 0, 'C', 1); // date("d-m-y", strtotime($value->date))
                 $pdf->Cell(45, 6, $value->name, 0, 0, 'L', 1);
                 $pdf->Cell(22, 6, date("d-m-y", strtotime($value->date)), 0, 0, 'L', 1);
                 $pdf->Cell(25, 6, number_format($value->total_amount, 2), 0, 0, 'C', 1);
