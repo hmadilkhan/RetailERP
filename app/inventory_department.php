@@ -42,9 +42,10 @@ class inventory_department extends Model
   // get department record //
   public static function getdepartment($id,$selectedColumn = [])
   {
-    $getRecord = DB::table("inventory_department")
+    $getRecord = DB::table('inventory_department')
                     ->where('company_id',session('company_id'))
-                    ->where("status", 1);
+                    ->where('status', 1)
+                    ->orderBy('priority','DESC');
 
         if(!empty($id)){
              $getRecord->where('department_id',$id)->get();
