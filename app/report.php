@@ -718,4 +718,9 @@ class report extends Model
     {
         return DB::select("SELECT c.id as itemId,c.item_code as code ,c.product_name, SUM(a.total_qty) as qty, SUM(a.total_amount) as amount,a.item_price as price, a.total_cost as cost,b.void_receipt,c.weight_qty,a.is_sale_return,d.order_status_name,e.order_mode as ordermode FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN inventory_general c ON c.id = a.item_code INNER JOIN sales_order_status d on d.order_status_id = b.status INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id where receipt_id IN (Select id from sales_receipts where date between ? and ? and branch IN (Select branch_id from branch where company_id = ?) and web = 1) GROUP BY a.item_code,b.status order by qty desc", [$from, $to, session('company_id')]);
     }
+
+    public function orderAmountReceivableTerminal($from,$to,$terminalId)
+    {
+        return DB::select("SELECT sales_receipts.id,sales_receipts.receipt_no,sales_receipts.total_amount,sales_account_general.receive_amount as paid,sales_receipts.date,SUM(customer_account.received) as receive_amount,date(customer_account.created_at) as received_date,sales_payment.payment_mode,customers.name FROM `customer_account` INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no INNER JOIN customers on customers.id = sales_receipts.customer_id INNER JOIN sales_account_general on sales_account_general.receipt_id = customer_account.receipt_no INNER JOIN sales_payment on sales_payment.payment_id = customer_account.payment_mode_id where date(customer_account.created_at) Between ? and ? and customer_account.terminal_id = ? and sales_receipts.order_mode_id = 2 and customer_account.total_amount = 0 group by customer_account.receipt_no;",[$from,$to,$terminalId]);
+    }
 }

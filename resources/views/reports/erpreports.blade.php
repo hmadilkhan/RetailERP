@@ -732,6 +732,7 @@
                 value: 1,
                 showDateFilter: true,
                 showBranch: true,
+                showTerminal: true,
             }]);
         });
 
