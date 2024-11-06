@@ -5947,7 +5947,10 @@ class ReportController extends Controller
 
                 $pdf->ln(1);
             }
-
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            
             $pdf->Cell(143, 6, "Total:", 0, 0, 'C', 1);
             $pdf->Cell(17, 6, number_format($totalReceivedAmount,0), 0, 0, 'C', 1);
             $pdf->Cell(37, 6, "", 0, 1, 'C', 1);
