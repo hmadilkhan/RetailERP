@@ -957,7 +957,9 @@
                 $("#mobileBanner_mdept"+departid).val());
             }
 
-            $("#priority").val($("#deptPriority_mdept"+departid).val()).change();
+            if($("#deptPriority_mdept"+departid).val() != ''){
+                $("#priority").val($("#deptPriority_mdept"+departid).val()).change();
+            }
 
             $("#metatitle_md").val($("#metaTitle_mdept"+departid).val());
             $("#metadescript_md").val($("#metaDescript_mdept"+departid).val());
