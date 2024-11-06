@@ -43,7 +43,7 @@
                 <table width="100%" cellpadding="0" cellspacing="0"
                     style="max-width: 600px; background-color: #ffffff; border: 1px solid #ddd; border-radius: 8px;">
                     <!-- Header -->
-                    <tr>
+                    {{-- <tr>
                         <td style="padding: 10px;">
                             <img src="https://retail.sabsoft.com.pk/storage/images/sabifyemaillogo.png" width="150" height="80"  alt="Sabify Logo" width="100" height="auto"
                                 style="display: inline-block; float: left;margin-top:24px;">
@@ -51,7 +51,21 @@
                                 alt="Kashees Logo" width="150" height="auto"
                                 style="display: inline-block; float: right;margin-top:24px;">
                         </td>
-                    </tr>
+                    </tr> --}}
+
+                    <td style="padding:10px;">
+                        <table width="100%" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+                            <tr>
+                                <td style="width:50%; text-align:center; vertical-align: center;">
+                                    <img src="https://retail.sabsoft.com.pk/storage/images/sabifyemaillogo.png" width="150" height="80" alt="Sabify Logo" style="display:inline-block; margin-top:24px;" />
+                                </td>
+                                {{-- <td style="width:50%; text-align:right; vertical-align: middle;">
+                                    <img src="{{$logo}}" alt="Kashees Logo" style="display:inline-block; margin-top:24px;" />
+                                </td> --}}
+                            </tr>
+                        </table>
+                    </td>
+                    
 
                     <!-- Sales Declaration -->
                     <tr>
@@ -229,8 +243,11 @@
                                 @if ($salesData['permissions'][0]->cb == 1)
                                     <tr>
                                         <td style="padding: 6px 0;">Closing Balance:</td>
-                                        <td style="padding: 6px 0; text-align: right;">
-                                            {{ number_format($salesData['heads'][0]->closingBal, 0) ?? 0 }}</td>
+                                        <td style="padding: 6px 0; text-align: right;color:{{$closingBalance == $CashInHand ? 'green;' : 'red;'}}">
+                                            {{ number_format($closingBalance, 0) ?? 0 }}
+                                            {{ $closingBalance > $CashInHand ? '(' . ($closingBalance - $CashInHand) . ' Amount Excess)' : '' }}
+                                            {{ $closingBalance < $CashInHand ? '(' . ($closingBalance - $CashInHand) . ' Amount Short)' : '' }}
+                                        </td>
                                     </tr>
                                 @endif
                                 <!-- Repeat rows as needed for all fields -->

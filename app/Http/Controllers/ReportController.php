@@ -51,6 +51,7 @@ use App\Traits\MediaTrait;
 use App\userDetails;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ReportController extends Controller
 {
@@ -4664,7 +4665,7 @@ class ReportController extends Controller
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
                         // print($emails);
-                        Mail::to($emails)->cc(["hmadilkhan@gmail.com","syedrazaali10@gmail.com","humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
+                        Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
                 } // Opening Id not found
             } // Email Not found bracket
@@ -4680,14 +4681,14 @@ class ReportController extends Controller
         // Mail::to('hmadilkhan@gmail.com')->send(new DeclarationEmail( $branchName,$subject,$declarationNo,$data));
     }
 
-    public function SendDeclarationEmail($openingId) 
+    public function SendDeclarationEmail($openingId)
     {
         $users = new userDetails();
         $dash = new dashboard();
-        
+        \Log::info($openingId);
         $opening = SalesOpening::where("opening_id", $openingId)->where("status", 2)->first();
         $date = $opening->date;
-        $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and b.terminal_id = ?",[$opening->terminal_id]);
+        $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and b.terminal_id = ?", [$opening->terminal_id]);
         foreach ($terminals as $key => $terminal) {
             $emails  = DB::table("branch_emails")->where("branch_id", $terminal->branch_id)->pluck("email");
             if (!empty($emails)) {
@@ -4716,12 +4717,12 @@ class ReportController extends Controller
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
                         // print($emails);
-                        Mail::to($emails)->cc(["hmadilkhan@gmail.com","syedrazaali10@gmail.com","humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
+                        Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
                 } // Opening Id not found
             } // Email Not found bracket
             //
-        } 
+        }
         return 1;
     }
 
@@ -5819,5 +5820,143 @@ class ReportController extends Controller
 
         //save file
         $pdf->Output('order_timing_summart.pdf', 'I');
+    }
+    public function orderAmountReceivable(Request $request, Vendor $vendor, report $report)
+    {
+
+        $branches = Branch::query();
+        if ($request->branch == "all") {
+            $branches->where("company_id", session("company_id"));
+        } else {
+            $branches->where("branch_id", $request->branch);
+        }
+        $branches = $branches->get();
+
+
+
+        $company = $vendor->company(session('company_id'));
+
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
+
+        $pdf = new pdfClass();
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        //first row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        //second row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+
+        //third row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        //forth row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company[0]->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        //fifth row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        //sixth row
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        //filter section
+        $fromdate = date('F-d-Y', strtotime($request->fromdate));
+        $todate = date('F-d-Y', strtotime($request->todate));
+
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromdate . ' through ' . $todate, 0, 1, 'C');
+
+        //report name
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'Order Amount Receivable', 'B,T', 1, 'L');
+        $pdf->ln(1);
+
+        $terminals = $report->getTerminals($request->branch);
+        $totalReceivedAmount = 0;
+        foreach ($terminals as $key => $terminal) {
+            $totalReceivedAmount = 0;
+
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(275, 10, "Terminal Name: " . $terminal->terminal_name, 0, 1, 'L');
+
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
+            $pdf->Cell(28, 7, 'Receipt No', 'B', 0, 'C', 1);
+            $pdf->Cell(42, 7, 'Customer Name', 'B', 0, 'L', 1);
+            $pdf->Cell(15, 7, 'B.Date', 'B', 0, 'L', 1); //17
+            $pdf->Cell(24, 7, 'B.Amount', 'B', 0, 'C', 1);
+            $pdf->Cell(22, 7, 'Advance', 'B', 0, 'C', 1);
+            $pdf->Cell(19, 7, 'Received', 'B', 0, 'C', 1);
+            $pdf->Cell(17, 7, 'Rec. Date', 'B', 0, 'C', 1);
+            $pdf->Cell(20, 7, 'Pay Mode', 'B', 1, 'R', 1);
+            $pdf->setFillColor(232, 232, 232);
+            $pdf->SetTextColor(0, 0, 0);
+
+            $details = $report->orderAmountReceivableTerminal($request->fromdate, $request->todate, $terminal->terminal_id);
+            foreach ($details as $key => $value) {
+                $totalReceivedAmount += $value->receive_amount;
+
+                $pdf->SetFont('Arial', '', 9);
+                $pdf->setFillColor(232, 232, 232);
+                $pdf->SetTextColor(0, 0, 0);
+
+                $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
+                $pdf->Cell(28, 6, $value->receipt_no, 0, 0, 'C', 1); // date("d-m-y", strtotime($value->date))
+                $pdf->Cell(42, 6, $value->name, 0, 0, 'L', 1);
+                $pdf->Cell(15, 6, date("d-m-y", strtotime($value->date)), 0, 0, 'L', 1);
+                $pdf->Cell(24, 6, number_format($value->total_amount, 2), 0, 0, 'C', 1);
+                $pdf->Cell(22, 6, number_format($value->paid, 2), 0, 0, 'C', 1);
+                $pdf->Cell(19, 6, number_format($value->receive_amount, 2), 0, 0, 'C', 1);
+                $pdf->Cell(17, 6, date("d-m-y", strtotime($value->received_date)), 0, 0, 'C', 1);
+                $pdf->Cell(20, 6, $value->payment_mode, 0, 1, 'C', 1);
+
+                $pdf->ln(1);
+            }
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            
+            $pdf->Cell(143, 6, "Total:", 0, 0, 'C', 1);
+            $pdf->Cell(17, 6, number_format($totalReceivedAmount,0), 0, 0, 'C', 1);
+            $pdf->Cell(37, 6, "", 0, 1, 'C', 1);
+        }
+
+        //save file
+        $pdf->Output('order_amount_receivable.pdf', 'I');
     }
 }

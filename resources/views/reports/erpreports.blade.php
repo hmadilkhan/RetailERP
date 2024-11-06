@@ -162,6 +162,12 @@
                             <h4 class="text-sm-center">Orders Timing Summary</h4>
                         </div>
                     </div>
+                    <div id="dvorderamountreceivable" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
+                            title="Orders Amount Receivable">
+                            <h4 class="text-sm-center">Orders Amount Receivable</h4>
+                        </div>
+                    </div>
                 </div>
 
 
@@ -243,6 +249,7 @@
                     <input type="hidden" value="0" id="txtsalespersonreport" />
                     <input type="hidden" value="0" id="txtwebsiteitemssummary" />
                     <input type="hidden" value="0" id="txtordertimingsummary" />
+                    <input type="hidden" value="0" id="txtorderamountreceivable" />
 
 
 
@@ -719,6 +726,15 @@
                 showBranch: true,
             }]);
         });
+        $('#dvorderamountreceivable').on('click', function() {
+            handleButtonClick('#txtorderamountreceivable', 'Order Amount Receivable', [{
+                field: '#txtorderamountreceivable',
+                value: 1,
+                showDateFilter: true,
+                showBranch: true,
+                showTerminal: true,
+            }]);
+        });
 
         function copydate() {
             let date = $('#datefrom').val();
@@ -813,6 +829,10 @@
             }
             if ($('#txtordertimingsummary').val() == 1) {
                 window.location = "{{ url('order-timings-summary') }}?fromdate=" + date + "&todate=" + todate + "&branch=" + branch ;
+            }
+            if ($('#txtorderamountreceivable').val() == 1) {
+                window.location = "{{ url('order-amount-receivable') }}?fromdate=" + date + "&todate=" + todate + "&branch=" + branch + "&terminalid=" +
+                terminalid ;
             }
         }
 
