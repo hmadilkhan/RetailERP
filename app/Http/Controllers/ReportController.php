@@ -5915,12 +5915,12 @@ class ReportController extends Controller
             $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
             $pdf->Cell(25, 7, 'Receipt No', 'B', 0, 'C', 1);
             $pdf->Cell(45, 7, 'Customer Name', 'B', 0, 'L', 1);
-            $pdf->Cell(22, 7, 'Booking Date', 'B', 0, 'L', 1);
-            $pdf->Cell(25, 7, 'Booking Amount', 'B', 0, 'C', 1);
-            $pdf->Cell(20, 7, 'Advance Amount', 'B', 0, 'C', 1);
-            $pdf->Cell(15, 7, 'Received Amount', 'B', 0, 'C', 1);
-            $pdf->Cell(15, 7, 'Received Date', 'B', 0, 'C', 1);
-            $pdf->Cell(20, 7, 'Payment Mode', 'B', 1, 'R', 1);
+            $pdf->Cell(22, 7, 'B.Date', 'B', 0, 'L', 1);
+            $pdf->Cell(25, 7, 'B.Amount', 'B', 0, 'C', 1);
+            $pdf->Cell(20, 7, 'Adv Amount', 'B', 0, 'C', 1);
+            $pdf->Cell(15, 7, 'Rec. Amount', 'B', 0, 'C', 1);
+            $pdf->Cell(15, 7, 'Rec. Date', 'B', 0, 'C', 1);
+            $pdf->Cell(20, 7, 'Payment', 'B', 1, 'R', 1);
             $pdf->setFillColor(232, 232, 232);
             $pdf->SetTextColor(0, 0, 0);
 
