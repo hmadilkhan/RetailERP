@@ -18,9 +18,9 @@
   <div class="alert alert-success">{{ Session::get('success') }}</div>
 @endif
 
-@if(Auth::user()->username == 'uzair.sdb')
+{{-- @if(Auth::user()->username == 'uzair.sdb')
    {{ $depart }}
-@endif
+@endif --}}
 
 <form method="post" id="deptform" action="{{ route('invent_dept.store') }}" class="form-horizontal" enctype="multipart/form-data">
    @csrf
@@ -87,9 +87,23 @@
                          <option {{ in_array($val->id,$oldSection) ? 'select' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
                         @endforeach
                       </select>
-                       <span class="form-control-feedback text-danger" id="webdeptname_alert"></span>
+                       <span class="form-control-feedback text-danger" id="sections_alert"></span>
                   </div>
                 </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label class="form-control-label">Priority</label>
+                        <select class="select2" name="priority" id="priority" placeholder='Select' multiple>
+                          <option value="">Select</option>
+                          @php $oldPriority = (array) old('priority') @endphp
+                          @foreach($depart as $val)
+                           <option {{ in_array($val->priority,$oldPriority) ? 'select' : '' }} value="{{ $val->priority }}">{{ $val->department_name }}</option>
+                          @endforeach
+                        </select>
+                         <span class="form-control-feedback text-danger" id="priority_alert"></span>
+                    </div>
+                  </div>
               </div>
               <div class="row">
     		       <div class="col-md-4">
