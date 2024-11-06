@@ -439,14 +439,13 @@ class ReportController extends Controller
 
     public function getOrderRecievingExport(Request $request,report $report)
     {
-        $details = $report->orderAmountReceivableTerminalExcel($request->from, $request->to, $request->branch);
-        return $details;
-        $branch = Branch::findOrFail($request->branch);
+        $details = $report->orderAmountReceivableTerminalExcel($request->fromdate, $request->todate, $request->branch);
+        $branch = "";
         $datearray = [
             "from" => $request->fromdate,
             "to" => $request->todate,
         ];
-        return Excel::download(new OrderReceivingReportExport($details, $branch->branch_name, $datearray), "Daily Stock Report.xlsx");
+        return Excel::download(new OrderReceivingReportExport($details, $branch, $datearray), "Order Receiving Report.xlsx");
     }
 
     public function getOrdersReportExcelExport(Request $request, report $report, order $order)
