@@ -5935,7 +5935,6 @@ class ReportController extends Controller
                 $pdf->Cell(38, 6, $value->name, 0, 0, 'L', 1);
                 $pdf->Cell(17, 6, date("d-m-y", strtotime($value->date)), 0, 0, 'L', 1);
                 $pdf->Cell(25, 6, number_format($value->total_amount, 2), 0, 0, 'C', 1);
-                $pdf->Cell(15, 6, number_format($value->actual_amount, 2), 0, 0, 'C', 1);
                 $pdf->Cell(25, 6, number_format($value->paid, 2), 0, 0, 'C', 1);
                 $pdf->Cell(15, 6, number_format($value->receive_amount, 2), 0, 0, 'C', 1);
                 $pdf->Cell(15, 6, date("d-m-y", strtotime($value->received_date)), 0, 0, 'C', 1);
