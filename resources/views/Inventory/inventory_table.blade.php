@@ -101,11 +101,11 @@
                             @if($inventory->pos_product_count != 0)
                               <a href='/inventory/{{ $inventory->id }}/variable-products' class="dropdown-item waves-light waves-effect"
                                   title='View Variable and Addon Products' data-toggle='tooltip' data-original-title='View Variable and Addon Products'>
-                                  Create Variable & Addon
+                                  View Variable & Addon
                               </a>
                             @else
                                   <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class="dropdown-item waves-light waves-effect"
-                                      title='Make a Deal & Variable Product' data-toggle='tooltip' data-original-title='Make a Deal & Variable Product'>View Variable & Addon</a>
+                                      title='Make a Deal & Variable Product' data-toggle='tooltip' data-original-title='Make a Deal & Variable Product'>Create Variable & Addon</a>
                             @endif
                           @endif
                       <a href="javascript:void(0)" onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
