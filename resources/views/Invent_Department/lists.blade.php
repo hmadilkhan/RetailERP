@@ -77,6 +77,7 @@
                                                         <input type="hidden" id="metaTitle_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->meta_title }}">
                                                         <input type="hidden" id="metaDescript_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->meta_description }}">
                                                         <input type="hidden" id="deptSection_mdept{{ $depart[$d]->department_id }}" value="{{ $sectionValue }}">
+                                                        <input type="hidden" id="deptPriority_mdept{{ $depart[$d]->department_id }}" value="{{ $depart[$d]->priority }}">
                                                     </td>
                                                     <td class="pointer"
                                                         onclick="editsubdepart('{{ $depart[$d]->code }}','{{ $depart[$d]->department_id }}','{{ addslashes($depart[$d]->department_name) }}')">
@@ -200,6 +201,22 @@
 
                                         <div class="col-md-12">
                                             <div class="form-group">
+                                                <label class="form-control-label">Priority</label>
+                                                <select class="select2" name="priority" id="priority" data-placeholder='Select'>
+                                                  <option value="">Select</option>
+                                                  @if($departPriority)
+                                                  @foreach($departPriority as $val)
+                                                   <option value="{{ $val->priority }}">{{ $val->department_name }}</option>
+                                                  @endforeach
+                                                  <option value="0">Last</option>
+                                                  @endif
+                                                </select>
+                                                 <span class="form-control-feedback text-danger" id="priority_alert"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
                                                 <label class="form-control-label">Meta Title</label>
                                                 <input class="form-control" type="text" name="metatitle"
                                                     id="metatitle_md" placeholder="Meta Title" />
@@ -277,7 +294,7 @@
                                             </div>
                                             <span class="text-danger" id="mobileBannerImage_md_alert"></span>
                                         </div>
-                                    </div>                                    
+                                    </div>
                                 @endif
                             </div>
                         </form>
@@ -386,7 +403,7 @@
                                 </div>
                             </div>
                             @if($websites)
-                            <div class="col-md-12">  
+                            <div class="col-md-12">
                             <hr/>
                             <div class="form-group">
                                 <label for="showWebsite_sbdept_md" class="pointer">
@@ -394,8 +411,8 @@
                                     Show on Website
                                 </label>
                             </div>
-                        </div>  
-                        <div class="col-md-12">    
+                        </div>
+                        <div class="col-md-12">
                             <div class="d-none" id="website_module_sbdept_md">
                                 <div class="form-group">
                                     <label class="form-control-label">Show website sub department name:</label>
@@ -403,7 +420,7 @@
                                         placeholder="Show website sub department name" />
                                 </div>
                             </div>
-                        </div>  
+                        </div>
                             @endif
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -433,9 +450,9 @@
                                         <span class="custom-file-control"></span>
                                     </label>
                                 </div>
-                            </div>   
-                          </div>  
-                          
+                            </div>
+                          </div>
+
                           <div class="d-none" id="website_module_mobileBannersbdept_md">
                             <div class="col-md-12">
                                 <div class="form-group">
@@ -450,8 +467,8 @@
                                         <span class="custom-file-control"></span>
                                     </label>
                                 </div>
-                            </div>   
-                          </div>                           
+                            </div>
+                          </div>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -567,7 +584,7 @@
 
                                       if(jxState.status == 500){
                                         swal('Error!',resp,'error');
-                                      }                                     
+                                      }
                                  },error:function(e){
                                         console.log(e)
                                  }
@@ -631,7 +648,7 @@
                 success: function(resp, textStatus, jqXHR) {
                     console.log(resp);
                     console.log(jqXHR);
-                    
+
                     if (jqXHR.status == 200) {
                         swal({
                                 title: "Operation Performed",
@@ -688,11 +705,11 @@
         // }
         $("#subdepartBanner_add").change(function() {
             readURL(this, 'previewBanner_sbmd');
-        });  
-        
+        });
+
         $("#subdepartMobileBanner_add").change(function() {
             readURL(this, 'previewMobileBanner_sbmd');
-        }); 
+        });
 
         $("#bannerImage_md").change(function() {
             readURL(this, 'previewDepartBannerImage_md');
@@ -700,8 +717,8 @@
 
         $("#mobileBannerImage_md").change(function() {
             readURL(this, 'previewDepartMobileBannerImage_md');
-        });        
-        
+        });
+
         $("#departImage_md").change(function() {
             readURL(this, 'previewImg');
         });
@@ -816,25 +833,25 @@
                 formData.append('dept', dept);
                 formData.append('code', $("#code_" + id).val());
                 formData.append('id', id);
-            
-               if(subdepartImage != null){ 
+
+               if(subdepartImage != null){
                 if (subdepartImage.files.length != 0 && subdepartImage.files[0].size <= 1048576) {
                     formData.append('subdepartImage', subdepartImage.files[0]);
                 }
                }
-           
-               if(subdepartBannerImage  != null){  
+
+               if(subdepartBannerImage  != null){
                 if (subdepartBannerImage.files.length != 0 && subdepartBannerImage.files[0].size <= 1048576) {
                     formData.append('subdepartBannerImage', subdepartBannerImage.files[0]);
                 }
                }
 
-               if(subdepartMobileBanner  != null){  
+               if(subdepartMobileBanner  != null){
                 if (subdepartMobileBanner.files.length != 0 && subdepartMobileBanner.files[0].size <= 1048576) {
                     formData.append('subdepartMobileBanner', subdepartMobileBanner.files[0]);
                 }
                }
-               
+
                 // sdbptbannerImg
 
                 if (process) {
@@ -889,7 +906,7 @@
         // 				swal_alert('Success!',r.msg,'success',false);
         // 			 }
         // 		   }
-        // 		}); 	
+        // 		});
         // }
 
         // }
@@ -920,13 +937,13 @@
 
             if ($("#deptSection_mdept"+departid).val() != '') {
                 $("#sections_md").val(JSON.parse($("#deptSection_mdept"+departid).val())).trigger('change');
-            }            
+            }
 
             $('#depart').val($("#deptName_mdept"+departid).val());
             $('#departid').val(departid);
             $('#editcode').val($("#deptCode_mdept"+departid).val());
             $('#webdeptname_md').val($("#websiteDeptName_mdept"+departid).val());
-            
+
 
             $("#previewImg").attr('src', $("#img-tble-" + departid).attr('src'));
             if ($("#desktopBanner_mdept"+departid).val() != '') {
@@ -935,10 +952,12 @@
             }
 
             if($("#mobileBanner_mdept"+departid).val() != ''){
-                
+
                 $("#previewDepartMobileBannerImage_md").attr('src', location.origin + '/storage/images/department/' +
                 $("#mobileBanner_mdept"+departid).val());
             }
+
+            $("#priority").val($("#deptPriority_mdept"+departid).val()).change();
 
             $("#metatitle_md").val($("#metaTitle_mdept"+departid).val());
             $("#metadescript_md").val($("#metaDescript_mdept"+departid).val());
@@ -983,13 +1002,13 @@
                             "'><div><input type='file' name='sdbptbannerImg' class='d-none' id='sdbptbannerImg" + r[s]
                             .sub_department_id + "'> <i id='btn_selectbannerImg" + r[s].sub_department_id +
                             "' class='icofont icofont-upload text-success icofont-3x' onclick='selectbannerImg(" + r[
-                                s].sub_department_id + ")'></i></div></td>";    
-                                
+                                s].sub_department_id + ")'></i></div></td>";
+
                         let mobileBannerColumn = "<td id='mobileBannerCell_md" + r[s].sub_department_id +
                             "'><div><input type='file' name='mobile_banner_sdbedit' class='d-none' id='mobile_banner_sdbedit" + r[s]
                             .sub_department_id + "'> <i id='btn_selectMobileBanner" + r[s].sub_department_id +
                             "' class='icofont icofont-upload text-success icofont-3x' onclick='selectMobilebanner(" + r[
-                                s].sub_department_id + ")'></i></div></td>";                                
+                                s].sub_department_id + ")'></i></div></td>";
 
                         if (r[s].image != null && r[s].image != '') {
                             imageColumn = "<td id='imgCell_md" + r[s].sub_department_id + "'><div><img src='" +
@@ -1005,13 +1024,13 @@
                                 r[s].sub_department_id + ")'></i></div></td>";
                         }
 
- 
+
                         if (r[s].mobile_banner != null && r[s].mobile_banner != '') {
                             mobileBannerColumn = "<td id='mobileBannerCell_md" + r[s].sub_department_id + "'><div><img src='" +
                                 location.origin + "/storage/images/department/" + r[s].mobile_banner +
                                 "' width='64' height='64'/><i class='icofont icofont-close text-danger' onclick='removeMobileBannerCell(" +
                                 r[s].sub_department_id + ")'></i></div></td>";
-                        }                       
+                        }
 
                         $(".sb_tble tbody").append(
                             "<tr id='subDept_rowmd"+r[s]
@@ -1068,7 +1087,7 @@
           $("#bannerCell_md" + id).append('<input type="file" name="sdbptbannerImg" class="d-none" id="sdbptbannerImg' + id +
               '"> <i id="btn_selectbannerImg' + id +
               '" class="icofont icofont-upload text-success icofont-3x" onclick="selectbannerImg(' + id + ')"></i>');
-        }    
+        }
 
         function removeMobileBannerCell(id) {
 
@@ -1076,8 +1095,8 @@
             $("#mobileBannerCell_md" + id).append('<input type="file" name="sdbptbannerImg" class="d-none" id="mobile_banner_sdbedit' + id +
                 '"> <i id="btn_selectMobileBanner' + id +
                 '" class="icofont icofont-upload text-success icofont-3x" onclick="selectMobilebanner(' + id + ')"></i>');
-        }  
-        
+        }
+
 
         let imgdId = null;
         let bannerImgId = null;
@@ -1102,7 +1121,7 @@
           bannerImgId = id;
             $("#sdbptbannerImg" + id).trigger('click');
             bannerImgGet_sbd_md(id)
-        }        
+        }
 
         function bannerImgGet_sbd_md(id) {
             $("#sdbptbannerImg" + id).on('change', function() {
@@ -1117,8 +1136,8 @@
             mobileBannerId = id;
             $("#mobile_banner_sdbedit" + id).trigger('click');
             mobileBannerGet_sbd_md(id)
-        } 
-        
+        }
+
         function mobileBannerGet_sbd_md(id) {
             $("#mobile_banner_sdbedit" + id).on('change', function() {
                 $("#btn_selectMobileBanner" + id).remove();
@@ -1126,7 +1145,7 @@
                     '"> <i class="icofont icofont-close text-danger" onclick="removeMobileBannerCell(' + id + ')"></i>');
                 readURL(this, "mobilebannerPreviewsdbpt" + id);
             })
-        }        
+        }
 
         function updatedepart() {
             var form = document.getElementById('editDepartmentForm');
@@ -1336,8 +1355,8 @@
 
                 if ($("#mobilebanner-imageBox_md").hasClass('d-none')) {
                     $("#mobilebanner-imageBox_md").removeClass('d-none');
-                }                
-                
+                }
+
             }
 
             if ($(this).is(':checked') == false) {
@@ -1351,7 +1370,7 @@
 
                 if (!$("#mobilebanner-imageBox_md").hasClass('d-none')) {
                     $("#mobilebanner-imageBox_md").addClass('d-none');
-                }                
+                }
             }
         });
 
@@ -1361,7 +1380,7 @@ if ($(this).is(':checked') == true) {
     if ($("#website_module_bannersbdept_md").hasClass('d-none')) {
         $("#website_module_bannersbdept_md").removeClass('d-none');
     }
-    
+
     if ($("#website_module_mobileBannersbdept_md").hasClass('d-none')) {
         $("#website_module_mobileBannersbdept_md").removeClass('d-none');
     }
@@ -1378,7 +1397,7 @@ if ($(this).is(':checked') == false) {
 
     if (!$("#website_module_mobileBannersbdept_md").hasClass('d-none')) {
         $("#website_module_mobileBannersbdept_md").addClass('d-none');
-    }    
+    }
 
     if (!$("#website_module_sbdept_md").hasClass('d-none')) {
         $("#website_module_sbdept_md").addClass('d-none');
