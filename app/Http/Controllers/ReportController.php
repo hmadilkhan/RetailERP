@@ -5913,7 +5913,7 @@ class ReportController extends Controller
             $pdf->setFillColor(0, 0, 0);
             $pdf->SetTextColor(255, 255, 255);
             $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
-            $pdf->Cell(25, 7, 'Receipt No', 'B', 0, 'C', 1);
+            $pdf->Cell(28, 7, 'Receipt No', 'B', 0, 'C', 1);
             $pdf->Cell(45, 7, 'Customer Name', 'B', 0, 'L', 1);
             $pdf->Cell(12, 7, 'B.Date', 'B', 0, 'L', 1);//17
             $pdf->Cell(24, 7, 'B.Amount', 'B', 0, 'C', 1);
