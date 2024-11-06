@@ -730,7 +730,7 @@ class report extends Model
         if ($branch == "all") {
             $filter = " (Select terminal_id from terminal_details where branch_id IN (Select branch_id from branch where company_id = ".session("company_id")."))" ;
         }else{
-            $filter = " (Select terminal_id from terminal_details where branch_id = ".$branch."))" ;
+            $filter = " (Select terminal_id from terminal_details where branch_id = ".$branch.")" ;
         }
         return DB::select("SELECT sales_receipts.id,sales_receipts.receipt_no,sales_receipts.total_amount,sales_account_general.receive_amount as paid,sales_receipts.date,SUM(customer_account.received) as receive_amount,date(customer_account.created_at) as received_date,sales_payment.payment_mode,customers.name,terminal_details.terminal_name FROM `customer_account` INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no INNER JOIN customers on customers.id = sales_receipts.customer_id INNER JOIN sales_account_general on sales_account_general.receipt_id = customer_account.receipt_no INNER JOIN sales_payment on sales_payment.payment_id = customer_account.payment_mode_id INNER JOIN terminal_details on terminal_details.terminal_id = sales_receipts.terminal_id where date(customer_account.created_at) Between ? and ? and customer_account.terminal_id In ".$filter."  and sales_receipts.order_mode_id = 2 and customer_account.total_amount = 0 and sales_receipts.status = 4 group by customer_account.receipt_no",[$from,$to]);
     }
