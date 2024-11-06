@@ -5948,9 +5948,9 @@ class ReportController extends Controller
                 $pdf->ln(1);
             }
 
-            $pdf->Cell(160, 6, "Total:", 0, 0, 'C', 1);
+            $pdf->Cell(143, 6, "Total:", 0, 0, 'C', 1);
             $pdf->Cell(17, 6, number_format($totalReceivedAmount,0), 0, 0, 'C', 1);
-            $pdf->Cell(20, 6, "", 0, 1, 'C', 1);
+            $pdf->Cell(37, 6, "", 0, 1, 'C', 1);
         }
 
         //save file
