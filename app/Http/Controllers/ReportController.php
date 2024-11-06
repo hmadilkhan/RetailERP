@@ -4685,7 +4685,7 @@ class ReportController extends Controller
     {
         $users = new userDetails();
         $dash = new dashboard();
-        Log::info("Checking",$openingId);
+        \Log::info($openingId);
         $opening = SalesOpening::where("opening_id", $openingId)->where("status", 2)->first();
         $date = $opening->date;
         $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and b.terminal_id = ?",[$opening->terminal_id]);
