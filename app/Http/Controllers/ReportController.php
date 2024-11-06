@@ -5902,8 +5902,11 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(190, 10, 'Order Amount Receivable', 'B,T', 1, 'L');
         $pdf->ln(1);
-
-        $terminals = $report->getTerminals($request->branch);
+        if ($request->branch == "all") {
+            $terminals = $report->getTerminals($request->branch);
+        }else{
+            $terminals = DB::table("terminal_details")->where("branch_id",$request->branch)->get();
+        }
         $totalReceivedAmount = 0;
         foreach ($terminals as $key => $terminal) {
             $totalReceivedAmount = 0;
@@ -5950,7 +5953,7 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->setFillColor(0, 0, 0);
             $pdf->SetTextColor(255, 255, 255);
-            
+
             $pdf->Cell(143, 6, "Total:", 0, 0, 'C', 1);
             $pdf->Cell(17, 6, number_format($totalReceivedAmount,0), 0, 0, 'C', 1);
             $pdf->Cell(37, 6, "", 0, 1, 'C', 1);
