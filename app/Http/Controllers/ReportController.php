@@ -34,6 +34,7 @@ use App\Exports\StockReport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\IsdbDatewiseExport;
 use App\Exports\ConsolidatedIsdbDatewiseExport;
+use App\Exports\OrderReceivingReportExport;
 use App\Exports\OrderReportExport;
 use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExcelExport;
@@ -434,6 +435,17 @@ class ReportController extends Controller
             ->get();
         // ->toSql();
 
+    }
+
+    public function getOrderRecievingExport(Request $request,report $report)
+    {
+        $details = $report->orderAmountReceivableTerminal($request->from, $request->to, $request->terminal);
+        $branch = Branch::findOrFail($request->branch);
+        $datearray = [
+            "from" => $request->fromdate,
+            "to" => $request->todate,
+        ];
+        return Excel::download(new OrderReceivingReportExport($details, $branch->branch_name, $datearray), "Daily Stock Report.xlsx");
     }
 
     public function getOrdersReportExcelExport(Request $request, report $report, order $order)

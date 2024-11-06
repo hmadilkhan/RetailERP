@@ -905,6 +905,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('reports/consolidated-excel-export-item-sale-report', [ReportController::class, 'getConsolidatedItemSaleReportExcelExport'])->name('excelExportItemSales');
     Route::get('reports/pdf-export-item-sale-report', [ReportController::class, 'getItemSaleReportPdfExport'])->name('pdfExportItemSales');
     Route::get('reports/excel-export-orders-report', [ReportController::class, 'getOrdersReportExcelExport'])->name('excelExportOrders');
+    Route::get('reports/excel-export-orders-receivables', [ReportController::class, 'getOrderRecievingExport'])->name('excelExportOrdersReceivables');
     Route::get('reports/excel-export-sales-declartion/{from}/{to}/{branch}/{terminal?}', [ReportController::class, 'getSalesDeclarationExport'])->name('excelExportSalesDeclaration');
     Route::get('reports/excel-export-stock-report',  [ReportController::class, 'getStockReportExcelExport'])->name('excelExportStock');
     Route::get('reports/excel-export-daily-stock-report/{from}/{to}/{branch}/{department?}/{subdepartment?}',  [ReportController::class, 'dailyStockReportExport'])->name('dailyStockReportExport');

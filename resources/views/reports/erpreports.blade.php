@@ -733,6 +733,7 @@
                 showDateFilter: true,
                 showBranch: true,
                 showTerminal: true,
+                showExcelButton:true,
             }]);
         });
 
@@ -854,6 +855,11 @@
             if ($('#txtinvoicereport').val() == 1) {
                 window.location = "{{ url('reports/excel-export-orders-report') }}?fromdate=" + from + "&todate=" + to + "&terminal_id=" +
                 terminal + "&type=" + type + "&report=excel&category=&branch=" + branch;
+            }
+
+            if ($('#txtorderamountreceivable').val() == 1) {
+                window.location = "{{ url('reports/excel-export-orders-receivables') }}?fromdate=" + from + "&todate=" + to + "&terminal=" +
+                terminal + "&branch=" + branch;
             }
 
             // if ($('#txtitemsale').val() == 1) {
