@@ -99,7 +99,7 @@
                           @if($depart)
                           @php $oldPriority = old('priority') @endphp
                           @foreach($depart as $val)
-                           <option {{ in_array($val->priority,$oldPriority) ? 'select' : '' }} value="{{ $val->priority }}">{{ $val->department_name }}</option>
+                           <option {{ $val->priority == $oldPriority ? 'select' : '' }} value="{{ $val->priority }}">{{ $val->department_name }}</option>
                           @endforeach
                           <option value="0">Last</option>
                           @endif
