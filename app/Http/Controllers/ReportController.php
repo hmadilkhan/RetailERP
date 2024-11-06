@@ -439,7 +439,8 @@ class ReportController extends Controller
 
     public function getOrderRecievingExport(Request $request,report $report)
     {
-        $details = $report->orderAmountReceivableTerminal($request->from, $request->to, $request->terminal);
+        $details = $report->orderAmountReceivableTerminalExcel($request->from, $request->to, $request->branch);
+        return $details;
         $branch = Branch::findOrFail($request->branch);
         $datearray = [
             "from" => $request->fromdate,

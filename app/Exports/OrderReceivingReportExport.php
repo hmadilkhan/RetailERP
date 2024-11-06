@@ -17,7 +17,7 @@ class OrderReceivingReportExport implements FromView, WithTitle
     protected $branch;
     protected $dates;
 
-    public function __construct(object $queryRecord, string $branch, array $dates)
+    public function __construct(array $queryRecord, string $branch, array $dates)
     {
         $this->queryRecord = $queryRecord;
         $this->branch = $branch;
