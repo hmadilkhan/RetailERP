@@ -5904,7 +5904,10 @@ class ReportController extends Controller
         $pdf->ln(1);
 
         $terminals = $report->getTerminals($request->branch);
+        $totalReceivedAmount = 0;
         foreach ($terminals as $key => $terminal) {
+            $totalReceivedAmount = 0;
+
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(275, 10, "Terminal Name: " . $terminal->terminal_name, 0, 1, 'L');
@@ -5915,7 +5918,7 @@ class ReportController extends Controller
             $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
             $pdf->Cell(28, 7, 'Receipt No', 'B', 0, 'C', 1);
             $pdf->Cell(42, 7, 'Customer Name', 'B', 0, 'L', 1);
-            $pdf->Cell(15, 7, 'B.Date', 'B', 0, 'L', 1);//17
+            $pdf->Cell(15, 7, 'B.Date', 'B', 0, 'L', 1); //17
             $pdf->Cell(24, 7, 'B.Amount', 'B', 0, 'C', 1);
             $pdf->Cell(22, 7, 'Advance', 'B', 0, 'C', 1);
             $pdf->Cell(19, 7, 'Received', 'B', 0, 'C', 1);
@@ -5926,12 +5929,14 @@ class ReportController extends Controller
 
             $details = $report->orderAmountReceivableTerminal($request->fromdate, $request->todate, $terminal->terminal_id);
             foreach ($details as $key => $value) {
+                $totalReceivedAmount += $value->receive_amount;
+
                 $pdf->SetFont('Arial', '', 9);
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);
 
                 $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
-                $pdf->Cell(28, 6,$value->receipt_no, 0, 0, 'C', 1); // date("d-m-y", strtotime($value->date))
+                $pdf->Cell(28, 6, $value->receipt_no, 0, 0, 'C', 1); // date("d-m-y", strtotime($value->date))
                 $pdf->Cell(42, 6, $value->name, 0, 0, 'L', 1);
                 $pdf->Cell(15, 6, date("d-m-y", strtotime($value->date)), 0, 0, 'L', 1);
                 $pdf->Cell(24, 6, number_format($value->total_amount, 2), 0, 0, 'C', 1);
@@ -5939,9 +5944,13 @@ class ReportController extends Controller
                 $pdf->Cell(19, 6, number_format($value->receive_amount, 2), 0, 0, 'C', 1);
                 $pdf->Cell(17, 6, date("d-m-y", strtotime($value->received_date)), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, $value->payment_mode, 0, 1, 'C', 1);
-                
+
                 $pdf->ln(1);
             }
+
+            $pdf->Cell(160, 6, "Total:", 0, 0, 'C', 1);
+            $pdf->Cell(17, 6, number_format($totalReceivedAmount,0), 0, 0, 'C', 1);
+            $pdf->Cell(20, 6, "", 0, 1, 'C', 1);
         }
 
         //save file
