@@ -18,6 +18,10 @@
   <div class="alert alert-success">{{ Session::get('success') }}</div>
 @endif
 
+@if(Auth::user()->username == 'demoadmin')
+   {{ $depart }}
+@endif
+
 <form method="post" id="deptform" action="{{ route('invent_dept.store') }}" class="form-horizontal" enctype="multipart/form-data">
    @csrf
    <div class="row">
@@ -26,8 +30,8 @@
              <div class="card-header">
                 <h5 class="card-header-text" id="title-hcard"> Create Department</h5>
               </div>
-              <div class="card-block"> 
-            <div class="row">    
+              <div class="card-block">
+            <div class="row">
                 <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Department Code <span class="text-muted">(Optional)</span></label>
@@ -37,7 +41,7 @@
                       @enderror
                   </div>
                 </div>
-            
+
     		    <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Department Name <span class="text-danger">*</span></label>
@@ -47,8 +51,8 @@
                        <span class="form-control-feedback text-danger" id="department_name_alert">{{ $message }}</span>
                        @enderror
                   </div>
-                </div>   
-                
+                </div>
+
                 {{-- <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Parent</label>
@@ -57,12 +61,12 @@
                           @foreach($depart as $val)
                             <option value="{{ $val->department_id }}">{{ $val->department_name }}</option>
                           @endforeach
-                      </select>    
+                      </select>
                       <span class="form-control-feedback text-danger" id="parent_alert"></span>
                   </div>
                 </div>                 --}}
-                
-            </div>  
+
+            </div>
            @if($websites)
             <hr/>
             <div class="form-group">
@@ -71,7 +75,7 @@
                     Show on Website
                 </label>
             </div>
-           <div class="d-none" id="website-module">  
+           <div class="d-none" id="website-module">
               <div class="row">
               <div class="col-md-4">
                   <div class="form-group">
@@ -82,10 +86,10 @@
                         @foreach($sections as $val)
                          <option {{ in_array($val->id,$oldSection) ? 'select' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
                         @endforeach
-                      </select> 
+                      </select>
                        <span class="form-control-feedback text-danger" id="webdeptname_alert"></span>
                   </div>
-                </div> 
+                </div>
               </div>
               <div class="row">
     		       <div class="col-md-4">
@@ -97,32 +101,32 @@
                         <span class="form-control-feedback text-danger" id="website_department_name_alert"></span>
                        @enderror
                   </div>
-                </div>  
+                </div>
                 <div class="col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Meta Title</label>
                       <input class="form-control" type="text"
                        name="metatitle" id="metatitle" placeholder='Meta Title' value="{{ old('metatitle') }}"/>
                   </div>
-                </div> 
+                </div>
                 <div class="col-md-4">
                   <div class="form-group">
                       <label class="form-control-label">Meta Description</label>
                       <textarea class="form-control" rows="5"
                        name="metadescript" id="metadescript" placeholder='Meta Description'></textarea>
                   </div>
-                </div>    
-              </div>                                  
-            </div> 
+                </div>
+              </div>
+            </div>
            @endif
          </div>
        </div>
        <div class="form-group row justify-content-center">
-          <button class="btn  btn-lg btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus" 
+          <button class="btn  btn-lg btn-primary f-left m-t-30 m-l-20"  type="submit" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus"
             ></i>&nbsp; Save</button>.
-              <a class="btn btn-lg btn-danger f-left m-t-30 m-l-10" href="{{ route('invent_dept.index') }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Discard"><i class="icofont icofont-error" 
+              <a class="btn btn-lg btn-danger f-left m-t-30 m-l-10" href="{{ route('invent_dept.index') }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Discard"><i class="icofont icofont-error"
             ></i> Discard</a>
-       </div>      
+       </div>
      </div> <!-- field portion-->
      <div class="col-md-4 p-1">
 
@@ -138,22 +142,22 @@
                         </a>
 
                     <div class="form-group {{ $errors->has('department_image') ? 'has-danger' : '' }} m-t-10">
-                                
+
 
                                     <label for="department_image" class="custom-file">
                                                 <input type="file" name="department_image" id="department_image" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
-                                            </label> 
-                                            <br/>        
+                                            </label>
+                                            <br/>
                                         @error('department_image')
                                             <span class="form-control-feedback">{{ $message }}</span>
                                         @enderror
-                              </div> 
-                
-              </div> 
-              </div>    
-              </div> 
-        @if($websites)    
+                              </div>
+
+              </div>
+              </div>
+              </div>
+        @if($websites)
         <div class="card d-none" id="banner-imageBox">
                   <div class="card-header">
                      <h4 for="bannerImage">Desktop Banner</h4>
@@ -168,16 +172,16 @@
                                     <label for="banner_image" class="custom-file">
                                                 <input type="file" name="banner_image" id="banner_image" class="custom-file-input">
                                                 <span class="custom-file-control"></span>
-                                            </label>   
-                                            <br/>        
+                                            </label>
+                                            <br/>
                                 @error('banner_image')
                                     <span class="form-control-feedback">{{ $message }}</span>
                                 @enderror
-                              </div> 
-                
-              </div> 
-            </div>    
-          </div> 
+                              </div>
+
+              </div>
+            </div>
+          </div>
 
           <div class="card d-none" id="mobile-banner-imageBox">
             <div class="card-header">
@@ -193,21 +197,21 @@
                               <label for="mobile_banner" class="custom-file">
                                           <input type="file" name="mobile_banner" id="mobile_banner" class="custom-file-input">
                                           <span class="custom-file-control"></span>
-                                      </label>   
-                                      <br/>        
+                                      </label>
+                                      <br/>
                           @error('mobile_banner')
                               <span class="form-control-feedback">{{ $message }}</span>
                           @enderror
-                        </div> 
-          
-        </div> 
-      </div>    
-    </div>           
+                        </div>
+
+        </div>
+      </div>
+    </div>
         @endif
      </div> <!-- col-md-4 close image portion -->
    </div>
    </form>
-</section>    
+</section>
 
 
 @endsection
@@ -233,42 +237,42 @@ $("#showWebsite").trigger('click');
 // });
 
 $("#showWebsite").on('click',function(){
-    
+
     if($(this).is(':checked')==true){
       // $("#parent").val('').change();
         if($("#website-module").hasClass('d-none')){
             $("#website-module").removeClass('d-none');
         }
-                
+
         if($("#banner-imageBox").hasClass('d-none')){
             $("#banner-imageBox").removeClass('d-none');
-        }   
-        
+        }
+
         if($("#mobile-banner-imageBox").hasClass('d-none')){
             $("#mobile-banner-imageBox").removeClass('d-none');
-        }         
+        }
     }
-    
+
     if($(this).is(':checked')==false){
         if(!$("#website-module").hasClass('d-none')){
             $("#website-module").addClass('d-none');
         }
-        
+
         if(!$("#banner-imageBox").hasClass('d-none')){
             $("#banner-imageBox").addClass('d-none');
         }
 
         if(!$("#mobile-banner-imageBox").hasClass('d-none')){
             $("#mobile-banner-imageBox").addClass('d-none');
-        } 
-    }    
+        }
+    }
 });
 
 
 
 // $("#deptform").on('submit',function(event){
 //       event.preventDefault();
-      
+
 //       var formData = new FormData(this);
 
 //     if($("#deptname").val() == ""){
@@ -307,7 +311,7 @@ $("#showWebsite").on('click',function(){
 //             swal_alert('Alert!', errorThrown, 'error', false);
 //         }
 //     });
-// });        
+// });
         //        $.ajax({
         //         url:'{{ route("invent_dept.store") }}',
         //         type:"POST",
@@ -323,8 +327,8 @@ $("#showWebsite").on('click',function(){
         //                 $("#"+r.contrl).focus();
         //                 $("#"+r.contrl+"_alert").html(r.msg);
         //               }
-        //               swal_alert('Alert!',r.msg,'error',false); 
-    
+        //               swal_alert('Alert!',r.msg,'error',false);
+
         //           }else {
         //              $("#deptname_alert").html('');
         //             swal_alert('Successfully!',r.msg,'success',true);
@@ -338,11 +342,11 @@ $("#showWebsite").on('click',function(){
   function readURL(input,id) {
 		  if (input.files && input.files[0]) {
 			var reader = new FileReader();
-			
+
 			reader.onload = function(e) {
 			  $('#'+id).attr('src', e.target.result);
 			}
-			
+
 			reader.readAsDataURL(input.files[0]);
 		}
 	}
@@ -353,14 +357,14 @@ $("#showWebsite").on('click',function(){
 
   $("#banner_image").change(function() {
 	   readURL(this,'previewDepartBannerImage');
-	}); 
+	});
 
   $("#mobile_banner").change(function() {
 	   readURL(this,'previewDepartMobileBannerImage');
 	});
 
   function swal_alert(title,msg,type,mode){
-    
+
     swal({
           title: title,
           text: msg,
