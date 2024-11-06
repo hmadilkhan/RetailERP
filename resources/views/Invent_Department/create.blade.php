@@ -94,7 +94,7 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="form-control-label">Priority</label>
-                        <select class="select2" name="priority" id="priority" placeholder='Select' multiple>
+                        <select class="select2" name="priority" id="priority" data-placeholder='Select'>
                           <option value="">Select</option>
                           @php $oldPriority = (array) old('priority') @endphp
                           @foreach($depart as $val)
