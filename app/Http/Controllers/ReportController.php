@@ -51,6 +51,7 @@ use \Illuminate\Support\Arr;
 use App\stock;
 use App\Traits\MediaTrait;
 use App\userDetails;
+use Crabbly\Fpdf\Fpdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -4777,7 +4778,7 @@ class ReportController extends Controller
         $CashInHand = round($CashInHand);
         $closingBalance = round($heads[0]->closingBal ?? 0);
 
-        $pdf = new pdfClass('P', 'mm', array(80, 200));
+        $pdf = new Fpdf('P', 'mm', array(80, 200));
 
 
         $pdf->AliasNbPages();
