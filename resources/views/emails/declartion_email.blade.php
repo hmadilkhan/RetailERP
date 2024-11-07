@@ -20,6 +20,7 @@
         $negative =
             ($salesData['heads'][0]->Discount ?? 0) +
             ($salesData['heads'][0]->SalesReturn ?? 0) +
+            ($salesData['heads'][0]->VoidReceipts ?? 0) +
             ($salesData['heads'][0]->cashOut ?? 0);
         $CashInHand =
             $positive -
