@@ -4787,7 +4787,7 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(35, 6, "Opening DateTime  ", 'T', 0, 'L');
         // CENTER SPACE
-        $pdf->Cell(5, 6, "", 'T', 0, 'C');
+        $pdf->Cell(10, 6, "", 'T', 0, 'C');
         $pdf->SetFont('Arial', '', 8);
         $pdf->Cell(35, 6, date('d M Y', strtotime($heads[0]->date)) . ' ' . date('H:i a', strtotime($heads[0]->time)) ?? 0, 'T', 1, 'L');
 
