@@ -5051,6 +5051,35 @@ class ReportController extends Controller
             $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
         }
 
+        $pdf->ln(6);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(78, 6, 'CASH-IN DETAILS', 0, 0, 'C', 1);
+        $pdf->ln(6);
+
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+
+        $cashins = DB::table("sales_cash_in")->where("opening_id",$request->opening)->get();
+
+        $pdf->setFillColor(233, 233, 233);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(20, 7, 'Date', 0, 0, 'L', 1);
+        $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
+        $pdf->Cell(38, 7, 'Narration', 0, 1, 'C', 1);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+        if (count($cashins) > 0) {
+            foreach ($cashins as $key => $cashin) {
+                $pdf->Cell(20, 7, date("d M Y",strtotime($cashin->datetime)), 0, 0, 'L', 1);
+                $pdf->Cell(20, 7, $cashin->amount, 0, 0, 'L', 1);
+                $pdf->Cell(38, 7, $cashin->narration, 0, 1, 'C', 1);
+            }
+        } else {
+            $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
+        }
+
+
 
 
         // $pdf->SetFont('Arial', '', 10);
