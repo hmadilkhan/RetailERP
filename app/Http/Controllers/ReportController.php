@@ -4779,14 +4779,14 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
 
         $pdf->ln(1);
-        $pdf->SetFont('Arial','B',10);
-        $pdf->Cell(10,6,"Branch  ",'T,B',0,'L');
-        $pdf->SetFont('Arial','',10);
+        $pdf->SetFont('Arial','B',8);
+        $pdf->Cell(10,6,"Branch  ",'T',0,'L');
+        $pdf->SetFont('Arial','',8);
         $pdf->Cell(40,6,$terminal_name[0]->branch_name,'T,B',0,'L');
 
-        $pdf->SetFont('Arial','B',10);
-        $pdf->Cell(10,6,"Terminal  ",'T,B',0,'L');
-        $pdf->SetFont('Arial','',10);
+        $pdf->SetFont('Arial','B',8);
+        $pdf->Cell(10,6,"Terminal  ",'T',0,'L');
+        $pdf->SetFont('Arial','',8);
         $pdf->Cell(15,6,$terminal_name[0]->terminal_name,'T,B',1,'L');
 
         $pdf->setFillColor(255, 255, 255);
