@@ -4772,7 +4772,8 @@ class ReportController extends Controller
         $pdf->Cell(75, 6, 'SALES DECLARATION', 0, 0, 'C', 1);
 
 
-
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
         $pdf->ln(6);
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
