@@ -738,6 +738,6 @@ class report extends Model
 
     public function itemsalesdatabaseforpdf($opening)
     {
-        return DB::select("SELECT item_name,item_price as price,SUM(total_qty) as qty,SUM(total_amount) as amount FROM `sales_receipt_details` where receipt_id IN (Select id from sales_receipts where opening_id = ?) group by item_name",[$opening]);
+        return DB::select("SELECT inventory_general.product_name,inventory_general.weight_qty,inventory_general.item_code,item_price as price,SUM(total_qty) as qty,SUM(total_amount) as amount FROM `sales_receipt_details` INNER JOIN inventory_general on inventory_general.id = sales_receipt_details.item_code where receipt_id IN (Select id from sales_receipts where opening_id = ?) group by item_name",[$opening]);
     }
 }
