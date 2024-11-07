@@ -4803,7 +4803,7 @@ class ReportController extends Controller
         // CENTER SPACE
         $pdf->Cell(5, 6, "", 'T', 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(20, 6, "Closing Balance  ", 'T', 0, 'L');
+        $pdf->Cell(20, 6, "Closing Bal  ", 'T', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
         $pdf->Cell(15, 6,  $closingBalance, 'T', 1, 'L');
 
