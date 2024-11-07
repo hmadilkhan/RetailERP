@@ -4793,11 +4793,11 @@ class ReportController extends Controller
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(35, 6, "Closing DateTime  ", 'T', 0, 'L');
+        $pdf->Cell(35, 6, "Closing DateTime  ", 0, 0, 'L');
         // CENTER SPACE
-        $pdf->Cell(5, 6, "", 'T', 0, 'C');
+        $pdf->Cell(5, 6, "", 0, 0, 'C');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(35, 6, date('d M Y', strtotime($heads[0]->closingDate)) . ' ' . date('H:i a', strtotime($heads[0]->closingTime)) ?? 0, 'T', 1, 'L');
+        $pdf->Cell(35, 6, date('d M Y', strtotime($heads[0]->closingDate)) . ' ' . date('H:i a', strtotime($heads[0]->closingTime)) ?? 0, 0, 1, 'L');
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
@@ -4817,7 +4817,7 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', '', 8);
         $pdf->Cell(15, 6, $declarationNo, 'B', 0, 'L');
         // CENTER SPACE
-        $pdf->Cell(5, 6, "", 'T', 0, 'C');
+        $pdf->Cell(5, 6, "", 'B', 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(20, 6, "Closing Bal  ", 'B', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
