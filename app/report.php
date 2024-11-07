@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use PhpParser\Node\Expr\FuncCall;
 
 class report extends Model
 {
@@ -733,5 +734,10 @@ class report extends Model
             $filter = " (Select terminal_id from terminal_details where branch_id = ".$branch.")" ;
         }
         return DB::select("SELECT sales_receipts.id,sales_receipts.receipt_no,sales_receipts.total_amount,sales_account_general.receive_amount as paid,sales_receipts.date,SUM(customer_account.received) as receive_amount,date(customer_account.created_at) as received_date,sales_payment.payment_mode,customers.name,terminal_details.terminal_name,user_details.fullname FROM `customer_account` INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no INNER JOIN customers on customers.id = sales_receipts.customer_id INNER JOIN sales_account_general on sales_account_general.receipt_id = customer_account.receipt_no INNER JOIN sales_payment on sales_payment.payment_id = customer_account.payment_mode_id INNER JOIN terminal_details on terminal_details.terminal_id = sales_receipts.terminal_id LEFT JOIN user_details on user_details.id = sales_receipts.sales_person_id where date(customer_account.created_at) Between ? and ? and customer_account.terminal_id In ".$filter."  and sales_receipts.order_mode_id = 2 and customer_account.total_amount = 0 and sales_receipts.status = 4 group by customer_account.receipt_no",[$from,$to]);
+    }
+
+    public function itemsalesdatabaseforpdf($opening)
+    {
+        return DB::select("SELECT item_name,item_price as price,SUM(total_qty) as qty,SUM(total_amount) as amount FROM `sales_receipt_details` where receipt_id IN (Select id from sales_receipts where opening_id = ?) group by item_name",[$opening]);
     }
 }

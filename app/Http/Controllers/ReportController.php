@@ -4743,6 +4743,7 @@ class ReportController extends Controller
     {
         $users = new userDetails();
         $dash = new dashboard();
+        $report = new report();
         $company = Company::findOrFail($request->company);
         $branch = Branch::findOrFail($request->branch);
         $permissions = $users->getPermission($request->terminal);
@@ -4986,6 +4987,17 @@ class ReportController extends Controller
         $pdf->Cell(13,7,'Price',0,0,'L',1);
         $pdf->Cell(11,7,'Qty',0,0,'C',1);
         $pdf->Cell(14,7,'Amount',0,1,'C',1);
+        $pdf->setFillColor(0,0,0);
+        $pdf->SetTextColor(255, 255, 255);
+
+        $items = $report->itemsalesdatabaseforpdf($request->opening);
+
+        foreach ($items as $key => $item) {
+            $pdf->Cell(40,7,$item->item_name,0,0,'L',1);
+            $pdf->Cell(13,7,$item->price,0,0,'L',1);
+            $pdf->Cell(11,7,$item->qty,0,0,'C',1);
+            $pdf->Cell(14,7,$item->amount,0,1,'C',1);
+        }
 
         // $pdf->SetFont('Arial', '', 10);
         // $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
