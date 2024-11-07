@@ -14,22 +14,22 @@ class OrderReceivingReportExport implements FromView, WithTitle
 {
     use RegistersEventListeners;
     protected $queryRecord;
-    protected $branch;
+    protected $company;
     protected $dates;
 
-    public function __construct(array $queryRecord, string $branch, array $dates)
+    public function __construct(array $queryRecord, string $company, array $dates)
     {
         $this->queryRecord = $queryRecord;
-        $this->branch = $branch;
+        $this->company = $company;
         $this->dates = $dates;
     }
 
     public function view(): View
     {
         $record = $this->queryRecord;
-        $branch = $this->branch;
+        $company = $this->company;
         $dates = $this->dates;
-        return view("partials.reports.order-receiving-report-export",compact("record","branch","dates"));
+        return view("partials.reports.order-receiving-report-export",compact("record","company","dates"));
     }
 	
 	public function title(): string

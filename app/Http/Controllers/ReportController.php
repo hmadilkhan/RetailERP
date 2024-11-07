@@ -43,6 +43,7 @@ use App\Exports\WebsiteItemSummaryExport;
 use App\Mail\DeclarationEmail;
 use App\Models\Company;
 use App\Models\DailyStock;
+use App\receiptpdf;
 use App\Services\OrderService;
 use App\Services\StockAdjustmentService;
 use Mail;
@@ -440,12 +441,13 @@ class ReportController extends Controller
     public function getOrderRecievingExport(Request $request,report $report)
     {
         $details = $report->orderAmountReceivableTerminalExcel($request->fromdate, $request->todate, $request->branch);
-        $branch = "";
+        $companyName = Company::findOrFail(session("company_id"));
+        $companyName = $companyName->name;
         $datearray = [
             "from" => $request->fromdate,
             "to" => $request->todate,
         ];
-        return Excel::download(new OrderReceivingReportExport($details, $branch, $datearray), "Order Receiving Report.xlsx");
+        return Excel::download(new OrderReceivingReportExport($details, $companyName, $datearray), "Order Receiving Report.xlsx");
     }
 
     public function getOrdersReportExcelExport(Request $request, report $report, order $order)
@@ -4697,7 +4699,6 @@ class ReportController extends Controller
     {
         $users = new userDetails();
         $dash = new dashboard();
-        \Log::info($openingId);
         $opening = SalesOpening::where("opening_id", $openingId)->where("status", 2)->first();
         $date = $opening->date;
         $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and b.terminal_id = ?", [$opening->terminal_id]);
@@ -4736,6 +4737,61 @@ class ReportController extends Controller
             //
         }
         return 1;
+    }
+
+    public function generateCompleteReportForEmail(Request $request)
+    {
+        $company = Company::findOrFail($request->company);
+        $branch = Branch::findOrFail($request->branch);
+
+
+        $pdf = new receiptpdf('P','mm',array(80,200));
+
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+        $pdf->SetMargins(1,0,0,1);
+        $pdf->SetFont('Arial','B',10);
+		$pdf->SetTitle($general[0]->receipt_no);
+		
+        $pdf->Image(asset('storage/images/company/'.$company->logo),28,4,-200);
+        $pdf->ln(23);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(80,0,$company->name,0,1,'C');
+        $pdf->SetFont('Arial','',7);
+        $pdf->Multicell(80,7,$branch->branch_address,0,'C',0);
+        $pdf->Cell(80,1,$branch->branch_ptcl." | ".$branch->branch_mobile,0,1,'C');
+
+        $pdf->ln(1);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(75,6,"",'T,B',1,'L');
+
+        $pdf->ln(2);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->setFillColor(233,233,233);
+        $pdf->SetTextColor(0,0,0);
+        $pdf->Cell(43,7,'SALES DECLARATION',0,0,'L',1);
+
+
+
+        $pdf->ln(3);
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(75,8,"Timing : 10:30 AM To 6:30 PM",'T,B',1,'C');
+
+        $pdf->ln(2);
+        $pdf->Cell(75,5,"Solution By Sabsons|Sabsoft",0,1,'C');
+        $pdf->Cell(75,5,"www.sabsoft.com.pk | 9221-34389215-16-17",0,1,'C');
+
+
+
+        header('Content-Type: application/pdf; charset=utf-8');
+        echo $pdf->Output('I',$general[0]->receipt_no.".pdf",true);
+		exit;
+
+        // return response($pdf->Output())
+        //     ->header('Content-Type', 'application/pdf');
+
+
     }
 
     public function testLaravelProject()
