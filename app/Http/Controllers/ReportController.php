@@ -4748,6 +4748,10 @@ class ReportController extends Controller
         $permissions = $users->getPermission($request->terminal);
         $terminal_name = $users->getTerminalName($request->terminal);
         $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->opening);
+        $CashInHand = "";
+        $declarationNo =  $heads[0]->opening_id  ?? 0;
+        $CashInHand = round($heads[0]->bal ?? 0);
+        $closingBalance = round($heads[0]->closingBal ?? 0);
 
         $pdf = new pdfClass('P', 'mm', array(80, 200));
 
@@ -4789,6 +4793,18 @@ class ReportController extends Controller
         $pdf->Cell(15, 6, "Terminal  ", 'T', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
         $pdf->Cell(20, 6, $terminal_name[0]->terminal_name, 'T', 1, 'L');
+
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Cell(15, 6, "Declaration #  ", 'T', 0, 'L');
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Cell(20, 6, $declarationNo, 'T', 0, 'L');
+        // CENTER SPACE
+        $pdf->Cell(5, 6, "", 'T', 0, 'C');
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Cell(15, 6, "Closing Balance  ", 'T', 0, 'L');
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Cell(20, 6,  $closingBalance, 'T', 1, 'L');
 
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
