@@ -4796,9 +4796,9 @@ class ReportController extends Controller
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(15, 6, "Declaration #  ", 'T', 0, 'L');
+        $pdf->Cell(20, 6, "Declaration #  ", 'T', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 6, $declarationNo, 'T', 0, 'L');
+        $pdf->Cell(15, 6, $declarationNo, 'T', 0, 'L');
         // CENTER SPACE
         $pdf->Cell(5, 6, "", 'T', 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
