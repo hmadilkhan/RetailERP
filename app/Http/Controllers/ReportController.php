@@ -4784,7 +4784,7 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', '', 8);
         $pdf->Cell(20, 6, $terminal_name[0]->branch_name, 'T', 0, 'L');
         // CENTER SPACE
-        $pdf->Cell(8, 6, "", 'T', 0, 'L');
+        $pdf->Cell(5, 6, "", 'T', 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(15, 6, "Terminal  ", 'T', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
