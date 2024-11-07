@@ -438,7 +438,7 @@ class ReportController extends Controller
 
     }
 
-    public function getOrderRecievingExport(Request $request,report $report)
+    public function getOrderRecievingExport(Request $request, report $report)
     {
         $details = $report->orderAmountReceivableTerminalExcel($request->fromdate, $request->todate, $request->branch);
         $companyName = Company::findOrFail(session("company_id"));
@@ -4745,48 +4745,47 @@ class ReportController extends Controller
         $branch = Branch::findOrFail($request->branch);
 
 
-        $pdf = new receiptpdf('P','mm',array(80,200));
+        $pdf = new receiptpdf('P', 'mm', array(80, 200));
 
 
         $pdf->AliasNbPages();
         $pdf->AddPage();
-        $pdf->SetMargins(1,0,0,1);
-        $pdf->SetFont('Arial','B',10);
-		$pdf->SetTitle("Declration Details");
-		
-        $pdf->Image(asset('storage/images/company/'.$company->logo),28,4,-200);
+        $pdf->SetMargins(1, 0, 0, 1);
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->SetTitle("Declration Details");
+
+        $pdf->Image(asset('storage/images/company/' . $company->logo), 28, 4, -200);
         $pdf->ln(23);
-        $pdf->SetFont('Arial','B',10);
-        $pdf->Cell(80,0,$company->name,0,1,'C');
-        $pdf->SetFont('Arial','',7);
-        $pdf->Multicell(80,7,$branch->branch_address,0,'C',0);
-        $pdf->Cell(80,1,$branch->branch_ptcl." | ".$branch->branch_mobile,0,1,'C');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(80, 0, $company->name, 0, 1, 'C');
+        $pdf->SetFont('Arial', '', 7);
+        $pdf->Multicell(80, 7, $branch->branch_address, 0, 'C', 0);
+        $pdf->Cell(80, 1, $branch->branch_ptcl . " | " . $branch->branch_mobile, 0, 1, 'C');
 
         $pdf->ln(1);
-        $pdf->SetFont('Arial','B',10);
-        $pdf->Cell(75,6,"",'T,B',1,'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(75, 6, "", 'T,B', 1, 'L');
 
         $pdf->ln(2);
-        $pdf->SetFont('Arial','B',10);
-        $pdf->setFillColor(233,233,233);
-        $pdf->SetTextColor(0,0,0);
-        $pdf->Cell(43,7,'SALES DECLARATION',0,0,'L',1);
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->setFillColor(233, 233, 233);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(43, 7, 'SALES DECLARATION', 0, 0, 'L', 1);
 
 
 
         $pdf->ln(3);
-        $pdf->SetFont('Arial','',10);
-        $pdf->Cell(75,8,"Timing : 10:30 AM To 6:30 PM",'T,B',1,'C');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
 
         $pdf->ln(2);
-        $pdf->Cell(75,5,"Solution By Sabsons|Sabsoft",0,1,'C');
-        $pdf->Cell(75,5,"www.sabsoft.com.pk | 9221-34389215-16-17",0,1,'C');
+        $pdf->Cell(75, 5, "Solution By Sabsons|Sabsoft", 0, 1, 'C');
+        $pdf->Cell(75, 5, "www.sabsoft.com.pk | 9221-34389215-16-17", 0, 1, 'C');
 
 
 
         header('Content-Type: application/pdf; charset=utf-8');
-        echo $pdf->Output('I',$general[0]->receipt_no.".pdf",true);
-		exit;
+        return  $pdf->Output('I', "Declration Details.pdf", true);
 
         // return response($pdf->Output())
         //     ->header('Content-Type', 'application/pdf');
@@ -5972,8 +5971,8 @@ class ReportController extends Controller
         $pdf->ln(1);
         if ($request->branch == "all") {
             $terminals = $report->getTerminals($request->branch);
-        }else{
-            $terminals = DB::table("terminal_details")->where("branch_id",$request->branch)->get();
+        } else {
+            $terminals = DB::table("terminal_details")->where("branch_id", $request->branch)->get();
         }
         $totalReceivedAmount = 0;
         foreach ($terminals as $key => $terminal) {
@@ -6023,7 +6022,7 @@ class ReportController extends Controller
             $pdf->SetTextColor(255, 255, 255);
 
             $pdf->Cell(143, 6, "Total:", 0, 0, 'C', 1);
-            $pdf->Cell(17, 6, number_format($totalReceivedAmount,0), 0, 0, 'C', 1);
+            $pdf->Cell(17, 6, number_format($totalReceivedAmount, 0), 0, 0, 'C', 1);
             $pdf->Cell(37, 6, "", 0, 1, 'C', 1);
         }
 
