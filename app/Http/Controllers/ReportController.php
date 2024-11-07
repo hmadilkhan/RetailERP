@@ -5003,18 +5003,18 @@ class ReportController extends Controller
             $totalAmount += $item->amount;
 
             $pdf->Cell(78, 7, "(" . $item->item_code . ")" . $item->product_name, 0, 1, 'L', 1);
-            $pdf->Cell(40, 7, number_format($item->price,0), 0, 0, 'L', 1);
+            $pdf->Cell(40, 7, number_format($item->price, 0), 0, 0, 'L', 1);
             $pdf->Cell(13, 7, $item->qty, 0, 0, 'L', 1);
             $pdf->Cell(11, 7, $item->qty * $item->weight_qty, 0, 0, 'C', 1);
-            $pdf->Cell(14, 7, number_format($item->amount,0), 0, 1, 'C', 1);
+            $pdf->Cell(14, 7, number_format($item->amount, 0), 0, 1, 'C', 1);
         }
 
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(40, 7, number_format($totalPrice,0), 0, 0, 'L', 1);
-        $pdf->Cell(13, 7, number_format($totalQty,0), 0, 0, 'L', 1);
-        $pdf->Cell(11, 7, number_format($totalWeightQty,0), 0, 0, 'C', 1);
-        $pdf->Cell(14, 7, number_format($totalAmount,0), 0, 1, 'C', 1);
+        $pdf->Cell(40, 7, number_format($totalPrice, 0), 0, 0, 'L', 1);
+        $pdf->Cell(13, 7, number_format($totalQty, 0), 0, 0, 'L', 1);
+        $pdf->Cell(11, 7, number_format($totalWeightQty, 0), 0, 0, 'C', 1);
+        $pdf->Cell(14, 7, number_format($totalAmount, 0), 0, 1, 'C', 1);
         $pdf->ln(6);
 
         $pdf->setFillColor(255, 255, 255);
@@ -5031,23 +5031,26 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
-        $expenses = expense::join('expense_categories', 'expense_categories.exp_cat_id', '=', 'expenses.exp_cat_id')->where('expenses.opening_id',$request->opening)->get();
+        $expenses = expense::join('expense_categories', 'expense_categories.exp_cat_id', '=', 'expenses.exp_cat_id')->where('expenses.opening_id', $request->opening)->get();
 
         $pdf->setFillColor(233, 233, 233);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(20, 7, 'Category', 0, 0, 'L', 1);
         $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
-        $pdf->Cell(35, 7, 'Details', 0, 1, 'C', 1);
+        $pdf->Cell(38, 7, 'Details', 0, 1, 'C', 1);
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
-
-        foreach ($expenses as $key => $expense) {
-            $pdf->Cell(20, 7, $expense->expense_category, 0, 0, 'L', 1);
-            $pdf->Cell(20, 7, $expense->amount, 0, 0, 'L', 1);
-            $pdf->Cell(35, 7, $expense->expense_details, 0, 1, 'C', 1);
+        if (!empty($expenses)) {
+            foreach ($expenses as $key => $expense) {
+                $pdf->Cell(20, 7, $expense->expense_category, 0, 0, 'L', 1);
+                $pdf->Cell(20, 7, $expense->amount, 0, 0, 'L', 1);
+                $pdf->Cell(38, 7, $expense->expense_details, 0, 1, 'C', 1);
+            }
+        } else {
+            $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
         }
 
-        
+
 
         // $pdf->SetFont('Arial', '', 10);
         // $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
