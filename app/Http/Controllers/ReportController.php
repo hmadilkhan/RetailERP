@@ -4815,13 +4815,13 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(20, 4, "Declaration#  ", 'B', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(15, 4, $declarationNo, 'B', 0, 'L');
+        $pdf->Cell(15, 4, $declarationNo, 'B', 0, 'R');
         // CENTER SPACE
         $pdf->Cell(5, 4, "", 'B', 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(20, 4, "Closing Bal  ", 'B', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(15, 4,  $closingBalance, 'B', 1, 'L');
+        $pdf->Cell(15, 4,  $closingBalance, 'B', 1, 'R');
 
         $pdf->ln(2);
         $pdf->SetFont('Arial', 'B', 12);
