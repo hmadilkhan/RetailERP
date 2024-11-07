@@ -4987,8 +4987,8 @@ class ReportController extends Controller
         $pdf->Cell(13,7,'Price',0,0,'L',1);
         $pdf->Cell(11,7,'Qty',0,0,'C',1);
         $pdf->Cell(14,7,'Amount',0,1,'C',1);
-        $pdf->setFillColor(0,0,0);
-        $pdf->SetTextColor(255, 255, 255);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
 
         $items = $report->itemsalesdatabaseforpdf($request->opening);
 
