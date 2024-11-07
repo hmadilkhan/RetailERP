@@ -4784,32 +4784,32 @@ class ReportController extends Controller
 
         // HEAD
         $pdf->ln(1);
-        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(35, 4, "Opening DateTime  ", 'T', 0, 'L');
         // CENTER SPACE
         $pdf->Cell(5, 4, "", 'T', 0, 'C');
-        $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(35, 4, date('d M Y', strtotime($heads[0]->date)) . ' ' . date('H:i a', strtotime($heads[0]->time)) ?? 0, 'T', 1, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 4, date('d M Y', strtotime($heads[0]->date)) . ' ' . date('H:i a', strtotime($heads[0]->time)) ?? 0, 'T', 1, 'R');
 
         $pdf->ln(1);
-        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(35, 4, "Closing DateTime  ", 0, 0, 'L');
         // CENTER SPACE
         $pdf->Cell(5, 4, "", 0, 0, 'C');
-        $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(35, 4, date('d M Y', strtotime($heads[0]->closingDate)) . ' ' . date('H:i a', strtotime($heads[0]->closingTime)) ?? 0, 0, 1, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 4, date('d M Y', strtotime($heads[0]->closingDate)) . ' ' . date('H:i a', strtotime($heads[0]->closingTime)) ?? 0, 0, 1, 'R');
 
         $pdf->ln(1);
-        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(15, 4, "Branch  ", 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 4, $terminal_name[0]->branch_name, 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(20, 4, $terminal_name[0]->branch_name, 0, 0, 'R');
         // CENTER SPACE
         $pdf->Cell(5, 4, "", 0, 0, 'C');
-        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(15, 4, "Terminal  ", 0, 0, 'L');
-        $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 4, $terminal_name[0]->terminal_name, 0, 1, 'L');
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(20, 4, $terminal_name[0]->terminal_name, 0, 1, 'R');
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
