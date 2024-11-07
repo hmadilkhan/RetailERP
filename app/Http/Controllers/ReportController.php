@@ -4803,13 +4803,13 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(15, 4, "Branch  ", 0, 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 4, $terminal_name[0]->branch_name, 0, 0, 'L');
+        $pdf->Cell(20, 4, $terminal_name[0]->branch_name, 0, 0, 'R');
         // CENTER SPACE
         $pdf->Cell(5, 4, "", 0, 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(15, 4, "Terminal  ", 0, 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 4, $terminal_name[0]->terminal_name, 0, 1, 'L');
+        $pdf->Cell(20, 4, $terminal_name[0]->terminal_name, 0, 1, 'R');
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
