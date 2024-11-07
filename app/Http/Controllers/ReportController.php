@@ -4760,6 +4760,7 @@ class ReportController extends Controller
         $negative =
             ($heads[0]->Discount ?? 0) +
             ($heads[0]->SalesReturn ?? 0) +
+            ($heads[0]->VoidReceipts ?? 0) +
             ($heads[0]->cashOut ?? 0);
         $CashInHand =
             $positive -
