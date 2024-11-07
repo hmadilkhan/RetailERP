@@ -4782,6 +4782,7 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
+        // HEAD
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(15, 6, "Branch  ", 'T', 0, 'L');
@@ -4796,15 +4797,15 @@ class ReportController extends Controller
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(20, 6, "Declaration #  ", 'T', 0, 'L');
+        $pdf->Cell(20, 6, "Declaration#  ", 'T', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
         $pdf->Cell(15, 6, $declarationNo, 'T', 0, 'L');
         // CENTER SPACE
         $pdf->Cell(5, 6, "", 'T', 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(15, 6, "Closing Balance  ", 'T', 0, 'L');
+        $pdf->Cell(20, 6, "Closing Balance  ", 'T', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 6,  $closingBalance, 'T', 1, 'L');
+        $pdf->Cell(15, 6,  $closingBalance, 'T', 1, 'L');
 
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
