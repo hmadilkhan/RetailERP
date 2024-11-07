@@ -4752,7 +4752,7 @@ class ReportController extends Controller
         $pdf->AddPage();
         $pdf->SetMargins(1,0,0,1);
         $pdf->SetFont('Arial','B',10);
-		$pdf->SetTitle($general[0]->receipt_no);
+		$pdf->SetTitle("Declration Details");
 		
         $pdf->Image(asset('storage/images/company/'.$company->logo),28,4,-200);
         $pdf->ln(23);
