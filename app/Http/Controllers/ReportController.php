@@ -4751,7 +4751,7 @@ class ReportController extends Controller
         $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->opening);
         $CashInHand = "";
         $declarationNo =  $heads[0]->opening_id  ?? 0;
-        
+
         $positive =
             ($heads[0]->bal ?? 0) +
             ($heads[0]->order_delivered_cash ?? 0) +
@@ -4981,24 +4981,41 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
-        $pdf->setFillColor(233,233,233);
-        $pdf->SetTextColor(0,0,0);
-        $pdf->Cell(40,7,'Product',0,0,'L',1);
-        $pdf->Cell(13,7,'Price',0,0,'L',1);
-        $pdf->Cell(11,7,'Qty',0,0,'C',1);
-        $pdf->Cell(14,7,'Amount',0,1,'C',1);
+        $pdf->setFillColor(233, 233, 233);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(40, 7, 'Product', 0, 0, 'L', 1);
+        $pdf->Cell(13, 7, 'Price', 0, 0, 'L', 1);
+        $pdf->Cell(11, 7, 'Qty', 0, 0, 'C', 1);
+        $pdf->Cell(14, 7, 'Amount', 0, 1, 'C', 1);
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
         $items = $report->itemsalesdatabaseforpdf($request->opening);
 
+        $totalPrice = 0;
+        $totalQty = 0;
+        $totalWeightQty = 0;
+        $totalAmount = 0;
         foreach ($items as $key => $item) {
-            $pdf->Cell(78,7,"(".$item->item_code.")".$item->product_name,0,1,'L',1);
-            $pdf->Cell(40,7,$item->price,0,0,'L',1);
-            $pdf->Cell(13,7,$item->qty,0,0,'L',1);
-            $pdf->Cell(11,7,$item->qty * $item->weight_qty,0,0,'C',1);
-            $pdf->Cell(14,7,$item->amount,0,1,'C',1);
+            $totalPrice += $item->price;
+            $totalQty += $item->qty;
+            $totalWeightQty += ($item->qty * $item->weight_qty);
+            $totalAmount += $item->amount;
+
+            $pdf->Cell(78, 7, "(" . $item->item_code . ")" . $item->product_name, 0, 1, 'L', 1);
+            $pdf->Cell(40, 7, $item->price, 0, 0, 'L', 1);
+            $pdf->Cell(13, 7, $item->qty, 0, 0, 'L', 1);
+            $pdf->Cell(11, 7, $item->qty * $item->weight_qty, 0, 0, 'C', 1);
+            $pdf->Cell(14, 7, $item->amount, 0, 1, 'C', 1);
         }
+
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(40, 7, $totalPrice, 0, 0, 'L', 1);
+        $pdf->Cell(13, 7, $totalQty, 0, 0, 'L', 1);
+        $pdf->Cell(11, 7, $totalWeightQty, 0, 0, 'C', 1);
+        $pdf->Cell(14, 7, $totalAmount, 0, 1, 'C', 1);
+        $pdf->ln(6);
 
         // $pdf->SetFont('Arial', '', 10);
         // $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
