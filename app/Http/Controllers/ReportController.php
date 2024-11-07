@@ -4985,7 +4985,7 @@ class ReportController extends Controller
         $pdf->Cell(40,7,'Product',0,0,'L',1);
         $pdf->Cell(13,7,'Price',0,0,'L',1);
         $pdf->Cell(11,7,'Qty',0,0,'C',1);
-        $pdf->Cell(11,7,'Amount',0,1,'C',1);
+        $pdf->Cell(12,7,'Amount',0,1,'C',1);
 
         // $pdf->SetFont('Arial', '', 10);
         // $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
