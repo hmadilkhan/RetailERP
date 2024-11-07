@@ -4938,7 +4938,7 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
             $pdf->Cell(35, 6, "Closing Balance", 0, 0, 'L', 1);
             $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
-            $pdf->Cell(30, 6, number_format($heads[0]->closingBalance, 0) ?? 0, 0, 1, 'R', 1);
+            $pdf->Cell(30, 6, number_format($closingBalance, 0) ?? 0, 0, 1, 'R', 1);
         }
 
 
