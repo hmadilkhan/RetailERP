@@ -4785,43 +4785,43 @@ class ReportController extends Controller
         // HEAD
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(35, 6, "Opening DateTime  ", 'T', 0, 'L');
+        $pdf->Cell(35, 4, "Opening DateTime  ", 'T', 0, 'L');
         // CENTER SPACE
-        $pdf->Cell(5, 6, "", 'T', 0, 'C');
+        $pdf->Cell(5, 4, "", 'T', 0, 'C');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(35, 6, date('d M Y', strtotime($heads[0]->date)) . ' ' . date('H:i a', strtotime($heads[0]->time)) ?? 0, 'T', 1, 'L');
+        $pdf->Cell(35, 4, date('d M Y', strtotime($heads[0]->date)) . ' ' . date('H:i a', strtotime($heads[0]->time)) ?? 0, 'T', 1, 'L');
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(35, 6, "Closing DateTime  ", 0, 0, 'L');
+        $pdf->Cell(35, 4, "Closing DateTime  ", 0, 0, 'L');
         // CENTER SPACE
-        $pdf->Cell(5, 6, "", 0, 0, 'C');
+        $pdf->Cell(5, 4, "", 0, 0, 'C');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(35, 6, date('d M Y', strtotime($heads[0]->closingDate)) . ' ' . date('H:i a', strtotime($heads[0]->closingTime)) ?? 0, 0, 1, 'L');
+        $pdf->Cell(35, 4, date('d M Y', strtotime($heads[0]->closingDate)) . ' ' . date('H:i a', strtotime($heads[0]->closingTime)) ?? 0, 0, 1, 'L');
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(15, 6, "Branch  ", 0, 0, 'L');
+        $pdf->Cell(15, 4, "Branch  ", 0, 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 6, $terminal_name[0]->branch_name, 0, 0, 'L');
+        $pdf->Cell(20, 4, $terminal_name[0]->branch_name, 0, 0, 'L');
         // CENTER SPACE
-        $pdf->Cell(5, 6, "", 0, 0, 'C');
+        $pdf->Cell(5, 4, "", 0, 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(15, 6, "Terminal  ", 0, 0, 'L');
+        $pdf->Cell(15, 4, "Terminal  ", 0, 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 6, $terminal_name[0]->terminal_name, 0, 1, 'L');
+        $pdf->Cell(20, 4, $terminal_name[0]->terminal_name, 0, 1, 'L');
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(20, 6, "Declaration#  ", 'B', 0, 'L');
+        $pdf->Cell(20, 4, "Declaration#  ", 'B', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(15, 6, $declarationNo, 'B', 0, 'L');
+        $pdf->Cell(15, 4, $declarationNo, 'B', 0, 'L');
         // CENTER SPACE
-        $pdf->Cell(5, 6, "", 'B', 0, 'C');
+        $pdf->Cell(5, 4, "", 'B', 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(20, 6, "Closing Bal  ", 'B', 0, 'L');
+        $pdf->Cell(20, 4, "Closing Bal  ", 'B', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(15, 6,  $closingBalance, 'B', 1, 'L');
+        $pdf->Cell(15, 4,  $closingBalance, 'B', 1, 'L');
 
         $pdf->ln(2);
         $pdf->SetFont('Arial', 'B', 12);
@@ -4945,12 +4945,12 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->ln(6);
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
+        // $pdf->SetFont('Arial', '', 10);
+        // $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
 
-        $pdf->ln(2);
-        $pdf->Cell(75, 5, "Solution By Sabsons|Sabsoft", 0, 1, 'C');
-        $pdf->Cell(75, 5, "www.sabsoft.com.pk | 9221-34389215-16-17", 0, 1, 'C');
+        // $pdf->ln(2);
+        // $pdf->Cell(75, 5, "Solution By Sabsons|Sabsoft", 0, 1, 'C');
+        // $pdf->Cell(75, 5, "www.sabsoft.com.pk | 9221-34389215-16-17", 0, 1, 'C');
 
 
 
