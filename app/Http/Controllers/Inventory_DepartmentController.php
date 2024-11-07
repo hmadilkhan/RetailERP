@@ -165,6 +165,11 @@ class Inventory_DepartmentController extends Controller
 
             $this->validate($request, $rules); // validation module
 
+            $priority = 0;
+            if(!empty($request->priority)){
+                $priority = $priority + 1;
+            }
+
 
             //department form details save array value
             $data = [
@@ -181,7 +186,7 @@ class Inventory_DepartmentController extends Controller
                 "meta_title"               => $request->metatitle,
                 "meta_description"         => $request->metadescript,
                 'website_mode'             => isset($request->showWebsite) ? 1 : 0,
-                'priority'                 => !empty($request->priority) ? $request->priority : 0
+                'priority'                 => $priority
             ];
 
             // department save to database
@@ -487,6 +492,7 @@ class Inventory_DepartmentController extends Controller
     }
     public function updatedepart(inventory_department $in_depart, Request $request)
     {
+        //return $request;
         $imageName = null;
         $bannerImageName = null;
         $mobile_banner = null;
@@ -544,6 +550,10 @@ class Inventory_DepartmentController extends Controller
             }
         }
 
+        $priority = 0;
+        if(!empty($request->priority)){
+            $priority = $priority + 1;
+        }
 
         $items = [
             'code'                     => $request->editcode,
@@ -551,7 +561,7 @@ class Inventory_DepartmentController extends Controller
             'website_department_name'  => (empty($request->webdeptname) ?  $request->departname : $request->webdeptname),
             'slug'                     => preg_replace("/[\s_]/", "-", strtolower($request->departname)),
             'website_mode'             => (isset($request->showWebsite) ? 1 : 0),
-            'priority'                 => !empty($request->priority) ? $request->priority : 0,
+            'priority'                 => $priority,
             'date'                     => date('Y-m-d'),
             'time'                     => date('H:i:s'),
         ];
