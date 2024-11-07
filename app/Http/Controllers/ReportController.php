@@ -4741,8 +4741,13 @@ class ReportController extends Controller
 
     public function generateCompleteReportForEmail(Request $request)
     {
+        $users = new userDetails();
+        $dash = new dashboard();
         $company = Company::findOrFail($request->company);
         $branch = Branch::findOrFail($request->branch);
+        $permissions = $users->getPermission($request->terminal);
+        $terminal_name = $users->getTerminalName($request->terminal);
+        $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->opening);
 
         $pdf = new pdfClass('P', 'mm', array(80, 200));
 
@@ -4760,17 +4765,26 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', '', 7);
         $pdf->Multicell(80, 7, $branch->branch_address, 0, 'C', 0);
         $pdf->Cell(80, 1, $branch->branch_ptcl . " | " . $branch->branch_mobile, 0, 1, 'C');
-
         $pdf->ln(1);
-        // $pdf->SetFont('Arial', 'B', 10);
-        // $pdf->Cell(75, 6, "", 'T', 1, 'L');
+
 
         $pdf->ln(2);
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(75, 6, 'SALES DECLARATION', 0, 0, 'C', 1);
+        $pdf->ln(6);
 
+        $pdf->ln(1);
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(10,6,"Branch  ",'T,B',0,'L');
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(40,6,$terminal_name[0]->branch_name,'T,B',0,'L');
+
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(10,6,"Terminal  ",'T,B',0,'L');
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(15,6,$terminal_name[0]->terminal_name,'T,B',1,'L');
 
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
