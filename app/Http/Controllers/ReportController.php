@@ -4974,7 +4974,7 @@ class ReportController extends Controller
         $pdf->ln(6);
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(75, 6, 'ITEM SALES DETAILS', 0, 0, 'C', 1);
+        $pdf->Cell(78, 6, 'ITEM SALES DETAILS', 0, 0, 'C', 1);
         $pdf->ln(6);
 
         $pdf->setFillColor(255, 255, 255);
