@@ -4785,27 +4785,43 @@ class ReportController extends Controller
         // HEAD
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(15, 6, "Branch  ", 'T', 0, 'L');
-        $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 6, $terminal_name[0]->branch_name, 'T', 0, 'L');
+        $pdf->Cell(35, 6, "Opening DateTime  ", 'T', 0, 'L');
         // CENTER SPACE
         $pdf->Cell(5, 6, "", 'T', 0, 'C');
-        $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(15, 6, "Terminal  ", 'T', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(20, 6, $terminal_name[0]->terminal_name, 'T', 1, 'L');
+        $pdf->Cell(35, 6, date('d M Y', strtotime($heads[0]->date)) . ' ' . date('H:i a', strtotime($heads[0]->time)) ?? 0, 'T', 1, 'L');
 
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(20, 6, "Declaration#  ", 'T', 0, 'L');
+        $pdf->Cell(35, 6, "Closing DateTime  ", 'T', 0, 'L');
+        // CENTER SPACE
+        $pdf->Cell(5, 6, "", 'T', 0, 'C');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(15, 6, $declarationNo, 'T', 0, 'L');
+        $pdf->Cell(35, 6, date('d M Y', strtotime($heads[0]->closingDate)) . ' ' . date('H:i a', strtotime($heads[0]->closingTime)) ?? 0, 'T', 1, 'L');
+
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Cell(15, 6, "Branch  ", 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Cell(20, 6, $terminal_name[0]->branch_name, 0, 0, 'L');
+        // CENTER SPACE
+        $pdf->Cell(5, 6, "", 0, 0, 'C');
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Cell(15, 6, "Terminal  ", 0, 0, 'L');
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Cell(20, 6, $terminal_name[0]->terminal_name, 0, 1, 'L');
+
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Cell(20, 6, "Declaration#  ", 'B', 0, 'L');
+        $pdf->SetFont('Arial', '', 8);
+        $pdf->Cell(15, 6, $declarationNo, 'B', 0, 'L');
         // CENTER SPACE
         $pdf->Cell(5, 6, "", 'T', 0, 'C');
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(20, 6, "Closing Bal  ", 'T', 0, 'L');
+        $pdf->Cell(20, 6, "Closing Bal  ", 'B', 0, 'L');
         $pdf->SetFont('Arial', '', 8);
-        $pdf->Cell(15, 6,  $closingBalance, 'T', 1, 'L');
+        $pdf->Cell(15, 6,  $closingBalance, 'B', 1, 'L');
 
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
