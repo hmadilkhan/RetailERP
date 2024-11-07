@@ -4750,7 +4750,29 @@ class ReportController extends Controller
         $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->opening);
         $CashInHand = "";
         $declarationNo =  $heads[0]->opening_id  ?? 0;
-        $CashInHand = round($heads[0]->bal ?? 0);
+        
+        $positive =
+            ($heads[0]->bal ?? 0) +
+            ($heads[0]->order_delivered_cash ?? 0) +
+            ($heads[0]->Cash ?? 0) +
+            ($heads[0]->adv_booking_cash ?? 0) +
+            ($heads[0]->cashIn ?? 0);
+        $negative =
+            ($heads[0]->Discount ?? 0) +
+            ($heads[0]->SalesReturn ?? 0) +
+            ($heads[0]->cashOut ?? 0);
+        $CashInHand =
+            $positive -
+            $negative +
+            ($heads[0]->CardCustomerDiscount ?? 0) +
+            ($heads[0]->Delivery ?? 0);
+        if (isset($heads[0]->expenses) && $heads[0]->expenses == 1) {
+            $CashInHand -= $heads[0]->expenses;
+        }
+        if (session('company_id') == 102) {
+            $CashInHand -= $salesData['heads'][0]->bal ?? 0;
+        }
+        $CashInHand = round($CashInHand);
         $closingBalance = round($heads[0]->closingBal ?? 0);
 
         $pdf = new pdfClass('P', 'mm', array(80, 200));
