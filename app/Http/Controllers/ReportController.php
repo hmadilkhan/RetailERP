@@ -4744,8 +4744,7 @@ class ReportController extends Controller
         $company = Company::findOrFail($request->company);
         $branch = Branch::findOrFail($request->branch);
 
-
-        $pdf = new receiptpdf('P', 'mm', array(80, 200));
+        $pdf = new pdfClass('P', 'mm', array(80, 200));
 
 
         $pdf->AliasNbPages();
