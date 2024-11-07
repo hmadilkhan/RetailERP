@@ -4775,6 +4775,9 @@ class ReportController extends Controller
         $pdf->Cell(75, 6, 'SALES DECLARATION', 0, 0, 'C', 1);
         $pdf->ln(6);
 
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
+
         $pdf->ln(1);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(10,6,"Branch  ",'T,B',0,'L');
