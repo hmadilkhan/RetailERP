@@ -4835,109 +4835,109 @@ class ReportController extends Controller
 
         if ($permissions[0]->ob == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Opening Balance", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Opening Balance", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->bal, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->cash_sale == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Cash Sale", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Cash Sale", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->Cash, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->customer_credit_sale == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Credit Card Sale", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Credit Card Sale", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->CreditCard, 0) ?? 0, 0, 1, 'R', 1);
         }
 
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(35, 6, "Total Sales", 0, 0, 'L', 1);
-        $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+        $pdf->Cell(38, 6, "Total Sales", 0, 0, 'L', 1);
+        $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
         $pdf->Cell(30, 6, number_format($heads[0]->TotalSales + $heads[0]->credit_card_transaction, 0) ?? 0, 0, 1, 'R', 1);
 
         if ($permissions[0]->order_booking == 1) {
 
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Adv Booking (Cash)", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Adv Booking (Cash)", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->adv_booking_cash, 0) ?? 0, 0, 1, 'R', 1);
 
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Adv Booking (Card)", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Adv Booking (Card)", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->adv_booking_card, 0) ?? 0, 0, 1, 'R', 1);
 
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Order Delivered (Cash)", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Order Delivered (Cash)", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->order_delivered_cash, 0) ?? 0, 0, 1, 'R', 1);
 
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Order Delivered (Card)", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Order Delivered (Card)", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->order_delivered_card, 0) ?? 0, 0, 1, 'R', 1);
         }
 
         if ($permissions[0]->sale_return == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Sale Return", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Sale Return", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->SalesReturn, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->void_receipt == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Void Receipts", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Void Receipts", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->VoidReceipts, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->discount == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Discount", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Discount", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->Discount, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->cash_in == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Cash In", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Cash In", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->cashIn, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->cash_out == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Cash Out", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Cash Out", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->cashOut, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->expenses == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Expense", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Expense", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->expenses, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->fbr_sync == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "FBR (TAX)", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "FBR (TAX)", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->fbr, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->srb_sync == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "SRB (TAX)", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "SRB (TAX)", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->srb, 0) ?? 0, 0, 1, 'R', 1);
         }
 
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(35, 6, "Cash In Hand", 0, 0, 'L', 1);
-        $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+        $pdf->Cell(38, 6, "Cash In Hand", 0, 0, 'L', 1);
+        $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
         $pdf->Cell(30, 6, number_format($CashInHand, 0) ?? 0, 0, 1, 'R', 1);
 
         if ($permissions[0]->cb == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(35, 6, "Closing Balance", 0, 0, 'L', 1);
-            $pdf->Cell(10, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(38, 6, "Closing Balance", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($closingBalance, 0) ?? 0, 0, 1, 'R', 1);
         }
 
