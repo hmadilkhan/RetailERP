@@ -5040,7 +5040,7 @@ class ReportController extends Controller
         $pdf->Cell(38, 7, 'Details', 0, 1, 'C', 1);
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
-        if (!empty($expenses)) {
+        if (count($expenses) > 0) {
             foreach ($expenses as $key => $expense) {
                 $pdf->Cell(20, 7, $expense->expense_category, 0, 0, 'L', 1);
                 $pdf->Cell(20, 7, $expense->amount, 0, 0, 'L', 1);
