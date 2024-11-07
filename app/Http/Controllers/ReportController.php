@@ -4993,10 +4993,10 @@ class ReportController extends Controller
         $items = $report->itemsalesdatabaseforpdf($request->opening);
 
         foreach ($items as $key => $item) {
-            $pdf->Cell(78,7,"(".$item->item_code.")".$item->item_name,0,1,'L',1);
-            $pdf->Cell(40,7,$item->weight_qty,0,0,'L',1);
-            $pdf->Cell(13,7,$item->price,0,0,'L',1);
-            $pdf->Cell(11,7,$item->qty,0,0,'C',1);
+            $pdf->Cell(78,7,"(".$item->item_code.")".$item->product_name,0,1,'L',1);
+            $pdf->Cell(40,7,$item->price,0,0,'L',1);
+            $pdf->Cell(13,7,$item->qty,0,0,'L',1);
+            $pdf->Cell(11,7,$item->qty * $item->weight_qty,0,0,'C',1);
             $pdf->Cell(14,7,$item->amount,0,1,'C',1);
         }
 
