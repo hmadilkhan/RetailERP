@@ -50,6 +50,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+
+        if ($exception instanceof \Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException && $exception->getStatusCode() == 419) {
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+
+
         return parent::render($request, $exception);
     }
 }
