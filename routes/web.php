@@ -913,6 +913,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('raw-usage-report',  [ReportController::class, 'rawUsage'])->name('raw.usage');
     Route::get('generate-daily-usage/{from}/{to}',  [ReportController::class, 'generateDailyUsage'])->name('generate.raw.usage');
     Route::get('testDeclarationEmail',  [ReportController::class, 'testDeclarationEmail'])->name('testDeclarationEmail');
+    Route::get('SendDeclarationEmail/{openingId}',  [ReportController::class, 'SendDeclarationEmail'])->name('SendDeclarationEmail');
     Route::get('pdf-complete-report/{company}/{branch}/{terminal}/{opening}',  [ReportController::class, 'generateCompleteReportForEmail'])->name('generateCompleteReportForEmail');
 
     //SMS
