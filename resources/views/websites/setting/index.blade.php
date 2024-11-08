@@ -511,9 +511,6 @@
        $("#address").val("{{ $GetWebsite->address }}");
  @endif
 
-@if(isset($GetWebsite) && $GetWebsite != null)
-      $("#address").val("{{ $GetWebsite->address }}");
-@endif
 
 //  $("#meta_description").on('change',function(){
 //      update($(this).attr('name'),$(this).val(),'website');
