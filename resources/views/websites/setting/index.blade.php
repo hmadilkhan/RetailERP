@@ -307,7 +307,7 @@
                 <button type="button" onclick="btn_update('address')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light m-t-1">Update!</button>
                                          <span id="address_alert"></span>
             </div>
-        </div>
+
         <div class="form-group">
             <label for="footer_layout" class="form-control-label">Footer Layout</label>
             <select name="footer_layout" id="footer_layout" data-placeholder="Select" class="form-control select2" onchange="update('footer_layout',$(this).val(),'theme')">
@@ -322,7 +322,7 @@
             </select>
               <div class="form-control-feedback text-danger" id="footer_layout_alert"></div>
        </div>
-
+      </div>
     </div>
 
     <div class="tab-pane" id="setting" role="tabpanel">
