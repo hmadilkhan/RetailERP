@@ -212,6 +212,20 @@
            </div>
           <span id="uan_number_alert"></span>
      </div>
+     <div class="form-group">
+        <label for="email" class="form-control-label">Email</label>
+          <div class="input-group">
+             <input type="email" class="form-control" placeholder="Email" aria-describedby="btn-email" data-id="website" value="{{ $GetWebsite->email }}" name="email" id="email">
+             <span class="input-group-btn" id="btn-email"><button type="button" onclick="btn_update('email')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light">Update!</button></span>
+          </div>
+         <span id="email_alert"></span>
+    </div>
+     <div class="form-group">
+        <label for="address" class="form-control-label">Address</label>
+        <textarea rows="5" class="form-control" name="address" data-id="website" id="address"></textarea>
+        <button type="button" onclick="btn_update('address')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light m-t-1">Update!</button>
+                                 <span id="address_alert"></span>
+    </div>
      </div>
     </div>
     <div class="tab-pane" id="product" role="tabpanel">
@@ -301,12 +315,7 @@
 
     <div class="tab-pane" id="footer" role="tabpanel">
         <div class="col-md-6 m-t-3">
-            <div class="form-group">
-                <label for="address" class="form-control-label">Address</label>
-                <textarea rows="5" class="form-control" name="address" data-id="website" id="address"></textarea>
-                <button type="button" onclick="btn_update('address')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light m-t-1">Update!</button>
-                                         <span id="address_alert"></span>
-            </div>
+
 
         <div class="form-group">
             <label for="footer_layout" class="form-control-label">Footer Layout</label>
