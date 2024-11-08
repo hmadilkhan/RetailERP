@@ -511,7 +511,9 @@
 
  @if(isset($GetWebsite) && $GetWebsite != null)
       $("#meta_description").val("{{ $GetWebsite->meta_description }}");
-       $("#address").val("{{ $GetWebsite->address }}");
+
+      let address = @json("{{ $GetWebsite->address }}");
+       $("#address").val(address);
  @endif
 
 
