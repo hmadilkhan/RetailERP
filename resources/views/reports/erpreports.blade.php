@@ -494,7 +494,7 @@
                 '#txttype', '#txtitemsale', '#txtstockadjustment',
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
-                '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport','#txtordertimingsummary'
+                '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport','#txtordertimingsummary','#txtorderamountreceivable'
             ];
 
             fields.forEach(field => {
