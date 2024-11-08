@@ -4796,7 +4796,7 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(80, 0, $company->name . " (" . $branch->branch_name . ") ", 0, 1, 'C');
         $pdf->SetFont('Arial', 'B', 8);
-        $pdf->Cell(80, 0, $terminal_name[0]->terminal_name, 0, 1, 'C');
+        // $pdf->Cell(80, 0, $terminal_name[0]->terminal_name, 0, 1, 'C');
         $pdf->SetFont('Arial', '', 7);
         $pdf->Multicell(80, 7, $branch->branch_address, 0, 'C', 0);
         $pdf->Cell(80, 1, $branch->branch_ptcl . " | " . $branch->branch_mobile, 0, 1, 'C');
