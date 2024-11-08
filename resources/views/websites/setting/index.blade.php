@@ -619,8 +619,8 @@
       dataType:'json',
       async:true,
       success: function(resp) {
-          notify('Success!', 'success');
-        console.log(resp)
+          swal('Success!','', 'success');
+        //console.log(resp)
       }
     });
   }
@@ -721,7 +721,7 @@
              cache: false,
              processData:false,
              success: function(data){
-                 notify('Success!', 'success');
+                swal('Success!','', 'success');
                //console.log(data);
              }
     });
