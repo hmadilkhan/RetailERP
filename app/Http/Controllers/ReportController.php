@@ -4680,7 +4680,7 @@ class ReportController extends Controller
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
 
-                        $this->generateCompleteReportForEmail($terminal->company_id,$terminal->branch_id,$terminal,$opening);
+                        $this->generateCompleteReportForEmail($terminal->company_id,$terminal->branch_id,$terminal,$opening->opening_id);
                         // print($emails);
                         Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
@@ -4733,7 +4733,7 @@ class ReportController extends Controller
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
 
-                        $this->generateCompleteReportForEmail($terminal->company_id,$terminal->branch_id,$terminal->terminal_id,$opening);
+                        $this->generateCompleteReportForEmail($terminal->company_id,$terminal->branch_id,$terminal->terminal_id,$opening->opening_id);
                         // print($emails);
                         Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
