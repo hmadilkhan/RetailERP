@@ -4680,7 +4680,7 @@ class ReportController extends Controller
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
 
-                        $this->generateCompleteReportForEmail($terminal->company_id,$terminal->branch_id,$terminal,$opening->opening_id);
+                        $this->generateCompleteReportForEmail($terminal->company_id, $terminal->branch_id, $terminal, $opening->opening_id);
                         // print($emails);
                         Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
@@ -4733,7 +4733,7 @@ class ReportController extends Controller
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
 
-                        $this->generateCompleteReportForEmail($terminal->company_id,$terminal->branch_id,$terminal->terminal_id,$opening->opening_id);
+                        $this->generateCompleteReportForEmail($terminal->company_id, $terminal->branch_id, $terminal->terminal_id, $opening->opening_id);
                         // print($emails);
                         Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
@@ -4744,7 +4744,7 @@ class ReportController extends Controller
         return 1;
     }
 
-    public function generateCompleteReportForEmail($company,$branch,$terminal,$opening)
+    public function generateCompleteReportForEmail($company, $branch, $terminal, $opening)
     {
         $users = new userDetails();
         $dash = new dashboard();
@@ -4794,7 +4794,9 @@ class ReportController extends Controller
         $pdf->Image(asset('storage/images/company/' . $company->logo), 28, 4, -200);
         $pdf->ln(23);
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(80, 0, $company->name, 0, 1, 'C');
+        $pdf->Cell(80, 0, $company->name . " (" . $terminal_name[0]->branch_name . ") ", 0, 1, 'C');
+        $pdf->SetFont('Arial', 'B', 8);
+        $pdf->Cell(80, 0, $terminal_name[0]->terminal_name, 0, 1, 'C');
         $pdf->SetFont('Arial', '', 7);
         $pdf->Multicell(80, 7, $branch->branch_address, 0, 'C', 0);
         $pdf->Cell(80, 1, $branch->branch_ptcl . " | " . $branch->branch_mobile, 0, 1, 'C');
@@ -5027,91 +5029,98 @@ class ReportController extends Controller
 
         $pdf->AddPage();
 
-        $pdf->ln(6);
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(78, 6, 'EXPENSE DETAILS', 0, 0, 'C', 1);
-        $pdf->ln(6);
+        // EXPENSES
+        if ($permissions[0]->expenses == 1) {
+            $pdf->ln(6);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(78, 6, 'EXPENSE DETAILS', 0, 0, 'C', 1);
+            $pdf->ln(6);
 
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
 
-        $expenses = expense::join('expense_categories', 'expense_categories.exp_cat_id', '=', 'expenses.exp_cat_id')->where('expenses.opening_id', $opening)->get();
+            $expenses = expense::join('expense_categories', 'expense_categories.exp_cat_id', '=', 'expenses.exp_cat_id')->where('expenses.opening_id', $opening)->get();
 
-        $pdf->setFillColor(233, 233, 233);
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(20, 7, 'Category', 0, 0, 'L', 1);
-        $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
-        $pdf->Cell(38, 7, 'Details', 0, 1, 'C', 1);
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
-        if (count($expenses) > 0) {
-            foreach ($expenses as $key => $expense) {
-                $pdf->Cell(20, 7, $expense->expense_category, 0, 0, 'L', 1);
-                $pdf->Cell(20, 7, $expense->amount, 0, 0, 'L', 1);
-                $pdf->Cell(38, 7, $expense->expense_details, 0, 1, 'C', 1);
+            $pdf->setFillColor(233, 233, 233);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(20, 7, 'Category', 0, 0, 'L', 1);
+            $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
+            $pdf->Cell(38, 7, 'Details', 0, 1, 'C', 1);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+            if (count($expenses) > 0) {
+                foreach ($expenses as $key => $expense) {
+                    $pdf->Cell(20, 7, $expense->expense_category, 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, $expense->amount, 0, 0, 'L', 1);
+                    $pdf->Cell(38, 7, $expense->expense_details, 0, 1, 'C', 1);
+                }
+            } else {
+                $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
             }
-        } else {
-            $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
         }
 
-        $pdf->ln(6);
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(78, 6, 'CASH-IN DETAILS', 0, 0, 'C', 1);
-        $pdf->ln(6);
+        // CASH IN 
+        if ($permissions[0]->cash_in == 1) {
+            $pdf->ln(6);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(78, 6, 'CASH-IN DETAILS', 0, 0, 'C', 1);
+            $pdf->ln(6);
 
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
 
-        $cashins = DB::table("sales_cash_in")->where("opening_id", $opening)->get();
+            $cashins = DB::table("sales_cash_in")->where("opening_id", $opening)->get();
 
-        $pdf->setFillColor(233, 233, 233);
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(20, 7, 'Date', 0, 0, 'L', 1);
-        $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
-        $pdf->Cell(38, 7, 'Narration', 0, 1, 'C', 1);
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
-        if (count($cashins) > 0) {
-            foreach ($cashins as $key => $cashin) {
-                $pdf->Cell(20, 7, date("d M Y", strtotime($cashin->datetime)), 0, 0, 'L', 1);
-                $pdf->Cell(20, 7, $cashin->amount, 0, 0, 'L', 1);
-                $pdf->Cell(38, 7, $cashin->narration, 0, 1, 'C', 1);
+            $pdf->setFillColor(233, 233, 233);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(20, 7, 'Date', 0, 0, 'L', 1);
+            $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
+            $pdf->Cell(38, 7, 'Narration', 0, 1, 'C', 1);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+            if (count($cashins) > 0) {
+                foreach ($cashins as $key => $cashin) {
+                    $pdf->Cell(20, 7, date("d M Y", strtotime($cashin->datetime)), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, $cashin->amount, 0, 0, 'L', 1);
+                    $pdf->Cell(38, 7, $cashin->narration, 0, 1, 'C', 1);
+                }
+            } else {
+                $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
             }
-        } else {
-            $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
         }
 
-        $pdf->ln(6);
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(78, 6, 'CASH-OUT DETAILS', 0, 0, 'C', 1);
-        $pdf->ln(6);
+        // CASH OUT
+        if ($permissions[0]->cash_out == 1) {
+            $pdf->ln(6);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(78, 6, 'CASH-OUT DETAILS', 0, 0, 'C', 1);
+            $pdf->ln(6);
 
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
 
-        $cashouts = DB::table("sales_cash_out")->where("opening_id", $opening)->get();
+            $cashouts = DB::table("sales_cash_out")->where("opening_id", $opening)->get();
 
-        $pdf->setFillColor(233, 233, 233);
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(20, 7, 'Date', 0, 0, 'L', 1);
-        $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
-        $pdf->Cell(38, 7, 'Narration', 0, 1, 'C', 1);
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
-        if (count($cashouts) > 0) {
-            foreach ($cashouts as $key => $cashout) {
-                $pdf->Cell(20, 7, date("d M Y", strtotime($cashout->datetime)), 0, 0, 'L', 1);
-                $pdf->Cell(20, 7, $cashout->amount, 0, 0, 'L', 1);
-                $pdf->Cell(38, 7, $cashout->narration, 0, 1, 'C', 1);
+            $pdf->setFillColor(233, 233, 233);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(20, 7, 'Date', 0, 0, 'L', 1);
+            $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
+            $pdf->Cell(38, 7, 'Narration', 0, 1, 'C', 1);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+            if (count($cashouts) > 0) {
+                foreach ($cashouts as $key => $cashout) {
+                    $pdf->Cell(20, 7, date("d M Y", strtotime($cashout->datetime)), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, $cashout->amount, 0, 0, 'L', 1);
+                    $pdf->Cell(38, 7, $cashout->narration, 0, 1, 'C', 1);
+                }
+            } else {
+                $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
             }
-        } else {
-            $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
         }
-
-
 
         // $pdf->SetFont('Arial', '', 10);
         // $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
