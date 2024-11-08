@@ -4794,8 +4794,9 @@ class ReportController extends Controller
         $pdf->Image(asset('storage/images/company/' . $company->logo), 28, 4, -200);
         $pdf->ln(23);
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(80, 0, $company->name . " (" . $terminal_name[0]->branch_name . ") ", 0, 1, 'C');
+        $pdf->Cell(80, 0, $company->name . " (" . $branch->branch_name . ") ", 0, 1, 'C');
         $pdf->SetFont('Arial', 'B', 8);
+        $pdf->ln(4);
         $pdf->Cell(80, 0, $terminal_name[0]->terminal_name, 0, 1, 'C');
         $pdf->SetFont('Arial', '', 7);
         $pdf->Multicell(80, 7, $branch->branch_address, 0, 'C', 0);
@@ -5142,7 +5143,7 @@ class ReportController extends Controller
 
         // Save the PDF to the specified path
         return $pdf->Output('F', $filePath);
-        return  $pdf->Output('I', "Declration Details.pdf", true);
+        // return  $pdf->Output('I', "Declration Details.pdf", true);
 
         // return response($pdf->Output())
         //     ->header('Content-Type', 'application/pdf');
