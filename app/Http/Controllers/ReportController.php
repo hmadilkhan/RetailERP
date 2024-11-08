@@ -5120,7 +5120,7 @@ class ReportController extends Controller
 
         header('Content-Type: application/pdf; charset=utf-8');
 
-        $filePath = storage_path('app/public/pdf/sales_declaration_report_' . $request->opening  . '.pdf');
+        $filePath = storage_path('app/public/pdfs/sales_declaration_report_' . $request->opening  . '.pdf');
 
         // Ensure the 'pdfs' folder exists, if not, create it
         if (!file_exists(storage_path('app/public/pdfs'))) {
