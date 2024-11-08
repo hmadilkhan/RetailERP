@@ -185,7 +185,7 @@
             <div class="row ">
             	<div class="text-center"><h2>{{($mode == 1 ? "CASH DETAILS" : ($mode == 2 ? "CREDIT CARD DETAILS" : ($mode == 3 ? "CUSTOMER CREDIT DETAILS" : "")))}}</h2></div>
             	<div class="col-sm-12 col-md-12">
-            		<table class="table table-responsive dt-responsive width-100 table-striped nowrap no-footer" style="width:100%;">
+            		<table class="table table-responsive dt-responsive table-striped nowrap">
             			<thead>
 							<th>Receipt No.</th>
             				<th>Total Item Qty</th>
@@ -238,6 +238,7 @@
                                 <td>Total Discount</td>
                                 <td class="text-left">Net Amount</td>
                                 <td></td>
+                                <td></td>
                             </tr>
                             <tr class="f-24 f-w-300">
                                 <td> {{$count}}</td>
@@ -245,6 +246,7 @@
                                 <td>{{number_format($actualAmount,0)}}</td>
                                 <td>{{number_format($discountAmount,0)}}</td>
             					<td class="text-left">Rs. {{number_format($total_amount,0)}}</td>
+                                <td></td>
                                 <td></td>
             				</tr>
             			</tbody>
