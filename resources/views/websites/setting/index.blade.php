@@ -482,11 +482,6 @@
            </div>
         </div>
 
-        @if(isset($GetWebsite) && $GetWebsite != null)
-
-         {{ 'Address:'.$GetWebsite->address }}
-   @endif
-
 </section>
 
 @endsection
