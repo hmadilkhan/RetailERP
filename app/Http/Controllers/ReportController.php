@@ -4679,6 +4679,8 @@ class ReportController extends Controller
                         $branchName = $terminal_name[0]->branch_name;
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
+
+                        $this->generateCompleteReportForEmail($terminal->company_id,$terminal->branch_id,$terminal,$opening);
                         // print($emails);
                         Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
@@ -4730,6 +4732,8 @@ class ReportController extends Controller
                         $branchName = $terminal_name[0]->branch_name;
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
+
+                        $this->generateCompleteReportForEmail($terminal->company_id,$terminal->branch_id,$terminal->terminal_id,$opening);
                         // print($emails);
                         Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
@@ -4740,16 +4744,16 @@ class ReportController extends Controller
         return 1;
     }
 
-    public function generateCompleteReportForEmail(Request $request)
+    public function generateCompleteReportForEmail($company,$branch,$terminal,$opening)
     {
         $users = new userDetails();
         $dash = new dashboard();
         $report = new report();
-        $company = Company::findOrFail($request->company);
-        $branch = Branch::findOrFail($request->branch);
-        $permissions = $users->getPermission($request->terminal);
-        $terminal_name = $users->getTerminalName($request->terminal);
-        $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->opening);
+        $company = Company::findOrFail($company);
+        $branch = Branch::findOrFail($branch);
+        $permissions = $users->getPermission($terminal);
+        $terminal_name = $users->getTerminalName($terminal);
+        $heads = $dash->getheadsDetailsFromOpeningIdForClosing($opening);
         $CashInHand = "";
         $declarationNo =  $heads[0]->opening_id  ?? 0;
 
@@ -4991,7 +4995,7 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
-        $items = $report->itemsalesdatabaseforpdf($request->opening);
+        $items = $report->itemsalesdatabaseforpdf($opening);
 
         $totalPrice = 0;
         $totalQty = 0;
@@ -5060,7 +5064,7 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
-        $cashins = DB::table("sales_cash_in")->where("opening_id", $request->opening)->get();
+        $cashins = DB::table("sales_cash_in")->where("opening_id", $opening)->get();
 
         $pdf->setFillColor(233, 233, 233);
         $pdf->SetTextColor(0, 0, 0);
@@ -5088,7 +5092,7 @@ class ReportController extends Controller
         $pdf->setFillColor(255, 255, 255);
         $pdf->SetTextColor(0, 0, 0);
 
-        $cashouts = DB::table("sales_cash_out")->where("opening_id", $request->opening)->get();
+        $cashouts = DB::table("sales_cash_out")->where("opening_id", $opening)->get();
 
         $pdf->setFillColor(233, 233, 233);
         $pdf->SetTextColor(0, 0, 0);
@@ -5120,11 +5124,11 @@ class ReportController extends Controller
 
         header('Content-Type: application/pdf; charset=utf-8');
 
-        $filePath = storage_path('app/public/pdfs/sales_declaration_report_' . $request->opening  . '.pdf');
+        $filePath = storage_path('app/public/declarationpdfs/sales_declaration_report_' . $opening  . '.pdf');
 
         // Ensure the 'pdfs' folder exists, if not, create it
-        if (!file_exists(storage_path('app/public/pdfs'))) {
-            mkdir(storage_path('app/public/pdfs'), 0777, true);
+        if (!file_exists(storage_path('app/public/declarationpdfs'))) {
+            mkdir(storage_path('app/public/declarationpdfs'), 0777, true);
         }
 
         // Save the PDF to the specified path
