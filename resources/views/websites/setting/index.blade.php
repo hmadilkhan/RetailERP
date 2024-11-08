@@ -302,7 +302,7 @@
     <div class="tab-pane" id="footer" role="tabpanel">
         <div class="col-md-6 m-t-3">
             <div class="form-group">
-                <label for="address" class="form-control-label">Address</label>
+                <label for="address" class="form-control-label">Shop Address</label>
                 <textarea rows="5" class="form-control" name="address" data-id="website" id="address"></textarea>
                 <button type="button" onclick="btn_update('address')" class="btn btn-primary shadow-none addon-btn waves-effect waves-light m-t-1">Update!</button>
                                          <span id="address_alert"></span>
