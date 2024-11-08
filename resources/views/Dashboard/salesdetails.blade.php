@@ -185,7 +185,8 @@
             <div class="row ">
             	<div class="text-center"><h2>{{($mode == 1 ? "CASH DETAILS" : ($mode == 2 ? "CREDIT CARD DETAILS" : ($mode == 3 ? "CUSTOMER CREDIT DETAILS" : "")))}}</h2></div>
             	<div class="col-sm-12 col-md-12">
-            		<table class="table table-responsive dt-responsive table-striped nowrap">
+                  <div class="table-responsive">
+            		<table class="table dt-responsive table-striped nowrap">
             			<thead>
 							<th>Receipt No.</th>
             				<th>Total Item Qty</th>
@@ -251,6 +252,7 @@
             				</tr>
             			</tbody>
             		</table>
+                 </div>
             	</div>
             </div>
 @endif
