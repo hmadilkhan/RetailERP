@@ -765,14 +765,20 @@
                         _token: "{{ csrf_token() }}",
                         inventid: rem_id,
                         website: $('#website_md').val()
+                    },beforeSend:function(){
+                        $("#btnwebsiteSave").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
                     },
-                    success: function(resp) {
-                        console.log(resp)
-                        if (resp == 'success') {
+                    success: function(resp,txtStatus,jXStatus) {
+
+                        if (jXStatus.status == 200) {
                             window.location = "{{ url('inventory-list') }}"
                         } else {
+                            $("#btnwebsiteSave").attr('disabled',false).html('Add');
                             swal("Cancelled", "Cannot change website. An error occured :)", "error");
                         }
+                    },error:function(errorResp){
+                        $("#btnwebsiteSave").attr('disabled',false).html('Add');
+                        swal('Error!',errorResp.responseText,'error');
                     }
 
                 }); //ajax end
