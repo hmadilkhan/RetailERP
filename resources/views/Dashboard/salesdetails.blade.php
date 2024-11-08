@@ -238,7 +238,6 @@
                                 <td>Total Discount</td>
                                 <td class="text-left">Net Amount</td>
                                 <td></td>
-                                <td></td>
                             </tr>
                             <tr class="f-24 f-w-300">
                                 <td> {{$count}}</td>
@@ -246,7 +245,6 @@
                                 <td>{{number_format($actualAmount,0)}}</td>
                                 <td>{{number_format($discountAmount,0)}}</td>
             					<td class="text-left">Rs. {{number_format($total_amount,0)}}</td>
-                                <td></td>
                                 <td></td>
             				</tr>
             			</tbody>
