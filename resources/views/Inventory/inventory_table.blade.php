@@ -93,19 +93,19 @@
 
                          @if ($inventory->is_deal == 1)
                           <a href='/inventory/{{ $inventory->id }}/deal-products' class="dropdown-item waves-light waves-effect"
-                              title='View Deal Products'>View Deal Products</a>
+                            data-original-title='View Deal Products' data-toggle='tooltip' data-placement='left'>View Deal Products</a>
                          @else
                           {{-- <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
                               title='Create Variable & Addon Product'><i
                                   class='icofont icofont-plus text-success'></i></a> --}}
                             @if($inventory->pos_product_count != 0)
                               <a href='/inventory/{{ $inventory->id }}/variable-products' class="dropdown-item waves-light waves-effect"
-                                  title='View Variable and Addon Products' data-toggle='tooltip' data-original-title='View Variable and Addon Products'>
+                                  title='View Variable and Addon Products' data-toggle='tooltip' data-placement='left' data-original-title='View Variable and Addon Products'>
                                   View Variable & Addon
                               </a>
                             @else
                                   <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class="dropdown-item waves-light waves-effect"
-                                      title='Make a Deal & Variable Product' data-toggle='tooltip' data-original-title='Make a Deal & Variable Product'>Create Variable & Addon</a>
+                                      title='Make a Deal & Variable Product' data-toggle='tooltip' data-placement='left' data-original-title='Make a Deal & Variable Product'>Create Variable & Addon</a>
                             @endif
                           @endif
                       <a href="javascript:void(0)" onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
