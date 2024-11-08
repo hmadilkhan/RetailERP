@@ -4794,7 +4794,7 @@ class ReportController extends Controller
         $pdf->Image(asset('storage/images/company/' . $company->logo), 28, 4, -200);
         $pdf->ln(23);
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(80, 0, $company->name . " (" . $terminal_name[0]->branch_name . ") ", 0, 1, 'C');
+        $pdf->Cell(80, 0, $company->name . " (" . $branch->branch_name . ") ", 0, 1, 'C');
         $pdf->SetFont('Arial', 'B', 8);
         $pdf->Cell(80, 0, $terminal_name[0]->terminal_name, 0, 1, 'C');
         $pdf->SetFont('Arial', '', 7);
