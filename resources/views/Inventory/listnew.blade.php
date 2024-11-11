@@ -265,7 +265,7 @@ $('.dataTable').DataTable({
     responsive: {
         details: {
             type: 'column', // This makes the responsive view use columns for details
-            target: -1 // Target the last column for responsive details
+            target: 13 // Target the last column for responsive details
         }
     },
     paging: false,  // Disable pagination
