@@ -24,6 +24,7 @@
                 <th>Stock</th>
                 <th>UOM</th>
                 <th>Action</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -128,6 +129,7 @@
                       </div>
 
                     </td>
+                    <td></td>
                 </tr>
             @endforeach
         </tbody>
