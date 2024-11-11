@@ -257,7 +257,7 @@
 $('.dataTable').DataTable({
     columnDefs: [
         {
-            className: 'dtr-control arrow-right', // This adds a custom class to the last column
+            className: 'dtr-control icofont icofont-arrow-left', // This adds a custom class to the last column
             orderable: false, // Prevent sorting on the last column
             targets: -1 // Target the last column (0-indexed, -1 for the last column)
         }
@@ -265,7 +265,7 @@ $('.dataTable').DataTable({
     responsive: {
         details: {
             type: 'column', // This makes the responsive view use columns for details
-            target: 13 // Target the last column for responsive details
+            target: -1 // Target the last column for responsive details
         }
     },
     paging: false,  // Disable pagination
