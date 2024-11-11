@@ -257,7 +257,7 @@
 $('.dataTable').DataTable({
     columnDefs: [
         {
-            className: 'dtr-control arrow-right', // This adds a custom class to the last column
+            className: 'dtr-control icofont icofont-arrow-left', // This adds a custom class to the last column
             orderable: false, // Prevent sorting on the last column
             targets: -1 // Target the last column (0-indexed, -1 for the last column)
         }
