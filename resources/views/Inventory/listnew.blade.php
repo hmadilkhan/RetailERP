@@ -254,12 +254,85 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
 
-    $('#dataTable').DataTable({
-      responsive: true,  // Enable responsiveness
-      paging: false,     // Disable pagination
-      searching: false,  // Disable search bar (optional)
-      info: false        // Disable table info (optional)
+    // $('#dataTable').DataTable({
+    //   responsive: true,  // Enable responsiveness
+
+    // });
+
+    function format(d) {
+    return (
+        '<dl>' +
+        '<dt>Full name:</dt>' +
+        '<dd>' + d.name + '</dd>' +
+        '<dt>Extension number:</dt>' +
+        '<dd>' + d.extn + '</dd>' +
+        '<dt>Extra info:</dt>' +
+        '<dd>Any additional information (images, links, etc.) can go here.</dd>' +
+        '</dl>'
+    );
+}
+
+// Function to fetch data based on dynamic ID
+function loadTableData(dynamicId) {
+    let table = $('#dataTable').DataTable({
+        "destroy": true,  // Destroy existing table to avoid multiple initializations
+        paging: false,     // Disable pagination
+        searching: false,  // Disable search bar (optional)
+        info: false        // Disable table info (optional)
+        "ajax": {
+            "url": "getData.php",  // Replace with your server-side URL
+            "type": "GET",
+            "data": { id: dynamicId },  // Pass the dynamic ID as a parameter to the server
+            "dataSrc": function (json) {
+                return json.data;  // Assuming server response contains data under `data` key
+            }
+        },
+        "columns": [
+            {
+                className: 'dt-control',
+                orderable: false,
+                data: null,
+                defaultContent: ''  // Empty content for the control column
+            },
+            { data: 'name' },
+            { data: 'position' },
+            { data: 'office' },
+            { data: 'salary' }
+        ],
+        "order": [[1, 'asc']],  // Default sorting by 'name'
+        "rowId": 'id',  // Set row ID based on 'id' property from the data
+        "stateSave": true,  // Save the state of the table (pagination, search, etc.)
+        "responsive": true,  // Enable responsive design
+        "paging": false,  // Disable pagination (optional)
+        "searching": false,  // Disable searching (optional)
+        "info": false  // Disable info (optional)
     });
+
+    // Add event listener for opening and closing details
+    table.on('click', 'td.dt-control', function (e) {
+        var tr = e.target.closest('tr');
+        var row = table.row(tr);
+
+        if (row.child.isShown()) {
+            // Row is already open - close it
+            row.child.hide();
+        } else {
+            // Open this row
+            row.child(format(row.data())).show();
+        }
+    });
+}
+
+// Event listener to load data when dynamic ID is entered
+$('#loadData').click(function() {
+    var dynamicId = $('#dynamicId').val();  // Get the dynamic ID entered by the user
+    if (dynamicId) {
+        loadTableData(dynamicId);  // Load table data based on the dynamic ID
+    } else {
+        alert("Please enter a valid ID.");
+    }
+});
+
 
      var crtagprodCode = null;
         function initializeLazyLoading() {
