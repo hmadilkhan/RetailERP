@@ -254,6 +254,13 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
 
+    $('#dataTable').DataTable({
+      responsive: true,  // Enable responsiveness
+      paging: false,     // Disable pagination
+      searching: false,  // Disable search bar (optional)
+      info: false        // Disable table info (optional)
+    });
+
      var crtagprodCode = null;
         function initializeLazyLoading() {
             let lazyImages = [].slice.call(document.querySelectorAll("img.lazy-load"));
