@@ -254,13 +254,14 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
 
-    // $('#dataTable').DataTable({
-    //   responsive: true,  // Enable responsiveness
-    //   targets: 4,
-    //   paging: false,     // Disable pagination
-    //   searching: false,  // Disable search bar (optional)
-    //   info: false        // Disable table info (optional)
-    // });
+    $('#dataTable').DataTable({
+      responsive: true,  // Enable responsiveness
+      bLengthChange: true,
+      targets: 3,
+      paging: false,     // Disable pagination
+      searching: false,  // Disable search bar (optional)
+      info: false        // Disable table info (optional)
+    });
 
 
 
