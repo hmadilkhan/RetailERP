@@ -258,14 +258,14 @@ $('.dataTable').DataTable({
     responsive: {
         details: {
             type: 'column', // Use columns for responsive details
-            target: -1 // Target the last column for responsive details
+            target: 14 // Target the last column for responsive details
         }
     },
     columnDefs: [
         {
             className: 'dtr-control icofont icofont-arrow-left', // Custom class for the last column
             orderable: false, // Prevent sorting on the last column
-            targets: -1 // Apply this to the last column (0-indexed)
+            targets: 14 // Apply this to the last column (0-indexed)
         }
     ],
     paging: false,  // Disable pagination
