@@ -265,7 +265,7 @@ $('.dataTable').DataTable({
         {
             className: 'dtr-control icofont icofont-arrow-left', // Custom class for the last column
             orderable: false, // Prevent sorting on the last column
-            targets: 13 // Apply this to the last column (0-indexed)
+            targets: -1 // Apply this to the last column (0-indexed)
         }
     ],
     paging: false,  // Disable pagination
