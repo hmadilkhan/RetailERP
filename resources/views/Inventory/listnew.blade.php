@@ -275,7 +275,7 @@
 }
 
 // Initialize DataTable
-let table = new DataTable('#dataTable', {
+let table = $('#dataTable').DataTable({
     // No AJAX data, data is null (static data in the HTML itself)
     data: null,  // We are not using AJAX to fetch data now
     paging: false,     // Disable pagination
