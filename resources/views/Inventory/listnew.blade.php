@@ -254,7 +254,7 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
 
-    $('#dataTable').DataTable({
+    $('.dataTable').DataTable({
       responsive: true,  // Enable responsiveness
       bLengthChange: true,
       paging: false,     // Disable pagination
