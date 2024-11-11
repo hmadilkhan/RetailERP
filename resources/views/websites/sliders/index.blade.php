@@ -24,7 +24,7 @@
     <h5 class="card-header-text">Create Slider</h5>
   </div>
     <div class="card-block">
-     <form name="sliderCreateForm " action="{{ route('sliderStore') }}" method="post" enctype="multipart/form-data">
+     <form id="sliderCreateForm " action="{{ route('sliderStore') }}" method="post" enctype="multipart/form-data">
       @csrf
       <div class="col-md-4">
       <div class="form-group m-r-2">
@@ -157,7 +157,7 @@
          </div>
        <div class="card-block">
 
-     <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
+     <table class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
          <thead>
             <tr>
                <th class="d-none">#</th>
