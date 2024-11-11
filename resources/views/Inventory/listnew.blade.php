@@ -257,7 +257,6 @@
     $('#dataTable').DataTable({
       responsive: true,  // Enable responsiveness
       bLengthChange: true,
-      targets: 3,
       paging: false,     // Disable pagination
       searching: false,  // Disable search bar (optional)
       info: false        // Disable table info (optional)
