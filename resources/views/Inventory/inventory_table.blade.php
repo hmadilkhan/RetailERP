@@ -14,16 +14,16 @@
                 <th>Preview</th>
                 <th>Code</th>
                 <th>Name</th>
-                <th>Depart</th>
-                <th>Sub-Depart</th>
-                <th>Price</th>
-                <th>GST%</th>
-                <th>Retail</th>
-                <th>Wholesale</th>
-                <th>Online</th>
-                <th>Stock</th>
-                <th>UOM</th>
-                <th>Action</th>
+                <th class="toggle-column">Depart</th>
+                <th class="toggle-column">Sub-Depart</th>
+                <th class="toggle-column">Price</th>
+                <th class="toggle-column">GST%</th>
+                <th class="toggle-column">Retail</th>
+                <th class="toggle-column">Wholesale</th>
+                <th class="toggle-column">Online</th>
+                <th class="toggle-column">Stock</th>
+                <th class="toggle-column">UOM</th>
+                <th class="toggle-column">Action</th>
             </tr>
         </thead>
         <tbody>
@@ -66,16 +66,16 @@
                     </td>
                     <td>{{ $inventory->item_code }}</td>
                     <td>{{ $inventory->product_name }} @if(isset($inventory->tags))<p class="text-muted p-t-0">(<span>Tags:</span> {{ $inventory->tags }} )</p> @endif </td>
-                    <td>{{ $inventory->department_name }}</td>
-                    <td>{{ $inventory->sub_depart_name }}</td>
-                    <td>{{ $inventory->actual_price }}</td>
-                    <td>{{ $inventory->tax_rate == null ? 0.0 : $inventory->tax_rate }}</td>
-                    <td>{{ $inventory->retail_price }}</td>
-                    <td>{{ $inventory->wholesale_price }}</td>
-                    <td>{{ $inventory->online_price }}</td>
-                    <td>{{ $inventory->stock }}</td>
-                    <td>{{ $inventory->name }}</td>
-                    <td>
+                    <td class="toggle-column">{{ $inventory->department_name }}</td>
+                    <td class="toggle-column">{{ $inventory->sub_depart_name }}</td>
+                    <td class="toggle-column">{{ $inventory->actual_price }}</td>
+                    <td class="toggle-column">{{ $inventory->tax_rate == null ? 0.0 : $inventory->tax_rate }}</td>
+                    <td class="toggle-column">{{ $inventory->retail_price }}</td>
+                    <td class="toggle-column">{{ $inventory->wholesale_price }}</td>
+                    <td class="toggle-column">{{ $inventory->online_price }}</td>
+                    <td class="toggle-column">{{ $inventory->stock }}</td>
+                    <td class="toggle-column">{{ $inventory->name }}</td>
+                    <td class="toggle-column">
 
 
                      <div class="dropdown-success">
