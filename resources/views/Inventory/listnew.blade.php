@@ -262,57 +262,7 @@
       info: false        // Disable table info (optional)
     });
 
-    function format(d) {
-    return (
-        '<dl>' +
-        '<dt>Full name:</dt>' +
-        '<dd>' + d.name + '</dd>' +
-        '<dt>Extension number:</dt>' +
-        '<dd>' + d.extn + '</dd>' +
-        '<dt>Extra info:</dt>' +
-        '<dd>Any additional information (images, links, etc.) can go here.</dd>' +
-        '</dl>'
-    );
-}
 
-// Initialize DataTable
-let table = new DataTable('#example', {
-    // No AJAX data, data is null (static data in the HTML itself)
-    data: null,  // We are not using AJAX to fetch data now
-    columns: [
-        {
-            className: 'dt-control',
-            orderable: false,
-            data: null,
-            defaultContent: ''  // Empty content for the control column (to trigger expansion)
-        },
-        { data: 'name' },
-        { data: 'position' },
-        { data: 'office' },
-        { data: 'salary' }
-    ],
-    order: [[1, 'asc']],  // Default sorting by 'name'
-    rowId: 'id',  // Set row ID based on 'id' property from the data (if available)
-    stateSave: true,  // Save the state of the table (pagination, search, etc.)
-    responsive: true,  // Enable responsive design
-    paging: false,  // Disable pagination (optional)
-    searching: false,  // Disable searching (optional)
-    info: false  // Disable info (optional)
-});
-
-// Add event listener for opening and closing details
-table.on('click', 'td.dt-control', function (e) {
-    var tr = e.target.closest('tr');
-    var row = table.row(tr);
-
-    if (row.child.isShown()) {
-        // Row is already open - close it
-        row.child.hide();
-    } else {
-        // Open this row
-        row.child(format(row.data())).show();
-    }
-});
 
      var crtagprodCode = null;
         function initializeLazyLoading() {
