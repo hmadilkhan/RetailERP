@@ -240,63 +240,7 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-<style>
-/* Base table styles */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-  font-size: 14px;
-}
 
-th, td {
-  padding: 10px;
-  text-align: left;
-  border: 1px solid #ddd;
-}
-
-button {
-  padding: 10px 20px;
-  background-color: #007BFF;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-bottom: 20px;
-}
-
-button:hover {
-  background-color: #0056b3;
-}
-
-/* Responsive table styles */
-@media (max-width: 768px) {
-  /* Hide certain columns on small screens */
-  .toggle-column {
-    display: none;
-  }
-
-  /* Optional: Style the table in stacked format for better readability on mobile */
-  table, thead, tbody, th, td, tr {
-    display: block;
-    width: 100%;
-  }
-
-  tr {
-    margin-bottom: 15px;
-  }
-
-  th, td {
-    width: 100%;
-    display: block;
-    text-align: right;
-  }
-
-  th {
-    text-align: left;
-    font-weight: bold;
-  }
-}
-</style>
  {{-- <style>
     .trCheckBoxAlign{
         text-align: center;
@@ -318,22 +262,7 @@ button:hover {
     //   info: false        // Disable table info (optional)
     // });
 
-    const toggleButton = document.getElementById("toggleColumnsBtn");
 
-// Get all the elements with the "toggle-column" class
-const toggleColumns = document.querySelectorAll(".toggle-column");
-
-// Add event listener to toggle button
-toggleButton.addEventListener("click", function() {
-  toggleColumns.forEach(function(column) {
-    // Toggle the visibility of each column
-    if (column.style.display === "none") {
-      column.style.display = ""; // Show the column
-    } else {
-      column.style.display = "none"; // Hide the column
-    }
-  });
-});
 
      var crtagprodCode = null;
         function initializeLazyLoading() {

@@ -14,16 +14,16 @@
                 <th>Preview</th>
                 <th>Code</th>
                 <th>Name</th>
-                <th class="toggle-column">Depart</th>
-                <th class="toggle-column">Sub-Depart</th>
-                <th class="toggle-column">Price</th>
-                <th class="toggle-column">GST%</th>
-                <th class="toggle-column">Retail</th>
-                <th class="toggle-column">Wholesale</th>
-                <th class="toggle-column">Online</th>
-                <th class="toggle-column">Stock</th>
-                <th class="toggle-column">UOM</th>
-                <th class="toggle-column">Action</th>
+                <th>Depart</th>
+                <th>Sub-Depart</th>
+                <th>Price</th>
+                <th>GST%</th>
+                <th>Retail</th>
+                <th>Wholesale</th>
+                <th>Online</th>
+                <th>Stock</th>
+                <th>UOM</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
