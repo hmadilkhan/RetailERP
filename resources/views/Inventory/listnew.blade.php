@@ -288,10 +288,10 @@ let table = $('#dataTable').DataTable({
             data: null,
             defaultContent: ''  // Empty content for the control column (to trigger expansion)
         },
-        { data: 'name' },
-        { data: 'position' },
-        { data: 'office' },
-        { data: 'salary' }
+        { data: 'Preview'},
+        { data: 'Code'},
+        { data: 'Name'},
+        { data: 'Depart' }
     ],
     order: [[1, 'asc']],  // Default sorting by 'name'
     rowId: 'id',  // Set row ID based on 'id' property from the data (if available)
