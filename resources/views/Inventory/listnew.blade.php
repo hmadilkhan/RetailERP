@@ -240,17 +240,6 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-  <!-- Include DataTables CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.min.css">
-
-  <!-- Include DataTables Responsive CSS -->
-  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.3.0/css/responsive.dataTables.min.css">
-
-  <!-- Include DataTables JS -->
-  <script src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-
-  <!-- Include DataTables Responsive JS -->
-  <script src="https://cdn.datatables.net/responsive/2.3.0/js/dataTables.responsive.min.js"></script>
 
  {{-- <style>
     .trCheckBoxAlign{
@@ -265,12 +254,13 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
 
-    // $('#dataTable').DataTable({
-    //   responsive: true,  // Enable responsiveness
-    //   paging: false,     // Disable pagination
-    //   searching: false,  // Disable search bar (optional)
-    //   info: false        // Disable table info (optional)
-    // });
+    $('#dataTable').DataTable({
+      responsive: true,  // Enable responsiveness
+      targets: 4,
+      paging: false,     // Disable pagination
+      searching: false,  // Disable search bar (optional)
+      info: false        // Disable table info (optional)
+    });
 
     function format(d) {
     return (
@@ -286,12 +276,9 @@
 }
 
 // Initialize DataTable
-let table = $('#dataTable').DataTable({
+let table = new DataTable('#example', {
     // No AJAX data, data is null (static data in the HTML itself)
     data: null,  // We are not using AJAX to fetch data now
-    paging: false,     // Disable pagination
-    searching: false,  // Disable search bar (optional)
-    info: false,        // Disable table info (optional)
     columns: [
         {
             className: 'dt-control',
@@ -299,10 +286,10 @@ let table = $('#dataTable').DataTable({
             data: null,
             defaultContent: ''  // Empty content for the control column (to trigger expansion)
         },
-        { data: 'Preview'},
-        { data: 'Code'},
-        { data: 'Name'},
-        { data: 'Depart' }
+        { data: 'name' },
+        { data: 'position' },
+        { data: 'office' },
+        { data: 'salary' }
     ],
     order: [[1, 'asc']],  // Default sorting by 'name'
     rowId: 'id',  // Set row ID based on 'id' property from the data (if available)
