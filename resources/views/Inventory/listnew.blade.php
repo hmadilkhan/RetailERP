@@ -240,7 +240,24 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<style>
+    /* Add this CSS to make the table responsive */
+.table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; /* for smooth scrolling on iOS */
+}
 
+table {
+  width: 100%;
+  border-collapse: collapse; /* Optional, for cleaner table borders */
+}
+
+th, td {
+  padding: 8px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+</style>
  {{-- <style>
     .trCheckBoxAlign{
         text-align: center;
@@ -254,13 +271,13 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
 
-    $('#dataTable').DataTable({
-      responsive: true,  // Enable responsiveness
-      targets: 4,
-      paging: false,     // Disable pagination
-      searching: false,  // Disable search bar (optional)
-      info: false        // Disable table info (optional)
-    });
+    // $('#dataTable').DataTable({
+    //   responsive: true,  // Enable responsiveness
+    //   targets: 4,
+    //   paging: false,     // Disable pagination
+    //   searching: false,  // Disable search bar (optional)
+    //   info: false        // Disable table info (optional)
+    // });
 
 
 
