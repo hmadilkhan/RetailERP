@@ -254,25 +254,25 @@
 
 <script type="text/javascript">
 
-$('.dataTable').DataTable({
-    responsive: {
-        details: {
-            type: 'column', // Use columns for responsive details
-            target: -1 // Target the last column for responsive details
-        }
-    },
-    columnDefs: [
-        {
-            className: 'dtr-control icofont icofont-arrow-left', // Custom class for the last column
-            orderable: false, // Prevent sorting on the last column
-            targets: -1 // Apply this to the last column (0-indexed)
-        }
-    ],
-    paging: false,  // Disable pagination
-    searching: false, // Disable the search bar
-    info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
-    bLengthChange: false, // Disable the length change dropdown ("Show X entries")
-});
+// $('.dataTable').DataTable({
+//     responsive: {
+//         details: {
+//             type: 'column', // Use columns for responsive details
+//             target: -1 // Target the last column for responsive details
+//         }
+//     },
+//     columnDefs: [
+//         {
+//             className: 'dtr-control icofont icofont-arrow-left', // Custom class for the last column
+//             orderable: false, // Prevent sorting on the last column
+//             targets: -1 // Apply this to the last column (0-indexed)
+//         }
+//     ],
+//     paging: false,  // Disable pagination
+//     searching: false, // Disable the search bar
+//     info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
+//     bLengthChange: false, // Disable the length change dropdown ("Show X entries")
+// });
 
 
 
