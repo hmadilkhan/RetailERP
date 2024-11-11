@@ -254,13 +254,25 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
     <script type="text/javascript">
 
-    $('.dataTable').DataTable({
-      responsive: true,  // Enable responsiveness
-      bLengthChange: true,
-      paging: false,     // Disable pagination
-      searching: false,  // Disable search bar (optional)
-      info: false        // Disable table info (optional)
-    });
+$('.dataTable').DataTable({
+    columnDefs: [
+        {
+            className: 'dtr-control arrow-right', // This adds a custom class to the last column
+            orderable: false, // Prevent sorting on the last column
+            targets: -1 // Target the last column (0-indexed, -1 for the last column)
+        }
+    ],
+    responsive: {
+        details: {
+            type: 'column', // This makes the responsive view use columns for details
+            target: -1 // Target the last column for responsive details
+        }
+    },
+    paging: false,  // Disable pagination
+    searching: false, // Disable the search bar
+    info: false,     // Disable table info (such as "Showing 1 to 10 of 50 entries")
+    bLengthChange: false, // Disable the length change dropdown (optional, it’s the "Show X entries" dropdown)
+});
 
 
 
