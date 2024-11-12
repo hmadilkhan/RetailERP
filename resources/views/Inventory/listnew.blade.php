@@ -240,8 +240,7 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-
- {{-- <style>
+{{-- <style>
     .trCheckBoxAlign{
         text-align: center;
         vertical-align: middle;
@@ -252,7 +251,30 @@
 @section('scriptcode_three')
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
-    <script type="text/javascript">
+
+<script type="text/javascript">
+
+// $('.dataTable').DataTable({
+//     responsive: {
+//         details: {
+//             type: 'column', // Use columns for responsive details
+//             target: -1 // Target the last column for responsive details
+//         }
+//     },
+//     columnDefs: [
+//         {
+//             className: 'dtr-control icofont icofont-arrow-left', // Custom class for the last column
+//             orderable: false, // Prevent sorting on the last column
+//             targets: -1 // Apply this to the last column (0-indexed)
+//         }
+//     ],
+//     paging: false,  // Disable pagination
+//     searching: false, // Disable the search bar
+//     info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
+//     bLengthChange: false, // Disable the length change dropdown ("Show X entries")
+// });
+
+
 
      var crtagprodCode = null;
         function initializeLazyLoading() {

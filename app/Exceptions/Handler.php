@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Session\TokenMismatchException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -50,6 +51,12 @@ class Handler extends ExceptionHandler
      */
     public function render($request, Throwable $exception)
     {
+        // Check if the exception is a TokenMismatchException (which causes a 419 error)
+        if ($exception instanceof TokenMismatchException) {
+            // Redirect to the login page when CSRF token is invalid or expired
+            return redirect()->route('login')->with('error', 'Session expired. Please login again.');
+        }
+
         return parent::render($request, $exception);
     }
 }

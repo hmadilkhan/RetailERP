@@ -135,7 +135,7 @@
                                 <td>{{ $value->mobile }}</td>
                                 <td>{{ $value->nic }}</td>
                                 @if (session('roleId') == 2)
-                                    <td>{{ $value->userauthorization->branch->branch_name }}</td>
+                                    <td>{{ isset($value->userauthorization->branch->branch_name) ? $value->userauthorization->branch->branch_name : '' }}</td>
                                 @endif
                                 <td class="action-icon">
 

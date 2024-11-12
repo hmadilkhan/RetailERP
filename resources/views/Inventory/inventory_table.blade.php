@@ -1,5 +1,5 @@
 <div class="project-table table-responsive">
-    <table id="inventtbl" class="table table-striped nowrap dt-responsive m-t-10 dataTable no-footer dtr-inline">
+    <table id="inventtbl" class="table table-striped nowrap m-t-10 dataTable" width="100%"  cellspacing="0">
         <thead>
             <tr>
                 <th style="text-align:center;vertical-align: middle;">
@@ -24,6 +24,7 @@
                 <th>Stock</th>
                 <th>UOM</th>
                 <th>Action</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -128,6 +129,7 @@
                       </div>
 
                     </td>
+                    <td></td>
                 </tr>
             @endforeach
         </tbody>
