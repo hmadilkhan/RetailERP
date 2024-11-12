@@ -4792,6 +4792,7 @@ class ReportController extends Controller
         $pdf->SetTitle("Declaration Details");
 
         $pdf->Image('https://retail.sabsoft.com.pk/storage/images/company/' . $company->logo, 28, 4, -200);
+        \Log::info('https://retail.sabsoft.com.pk/storage/images/company/' . $company->logo);
         $pdf->ln(23);
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(80, 0, $company->name . " (" . $branch->branch_name . ") ", 0, 1, 'C');
