@@ -65,7 +65,7 @@ class DeclarationEmail extends Mailable
     {
         return [
             // Attachment::fromPath(asset("/storage/declarationpdfs/" . 'sales_declaration_report_' . $this->declarationNumber  . '.pdf'))
-            Attachment::fromPath( storage_path('app/public/declarationpdfs/sales_declaration_report_' . $this->declarationNumber  . '.pdf'))
+            Attachment::from( public_path('storage/declarationpdfs/sales_declaration_report_' .  $this->declarationNumber  . '.pdf'))
         ];
     }
 
