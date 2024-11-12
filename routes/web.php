@@ -55,6 +55,7 @@ use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
 use App\Livewire\Customers\CustomerList;
 use App\Livewire\Inventory\Inventory;
+use App\Livewire\Orders\PreOrderBooking;
 use App\Livewire\StockAdjustment\ListAdjustment;
 use App\Livewire\StockReport;
 use App\Livewire\ViewInventory;
@@ -100,6 +101,7 @@ Route::get('/view-inventory', ViewInventory::class);
 Route::get('/view-adjustments', ListAdjustment::class);
 Route::get('/stock-report', StockReport::class);
 Route::get('/customers-list', CustomerList::class);
+Route::get('/pre-order-booking', PreOrderBooking::class);
 
 Route::resource('addons', AddonController::class);
 Route::resource('addon-category', AddonCategoryController::class);

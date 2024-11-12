@@ -72,9 +72,9 @@
     integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
 </script>
     @include('partials.js-libs')
+    @livewireScripts
     @yield('scriptcode_three')
 
-    @livewireScripts
 </body>
 
 </html>

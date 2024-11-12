@@ -27,6 +27,7 @@ class Sidebar extends Component
         $checkPackage = DB::table("company")->where("company_id", session("company_id"))->whereNotNull("package_id")->get();
         if (count($checkPackage) > 0) {
             $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? and page_id IN (SELECT page_id FROM `package_module_permissions` where package_id = ?) ORDER BY page_id;', [session("roleId"), $checkPackage[0]->package_id]);
+            // $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? and page_id IN (SELECT page_id FROM `module_permissions_details` where company_id = ?) ORDER BY page_id;', [session("roleId"), session("company_id")]);
         } else {
             $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id', [session("roleId")]);
         }
