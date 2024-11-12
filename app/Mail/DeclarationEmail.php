@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 class DeclarationEmail extends Mailable
 {
     use Queueable, SerializesModels;
-
+    
     public $branchName;
     public $subjectTitle;
     public $declarationNumber;
@@ -25,7 +25,7 @@ class DeclarationEmail extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($branchName, $subjectTitle, $declarationNumber, $salesData, $currency, $date, $logo)
+    public function __construct($branchName,$subjectTitle,$declarationNumber,$salesData,$currency,$date,$logo)
     {
         $this->branchName = $branchName;
         $this->subjectTitle = $subjectTitle;
@@ -57,13 +57,16 @@ class DeclarationEmail extends Mailable
     }
 
     /**
-     * Get the path for the PDF attachment.
+     * Get the attachments for the message.
      *
-     * @return string
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
-    protected function getAttachmentPath()
+    public function attachments(): array
     {
-        return storage_path('app/public/declarationpdfs/sales_declaration_report_' . $this->declarationNumber . '.pdf');
+        return [
+            Attachment::fromPath(asset("/storage/declarationpdfs/" . 'sales_declaration_report_' . $this->declarationNumber  . '.pdf'))
+            // Attachment::from( public_path('storage/declarationpdfs/sales_declaration_report_' .  $this->declarationNumber  . '.pdf'))
+        ];
     }
 
     public function build()
