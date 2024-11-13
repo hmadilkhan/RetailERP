@@ -49,35 +49,9 @@ class HomeController extends Controller
     }
     public function index(dashboard $dash, Request $request)
     {
-        // $sevenMonthsAgo = Carbon::now()->subMonths(6)->startOfMonth()->toDateString();
-        // $currentMonth = Carbon::now()->endOfMonth()->toDateString();
-        // // Assuming `sales` table has `amount`, `created_at`, and `branch_id` fields
-        // $salesData = DB::table('sales_receipts')
-        //     ->select(
-        //         DB::raw('DATE_FORMAT(sales_receipts.date, "%Y-%m") as month'),
-        //         'branch.branch_name',
-        //         'branch.branch_id',
-        //         DB::raw('SUM(total_amount) as total_sales')
-        //     )
-        //     ->join("branch", "branch.branch_id", "=", "sales_receipts.branch")
-        //     ->whereBetween('sales_receipts.date', [$sevenMonthsAgo, $currentMonth])
-        //     ->whereIn("sales_receipts.branch", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))
-        //     ->whereNotIn("sales_receipts.status", [12, 14, 5])
-        //     ->groupBy('month', 'sales_receipts.branch')
-        //     ->orderBy('month')
-        //     ->get();
-
-        // // Organize the data for charting
-        // $branches = DB::table("branch")->where("company_id", session("company_id"))->get(); //$salesData->pluck('branch_id')->unique()->values(); // Unique branch IDs
-        // $months = $salesData->pluck('month')->unique()->values(); 
-        // $monthNames = $salesData->pluck('month')->unique()->values()->map(function ($month) {
-        //     return \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M-Y'); // Format as "Jun-2024"
-        // });
-        // return $monthNames;
-        // return $monthsales = $dash->monthsales();
-        $customers = $dash->getCustomersCount();
-        $masters = $dash->getMastersCount();
-        $vendors = $dash->getVendorsCount();
+        // $customers = $dash->getCustomersCount();
+        // $masters = $dash->getMastersCount();
+        // $vendors = $dash->getVendorsCount();
         $products = $dash->getMostSalesProduct();
         $totalstock = $dash->getTotalItems();
         $months = $dash->getMonthsSales();
@@ -85,16 +59,16 @@ class HomeController extends Controller
         $orders = $dash->orderStatus();
         $branches = $dash->branches();
         $sales = $dash->sales();
-        $monthsales = $dash->monthsales();
+        // $monthsales = $dash->monthsales(); //This is the Previous Graph that is hide
         $totalSales = $dash->totalSales();
-        $expenseAmount = $dash->totalExpense();
-        $vendorPayable = $dash->getVendorPayable();
-        $customerPayable = $dash->getCustomerPayable();
+        // $expenseAmount = $dash->totalExpense();
+        // $vendorPayable = $dash->getVendorPayable();
+        // $customerPayable = $dash->getCustomerPayable();
         $currentDate = date("Y-m-d");
         $permission = $dash->dashboardRole();
         $projected = $dash->getProjectedSales();
-
-        return view('dashboard', compact('customers', 'masters', 'vendors', 'products', 'months', 'year', 'totalstock', 'orders', 'branches', 'sales', 'monthsales', 'totalSales', 'expenseAmount', 'vendorPayable', 'customerPayable', 'currentDate', 'permission', 'projected'));
+        // 'customers', 'masters', 'vendors' , 'monthsales', 'expenseAmount', 'vendorPayable', 'customerPayable'  //This is the Previous Graph that is hide
+        return view('dashboard', compact( 'products', 'months', 'year', 'totalstock', 'orders', 'branches', 'sales', 'totalSales',  'currentDate', 'permission', 'projected')); 
     }
 
     public function getTerminalsByBranch(Request $request, dashboard $dash)

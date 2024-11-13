@@ -4735,7 +4735,7 @@ class ReportController extends Controller
 
                         $this->generateCompleteReportForEmail($terminal->company_id, $terminal->branch_id, $terminal->terminal_id, $opening->opening_id);
                         // print($emails);
-                        Mail::to($emails)->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
+                        Mail::to($emails)->cc(["humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
                 } // Opening Id not found
             } // Email Not found bracket

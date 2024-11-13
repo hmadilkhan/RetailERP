@@ -45,7 +45,7 @@ class MonthlySalesChart extends Component
             'rgba(231, 76, 60, 0.8)',   // Strong Red
             'rgba(52, 152, 219, 0.8)'   // Light Blue
         ];
-        $sevenMonthsAgo = Carbon::now()->subMonths(6)->startOfMonth()->toDateString();
+        $sevenMonthsAgo = Carbon::now()->subMonths(8)->startOfMonth()->toDateString();
         $currentMonth = Carbon::now()->endOfMonth()->toDateString();
         // Assuming `sales` table has `amount`, `created_at`, and `branch_id` fields
         $salesData = DB::table('sales_receipts')
