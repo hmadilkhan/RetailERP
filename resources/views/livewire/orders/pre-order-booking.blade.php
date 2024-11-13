@@ -119,7 +119,30 @@
         <div class="card">
             <div class="card-header">Order Items</div>
             <div class="card-body">
-
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="form-control-label "><i class="icofont icofont-barcode"></i>
+                                Products</label>
+                            <select class="select2" id="products" wire:model="productId">
+                                <option value="">Select Products</option>
+                                @if ($products)
+                                    @foreach ($products as $product)
+                                        <option value="{{ $product->id }}">
+                                            {{ $product->product_name }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="form-control-label "><i class="icofont icofont-barcode"></i>Qty</label>
+                            <input type="form-control" id="qty" name="qty" wire:model="qty" />
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
@@ -145,6 +168,7 @@
                 $('#terminals').select2();
                 $('#salespersons').select2();
                 $('#ordertypes').select2();
+                $('#products').select2();
             })
         })
     </script>

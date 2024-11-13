@@ -179,7 +179,6 @@
         {{-- @livewire('dashboard.monthly-sales-chart') --}}
         <livewire:dashboard.monthly-sales-chart />
 
-
         <div class="row">
             <div class="col-md-6 col-xl-6 col-lg-6">
                 <div class="card">
@@ -458,7 +457,11 @@
         </div>
     @endif
 @endsection
-
+<script type="text/javascript">
+    function getdetails() {
+        window.location = "{{ url('sales-details') }}";
+    }
+</script>
 @section('scriptcode_three')
     <script type="text/javascript">
         <?php if (session('login_msg')) { ?>
@@ -469,9 +472,11 @@
             <?php $_SESSION['login_msg'] = ''; ?>
         });
 
-        <?php
-   }
-   ?>
+        <?php }?>
+
+        function getdetails() {
+            window.location = "{{ url('sales-details') }}";
+        }
 
         function showTime() {
             var date = new Date();
@@ -643,9 +648,7 @@
 
         });
 
-        function getdetails() {
-            window.location = "{{ url('sales-details') }}";
-        }
+
 
 
         function getTerminals(branch) {

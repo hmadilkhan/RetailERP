@@ -4,6 +4,7 @@ namespace App\Livewire\Orders;
 
 use App\Models\Branch;
 use App\Models\Customer;
+use App\Models\Inventory;
 use App\Models\OrderMode;
 use App\Models\ServiceProvider;
 use App\Models\Terminal;
@@ -28,9 +29,8 @@ class PreOrderBooking extends Component
     public function updatedBranchId($value)
     {
         if ($this->branchId != "") {
-            $this->terminals = Terminal::where("branch_id", $this->branchId)->get();
-            $this->salesPersons = ServiceProvider::with("serviceprovideruser")->where("branch_id", $this->branchId)->where("categor_id", 2)->get();
-            // dd($this->salesPersons);
+            $this->terminals = Terminal::where("branch_id", $value)->get();
+            $this->salesPersons = ServiceProvider::with("serviceprovideruser")->where("branch_id", $value)->where("categor_id", 1)->where("status_id", 1)->get();
         }
     }
 
@@ -38,6 +38,7 @@ class PreOrderBooking extends Component
     {
         $orderTypes = OrderMode::all();
         $branches = Branch::where("company_id", session("company_id"))->get();
-        return view('livewire.orders.pre-order-booking', compact('orderTypes', 'branches'));
+        $products = Inventory::where("company_id",session('company_id'))->where("status",1)->get();
+        return view('livewire.orders.pre-order-booking', compact('orderTypes', 'branches','products'));
     }
 }
