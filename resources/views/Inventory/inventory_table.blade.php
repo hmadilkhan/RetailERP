@@ -132,16 +132,29 @@
                     <td class="toggle-row">+</td> <!-- Toggle button -->
                 </tr>
                 <tr class="child">
-                    <td colspan="3">
+                    <td colspan="15">
                         <div class="child-content">
-                            <dl>
-                                <dt>Full name:</dt>
-                                <dd>Jane Smith</dd>
-                                <dt>Extension number:</dt>
-                                <dd>5678</dd>
-                                <dt>Extra info:</dt>
-                                <dd>Additional details...</dd>
-                            </dl>
+                            <!-- Bootstrap Card Component in Child Row -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Full Name: John Doe</h5>
+                                    <p class="card-text">Extension: 1234</p>
+                                    <p class="card-text">More info: Additional details about this person...</p>
+                                </div>
+                            </div>
+                            <!-- Example of Bootstrap grid layout inside child row -->
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="alert alert-info" role="alert">
+                                        This is a basic alert with some extra information.
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="alert alert-warning" role="alert">
+                                        Be careful! This is some important info.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </td>
                 </tr>
