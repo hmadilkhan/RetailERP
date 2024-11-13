@@ -52,7 +52,7 @@
                         <!--<button class="btn btn-primary m-l-1 m-t-2 f-left" id="btnSearch" type="button">Search</button>-->
                     </div>
                 </div>
-            
+
         </div>
     </div>
 </section>
@@ -68,6 +68,11 @@
 </section>
 
 
+@endsection
+
+@section('scriptcode_one')
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+  <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
 @endsection
 
 @section('scriptcode_three')
@@ -112,14 +117,14 @@
             }
         });
     }
-    
+
     $("#branch").on('change', function() {
-        
-       if($(this).val() != ''){   
+
+       if($(this).val() != ''){
            if($("#website").val() == ''){
                $(this).focus();
-               $("#website_alert").text('Please select website name').addClass('text-danger'); 
-           }    
+               $("#website_alert").text('Please select website name').addClass('text-danger');
+           }
         $.ajax({
                 url: '{{ route("getBranchTiming") }}',
                 type: 'POST',
@@ -128,11 +133,11 @@
                     websiteId: $("#website").val(),
                     branchId: $("#branch").val()
                 },
-    
+
                 success: function(resp) {
                      if($("#listBox").hasClass('d-none')){
                         $("#listBox").removeClass('d-none');
-                    }                   
+                    }
                     $("#tablediv").empty()
                     $("#tablediv").html(resp)
                 }
@@ -141,7 +146,7 @@
           $(this).focus();
           $("#branch_alert").text('Please select branch name').addClass('text-danger');
        }
-    });    
+    });
 
     $("#btnSearch").click(function() {
         $.ajax({
@@ -157,7 +162,7 @@
                 if($("#listBox").hasClass('d-none')){
                     $("#listBox").removeClass('d-none');
                 }
-                
+
                 $("#tablediv").empty()
                 $("#tablediv").html(resp)
             }

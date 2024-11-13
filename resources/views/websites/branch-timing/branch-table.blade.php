@@ -17,10 +17,10 @@
             ->filter(function ($timing) use ($day) {
             return $timing->day === $day;
             })->values();
-           
+
             @endphp
             <tr>
-             
+
                 <input type='hidden' class="form-control" name="id[]" value="{{count($timings) > 0 ? $filteredArray[0]->id : ''}}" />
                 <input type='hidden' class="form-control" name="mode" value="{{count($timings) > 0 ? 'update' : 'insert'}}" />
                 <td><input type='hidden' class="form-control" name="dayname[]" value="{{$day}}" />{{$day}}</td>
@@ -37,7 +37,19 @@
 
 <script type="text/javascript">
     // $(".select2").select2();
-    
+    $('input.timepicker').each(function() {
+        if ($(this).attr('type') !== 'hidden') {
+            $(this).timepicker({
+                timeFormat: 'HH:mm',
+                interval: 15,
+                minTime: '08:00',
+                maxTime: '22:00',
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
+            });
+        }
+    });
 
         @foreach($days as $day)
             @php
@@ -45,24 +57,24 @@
             ->filter(function ($timing) use ($day) {
             return $timing->day === $day;
             })->values();
-           
-            @endphp    
-    
 
-    $('#starttime{{$day}},#endtime{{$day}}').datetimepicker({
-        format: 'LT',
-        icons: {
-            time: "icofont icofont-clock-time",
-            date: "icofont icofont-ui-calendar",
-            up: "icofont icofont-rounded-up",
-            down: "icofont icofont-rounded-down",
-            next: "icofont icofont-rounded-right",
-            previous: "icofont icofont-rounded-left"
-        }
-    });
-    
-    
-@endforeach    
+            @endphp
+
+
+    // $('#starttime{{$day}},#endtime{{$day}}').datetimepicker({
+    //     format: 'LT',
+    //     icons: {
+    //         time: "icofont icofont-clock-time",
+    //         date: "icofont icofont-ui-calendar",
+    //         up: "icofont icofont-rounded-up",
+    //         down: "icofont icofont-rounded-down",
+    //         next: "icofont icofont-rounded-right",
+    //         previous: "icofont icofont-rounded-left"
+    //     }
+    // });
+
+
+@endforeach
 
     // $("#btnSubmit").click(function(){
     //     $("#timingForm").submit();
