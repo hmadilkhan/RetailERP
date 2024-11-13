@@ -41,7 +41,7 @@
     $(document).ready(function() {
     // Timepicker ko sirf un fields par apply karna jo type="text" ho
     $('input.timepicker').each(function() {
-        if ($(this).attr('type') !== 'hidden') {
+        if ($(this).attr('type') === 'text') {
             $(this).timepicker({
                 timeFormat: 'HH:mm',
                 interval: 15,
