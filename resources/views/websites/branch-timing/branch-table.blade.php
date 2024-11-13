@@ -58,14 +58,14 @@
     });
 });
 
-        @foreach($days as $day)
+       {{-- @foreach($days as $day)
             @php
             $filteredArray = collect($timings)
             ->filter(function ($timing) use ($day) {
             return $timing->day === $day;
             })->values();
 
-            @endphp
+            @endphp --}}
 
 
     // $('#starttime{{$day}},#endtime{{$day}}').datetimepicker({
@@ -81,7 +81,7 @@
     // });
 
 
-@endforeach
+{{--@endforeach--}}
 
     // $("#btnSubmit").click(function(){
     //     $("#timingForm").submit();
