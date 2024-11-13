@@ -44,10 +44,12 @@
         if ($(this).attr('type') === 'text') {
              console.log($(this).attr('id'));
             $(this).timepicker({
-                timeFormat: 'HH:mm',
-                interval: 15,
-                minTime: '08:00',
-                maxTime: '22:00',
+                timeFormat: 'h:mm p',
+                interval: 60,
+                minTime: '10',
+                maxTime: '6:00pm',
+                defaultTime: '11',
+                startTime: '10:00',
                 dynamic: false,
                 dropdown: true,
                 scrollbar: true
