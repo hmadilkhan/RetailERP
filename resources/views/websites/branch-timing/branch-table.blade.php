@@ -44,7 +44,7 @@
         if ($(this).attr('type') === 'text') {
              console.log($(this).attr('id'));
             $(this).timepicker({
-                timeFormat: 'h:mm p',
+                timeFormat: 'h:mm',
                 interval: 60,
                 minTime: '10',
                 maxTime: '6:00pm',
