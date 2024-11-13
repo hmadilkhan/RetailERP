@@ -24,8 +24,8 @@
                 <input type='hidden' class="form-control" name="id[]" value="{{count($timings) > 0 ? $filteredArray[0]->id : ''}}" />
                 <input type='hidden' class="form-control" name="mode" value="{{count($timings) > 0 ? 'update' : 'insert'}}" />
                 <td><input type='hidden' class="form-control" name="dayname[]" value="{{$day}}" />{{$day}}</td>
-                <td> <input type='text' class="form-control timepicker" name="starttime[]" id="starttime{{$day}}" placeholder="DD-MM-YYYY" value="{{count($timings) > 0 ? $filteredArray[0]->opening_time : ''}}" /></td>
-                <td><input type='text' class="form-control timepicker" name="endtime[]" id="endtime{{$day}}" placeholder="DD-MM-YYYY" value="{{count($timings) > 0 ? $filteredArray[0]->closing_time : ''}}" /></td>
+                <td> <input type='text' class="form-control timepicker" name="starttime[]" id="starttime{{$day}}" placeholder="00:00" value="{{count($timings) > 0 ? $filteredArray[0]->opening_time : ''}}" /></td>
+                <td><input type='text' class="form-control timepicker" name="endtime[]" id="endtime{{$day}}" placeholder="00:00" value="{{count($timings) > 0 ? $filteredArray[0]->closing_time : ''}}" /></td>
             </tr>
             @endforeach
             <tr>
