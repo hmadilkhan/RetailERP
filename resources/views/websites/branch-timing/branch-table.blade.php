@@ -38,6 +38,21 @@
 <script type="text/javascript">
     // $(".select2").select2();
 
+  $('input.timepicker').each(function() {
+        if ($(this).attr('type') !== 'hidden') {
+    $('input.timepicker').datetimepicker({
+        format: 'LT',
+        icons: {
+            time: "icofont icofont-clock-time",
+            date: "icofont icofont-ui-calendar",
+            up: "icofont icofont-rounded-up",
+            down: "icofont icofont-rounded-down",
+            next: "icofont icofont-rounded-right",
+            previous: "icofont icofont-rounded-left"
+        }
+    });
+        }
+  });
 
         @foreach($days as $day)
             @php

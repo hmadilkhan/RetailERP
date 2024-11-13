@@ -79,7 +79,7 @@
 <script type="text/javascript">
     $(".select2").select2();
 
-    // $('#starttime,#endtime').datetimepicker({
+    // $('input.timepicker').datetimepicker({
     //     format: 'LT',
     //     icons: {
     //         time: "icofont icofont-clock-time",
@@ -91,19 +91,19 @@
     //     }
     // });
 
-    $('input.timepicker').each(function() {
-        if ($(this).attr('type') !== 'hidden') {
-            $(this).timepicker({
-                timeFormat: 'HH:mm',
-                interval: 15,
-                minTime: '08:00',
-                maxTime: '22:00',
-                dynamic: false,
-                dropdown: true,
-                scrollbar: true
-            });
-        }
-    });
+    // $('input.timepicker').each(function() {
+    //     if ($(this).attr('type') !== 'hidden') {
+    //         $(this).timepicker({
+    //             timeFormat: 'HH:mm',
+    //             interval: 15,
+    //             minTime: '08:00',
+    //             maxTime: '22:00',
+    //             dynamic: false,
+    //             dropdown: true,
+    //             scrollbar: true
+    //         });
+    //     }
+    // });
 
     $("#website").on('change', function() {
         loadBranchesDropdown($(this).val())
