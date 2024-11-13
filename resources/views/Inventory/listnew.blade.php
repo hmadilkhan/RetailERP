@@ -241,12 +241,12 @@
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
  <style>
-/* Initially hide child rows */
+/* Initially hide the child rows */
 .child {
     display: none;
 }
 
-/* Style the toggle button */
+/* Style for the toggle button */
 .toggle-row {
     cursor: pointer;
     text-align: center;
@@ -254,7 +254,7 @@
     padding: 5px;
 }
 
-/* Responsive design for mobile/tablets */
+/* Responsive: Move last column data to the child row */
 @media (max-width: 768px) {
     table, th, td {
         display: block;
@@ -269,7 +269,13 @@
         background-color: #f9f9f9;
         margin-bottom: 10px;
     }
+
+    .child-content {
+        font-size: 0.9em;
+        color: #555;
+    }
 }
+
  </style>
 @endsection
 
@@ -279,15 +285,15 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
-    // Toggle child row on click of parent row
+    // Click event to toggle child row
     $('.toggle-row').on('click', function() {
         var $parentRow = $(this).closest('.parent');
         var $childRow = $parentRow.next('.child');
 
-        // Toggle child row visibility
+        // Toggle the visibility of the child row
         $childRow.toggle();
 
-        // Toggle plus/minus icon on click
+        // Change the toggle text (+/-)
         if ($childRow.is(':visible')) {
             $(this).text('-');
         } else {
@@ -295,24 +301,32 @@ $(document).ready(function() {
         }
     });
 
-    // Optionally, add a "StateSave" functionality to remember which rows are open/closed
-    var openRows = JSON.parse(localStorage.getItem('openRows')) || {};
+    // Handle the case when the screen is resized
+    function handleResponsiveLayout() {
+        // For mobile/tablet, transfer last column's content to the child row
+        if ($(window).width() <= 768) {
+            $('.parent').each(function() {
+                var lastColumnData = $(this).find('td:last-child').text();  // Get the last column data
+                var $childRow = $(this).next('.child');
 
-    // Check and open the previously opened rows
-    $('.parent').each(function(index) {
-        if (openRows[index]) {
-            $(this).next('.child').show();
-            $(this).find('.toggle-row').text('-');
+                // Add last column data to the child row if it's not already added
+                if ($childRow.find('.last-column-data').length === 0) {
+                    $childRow.find('.child-content').append('<div class="last-column-data">Details: ' + lastColumnData + '</div>');
+                }
+            });
+        } else {
+            // For larger screens, remove the last column data from the child row
+            $('.child').each(function() {
+                $(this).find('.last-column-data').remove();
+            });
         }
-    });
+    }
 
-    // Store the state when a row is clicked
-    $('.toggle-row').on('click', function() {
-        var rowIndex = $(this).closest('.parent').index();
-        openRows[rowIndex] = $(this).closest('.parent').next('.child').is(':visible');
-        localStorage.setItem('openRows', JSON.stringify(openRows));
-    });
+    // Initialize and run the layout handling on page load and window resize
+    handleResponsiveLayout();
+    $(window).on('resize', handleResponsiveLayout);
 });
+
 // $('.dataTable').DataTable({
 //     responsive: {
 //         details: {

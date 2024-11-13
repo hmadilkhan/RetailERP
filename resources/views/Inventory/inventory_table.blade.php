@@ -133,7 +133,16 @@
                 </tr>
                 <tr class="child">
                     <td colspan="3">
-                        <div class="child-content">Additional Data for Row 1</div>
+                        <div class="child-content">
+                            <dl>
+                                <dt>Full name:</dt>
+                                <dd>Jane Smith</dd>
+                                <dt>Extension number:</dt>
+                                <dd>5678</dd>
+                                <dt>Extra info:</dt>
+                                <dd>Additional details...</dd>
+                            </dl>
+                        </div>
                     </td>
                 </tr>
             @endforeach
