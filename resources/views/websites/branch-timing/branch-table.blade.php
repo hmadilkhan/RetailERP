@@ -39,26 +39,31 @@
     // $(".select2").select2();
 
     $(document).ready(function() {
-    // Sirf visible text type inputs par timepicker apply karo
-    $('input.timepicker[type="text"]').timepicker({
-        timeFormat: 'HH:mm',
-        interval: 15,
-        minTime: '08:00',
-        maxTime: '22:00',
-        dynamic: false,
-        dropdown: true,
-        scrollbar: true
+    // Timepicker ko sirf un fields par apply karna jo type="text" ho
+    $('input.timepicker').each(function() {
+        if ($(this).attr('type') === 'text') {
+             console.log($(this).attr('id'));
+            $(this).timepicker({
+                timeFormat: 'h:mm a',
+                interval: 60,
+                minTime: '10',
+                maxTime: '6:00pm',
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
+            });
+        }
     });
 });
 
-        @foreach($days as $day)
+       {{-- @foreach($days as $day)
             @php
             $filteredArray = collect($timings)
             ->filter(function ($timing) use ($day) {
             return $timing->day === $day;
             })->values();
 
-            @endphp
+            @endphp --}}
 
 
     // $('#starttime{{$day}},#endtime{{$day}}').datetimepicker({
@@ -74,7 +79,7 @@
     // });
 
 
-@endforeach
+{{--@endforeach--}}
 
     // $("#btnSubmit").click(function(){
     //     $("#timingForm").submit();
