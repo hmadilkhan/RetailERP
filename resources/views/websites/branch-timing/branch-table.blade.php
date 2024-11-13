@@ -45,7 +45,7 @@
                 interval: 15,
                 minTime: '08:00',
                 maxTime: '22:00',
-                dynamic: false,
+                dynamic: true,
                 dropdown: true,
                 scrollbar: true
             });
