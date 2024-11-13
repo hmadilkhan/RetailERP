@@ -240,12 +240,37 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-{{-- <style>
-    .trCheckBoxAlign{
-        text-align: center;
-        vertical-align: middle;
+ <style>
+/* Initially hide child rows */
+.child {
+    display: none;
+}
+
+/* Style the toggle button */
+.toggle-row {
+    cursor: pointer;
+    text-align: center;
+    background-color: #f1f1f1;
+    padding: 5px;
+}
+
+/* Responsive design for mobile/tablets */
+@media (max-width: 768px) {
+    table, th, td {
+        display: block;
+        width: 100%;
     }
- </style> --}}
+
+    td {
+        text-align: left;
+    }
+
+    .parent {
+        background-color: #f9f9f9;
+        margin-bottom: 10px;
+    }
+}
+ </style>
 @endsection
 
 @section('scriptcode_three')
@@ -253,7 +278,41 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 
 <script type="text/javascript">
+$(document).ready(function() {
+    // Toggle child row on click of parent row
+    $('.toggle-row').on('click', function() {
+        var $parentRow = $(this).closest('.parent');
+        var $childRow = $parentRow.next('.child');
 
+        // Toggle child row visibility
+        $childRow.toggle();
+
+        // Toggle plus/minus icon on click
+        if ($childRow.is(':visible')) {
+            $(this).text('-');
+        } else {
+            $(this).text('+');
+        }
+    });
+
+    // Optionally, add a "StateSave" functionality to remember which rows are open/closed
+    var openRows = JSON.parse(localStorage.getItem('openRows')) || {};
+
+    // Check and open the previously opened rows
+    $('.parent').each(function(index) {
+        if (openRows[index]) {
+            $(this).next('.child').show();
+            $(this).find('.toggle-row').text('-');
+        }
+    });
+
+    // Store the state when a row is clicked
+    $('.toggle-row').on('click', function() {
+        var rowIndex = $(this).closest('.parent').index();
+        openRows[rowIndex] = $(this).closest('.parent').next('.child').is(':visible');
+        localStorage.setItem('openRows', JSON.stringify(openRows));
+    });
+});
 // $('.dataTable').DataTable({
 //     responsive: {
 //         details: {

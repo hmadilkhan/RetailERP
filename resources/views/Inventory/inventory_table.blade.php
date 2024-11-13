@@ -46,7 +46,7 @@
                      }
                   }
               @endphp --}}
-                <tr>
+                <tr class="parent">
                     <td style="text-align:center;vertical-align: middle;">
                         <div class='rkmd-checkbox checkbox-rotate'>
                             <label class='input-checkbox checkbox-primary'>
@@ -129,7 +129,12 @@
                       </div>
 
                     </td>
-                    <td></td>
+                    <td class="toggle-row">+</td> <!-- Toggle button -->
+                </tr>
+                <tr class="child">
+                    <td colspan="3">
+                        <div class="child-content">Additional Data for Row 1</div>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
