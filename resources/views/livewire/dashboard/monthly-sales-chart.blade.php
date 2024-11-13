@@ -25,6 +25,7 @@
                 },
                 options: {
                     responsive: true,
+                    // barSizeRatio: 0.25,
                     plugins: {
                         legend: {
                             position: 'top',
@@ -35,7 +36,9 @@
                             beginAtZero: true
                         },
                         x: {
-                            stacked: false // Set to true if you want stacked bars
+                            stacked: false, // Set to true if you want stacked bars,
+                            // barPercentage: 0.8, // Controls the width of the bars (0 - 1)
+                            // categoryPercentage: 0.7 // Controls the spacing between bars (0 - 1)
                         }
                     }
                 }

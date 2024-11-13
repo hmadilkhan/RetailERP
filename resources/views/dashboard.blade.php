@@ -49,6 +49,7 @@
             background: #198754;
             color: #ffffff;
         }
+
         #closedSales div:hover {
             background: #198754;
             color: #ffffff;
@@ -93,32 +94,6 @@
                 </div>
             </div>
         </div>
-        {{-- <div class="row dashboard-header mt-15">
-            <div class="col-lg-6 col-md-6" onclick="" style="cursor:pointer;">
-                <div class="card dashboard-product">
-                    <span class="f-20">Projected Sales</span>
-                    <h2 class="dashboard-total-products f-28">
-                        {{ empty($projected) ? 0 : number_format($projected[0]->sales, 2) }}</h2>
-                    <span class="label label-primary f-18">Total </span>
-                    <div class="side-box ">
-                        <i class="ti-gift text-primary-color"></i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-6 col-md-6" onclick="getdetails()" style="cursor:pointer;">
-                <div class="card dashboard-product">
-                    <span class="f-20">All Closed Sales</span>
-                    <h2 class="dashboard-total-products f-28">
-                        {{ empty($totalSales) ? 0 : number_format($totalSales[0]->TotalSales, 2) }}</h2>
-                    <span class="label label-warning f-18">Total Sales</span>
-                    <div class="side-box">
-                        <i class="ti-signal text-warning-color"></i>
-                    </div>
-                </div>
-            </div>
-
-        </div> --}}
 
         <script type="text/javascript">
             var data1 = [
@@ -131,14 +106,14 @@
                     },
                 @endforeach
             ];
-            var data2 = [
+            {{-- var data2 = [
                 @foreach ($monthsales as $sales)
                     {
                         "x": '{{ $sales->branch_name . ' (' . date('F', strtotime($sales->date)) . ')' }}',
                         "y": '{{ $sales->total }}'
                     },
                 @endforeach
-            ];
+            ]; --}}
         </script>
         <div class="row">
             <div class="col-xl-12 col-lg-12 col-md-12 col-xl-4  ">
@@ -169,7 +144,7 @@
             </div>
         </div>
 
-        <div class="row">
+        {{-- <div class="row">
             <div class="col-xl-12 col-md-12  col-xl-12 col-lg-12 ">
 
                 <div class="card" style="height: 380px;">
@@ -199,11 +174,10 @@
                     </div>
                 </div>
             </div>
-        </div>  
+        </div>   --}}
 
         {{-- @livewire('dashboard.monthly-sales-chart') --}}
-        <livewire:dashboard.monthly-sales-chart/>
-
+        <livewire:dashboard.monthly-sales-chart />
 
 
         <div class="row">
@@ -486,7 +460,6 @@
 @endsection
 
 @section('scriptcode_three')
-
     <script type="text/javascript">
         <?php if (session('login_msg')) { ?>
 
