@@ -170,7 +170,7 @@
         </div>
 
         <div class="row">
-            <div class="col-xl-12 col-md-12  col-xl-4 col-lg-12 ">
+            <div class="col-xl-12 col-md-12  col-xl-12 col-lg-12 ">
 
                 <div class="card" style="height: 380px;">
                     <div class="card-header">
@@ -180,7 +180,7 @@
                         <div id="bar-example" class="" style="height: 260px;">
                             <script type="text/javascript">
                                 var $arrColors = ['#34495E', '#26B99A', '#666', '#3498DB', '#7D3323', '#48C9B0', '#2471A3', '#6C3483', '#6E2C00',
-                                    '#F1C40F', '#73C6B6', '#34495E'
+                                    '#F1C40F', '#73C6B6', '#34495E', '#34495E', '#26B99A', '#666', '#3498DB', '#7D3323', '#48C9B0', '#2471A3', '#6C3483'
                                 ];
                                 Morris.Bar({
                                     barGap: 1,
@@ -199,7 +199,10 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div>  
+
+        {{-- @livewire('dashboard.monthly-sales-chart') --}}
+        <livewire:dashboard.monthly-sales-chart/>
 
 
 

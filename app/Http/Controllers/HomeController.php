@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Models\SalesOpening;
 use App\Models\SalesClosing;
 use App\userDetails;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use flash;
 use Illuminate\Contracts\Session\Session as SessionSession;
@@ -48,8 +49,32 @@ class HomeController extends Controller
     }
     public function index(dashboard $dash, Request $request)
     {
-        // return !empty(session("settings")) ? session("settings")['currency'] : 'Rs.';
-        // return session("currency");
+        // $sevenMonthsAgo = Carbon::now()->subMonths(6)->startOfMonth()->toDateString();
+        // $currentMonth = Carbon::now()->endOfMonth()->toDateString();
+        // // Assuming `sales` table has `amount`, `created_at`, and `branch_id` fields
+        // $salesData = DB::table('sales_receipts')
+        //     ->select(
+        //         DB::raw('DATE_FORMAT(sales_receipts.date, "%Y-%m") as month'),
+        //         'branch.branch_name',
+        //         'branch.branch_id',
+        //         DB::raw('SUM(total_amount) as total_sales')
+        //     )
+        //     ->join("branch", "branch.branch_id", "=", "sales_receipts.branch")
+        //     ->whereBetween('sales_receipts.date', [$sevenMonthsAgo, $currentMonth])
+        //     ->whereIn("sales_receipts.branch", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))
+        //     ->whereNotIn("sales_receipts.status", [12, 14, 5])
+        //     ->groupBy('month', 'sales_receipts.branch')
+        //     ->orderBy('month')
+        //     ->get();
+
+        // // Organize the data for charting
+        // $branches = DB::table("branch")->where("company_id", session("company_id"))->get(); //$salesData->pluck('branch_id')->unique()->values(); // Unique branch IDs
+        // $months = $salesData->pluck('month')->unique()->values(); 
+        // $monthNames = $salesData->pluck('month')->unique()->values()->map(function ($month) {
+        //     return \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M-Y'); // Format as "Jun-2024"
+        // });
+        // return $monthNames;
+        // return $monthsales = $dash->monthsales();
         $customers = $dash->getCustomersCount();
         $masters = $dash->getMastersCount();
         $vendors = $dash->getVendorsCount();
@@ -68,18 +93,6 @@ class HomeController extends Controller
         $currentDate = date("Y-m-d");
         $permission = $dash->dashboardRole();
         $projected = $dash->getProjectedSales();
-        //        return parse_url($request->url(),PHP_URL_PATH);
-
-
-        //        $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[session("roleId")]);
-        //        $array = [];
-        //
-        //        foreach ($pageid as $value)
-        //        {
-        //            array_push($array,$value->page_id);
-        //        }
-        //
-        //        $result = DB::table('pages_details')->whereIN('id',$array)->get();
 
         return view('dashboard', compact('customers', 'masters', 'vendors', 'products', 'months', 'year', 'totalstock', 'orders', 'branches', 'sales', 'monthsales', 'totalSales', 'expenseAmount', 'vendorPayable', 'customerPayable', 'currentDate', 'permission', 'projected'));
     }

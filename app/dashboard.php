@@ -130,7 +130,7 @@ class dashboard extends Model
 
     public function monthsales()
     {
-        $result = DB::select("SELECT SUM(a.total_amount) as total,a.date,b.branch_name,a.branch FROM sales_receipts a INNER JOIN branch b on b.branch_id = a.branch where a.branch IN (Select branch_id from branch where company_id = ?) group by a.branch,MONTH(a.date)", [session("company_id")]);
+        $result = DB::select("SELECT SUM(a.total_amount) as total,a.date,b.branch_name,a.branch FROM sales_receipts a INNER JOIN branch b on b.branch_id = a.branch where a.branch IN (Select branch_id from branch where company_id = ?) group by a.branch,MONTH(a.date) LIMIT 25", [session("company_id")]);
         return $result;
     }
 
