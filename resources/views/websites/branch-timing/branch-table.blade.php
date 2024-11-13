@@ -38,19 +38,18 @@
 <script type="text/javascript">
     // $(".select2").select2();
 
-    $('input.timepicker').each(function() {
-        if ($(this).attr('type') !== 'hidden') {
-            $(this).timepicker({
-                timeFormat: 'HH:mm',
-                interval: 15,
-                minTime: '08:00',
-                maxTime: '22:00',
-                dynamic: true,
-                dropdown: true,
-                scrollbar: true
-            });
-        }
+    $(document).ready(function() {
+    // Sirf visible text type inputs par timepicker apply karo
+    $('input.timepicker[type="text"]').timepicker({
+        timeFormat: 'HH:mm',
+        interval: 15,
+        minTime: '08:00',
+        maxTime: '22:00',
+        dynamic: false,
+        dropdown: true,
+        scrollbar: true
     });
+});
 
         @foreach($days as $day)
             @php
