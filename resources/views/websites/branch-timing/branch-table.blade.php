@@ -38,21 +38,19 @@
 <script type="text/javascript">
     // $(".select2").select2();
 
-  $('input.timepicker').each(function() {
+    $('input.timepicker').each(function() {
         if ($(this).attr('type') !== 'hidden') {
-    $(this).datetimepicker({
-        format: 'LT',
-        icons: {
-            time: "icofont icofont-clock-time",
-            date: "icofont icofont-ui-calendar",
-            up: "icofont icofont-rounded-up",
-            down: "icofont icofont-rounded-down",
-            next: "icofont icofont-rounded-right",
-            previous: "icofont icofont-rounded-left"
+            $(this).timepicker({
+                timeFormat: 'HH:mm',
+                interval: 15,
+                minTime: '08:00',
+                maxTime: '22:00',
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
+            });
         }
     });
-        }
-  });
 
         @foreach($days as $day)
             @php
