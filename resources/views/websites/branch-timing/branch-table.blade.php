@@ -39,15 +39,19 @@
     // $(".select2").select2();
 
     $(document).ready(function() {
-    // Sirf visible text type inputs par timepicker apply karo
-    $('input.timepicker[type="text"]').timepicker({
-        timeFormat: 'HH:mm',
-        interval: 15,
-        minTime: '08:00',
-        maxTime: '22:00',
-        dynamic: false,
-        dropdown: true,
-        scrollbar: true
+    // Timepicker ko sirf un fields par apply karna jo type="text" ho
+    $('input.timepicker').each(function() {
+        if ($(this).attr('type') !== 'hidden') {
+            $(this).timepicker({
+                timeFormat: 'HH:mm',
+                interval: 15,
+                minTime: '08:00',
+                maxTime: '22:00',
+                dynamic: false,
+                dropdown: true,
+                scrollbar: true
+            });
+        }
     });
 });
 
