@@ -721,8 +721,16 @@ $("#showProductWebsite").on('click',function(){
 
 	  $( '#inventoryupdate').submit( function(e){
 		  e.preventDefault();
-		  var form = $(this);
-		  var actionUrl = form.attr('action');
+		  let form = $(this);
+		  let actionUrl = form.attr('action');
+          let process = true;
+          let regex = /[^a-zA-Z0-9]/g;
+          if(regex.test($("#name").val())){
+            process = false;
+            swal('Error!','Special characters are not allowed!','error');
+          }
+
+         if(process){
 		  $.ajax({
 				type: "POST",
 				url: actionUrl,
@@ -746,6 +754,8 @@ $("#showProductWebsite").on('click',function(){
 
 				}
 			});
+
+          }
 		});
 
 		function sunmiCloud(){
