@@ -41,6 +41,7 @@
   $('input.timepicker').each(function() {
         if ($(this).attr('type') !== 'hidden') {
     $(this).datetimepicker({
+        format: 'LT',
         icons: {
             time: "icofont icofont-clock-time",
             date: "icofont icofont-ui-calendar",
