@@ -240,7 +240,7 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
- <style>
+ {{-- <style>
 /* Initially hide the child rows */
 .child {
     display: none;
@@ -276,7 +276,7 @@
     }
 }
 
- </style>
+ </style> --}}
 @endsection
 
 @section('scriptcode_three')
@@ -284,48 +284,48 @@
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 
 <script type="text/javascript">
-$(document).ready(function() {
-    // Click event to toggle child row
-    $('.toggle-row').on('click', function() {
-        var $parentRow = $(this).closest('.parent');
-        var $childRow = $parentRow.next('.child');
+// $(document).ready(function() {
+//     // Click event to toggle child row
+//     $('.toggle-row').on('click', function() {
+//         var $parentRow = $(this).closest('.parent');
+//         var $childRow = $parentRow.next('.child');
 
-        // Toggle the visibility of the child row
-        $childRow.toggle();
+//         // Toggle the visibility of the child row
+//         $childRow.toggle();
 
-        // Change the toggle text (+/-)
-        if ($childRow.is(':visible')) {
-            $(this).text('-');
-        } else {
-            $(this).text('+');
-        }
-    });
+//         // Change the toggle text (+/-)
+//         if ($childRow.is(':visible')) {
+//             $(this).text('-');
+//         } else {
+//             $(this).text('+');
+//         }
+//     });
 
-    // Handle the case when the screen is resized
-    function handleResponsiveLayout() {
-        // For mobile/tablet, transfer last column's content to the child row
-        if ($(window).width() <= 768) {
-            $('.parent').each(function() {
-                var lastColumnData = $(this).find('td:last-child').text();  // Get the last column data
-                var $childRow = $(this).next('.child');
+//     // Handle the case when the screen is resized
+//     function handleResponsiveLayout() {
+//         // For mobile/tablet, transfer last column's content to the child row
+//         if ($(window).width() <= 768) {
+//             $('.parent').each(function() {
+//                 var lastColumnData = $(this).find('td:last-child').text();  // Get the last column data
+//                 var $childRow = $(this).next('.child');
 
-                // Add last column data to the child row if it's not already added
-                if ($childRow.find('.last-column-data').length === 0) {
-                    $childRow.find('.child-content').append('<div class="last-column-data">Details: ' + lastColumnData + '</div>');
-                }
-            });
-        } else {
-            // For larger screens, remove the last column data from the child row
-            $('.child').each(function() {
-                $(this).find('.last-column-data').remove();
-            });
-        }
-    }
+//                 // Add last column data to the child row if it's not already added
+//                 if ($childRow.find('.last-column-data').length === 0) {
+//                     $childRow.find('.child-content').append('<div class="last-column-data">Details: ' + lastColumnData + '</div>');
+//                 }
+//             });
+//         } else {
+//             // For larger screens, remove the last column data from the child row
+//             $('.child').each(function() {
+//                 $(this).find('.last-column-data').remove();
+//             });
+//         }
+//     }
 
-    // Initialize and run the layout handling on page load and window resize
-    handleResponsiveLayout();
-    $(window).on('resize', handleResponsiveLayout);
-});
+//     // Initialize and run the layout handling on page load and window resize
+//     handleResponsiveLayout();
+//     $(window).on('resize', handleResponsiveLayout);
+// });
 
 // $('.dataTable').DataTable({
 //     responsive: {
