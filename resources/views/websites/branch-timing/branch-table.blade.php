@@ -42,7 +42,8 @@
     // Timepicker ko sirf un fields par apply karna jo type="text" ho
     $('input.timepicker').each(function() {
         if ($(this).attr('type') === 'text') {
-            $(this).datetimepicker({
+             console.log($(this).attr('id'));
+            $(this).timepicker({
                 timeFormat: 'HH:mm',
                 interval: 15,
                 minTime: '08:00',
