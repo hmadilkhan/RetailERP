@@ -241,7 +241,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <label for="showProductWebsite">
+                    <label for="showProductWebsite" class="pointer">
                         <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
                         Show Product on Website
                     </label>
