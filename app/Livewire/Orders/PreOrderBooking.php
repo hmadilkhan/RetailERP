@@ -28,9 +28,9 @@ class PreOrderBooking extends Component
     public $orderItems = [];
 
     // ORDER ITEMS MODELS
-    // public $productId = "";
-    // public $qty = 0;
-    // public $price = 0;
+    public $productId = "";
+    public $qty = 0;
+    public $price = 0;
 
     public function mount()
     {
@@ -47,16 +47,15 @@ class PreOrderBooking extends Component
     }
 
     #[On('addItems')]
-    public function addItems($productId, $qty, $price)
+    public function addItems() //$productId, $qty, $price
     {
         $item = [
-            "productId" => $productId,
-            "qty" => $qty,
-            "price" => $price,
+            "productId" => $this->productId,
+            "qty" => $this->qty,
+            "price" => $this->price,
         ];
 
         $this->orderItems[] = $item; // Append new item to orderItems array
-        $this->dispatch('refreshComponent');
     }
 
     public function updatedOrderItems()

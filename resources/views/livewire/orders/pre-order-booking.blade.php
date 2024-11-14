@@ -152,7 +152,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="button" id="submit-button" data-placement="bottom"
+                            <button type="submit"  data-placement="bottom"
                                 class="btn btn-success  waves-effect waves-light mt-4">Add Item</button>
                         </div>
                     </div>
@@ -208,19 +208,23 @@
                 var data = $('#branch').select2("val");
                 @this.set('branchId', data);
             });
-
-            document.getElementById('submit-button').addEventListener('click', function() {
-                // Manually submit the form with parameters
-                console.log($("#products").val(), $("#qty").val(), $("#price").val());
-
-                // Pass parameters as an object/array
-                Livewire.dispatch('addItems', {
-                    productId: $("#products").val(),
-                    qty: $("#qty").val(),
-                    price: $("#price").val()
-                });
-                
+            $('#products').on('change', function(e) {
+                var data = $('#products').select2("val");
+                @this.set('productId', data);
             });
+
+            // document.getElementById('submit-button').addEventListener('click', function() {
+            //     // Manually submit the form with parameters
+            //     console.log($("#products").val(), $("#qty").val(), $("#price").val());
+
+            //     // Pass parameters as an object/array
+            //     Livewire.dispatch('addItems', {
+            //         productId: $("#products").val(),
+            //         qty: $("#qty").val(),
+            //         price: $("#price").val()
+            //     });
+                
+            // });
 
 
             Livewire.hook('morph.updating', ({
