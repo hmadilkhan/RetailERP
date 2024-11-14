@@ -746,7 +746,6 @@ $("#showProductWebsite").on('click',function(){
                 },
 				success: function(data,statusText,getStatus)
 				{
-				  //console.log("",data); // show response from the php script.
 				  if(data == 1)
 				  {
 					  location.reload();
