@@ -140,7 +140,9 @@
             @endif
         </tbody>
     </table>
+    <div class="col-md-12">
     {{ $orders->links('pagination::bootstrap-4') }}
+    </div>
 </div>
 <script type="text/javascript">
     $(function() {
