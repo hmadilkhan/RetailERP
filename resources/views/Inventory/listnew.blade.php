@@ -245,6 +245,7 @@
         padding:0.2rem;
         font-size: 13px;
         font-weight: 100;
+        border-radius:3px;
     }
     .project-table label .tag-label{
         padding:0.2rem;
