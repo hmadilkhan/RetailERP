@@ -24,7 +24,7 @@
                 <th>Stock</th>
                 <th>UOM</th>
                 <th>Action</th>
-                {{-- <th></th> --}}
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -131,7 +131,7 @@
                     </td>
                     {{-- <td class="toggle-row">+</td> <!-- Toggle button --> --}}
                 </tr>
-                {{-- <tr class="child">
+                <tr class="child">
                     <td colspan="15">
                         <div class="child-content">
                             <!-- Bootstrap Card Component in Child Row -->
@@ -157,7 +157,7 @@
                             </div>
                         </div>
                     </td>
-                </tr> --}}
+                </tr>
             @endforeach
         </tbody>
     </table>
