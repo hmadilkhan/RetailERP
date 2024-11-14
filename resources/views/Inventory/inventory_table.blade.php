@@ -71,7 +71,7 @@
                            <br/>
                            @php $tagValues = explode(',',$inventory->tags) @endphp
                            @foreach($tagValues as $tags)
-                            <label class="badge label-bagde badge-danger">{{ $tags }} </label>
+                            <label class="badge label-bagde badge-danger tag-label">{{ $tags }} </label>
                            @endforeach
                          @endif
                     </td>
