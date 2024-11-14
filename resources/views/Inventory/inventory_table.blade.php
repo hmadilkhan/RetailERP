@@ -69,7 +69,9 @@
                     <td>{{ $inventory->product_name }}
                          @if(isset($inventory->tags))
                            <br/>
-                           <label class="label bg-danger">{{ $inventory->tags }} </label>
+                           @foreach($inventory->tags as $tags)
+                            <label class="label bg-danger">{{ $tags }} </label>
+                           @endforeach
                          @endif
                     </td>
                     <td>{{ $inventory->department_name }}</td>
