@@ -69,7 +69,8 @@
                     <td>{{ $inventory->product_name }}
                          @if(isset($inventory->tags))
                            <br/>
-                           @foreach($inventory->tags as $tags)
+                           @php $tagValues = explode(',',$inventory->tags) @endphp
+                           @foreach($tagValues as $tags)
                             <label class="label bg-danger">{{ $tags }} </label>
                            @endforeach
                          @endif
