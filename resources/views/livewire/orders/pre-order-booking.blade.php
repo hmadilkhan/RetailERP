@@ -125,7 +125,7 @@
                             <div class="form-group">
                                 <label class="form-control-label "><i class="icofont icofont-barcode"></i>
                                     Products</label>
-                                <select class="select2" id="products" wire:model="productId">
+                                <select class="select2" id="products" wire:model="productId" wire:ignore>
                                     <option value="">Select Products</option>
                                     @if ($products)
                                         @foreach ($products as $product)
@@ -152,7 +152,7 @@
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <button type="submit"  data-placement="bottom"
+                            <button type="button" id="submit-button" data-placement="bottom"
                                 class="btn btn-success  waves-effect waves-light mt-4">Add Item</button>
                         </div>
                     </div>
@@ -168,6 +168,7 @@
                     <thead>
                         <th>S.No.</th>
                         <th>Product</th>
+                        <th>Price</th>
                         <th>Qty</th>
                         <th>Amount</th>
                         <th>Action</th>
@@ -177,9 +178,10 @@
                             @foreach($orderItems as $key => $item)
                                 <tr>
                                     <td>{{++$key}}</td>
-                                    <td>{{$item["productId"]}}</td>
-                                    <td>{{$item["qty"]}}</td>
+                                    <td>{{$item["productName"]}}</td>
                                     <td>{{$item["price"]}}</td>
+                                    <td>{{$item["qty"]}}</td>
+                                    <td>{{$item["amount"]}}</td>
                                     <td></td>
                                 </tr>
                             @endforeach
@@ -193,7 +195,18 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12 text-end">
-
+                    <div class="text-end py-2">
+                        Sub Total :  <span>1000</span>
+                    </div>
+                    <div class="text-end py-2">
+                        Discount : <span>1000</span>
+                    </div>
+                    <div class="text-end py-2">
+                        Tax Amount : <span>1000</span>
+                    </div>
+                    <div class="text-end py-2">
+                        Total Amount : <span>1000</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -208,35 +221,38 @@
                 var data = $('#branch').select2("val");
                 @this.set('branchId', data);
             });
-            $('#products').on('change', function(e) {
-                var data = $('#products').select2("val");
-                @this.set('productId', data);
-            });
-
-            // document.getElementById('submit-button').addEventListener('click', function() {
-            //     // Manually submit the form with parameters
-            //     console.log($("#products").val(), $("#qty").val(), $("#price").val());
-
-            //     // Pass parameters as an object/array
-            //     Livewire.dispatch('addItems', {
-            //         productId: $("#products").val(),
-            //         qty: $("#qty").val(),
-            //         price: $("#price").val()
-            //     });
-                
+            // $('#products').on('change', function(e) {
+            //     var data = $('#products').select2("val");
+            //     @this.set('productId', data);
             // });
+            let productname = "";
+            document.getElementById('submit-button').addEventListener('click', function() {
+                // Manually submit the form with parameters
+                if ($("#products").val() != "") {
+                    productname = $("#products option:selected").text().replace(/\s+/g, " ");
+                }
+                // Pass parameters as an object/array
+                Livewire.dispatch('addItems', {
+                    productId: $("#products").val(),
+                    productName: productname,
+                    qty: $("#qty").val(),
+                    price: $("#price").val()
+                });
+                
+            });
 
 
             Livewire.hook('morph.updating', ({
                 component,
                 cleanup
             }) => {
-                $('#customers').select2();
-                $('#branch').select2();
-                $('#terminals').select2();
-                $('#salespersons').select2();
-                $('#ordertypes').select2();
-                $('#products').select2();
+                // $('#customers').select2();
+                // $('#branch').select2();
+                // $('#terminals').select2();
+                // $('#salespersons').select2();
+                // $('#ordertypes').select2();
+                // $('#products').select2();
+                $('.select2').select2()
             })
         })
     </script>
