@@ -164,7 +164,7 @@ class InventoryController extends Controller
 
         $rules = [
             'code'          => 'required',
-            'name'          => 'required|regex:/^[a-zA-Z0-9\s\-]+$/',
+            'name'          => 'required|regex:/^[a-zA-Z0-9\s]+$/',
             'reminder'      => 'required',
             'uom'           => 'required',
             'cuom'          => 'required',

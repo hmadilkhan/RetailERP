@@ -83,7 +83,7 @@
                   <input class="form-control" type="text"
                    name="name" id="name"  value="{{ old('name') }}" onchange="samename()"  placeholder="Enter Product Name"/>
                     @if ($errors->has('name'))
-                      <div class="form-control-feedback" id="nameerror">Required field can not be blank.</div>
+                      <div class="form-control-feedback" id="nameerror">{{ $errors->first('name') }}</div>
                     @endif
               </div>
             </div>
