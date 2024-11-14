@@ -240,14 +240,19 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
- {{-- <style>
-/* Initially hide the child rows */
+  <style>
+    .label .tag-label{
+        padding:0.2rem;
+        font-size: 13px;
+        font-weight: 100;
+    }
+/* Initially hide the child rows
 .child {
     display: none;
 }
 
 /* Style for the toggle button */
-.toggle-row {
+/*.toggle-row {
     cursor: pointer;
     text-align: center;
     background-color: #f1f1f1;
@@ -255,7 +260,7 @@
 }
 
 /* Responsive: Move last column data to the child row */
-@media (max-width: 768px) {
+/*@media (max-width: 768px) {
     table, th, td {
         display: block;
         width: 100%;
@@ -274,9 +279,9 @@
         font-size: 0.9em;
         color: #555;
     }
-}
+} */
 
- </style> --}}
+ </style>
 @endsection
 
 @section('scriptcode_three')
