@@ -57,12 +57,7 @@ class PreOrderBooking extends Component
 
         $this->orderItems[] = $item; // Append new item to orderItems array
     }
-
-    public function updatedOrderItems()
-    {
-        logger('Order items updated:', $this->orderItems);
-    }
-
+    
     public function render()
     {
         $orderTypes = OrderMode::all();
