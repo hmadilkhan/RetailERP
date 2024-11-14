@@ -724,7 +724,8 @@ $("#showProductWebsite").on('click',function(){
 		  let form = $(this);
 		  let actionUrl = form.attr('action');
           let process = true;
-          let regex = /[^a-zA-Z0-9\s]/g;
+        //   let regex = /[^a-zA-Z0-9\s]/g;
+          let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F]/g;
           if(regex.test($("#name").val())){
             process = false;
             swal('Error!','Special characters are not allowed!','error');
