@@ -246,6 +246,9 @@
         font-size: 13px;
         font-weight: 100;
     }
+    .project-table .label .tag-label{
+        padding:0.2rem;
+    }
 /* Initially hide the child rows
 .child {
     display: none;
