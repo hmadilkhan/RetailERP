@@ -990,7 +990,15 @@
       function blockSpecialChar(e) {
           var k = e.keyCode;
           console.log(e.keyCode);
-          return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32   || ( k >= 40 && k <= 42) || (k >= 48 && k <= 57));
+          //return ((k > 64 && k < 91) || (k > 96 && k < 123) || k == 8 || k == 32   || ( k >= 40 && k <= 42) || (k >= 48 && k <= 57));
+          // Allow alphabets (A-Z and a-z), backspace (8), space (32), and dash (45), and numbers (0-9)
+          
+            return ((k >= 65 && k <= 90) || // A-Z
+                    (k >= 97 && k <= 122) || // a-z
+                    (k >= 48 && k <= 57) ||  // 0-9
+                    k == 8 || // Backspace
+                    k == 32 || // Space
+                    k == 45);  // Dash (-)
 
       }
 	  
