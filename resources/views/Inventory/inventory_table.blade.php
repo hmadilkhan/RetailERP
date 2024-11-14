@@ -68,7 +68,8 @@
                     <td>{{ $inventory->item_code }}</td>
                     <td>{{ $inventory->product_name }}
                          @if(isset($inventory->tags))
-                           <label class="label bg-primary">{{ $inventory->tags }} </label>
+                           <br/>
+                           <label class="label bg-danger">{{ $inventory->tags }} </label>
                          @endif
                     </td>
                     <td>{{ $inventory->department_name }}</td>
