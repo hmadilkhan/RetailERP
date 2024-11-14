@@ -66,7 +66,15 @@
                         </a>
                     </td>
                     <td>{{ $inventory->item_code }}</td>
-                    <td>{{ $inventory->product_name }} @if(isset($inventory->tags))<p class="text-muted p-t-0">(<span>Tags:</span> {{ $inventory->tags }} )</p> @endif </td>
+                    <td>{{ $inventory->product_name }}
+                         @if(isset($inventory->tags))
+                           <br/>
+                           @php $tagValues = explode(',',$inventory->tags) @endphp
+                           @foreach($tagValues as $tags)
+                            <label class="label bg-danger">{{ $tags }} </label>
+                           @endforeach
+                         @endif
+                    </td>
                     <td>{{ $inventory->department_name }}</td>
                     <td>{{ $inventory->sub_depart_name }}</td>
                     <td>{{ $inventory->actual_price }}</td>

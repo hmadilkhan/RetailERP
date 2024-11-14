@@ -94,6 +94,7 @@
                     @if ($errors->has('name'))
                       <div class="form-control-feedback" id="nameerror">Required field can not be blank.</div>
                     @endif
+                    <span class="text-danger" id="product_name_alert"></span>
               </div>
              </div>
      </div>
@@ -240,7 +241,7 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="form-group">
-                    <label for="showProductWebsite">
+                    <label for="showProductWebsite" class="pointer">
                         <input type="checkbox" id="showProductWebsite" name="showProductWebsite">
                         Show Product on Website
                     </label>
@@ -719,13 +720,38 @@ $("#showProductWebsite").on('click',function(){
       CKEDITOR.replace( 'summary-ckeditor' );
 	  var rem_id = [];
 
+      $("#name").on('change',function(){
+         let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
+          if(regex.test($("#name").val())){
+            swal('Error!','Special characters are not allowed!','error');
+             $("#product_name_alert").text('Special characters are not allowed!');
+             if(!$(this).hasClass('input-danger')){
+                $(this).addClass('input-danger')
+             }
+
+             if($(this).hasClass('input-success')){
+                $(this).removeClass('input-success')
+             }
+
+          }else{
+            $("#product_name_alert").text('');
+            if($(this).hasClass('input-danger')){
+                $(this).removeClass('input-danger')
+             }
+
+             if(!$(this).hasClass('input-success')){
+                $(this).addClass('input-success')
+             }
+          }
+      });
+
 	  $( '#inventoryupdate').submit( function(e){
 		  e.preventDefault();
 		  let form = $(this);
 		  let actionUrl = form.attr('action');
           let process = true;
         //   let regex = /[^a-zA-Z0-9\s]/g;
-          let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F]/g;
+          let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
           if(regex.test($("#name").val())){
             process = false;
             swal('Error!','Special characters are not allowed!','error');
@@ -746,7 +772,6 @@ $("#showProductWebsite").on('click',function(){
                 },
 				success: function(data,statusText,getStatus)
 				{
-				  //console.log("",data); // show response from the php script.
 				  if(data == 1)
 				  {
 					  location.reload();
