@@ -119,42 +119,44 @@
         <div class="card">
             <div class="card-header">Add Order Items</div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="form-control-label "><i class="icofont icofont-barcode"></i>
-                                Products</label>
-                            <select class="select2" id="products" wire:model="productId">
-                                <option value="">Select Products</option>
-                                @if ($products)
-                                    @foreach ($products as $product)
-                                        <option value="{{ $product->id }}">
-                                            {{ $product->item_code }} - {{ $product->product_name }}
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
+                <form wire:submit.prevent="addItems">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
+                                    Products</label>
+                                <select class="select2" id="products" wire:model="productId">
+                                    <option value="">Select Products</option>
+                                    @if ($products)
+                                        @foreach ($products as $product)
+                                            <option value="{{ $product->id }}">
+                                                {{ $product->item_code }} - {{ $product->product_name }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-12">
+                            <div id="itemcode" class="form-group">
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i> Qty</label>
+                                <input class="form-control" type="text" id="qty" wire:model="qty"
+                                    placeholder="Enter Qty" />
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-sm-12">
+                            <div id="itemcode" class="form-group">
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>Price</label>
+                                <input class="form-control" type="text" wire:model="price" id="price"
+                                    placeholder="Enter Price " />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="button" id="submit-button" data-placement="bottom"
+                                class="btn btn-success  waves-effect waves-light mt-4">Add Item</button>
                         </div>
                     </div>
-                    <div class="col-md-3 col-sm-12">
-                        <div id="itemcode" class="form-group">
-                            <label class="form-control-label "><i class="icofont icofont-barcode"></i> Qty</label>
-                            <input class="form-control" type="text" id="qty" wire:model="qty"
-                                placeholder="Enter Qty" />
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-sm-12">
-                        <div id="itemcode" class="form-group">
-                            <label class="form-control-label "><i class="icofont icofont-barcode"></i>Price</label>
-                            <input class="form-control" type="text" wire:model="price" id="price"
-                                placeholder="Enter Price " />
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <button type="button" data-placement="bottom"
-                            class="btn btn-success  waves-effect waves-light mt-4" wire:click="applyFilters()">Add Item</button>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
     </section>
@@ -162,7 +164,7 @@
         <div class="card">
             <div class="card-header">Order Items Details</div>
             <div class="card-body">
-                <table class="table">
+                <table class="table table-striped">
                     <thead>
                         <th>S.No.</th>
                         <th>Product</th>
@@ -171,7 +173,17 @@
                         <th>Action</th>
                     </thead>
                     <tbody>
-
+                        @if($orderItems)
+                            @foreach($orderItems as $key => $item)
+                                <tr>
+                                    <td>{{++$key}}</td>
+                                    <td>{{$item["productId"]}}</td>
+                                    <td>{{$item["qty"]}}</td>
+                                    <td>{{$item["price"]}}</td>
+                                    <td></td>
+                                </tr>
+                            @endforeach
+                        @endif
                     </tbody>
                 </table>
             </div>
@@ -181,7 +193,7 @@
         <div class="card-body">
             <div class="row">
                 <div class="col-md-12 text-end">
-                    
+
                 </div>
             </div>
         </div>
@@ -194,10 +206,22 @@
 
             $('#branch').on('change', function(e) {
                 var data = $('#branch').select2("val");
-                console.log(data);
-
                 @this.set('branchId', data);
             });
+
+            document.getElementById('submit-button').addEventListener('click', function() {
+                // Manually submit the form with parameters
+                console.log($("#products").val(), $("#qty").val(), $("#price").val());
+
+                // Pass parameters as an object/array
+                Livewire.dispatch('addItems', {
+                    productId: $("#products").val(),
+                    qty: $("#qty").val(),
+                    price: $("#price").val()
+                });
+                
+            });
+
 
             Livewire.hook('morph.updating', ({
                 component,
