@@ -26,6 +26,10 @@ class PreOrderBooking extends Component
     public $terminals = [];
     public $salesPersons = [];
     public $orderItems = [];
+    public $branches = [];
+    public $orderTypes = [];
+    public $orderTypeId = "";
+    public $customerId = "";
 
     // ORDER ITEMS MODELS
     public $productId = "";
@@ -34,7 +38,9 @@ class PreOrderBooking extends Component
 
     public function mount()
     {
-        $this->customers = Customer::where("company_id", session("company_id"))->get();
+        $this->customers = []; //Customer::where("company_id", session("company_id"))->get();
+        // Fetch essential data only on component mount
+        $this->branches = Branch::where("company_id", session("company_id"))->get();
     }
 
     #[Computed()]
@@ -46,23 +52,61 @@ class PreOrderBooking extends Component
         }
     }
 
+    // // Computed property to get customers filtered by search text
+    // public function getCustomersProperty()
+    // {
+    //     return Customer::where("company_id", session("company_id"))
+    //         ->when($this->customerText, function ($query) {
+    //             $query->where("name", "like", "%{$this->customerText}%");
+    //         })
+    //         ->limit(10)  // Limit results for performance
+    //         ->get();
+    // }
+
+    // // Computed property to get terminals for the selected branch
+    // public function getTerminalsProperty()
+    // {
+    //     return $this->branchId ? Terminal::where("branch_id", $this->branchId)->get() : [];
+    // }
+
+    // // Computed property to get sales persons for the selected branch
+    // public function getSalesPersonsProperty()
+    // {
+    //     return $this->branchId
+    //         ? ServiceProvider::with("serviceprovideruser")
+    //         ->where("branch_id", $this->branchId)
+    //         ->where("categor_id", 1)
+    //         ->where("status_id", 1)
+    //         ->get()
+    //         : [];
+    // }
+
     #[On('addItems')]
-    public function addItems() //$productId, $qty, $price
+    public function addItems($productId, $productName, $qty, $price) //$productId, $qty, $price
     {
         $item = [
-            "productId" => $this->productId,
-            "qty" => $this->qty,
-            "price" => $this->price,
+            "productId" => $productId,
+            "productName" => trim($productName),
+            "qty" => $qty,
+            "price" => $price,
+            "amount" => $qty * $price,
         ];
 
         $this->orderItems[] = $item; // Append new item to orderItems array
     }
-    
+
     public function render()
     {
-        $orderTypes = OrderMode::all();
-        $branches = Branch::where("company_id", session("company_id"))->get();
+        $orderTypes = []; //OrderMode::all();
+        $branches = []; //Branch::where("company_id", session("company_id"))->get();
         $products = Inventory::where("company_id", session('company_id'))->where("status", 1)->get();
-        return view('livewire.orders.pre-order-booking', compact('orderTypes', 'branches', 'products'));
+        return view('livewire.orders.pre-order-booking', [
+            'orderTypes' => $orderTypes,
+            'branches' => $this->branches,
+            'customers' => $this->customers,
+            'terminals' => $this->terminals,
+            'salesPersons' => $this->salesPersons,
+            'products' => $products,
+        ]);
     }
 }
