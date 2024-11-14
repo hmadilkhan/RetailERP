@@ -719,6 +719,13 @@ $("#showProductWebsite").on('click',function(){
       CKEDITOR.replace( 'summary-ckeditor' );
 	  var rem_id = [];
 
+      $("#name").on('change',function(){
+         let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
+          if(regex.test($("#name").val())){
+            swal('Error!','Special characters are not allowed!','error');
+          }
+      });
+
 	  $( '#inventoryupdate').submit( function(e){
 		  e.preventDefault();
 		  let form = $(this);
