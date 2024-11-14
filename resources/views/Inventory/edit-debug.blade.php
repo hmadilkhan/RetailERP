@@ -723,6 +723,21 @@ $("#showProductWebsite").on('click',function(){
          let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
           if(regex.test($("#name").val())){
             swal('Error!','Special characters are not allowed!','error');
+             if(!$(this).hasClass('border-danger')){
+                $(this).addClass('border-danger')
+             }
+
+             if($(this).hasClass('border-success')){
+                $(this).removeClass('border-success')
+             }
+          }else{
+            if($(this).hasClass('border-danger')){
+                $(this).removeClass('border-danger')
+             }
+
+             if(!$(this).hasClass('border-success')){
+                $(this).addClass('border-success')
+             }
           }
       });
 
