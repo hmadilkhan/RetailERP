@@ -94,6 +94,7 @@
                     @if ($errors->has('name'))
                       <div class="form-control-feedback" id="nameerror">Required field can not be blank.</div>
                     @endif
+                    <span class="text-danger" id="product_name_alert"></span>
               </div>
              </div>
      </div>
@@ -723,6 +724,7 @@ $("#showProductWebsite").on('click',function(){
          let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
           if(regex.test($("#name").val())){
             swal('Error!','Special characters are not allowed!','error');
+             $("#product_name_alert").text('Special characters are not allowed!');
              if(!$(this).hasClass('input-danger')){
                 $(this).addClass('input-danger')
              }
@@ -730,7 +732,9 @@ $("#showProductWebsite").on('click',function(){
              if($(this).hasClass('input-success')){
                 $(this).removeClass('input-success')
              }
+
           }else{
+            $("#product_name_alert").text('');
             if($(this).hasClass('input-danger')){
                 $(this).removeClass('input-danger')
              }
