@@ -1,4 +1,29 @@
 <div>
+    <style>
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+        }
+
+        .badge {
+            padding: 5px 10px;
+            border-radius: 10px;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            margin-left: 5px;
+            cursor: pointer;
+            padding: 0;
+        }
+    </style>
+
+    </style>
     <section>
         <div class="card">
             <div class="card-header">Pre-order Booking</div>
@@ -88,26 +113,98 @@
                             </div>
                         </div>
                         {{-- <div class="col-md-3">
-                            <input 
-                                type="text" 
-                                class="form-control" 
-                                placeholder="Search..." 
-                                wire:model.debounce.100ms="customerText" 
-                                aria-label="Search"
-                            >
-                        
-                            @if (!empty($customers))
-                                <ul class="list-group mt-2">
-                                    @foreach ($customers as $customer)
-                                        <li class="list-group-item">{{ $customer->name }}</li> <!-- Adjust to match your data -->
-                                    @endforeach
-                                </ul>
-                            @else
-                                @if ($customerText)
-                                    <p class="mt-2">No results found for "{{ $customerText }}".</p>
+                            <div class="form-group">
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
+                                   Customers</label>
+                                <input type="text" class="form-control" placeholder="Search..."
+                                    wire:model.live.debounce.100ms="customerText" aria-label="Search">
+
+                                <div wire:loading>
+                                    <p>Searching...</p>
+                                </div>
+
+                                @if (!empty($customers))
+                                    <ul class="list-group mt-2"
+                                        style="max-height: 200px; overflow-y: auto; z-index: 1000; position: absolute; width: 100%;">
+                                        @foreach ($customers as $customer)
+                                            <li class="list-group-item" style="cursor: pointer;"
+                                                wire:click="selectCustomer({{ $customer->id }}, '{{ $customer->name }}')">
+                                                {{ $customer->name }}
+                                            </li> <!-- Adjust to match your data -->
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    @if ($customerText)
+                                        <p class="mt-2">No results found for "{{ $customerText }}".</p>
+                                    @endif
                                 @endif
-                            @endif
+
+                                <!-- Display the selected customer -->
+                                @if ($selectedCustomerName)
+                                    <p class="mt-2">Selected Customer: {{ $selectedCustomerName }}</p>
+                                @endif
+                            </div>
                         </div> --}}
+
+                        <div class="col-md-3 position-relative">
+                            <div class="form-group">
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
+                                    Customers</label>
+                                <!-- Tag Input Container with Bootstrap classes -->
+                                {{-- <div class="input-group flex-wrap"> --}}
+
+                                <!-- Search Input -->
+                                <input type="text" class="form-control" placeholder="Search..."
+                                    wire:model.live.debounce.100ms="customerText" aria-label="Search" />
+
+                                <div wire:loading>
+                                    <p>Searching...</p>
+                                </div>
+
+                                <!-- Tag List Container -->
+                                {{-- <div class="d-flex flex-wrap gap-2 mb-2">
+                                        @foreach ($selectedCustomers as $customer)
+                                            <span class="badge bg-secondary d-flex align-items-center">
+                                                {{ $customer['name'] }}
+                                                <button type="button" class="btn-close ms-2" aria-label="Remove"
+                                                    wire:click="removeCustomer({{ $customer['id'] }})"></button>
+                                            </span>
+                                        @endforeach
+                                    </div> --}}
+                                {{-- </div> --}}
+
+                                <!-- Search Results -->
+                                @if (!empty($customers))
+                                    <ul class="list-group mt-2"
+                                        style="max-height: 200px; overflow-y: auto; z-index: 1000; position: absolute; width: 100%;">
+                                        @foreach ($customers as $customer)
+                                            <li class="list-group-item list-group-item-action" style="cursor: pointer;"
+                                                wire:click="selectCustomer({{ $customer->id }}, '{{ $customer->name }}')">
+                                                {{ $customer->name }}
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    @if ($customerText)
+                                        <p class="mt-2 text-muted">No results found for "{{ $customerText }}".</p>
+                                    @endif
+                                @endif
+
+                                @if (!empty($selectedCustomers))
+                                    <div class="d-flex flex-wrap gap-2 mb-2 mt-2">
+                                        @foreach ($selectedCustomers as $customer)
+                                            <span class="badge bg-secondary d-flex align-items-center">
+                                                {{ $customer['name'] }}
+                                                <button type="button" class="btn-close ms-2" aria-label="Remove"
+                                                    wire:click="removeCustomer({{ $customer['id'] }})"></button>
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+
+
 
                     </div>
                 </form>
@@ -174,17 +271,24 @@
                         <th>Action</th>
                     </thead>
                     <tbody>
-                        @if($orderItems)
-                            @foreach($orderItems as $key => $item)
+                        @if ($orderItems)
+                            @foreach ($orderItems as $key => $item)
                                 <tr>
-                                    <td>{{++$key}}</td>
-                                    <td>{{$item["productName"]}}</td>
-                                    <td>{{$item["price"]}}</td>
-                                    <td>{{$item["qty"]}}</td>
-                                    <td>{{$item["amount"]}}</td>
-                                    <td></td>
+                                    <td>{{ ++$key }}</td>
+                                    <td>{{ $item['productName'] }}</td>
+                                    <td>{{ $item['price'] }}</td>
+                                    <td>{{ $item['qty'] }}</td>
+                                    <td>{{ $item['amount'] }}</td>
+                                    <td>
+                                        <i class="icofont icofont-trash text-danger fs-4"
+                                            onclick="deleteItem({{ $item['productId'] }})"></i>
+                                    </td>
                                 </tr>
                             @endforeach
+                        @else
+                            <tr>
+                                <td colspan="6" class="text-center"> No record found.</td>
+                            </tr>
                         @endif
                     </tbody>
                 </table>
@@ -196,7 +300,7 @@
             <div class="row">
                 <div class="col-md-12 text-end">
                     <div class="text-end py-2">
-                        Sub Total :  <span>1000</span>
+                        Sub Total : <span>1000</span>
                     </div>
                     <div class="text-end py-2">
                         Discount : <span>1000</span>
@@ -238,20 +342,20 @@
                     qty: $("#qty").val(),
                     price: $("#price").val()
                 });
-                
+
             });
 
+            window.deleteItem = function(id) {
+                alert('Item deletion triggered for ID: ' + id);
+                Livewire.dispatch('deleteItem', {
+                    productId: id
+                });
+            };
 
             Livewire.hook('morph.updating', ({
                 component,
                 cleanup
             }) => {
-                // $('#customers').select2();
-                // $('#branch').select2();
-                // $('#terminals').select2();
-                // $('#salespersons').select2();
-                // $('#ordertypes').select2();
-                // $('#products').select2();
                 $('.select2').select2()
             })
         })

@@ -30,6 +30,9 @@ class PreOrderBooking extends Component
     public $orderTypes = [];
     public $orderTypeId = "";
     public $customerId = "";
+    public $selectedCustomerId = null;
+    public $selectedCustomerName = '';
+    public $selectedCustomers = [];
 
     // ORDER ITEMS MODELS
     public $productId = "";
@@ -38,7 +41,7 @@ class PreOrderBooking extends Component
 
     public function mount()
     {
-        $this->customers = []; //Customer::where("company_id", session("company_id"))->get();
+        // $this->customers = []; //Customer::where("company_id", session("company_id"))->get();
         // Fetch essential data only on component mount
         $this->branches = Branch::where("company_id", session("company_id"))->get();
     }
@@ -50,6 +53,51 @@ class PreOrderBooking extends Component
             $this->terminals = Terminal::where("branch_id", $value)->get();
             $this->salesPersons = ServiceProvider::with("serviceprovideruser")->where("branch_id", $value)->where("categor_id", 1)->where("status_id", 1)->get();
         }
+    }
+
+    #[Computed()]
+    public function updatedCustomerText()
+    {
+        // Perform the search only if there is input text
+        if (!empty($this->customerText)) {
+            $this->customers = Customer::where("company_id", session("company_id"))
+                ->when($this->customerText, function ($query) {
+                    $query->where("name", "like", "%{$this->customerText}%");
+                })
+                ->limit(10)  // Limit results for performance
+                ->get();
+        } else {
+            // Reset customers if input text is empty
+            $this->customers = [];
+        }
+    }
+
+    public function removeCustomer($id)
+    {
+        $this->selectedCustomers = collect($this->selectedCustomers)->reject(function ($customer) use ($id) {
+            return $customer['id'] === $id;
+        })->values()->toArray();
+    }
+
+    // public function selectCustomer($id, $name)
+    // {
+    //     // Store selected customer id and name
+    //     $this->selectedCustomerId = $id;
+    //     $this->selectedCustomerName = $name;
+
+    //     // Clear the customer list and text input if you wish
+    //     $this->customerText = '';
+    //     $this->customers = [];
+    // }
+
+    public function selectCustomer($id, $name)
+    {
+        if (!collect($this->selectedCustomers)->contains('id', $id)) {
+            $this->selectedCustomers[] = ['id' => $id, 'name' => $name];
+        }
+
+        $this->customerText = "";
+        $this->customers = [];
     }
 
     // // Computed property to get customers filtered by search text
@@ -85,7 +133,7 @@ class PreOrderBooking extends Component
     public function addItems($productId, $productName, $qty, $price) //$productId, $qty, $price
     {
         $item = [
-            "productId" => $productId,
+            "productId" => (int) $productId,
             "productName" => trim($productName),
             "qty" => $qty,
             "price" => $price,
@@ -93,6 +141,22 @@ class PreOrderBooking extends Component
         ];
 
         $this->orderItems[] = $item; // Append new item to orderItems array
+    }
+
+    #[On('deleteItem')]
+    public function deleteItem($productId)
+    {   
+        // Type cast productId to ensure correct matching
+        $productId = (int) $productId;
+        // dd($productId);
+        $item = array_values(array_filter($this->orderItems, function ($item) use ($productId) {
+            return $item['productId'] !== $productId;
+        }));
+        // dd($item);
+        $this->orderItems = array_values(array_filter($this->orderItems, function ($item) use ($productId) {
+            return $item['productId'] !== $productId;
+        }));
+
     }
 
     public function render()
