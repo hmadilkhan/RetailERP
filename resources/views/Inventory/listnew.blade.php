@@ -54,17 +54,13 @@
                         <label for="update" class="form-check-label m-r-15">
                                      <input name="update" id="update" class="form-check-input" type="checkbox"> Update to Retail Price
                         </label>
+                        <input type='submit' class="btn btn-primary waves-effect waves-light" name='submit' value='Import'>
                         @if ($errors->has('file'))
                          <div class="form-control-feedback">Required field can not be blank.</div>
                         @endif
-
-                        <input type='submit' class="btn btn-primary waves-effect waves-light" name='submit' value='Import'>
                     </div>
 
                     {{-- <div class="row col-md-2 "> --}}
-                        {{-- <div class="form-button p-t-35">
-                         <input type='submit' class="btn btn-primary waves-effect waves-light" name='submit' value='Import'>
-                        </div> --}}
                     {{-- </div> --}}
                 </form>
             </div>
