@@ -38,7 +38,7 @@
                     {{-- </div> --}}
 
                     {{-- <div class="row col-md-4 "> --}}
-                        <div class="form-group m-l-20 {{ $errors->has('file') ? 'has-danger' : '' }} ">
+                        <div class="form-group m-r-15 {{ $errors->has('file') ? 'has-danger' : '' }} ">
                             <label for="vdimg" class="block form-control-label">Select File </label>
                             <label for="vdimg" class="custom-file">
                                 <input type="file" name="file" id="vdimg" class="custom-file-input">
@@ -51,7 +51,7 @@
                     {{-- </div> --}}
 
                     <div class="form-check p-t-35 {{ $errors->has('file') ? 'has-danger' : '' }}">
-                        <label for="update" class="form-check-label m-r-10">
+                        <label for="update" class="form-check-label m-r-15">
                                      <input name="update" id="update" class="form-check-input" type="checkbox"> Update to Retail Price
                         </label>
                         @if ($errors->has('file'))
