@@ -239,6 +239,9 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+
+ <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
+ <link href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.css" rel="stylesheet">
   <style type="text/css">
 
 /* Initially hide the child rows
@@ -283,7 +286,28 @@
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.dataTables.js"></script>
+
 <script type="text/javascript">
+
+$('.dataTable').DataTable({
+    columnDefs: [
+        {
+            className: 'dtr-control arrow-right',
+            orderable: false,
+            target: -1
+        }
+    ],
+    responsive: {
+        details: {
+            type: 'column',
+            target: -1
+        }
+    }
+});
 // $(document).ready(function() {
 //     // Click event to toggle child row
 //     $('.toggle-row').on('click', function() {
