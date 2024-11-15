@@ -25,7 +25,7 @@
                     {{ csrf_field() }}
                     {{-- <div class="row col-md-2 "> --}}
                         <div class="form-group {{ $errors->has('file') ? 'has-danger' : '' }}">
-                            <label for="" class="checkbox-inline">Update to Retail Price</label>
+                            {{-- <label for="" class="checkbox-inline">Update to Retail Price</label> --}}
                             <br />
                             <label for="" class="checkbox-inline pointer">
                                 <input type="checkbox" name="update" id="update" class="custom-control">
@@ -39,7 +39,6 @@
                     {{-- <div class="row col-md-4 "> --}}
                         <div class="form-group {{ $errors->has('file') ? 'has-danger' : '' }} ">
                             <label for="vdimg" class="form-control-label">Select File </label>
-                            <br />
                             <label for="vdimg" class="custom-file">
                                 <input type="file" name="file" id="vdimg" class="custom-file-input">
                                 <span class="custom-file-control"></span>
