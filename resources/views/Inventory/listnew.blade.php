@@ -298,13 +298,13 @@ $('.dataTable').DataTable({
         {
             className: 'dtr-control arrow-right',
             orderable: false,
-            target: -1
+            target: 12
         }
     ],
     responsive: {
         details: {
             type: 'column',
-            target: -1
+            target: 12
         }
     },
     paging: false,  // Disable pagination
