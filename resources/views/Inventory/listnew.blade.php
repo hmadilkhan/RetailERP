@@ -12,7 +12,7 @@
         data-original-title="Create Inventory"
         class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i
             class="icofont icofont-plus m-r-5"></i> CREATE INVENTORY</a>
-        <div class="card m-t-50">
+        <div class="card card inline-form-style m-t-50">
             <div class="card-header">
                 <h5 class="card-header-text">Upload Inventory</h5>
                 <a href="{{ url('get-sample-csv') }}" data-toggle="tooltip" data-placement="bottom" title=""
