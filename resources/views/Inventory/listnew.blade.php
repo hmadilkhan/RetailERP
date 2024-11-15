@@ -57,12 +57,14 @@
                         @if ($errors->has('file'))
                          <div class="form-control-feedback">Required field can not be blank.</div>
                         @endif
+
+                        <input type='submit' class="btn btn-primary waves-effect waves-light" name='submit' value='Import'>
                     </div>
 
                     {{-- <div class="row col-md-2 "> --}}
-                        <div class="form-button p-t-35">
-                         <input type='submit' class="btn btn-primary waves-effect waves-light m-r-30" name='submit' value='Import'>
-                        </div>
+                        {{-- <div class="form-button p-t-35">
+                         <input type='submit' class="btn btn-primary waves-effect waves-light" name='submit' value='Import'>
+                        </div> --}}
                     {{-- </div> --}}
                 </form>
             </div>
