@@ -24,7 +24,7 @@
                 <th>Stock</th>
                 <th>UOM</th>
                 <th>Action</th>
-                <th></th>
+                {{-- <th></th> --}}
             </tr>
         </thead>
         <tbody>
@@ -137,7 +137,6 @@
                       </div>
 
                     </td>
-                    <td></td>
                     {{-- <td class="toggle-row">+</td> <!-- Toggle button --> --}}
                 </tr>
                 {{-- <tr class="child">
