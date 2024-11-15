@@ -912,7 +912,7 @@ class InventoryController extends Controller
 
         $inventoryBrand = DB::table("inventory_brands")->where("inventory_id", $data[0]->id)->pluck("brand_id");
 
-        $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->pluck("tag_id");
+        $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->where("status",1)->pluck("tag_id");
 
         foreach ($references as $refval) {
             $ref[] = $refval->refrerence;
