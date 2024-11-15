@@ -37,7 +37,7 @@
                         </div>
                     {{-- </div> --}}
                     {{-- <div class="row col-md-4 "> --}}
-                        <div class="form-group {{ $errors->has('file') ? 'has-danger' : '' }} ">
+                        <div class="form-group m-l-20 {{ $errors->has('file') ? 'has-danger' : '' }} ">
                             <label for="vdimg" class="form-control-label">Select File </label>
                             <label for="vdimg" class="custom-file">
                                 <input type="file" name="file" id="vdimg" class="custom-file-input">
