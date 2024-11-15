@@ -306,7 +306,11 @@ $('.dataTable').DataTable({
             type: 'column',
             target: -1
         }
-    }
+    },
+    paging: false,  // Disable pagination
+    searching: false, // Disable the search bar
+    info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
+    bLengthChange: false, // Disable the length change dropdown ("Show X entries")
 });
 // $(document).ready(function() {
 //     // Click event to toggle child row
