@@ -383,7 +383,7 @@ let table_row_editAddonmdId = [];
                     type: "POST",
                     data: {_token:'{{ csrf_token() }}',id:headAddonId},
                     success:function(resp){
-
+                         console.log(resp)
                         if (resp != null) {
                             table_row_editAddonmdId=[];
                             $("#table_addonGeneratList_editmd tbody").empty();
