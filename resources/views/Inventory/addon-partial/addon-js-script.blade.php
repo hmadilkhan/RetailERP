@@ -54,7 +54,7 @@ let table_row_editAddonmdId = [];
 
 		$("#subDepartment_addonTab").on('change',function(){
 		    if($(this).val() == ''){
-		        $("#product_addonTab").val('change');
+		        $("#product_addonTab").val('').change();
 		        if(!$("#product_addonTab").attr('disabled')){
 		            $("#product_addonTab").attr('disabled',true);
 		            $("#product_addonTab").val('');
@@ -79,7 +79,7 @@ let table_row_editAddonmdId = [];
 
 		$("#subDepartment_editmdAddon").on('change',function(){
 		    if($(this).val() == ''){
-		        $("#product_editmdAddon").val('change');
+		        $("#product_editmdAddon").val('').change();
 		        if(!$("#product_editmdAddon").attr('disabled')){
 		            $("#product_editmdAddon").attr('disabled',true);
 		            $("#product_editmdAddon").val('');
