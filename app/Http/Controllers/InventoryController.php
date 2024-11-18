@@ -3801,9 +3801,8 @@ class InventoryController extends Controller
             ->where('addons.status', 1)
             ->join('inventory_general', 'inventory_general.id', 'addons.inventory_product_id')
             ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
-            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_sub_department.sub_department_id')
+            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_general.sub_department_id')
             ->select('addons.*', 'inventory_department.department_name', 'inventory_sub_department.sub_depart_name')
-            ->where('addons.status',1)
             ->get();
     }
 
