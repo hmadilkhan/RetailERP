@@ -90,6 +90,8 @@ let table_row_editAddonmdId = [];
 		});
 
 		function productload_department_wise(departId,elementId){
+            $("#"+elementId).empty();
+
 			$.ajax({
 			  url: "{{ route('invent-list-department') }}",
 			  method : "POST",
@@ -97,7 +99,6 @@ let table_row_editAddonmdId = [];
 			  cache: false,
 			  success: function(resp){
 			    if(resp != null){
-				 $("#"+elementId).empty();
 
 				 if($("#"+elementId).attr('disabled')){
 				     $("#"+elementId).attr('disabled',false);
