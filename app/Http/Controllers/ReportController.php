@@ -4735,6 +4735,8 @@ class ReportController extends Controller
 
                         $this->generateCompleteReportForEmail($terminal->company_id, $terminal->branch_id, $terminal->terminal_id, $opening->opening_id);
                         // print($emails);
+                        //$emails = ["hmadilkhan@gmail.com"]; 
+
                         Mail::to($emails)->cc(["humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
                 } // Opening Id not found
@@ -4773,11 +4775,11 @@ class ReportController extends Controller
             $negative +
             ($heads[0]->CardCustomerDiscount ?? 0) +
             ($heads[0]->Delivery ?? 0);
-        if (isset($heads[0]->expenses) && $heads[0]->expenses == 1) {
+        if (isset($permissions[0]->expenses) && $permissions[0]->expenses == 1) {
             $CashInHand -= $heads[0]->expenses;
         }
         if (session('company_id') == 102) {
-            $CashInHand -= $salesData['heads'][0]->bal ?? 0;
+            $CashInHand -= $heads[0]->bal ?? 0;
         }
         $CashInHand = round($CashInHand);
         $closingBalance = round($heads[0]->closingBal ?? 0);
@@ -4967,11 +4969,30 @@ class ReportController extends Controller
         $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
         $pdf->Cell(30, 6, number_format($CashInHand, 0) ?? 0, 0, 1, 'R', 1);
 
+
         if ($permissions[0]->cb == 1) {
             $pdf->SetFont('Arial', '', 10);
             $pdf->Cell(38, 6, "Closing Balance", 0, 0, 'L', 1);
             $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($closingBalance, 0) ?? 0, 0, 1, 'R', 1);
+        }
+
+        $status = "";
+        if ($closingBalance > $CashInHand) {
+            $pdf->SetTextColor(255, 0, 0);
+            $status = '(' . ($closingBalance - $CashInHand) . ' Amount Excess)';
+        } else if ($closingBalance < $CashInHand) {
+            $pdf->SetTextColor(255, 0, 0);
+            $status =  '(' . ($closingBalance - $CashInHand) . ' Amount Short)';
+        } else if ($closingBalance == $CashInHand) {
+            $pdf->SetTextColor(34, 139, 34);
+        }
+
+        if ($permissions[0]->cb == 1) {
+            $pdf->SetFont('Arial', '', 8);
+            $pdf->Cell(38, 6, "", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, $status, 0, 1, 'R', 1);
         }
 
 
@@ -5011,7 +5032,7 @@ class ReportController extends Controller
             $totalWeightQty += ($item->qty * $item->weight_qty);
             $totalAmount += $item->amount;
 
-            $pdf->Cell(78, 7, "(" . $item->item_code . ")" . $item->product_name, 0, 1, 'L', 1);
+            $pdf->Cell(78, 7, "(" . $item->item_code . ") " . $item->product_name, 0, 1, 'L', 1);
             $pdf->Cell(40, 7, number_format($item->price, 0), 0, 0, 'L', 1);
             $pdf->Cell(13, 7, $item->qty, 0, 0, 'L', 1);
             $pdf->Cell(11, 7, $item->qty * $item->weight_qty, 0, 0, 'C', 1);
@@ -5043,6 +5064,7 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
 
             $expenses = expense::join('expense_categories', 'expense_categories.exp_cat_id', '=', 'expenses.exp_cat_id')->where('expenses.opening_id', $opening)->get();
+            $totalExpenseAmount = 0;
 
             $pdf->setFillColor(233, 233, 233);
             $pdf->SetTextColor(0, 0, 0);
@@ -5053,10 +5075,20 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
             if (count($expenses) > 0) {
                 foreach ($expenses as $key => $expense) {
+                    $totalExpenseAmount += $expense->amount;
                     $pdf->Cell(20, 7, $expense->expense_category, 0, 0, 'L', 1);
-                    $pdf->Cell(20, 7, $expense->amount, 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, number_format($expense->amount,0), 0, 0, 'L', 1);
                     $pdf->Cell(38, 7, $expense->expense_details, 0, 1, 'C', 1);
                 }
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(20, 7, "Total", 0, 0, 'L', 1);
+                $pdf->Cell(20, 7, number_format($totalExpenseAmount,0), 0, 0, 'L', 1);
+                $pdf->Cell(38, 7, "", 0, 1, 'C', 1);
+                $pdf->ln(6);
+
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
             } else {
                 $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
             }
@@ -5074,6 +5106,7 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
 
             $cashins = DB::table("sales_cash_in")->where("opening_id", $opening)->get();
+            $totalCashIns = 0;
 
             $pdf->setFillColor(233, 233, 233);
             $pdf->SetTextColor(0, 0, 0);
@@ -5084,10 +5117,20 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
             if (count($cashins) > 0) {
                 foreach ($cashins as $key => $cashin) {
+                    $totalCashIns += $cashin->amount;
                     $pdf->Cell(20, 7, date("d M Y", strtotime($cashin->datetime)), 0, 0, 'L', 1);
-                    $pdf->Cell(20, 7, $cashin->amount, 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, number_format($cashin->amount,0), 0, 0, 'L', 1);
                     $pdf->Cell(38, 7, $cashin->narration, 0, 1, 'C', 1);
                 }
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(20, 7, "Totals", 0, 0, 'L', 1);
+                $pdf->Cell(20, 7, number_format($totalCashIns,0), 0, 0, 'L', 1);
+                $pdf->Cell(38, 7, "", 0, 1, 'C', 1);
+                $pdf->ln(6);
+
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
             } else {
                 $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
             }
@@ -5105,6 +5148,7 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
 
             $cashouts = DB::table("sales_cash_out")->where("opening_id", $opening)->get();
+            $totalCashOuts = 0;
 
             $pdf->setFillColor(233, 233, 233);
             $pdf->SetTextColor(0, 0, 0);
@@ -5116,22 +5160,22 @@ class ReportController extends Controller
             if (count($cashouts) > 0) {
                 foreach ($cashouts as $key => $cashout) {
                     $pdf->Cell(20, 7, date("d M Y", strtotime($cashout->datetime)), 0, 0, 'L', 1);
-                    $pdf->Cell(20, 7, $cashout->amount, 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, number_format($cashout->amount,0), 0, 0, 'L', 1);
                     $pdf->Cell(38, 7, $cashout->narration, 0, 1, 'C', 1);
                 }
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(20, 7, "Totals", 0, 0, 'L', 1);
+                $pdf->Cell(20, 7, number_format($totalCashOuts,0), 0, 0, 'L', 1);
+                $pdf->Cell(38, 7, "", 0, 1, 'C', 1);
+                $pdf->ln(6);
+
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
             } else {
                 $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
             }
         }
-
-        // $pdf->SetFont('Arial', '', 10);
-        // $pdf->Cell(75, 8, "Timing : 10:30 AM To 6:30 PM", 'T,B', 1, 'C');
-
-        // $pdf->ln(2);
-        // $pdf->Cell(75, 5, "Solution By Sabsons|Sabsoft", 0, 1, 'C');
-        // $pdf->Cell(75, 5, "www.sabsoft.com.pk | 9221-34389215-16-17", 0, 1, 'C');
-
-
 
         header('Content-Type: application/pdf; charset=utf-8');
 
