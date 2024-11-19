@@ -12,7 +12,7 @@
         data-original-title="Create Inventory"
         class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i
             class="icofont icofont-plus m-r-5"></i> CREATE INVENTORY</a>
-        <div class="card m-t-50">
+        <div class="card card inline-form-style m-t-50">
             <div class="card-header">
                 <h5 class="card-header-text">Upload Inventory</h5>
                 <a href="{{ url('get-sample-csv') }}" data-toggle="tooltip" data-placement="bottom" title=""
@@ -21,24 +21,25 @@
                         class="icofont icofont-plus m-r-5"></i> Download Sample</a>
             </div>
             <div class="card-block">
-                <form method='post' action='{{ url('uploadInventory') }}' enctype='multipart/form-data'>
+                <form method='post' class="form-inline" action='{{ url('uploadInventory') }}' enctype='multipart/form-data'>
                     {{ csrf_field() }}
-                    <div class="row col-md-2 ">
-                        <div class="form-group">
-                            <label for="" class="checkbox-inline">Update to Retail Price</label>
-                            <br />
-                            <label for="" class="checkbox-inline">
+                    {{-- <div class="row col-md-2 "> --}}
+                        {{-- <div class="form-group {{ $errors->has('file') ? 'has-danger' : '' }}">
+                            {{-- <label for="" class="checkbox-inline">Update to Retail Price</label> --}}
+
+                            {{--<label for="" class="checkbox-inline pointer">
                                 <input type="checkbox" name="update" id="update" class="custom-control">
+                                Update to Retail Price
                             </label>
                             @if ($errors->has('file'))
                                 <div class="form-control-feedback">Required field can not be blank.</div>
                             @endif
-                        </div>
-                    </div>
-                    <div class="row col-md-4 ">
-                        <div class="form-group {{ $errors->has('file') ? 'has-danger' : '' }} ">
-                            <label for="vdimg" class="form-control-label">Select File </label>
-                            <br />
+                        </div> --}}
+                    {{-- </div> --}}
+
+                    {{-- <div class="row col-md-4 "> --}}
+                        <div class="form-group m-r-15 {{ $errors->has('file') ? 'has-danger' : '' }} ">
+                            <label for="vdimg" class="block form-control-label">Select File </label>
                             <label for="vdimg" class="custom-file">
                                 <input type="file" name="file" id="vdimg" class="custom-file-input">
                                 <span class="custom-file-control"></span>
@@ -47,12 +48,20 @@
                                 <div class="form-control-feedback">Required field can not be blank.</div>
                             @endif
                         </div>
+                    {{-- </div> --}}
+
+                    <div class="form-check p-t-35 {{ $errors->has('file') ? 'has-danger' : '' }}">
+                        <label for="update" class="form-check-label m-r-15">
+                                     <input name="update" id="update" class="form-check-input" type="checkbox"> Update to Retail Price
+                        </label>
+                        <input type='submit' class="btn btn-primary waves-effect waves-light" name='submit' value='Import'>
+                        @if ($errors->has('file'))
+                         <div class="form-control-feedback">Required field can not be blank.</div>
+                        @endif
                     </div>
 
-                    <div class="row col-md-2 ">
-                        <input type='submit' class="btn btn-primary m-l-5 m-t-35" name='submit' value='Import'>
-
-                    </div>
+                    {{-- <div class="row col-md-2 "> --}}
+                    {{-- </div> --}}
                 </form>
             </div>
         </div>
@@ -239,6 +248,9 @@
 @section('css_code')
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+
+ {{-- <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
+ <link href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.css" rel="stylesheet"> --}}
   <style type="text/css">
 
 /* Initially hide the child rows
@@ -283,7 +295,32 @@
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 
+    {{-- <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.1.8/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.dataTables.js"></script> --}}
+
 <script type="text/javascript">
+
+// $('.dataTable').DataTable({
+//     columnDefs: [
+//         {
+//             className: 'dtr-control arrow-right',
+//             orderable: false,
+//             target: -1
+//         }
+//     ],
+//     responsive: {
+//         details: {
+//             type: 'column',
+//             target: -1
+//         }
+//     },
+//     paging: false,  // Disable pagination
+//     searching: false, // Disable the search bar
+//     info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
+//     bLengthChange: true, // Disable the length change dropdown ("Show X entries")
+// });
 // $(document).ready(function() {
 //     // Click event to toggle child row
 //     $('.toggle-row').on('click', function() {

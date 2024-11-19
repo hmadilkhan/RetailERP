@@ -973,6 +973,8 @@ input+.slider:before {
 	   function variationForm_clear(){
 	       $("#variationForm")[0].reset();
 
+           $("#product_md").val('').change();
+
 	       $("#variation_name_alert").text('');
 	       $("#variation_type_alert").text('');
 	       $("#selection_limited_alert").text('');

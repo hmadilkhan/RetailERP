@@ -912,7 +912,7 @@ class InventoryController extends Controller
 
         $inventoryBrand = DB::table("inventory_brands")->where("inventory_id", $data[0]->id)->pluck("brand_id");
 
-        $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->pluck("tag_id");
+        $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->where("status",1)->pluck("tag_id");
 
         foreach ($references as $refval) {
             $ref[] = $refval->refrerence;
@@ -3801,7 +3801,7 @@ class InventoryController extends Controller
             ->where('addons.status', 1)
             ->join('inventory_general', 'inventory_general.id', 'addons.inventory_product_id')
             ->join('inventory_department', 'inventory_department.department_id', 'inventory_general.department_id')
-            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_sub_department.sub_department_id')
+            ->join('inventory_sub_department', 'inventory_sub_department.sub_department_id', 'inventory_general.sub_department_id')
             ->select('addons.*', 'inventory_department.department_name', 'inventory_sub_department.sub_depart_name')
             ->get();
     }

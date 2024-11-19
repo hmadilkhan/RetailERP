@@ -54,7 +54,7 @@ let table_row_editAddonmdId = [];
 
 		$("#subDepartment_addonTab").on('change',function(){
 		    if($(this).val() == ''){
-		        $("#product_addonTab").val('change');
+		        $("#product_addonTab").val('').change();
 		        if(!$("#product_addonTab").attr('disabled')){
 		            $("#product_addonTab").attr('disabled',true);
 		            $("#product_addonTab").val('');
@@ -79,7 +79,7 @@ let table_row_editAddonmdId = [];
 
 		$("#subDepartment_editmdAddon").on('change',function(){
 		    if($(this).val() == ''){
-		        $("#product_editmdAddon").val('change');
+		        $("#product_editmdAddon").val('').change();
 		        if(!$("#product_editmdAddon").attr('disabled')){
 		            $("#product_editmdAddon").attr('disabled',true);
 		            $("#product_editmdAddon").val('');
@@ -90,6 +90,8 @@ let table_row_editAddonmdId = [];
 		});
 
 		function productload_department_wise(departId,elementId){
+            $("#"+elementId).empty();
+
 			$.ajax({
 			  url: "{{ route('invent-list-department') }}",
 			  method : "POST",
@@ -97,7 +99,6 @@ let table_row_editAddonmdId = [];
 			  cache: false,
 			  success: function(resp){
 			    if(resp != null){
-				 $("#"+elementId).empty();
 
 				 if($("#"+elementId).attr('disabled')){
 				     $("#"+elementId).attr('disabled',false);
@@ -382,7 +383,7 @@ let table_row_editAddonmdId = [];
                     type: "POST",
                     data: {_token:'{{ csrf_token() }}',id:headAddonId},
                     success:function(resp){
-
+                         console.log(resp)
                         if (resp != null) {
                             table_row_editAddonmdId=[];
                             $("#table_addonGeneratList_editmd tbody").empty();
