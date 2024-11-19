@@ -5,7 +5,6 @@ namespace App\Livewire\Orders;
 use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Inventory;
-use App\Models\OrderMode;
 use App\Models\ServiceProvider;
 use App\Models\Terminal;
 use Livewire\Attributes\Computed;
@@ -38,6 +37,12 @@ class PreOrderBooking extends Component
     public $productId = "";
     public $qty = 0;
     public $price = 0;
+
+    // ORDER ITEMS TOTALS
+    public $subTotal = 0;
+    public $discount = 0;
+    public $taxAmount = 0;
+    public $totalAmount = 0;
 
     public function mount()
     {
@@ -79,17 +84,6 @@ class PreOrderBooking extends Component
         })->values()->toArray();
     }
 
-    // public function selectCustomer($id, $name)
-    // {
-    //     // Store selected customer id and name
-    //     $this->selectedCustomerId = $id;
-    //     $this->selectedCustomerName = $name;
-
-    //     // Clear the customer list and text input if you wish
-    //     $this->customerText = '';
-    //     $this->customers = [];
-    // }
-
     public function selectCustomer($id, $name)
     {
         if (!collect($this->selectedCustomers)->contains('id', $id)) {
@@ -99,35 +93,6 @@ class PreOrderBooking extends Component
         $this->customerText = "";
         $this->customers = [];
     }
-
-    // // Computed property to get customers filtered by search text
-    // public function getCustomersProperty()
-    // {
-    //     return Customer::where("company_id", session("company_id"))
-    //         ->when($this->customerText, function ($query) {
-    //             $query->where("name", "like", "%{$this->customerText}%");
-    //         })
-    //         ->limit(10)  // Limit results for performance
-    //         ->get();
-    // }
-
-    // // Computed property to get terminals for the selected branch
-    // public function getTerminalsProperty()
-    // {
-    //     return $this->branchId ? Terminal::where("branch_id", $this->branchId)->get() : [];
-    // }
-
-    // // Computed property to get sales persons for the selected branch
-    // public function getSalesPersonsProperty()
-    // {
-    //     return $this->branchId
-    //         ? ServiceProvider::with("serviceprovideruser")
-    //         ->where("branch_id", $this->branchId)
-    //         ->where("categor_id", 1)
-    //         ->where("status_id", 1)
-    //         ->get()
-    //         : [];
-    // }
 
     #[On('addItems')]
     public function addItems($productId, $productName, $qty, $price) //$productId, $qty, $price
@@ -141,22 +106,53 @@ class PreOrderBooking extends Component
         ];
 
         $this->orderItems[] = $item; // Append new item to orderItems array
+
+        $this->calculateTotal();
+        $this->resetOrderControls();
+        $this->dispatch("resetControls");
+        $this->dispatch("itemAdded");
+    }
+
+    public function calculateTotal()
+    {
+        $this->resetCalculationControls();
+
+        collect($this->orderItems)->map(function ($item) {
+            $this->subTotal += $item["amount"];
+        });
+        $this->totalAmount = $this->subTotal + $this->taxAmount  - $this->discount;
+    }
+
+    public function resetCalculationControls()
+    {
+        $this->subTotal = 0;
+        $this->discount = 0;
+        $this->taxAmount = 0;
+        $this->totalAmount = 0;
+    }
+
+    public function resetOrderControls()
+    {
+        $this->productId = "";
+        $this->qty = 0;
+        $this->price = 0;
     }
 
     #[On('deleteItem')]
     public function deleteItem($productId)
-    {   
+    {
         // Type cast productId to ensure correct matching
         $productId = (int) $productId;
         // dd($productId);
-        $item = array_values(array_filter($this->orderItems, function ($item) use ($productId) {
-            return $item['productId'] !== $productId;
-        }));
+        // $item = array_values(array_filter($this->orderItems, function ($item) use ($productId) {
+        //     return $item['productId'] !== $productId;
+        // }));
         // dd($item);
         $this->orderItems = array_values(array_filter($this->orderItems, function ($item) use ($productId) {
             return $item['productId'] !== $productId;
         }));
 
+        $this->calculateTotal();
     }
 
     public function render()

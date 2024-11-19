@@ -298,66 +298,150 @@
     <div class="card">
         <div class="card-body">
             <div class="row">
-                <div class="col-md-12 text-end">
-                    <div class="text-end py-2">
-                        Sub Total : <span>1000</span>
+                <!-- Sub Total -->
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12 py-2 d-flex justify-content-end">
+                    <div class="col-8 col-lg-8 col-md-8 col-sm-8"></div>
+                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                        <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
+                            <span class="fw-bold ">Sub Total :</span>
+                        </div>
+                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
+                            <span class="">{{ number_format($subTotal, 0) }}</span>
+                        </div>
                     </div>
-                    <div class="text-end py-2">
-                        Discount : <span>1000</span>
+                </div>
+                <!-- Discount -->
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12  py-2 d-flex justify-content-end">
+                    <div class="col-8 col-lg-8 col-md-8 col-sm-8"></div>
+                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                        <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
+                            <span class="fw-bold ">Discount :</span>
+                        </div>
+                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
+                            <span class="">{{ number_format($discount, 0) }}</span>
+                        </div>
                     </div>
-                    <div class="text-end py-2">
-                        Tax Amount : <span>1000</span>
+                </div>
+                <!-- Tax Amount -->
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12  py-2 d-flex justify-content-end">
+                    <div class="col-8 col-lg-8 col-md-8"></div>
+                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                        <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
+                            <span class="fw-bold ">Tax Amount :</span>
+                        </div>
+                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
+                            <span class="">{{ number_format($taxAmount, 0) }}</span>
+                        </div>
                     </div>
-                    <div class="text-end py-2">
-                        Total Amount : <span>1000</span>
+                </div>
+                <!-- Total Amount -->
+                <div class="col-12 col-lg-12 col-md-12 col-sm-12 py-2 d-flex justify-content-end">
+                    <div class="ccol-8 col-lg-8 col-md-8"></div>
+                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                        <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
+                            <span class="fw-bold ">Total Amount :</span>
+                        </div>
+                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
+                            <span class="">{{ number_format($totalAmount, 0) }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-@script
-    <script>
-        $(document).ready(function() {
-            $(".select2").select2();
 
-            $('#branch').on('change', function(e) {
-                var data = $('#branch').select2("val");
-                @this.set('branchId', data);
-            });
-            // $('#products').on('change', function(e) {
-            //     var data = $('#products').select2("val");
-            //     @this.set('productId', data);
-            // });
-            let productname = "";
-            document.getElementById('submit-button').addEventListener('click', function() {
-                // Manually submit the form with parameters
-                if ($("#products").val() != "") {
-                    productname = $("#products option:selected").text().replace(/\s+/g, " ");
-                }
-                // Pass parameters as an object/array
-                Livewire.dispatch('addItems', {
-                    productId: $("#products").val(),
-                    productName: productname,
-                    qty: $("#qty").val(),
-                    price: $("#price").val()
+    {{-- <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 text-end">
+                    <div class="col-md-11 py-2">
+                        <span class="fw-bold">Sub Total : </span>
+                    </div>
+                    <div class="col-md-1 py-2">
+                       <span class="text-end">{{ number_format($subTotal, 0) }}</span>
+                    </div>
+                    <div class="col-md-11 py-2">
+                        <span class="fw-bold"> Discount : </span>
+                    </div>
+                    <div class="col-md-1 py-2">
+                        <span class="text-end">{{ number_format($discount, 0) }}</span>
+                    </div>
+                    <div class="col-md-11 py-2">
+                        <span class="fw-bold"> Tax Amount : </span>
+                    </div>
+                    <div class="col-md-1 py-2">
+                        <span class="text-end">{{ number_format($taxAmount, 0) }}</span>
+                    </div>
+                    <div class="col-md-11 py-2">
+                        <span class="fw-bold"> Total Amount : </span>
+                    </div>
+                    <div class="col-md-1 py-2">
+                        <span class="text-end">{{ number_format($totalAmount, 0) }}</span>
+                    </div>
+            </div>
+        </div>
+    </div>
+</div> --}}
+    @script
+        <script>
+            $(document).ready(function() {
+                $(".select2").select2();
+
+                $('#branch').on('change', function(e) {
+                    var data = $('#branch').select2("val");
+                    @this.set('branchId', data);
+                });
+                // $('#products').on('change', function(e) {
+                //     var data = $('#products').select2("val");
+                //     @this.set('productId', data);
+                // });
+                let productname = "";
+                document.getElementById('submit-button').addEventListener('click', function() {
+                    // Select all controls and buttons to disable
+                    let controls = document.querySelectorAll('input, select, button');
+
+                    // Disable controls and buttons
+                    controls.forEach(control => control.disabled = true);
+
+                    // Manually submit the form with parameters
+                    if ($("#products").val() != "") {
+                        productname = $("#products option:selected").text().replace(/\s+/g, " ");
+                    }
+
+                    // Pass parameters as an object/array
+                    Livewire.dispatch('addItems', {
+                        productId: $("#products").val(),
+                        productName: productname,
+                        qty: $("#qty").val(),
+                        price: $("#price").val()
+                    });
+
+                    // Re-enable controls after the Livewire request is complete
+                    Livewire.on('itemAdded', function() {
+                        controls.forEach(control => control.disabled = false);
+                    });
+
                 });
 
-            });
-
-            window.deleteItem = function(id) {
-                alert('Item deletion triggered for ID: ' + id);
-                Livewire.dispatch('deleteItem', {
-                    productId: id
+                window.addEventListener('resetControls', event => {
+                    $("#products").val('').change();
+                    $("#qty").val('');
+                    $("#price").val('')
                 });
-            };
 
-            Livewire.hook('morph.updating', ({
-                component,
-                cleanup
-            }) => {
-                $('.select2').select2()
+                window.deleteItem = function(id) {
+                    alert('Item deletion triggered for ID: ' + id);
+                    Livewire.dispatch('deleteItem', {
+                        productId: id
+                    });
+                };
+
+                Livewire.hook('morph.updating', ({
+                    component,
+                    cleanup
+                }) => {
+                    $('.select2').select2()
+                })
             })
-        })
-    </script>
-@endscript
+        </script>
+    @endscript

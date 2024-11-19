@@ -27,7 +27,7 @@
             $negative +
             ($salesData['heads'][0]->CardCustomerDiscount ?? 0) +
             ($salesData['heads'][0]->Delivery ?? 0);
-        if (isset($salesData['heads'][0]->expenses) && $salesData['heads'][0]->expenses == 1) {
+        if (isset($salesData['permissions'][0]->expenses) && $salesData['permissions'][0]->expenses == 1) {
             $CashInHand -= $salesData['heads'][0]->expenses;
         }
         if (session('company_id') == 102) {
