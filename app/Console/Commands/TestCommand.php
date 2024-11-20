@@ -13,7 +13,7 @@ class TestCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'test:run';
+    protected $signature = 'test:run {data*}';
 
     /**
      * The console command description.
@@ -39,7 +39,8 @@ class TestCommand extends Command
      */
     public function handle()
     {
+        $data = $this->argument('data');
         Log::info('Retail Run');
-        DB::table("test")->insert(["data" => 2]);
+        DB::table("test")->insert(["data" => $data]);
     }
 }
