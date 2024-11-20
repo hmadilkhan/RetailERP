@@ -508,10 +508,6 @@ class DeclarationEmailService
                 $opening = SalesOpening::where("terminal_id", $terminal->terminal_id)->where("date", $date)->where("status", 2)->first();
                 $companyLogo = "https://retail.sabsoft.com.pk/storage/images/company/" . $terminal->logo;
                 if (!empty($opening)) {
-                    // if (count($emails) == 1) {
-                    //     $emails = $emails[0];
-                    // }
-                    // return $emails;
                     $permissions = $users->getPermission($terminal->terminal_id);
                     $terminal_name = $users->getTerminalName($terminal->terminal_id);
                     $heads = $dash->getheadsDetailsFromOpeningIdForClosing($opening->opening_id);
@@ -526,7 +522,6 @@ class DeclarationEmailService
                         $declarationNo =  $heads[0]->opening_id;
 
                         $this->generatePdfReport($terminal->company_id, $terminal->branch_id, $terminal->terminal_id, $openingId);
-                        // print($emails);
                         $emails = ["hmadilkhan@gmail.com"]; // ->cc(["hmadilkhan@gmail.com", "syedrazaali10@gmail.com", "humayunshamimbarry@gmail.com"])
                         Mail::to($emails)->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
