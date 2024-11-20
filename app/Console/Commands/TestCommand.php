@@ -41,6 +41,6 @@ class TestCommand extends Command
     {
         $params = $this->argument('data');
         Log::info('Retail Run',$params);
-        DB::table("test")->insert(["data" => $params]);
+        DB::table("test")->insert(["data" => json_encode($params)]);
     }
 }
