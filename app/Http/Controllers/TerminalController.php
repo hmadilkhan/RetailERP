@@ -6,10 +6,13 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 use App\Terminal;
 use App\terminal_print_details;
+use App\Traits\MediaTrait;
 use App\userDetails;
 
 class TerminalController extends Controller
 {
+    use MediaTrait;
+    
     public function __construct()
     {
         $this->middleware('auth');
@@ -191,7 +194,7 @@ class TerminalController extends Controller
 
                 // REMOVE THE PREVIOUS IMAGE //
                 $this->removeImage("images/receipt/", $request->previous_image);
-                
+
                 // $imageName = time() . '.' . $request->image->getClientOriginalExtension();
                 // $request->image->move(public_path('assets/images/receipt/'), $imageName);
                 $this->uploads($request->image, 'images/receipt/');
