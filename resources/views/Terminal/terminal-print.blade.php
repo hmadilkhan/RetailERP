@@ -267,7 +267,7 @@
             if(desktop == 1){
                 $('input:radio[id=desktop]').prop('checked', true);
             }
-            $('#simg').attr('src','{{asset('assets/images/receipt/')}}'+"/"+image);
+            $('#simg').attr('src','{{asset('storage/images/receipt')}}'+"/"+image);
         }
 
         $('#btnCancel').click(function (e) {
