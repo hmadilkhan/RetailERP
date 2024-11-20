@@ -142,9 +142,11 @@ class TerminalController extends Controller
                     $request->validate([
                         'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                     ]);
-                    $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+                    // $imageName = time() . '.' . $request->image->getClientOriginalExtension();
 
-                    $request->image->move(public_path('assets/images/receipt/'), $imageName);
+                    // $request->image->move(public_path('assets/images/receipt/'), $imageName);
+
+                    $this->uploads($request->image, 'images/receipt/');
                 }
 
                 $header_text = $request->header;
@@ -177,17 +179,22 @@ class TerminalController extends Controller
         } else {
 
             if (!empty($request->image)) {
-                // REMOVE THE PREVIOUS IMAGE //
-                $image_path = public_path('assets/images/receipt/' . $request->previous_image);  // Value is not URL but directory file path
-                if ($request->previmage != "") {
-                    unlink($image_path);
-                }
+                
+                // $image_path = public_path('assets/images/receipt/' . $request->previous_image);  // Value is not URL but directory file path
+                // if ($request->previmage != "") {
+                //     unlink($image_path);
+                // }
                 // STORE THE NEW  IMAGE //
                 $request->validate([
                     'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
                 ]);
-                $imageName = time() . '.' . $request->image->getClientOriginalExtension();
-                $request->image->move(public_path('assets/images/receipt/'), $imageName);
+
+                // REMOVE THE PREVIOUS IMAGE //
+                $this->removeImage("images/receipt/", $request->previous_image);
+                
+                // $imageName = time() . '.' . $request->image->getClientOriginalExtension();
+                // $request->image->move(public_path('assets/images/receipt/'), $imageName);
+                $this->uploads($request->image, 'images/receipt/');
             } else {
                 $imageName = $request->previous_image;
             }
