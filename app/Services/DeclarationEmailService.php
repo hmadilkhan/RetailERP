@@ -527,9 +527,9 @@ class DeclarationEmailService
 
                         $this->generatePdfReport($terminal->company_id, $terminal->branch_id, $terminal->terminal_id, $opening->opening_id);
                         // print($emails);
-                        $emails = ["hmadilkhan@gmail.com"];  //->cc(["humayunshamimbarry@gmail.com"])
+                        // $emails = ["hmadilkhan@gmail.com"];  //
 
-                        Mail::to($emails)->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
+                        Mail::to($emails)->cc(["humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
                 } // Opening Id not found
             } // Email Not found bracket
