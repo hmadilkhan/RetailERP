@@ -12,7 +12,7 @@ use App\userDetails;
 class TerminalController extends Controller
 {
     use MediaTrait;
-    
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -149,7 +149,8 @@ class TerminalController extends Controller
 
                     // $request->image->move(public_path('assets/images/receipt/'), $imageName);
 
-                    $this->uploads($request->image, 'images/receipt/');
+                    $file = $this->uploads($request->image, 'images/receipt/');
+                    $imageName =  !empty($file) ? $file["fileName"] :  '' ;
                 }
 
                 $header_text = $request->header;
@@ -197,7 +198,8 @@ class TerminalController extends Controller
 
                 // $imageName = time() . '.' . $request->image->getClientOriginalExtension();
                 // $request->image->move(public_path('assets/images/receipt/'), $imageName);
-                $this->uploads($request->image, 'images/receipt/');
+                $file = $this->uploads($request->image, 'images/receipt/');
+                $imageName =  !empty($file) ? $file["fileName"] :  '' ;
             } else {
                 $imageName = $request->previous_image;
             }
@@ -212,7 +214,7 @@ class TerminalController extends Controller
             $ter->desktop = $desktop;
             $ter->cloud = $cloud;
             $ter->printer_name = $request->printerName;
-            $ter->image = $imageName;
+            $ter->image = !empty($request->image) ? $imageName :  $request->previous_image;
             if ($ter->save()) {
                 return redirect("/printing-details/" . Crypt::encrypt($request->terminal_id))->with('message', 'Update Printer Setting Saved successfully!!!');
             } else {
