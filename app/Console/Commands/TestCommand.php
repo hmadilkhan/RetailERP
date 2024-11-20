@@ -39,8 +39,8 @@ class TestCommand extends Command
      */
     public function handle()
     {
-        $data = $this->argument('data');
-        Log::info('Retail Run');
-        DB::table("test")->insert(["data" => $data]);
+        $params = $this->argument('data');
+        Log::info('Retail Run',$params);
+        DB::table("test")->insert(["data" => $params]);
     }
 }
