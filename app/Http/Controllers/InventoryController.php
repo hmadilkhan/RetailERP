@@ -3266,7 +3266,7 @@ class InventoryController extends Controller
 
             $getId_InventoryVariation = InventoryVariation::where('product_id', $request->item_id)->where('variation_id', $request->variation_id)->pluck('id');
             InventoryVariation::where('product_id', $request->item_id)->where('variation_id', $request->variation_id)->update(['status' => 0]);
-            InventoryVariationProduct::where('inventory_variation_id', $getId_InventoryVariation)->update(['status' => 0]);
+            //InventoryVariationProduct::where('inventory_variation_id', $getId_InventoryVariation)->update(['status' => 0]);
 
             if(!empty($request->priority_variation_md)){
                 $priority = (int) $request->priority_variation_md;
