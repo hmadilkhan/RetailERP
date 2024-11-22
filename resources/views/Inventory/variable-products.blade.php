@@ -947,7 +947,13 @@ input+.slider:before {
 			  method : "POST",
 			  data:$("#variationForm").serialize(),
 			  dataType:'json',
+              beforeSend:function(){
+                $('#btn_submit_variation').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+            });
+              },
 			  success: function(resp){
+
+                    $('#btn_submit_variation').prop('disabled', false).html(($("#mode_md").val() == 0 ? 'Submit' : 'Update'));
 
 			    if(resp.status == 200){
 	                $("#createVariation-modal").modal('hide');
