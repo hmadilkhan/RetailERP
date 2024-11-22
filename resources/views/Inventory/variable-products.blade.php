@@ -949,7 +949,6 @@ input+.slider:before {
 			  dataType:'json',
               beforeSend:function(){
                 $('#btn_submit_variation').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
-            });
               },
 			  success: function(resp){
 
