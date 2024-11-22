@@ -257,6 +257,7 @@
             </div>
         </div>
     </section>
+
     <section>
         <div class="card">
             <div class="card-header">Order Items Details</div>
@@ -280,6 +281,8 @@
                                     <td>{{ $item['qty'] }}</td>
                                     <td>{{ $item['amount'] }}</td>
                                     <td>
+                                        <i class="icofont icofont-pencil text-warning fs-4"
+                                            onclick="editItem('{{ $item['productId'] }}','{{$item['qty']}}','{{$item['price']}}')"></i>
                                         <i class="icofont icofont-trash text-danger fs-4"
                                             onclick="deleteItem({{ $item['productId'] }})"></i>
                                     </td>
@@ -434,6 +437,13 @@
                     Livewire.dispatch('deleteItem', {
                         productId: id
                     });
+                };
+
+                window.editItem = function(productId,qty,price){
+                    console.log(productId,qty,price);
+                    $("#products").val(productId).change();
+                    $("#qty").val(qty);
+                    $("#price").val(price)
                 };
 
                 Livewire.hook('morph.updating', ({

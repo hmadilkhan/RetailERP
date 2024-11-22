@@ -128,6 +128,11 @@
                                                     data-toggle='tooltip' data-placement='top' title=''
                                                     data-original-title='Assign to Branch'></i>Assign to Branch</a></li>
                                     @endif
+                                    <li onclick='discountReceipt("{{ $order->id }}")'><a class="dropdown-item"><i
+                                        onclick='discountReceipt("{{ $order->id }}")'
+                                        class='alert-confirm text-info icofont icofont icofont-sale-discount mx-2'
+                                        data-toggle='tooltip' data-placement='top' title=''
+                                        data-original-title='Mark as Void'></i>Add Discount</a></li>
                                 </ul>
                             </div>
                         </td>

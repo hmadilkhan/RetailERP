@@ -105,7 +105,18 @@ class PreOrderBooking extends Component
             "amount" => $qty * $price,
         ];
 
-        $this->orderItems[] = $item; // Append new item to orderItems array
+        // Check if the product already exists in the orderItems array
+        $key = array_search($item['productId'], array_column($this->orderItems, 'productId'));
+
+        if ($key !== false) {
+            // Update the existing item's quantity, price, and amount
+            $this->orderItems[$key]['qty'] = $item['qty'];
+            $this->orderItems[$key]['amount'] = $this->orderItems[$key]['qty'] * $this->orderItems[$key]['price'];
+        } else {
+            // Add the new item to the orderItems array
+            $this->orderItems[] = $item;
+        }
+
 
         $this->calculateTotal();
         $this->resetOrderControls();

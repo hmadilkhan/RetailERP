@@ -544,6 +544,38 @@
                     </div>
                 </div>
             </div>
+            <div class="modal fade modal-flex in" id="discount-modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-md" role="document">
+                    <input type="hidden" name="orderDiscountId" id="orderDiscountId" class="form-control" />
+                    <div class="modal-content">
+                        <div class="modal-header d-flex justify-content-between">
+                            <h4 class="modal-title">Discount Order </h4>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Enter Discount Amount :</label>
+                                        <input type="text" name="discountamount" id="discountamount" class="form-control" />
+                                        <span id="discountamount_message" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="form-control-label">Reason :</label>
+                                        <textarea rows="3" type="text" name="discountreason" id="discountreason" class="form-control" ></textarea>
+                                        <span id="discountreason_message" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success waves-effect waves-light" onClick="applyDiscount()">Submit</button>
+                            <button type="button" data-dismiss="modal" aria-label="Close" class=" btn btn-danger waves-effect waves-light" onclick="$('#discount-modal').modal('hide');">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 @endsection
@@ -941,6 +973,11 @@
             $("#void-modal").modal("show");
         }
 
+        function discountReceipt(id) {
+            $("#orderDiscountId").val(id);
+            $("#discount-modal").modal("show");
+        }
+
         function saveVoid() {
             $("#reason_mesasge").html("");
             if ($("#reason").val() == "") {
@@ -977,6 +1014,49 @@
                     }
 
                 });
+            }
+        }
+
+        function applyDiscount() {
+            $("#discountamount_message").html("");
+            $("#discountreason_message").html("");
+            if ($("#discountamount").val() == "") {
+                $("#discountamount_message").html("Please enter discount amount");
+            }else if ($("#discountreason").val() == "") {
+                $("#discountreason_message").html("Please enter reason.");
+            } else {
+                alert();
+                // $.ajax({
+                //     url: "{{ url('make-receipt-void') }}",
+                //     type: 'POST',
+                //     data: {
+                //         _token: "{{ csrf_token() }}",
+                //         id: $("#voidId").val(),
+                //         reason: $("#reason").val()
+                //     },
+                //     dataType: "json",
+                //     success: function(resp) {
+                //         if (resp.status == 200) {
+                //             swal({
+                //                 title: "Deleted",
+                //                 text: resp.message,
+                //                 type: "success"
+                //             }, function(isConfirm) {
+                //                 if (isConfirm) {
+                //                     fetch_data(1)
+                //                     // window.location="{{ route('vendors.index') }}";
+                //                     $("#reason_mesasge").html("");
+                //                     $("#void-modal").modal("hide");
+                //                     $("#voidId").val("");
+                //                     $("#reason").val("")
+                //                 }
+                //             });
+                //             $("#voidId").val("");
+                //             $("#reason").val("")
+                //         }
+                //     }
+
+                // });
             }
         }
 
