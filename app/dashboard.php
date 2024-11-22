@@ -223,22 +223,17 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
 
     public function lastDayDetails($terminal)
     {
-        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
-        SUM(b.total_amount) AS sales
-      FROM
-        sales_receipts b
-      WHERE opening_id = a.opening_id
-        AND b.order_mode_id = 3),0) as Delivery,IFNULL((SELECT
-        SUM(b.total_amount) AS sales
-      FROM
-        sales_receipts b
-      WHERE opening_id = a.opening_id
-        AND b.void_receipt = 1),0) as VoidReceipts,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1),0) as Cash,IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2)+
-        (SELECT
-          SUM(credit_card_transaction)
-        FROM
-          sales_account_subdetails
-        WHERE receipt_id IN
+        $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,
+        IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,
+        IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,
+        (Select date from sales_closing where opening_id = a.opening_id) as closingDate,
+        (Select time from sales_closing where opening_id = a.opening_id) as closingTime,
+        IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,
+        IFNULL((SELECT SUM(b.total_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.order_mode_id = 3),0) as Delivery,
+        IFNULL((SELECT SUM(b.total_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1),0) as VoidReceipts,
+        IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,
+        IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1),0) as Cash,
+        IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2)+ (SELECT SUM(credit_card_transaction) FROM sales_account_subdetails WHERE receipt_id IN
           (SELECT
             id AS sales
           FROM
@@ -258,8 +253,7 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
     (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 2) AS order_delivered_card,
     (SELECT SUM(net_amount) FROM `expenses` where terminal_id = a.terminal_id and opening_id = a.opening_id) as expenses FROM sales_opening a where a.opening_id  = (Select MAX(opening_id) from sales_opening where terminal_id = ?) and a.terminal_id = ?", [$terminal, $terminal]);
 
-
-        return $result;
+    return $result;
     }
 
     public function getDetailsByMode($opening, $terminal, $mode)
