@@ -3,12 +3,13 @@
 namespace App\Exports;
 
 use Illuminate\Contracts\View\View;
-use App\Services\ComplianceService;
 use Maatwebsite\Excel\Concerns\FromView;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 
 class OrderReportExport implements FromView,WithColumnWidths,WithTitle,WithEvents
@@ -25,6 +26,21 @@ class OrderReportExport implements FromView,WithColumnWidths,WithTitle,WithEvent
         $this->branch = $branch;
         $this->dates = $dates;
         $this->mode = $mode;
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            BeforeSheet::class => function (BeforeSheet $event) {
+                $dompdf = new Dompdf();
+                $options = new Options();
+                $options->set('isHtml5ParserEnabled', true);
+                $options->set('isRemoteEnabled', true);
+
+                $dompdf->setOptions($options);
+                $dompdf->setPaper('A4', 'landscape'); // Change 'landscape' to 'portrait' if needed
+            },
+        ];
     }
 		
 	// public static function beforeExport(BeforeExport $event)

@@ -55,6 +55,7 @@ use Crabbly\Fpdf\Fpdf;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\OrderReportPDF;
 
 class ReportController extends Controller
 {
@@ -475,8 +476,41 @@ class ReportController extends Controller
         if ($request->report == "excel") {
             return Excel::download(new OrderReportExport($record, $branch, $datearray, $mode), "Orders Report.xlsx");
         } else {
-            return Excel::download(new OrderReportExport($record, $branch, $datearray, $mode), 'Orders Report.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+            // return Excel::download(new OrderReportExport($record, $branch, $datearray, $mode), 'Orders Report.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+            return $this->orderReportPdf($request->branch,$branch,$datearray,$record);
         }
+    }
+
+    public function orderReportPdf($branchFilter,$branch,$dates,$record)
+    {
+        $pdf = new OrderReportPDF('L', 'mm', 'A3');
+        
+        if ($branchFilter[0] == "all") {
+            $pdf->branch = "all"; // Assign to class property
+        }else{
+            $pdf->branch = $branch; // Assign to class property
+        }
+        
+        
+        $pdf->dates = $dates;   // Assign to class property
+        $pdf->SetFont('Arial', '', 12);
+
+        // Add a page
+        $pdf->AddPage();
+
+        // Table Header
+        // $pdf->Header();
+        // $pdf->TableHeader();
+
+        // Table Rows
+        foreach ($record as $value) {
+            $pdf->TableRow($value, function ($key) {
+                return session($key);
+            });
+        }
+
+        // Output PDF
+        $pdf->Output('I', 'Orders_Report.pdf');
     }
 
     public function getOrdersQuery(Request $request)
@@ -5077,13 +5111,13 @@ class ReportController extends Controller
                 foreach ($expenses as $key => $expense) {
                     $totalExpenseAmount += $expense->amount;
                     $pdf->Cell(20, 7, $expense->expense_category, 0, 0, 'L', 1);
-                    $pdf->Cell(20, 7, number_format($expense->amount,0), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, number_format($expense->amount, 0), 0, 0, 'L', 1);
                     $pdf->Cell(38, 7, $expense->expense_details, 0, 1, 'C', 1);
                 }
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->Cell(20, 7, "Total", 0, 0, 'L', 1);
-                $pdf->Cell(20, 7, number_format($totalExpenseAmount,0), 0, 0, 'L', 1);
+                $pdf->Cell(20, 7, number_format($totalExpenseAmount, 0), 0, 0, 'L', 1);
                 $pdf->Cell(38, 7, "", 0, 1, 'C', 1);
                 $pdf->ln(6);
 
@@ -5119,13 +5153,13 @@ class ReportController extends Controller
                 foreach ($cashins as $key => $cashin) {
                     $totalCashIns += $cashin->amount;
                     $pdf->Cell(20, 7, date("d M Y", strtotime($cashin->datetime)), 0, 0, 'L', 1);
-                    $pdf->Cell(20, 7, number_format($cashin->amount,0), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, number_format($cashin->amount, 0), 0, 0, 'L', 1);
                     $pdf->Cell(38, 7, $cashin->narration, 0, 1, 'C', 1);
                 }
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->Cell(20, 7, "Totals", 0, 0, 'L', 1);
-                $pdf->Cell(20, 7, number_format($totalCashIns,0), 0, 0, 'L', 1);
+                $pdf->Cell(20, 7, number_format($totalCashIns, 0), 0, 0, 'L', 1);
                 $pdf->Cell(38, 7, "", 0, 1, 'C', 1);
                 $pdf->ln(6);
 
@@ -5160,13 +5194,13 @@ class ReportController extends Controller
             if (count($cashouts) > 0) {
                 foreach ($cashouts as $key => $cashout) {
                     $pdf->Cell(20, 7, date("d M Y", strtotime($cashout->datetime)), 0, 0, 'L', 1);
-                    $pdf->Cell(20, 7, number_format($cashout->amount,0), 0, 0, 'L', 1);
+                    $pdf->Cell(20, 7, number_format($cashout->amount, 0), 0, 0, 'L', 1);
                     $pdf->Cell(38, 7, $cashout->narration, 0, 1, 'C', 1);
                 }
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->Cell(20, 7, "Totals", 0, 0, 'L', 1);
-                $pdf->Cell(20, 7, number_format($totalCashOuts,0), 0, 0, 'L', 1);
+                $pdf->Cell(20, 7, number_format($totalCashOuts, 0), 0, 0, 'L', 1);
                 $pdf->Cell(38, 7, "", 0, 1, 'C', 1);
                 $pdf->ln(6);
 
