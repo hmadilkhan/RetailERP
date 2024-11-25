@@ -253,6 +253,15 @@
  <link href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.css" rel="stylesheet"> --}}
   <style type="text/css">
 
+@media only screen and (max-width: 1199px) {
+    .list-group-item {
+        display: inline-block;
+        /* max-width: 150px; */
+        /* padding-top: 5px; */
+        /* padding-bottom: 5px; */
+    }
+}
+
 /* Initially hide the child rows
 .child {
     display: none;
