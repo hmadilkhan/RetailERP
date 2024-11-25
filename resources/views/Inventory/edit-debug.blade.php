@@ -396,7 +396,7 @@
                                @endif --}}
                         {{-- @endif --}}
                             <a href="{{ $imageUrl }}" data-toggle="lightbox" data-title="{{$data[0]->product_name}}">
-                                <img id="simg" src="{{ $imageUrl }}" class="max-height-100 width-100" alt="{{ empty($data[0]->image) ? $data[0]->image : 'placeholder.jpg' }}">
+                                <img id="simg" src="{{ $imageUrl }}" class="max-height-100 width-100 m-b-15" alt="{{ empty($data[0]->image) ? $data[0]->image : 'placeholder.jpg' }}">
                                 </a>
                                 <br/>
                                 <label for="image" class="custom-file">
