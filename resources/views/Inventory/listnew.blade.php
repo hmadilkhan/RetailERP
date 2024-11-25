@@ -265,6 +265,15 @@
     background-color: #fff;
     border: 1px solid #ddd;
 }
+.list-group-item1:first-child {
+    border-top-right-radius: .25rem;
+    border-top-left-radius: .25rem;
+}
+.list-group-item1:last-child {
+    margin-bottom: 0;
+    border-bottom-right-radius: .25rem;
+    border-bottom-left-radius: .25rem;
+}
 @media only screen and (max-width: 1199px) {
     .list-group-item1 {
         display: inline-block;
