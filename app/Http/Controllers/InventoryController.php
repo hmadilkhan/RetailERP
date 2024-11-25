@@ -2873,6 +2873,7 @@ class InventoryController extends Controller
                     $items = [
                         'item_code'   => $this->autoGenerateCode_variableProduct($request),
                         'priority'    => $getPosProduct->priority,
+                        'attribute'   => $getPosProduct->attribute,
                         'item_name'   => $getPosProduct->item_name,
                         'product_id'  => $val,
                         'uom'         => $getPosProduct->uom,
