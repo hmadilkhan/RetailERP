@@ -252,11 +252,22 @@
  {{-- <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
  <link href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.css" rel="stylesheet"> --}}
   <style type="text/css">
-
+.list-group-item-action1 {
+    width: 100%;
+    color: #555;
+    text-align: inherit;
+}
+.list-group-item1 {
+    position: relative;
+    display: block;
+    padding: .75rem 1.25rem;
+    margin-bottom: -1px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
 @media only screen and (max-width: 1199px) {
-    .list-group-item {
+    .list-group-item1 {
         display: inline-block;
-        max-width: auto;
         /* padding-top: 5px; */
         /* padding-bottom: 5px; */
     }
