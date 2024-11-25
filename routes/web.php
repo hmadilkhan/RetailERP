@@ -603,6 +603,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/orders-view-new', [OrderController::class, 'ordersviewnew']);
     Route::get('/get-pos-orders-new', [OrderController::class, 'getNewPOSOrders']);
     Route::post('/make-receipt-void', [OrderController::class, 'makeReceiptVoid']);
+    Route::post('/apply-discount', [OrderController::class, 'applyDiscount']);
     Route::post('/make-receipt-delivered', [OrderController::class, 'makeReceiptDelivered']);
     Route::post('/get-service-Provider-by-branch', [OrderController::class, 'getServiceProviderByBranch'])->name("sp.branch");
     Route::get('/send-email', [OrderController::class, 'sendEmail']);

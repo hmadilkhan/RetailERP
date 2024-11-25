@@ -16,6 +16,8 @@ use App\Models\CustomerAccount;
 use App\Http\Resources\onlineSalesResource\salesReceiptResource;
 use App\Mail\OrderConfirmed;
 use App\Models\Company;
+use App\Models\DiscountLog;
+use App\Models\OrderSubAccount;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
@@ -76,7 +78,7 @@ class OrderController extends Controller
 
     public function orderdetails(Request $request, Customer $customer)
     {
-        $orders = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user", "payment","address")->where("id", $request->id)->first();
+        $orders = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user", "payment", "address")->where("id", $request->id)->first();
         $received = CustomerAccount::where("receipt_no", $request->id)->sum('received');
         $statuses = OrderStatus::all();
         $ledgerDetails = $customer->LedgerDetailsShowInOrderDetails($orders->customer->id, $request->id);
@@ -125,7 +127,7 @@ class OrderController extends Controller
         $branch = $order->getBranch();
         $serviceproviders = $orderService->getServiceProviders();
         $orders = [];
-        $totalorders = [];//$order->getTotalAndSumofOrdersQuery($request);
+        $totalorders = []; //$order->getTotalAndSumofOrdersQuery($request);
         return view('order.orderviewnew', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'orders', 'serviceproviders', 'totalorders', 'statuses'));
     }
 
@@ -145,7 +147,7 @@ class OrderController extends Controller
         // });
         // $collection = collect($totalorders);
         // return $collection->filter(fn ($item) => $item->order_status_name == "Void")->values()->all();
-        return view('partials.orders_table', compact('orders', 'totalorders','totaltax','orderTimingGraph','height'));
+        return view('partials.orders_table', compact('orders', 'totalorders', 'totaltax', 'orderTimingGraph', 'height'));
     }
 
 
@@ -594,7 +596,7 @@ class OrderController extends Controller
             $order = OrderModel::where("id", $request->receiptId)->first();
             $order->sales_person_id = $request->sp;
             $order->save();
-            $provider = ServiceProviderRelation::where("user_id",$request->sp)->first();
+            $provider = ServiceProviderRelation::where("user_id", $request->sp)->first();
             if (!empty($provider)) {
                 ServiceProviderOrders::create([
                     "service_provider_id" => $provider->provider_id,
@@ -602,10 +604,10 @@ class OrderController extends Controller
                 ]);
             }
             DB::commit();
-            return response()->json(["status" => 200,"message" => "Sales Person assigned"]);
+            return response()->json(["status" => 200, "message" => "Sales Person assigned"]);
         } catch (\Throwable $th) {
             DB::rollBack();
-            return response()->json(["status" => 500,"message" => "Error: ".$th->getMessage()]);
+            return response()->json(["status" => 500, "message" => "Error: " . $th->getMessage()]);
         }
     }
 
@@ -659,6 +661,49 @@ class OrderController extends Controller
         } catch (\Exception $e) {
         }
     }
+
+    public function applyDiscount(Request $request)
+    {
+        $request->validate([
+            'id' => 'required|integer|exists:sales_receipts,id',
+            'amount' => 'required|numeric|min:0',
+            'reason' => 'nullable|string|max:255'
+        ]);
+
+        try {
+            DB::beginTransaction();
+
+            // Update the discount amount in the sub-account
+            $subAccount = OrderSubAccount::where("receipt_id", $request->id)->firstOrFail();
+            $subAccount->update([
+                "discount_amount" => $request->amount,
+                "is_sync" => 1,
+            ]);
+
+            // Log the discount details
+            DiscountLog::create([
+                "receipt_id" => $request->id,
+                "amount" => $request->amount,
+                "reason" => $request->reason,
+            ]);
+
+            // Update the total order amount field
+            $order = OrderModel::findOrFail($request->id);
+            $additionalCharges = $subAccount->srb + $subAccount->sales_tax_amount;
+            $discountedAmount = $order->actual_amount - $request->amount;
+            $order->total_amount = $discountedAmount + $additionalCharges;
+            $order->save();
+
+            DB::commit();
+
+            return response()->json(["status" => 200, "message" => "Discount applied successfully."]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error applying discount: ' . $e->getMessage());
+            return response()->json(["status" => 500, "message" => "An unexpected error occurred."]);
+        }
+    }
+
 
     public function makeReceiptDelivered(Request $request)
     {
@@ -757,6 +802,6 @@ class OrderController extends Controller
         $company = Company::findOrFail(session('company_id'));
         $logo = $company->logo;
 
-        Mail::to("hmadilkhan@gmail.com")->send(new OrderConfirmed($order, $customer,$logo));
+        Mail::to("hmadilkhan@gmail.com")->send(new OrderConfirmed($order, $customer, $logo));
     }
 }

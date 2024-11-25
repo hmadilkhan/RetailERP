@@ -978,6 +978,51 @@
             $("#discount-modal").modal("show");
         }
 
+        function applyDiscount() {
+            $("#discountamount_message").html("");
+            $("#discountreason_message").html("");
+            if ($("#discountamount").val() == "") {
+                $("#discountamount_message").html("Please enter discount amount");
+            }else if ($("#discountreason").val() == "") {
+                $("#discountreason_message").html("Please enter reason.");
+            } else {
+                
+                $.ajax({
+                    url: "{{ url('apply-discount') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: $("#orderDiscountId").val(),
+                        amount: $("#discountamount").val(),
+                        reason: $("#discountreason").val(),
+                    },
+                    dataType: "json",
+                    success: function(resp) {
+                        if (resp.status == 200) {
+                            swal({
+                                title: "Discount Applied",
+                                text: resp.message,
+                                type: "success"
+                            }, function(isConfirm) {
+                                if (isConfirm) {
+                                    fetch_data(1)
+                                    $("#discountamount_message").html("");
+                                    $("#discountreason_message").html("");
+                                    $("#discount-modal").modal("hide");
+                                    $("#orderDiscountId").val("");
+                                    $("#discountamount").val("")
+                                    $("#discountreason").val("")
+                                }
+                            });
+                            $("#voidId").val("");
+                            $("#reason").val("")
+                        }
+                    }
+
+                });
+            }
+        }
+
         function saveVoid() {
             $("#reason_mesasge").html("");
             if ($("#reason").val() == "") {
@@ -1017,48 +1062,7 @@
             }
         }
 
-        function applyDiscount() {
-            $("#discountamount_message").html("");
-            $("#discountreason_message").html("");
-            if ($("#discountamount").val() == "") {
-                $("#discountamount_message").html("Please enter discount amount");
-            }else if ($("#discountreason").val() == "") {
-                $("#discountreason_message").html("Please enter reason.");
-            } else {
-                alert();
-                // $.ajax({
-                //     url: "{{ url('make-receipt-void') }}",
-                //     type: 'POST',
-                //     data: {
-                //         _token: "{{ csrf_token() }}",
-                //         id: $("#voidId").val(),
-                //         reason: $("#reason").val()
-                //     },
-                //     dataType: "json",
-                //     success: function(resp) {
-                //         if (resp.status == 200) {
-                //             swal({
-                //                 title: "Deleted",
-                //                 text: resp.message,
-                //                 type: "success"
-                //             }, function(isConfirm) {
-                //                 if (isConfirm) {
-                //                     fetch_data(1)
-                //                     // window.location="{{ route('vendors.index') }}";
-                //                     $("#reason_mesasge").html("");
-                //                     $("#void-modal").modal("hide");
-                //                     $("#voidId").val("");
-                //                     $("#reason").val("")
-                //                 }
-                //             });
-                //             $("#voidId").val("");
-                //             $("#reason").val("")
-                //         }
-                //     }
-
-                // });
-            }
-        }
+        
 
         function deliveredReceipt(id) {
             $("#orderId").val(id);

@@ -185,7 +185,13 @@ return [
         | Available options: Excel::MPDF | Excel::TCPDF | Excel::DOMPDF
         |
         */
-        'pdf'      => Excel::DOMPDF,
+        'pdf'      =>  [
+            'driver' => 'DomPDF',
+            'options' => [
+                'defaultPaperSize' => 'a4',
+                'defaultPaperOrientation' => 'landscape',
+            ],
+        ],
     ],
 
     /*
