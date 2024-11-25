@@ -296,7 +296,7 @@ input+.slider:before {
         }
 
         $("#btn_past_variableTogeneral").on('click',function(){
-               alert(tmp_arrayValue)
+               //alert(tmp_arrayValue)
             if(tmp_arrayValue.length > 0){
                 $.ajax({
                     url: "{{ route('VariableProduct_set_to_generalProduct') }}",
@@ -304,7 +304,7 @@ input+.slider:before {
                     data:{_token:"{{ csrf_token() }}",item_code:tmp_arrayValue,variableId:$("#variableId_cpymd").val(),variableName:$("#variableName_cpymd").val(),generalInventoryCode:$("#generalInventoryId_cpymd").val()},
                     dataType:'json',
                     success:function(resp){
-                         console.log(resp)
+                         //console.log(resp)
                         if(resp.status == 200){
                                     swal({
                                         title: "Success!",
