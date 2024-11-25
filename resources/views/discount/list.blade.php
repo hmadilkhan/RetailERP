@@ -10,35 +10,35 @@
 <style type="text/css">
 
 .container1 {
-  width: 480px; 
-  height: 240px; 
+  width: 480px;
+  height: 240px;
   overflow-x: scroll;
   overflow-y: hidden;
 }
 
 .container2 {
-  width: 480px; 
-  height: 330px; 
+  width: 480px;
+  height: 330px;
   overflow-x: scroll;
   overflow-y: hidden;
 }
 
 .inner {
   height: 40px;
-  white-space:nowrap; 
+  white-space:nowrap;
 }
 
 .floatLeft {
   width: 200px;
-  height: 180px; 
-  margin:10px 10px 50px 10px; 
+  height: 180px;
+  margin:10px 10px 50px 10px;
   display: inline-block;
 }
 
 .floatLeft1 {
   width: 160px;
-  height: 200px; 
-  margin:10px 10px 50px 10px; 
+  height: 200px;
+  margin:10px 10px 50px 10px;
   display: inline-block;
 }
 
@@ -57,7 +57,7 @@
   height: 21px;
 }
 
-.switch input { 
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;
@@ -124,7 +124,7 @@ input+.slider:before {
 /*.insideDiv {
   width: 340px;
   height: 200px;
-  background-color:transparent; 
+  background-color:transparent;
   overflow-x: scroll;
   overflow-y: hidden;
   white-space: nowrap;
@@ -142,20 +142,20 @@ input+.slider:before {
            <h5 class="card-header-text">Discount List</h5>
            <a href="{{url('/create-discount')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Discount
               </a>
-              
+
            <a href="javascript:void(0)" class="btn btn-danger waves-effect waves-light f-right m-r-1 d-none" id="removeAllBtn" data-id="{{ $status }}"> <i class="icofont icofont-plus f-18 m-r-5"></i>Remove All
-              </a>              
+              </a>
         </div>
 		<div class="col-md-12 m-b-2">
 		<a href="{{($status == 2  ? url('/get-discount') :  url('/get-discount/in-active'))}}"> <div class="captions">{{($status == 2 ? 'Show Active Items' : 'Show In-Active Items')}}</div> </a>
 
                     </div>
         <div class="card-block responsive">
-		
+
      <table id="expensetb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
          <thead>
             <tr>
-               
+
                <th class="d-none">ID</th>
                <th><input type="checkbox" id="headCheckbox"></th>
                <th>Code</th>
@@ -168,7 +168,7 @@ input+.slider:before {
                <th>Open Discount</th>
                <th>Status</th>
                <th>Action</th>
-               
+
             </tr>
          </thead>
          <tbody>
@@ -194,32 +194,32 @@ input+.slider:before {
                          <!--       <input type="checkbox" onchange="" data-toggle="toggle" {{ $value->status == 1 ? 'checked' : '' }}>-->
                          <!--     </label> -->
                          <!--</div> -->
-                         
+
                                 <!-- Rounded switch -->
                                 <label class="switch m-r-1">
-                                  <input type="checkbox" title="" data-original-title="Active/In-Active Switch" 
+                                  <input type="checkbox" title="" data-original-title="Active/In-Active Switch"
                                   onclick="switchMode({{ $value->discount_id }},{{ $value->status }},'{{$value->discount_code}}',this)" {{ $value->status == 1 ? 'checked' : '' }}>
                                   <span class="slider round"></span>
                                 </label>
-                                
+
       							<a  class="p-r-10 f-18 text-primary" onclick="modelcall('{{ $value->discount_id }}')" title="" data-original-title="View">
       							    <i class="icofont icofont-eye-alt"></i></a>
-                               
+
                                 <!--<a href="{{-- url('/edit-discount') --}}/{{-- Crypt::encrypt($value->discount_id) --}}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>-->
-                                
+
                                 <a class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="discountDelete({{ $value->discount_id }},{{$status}})" data-id="{{ $value->discount_id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></a>
 
-                             </td> 
+                             </td>
       				</tr>
       			@endforeach
       		@endif
-         	
-     
+
+
          </tbody>
      </table>
     </div>
   </div>
-</section>    
+</section>
 
 
  <!--modal-->
@@ -232,7 +232,7 @@ input+.slider:before {
                            <div class="sign-in-up">
                               <div class="sign-in-up-left"><i class="icofont icofont-sale-discount f-64" aria-hidden="true"></i>
                               <h1>Discount</h1>
-                              	
+
                               </div>
                               <div class="sign-in-up-right">
                                  <h1 class="text-primary text-center">Dicount Details</h1>
@@ -292,14 +292,14 @@ input+.slider:before {
                                     </div>
                                   </div>
 
-                                  
+
                                   <div id="BuyandGet1" class="container2" style="display: none;">
                                   <h1 id="cust_buy_heading"></h1>
 
                                    <div id="buys" class="inner">
                                    </div>
                                  </div>
-                                 
+
 
                                 <div id="BuyandGet2" class="container2" style="display: none;">
                                   <h1 id="cust_get_heading"></h1>
@@ -308,25 +308,25 @@ input+.slider:before {
                                    </div>
                                   </div>
                                 </div>
-                                 
-                                 
+
+
 
                            </div>
                         </div>
                      </div>
                      <!-- end of modal fade -->
                   </div>
-                  
+
                   <div class="modal fade modal-flex " id="createSchedule-modal" data-backdrop="static" data-keyboard="false" tabindex="-1" role="dialog">
                      <div class="modal-dialog modal-lg">
                         <div class="modal-content">
-                         <div class="modal-header"> 
+                         <div class="modal-header">
                          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                             <h4 class="modal-title">Create Schedule</h4>
                           </div>
-                          
+
                           <div class="modal-body">
                               <input type="hidden" name="discount_id" id="discount_id_md">
                               <div class="row">
@@ -369,8 +369,8 @@ input+.slider:before {
             </div>
           </div>
         </div>
-    </div>    
-                            
+    </div>
+
                            </div>
                            <div class="modal-footer">
                                <button type="button" class="btn btn-success" onclick="re_active_discount()">Save Changes</button>
@@ -378,8 +378,8 @@ input+.slider:before {
                         </div>
                      </div>
                      <!-- end of modal fade -->
-                  </div>                  
-  
+                  </div>
+
 @endsection
 
 
@@ -388,10 +388,10 @@ input+.slider:before {
 @endsection
 
 @section('scriptcode_three')
- <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
+ <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
   <script type="text/javascript" >
-    
+
 $(document).ready(function(){
 
 $(".select2").select2();
@@ -401,13 +401,13 @@ $(".select2").select2();
         info: false,
 		"order" : [0,"DESC"],
         language: {
-          search:'', 
+          search:'',
           searchPlaceholder: 'Search Discount',
           lengthMenu: '<span></span> _MENU_'
-   
+
         },
-        
- 
+
+
     });
 
 });
@@ -416,15 +416,15 @@ $("#headCheckbox").on('click',function(){
     if($(this).is(':checked')){
          $('.child-chkbx').prop('checked', true);
          if($("#removeAllBtn").hasClass('d-none')){
-            $("#removeAllBtn").removeClass('d-none').addClass('d-inline-block'); 
+            $("#removeAllBtn").removeClass('d-none').addClass('d-inline-block');
          }
     }else{
-         $('.child-chkbx').prop('checked', false); 
+         $('.child-chkbx').prop('checked', false);
 
          if(!$("#removeAllBtn").hasClass('d-none')){
-            $("#removeAllBtn").addClass('d-none').removeClass('d-inline-block'); 
-         }         
-         
+            $("#removeAllBtn").addClass('d-none').removeClass('d-inline-block');
+         }
+
     }
 });
 
@@ -474,11 +474,11 @@ $("#removeAllBtn").on('click',function(){
             }else {
                 swal("Cancelled", "Operation Cancelled:)", "error");
             }
-        });    
+        });
 });
 
 function switchMode(discId,status,voucher,element){
- var status_name = null; 
+ var status_name = null;
  var value = 2;
     if($(element).is(':checked')){
         status_name = 'Active';
@@ -487,7 +487,7 @@ function switchMode(discId,status,voucher,element){
         status_name = 'In-Active';
         value = 2;
     }
-    
+
     swal({
             title: "Are you sure?",
             text: "You want to "+status_name+" this discount voucher "+voucher+" !",
@@ -501,7 +501,7 @@ function switchMode(discId,status,voucher,element){
         },
         function(isConfirm){
             if(isConfirm){
-                
+
                   if(status == 1){
                         $.ajax({
                             url: "{{url('/remove-discount')}}",
@@ -524,7 +524,7 @@ function switchMode(discId,status,voucher,element){
                             }
 
                         });
-                        
+
                   }else{
                       swal.close();
                       $("#createSchedule-modal").modal('show');
@@ -579,12 +579,12 @@ function modelcall(id)
           $('#discount_ends').html(r[0].ends);
           $('#discount_status_class').html(r[0].status);
           console.log(r[0].applies_name);
-          if (r[0].applies_name == null) 
+          if (r[0].applies_name == null)
           {
             $('#applyTo').css('display','none');
           }
 
-            if (r[0].status == "Active") 
+            if (r[0].status == "Active")
             {
               $('#discount_status_class').addClass('tag-success')
             }
@@ -601,7 +601,7 @@ function modelcall(id)
             $('#buys').empty();
             $('#gets').empty();
             $('.inner').empty();
-            
+
             //DISPLAY NONE
             $('#CatandPro').css('display','none');
             $('#BuyandGet1').css('display','none');
@@ -618,10 +618,10 @@ function modelcall(id)
                           $('#fillDiv').empty();
                           $('.inner').empty();
                         $.each(r, function( index, value ) {
-                            
-                            
+
+
                             $('.inner').append(
-                            
+
                                 "<div class='floatLeft card thumb-block'>"+
                                  "<div class='thumb-img'>"+
                                     "<img src='{{asset('public/assets/images/task/task-u2.jpg')}}' width='190' height='170' class='tile'>"+
@@ -629,8 +629,8 @@ function modelcall(id)
                                     "<div class='card-footer text-center'>"+
                                       "<label class='f-14'>"+ value.department_name+"</label>"+
                                    "</div></div>"
-                              
-                                           
+
+
                               );
                           });
                       }
@@ -653,7 +653,7 @@ function modelcall(id)
                                      "</div>"+
                                     "<div class='card-footer text-center'>"+
                                       "<label class='f-14'>"+ value.product_name+"</label>"+
-                                   "</div></div>"       
+                                   "</div></div>"
                               );
                           });
                       }
@@ -682,12 +682,12 @@ function modelcall(id)
                                      "</div>"+
                                     "<div class='card-footer text-center'>"+
                                       "<label class='f-14'>"+ value.product_name+"</label>"+
-                                   "</div></div>"       
+                                   "</div></div>"
                               );
                           });
                       }
                     });
-                
+
                 $.ajax({
                       url:'{{ url("get-customer-gets") }}',
                       type:"POST",
@@ -698,11 +698,11 @@ function modelcall(id)
                             $('#gets').append(
                                 "<div class='floatLeft1 card thumb-block'>"+
                                  "<div class='thumb-img'>"+
-                                    "<img src='public/assets/images/products/"+value.image+"' width='150' height='150' class='tile '>"+
+                                    "<img src='storage/images/products/"+value.image+"' width='150' height='150' class='tile '>"+
                                      "</div>"+
                                     "<div class='card-footer text-center'>"+
                                       "<label class='f-14'>"+ value.product_name+"</label>"+
-                                   "</div></div>"       
+                                   "</div></div>"
                               );
                           });
                       }
@@ -720,7 +720,7 @@ function modelcall(id)
 
 
   </script>
-  
+
 @endsection
 
 @section('scriptcode_two')
@@ -811,7 +811,7 @@ function discountDelete(id,md){
 
   $('#chkEndDate').change(function() {
     if ($('#chkEndDate').prop("checked") == true) {
-        
+
          if($('#divEndSection').hasClass('d-none')){
              $('#divEndSection').removeClass('d-none');
          }
@@ -819,8 +819,8 @@ function discountDelete(id,md){
     } else if ($('#chkEndDate').prop("checked") == false) {
          if(!$('#divEndSection').hasClass('d-none')){
              $('#divEndSection').addClass('d-none');
-         }        
-        
+         }
+
     //   $('#divEndSection').css('display', 'none');
     //   $('#endtime').val('');
     //   if ($('#startdate') != "") {
