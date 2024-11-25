@@ -256,7 +256,7 @@
 @media only screen and (max-width: 1199px) {
     .list-group-item {
         display: inline-block;
-        /* max-width: 150px; */
+        max-width: auto;
         /* padding-top: 5px; */
         /* padding-bottom: 5px; */
     }
