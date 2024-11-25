@@ -624,7 +624,7 @@ function modelcall(id)
 
                                 "<div class='floatLeft card thumb-block'>"+
                                  "<div class='thumb-img'>"+
-                                    "<img src='{{asset('public/assets/images/task/task-u2.jpg')}}' width='190' height='170' class='tile'>"+
+                                    "<img src='storage/images/task/task-u2.jpg' width='190' height='170' class='tile'>"+
                                      "</div>"+
                                     "<div class='card-footer text-center'>"+
                                       "<label class='f-14'>"+ value.department_name+"</label>"+
