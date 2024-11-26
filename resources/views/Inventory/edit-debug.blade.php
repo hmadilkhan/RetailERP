@@ -754,9 +754,7 @@ $("#showProductWebsite").on('click',function(){
           //let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
           let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)]+$/;
 
-// Debugging: log the value of the input field
-console.log("Input value: ", (regex.test($("#name").val()) ? true : false));
-          if(regex.test($("#name").val())){
+          if(!regex.test($("#name").val())){
             process = false;
             swal('Error!','Special characters are not allowed!','error');
           }
