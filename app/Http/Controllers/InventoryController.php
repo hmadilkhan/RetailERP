@@ -161,10 +161,10 @@ class InventoryController extends Controller
         //       return empty($request->file('productvideo')) ? 1 : 0;
         // }
         //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size
-
+//regex:/^[a-zA-Z0-9\s]+$/ old regex
         $rules = [
             'code'          => 'required',
-            'name'          => 'required|regex:/^[a-zA-Z0-9\s]+$/',
+            'name'          => 'required|regex:/^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()\-\]*$/',
             'reminder'      => 'required',
             'uom'           => 'required',
             'cuom'          => 'required',
