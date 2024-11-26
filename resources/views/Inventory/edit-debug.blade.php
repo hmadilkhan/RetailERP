@@ -633,6 +633,13 @@
             font-size: 14px;
             padding: 6px;
         }
+        @media screen and (max-width: 32em) {
+            .video-remove-button {
+                    top: 45px;
+                    right: 75px;
+            }
+        }
+
     </style>
 @endsection
 
