@@ -721,7 +721,8 @@ $("#showProductWebsite").on('click',function(){
 	  var rem_id = [];
 
       $("#name").on('change',function(){
-         let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
+         //let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
+         let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)]+$/;
           if(regex.test($("#name").val())){
             swal('Error!','Special characters are not allowed!','error');
              $("#product_name_alert").text('Special characters are not allowed!');
@@ -750,8 +751,8 @@ $("#showProductWebsite").on('click',function(){
 		  let form = $(this);
 		  let actionUrl = form.attr('action');
           let process = true;
-          let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
-          //let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()\-]*$/;
+          //let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
+          let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)]+$/;
           if(regex.test($("#name").val())){
             process = false;
             swal('Error!','Special characters are not allowed!','error');
