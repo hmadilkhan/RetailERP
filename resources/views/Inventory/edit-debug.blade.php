@@ -620,20 +620,20 @@
 @endsection
 
 @section('css_code')
-<style>
+    <style>
         .video-remove-button {
             position: absolute;
-            top: -6px;
-            right: -6px;
+            top: 65px;
+            right: 35px;
             background-color: red;
             color: white;
             border: none;
-            border-radius: 50%;
+            border-radius: 30%;
             cursor: pointer;
-            font-size: 12px;
-            padding: 5px;
+            font-size: 14px;
+            padding: 6px;
         }
-</style>
+    </style>
 @endsection
 
 @section('scriptcode_one')
