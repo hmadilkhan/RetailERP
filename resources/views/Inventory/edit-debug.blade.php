@@ -1406,7 +1406,7 @@ function handleVideo(input, containerId) {
                 // Create a remove button
                 const removeButton = document.createElement('button');
                 removeButton.innerHTML = '✖'; // Cross symbol
-                removeButton.classList.add('video-remove-butto');
+                removeButton.classList.add('video-remove-button');
 
                 // Add event listener to remove button
                 removeButton.addEventListener('click', function() {
