@@ -883,7 +883,7 @@
             cursor: pointer;
             font-size: 12px;
             padding: 5px;
-
+        }
     </style>
 
   @endif
