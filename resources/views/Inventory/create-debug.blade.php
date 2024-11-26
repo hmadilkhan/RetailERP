@@ -761,6 +761,7 @@
 
   @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
     <style>
+        /*
 .nav-tabs1 {
     border-bottom: 1px solid #ddd
 }
@@ -820,7 +821,7 @@
     -ms-transition: all 0.3s 0s;
     transition: all 0.3s 0s;
 }
-
+*/
 
         /* Product Gallery */
 /* ----------------------------------------- */
@@ -870,6 +871,19 @@
             padding: 5px;
         }
         */
+
+        .video-remove-button {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 5px;
+        }
     </style>
 
   @endif
@@ -1262,7 +1276,7 @@ function handleVideo(input, containerId) {
                 // Create a remove button
                 const removeButton = document.createElement('button');
                 removeButton.innerHTML = '✖'; // Cross symbol
-                removeButton.classList.add('remove-button');
+                removeButton.classList.add('vide-remove-button');
 
                 // Add event listener to remove button
                 removeButton.addEventListener('click', function() {

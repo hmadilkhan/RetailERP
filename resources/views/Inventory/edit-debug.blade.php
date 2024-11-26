@@ -618,6 +618,24 @@
               </div>
           </div>
 @endsection
+
+@section('css_code')
+<style>
+        .video-remove-button {
+            position: absolute;
+            top: -6px;
+            right: -6px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 12px;
+            padding: 5px;
+        }
+</style>
+@endsection
+
 @section('scriptcode_one')
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -1388,7 +1406,7 @@ function handleVideo(input, containerId) {
                 // Create a remove button
                 const removeButton = document.createElement('button');
                 removeButton.innerHTML = '✖'; // Cross symbol
-                removeButton.classList.add('remove-button');
+                removeButton.classList.add('video-remove-button');
 
                 // Add event listener to remove button
                 removeButton.addEventListener('click', function() {
