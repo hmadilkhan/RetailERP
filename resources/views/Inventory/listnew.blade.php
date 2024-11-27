@@ -18,7 +18,7 @@
                 <a href="{{ url('get-sample-csv') }}" data-toggle="tooltip" data-placement="bottom" title=""
                     data-original-title="Download Sample"
                     class="btn btn-success waves-effect waves-light f-right d-inline-block"> <i
-                        class="icofont icofont-plus m-r-5"></i> Download Sample</a>
+                        class="fa fa-download"></i> Download Sample</a>
             </div>
             <div class="card-block">
                 <form method='post' class="form-inline" action='{{ url('uploadInventory') }}' enctype='multipart/form-data'>
