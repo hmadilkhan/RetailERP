@@ -1824,6 +1824,10 @@ $("#showProductWebsite").on('click',function(){
         }
     @endif
 
+    @error('op')
+     alert('{{ $message }}')
+    @enderror
+
   </script>
 
 <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
