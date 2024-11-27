@@ -1812,7 +1812,16 @@ $("#showProductWebsite").on('click',function(){
 
     @if(old('showProductWebsite'))
      $("#showProductWebsite").attr('checked', true);
-     $("#showProductWebsite").trigger('click');
+        if($("#showProductWebsite").is(':checked')==true){
+            if($("#website-module").hasClass('d-none')){
+                $("#website-module").removeClass('d-none');
+            }
+
+
+            if($("#prodAdvans_Media").hasClass('d-none')){
+                $("#prodAdvans_Media").removeClass('d-none');
+            }
+        }
     @endif
 
   </script>
