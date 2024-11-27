@@ -1811,7 +1811,7 @@ $("#showProductWebsite").on('click',function(){
 })
 
     @if(old('showProductWebsite'))
-    $("#showProductWebsite").attr('checked', true).trigger('click');
+     $("#showProductWebsite").attr('checked', true).trigger('change');
     @endif
 
   </script>
