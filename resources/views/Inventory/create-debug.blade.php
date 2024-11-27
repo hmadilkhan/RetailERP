@@ -356,6 +356,8 @@
                     <input class="form-control" type="Number" min="0" name="taxamount" id="taxamount" value="{{ old('taxamount') }}"/>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-md-3 col-lg-3">
                 <div class="form-group {{ $errors->has('rp') ? 'has-danger' : '' }}">
                     <label class="form-control-label">Retail Price<span class="text-danger m-l-5">*</span></label>
