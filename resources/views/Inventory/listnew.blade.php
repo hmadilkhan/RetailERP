@@ -18,7 +18,7 @@
                 <a href="{{ url('get-sample-csv') }}" data-toggle="tooltip" data-placement="bottom" title=""
                     data-original-title="Download Sample"
                     class="btn btn-success waves-effect waves-light f-right d-inline-block"> <i
-                        class="icofont icofont-plus m-r-5"></i> Download Sample</a>
+                        class="fa fa-download">&nbsp;</i> Download Sample</a>
             </div>
             <div class="card-block">
                 <form method='post' class="form-inline" action='{{ url('uploadInventory') }}' enctype='multipart/form-data'>
@@ -54,7 +54,8 @@
                         <label for="update" class="form-check-label m-r-15">
                                      <input name="update" id="update" class="form-check-input" type="checkbox"> Update to Retail Price
                         </label>
-                        <input type='submit' class="btn btn-primary waves-effect waves-light" name='submit' value='Import'>
+                        <button type='submit' class="btn btn-primary waves-effect waves-light" name='submit'>
+                            <i class="fa fa-upload">&nbsp;</i> Import</button>
                         @if ($errors->has('file'))
                          <div class="form-control-feedback">Required field can not be blank.</div>
                         @endif

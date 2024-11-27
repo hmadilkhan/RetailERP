@@ -164,7 +164,7 @@ class InventoryController extends Controller
 //regex:/^[a-zA-Z0-9\s]+$/ old regex
         $rules = [
             'code'          => 'required',
-            'name'          => 'required|regex:/^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()\-\]*$/',
+            'name'          => 'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)]+$/u',
             'reminder'      => 'required',
             'uom'           => 'required',
             'cuom'          => 'required',
@@ -177,6 +177,10 @@ class InventoryController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
 
         ];
+
+        if (!empty($request->website) && isset($request->showProductWebsite) && $request->op == 0) {
+            $rules['op'] = 'required';
+        }
 
         $this->validate($request, $rules);
 

@@ -283,7 +283,7 @@
                        @endif
                     </select>
                     @if ($errors->has('website'))
-                      <div class="form-control-feedback">Required field can not be blank.</div>
+                      <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
 				</div>
             </div>
@@ -303,7 +303,7 @@
                     <label class="form-control-label">Short Description <i>(For Website Only)</i></label>
                     <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" >{{ old('sdescription') }}</textarea>
                     @if ($errors->has('sdescription'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
                 </div>
             </div>
@@ -312,7 +312,7 @@
                     <label class="form-control-label">Details <i>(For Website Only)</i></label>
                     <textarea class="form-control" name="details" id="details" rows="6"></textarea>
                     @if ($errors->has('details'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
                 </div>
             </div>
@@ -340,7 +340,7 @@
                     <label class="form-control-label">Actual Price:<span class="text-danger m-l-5">*</span></label>
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="ap" id="ap" value="{{ old('ap') }}" placeholder="0"/>
                     @if ($errors->has('ap'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
                 </div>
             </div>
@@ -356,12 +356,14 @@
                     <input class="form-control" type="Number" min="0" name="taxamount" id="taxamount" value="{{ old('taxamount') }}"/>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-md-3 col-lg-3">
                 <div class="form-group {{ $errors->has('rp') ? 'has-danger' : '' }}">
                     <label class="form-control-label">Retail Price<span class="text-danger m-l-5">*</span></label>
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="rp" id="rp" placeholder="0" value="{{ old('rp') }}" />
                     @if ($errors->has('rp'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
                 </div>
             </div>
@@ -384,6 +386,9 @@
                 <div class="form-group">
                     <label class="form-control-label">Online Price:</label>
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="op" id="op" value="0"/>
+                    @if ($errors->has('op'))
+                        <span class="form-control-feedback">Required field can not be blank.</span>
+                    @endif
                 </div>
             </div>
 
@@ -761,6 +766,7 @@
 
   @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
     <style>
+        /*
 .nav-tabs1 {
     border-bottom: 1px solid #ddd
 }
@@ -820,7 +826,7 @@
     -ms-transition: all 0.3s 0s;
     transition: all 0.3s 0s;
 }
-
+*/
 
         /* Product Gallery */
 /* ----------------------------------------- */
@@ -870,6 +876,26 @@
             padding: 5px;
         }
         */
+
+        .video-remove-button {
+            position: absolute;
+            top: 65px;
+            right: 35px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 30%;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px;
+        }
+
+        @media screen and (max-width: 32em) {
+            .video-remove-button {
+                    top: 45px;
+                    right: 75px;
+            }
+        }
     </style>
 
   @endif
@@ -1262,7 +1288,7 @@ function handleVideo(input, containerId) {
                 // Create a remove button
                 const removeButton = document.createElement('button');
                 removeButton.innerHTML = '✖'; // Cross symbol
-                removeButton.classList.add('remove-button');
+                removeButton.classList.add('vide-remove-button');
 
                 // Add event listener to remove button
                 removeButton.addEventListener('click', function() {
@@ -1783,6 +1809,10 @@ $("#showProductWebsite").on('click',function(){
         }
     }
 })
+
+    @if(old('showProductWebsite'))
+    $("#showProductWebsite").attr('checked', true).trigger('click');
+    @endif
 
   </script>
 

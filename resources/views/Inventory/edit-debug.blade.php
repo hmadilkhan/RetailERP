@@ -335,6 +335,8 @@
                     <input class="form-control" type="Number" min="0" name="taxamount" id="taxamount" value="{{ old('taxamount') ? old('taxamount') : $prices[0]->tax_amount }}"/>
                 </div>
             </div>
+        </div>
+        <div class="row">
             <div class="col-md-3 col-lg-3">
                 <div class="form-group {{ $errors->has('rp') ? 'has-danger' : '' }}">
                     <label class="form-control-label">Retail Price<span class="text-danger m-l-5">*</span></label>
@@ -618,6 +620,31 @@
               </div>
           </div>
 @endsection
+
+@section('css_code')
+    <style>
+        .video-remove-button {
+            position: absolute;
+            top: 65px;
+            right: 35px;
+            background-color: red;
+            color: white;
+            border: none;
+            border-radius: 30%;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px;
+        }
+        @media screen and (max-width: 32em) {
+            .video-remove-button {
+                    top: 45px;
+                    right: 75px;
+            }
+        }
+
+    </style>
+@endsection
+
 @section('scriptcode_one')
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -721,7 +748,8 @@ $("#showProductWebsite").on('click',function(){
 	  var rem_id = [];
 
       $("#name").on('change',function(){
-         let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
+         //let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
+         let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)]+$/;
           if(regex.test($("#name").val())){
             swal('Error!','Special characters are not allowed!','error');
              $("#product_name_alert").text('Special characters are not allowed!');
@@ -750,9 +778,10 @@ $("#showProductWebsite").on('click',function(){
 		  let form = $(this);
 		  let actionUrl = form.attr('action');
           let process = true;
-          let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
-          //let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()\-]*$/;
-          if(regex.test($("#name").val())){
+          //let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
+          let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
+
+          if(!regex.test($("#name").val())){
             process = false;
             swal('Error!','Special characters are not allowed!','error');
           }
@@ -1386,7 +1415,7 @@ function handleVideo(input, containerId) {
                 // Create a remove button
                 const removeButton = document.createElement('button');
                 removeButton.innerHTML = '✖'; // Cross symbol
-                removeButton.classList.add('remove-button');
+                removeButton.classList.add('video-remove-button');
 
                 // Add event listener to remove button
                 removeButton.addEventListener('click', function() {
