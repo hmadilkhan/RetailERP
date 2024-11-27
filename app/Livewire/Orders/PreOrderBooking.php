@@ -5,6 +5,7 @@ namespace App\Livewire\Orders;
 use App\Models\Branch;
 use App\Models\Customer;
 use App\Models\Inventory;
+use App\Models\OrderMode;
 use App\Models\ServiceProvider;
 use App\Models\Terminal;
 use Livewire\Attributes\Computed;
@@ -46,9 +47,9 @@ class PreOrderBooking extends Component
 
     public function mount()
     {
-        // $this->customers = []; //Customer::where("company_id", session("company_id"))->get();
         // Fetch essential data only on component mount
         $this->branches = Branch::where("company_id", session("company_id"))->get();
+        $this->orderTypes = OrderMode::all();
     }
 
     #[Computed()]
@@ -154,11 +155,7 @@ class PreOrderBooking extends Component
     {
         // Type cast productId to ensure correct matching
         $productId = (int) $productId;
-        // dd($productId);
-        // $item = array_values(array_filter($this->orderItems, function ($item) use ($productId) {
-        //     return $item['productId'] !== $productId;
-        // }));
-        // dd($item);
+
         $this->orderItems = array_values(array_filter($this->orderItems, function ($item) use ($productId) {
             return $item['productId'] !== $productId;
         }));
@@ -166,17 +163,21 @@ class PreOrderBooking extends Component
         $this->calculateTotal();
     }
 
+    #[On('placeOrder')]
+    public function placeOrder($customerId,$type,$branchId,$terminalId,$salesPersonId)
+    {
+        // dump($this->selectedCustomers);
+        dump($customerId." | ".$type." | ".$branchId." | ".$terminalId." | ".$salesPersonId);
+        dd("Place Order");
+    }
+
     public function render()
     {
-        $orderTypes = []; //OrderMode::all();
-        $branches = []; //Branch::where("company_id", session("company_id"))->get();
+        $this->dispatch('childRendered'); // Emit event after child render
         $products = Inventory::where("company_id", session('company_id'))->where("status", 1)->get();
         return view('livewire.orders.pre-order-booking', [
-            'orderTypes' => $orderTypes,
             'branches' => $this->branches,
             'customers' => $this->customers,
-            'terminals' => $this->terminals,
-            'salesPersons' => $this->salesPersons,
             'products' => $products,
         ]);
     }
