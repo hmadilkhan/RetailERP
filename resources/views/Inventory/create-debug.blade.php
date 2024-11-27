@@ -1810,6 +1810,10 @@ $("#showProductWebsite").on('click',function(){
     }
 })
 
+@if(old('showProductWebsite'))
+   $("#showProductWebsite").prop('checked',true).trigger('click');
+@endif
+
   </script>
 
 <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
