@@ -178,7 +178,7 @@ class InventoryController extends Controller
 
         ];
 
-        if (!empty($request->website) && isset($request->showProductWebsite) && empty($request->op)) {
+        if (!empty($request->website) && isset($request->showProductWebsite) && in_array($request->op,['',0])) {
             $rules['op'] = 'required';
         }
 
