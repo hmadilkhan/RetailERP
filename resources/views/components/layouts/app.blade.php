@@ -73,6 +73,7 @@
 </script>
     @include('partials.js-libs')
     @livewireScripts
+    @stack('scripts')
     @yield('scriptcode_three')
 
 </body>

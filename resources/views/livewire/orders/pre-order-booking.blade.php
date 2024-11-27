@@ -23,13 +23,19 @@
         }
     </style>
 
-    </style>
     <section>
         <div class="card">
             <div class="card-header">Pre-order Booking</div>
             <div class="card-body">
                 <form wire:submit.prevent="save">
                     <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
+                                    Customers New</label>
+                                <livewire:select2-component />
+                            </div>
+                        </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="form-control-label "><i class="icofont icofont-barcode"></i>
@@ -52,7 +58,7 @@
                                     Order Type</label>
                                 <select class="select2" id="ordertypes" wire:model="orderTypeId">
                                     <option value="">Order Type</option>
-                                    @if ($orderTypes)
+                                    @if (!empty($orderTypes))
                                         @foreach ($orderTypes as $types)
                                             <option value="{{ $types->order_mode_id }}">
                                                 {{ $types->order_mode }}
@@ -112,47 +118,11 @@
                                 </select>
                             </div>
                         </div>
-                        {{-- <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
-                                   Customers</label>
-                                <input type="text" class="form-control" placeholder="Search..."
-                                    wire:model.live.debounce.100ms="customerText" aria-label="Search">
-
-                                <div wire:loading>
-                                    <p>Searching...</p>
-                                </div>
-
-                                @if (!empty($customers))
-                                    <ul class="list-group mt-2"
-                                        style="max-height: 200px; overflow-y: auto; z-index: 1000; position: absolute; width: 100%;">
-                                        @foreach ($customers as $customer)
-                                            <li class="list-group-item" style="cursor: pointer;"
-                                                wire:click="selectCustomer({{ $customer->id }}, '{{ $customer->name }}')">
-                                                {{ $customer->name }}
-                                            </li> <!-- Adjust to match your data -->
-                                        @endforeach
-                                    </ul>
-                                @else
-                                    @if ($customerText)
-                                        <p class="mt-2">No results found for "{{ $customerText }}".</p>
-                                    @endif
-                                @endif
-
-                                <!-- Display the selected customer -->
-                                @if ($selectedCustomerName)
-                                    <p class="mt-2">Selected Customer: {{ $selectedCustomerName }}</p>
-                                @endif
-                            </div>
-                        </div> --}}
 
                         <div class="col-md-3 position-relative">
                             <div class="form-group">
                                 <label class="form-control-label "><i class="icofont icofont-barcode"></i>
                                     Customers</label>
-                                <!-- Tag Input Container with Bootstrap classes -->
-                                {{-- <div class="input-group flex-wrap"> --}}
-
                                 <!-- Search Input -->
                                 <input type="text" class="form-control" placeholder="Search..."
                                     wire:model.live.debounce.100ms="customerText" aria-label="Search" />
@@ -160,18 +130,6 @@
                                 <div wire:loading>
                                     <p>Searching...</p>
                                 </div>
-
-                                <!-- Tag List Container -->
-                                {{-- <div class="d-flex flex-wrap gap-2 mb-2">
-                                        @foreach ($selectedCustomers as $customer)
-                                            <span class="badge bg-secondary d-flex align-items-center">
-                                                {{ $customer['name'] }}
-                                                <button type="button" class="btn-close ms-2" aria-label="Remove"
-                                                    wire:click="removeCustomer({{ $customer['id'] }})"></button>
-                                            </span>
-                                        @endforeach
-                                    </div> --}}
-                                {{-- </div> --}}
 
                                 <!-- Search Results -->
                                 @if (!empty($customers))
@@ -203,9 +161,6 @@
                                 @endif
                             </div>
                         </div>
-
-
-
                     </div>
                 </form>
             </div>
@@ -243,7 +198,8 @@
                         </div>
                         <div class="col-md-3 col-sm-12">
                             <div id="itemcode" class="form-group">
-                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>Price</label>
+                                <label class="form-control-label "><i
+                                        class="icofont icofont-barcode"></i>Price</label>
                                 <input class="form-control" type="text" wire:model="price" id="price"
                                     placeholder="Enter Price " />
                             </div>
@@ -282,7 +238,7 @@
                                     <td>{{ $item['amount'] }}</td>
                                     <td>
                                         <i class="icofont icofont-pencil text-warning fs-4"
-                                            onclick="editItem('{{ $item['productId'] }}','{{$item['qty']}}','{{$item['price']}}')"></i>
+                                            onclick="editItem('{{ $item['productId'] }}','{{ $item['qty'] }}','{{ $item['price'] }}')"></i>
                                         <i class="icofont icofont-trash text-danger fs-4"
                                             onclick="deleteItem({{ $item['productId'] }})"></i>
                                     </td>
@@ -298,93 +254,71 @@
             </div>
         </div>
     </section>
-    <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <!-- Sub Total -->
-                <div class="col-12 col-lg-12 col-md-12 col-sm-12 py-2 d-flex justify-content-end">
-                    <div class="col-8 col-lg-8 col-md-8 col-sm-8"></div>
-                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                        <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
-                            <span class="fw-bold ">Sub Total :</span>
-                        </div>
-                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
-                            <span class="">{{ number_format($subTotal, 0) }}</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Discount -->
-                <div class="col-12 col-lg-12 col-md-12 col-sm-12  py-2 d-flex justify-content-end">
-                    <div class="col-8 col-lg-8 col-md-8 col-sm-8"></div>
-                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                        <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
-                            <span class="fw-bold ">Discount :</span>
-                        </div>
-                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
-                            <span class="">{{ number_format($discount, 0) }}</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Tax Amount -->
-                <div class="col-12 col-lg-12 col-md-12 col-sm-12  py-2 d-flex justify-content-end">
-                    <div class="col-8 col-lg-8 col-md-8"></div>
-                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                        <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
-                            <span class="fw-bold ">Tax Amount :</span>
-                        </div>
-                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
-                            <span class="">{{ number_format($taxAmount, 0) }}</span>
-                        </div>
-                    </div>
-                </div>
-                <!-- Total Amount -->
-                <div class="col-12 col-lg-12 col-md-12 col-sm-12 py-2 d-flex justify-content-end">
-                    <div class="ccol-8 col-lg-8 col-md-8"></div>
-                    <div class="col-4 col-lg-4 col-md-4 col-sm-4">
-                        <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
-                            <span class="fw-bold ">Total Amount :</span>
-                        </div>
-                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
-                            <span class="">{{ number_format($totalAmount, 0) }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
 
-    {{-- <div class="card">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-12 text-end">
-                    <div class="col-md-11 py-2">
-                        <span class="fw-bold">Sub Total : </span>
+    <section>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <!-- Sub Total -->
+                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 py-2 d-flex justify-content-end">
+                        <div class="col-8 col-lg-8 col-md-8 col-sm-8"></div>
+                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
+                                <span class="fw-bold ">Sub Total :</span>
+                            </div>
+                            <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
+                                <span class="">{{ number_format($subTotal, 0) }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-1 py-2">
-                       <span class="text-end">{{ number_format($subTotal, 0) }}</span>
+                    <!-- Discount -->
+                    <div class="col-12 col-lg-12 col-md-12 col-sm-12  py-2 d-flex justify-content-end">
+                        <div class="col-8 col-lg-8 col-md-8 col-sm-8"></div>
+                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
+                                <span class="fw-bold ">Discount :</span>
+                            </div>
+                            <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
+                                <span class="">{{ number_format($discount, 0) }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-11 py-2">
-                        <span class="fw-bold"> Discount : </span>
+                    <!-- Tax Amount -->
+                    <div class="col-12 col-lg-12 col-md-12 col-sm-12  py-2 d-flex justify-content-end">
+                        <div class="col-8 col-lg-8 col-md-8"></div>
+                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
+                                <span class="fw-bold ">Tax Amount :</span>
+                            </div>
+                            <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
+                                <span class="">{{ number_format($taxAmount, 0) }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-1 py-2">
-                        <span class="text-end">{{ number_format($discount, 0) }}</span>
+                    <!-- Total Amount -->
+                    <div class="col-12 col-lg-12 col-md-12 col-sm-12 py-2 d-flex justify-content-end">
+                        <div class="ccol-8 col-lg-8 col-md-8"></div>
+                        <div class="col-4 col-lg-4 col-md-4 col-sm-4">
+                            <div class="col-10 col-lg-10 col-md-10 col-sm-10 text-end">
+                                <span class="fw-bold ">Total Amount :</span>
+                            </div>
+                            <div class="col-2 col-lg-2 col-md-2 col-sm-2 text-end">
+                                <span class="">{{ number_format($totalAmount, 0) }}</span>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-md-11 py-2">
-                        <span class="fw-bold"> Tax Amount : </span>
-                    </div>
-                    <div class="col-md-1 py-2">
-                        <span class="text-end">{{ number_format($taxAmount, 0) }}</span>
-                    </div>
-                    <div class="col-md-11 py-2">
-                        <span class="fw-bold"> Total Amount : </span>
-                    </div>
-                    <div class="col-md-1 py-2">
-                        <span class="text-end">{{ number_format($totalAmount, 0) }}</span>
-                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div> --}}
+    </section>
+
+    <section>
+        <div class="row">
+            <div class="col-md-12 text-end">
+                <button type="button" id="place-order" class="btn btn-success text-end">Place Order</button>
+            </div>
+        </div>
+    </section>
     @script
         <script>
             $(document).ready(function() {
@@ -394,6 +328,24 @@
                     var data = $('#branch').select2("val");
                     @this.set('branchId', data);
                 });
+                // $('#select2-dropdown').on('change', function(e) {
+                //     console.log("working");
+                // });
+
+                // $('#select2-dropdown').select2({
+                //     placeholder: 'Search and select',
+                //     minimumInputLength: 1,
+                //     ajax: {
+                //         delay: 250,
+                //         transport: function(params, success) {
+                //             console.log(params);
+                            
+                //             Livewire.dispatch('updatedSearch', params.data
+                //             .q); // Emit search query to Livewire
+                //             success();
+                //         }
+                //     }
+                // });
                 // $('#products').on('change', function(e) {
                 //     var data = $('#products').select2("val");
                 //     @this.set('productId', data);
@@ -426,6 +378,23 @@
 
                 });
 
+                document.getElementById('place-order').addEventListener('click', function() {
+
+                    // Select all controls and buttons to disable
+                    let controls = document.querySelectorAll('input, select, button');
+
+                    // Disable controls and buttons
+                    controls.forEach(control => control.disabled = true);
+
+                    Livewire.dispatch('placeOrder', {
+                        customerId: $("#customers").val(),
+                        type: $("#ordertypes").val(),
+                        branchId: $("#branch").val(),
+                        terminalId: $("#terminals").val(),
+                        salesPersonId: $("#salespersons").val()
+                    });
+                });
+
                 window.addEventListener('resetControls', event => {
                     $("#products").val('').change();
                     $("#qty").val('');
@@ -439,12 +408,43 @@
                     });
                 };
 
-                window.editItem = function(productId,qty,price){
-                    console.log(productId,qty,price);
+                window.editItem = function(productId, qty, price) {
+                    console.log(productId, qty, price);
                     $("#products").val(productId).change();
                     $("#qty").val(qty);
                     $("#price").val(price)
                 };
+
+                document.addEventListener('livewire:load', () => {
+                    const select2Element = $('#select2-dropdown');
+                    console.log("Its working");
+
+                    // Initialize Select2
+                    select2Element.select2({
+                        placeholder: 'Search and select',
+                        minimumInputLength: 1,
+                        ajax: {
+                            delay: 250, // Delay for debouncing
+                            transport: function(params, success, failure) {
+                                Livewire.emit('updatedSearch', params.data
+                                    .q); // Emit search query to Livewire
+                                success();
+                            }
+                        }
+                    });
+
+                    // Listen for changes in Select2 and update Livewire
+                    select2Element.on('change', function(e) {
+                        console.log(e);
+
+                        @this.set('selectedOption', $(this).val());
+                    });
+
+                    // Reinitialize options when Livewire updates
+                    Livewire.hook('message.processed', (message, component) => {
+                        select2Element.select2('destroy').select2();
+                    });
+                });
 
                 Livewire.hook('morph.updating', ({
                     component,
