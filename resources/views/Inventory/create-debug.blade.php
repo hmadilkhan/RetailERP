@@ -1811,7 +1811,7 @@ $("#showProductWebsite").on('click',function(){
 })
 
 @if(old('showProductWebsite'))
-  alert(1)
+
    $("#showProductWebsite").prop('checked',true).trigger('click');
 @endif
 
