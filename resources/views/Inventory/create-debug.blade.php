@@ -283,7 +283,7 @@
                        @endif
                     </select>
                     @if ($errors->has('website'))
-                      <div class="form-control-feedback">Required field can not be blank.</div>
+                      <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
 				</div>
             </div>
@@ -303,7 +303,7 @@
                     <label class="form-control-label">Short Description <i>(For Website Only)</i></label>
                     <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" >{{ old('sdescription') }}</textarea>
                     @if ($errors->has('sdescription'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
                 </div>
             </div>
@@ -312,7 +312,7 @@
                     <label class="form-control-label">Details <i>(For Website Only)</i></label>
                     <textarea class="form-control" name="details" id="details" rows="6"></textarea>
                     @if ($errors->has('details'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
                 </div>
             </div>
@@ -340,7 +340,7 @@
                     <label class="form-control-label">Actual Price:<span class="text-danger m-l-5">*</span></label>
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="ap" id="ap" value="{{ old('ap') }}" placeholder="0"/>
                     @if ($errors->has('ap'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
                 </div>
             </div>
@@ -363,7 +363,7 @@
                     <label class="form-control-label">Retail Price<span class="text-danger m-l-5">*</span></label>
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="rp" id="rp" placeholder="0" value="{{ old('rp') }}" />
                     @if ($errors->has('rp'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
                 </div>
             </div>
@@ -386,6 +386,9 @@
                 <div class="form-group">
                     <label class="form-control-label">Online Price:</label>
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="op" id="op" value="0"/>
+                    @if ($errors->has('op'))
+                        <span class="form-control-feedback">Required field can not be blank.</span>
+                    @endif
                 </div>
             </div>
 
