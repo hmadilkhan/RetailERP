@@ -278,7 +278,7 @@
                        <option value="">Websites</option>
                        @if($websites)
 						  @foreach($websites as $website)
-							  <option value="{{$website->id}}">{{$website->name}}</option>
+							  <option {{ old('website') == $website->id ? 'selected' : '' }} value="{{$website->id}}">{{$website->name}}</option>
 						  @endforeach
                        @endif
                     </select>
@@ -1811,8 +1811,20 @@ $("#showProductWebsite").on('click',function(){
 })
 
     @if(old('showProductWebsite'))
-    $("#showProductWebsite").attr('checked', true).trigger('click');
+     $("#showProductWebsite").attr('checked', true);
+        if($("#showProductWebsite").is(':checked')==true){
+            if($("#website-module").hasClass('d-none')){
+                $("#website-module").removeClass('d-none');
+            }
+
+
+            if($("#prodAdvans_Media").hasClass('d-none')){
+                $("#prodAdvans_Media").removeClass('d-none');
+            }
+        }
     @endif
+
+
 
   </script>
 
