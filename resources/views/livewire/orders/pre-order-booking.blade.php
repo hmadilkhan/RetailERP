@@ -32,26 +32,21 @@
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="form-control-label "><i class="icofont icofont-barcode"></i>
-                                    Customers New</label>
-                                <livewire:select2-component />
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="form-group">
-                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
                                     Customers</label>
-                                <select class="select2" id="customers" wire:model="customerId">
-                                    <option value="">Select Customer</option>
-                                    @if ($customers)
-                                        @foreach ($customers as $customer)
-                                            <option value="{{ $customer->id }}">
-                                                {{ $customer->name }}
-                                            </option>
+                                <select id="customers" class="select2" wire:model="selectedOption"
+                                    style="width: 100%;">
+                                    <option value="">Select an option</option>
+                                    @if (is_array($options) && !empty($options))
+                                        @foreach ($options as $option)
+                                            <option value="{{ $option["id"] }}">{{ $option["name"] }}</option>
                                         @endforeach
+                                    @else
+                                        <option value="" disabled>No options available</option>
                                     @endif
                                 </select>
                             </div>
                         </div>
+
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="form-control-label "><i class="icofont icofont-barcode"></i>
@@ -68,6 +63,24 @@
                                 </select>
                             </div>
                         </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
+                                    Order Payment</label>
+                                <select class="select2" id="payments" wire:model="paymentId">
+                                    <option value="">Order Payment</option>
+                                    @if (!empty($payments))
+                                        @foreach ($payments as $payment)
+                                            <option value="{{ $payment->payment_id }}">
+                                                {{ $payment->payment_mode }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                            </div>
+                        </div>
+
                         <div class="col-md-3">
                             <div class="form-group">
                                 <label class="form-control-label "><i class="icofont icofont-barcode"></i>
@@ -116,49 +129,6 @@
                                         @endforeach
                                     @endif
                                 </select>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3 position-relative">
-                            <div class="form-group">
-                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
-                                    Customers</label>
-                                <!-- Search Input -->
-                                <input type="text" class="form-control" placeholder="Search..."
-                                    wire:model.live.debounce.100ms="customerText" aria-label="Search" />
-
-                                <div wire:loading>
-                                    <p>Searching...</p>
-                                </div>
-
-                                <!-- Search Results -->
-                                @if (!empty($customers))
-                                    <ul class="list-group mt-2"
-                                        style="max-height: 200px; overflow-y: auto; z-index: 1000; position: absolute; width: 100%;">
-                                        @foreach ($customers as $customer)
-                                            <li class="list-group-item list-group-item-action" style="cursor: pointer;"
-                                                wire:click="selectCustomer({{ $customer->id }}, '{{ $customer->name }}')">
-                                                {{ $customer->name }}
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @else
-                                    @if ($customerText)
-                                        <p class="mt-2 text-muted">No results found for "{{ $customerText }}".</p>
-                                    @endif
-                                @endif
-
-                                @if (!empty($selectedCustomers))
-                                    <div class="d-flex flex-wrap gap-2 mb-2 mt-2">
-                                        @foreach ($selectedCustomers as $customer)
-                                            <span class="badge bg-secondary d-flex align-items-center">
-                                                {{ $customer['name'] }}
-                                                <button type="button" class="btn-close ms-2" aria-label="Remove"
-                                                    wire:click="removeCustomer({{ $customer['id'] }})"></button>
-                                            </span>
-                                        @endforeach
-                                    </div>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -328,28 +298,49 @@
                     var data = $('#branch').select2("val");
                     @this.set('branchId', data);
                 });
-                // $('#select2-dropdown').on('change', function(e) {
-                //     console.log("working");
-                // });
 
-                // $('#select2-dropdown').select2({
-                //     placeholder: 'Search and select',
-                //     minimumInputLength: 1,
-                //     ajax: {
-                //         delay: 250,
-                //         transport: function(params, success) {
-                //             console.log(params);
-                            
-                //             Livewire.dispatch('updatedSearch', params.data
-                //             .q); // Emit search query to Livewire
-                //             success();
-                //         }
-                //     }
-                // });
-                // $('#products').on('change', function(e) {
-                //     var data = $('#products').select2("val");
-                //     @this.set('productId', data);
-                // });
+                const select2Element = $('#customers');
+
+                // Destroy any previous Select2 instance
+                if (select2Element.hasClass("select2-hidden-accessible")) {
+                    select2Element.select2('destroy');
+                }
+
+                // Reinitialize Select2
+                select2Element.select2({
+                    placeholder: 'Search and select',
+                    minimumInputLength: 1,
+                    ajax: {
+                        delay: 1000,
+                        transport: function(params, success, failure) {
+                            // Emit the query to Livewire
+                            Livewire.dispatch('fetchSelect2Options', {
+                                search: params.data.q
+                            });
+
+                            // Listen for Livewire's response
+                            Livewire.on('select2OptionsFetched', (event) => {
+                                const payload = event; // Event detail should contain the array
+                                const options = payload[0]?.options || []; // Access options safely
+
+                                const select2Data = options.map(option => ({
+                                    id: option.id,
+                                    text: option.name
+                                }));
+
+                                success({
+                                    results: select2Data
+                                });
+                            });
+                        }
+                    }
+                });
+
+                // Sync value with Livewire
+                select2Element.on('change', function() {
+                    Livewire.dispatch('select2Updated', {value:$(this).val()});
+                });
+
                 let productname = "";
                 document.getElementById('submit-button').addEventListener('click', function() {
                     // Select all controls and buttons to disable
@@ -391,7 +382,8 @@
                         type: $("#ordertypes").val(),
                         branchId: $("#branch").val(),
                         terminalId: $("#terminals").val(),
-                        salesPersonId: $("#salespersons").val()
+                        salesPersonId: $("#salespersons").val(),
+                        paymentId : $("#payments").val()
                     });
                 });
 
@@ -414,37 +406,6 @@
                     $("#qty").val(qty);
                     $("#price").val(price)
                 };
-
-                document.addEventListener('livewire:load', () => {
-                    const select2Element = $('#select2-dropdown');
-                    console.log("Its working");
-
-                    // Initialize Select2
-                    select2Element.select2({
-                        placeholder: 'Search and select',
-                        minimumInputLength: 1,
-                        ajax: {
-                            delay: 250, // Delay for debouncing
-                            transport: function(params, success, failure) {
-                                Livewire.emit('updatedSearch', params.data
-                                    .q); // Emit search query to Livewire
-                                success();
-                            }
-                        }
-                    });
-
-                    // Listen for changes in Select2 and update Livewire
-                    select2Element.on('change', function(e) {
-                        console.log(e);
-
-                        @this.set('selectedOption', $(this).val());
-                    });
-
-                    // Reinitialize options when Livewire updates
-                    Livewire.hook('message.processed', (message, component) => {
-                        select2Element.select2('destroy').select2();
-                    });
-                });
 
                 Livewire.hook('morph.updating', ({
                     component,
