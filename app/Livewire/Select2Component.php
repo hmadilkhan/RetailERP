@@ -8,36 +8,36 @@ use Livewire\Component;
 
 class Select2Component extends Component
 {
-    public $selectedOption = null;
-    public $search = '';
-    public $options = [];
+    // public $selectedOption = null;
+    // public $search = '';
+    // public $options = [];
 
-    public function mount()
-    {
-        $this->options = $this->getOptions();
-    }
+    // public function mount()
+    // {
+    //     $this->options = $this->getOptions();
+    // }
 
-    #[On('updatedSearch')]
-    public function updatedSearch()
-    {
-        $this->options = $this->getOptions($this->search);
-    }
+    // #[On('updatedSearch')]
+    // public function updatedSearch()
+    // {
+    //     $this->options = $this->getOptions($this->search);
+    // }
 
-    public function getOptions($search = null)
-    {
-        $query = Customer::query();
+    // public function getOptions($search = null)
+    // {
+    //     $query = Customer::query();
 
-        if ($search) {
-            $query->where('name', 'like', "%{$search}%");
-        }
+    //     if ($search) {
+    //         $query->where('name', 'like', "%{$search}%");
+    //     }
 
-        return $query->take(10)->get()->toArray();
-    }
+    //     return $query->take(10)->get()->toArray();
+    // }
 
-    public function select2Updated($value)
-    {
-        $this->selectedOption = $value;
-    }
+    // public function select2Updated($value)
+    // {
+    //     $this->selectedOption = $value;
+    // }
 
     public function render()
     {

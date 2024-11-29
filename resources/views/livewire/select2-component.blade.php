@@ -1,48 +1,64 @@
-<div>
+{{-- <div>
+    <pre>{{ json_encode($options) }}</pre>
     <select id="select2-dropdown" class="select2" wire:model="selectedOption" style="width: 100%;">
         <option value="">Select an option</option>
-        @foreach ($options as $option)
-            <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
-        @endforeach
+        
+        @if (!empty($options) && is_array($options))
+            @foreach ($options as $option)
+                <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
+            @endforeach
+        @endif
     </select>
-</div>
+</div> --}}
 
-@script
+{{-- @push('scripts')
     <script>
-        function initializeChildSelect2() {
-            console.log("workds");
+         function initializeChildSelect2() {
+                console.log("Initiliazing");
+            
+                const select2Element = $('#select2-dropdown');
 
-            const select2Element = $('#select2-dropdown');
-
-            // Destroy any previous Select2 instance
-            // select2Element.select2('destroy');
-
-            // Reinitialize Select2
-            select2Element.select2({
-                placeholder: 'Search and select',
-                minimumInputLength: 1,
-                ajax: {
-                    delay: 250,
-                    transport: function(params, success) {
-                        Livewire.dispatch('updatedSearch', params.data.q); // Emit search query to Livewire
-                        success();
-                    }
+                // Destroy any previous Select2 instance
+                if (select2Element.hasClass("select2-hidden-accessible")) {
+                    select2Element.select2('destroy');
                 }
-            });
 
-            // Sync value with Livewire
-            select2Element.on('change', function() {
-                Livewire.dispatch('select2Updated', $(this).val());
-            });
-        }
+                // Reinitialize Select2
+                select2Element.select2({
+                    placeholder: 'Search and select',
+                    minimumInputLength: 1,
+                    ajax: {
+                        delay: 250,
+                        transport: function(params, success, failure) {
+                            Livewire.dispatch('fetchSelect2Options', params.data
+                            .q); // Emit query to Livewire
+                            success
+                        (); // Resolve the transport (no real fetch here since Livewire handles it)
+                        }
+                    }
+                });
 
-        // Reinitialize Select2 after Livewire updates the DOM
-        document.addEventListener('livewire:load', initializeChildSelect2);
-        Livewire.hook('message.processed', (message, component) => {
+                // Sync value with Livewire
+                select2Element.on('change', function() {
+                    Livewire.dispatch('select2Updated', $(this).val());
+                });
+            }
             initializeChildSelect2();
-        });
-        Livewire.on('childRendered', () => {
-            initializeChildSelect2(); // Initialize Select2 after parent re-renders the child
+            $('#select2-dropdown').change(function(){
+                console.log("works");
+                
+            })
+        document.addEventListener('livewire:load', function() {
+            console.log("works");
+            
+            
+
+            // Reinitialize Select2 after Livewire updates the DOM
+            Livewire.hook('message.processed', (message, component) => {
+                initializeChildSelect2();
+            });
+
+            initializeChildSelect2(); // Initial load
         });
     </script>
-@endscript
+@endpush --}}
