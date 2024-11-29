@@ -33,17 +33,19 @@
                             <div class="form-group">
                                 <label class="form-control-label "><i class="icofont icofont-barcode"></i>
                                     Customers</label>
-                                <select id="customers" class="select2" wire:model="selectedOption"
-                                    style="width: 100%;">
+                                <select id="customers" class="select2" wire:model="selectedOption" style="width: 100%;">
                                     <option value="">Select an option</option>
                                     @if (is_array($options) && !empty($options))
                                         @foreach ($options as $option)
-                                            <option value="{{ $option["id"] }}">{{ $option["name"] }}</option>
+                                            <option value="{{ $option['id'] }}">{{ $option['name'] }}</option>
                                         @endforeach
                                     @else
                                         <option value="" disabled>No options available</option>
                                     @endif
                                 </select>
+                                @error('customerId')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
@@ -61,6 +63,9 @@
                                         @endforeach
                                     @endif
                                 </select>
+                                @error('orderTypeId')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
@@ -78,6 +83,9 @@
                                         @endforeach
                                     @endif
                                 </select>
+                                @error('paymentId')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
 
@@ -95,6 +103,9 @@
                                         @endforeach
                                     @endif
                                 </select>
+                                @error('branchId')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -111,6 +122,9 @@
                                         @endforeach
                                     @endif
                                 </select>
+                                @error('terminalId')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -131,6 +145,25 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>
+                                    Tax</label>
+                                <select class="select2" id="taxes" wire:model="taxValue">
+                                    <option value="">Select Tax</option>
+                                    @if (!empty($taxes))
+                                        @foreach ($taxes as $tax)
+                                            <option value="{{ $tax->value }}">
+                                                {{ $tax->name." ".$tax->value."%" }}
+                                            </option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                @error('paymentId')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -141,6 +174,9 @@
         <div class="card">
             <div class="card-header">Add Order Items</div>
             <div class="card-body">
+                @error('orderItems')
+                    <div class="text-danger">{{ $message }}</div>
+                @enderror
                 <form wire:submit.prevent="addItems">
                     <div class="row">
                         <div class="col-md-3">
@@ -168,8 +204,7 @@
                         </div>
                         <div class="col-md-3 col-sm-12">
                             <div id="itemcode" class="form-group">
-                                <label class="form-control-label "><i
-                                        class="icofont icofont-barcode"></i>Price</label>
+                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>Price</label>
                                 <input class="form-control" type="text" wire:model="price" id="price"
                                     placeholder="Enter Price " />
                             </div>
@@ -291,55 +326,75 @@
     </section>
     @script
         <script>
+            console.log("calling");
+            
             $(document).ready(function() {
                 $(".select2").select2();
+                var select2Data = null ;
 
                 $('#branch').on('change', function(e) {
                     var data = $('#branch').select2("val");
                     @this.set('branchId', data);
                 });
+                $('#taxes').on('change', function(e) {
+                    var data = $('#taxes').select2("val");
+                    @this.set('taxValue', data);
+                });
 
-                const select2Element = $('#customers');
+                initializeSearchAndSelect();
 
-                // Destroy any previous Select2 instance
-                if (select2Element.hasClass("select2-hidden-accessible")) {
-                    select2Element.select2('destroy');
+                function initializeSearchAndSelect() {
+                    const select2Element = $('#customers');
+
+                    // Destroy any previous Select2 instance
+                    if (select2Element.hasClass("select2-hidden-accessible")) {
+                        select2Element.select2('destroy');
+                    }
+
+                    // Reinitialize Select2
+                    select2Element.select2({
+                        placeholder: 'Search and select',
+                        minimumInputLength: 1,
+                        ajax: {
+                            delay: 1000,
+                            transport: function(params, success, failure) {
+                                // Emit the query to Livewire
+                                Livewire.dispatch('fetchSelect2Options', {
+                                    search: params.data.q
+                                });
+
+                                // Listen for Livewire's response
+                                Livewire.on('select2OptionsFetched', (event) => {
+                                    const payload = event; // Event detail should contain the array
+                                    const options = payload[0]?.options ||
+                                []; // Access options safely
+
+                                    select2Data = options.map(option => ({
+                                        id: option.id,
+                                        text: option.name
+                                    }));
+
+                                    success({
+                                        results: select2Data
+                                    });
+                                });
+                            }
+                        }
+                    });
                 }
 
-                // Reinitialize Select2
-                select2Element.select2({
-                    placeholder: 'Search and select',
-                    minimumInputLength: 1,
-                    ajax: {
-                        delay: 1000,
-                        transport: function(params, success, failure) {
-                            // Emit the query to Livewire
-                            Livewire.dispatch('fetchSelect2Options', {
-                                search: params.data.q
-                            });
-
-                            // Listen for Livewire's response
-                            Livewire.on('select2OptionsFetched', (event) => {
-                                const payload = event; // Event detail should contain the array
-                                const options = payload[0]?.options || []; // Access options safely
-
-                                const select2Data = options.map(option => ({
-                                    id: option.id,
-                                    text: option.name
-                                }));
-
-                                success({
-                                    results: select2Data
-                                });
-                            });
-                        }
-                    }
+                // Listen for Livewire events to reinitialize Select2
+                Livewire.on('reinitializeSelect2', (event) => {
+                    console.log('Reinitializing Select2...');
+                    initializeSearchAndSelect();
                 });
 
                 // Sync value with Livewire
-                select2Element.on('change', function() {
-                    Livewire.dispatch('select2Updated', {value:$(this).val()});
-                });
+                // select2Element.on('change', function() {
+                //     Livewire.dispatch('select2Updated', {
+                //         value: $(this).val()
+                //     });
+                // });
 
                 let productname = "";
                 document.getElementById('submit-button').addEventListener('click', function() {
@@ -383,7 +438,7 @@
                         branchId: $("#branch").val(),
                         terminalId: $("#terminals").val(),
                         salesPersonId: $("#salespersons").val(),
-                        paymentId : $("#payments").val()
+                        paymentId: $("#payments").val()
                     });
                 });
 
@@ -411,8 +466,14 @@
                     component,
                     cleanup
                 }) => {
-                    $('.select2').select2()
+                    $('.select2').select2();
+                    console.log(select2Data);
+                    if (select2Data == null) {
+                        initializeSearchAndSelect();
+                    }
+                    // initializeSearchAndSelect();
                 })
+
             })
         </script>
     @endscript

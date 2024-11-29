@@ -13,6 +13,7 @@ use App\Models\OrderPayment;
 use App\Models\OrderSubAccount;
 use App\Models\ServiceProvider;
 use App\Models\Terminal;
+use App\tax;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Computed;
 use Livewire\Attributes\On;
@@ -40,6 +41,8 @@ class PreOrderBooking extends Component
     public $orderTypeId = "";
     public $customerId = "";
     public $paymentId = "";
+    public $errorMessage = "";
+    public $taxValue = "";
 
     // ORDER ITEMS MODELS
     public $productId = "";
@@ -55,10 +58,24 @@ class PreOrderBooking extends Component
     public $selectedOption = null;
     public $options = [];
 
+    protected $rules = [
+        "customerId" => "required",
+        "orderTypeId" => "required",
+        "paymentId" => "required",
+        "branchId" => "required",
+        "terminalId" => "required",
+    ];
+
     public function mount()
     {
         $this->branches = Branch::where("company_id", session("company_id"))->get();
         $this->orderTypes = OrderMode::all();
+    }
+
+    public function hydrate()
+    {
+        $this->dispatch("reinitializeSelect2");
+        // dd("Hydrate");
     }
 
 
@@ -122,6 +139,12 @@ class PreOrderBooking extends Component
         $this->dispatch("itemAdded");
     }
 
+    public function updatedTaxValue($value)
+    {
+        $this->taxValue = $value;
+        $this->calculateTotal();
+    }
+
     public function calculateTotal()
     {
         $this->resetCalculationControls();
@@ -129,6 +152,11 @@ class PreOrderBooking extends Component
         collect($this->orderItems)->map(function ($item) {
             $this->subTotal += $item["amount"];
         });
+        if ($this->taxValue != "") {
+           $taxvalue = $this->taxValue / 100;
+           $this->taxAmount  = $this->subTotal *  $taxvalue;
+        }
+
         $this->totalAmount = $this->subTotal + $this->taxAmount  - $this->discount;
     }
 
@@ -161,10 +189,18 @@ class PreOrderBooking extends Component
     }
 
     #[On('placeOrder')]
-    public function placeOrder($customerId, $type, $branchId, $terminalId, $salesPersonId,$paymentId)
+    public function placeOrder($customerId, $type, $branchId, $terminalId, $salesPersonId, $paymentId)
     {
-        // dump($this->selectedCustomers);
-        // dump($customerId . " | " . $type . " | " . $branchId . " | " . $terminalId . " | " . $salesPersonId);
+        $this->validate();
+
+        $this->dispatch("reinitializeSelect2");
+
+        if (count($this->orderItems) == 0) {
+            $this->addError('orderItems', 'Please select items.');
+            // $this->dispatch('reinitializeSelect2'); // Emit custom event
+            return; // Stop execution and return control to Livewire
+        }
+
         try {
             DB::beginTransaction();
             $order = Order::create([
@@ -205,7 +241,7 @@ class PreOrderBooking extends Component
                 "sales_tax_amount" => 0,
             ]);
             DB::commit();
-            dd($order->id." has been placed");
+            dd($order->id . " has been placed");
         } catch (\Throwable $th) {
             DB::rollBack();
             dd($th->getMessage());
@@ -217,12 +253,14 @@ class PreOrderBooking extends Component
         // $this->dispatch('childRendered'); // Emit event after child render
         $products = Inventory::where("company_id", session('company_id'))->where("status", 1)->get();
         $payments = OrderPayment::all();
+        $taxes = tax::where("company_id", session('company_id'))->where("status_id", 1)->where("show_in_pos", 1)->get();
         return view('livewire.orders.pre-order-booking', [
             'branches' => $this->branches,
             'customers' => $this->customers,
             'products' => $products,
             'payments' => $payments,
             'options' => is_array($this->options) ? $this->options : [],
+            'taxes' => $taxes,
         ]);
     }
 }
