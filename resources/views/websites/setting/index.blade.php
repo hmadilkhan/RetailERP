@@ -303,7 +303,7 @@
               @php
                 $favicon = !empty($GetWebsite->favicon) ? 'website/'.$GetWebsite->favicon : 'placeholder.jpg';
               @endphp
-             <img id="faviconimages" src="{{ asset('storage/images/'.$favicon) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+             <img id="faviconimages" src="{{ asset('storage/images/'.$favicon) }}" class="thumb-img" alt="img" style="width: 32px;height: 32px;">
             <br/>
             <label for="favicon" class="custom-file">
                 <input type="file" name="favicon" id="favicon" onchange="readURL(this,'faviconimages')" class="custom-file-input">
