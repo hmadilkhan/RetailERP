@@ -599,10 +599,10 @@
             padding: 8px;
             text-align: center;
         }
-        .container {
+        /* .child-container {
             display: flex;
             justify-content: center; /* Center the child table */
-        }
+       /* } */
  </style> --}}
 @endsection
 

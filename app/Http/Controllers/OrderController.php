@@ -290,9 +290,9 @@ class OrderController extends Controller
         return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders', 'website', 'websiteId'));
     }
 
-    public function inline_receiptDetails(Request $request){
-
-    }
+   /* public function inline_receiptDetails(Request $request){
+           return DB::table('sales_receipt_details')->where('receipt_id',$request->receipt)->get();
+    }*/
 
     public function getWebOrders(Request $request, order $order)
     {

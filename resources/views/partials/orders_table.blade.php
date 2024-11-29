@@ -142,8 +142,9 @@
                     {{-- <tr class="details-row">
                         <td colspan="16">
                          <h3 class="text-center">Receipt Details</h3>
-                           <div class="container">
-                            <table id="child-{{ $order->id }}">
+                         <h4 class="text-center" id="child-receiptNo{{ $order->id }}"></h4>
+                            <div class="container">
+                            <table id="child{{ $order->id }}" class="table">
                                 <thead>
                                     <tr>
                                         <th>Item Code</th>
@@ -171,21 +172,55 @@
     </div>
 </div>
 <script type="text/javascript">
+/*
+$(document).ready(function() {
+ // Click event for opening and closing details
+ $('#order_table').on('click', 'tr.main-row', function() {
+        let row = $(this);
+        let detailsRow = row.next('.details-row');
 
-// $(document).ready(function() {
-//  // Click event for opening and closing details
-//  $('#order_table').on('click', 'tr.main-row', function() {
-//         var $row = $(this);
-//         var $detailsRow = $row.next('.details-row');
+        // Toggle the details row visibility
+        if (detailsRow.is(':visible')) {
+            detailsRow.hide();
+        } else {
+            detailsRow.show();
+            let id = row.attr('id');
+            $("#child-receiptNo"+id.replace('parent','')).text(id.replace('parent',''));
+            swal('Loading','Please wait','info');
+            inLineOrderDetails(id.replace('parent',''));
+        }
+    });
+});
 
-//         // Toggle the details row visibility
-//         if ($detailsRow.is(':visible')) {
-//             $detailsRow.hide();
-//         } else {
-//             $detailsRow.show();
-//         }
-//     });
-// });
+function inLineOrderDetails(id){
+    $.ajax({
+            url: location.origin+"/sales/inline-order-details/"+id,
+            type: "GET",
+            data: {
+                receipt: id,
+            },
+            dataType: 'json',
+            async:false,
+            success: function(result,txtStatus,jaxStatus) {
+                console.log(result);
+                if (jaxStatus.status == 200) {
+                    $.each(result,function(i,v){
+                       $('#child'+id+" tbody").append(
+                            '<tr>'+
+                                '<td>'+v.item_code+'</td>'+
+                                '<td>'+v.item_name+'</td>'+
+                                '<td>'+v.item_price+'</td>'+
+                                '<td>'+v.total_qty+'</td>'+
+                                '<td>'+v.total_amount+'</td>'+
+                            '<tr>'
+                            );
+
+                    });
+                }
+            }
+        });
+}
+*/
     $(function() {
         $('.collapse-item').click(function(e) {
             e.preventDefault();
