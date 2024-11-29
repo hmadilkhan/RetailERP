@@ -580,8 +580,36 @@
     </section>
 @endsection
 
+@section('css_code')
+ {{-- <style>
+        .details-row {
+            background-color: #f9f9f9;
+            display: none;
+        }
+        .details-row td {
+            padding: 10px;
+        }
+        .child-table {
+            width: 80%;
+            margin: 0 auto;
+            border: 1px solid #ddd;
+            margin-top: 10px;
+        }
+        .child-table th, .child-table td {
+            padding: 8px;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center; /* Center the child table */
+        }
+ </style> --}}
+@endsection
+
 @section('scriptcode_three')
     <script type="text/javascript">
+
+
         $(".select2").select2();
         getTerminal();
 
@@ -986,7 +1014,7 @@
             }else if ($("#discountreason").val() == "") {
                 $("#discountreason_message").html("Please enter reason.");
             } else {
-                
+
                 $.ajax({
                     url: "{{ url('apply-discount') }}",
                     type: 'POST',
@@ -1062,7 +1090,7 @@
             }
         }
 
-        
+
 
         function deliveredReceipt(id) {
             $("#orderId").val(id);

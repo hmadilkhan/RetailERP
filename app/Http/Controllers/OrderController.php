@@ -290,6 +290,10 @@ class OrderController extends Controller
         return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders', 'website', 'websiteId'));
     }
 
+    public function inline_receiptDetails(Request $request){
+
+    }
+
     public function getWebOrders(Request $request, order $order)
     {
         $orders = $order->getWebOrders($request->first, $request->second, $request->status, $request->customer, $request->receipt, $request->mode, $request->deli_from, $request->deli_to, $request->branch, $request->terminal, $request->payMode);
