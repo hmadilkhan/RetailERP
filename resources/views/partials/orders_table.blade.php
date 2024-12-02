@@ -24,7 +24,7 @@
         <tbody>
             @if ($orders->isNotEmpty())
                 @foreach ($orders as $key => $order)
-                    <tr class="{{ $order->is_sale_return == 1 ? 'table-danger' : '' }}">
+                    <tr id="parent{{ $order->id }}" class="{{ $order->is_sale_return == 1 ? 'table-danger' : '' }} main-row pointer">
                         <td>{{ $order->web == 1 ? strtoupper($order->url_orderid) : $order->machine_terminal_count }}
                         </td>
                         <td>{{ $order->id }}</td>
@@ -139,6 +139,26 @@
                             </div>
                         </td>
                     </tr>
+                    {{-- <tr class="details-row">
+                        <td colspan="16">
+                         <h3 class="text-center">Receipt Details</h3>
+                         <h4 class="text-center" id="child-receiptNo{{ $order->id }}"></h4>
+                            <div class="container">
+                            <table id="child{{ $order->id }}" class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Item Code</th>
+                                        <th>Item Name</th>
+                                        <th>Item Price</th>
+                                        <th>Item Quantity</th>
+                                        <th>Total Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            </div>
+                        </td>
+                    </tr> --}}
                 @endforeach
             @else
                 <tr>
@@ -152,6 +172,55 @@
     </div>
 </div>
 <script type="text/javascript">
+/*
+$(document).ready(function() {
+ // Click event for opening and closing details
+ $('#order_table').on('click', 'tr.main-row', function() {
+        let row = $(this);
+        let detailsRow = row.next('.details-row');
+
+        // Toggle the details row visibility
+        if (detailsRow.is(':visible')) {
+            detailsRow.hide();
+        } else {
+            detailsRow.show();
+            let id = row.attr('id');
+            $("#child-receiptNo"+id.replace('parent','')).text(id.replace('parent',''));
+            swal('Loading','Please wait','info');
+            inLineOrderDetails(id.replace('parent',''));
+        }
+    });
+});
+
+function inLineOrderDetails(id){
+    $.ajax({
+            url: location.origin+"/sales/inline-order-details/"+id,
+            type: "GET",
+            data: {
+                receipt: id,
+            },
+            dataType: 'json',
+            async:false,
+            success: function(result,txtStatus,jaxStatus) {
+                console.log(result);
+                if (jaxStatus.status == 200) {
+                    $.each(result,function(i,v){
+                       $('#child'+id+" tbody").append(
+                            '<tr>'+
+                                '<td>'+v.item_code+'</td>'+
+                                '<td>'+v.item_name+'</td>'+
+                                '<td>'+v.item_price+'</td>'+
+                                '<td>'+v.total_qty+'</td>'+
+                                '<td>'+v.total_amount+'</td>'+
+                            '<tr>'
+                            );
+
+                    });
+                }
+            }
+        });
+}
+*/
     $(function() {
         $('.collapse-item').click(function(e) {
             e.preventDefault();
