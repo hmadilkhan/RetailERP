@@ -335,6 +335,25 @@
                         </div>
                     </div>
 
+                    <div class="row" id="dvmultipledepartments" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Department</label>
+                                <select name="multipledepartment" id="multipledepartment"
+                                    data-placeholder="Select Department" multiple class="form-control select2">
+                                    <option value="">Select Department</option>
+                                    @if ($departments)
+                                        @foreach ($departments as $department)
+                                            <option value="{{ $department->department_id }}">
+                                                {{ $department->department_name }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row" id="dvpaymentmodes" style="display: none;">
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group">
@@ -377,7 +396,8 @@
                                     <option value="0">All Terminals</option>
                                     @if ($terminals)
                                         @foreach ($terminals as $value)
-                                            <option value="{{ $value->terminal_id }}">{{ $value->terminal_name }}</option>
+                                            <option value="{{ $value->terminal_id }}">{{ $value->terminal_name }}
+                                            </option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -494,15 +514,17 @@
                 '#txttype', '#txtitemsale', '#txtstockadjustment',
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
-                '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport','#txtordertimingsummary','#txtorderamountreceivable'
+                '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport', '#txtordertimingsummary',
+                '#txtorderamountreceivable'
             ];
 
             fields.forEach(field => {
                 $(field).val(0);
             });
 
-            const filters = ['#dvbranch', '#dvdepartments', '#dvsubdepartments', '#dvterminal', '#dvtype', '#dvitemcode',
-                '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus','#dvcategory'
+            const filters = ['#dvbranch', '#dvdepartments', '#dvmultipledepartments', '#dvsubdepartments', '#dvterminal',
+                '#dvtype', '#dvitemcode',
+                '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -599,7 +621,7 @@
                 showDateFilter: true,
                 showBranch: true,
                 showTerminal: true,
-                showExcelButton:true,
+                showExcelButton: true,
             }]);
         });
 
@@ -673,7 +695,7 @@
                 showBranch: true,
                 showType: true,
                 showTerminal: true,
-                showCategory:true
+                showCategory: true
             }]);
         });
 
@@ -714,7 +736,7 @@
                 field: '#txtwebsiteitemssummary',
                 value: 1,
                 showDateFilter: true,
-                showExcelButton:true,
+                showExcelButton: true,
             }]);
         });
 
@@ -733,7 +755,7 @@
                 showDateFilter: true,
                 showBranch: true,
                 showTerminal: true,
-                showExcelButton:true,
+                showExcelButton: true,
             }]);
         });
 
@@ -752,12 +774,17 @@
             let branch = $('#branch').val();
             let type = $('#type').val();
             let department = $('#department').val();
+            let multidepartments = $('#multipledepartment').val();
             let subdepartment = $('#subdepartment').val();
             let paymentmethod = $('#paymentmethod').val();
             let salesperson = $('#salesperson').val();
             let mode = $('#mode').val();
             let status = $('#status').val();
             let category = $('#category').val();
+
+            // Convert the array to query string format
+            let departmentQuery = multidepartments.map(dep => `department[]=${dep}`).join('&');
+            departmentQuery = "&"+departmentQuery;
 
             if ($('#txtprofitstandard').val() == 1) {
                 window.location = "{{ url('profitLossStandardReport') }}?fromdate=" + date + "&todate=" + todate +
@@ -783,7 +810,8 @@
             }
             if ($('#txtitemsale').val() == 1) {
                 window.location = "{{ url('itemsaledatabasepdf') }}?fromdate=" + date + "&todate=" + todate +
-                    "&terminalid=" + terminalid + "&type=" + $("#type").val() + "&department=" + department + "&branch=" +
+                    "&terminalid=" + terminalid + "&type=" + $("#type").val() + departmentQuery +
+                    "&branch=" +
                     branch;
             }
             if ($('#txtsalereturn').val() == 1) {
@@ -806,7 +834,7 @@
 
             if ($('#txtsalesinvoicesreport').val() == 1) {
                 window.location = "{{ url('sales-invoices-report') }}?fromdate=" + date + "&todate=" + todate +
-                    "&terminalid=" + terminalid + "&type=" + type + "&branch=" + branch+ "&category=" + category;
+                    "&terminalid=" + terminalid + "&type=" + type + "&branch=" + branch + "&category=" + category;
             }
 
             if ($('#txtstockreport').val() == 1) {
@@ -826,14 +854,16 @@
                     branch + "&salesperson=" + salesperson + "&status=" + status;
             }
             if ($('#txtwebsiteitemssummary').val() == 1) {
-                window.location = "{{ url('website-items-summary') }}?fromdate=" + date + "&todate=" + todate ;
+                window.location = "{{ url('website-items-summary') }}?fromdate=" + date + "&todate=" + todate;
             }
             if ($('#txtordertimingsummary').val() == 1) {
-                window.location = "{{ url('order-timings-summary') }}?fromdate=" + date + "&todate=" + todate + "&branch=" + branch ;
+                window.location = "{{ url('order-timings-summary') }}?fromdate=" + date + "&todate=" + todate +
+                    "&branch=" + branch;
             }
             if ($('#txtorderamountreceivable').val() == 1) {
-                window.location = "{{ url('order-amount-receivable') }}?fromdate=" + date + "&todate=" + todate + "&branch=" + branch + "&terminalid=" +
-                terminalid ;
+                window.location = "{{ url('order-amount-receivable') }}?fromdate=" + date + "&todate=" + todate +
+                    "&branch=" + branch + "&terminalid=" +
+                    terminalid;
             }
         }
 
@@ -845,21 +875,24 @@
             let type = $('#type').val();
 
             if ($('#txtsaledec').val() == 1) {
-                window.location = "{{ url('reports/excel-export-sales-declartion') }}"+"/" + from + "/" + to +"/" + branch + "/" + terminal;
+                window.location = "{{ url('reports/excel-export-sales-declartion') }}" + "/" + from + "/" + to + "/" +
+                    branch + "/" + terminal;
             }
 
             if ($('#txtwebsiteitemssummary').val() == 1) {
-                window.location = "{{ url('reports/website-items-summary') }}"+"/" + from + "/" + to;
+                window.location = "{{ url('reports/website-items-summary') }}" + "/" + from + "/" + to;
             }
 
             if ($('#txtinvoicereport').val() == 1) {
-                window.location = "{{ url('reports/excel-export-orders-report') }}?fromdate=" + from + "&todate=" + to + "&terminal_id=" +
-                terminal + "&type=" + type + "&report=excel&category=&branch=" + branch;
+                window.location = "{{ url('reports/excel-export-orders-report') }}?fromdate=" + from + "&todate=" + to +
+                    "&terminal_id=" +
+                    terminal + "&type=" + type + "&report=excel&category=&branch=" + branch;
             }
 
             if ($('#txtorderamountreceivable').val() == 1) {
-                window.location = "{{ url('reports/excel-export-orders-receivables') }}?fromdate=" + from + "&todate=" + to + "&terminal=" +
-                terminal + "&branch=" + branch;
+                window.location = "{{ url('reports/excel-export-orders-receivables') }}?fromdate=" + from + "&todate=" +
+                    to + "&terminal=" +
+                    terminal + "&branch=" + branch;
             }
 
             // if ($('#txtitemsale').val() == 1) {
@@ -918,17 +951,20 @@
         function showCategory() {
             $('#dvcategory').css("display", "block");
         }
+
         function showExcelButton() {
             $('#btnExcel').css("display", "block");
         }
         showdepartments();
 
         function showdepartments() {
-            if ($('#txtinventory').val() == 1 || $('#txtitemsale').val() == 1 || $('#txtinventorygeneralreport').val() ==
-                1 || $('#txtstockreport').val() == 1) {
+            if ($('#txtinventory').val() == 1 || $('#txtinventorygeneralreport').val() == 1 || $('#txtstockreport').val() ==
+                1) {
                 $('#dvdepartments').css("display", "block");
+            } else if ($('#txtitemsale').val() == 1) {
+                $('#dvmultipledepartments').css("display", "block");
             } else {
-                $('#dvdepartments').css("display", "none");
+                $('#dvmultipledepartments').css("display", "none");
             }
             if ($('#txtinventory').val() == 1 || $('#txtinventorygeneralreport').val() == 1 || $('#txtitemsale').val() ==
                 1 || $('#txtstockreport').val() == 1) {
@@ -960,6 +996,12 @@
             }
         });
 
+        $("#multipledepartment").change(function() {
+            if ($(this).val() != "") {
+                load_sub_dept($(this).val());
+            }
+        });
+
 
         function load_sub_dept(id) {
             $.ajax({
@@ -967,11 +1009,13 @@
                 type: 'POST',
                 data: {
                     _token: "{{ csrf_token() }}",
-                    id: $("#department").val()
+                    id: id
                 },
                 success: function(resp) {
                     $('#subdepartment').empty();
                     $("#subdepartment").append("<option value=''>Select Sub Department</option>");
+                    console.log(resp);
+
                     $.each(resp, function(index, value) {
                         $("#subdepartment").append(
                             "<option value=" + value.sub_department_id + ">" + value

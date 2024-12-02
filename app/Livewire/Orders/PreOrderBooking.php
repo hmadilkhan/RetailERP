@@ -43,6 +43,9 @@ class PreOrderBooking extends Component
     public $paymentId = "";
     public $errorMessage = "";
     public $taxValue = "";
+    public $discountType = "";
+    public $discountText = "";
+    public $discountValue = "";
 
     // ORDER ITEMS MODELS
     public $productId = "";
@@ -70,6 +73,9 @@ class PreOrderBooking extends Component
     {
         $this->branches = Branch::where("company_id", session("company_id"))->get();
         $this->orderTypes = OrderMode::all();
+        $this->discountType = "percentage";
+        $this->discountText = "Enter Percentage";
+        // dd($this->discountType);
     }
 
     public function hydrate()
@@ -99,8 +105,23 @@ class PreOrderBooking extends Component
         $this->customerId = $value;
     }
 
+    public function updatedDiscountType($value)  
+    {
+        $this->discountType = $value;
+        if ($value == "percentage") {
+            $this->discountText = "Enter Percentage";
+        }else if ($value == "amount") {
+            $this->discountText = "Enter Amount";
+        }
+        $this->calculateTotal();
+    }
 
-    #[Computed()]
+    public function updatedDiscountValue($value)
+    {
+        $this->discount = $value;
+        $this->calculateTotal();
+    }
+
     public function updatedBranchId($value)
     {
         if ($this->branchId != "") {
@@ -156,7 +177,14 @@ class PreOrderBooking extends Component
            $taxvalue = $this->taxValue / 100;
            $this->taxAmount  = $this->subTotal *  $taxvalue;
         }
+        
+        if ($this->discountType == "percentage") {
+            $this->discount = $this->subTotal * ((float) $this->discountValue / 100);
+        }else{
+            $this->discount = (float) $this->discountValue;
 
+        }
+       
         $this->totalAmount = $this->subTotal + $this->taxAmount  - $this->discount;
     }
 

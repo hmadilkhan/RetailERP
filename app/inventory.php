@@ -786,7 +786,16 @@ public function updateProductName($id,$name)
 
     public function get_sub_departments($id)
     {
-        $result = DB::select('SELECT a.* FROM inventory_sub_department a Inner JOIN inventory_department b on b.department_id = a.department_id and b.company_id = ? where a.department_id = ?',[session("company_id"),$id]);
+        if(is_array($id)){
+            $values = implode(",",$id);
+
+            // return "SELECT a.* FROM inventory_sub_department a Inner JOIN inventory_department b on b.department_id = a.department_id and b.company_id = ".session("company_id")." where a.department_id IN($values)";;
+        }else{
+            $values = $id;
+        }
+        $query = "SELECT a.* FROM inventory_sub_department a Inner JOIN inventory_department b on b.department_id = a.department_id and b.company_id = ".session("company_id")." where a.department_id IN($values)";
+        // $result = DB::select('SELECT a.* FROM inventory_sub_department a Inner JOIN inventory_department b on b.department_id = a.department_id and b.company_id = ? where a.department_id IN (?)',[session("company_id"),$values]);
+        $result = DB::select($query);
         return $result;
     }
 

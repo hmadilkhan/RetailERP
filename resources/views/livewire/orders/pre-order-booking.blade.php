@@ -154,12 +154,40 @@
                                     @if (!empty($taxes))
                                         @foreach ($taxes as $tax)
                                             <option value="{{ $tax->value }}">
-                                                {{ $tax->name." ".$tax->value."%" }}
+                                                {{ $tax->name . ' ' . $tax->value . '%' }}
                                             </option>
                                         @endforeach
                                     @endif
                                 </select>
                                 @error('paymentId')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                {{-- <label class="form-control-label "><i class="icofont icofont-barcode"></i>
+                                    Discount Type
+                                </label> --}}
+                                <div class="d-flex">
+                                    <div class="form-check f-right">
+                                        <input class="form-check-input" type="radio"  checked
+                                            value="percentage"  wire:model.live.debounce.100ms="discountType">
+                                        <label class="form-check-label" for="type">
+                                            Percentage
+                                        </label>
+                                    </div>
+                                    <div class="form-check f-right m-l-2">
+                                        <input class="form-check-input" type="radio" 
+                                            value="amount"  wire:model.live.debounce.100ms="discountType">
+                                        <label class="form-check-label" for="type">
+                                            Amount
+                                        </label>
+                                    </div>
+                                </div>
+                                <input class="form-control" type="text" id="discountValue" wire:model.live.debounce.250ms="discountValue"
+                                    placeholder="{{$discountText}}" />
+                                @error('discountType')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -204,7 +232,8 @@
                         </div>
                         <div class="col-md-3 col-sm-12">
                             <div id="itemcode" class="form-group">
-                                <label class="form-control-label "><i class="icofont icofont-barcode"></i>Price</label>
+                                <label class="form-control-label "><i
+                                        class="icofont icofont-barcode"></i>Price</label>
                                 <input class="form-control" type="text" wire:model="price" id="price"
                                     placeholder="Enter Price " />
                             </div>
@@ -327,10 +356,10 @@
     @script
         <script>
             console.log("calling");
-            
+
             $(document).ready(function() {
                 $(".select2").select2();
-                var select2Data = null ;
+                var select2Data = null;
 
                 $('#branch').on('change', function(e) {
                     var data = $('#branch').select2("val");
