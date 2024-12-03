@@ -833,7 +833,7 @@
                 window.location = "{{ url('itemsaledatabasepdf') }}?fromdate=" + date + "&todate=" + todate +
                     "&terminalid=" + terminalid + "&type=" + $("#type").val() + departmentQuery +
                     "&branch=" +
-                    branch + "&ordermode=" + ordermode + "&status" + status;
+                    branch + "&ordermode=" + ordermode + "&status=" + status;
             }
             if ($('#txtsalereturn').val() == 1) {
                 window.location = "{{ url('salesreturnpdf') }}?fromdate=" + date + "&todate=" + todate + "&terminalid=" +

@@ -3537,13 +3537,13 @@ class ReportController extends Controller
         $pdf->AliasNbPages();
         $pdf->AddPage();
 
-        //first row
+        // first row
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(35, 0, '', 0, 0);
         $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
         $pdf->Cell(50, 0, "", 0, 1, 'L');
 
-        //second row
+        // second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
         $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
@@ -3591,7 +3591,7 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(190, 10, 'Item Sale Database ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
-        if ($request->terminalid != 0) {
+        // if ($request->terminalid != 0) {
             // $pdf->SetFont('Arial', 'B', 12);
             // $pdf->setFillColor(0, 0, 0);
             // $pdf->SetTextColor(255, 255, 255);
@@ -3602,7 +3602,7 @@ class ReportController extends Controller
             // $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
             // $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
             // $pdf->Cell(30, 7, 'Gross Margin', 'B', 1, 'R', 1);
-        }
+        // }
 
 
         //total variables
