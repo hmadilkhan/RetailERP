@@ -1,0 +1,78 @@
+Product Code,Product Name,Product Description,Actual Price,Tax Rate,Tax Amount,Retail Price,Wholesale Price,Online Price,Discount Price,Department,Sub Department,Unit
+1,Garlic Bread (4 pcs),Garlic Bread (4 pcs),200,0,0,200,0,0,0,Starters,Starters,Unit
+2,Garlic Bread Supreme (4 pcs),Garlic Bread Supreme (4 pcs),250,0,0,250,0,0,0,Starters,Starters,Unit
+3,Chicken Corn Soup,Chicken Corn Soup,200,0,0,200,0,0,0,Starters,Soup,Unit
+4,Hot & Sour Soup,Hot & Sour Soup,250,0,0,250,0,0,0,Starters,Soup,Unit
+5,Chicken Tikka,Small,399,0,0,399,0,0,0,Pizza,Small,Unit
+6,Chicken Tikka,Regular,649,0,0,649,0,0,0,Pizza,Regular,Unit
+7,Chicken Tikka,Large,1099,0,0,1099,0,0,0,Pizza,Large,Unit
+8,Chicken Fajita,Small,399,0,0,399,0,0,0,Pizza,Small,Unit
+9,Chicken Fajita,Regular,649,0,0,649,0,0,0,Pizza,Regular,Unit
+10,Chicken Fajita,Large,1099,0,0,1099,0,0,0,Pizza,Large,Unit
+11,Cheesy Blast,Small,399,0,0,399,0,0,0,Pizza,Small,Unit
+12,Cheesy Blast,Regular,649,0,0,649,0,0,0,Pizza,Regular,Unit
+13,Cheesy Blast,Large,1099,0,0,1099,0,0,0,Pizza,Large,Unit
+14,Vegi Lover,Small,399,0,0,399,0,0,0,Pizza,Small,Unit
+15,Vegi Lover,Regular,649,0,0,649,0,0,0,Pizza,Regular,Unit
+16,Vegi Lover,Large,1099,0,0,1099,0,0,0,Pizza,Large,Unit
+17,Ch Super Supreme,Small,499,0,0,499,0,0,0,Pizza,Small,Unit
+18,Ch Super Supreme,Regular,799,0,0,799,0,0,0,Pizza,Regular,Unit
+19,Ch Super Supreme,Large,1199,0,0,1199,0,0,0,Pizza,Large,Unit
+20,Afghani Boti,Small,499,0,0,499,0,0,0,Pizza,Small,Unit
+21,Afghani Boti,Regular,799,0,0,799,0,0,0,Pizza,Regular,Unit
+22,Afghani Boti,Large,1199,0,0,1199,0,0,0,Pizza,Large,Unit
+23,Chicken Malai Tikka,Small,499,0,0,499,0,0,0,Pizza,Small,Unit
+24,Chicken Malai Tikka,Regular,799,0,0,799,0,0,0,Pizza,Regular,Unit
+25,Chicken Malai Tikka,Large,1199,0,0,1199,0,0,0,Pizza,Large,Unit
+26,Chicken B.B.Q,Small,499,0,0,499,0,0,0,Pizza,Small,Unit
+27,Chicken B.B.Q,Regular,799,0,0,799,0,0,0,Pizza,Regular,Unit
+28,Chicken B.B.Q,Large,1199,0,0,1199,0,0,0,Pizza,Large,Unit
+29,Shawarma Supreme,Small,499,0,0,499,0,0,0,Pizza,Small,Unit
+30,Shawarma Supreme,Regular,799,0,0,799,0,0,0,Pizza,Regular,Unit
+31,Shawarma Supreme,Large,1199,0,0,1199,0,0,0,Pizza,Large,Unit
+32,Club Sandwich,Club Sandwich,450,0,0,450,0,0,0,Sandwich,Sandwich,Unit
+33,B.B.Q Chicken Sandwich,B.B.Q Chicken Sandwich,500,0,0,500,0,0,0,Sandwich,Sandwich,Unit
+34,House Special Mexican Sandwich,House Special Mexican Sandwich,700,0,0,700,0,0,0,Sandwich,Sandwich,Unit
+35,Turkish Burger,Turkish Burger,700,0,0,700,0,0,0,Burger,Signature Range,Unit
+36,Mushroom Burger,Mushroom Burger,700,0,0,700,0,0,0,Burger,Signature Range,Unit
+37,Grill Burger,Grill Burger,750,0,0,750,0,0,0,Burger,Signature Range,Unit
+38,Pizza Burger,Pizza Burger,700,0,0,700,0,0,0,Burger,Signature Range,Unit
+39,Classic Beef,Classic Beef,500,0,0,500,0,0,0,Burger,Original Range,Unit
+40,Classic Chicken,Classic Chicken,400,0,0,400,0,0,0,Burger,Original Range,Unit
+41,HouseSpecial Burger,HouseSpecial Burger,700,0,0,700,0,0,0,Burger,Original Range,Unit
+42,Crispy Zinger Burger,Crispy Zinger Burger,450,0,0,450,0,0,0,Burger,Crispy Range,Unit
+43,Crispy Jalapeno,Crispy Jalapeno,550,0,0,550,0,0,0,Burger,Crispy Range,Unit
+44,Crispy B.B.Q,Crispy B.B.Q,500,0,0,500,0,0,0,Burger,Crispy Range,Unit
+45,Plain Fries,Plain Fries,200,0,0,200,0,0,0,Fries,Fries,Unit
+46,Loaded Fries,Loaded Fries,400,0,0,400,0,0,0,Fries,Fries,Unit
+47,Pizza Fries,Pizza Fries,500,0,0,500,0,0,0,Fries,Fries,Unit
+48,Crispy Chicken Fries,Crispy Chicken Fries,500,0,0,500,0,0,0,Fries,Fries,Unit
+49,Mayo Garlic Fries,Mayo Garlic Fries,250,0,0,250,0,0,0,Fries,Fries,Unit
+50,Chicken Chatni Roll,Chicken Chatni Roll,200,0,0,200,0,0,0,Roll,Roll,Unit
+51,Chicken Mayo Roll,Chicken Mayo Roll,250,0,0,250,0,0,0,Roll,Roll,Unit
+52,Chicken Chesse Roll,Chicken Chesse Roll,300,0,0,300,0,0,0,Roll,Roll,Unit
+53,Zinger Roll,Zinger Roll,350,0,0,350,0,0,0,Roll,Roll,Unit
+54,Egg Fried Rice,Egg Fried Rice,500,0,0,500,0,0,0,Rice,Rice,Unit
+55,Vegitable Rice,Vegitable Rice,400,0,0,400,0,0,0,Rice,Rice,Unit
+56,Chicken Fried Rice,Chicken Fried Rice,600,0,0,600,0,0,0,Rice,Rice,Unit
+57,Singaporean Rice,Singaporean Rice,800,0,0,800,0,0,0,Rice,Rice,Unit
+58,Chicken Shashlik,Chicken Shashlik,700,0,0,700,0,0,0,Chinese,Chinese,Unit
+59,Chicken Manchurian,Chicken Manchurian,700,0,0,700,0,0,0,Chinese,Chinese,Unit
+60,Chicken Chilli Dry,Chicken Chilli Dry,800,0,0,800,0,0,0,Chinese,Chinese,Unit
+61,Chicken Kung Pao,Chicken Kung Pao,850,0,0,850,0,0,0,Chinese,Chinese,Unit
+62,Ch. Chilli Vegitable,Ch. Chilli Vegitable,700,0,0,700,0,0,0,Chinese,Chinese,Unit
+63,Dragon Chicken,Dragon Chicken,900,0,0,900,0,0,0,Chinese,Chinese,Unit
+64,Chicken Chowmein,Chicken Chowmein,600,0,0,600,0,0,0,Chinese,Chinese,Unit
+65,Vegitable Chowmein,Vegitable Chowmein,500,0,0,500,0,0,0,Chinese,Chinese,Unit
+66,Deal 1,1 Crispy Zinger Burger 1 Small Pizza 1 Cold Drink 345ml,799,0,0,799,0,0,0,Deal,Deal,Unit
+67,Deal 2,1 B.B.Q Chicken Sandwich 1 Regular Pizza 1 Chicken Chilli Dry 3 Cold Drink 345ml,1799,0,0,1799,0,0,0,Deal,Deal,Unit
+68,Deal 3,2 Chicken Chatni Roll 1 Classic Chicken Burger 1 Pizza Fries 2 Drink 345ml,1299,0,0,1299,0,0,0,Deal,Deal,Unit
+69,Deal 4,1 Small Pizza 1 Ch. Garlic Mayo Roll 1 Cold Drink 345ml,799,0,0,799,0,0,0,Deal,Deal,Unit
+70,Deal 5,2 Large Pizza 1 Cold Drink 1.5 Ltr,2199,0,0,2199,0,0,0,Deal,Deal,Unit
+71,Deal 6,1 Chicken Kung Pao 1 House Special Mexican Sandwich 2 Cold Drink 345ml,1499,0,0,1499,0,0,0,Deal,Deal,Unit
+72,Deal 7,1 Pizza Burger 1 Pizza Fries 1 Regular Pizza 1 Chicken Chowmein 4 Cold Drink 345ml,2599,0,0,2599,0,0,0,Deal,Deal,Unit
+73,Deal 8,2 Zinger Burger 1 Large Pizza 1 Chicken Shashlik 1 Cold Drink 1.5 Ltr,2699,0,0,2699,0,0,0,Deal,Deal,Unit
+74,Deal 9,1 Chicken Manchurian 1 Mushroom Burger 1 Club Sandwich 3 Cold Drink 345ml,1999,0,0,1999,0,0,0,Deal,Deal,Unit
+75,Deal 10,1 Club Sandwich 1 Crispy Zinger 2 Cold Drink 345ml,899,0,0,899,0,0,0,Deal,Deal,Unit
+76,Deal 11,4 Zinger Burger 1 Cold Drink 1.5 Ltr,1699,0,0,1699,0,0,0,Deal,Deal,Unit
+77,Deal 12,1 Large Pizza 2 Small Pizza 1 Cold Drink 1.5 Ltr,1899,0,0,1899,0,0,0,Deal,Deal,Unit

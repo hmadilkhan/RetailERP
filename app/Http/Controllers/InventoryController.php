@@ -1542,6 +1542,8 @@ class InventoryController extends Controller
             // Redirect to index
             // return redirect()->action('InventoryController@index');
             return redirect()->route('invent-list');
+        }else{
+            return 0;
         }
     }
 
@@ -2240,7 +2242,7 @@ class InventoryController extends Controller
         $this->validate($request, $rules);
 
         if ($request->input('submit') != null) {
-
+ 
             $deptandSubdept = $inventory->getDeptandSubDept();
 
             $file = $request->file('file');
