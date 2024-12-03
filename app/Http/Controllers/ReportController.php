@@ -3867,7 +3867,7 @@ class ReportController extends Controller
                 $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
                 $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
                 $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id, $request->department, $request->subdepartment, $request->ordermode, $request->status);
-                return $details;
+
                 if (!empty($departments)) {
                     foreach ($departments as $key => $department) {
                         $totaldepartmentCount = 0;
