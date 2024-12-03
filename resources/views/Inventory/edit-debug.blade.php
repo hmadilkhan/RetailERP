@@ -749,8 +749,9 @@ $("#showProductWebsite").on('click',function(){
 
       $("#name").on('change',function(){
          //let regex = /[^a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F()]/g;
-         let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)]+$/;
-          if(regex.test($("#name").val())){
+         //let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)]+$/;
+         let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
+          if(!regex.test($("#name").val())){
             swal('Error!','Special characters are not allowed!','error');
              $("#product_name_alert").text('Special characters are not allowed!');
              if(!$(this).hasClass('input-danger')){
