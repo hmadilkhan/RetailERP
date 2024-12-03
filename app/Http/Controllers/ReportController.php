@@ -4032,7 +4032,7 @@ class ReportController extends Controller
             $pdf->ln(10);
         }
        
-        // $pdf->Output('Item_Sale_Database.pdf', 'I');
+        $pdf->Output('Item_Sale_Database.pdf', 'I');
     }
 
     //Sale Return  report
