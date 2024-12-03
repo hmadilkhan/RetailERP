@@ -3789,6 +3789,16 @@ class ReportController extends Controller
                             // $pdf->ln(1);
                         }
                     }
+
+                    $pdf->ln(2);
+                    $pdf->SetFont('Arial', 'B', 12);
+
+                    $pdf->setFillColor(0, 0, 0);
+                    $pdf->SetTextColor(255, 255, 255);
+                    $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
+                    $pdf->setFillColor(255, 255, 255);
+                    $pdf->SetTextColor(0, 0, 0);
+
                     $pdf->setFillColor(255, 255, 255);
                     $pdf->SetTextColor(0, 0, 0);
                     $pdf->SetFont('Arial', 'B', 10);
@@ -4028,7 +4038,7 @@ class ReportController extends Controller
             }
             $pdf->ln(10);
         }
-       
+
         $pdf->Output('Item_Sale_Database.pdf', 'I');
     }
 
