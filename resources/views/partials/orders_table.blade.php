@@ -186,7 +186,7 @@ $(document).ready(function() {
             detailsRow.show();
             let id = row.attr('id');
             $("#child-receiptNo"+id.replace('parent','')).text(id.replace('parent',''));
-            swal('Loading','Please wait','info');
+            //swal('Loading','Please wait','info');
             inLineOrderDetails(id.replace('parent',''));
         }
     });
