@@ -2915,7 +2915,7 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminals[0]->terminal_name, 0, 1, 'L');
-            $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid,"","","all","all");
+            $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, "", "", "all", "all");
             foreach ($details as $value) {
                 $actualAmount = 0;
                 $salesTaxAmount = 0;
@@ -3525,12 +3525,12 @@ class ReportController extends Controller
             $departments = InventoryDepartment::whereIn("department_id", $request->department)->select("department_id", "department_name")->get();
         }
 
-        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
-            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
-            \QrCode::size(200)
-                ->format('png')
-                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
-        }
+        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+        //     \QrCode::size(200)
+        //         ->format('png')
+        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        // }
 
         $pdf = new pdfClass();
 
@@ -3544,12 +3544,12 @@ class ReportController extends Controller
         $pdf->Cell(50, 0, "", 0, 1, 'L');
 
         // second row
-        $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
-        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
-        $pdf->Cell(50, 0, "", 0, 1, 'R');
-        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+        // $pdf->SetFont('Arial', 'B', 14);
+        // $pdf->Cell(35, 0, '', 0, 0);
+        // $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        // $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        // $pdf->Cell(50, 0, "", 0, 1, 'R');
+        // $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
 
         //third row
         $pdf->SetFont('Arial', '', 10);
@@ -3591,19 +3591,6 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(190, 10, 'Item Sale Database ' . $branchname, 'B,T', 1, 'L');
         $pdf->ln(1);
-        // if ($request->terminalid != 0) {
-            // $pdf->SetFont('Arial', 'B', 12);
-            // $pdf->setFillColor(0, 0, 0);
-            // $pdf->SetTextColor(255, 255, 255);
-            // $pdf->Cell(20, 7, 'Code', 'B', 0, 'C', 1);
-            // $pdf->Cell(65, 7, 'Poduct Name', 'B', 0, 'L', 1);
-            // $pdf->Cell(20, 7, 'Qty', 'B', 0, 'C', 1);
-            // $pdf->Cell(20, 7, 'Price', 'B', 0, 'C', 1);
-            // $pdf->Cell(20, 7, 'Amount', 'B', 0, 'R', 1);
-            // $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
-            // $pdf->Cell(30, 7, 'Gross Margin', 'B', 1, 'R', 1);
-        // }
-
 
         //total variables
         $totalCount = 0;
@@ -3817,26 +3804,7 @@ class ReportController extends Controller
                     $pdf->ln(2);
                     $pdf->SetFont('Arial', 'B', 12);
 
-
-
-                    // $pdf->SetFont('Arial', 'B', 10);
-                    // $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
-                    // $pdf->Cell(63, 7, number_format($totalSalesReturnOrders), 'B,T', 0, 'R');
-                    // $pdf->Cell(63, 7, number_format($totalSalesReturnOrdersAmount), 'B,T', 1, 'R');
-                    // $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
-                    // $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
-                    // $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
-
-                    // $pdf->ln(2);
-                    // $pdf->SetFont('Arial', 'B', 12);
-                    // $pdf->setFillColor(0, 0, 0);
-                    // $pdf->SetTextColor(255, 255, 255);
-                    // $pdf->Cell(63, 7, 'Status Name', 'B', 0, 'C', 1);
-                    // $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
-                    // $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
-
-
-                    $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id,$request->department, $request->subdepartment, $request->ordermode, $request->status);
+                    $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id, $request->department, $request->subdepartment, $request->ordermode, $request->status);
                     if (!empty($allOrdersByStatus)) {
                         $pdf->setFillColor(0, 0, 0);
                         $pdf->SetTextColor(255, 255, 255);
@@ -4024,20 +3992,7 @@ class ReportController extends Controller
                     }
                 }
 
-                $pdf->ln(2);
-                // $pdf->SetFont('Arial', 'B', 12);
 
-                // $pdf->setFillColor(255, 255, 255);
-                // $pdf->SetTextColor(0, 0, 0);
-                // $pdf->SetFont('Arial', 'B', 10);
-                // $pdf->Cell(20, 7, "Total", 'B,T', 0, 'L');
-                // $pdf->Cell(50, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
-                // $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
-                // $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
-                // $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'C');
-                // $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
-                // $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
-                // $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
 
                 $pdf->ln(2);
                 $pdf->SetFont('Arial', 'B', 12);
@@ -4062,24 +4017,7 @@ class ReportController extends Controller
 
                 $pdf->ln(2);
 
-                // $pdf->SetFont('Arial', 'B', 10);
-                // $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
-                // $pdf->Cell(63, 7, number_format($totalSalesReturnOrders), 'B,T', 0, 'R');
-                // $pdf->Cell(63, 7, number_format($totalSalesReturnOrdersAmount), 'B,T', 1, 'R');
-                // $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
-                // $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
-                // $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
-
-                // $pdf->ln(2);
-                // $pdf->SetFont('Arial', 'B', 12);
-                // $pdf->setFillColor(0, 0, 0);
-                // $pdf->SetTextColor(255, 255, 255);
-                // $pdf->Cell(63, 7, 'Status Name', 'B', 0, 'C', 1);
-                // $pdf->Cell(63, 7, 'Total Orders', 'B', 0, 'C', 1);
-                // $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
-
-
-                $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id,$request->department, $request->subdepartment, $request->ordermode, $request->status);
+                $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id, $request->department, $request->subdepartment, $request->ordermode, $request->status);
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);
@@ -4090,24 +4028,11 @@ class ReportController extends Controller
                 }
             }
 
-            // $pdf->ln(2);
-
-            // $pdf->SetFont('Arial', 'B', 10);
-            // $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
-            // $pdf->Cell(63, 7, number_format($totalSalesReturnOrders), 'B,T', 0, 'R');
-            // $pdf->Cell(63, 7, number_format($totalSalesReturnOrdersAmount), 'B,T', 1, 'R');
-            // $pdf->Cell(63, 7, "Total Void Order", 'B,T', 0, 'L');
-            // $pdf->Cell(63, 7, number_format($totalVoidOrders), 'B,T', 0, 'R');
-            // $pdf->Cell(63, 7, number_format($totalVoidOrdersAmount), 'B,T', 1, 'R');
-            // $pdf->Cell(63, 7, "Total Delivered Orders", 'B,T', 0, 'L');
-            // $pdf->Cell(63, 7, number_format($totalDeliveredOrders), 'B,T', 0, 'R');
-            // $pdf->Cell(63, 7, number_format($totalDeliveredOrdersAmount), 'B,T', 1, 'R');
 
             $pdf->ln(10);
         }
-
-        //save file
-        $pdf->Output('Item_Sale_Database.pdf', 'I');
+       
+        // $pdf->Output('Item_Sale_Database.pdf', 'I');
     }
 
     //Sale Return  report
