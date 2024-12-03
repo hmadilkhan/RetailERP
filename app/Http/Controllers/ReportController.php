@@ -75,8 +75,9 @@ class ReportController extends Controller
         $paymentModes = $report->getPaymentModes();
         $salespersons = $orderService->getServiceProviders();
         $statuses = $orderService->getOrderStatus();
+        $ordermodes = $orderService->getOrderModes();
 
-        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons', 'statuses'));
+        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons', 'statuses', 'ordermodes'));
     }
 
     public function show(report $report, salary $salary)
@@ -2914,7 +2915,7 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminals[0]->terminal_name, 0, 1, 'L');
-            $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid);
+            $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid,"","","all","all");
             foreach ($details as $value) {
                 $actualAmount = 0;
                 $salesTaxAmount = 0;
@@ -3635,21 +3636,8 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 15);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'C');
-                $modes = $report->itemSalesOrderMode($request->fromdate, $request->todate, $values->terminal_id);
-                // $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $request->type, $request->department, $request->subdepartment);
+                $modes = $report->itemSalesOrderMode($request->fromdate, $request->todate, $values->terminal_id, $request->ordermode, $request->status);
 
-                // Filter the collection for specific statuses
-                // $filtered = collect($details)->filter(function ($order) {
-                //     return $order->ordermode;
-                // });
-
-                // Get the unique `status` values and group by the status
-                // $orderModes = $filtered->groupBy('ordermode')->keys();
-
-                // Group the filtered collection by status
-                // $grouped = $filtered->groupBy('ordermode');
-
-                // return $grouped["TAKE AWAY"];
                 foreach ($modes as $mode) {
                     $totalCount = 0;
                     $totalqty = 0;
@@ -3682,7 +3670,7 @@ class ReportController extends Controller
                     $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
                     $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
 
-                    $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $mode->order_mode_id, $request->department, $request->subdepartment);
+                    $details = $report->itemsale_details($request->fromdate, $request->todate, $values->terminal_id, $mode->order_mode_id, $request->department, $request->subdepartment, $request->ordermode, $request->status);
 
                     if (!empty($departments)) {
                         foreach ($departments as $key => $department) {
@@ -3829,7 +3817,7 @@ class ReportController extends Controller
                     $pdf->ln(2);
                     $pdf->SetFont('Arial', 'B', 12);
 
-                    
+
 
                     // $pdf->SetFont('Arial', 'B', 10);
                     // $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
@@ -3848,7 +3836,7 @@ class ReportController extends Controller
                     // $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
 
 
-                    $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id);
+                    $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id,$request->department, $request->subdepartment, $request->ordermode, $request->status);
                     if (!empty($allOrdersByStatus)) {
                         $pdf->setFillColor(0, 0, 0);
                         $pdf->SetTextColor(255, 255, 255);
@@ -3877,18 +3865,8 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminals[0]->terminal_name, 0, 1, 'L');
-            $modes = $report->itemSalesOrderMode($request->fromdate, $request->todate, $request->terminalid);
-            // $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $request->type, $request->department, $request->subdepartment);
-            // Filter the collection for specific statuses
-            // $filtered = collect($details)->filter(function ($order) {
-            //     return $order->ordermode;
-            // });
+            $modes = $report->itemSalesOrderMode($request->fromdate, $request->todate, $request->terminalid, $request->ordermode, $request->status);
 
-            // Get the unique `status` values and group by the status
-            // $orderModes = $filtered->groupBy('ordermode')->keys();
-
-            // Group the filtered collection by status
-            // $grouped = $filtered->groupBy('ordermode');
             foreach ($modes as $mode) {
                 $totalCount = 0;
                 $totalqty = 0;
@@ -3920,9 +3898,15 @@ class ReportController extends Controller
                 $pdf->Cell(15, 7, 'COGS', 'B', 0, 'R', 1);
                 $pdf->Cell(15, 7, 'Margin', 'B', 0, 'R', 1);
                 $pdf->Cell(30, 7, 'Status', 'B', 1, 'R', 1);
-                $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id, $request->department, $request->subdepartment);
+                $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id, $request->department, $request->subdepartment, $request->ordermode, $request->status);
                 if (!empty($departments)) {
                     foreach ($departments as $key => $department) {
+                        $totaldepartmentCount = 0;
+                        $totaldepartmentqty = 0;
+                        $totaldepartmentamount = 0;
+                        $totaldepartmentcost = 0;
+                        $totaldepartmentmargin = 0;
+
                         $pdf->ln(2);
                         $pdf->SetFont('Arial', 'B', 12);
                         $pdf->setFillColor(128, 128, 128);
@@ -3944,6 +3928,17 @@ class ReportController extends Controller
                             $totalamount = $totalamount + $value->amount;
                             $totalcost = $totalcost + $value->cost;
                             $totalmargin = $totalmargin + ($value->amount - $value->cost);
+
+                            $totaldepartmentCount++;
+                            // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
+                            if (session('company_id') == 74) {
+                                $totaldepartmentqty = $totaldepartmentqty + ($value->qty * $value->weight_qty);
+                            } else {
+                                $totaldepartmentqty = $totaldepartmentqty + $value->qty;
+                            }
+                            $totaldepartmentamount = $totaldepartmentamount + $value->amount;
+                            $totaldepartmentcost = $totaldepartmentcost + $value->cost;
+                            $totaldepartmentmargin = $totaldepartmentmargin + ($value->amount - $value->cost);
 
                             $pdf->SetFont('Arial', '', 10);
                             if ($value->void_receipt == 1) {
@@ -3973,6 +3968,18 @@ class ReportController extends Controller
                             $pdf->Cell(15, 6, number_format($value->amount - $value->cost), 0, 0, 'R', 1);
                             $pdf->Cell(30, 6, $value->order_status_name, 0, 1, 'R', 1);
                         }
+
+                        $pdf->setFillColor(255, 255, 255);
+                        $pdf->SetTextColor(0, 0, 0);
+                        $pdf->SetFont('Arial', 'B', 10);
+                        $pdf->Cell(20, 7, "Total", 'B,T', 0, 'L');
+                        $pdf->Cell(50, 7, "Item Count (" . $totaldepartmentCount . ")", 'B,T', 0, 'L');
+                        $pdf->Cell(20, 7, number_format($totaldepartmentqty), 'B,T', 0, 'C');
+                        $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
+                        $pdf->Cell(20, 7, number_format($totaldepartmentamount), 'B,T', 0, 'C');
+                        $pdf->Cell(15, 7, number_format($totaldepartmentcost), 'B,T', 0, 'R');
+                        $pdf->Cell(15, 7, number_format($totaldepartmentmargin), 'B,T', 0, 'R');
+                        $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
                     }
                 } else {
                     foreach ($details as $value) {
@@ -4017,6 +4024,30 @@ class ReportController extends Controller
                     }
                 }
 
+                $pdf->ln(2);
+                // $pdf->SetFont('Arial', 'B', 12);
+
+                // $pdf->setFillColor(255, 255, 255);
+                // $pdf->SetTextColor(0, 0, 0);
+                // $pdf->SetFont('Arial', 'B', 10);
+                // $pdf->Cell(20, 7, "Total", 'B,T', 0, 'L');
+                // $pdf->Cell(50, 7, "Item Count (" . $totalCount . ")", 'B,T', 0, 'L');
+                // $pdf->Cell(20, 7, number_format($totalqty), 'B,T', 0, 'C');
+                // $pdf->Cell(20, 7, '', 'B,T', 0, 'C');
+                // $pdf->Cell(20, 7, number_format($totalamount), 'B,T', 0, 'C');
+                // $pdf->Cell(15, 7, number_format($totalcost), 'B,T', 0, 'R');
+                // $pdf->Cell(15, 7, number_format($totalmargin), 'B,T', 0, 'R');
+                // $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
+
+                $pdf->ln(2);
+                $pdf->SetFont('Arial', 'B', 12);
+
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
+
                 $pdf->setFillColor(255, 255, 255);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->SetFont('Arial', 'B', 10);
@@ -4030,13 +4061,6 @@ class ReportController extends Controller
                 $pdf->Cell(30, 7, '-', 'B,T', 1, 'R');
 
                 $pdf->ln(2);
-                $pdf->SetFont('Arial', 'B', 12);
-
-                $pdf->setFillColor(0, 0, 0);
-                $pdf->SetTextColor(255, 255, 255);
-                $pdf->Cell(190, 7, 'SUMMARY', 'B', 1, 'C', 1);
-                $pdf->setFillColor(255, 255, 255);
-                $pdf->SetTextColor(0, 0, 0);
 
                 // $pdf->SetFont('Arial', 'B', 10);
                 // $pdf->Cell(63, 7, "Total Sale Return", 'B,T', 0, 'L');
@@ -4055,7 +4079,7 @@ class ReportController extends Controller
                 // $pdf->Cell(63, 7, 'Total Amount', 'B', 1, 'C', 1);
 
 
-                $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id);
+                $allOrdersByStatus = $report->groupByItemSaleStatus($request->fromdate, $request->todate, $request->terminalid, $mode->order_mode_id,$request->department, $request->subdepartment, $request->ordermode, $request->status);
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);

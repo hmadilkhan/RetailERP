@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Branch;
+use App\Models\OrderMode;
 use App\Models\OrderStatus;
 use App\Models\ServiceProvider;
 use Illuminate\Support\Facades\DB;
@@ -38,6 +39,11 @@ class OrderService
     public function getOrderStatus()
     {
         return OrderStatus::all();
+    }
+
+    public function getOrderModes()
+    {
+        return OrderMode::all();
     }
 
     public function getOrderDetailsFromItems($from,$to,$branch,$productId)

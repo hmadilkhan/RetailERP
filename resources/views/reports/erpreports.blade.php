@@ -471,6 +471,23 @@
                         </div>
                     </div>
 
+                    <div class="row" id="dvordermode" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Order Mode</label>
+                                <select name="ordermode" id="ordermode" data-placeholder="Select Order Mode"
+                                    class="form-control select2">
+                                    <option value="all">All</option>
+                                    @foreach ($ordermodes as $mode)
+                                        <option value="{{ $mode->order_mode_id }}">{{ $mode->order_mode }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button id="ExcelButton" style="display:none;" type="button"
@@ -524,7 +541,7 @@
 
             const filters = ['#dvbranch', '#dvdepartments', '#dvmultipledepartments', '#dvsubdepartments', '#dvterminal',
                 '#dvtype', '#dvitemcode',
-                '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory'
+                '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory', '#dvordermode'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -556,6 +573,7 @@
             if (fieldMappings.some(mapping => mapping.showMode)) showMode();
             if (fieldMappings.some(mapping => mapping.showStatus)) showStatus();
             if (fieldMappings.some(mapping => mapping.showCategory)) showCategory();
+            if (fieldMappings.some(mapping => mapping.showOrderMode)) showOrderMode();
         }
 
         $('#dvprofitstandard').on('click', function() {
@@ -634,7 +652,9 @@
                 showDepartments: true,
                 showsubdepartments: true,
                 showBranch: true,
-                showTerminal: true
+                showTerminal: true,
+                showOrderMode: true,
+                showStatus: true
             }]);
         });
 
@@ -781,10 +801,11 @@
             let mode = $('#mode').val();
             let status = $('#status').val();
             let category = $('#category').val();
+            let ordermode = $('#ordermode').val();
 
             // Convert the array to query string format
             let departmentQuery = multidepartments.map(dep => `department[]=${dep}`).join('&');
-            departmentQuery = "&"+departmentQuery;
+            departmentQuery = "&" + departmentQuery;
 
             if ($('#txtprofitstandard').val() == 1) {
                 window.location = "{{ url('profitLossStandardReport') }}?fromdate=" + date + "&todate=" + todate +
@@ -812,7 +833,7 @@
                 window.location = "{{ url('itemsaledatabasepdf') }}?fromdate=" + date + "&todate=" + todate +
                     "&terminalid=" + terminalid + "&type=" + $("#type").val() + departmentQuery +
                     "&branch=" +
-                    branch;
+                    branch + "&ordermode=" + ordermode + "&status" + status;
             }
             if ($('#txtsalereturn').val() == 1) {
                 window.location = "{{ url('salesreturnpdf') }}?fromdate=" + date + "&todate=" + todate + "&terminalid=" +
@@ -913,11 +934,12 @@
         });
 
         function showType() {
-            if ($('#txttype').val() == 1) {
-                $('#dvtype').css("display", "block");
-            } else {
-                $('#dvtype').css("display", "none");
-            }
+            $('#dvtype').css("display", "block");
+            // if ($('#txttype').val() == 1) {
+            //     $('#dvtype').css("display", "block");
+            // } else {
+            //     $('#dvtype').css("display", "none");
+            // }
         }
 
         function showCode() {
@@ -946,6 +968,10 @@
 
         function showStatus() {
             $('#dvstatus').css("display", "block");
+        }
+
+        function showOrderMode() {
+            $("#dvordermode").css("display", "block");
         }
 
         function showCategory() {
