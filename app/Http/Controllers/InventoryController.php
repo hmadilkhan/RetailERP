@@ -164,7 +164,7 @@ class InventoryController extends Controller
 //regex:/^[a-zA-Z0-9\s]+$/ old regex
         $rules = [
             'code'          => 'required',
-            'name'          => 'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)]+$/u',
+            'name'          => 'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)\.]+$/u',
             'reminder'      => 'required',
             'uom'           => 'required',
             'cuom'          => 'required',
@@ -2242,7 +2242,7 @@ class InventoryController extends Controller
         $this->validate($request, $rules);
 
         if ($request->input('submit') != null) {
- 
+
             $deptandSubdept = $inventory->getDeptandSubDept();
 
             $file = $request->file('file');
