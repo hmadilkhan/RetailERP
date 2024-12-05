@@ -8,6 +8,7 @@ use App\order;
 use App\master;
 use App\inventory;
 use App\Customer;
+use App\Http\Resources\onlineSalesResource\ProductResource;
 use App\Vendor;
 use App\Models\Order as OrderModel;
 use App\Models\Terminal;
@@ -76,16 +77,78 @@ class OrderController extends Controller
         return view('order.orderview', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'orders', 'serviceproviders'));
     }
 
-    public function orderdetails(Request $request, Customer $customer)
+    public function orderdetails(Request $request, Customer $customer, OrderService $orderService)
     {
-        $orders = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user", "payment", "address")->where("id", $request->id)->first();
-        $received = CustomerAccount::where("receipt_no", $request->id)->sum('received');
+        $orderId = $request->id;
+
+        // Fetch order details
+        $order = $orderService->getOrderWithRelations($orderId);
+
+        if ($order && $order->website) {
+            $record = $order->web_onlineOrderDetails($request->id);
+
+            if ($record == null) {
+                Session::flash('error', 'Error! order detail not found.');
+                return redirect('web-orders-view');
+            }
+
+            $orders = new salesReceiptResource($record[0]);
+
+            if ($orders != null) {
+                $orders = json_encode($orders);
+                $orders = json_decode($orders);
+            }
+
+            return view("order.online-order-details", compact("orders"));
+        }
+
+        // Retrieve other necessary data
+        $received = $orderService->getTotalReceived($orderId);
         $statuses = OrderStatus::all();
-        $ledgerDetails = $customer->LedgerDetailsShowInOrderDetails($orders->customer->id, $request->id);
-        $provider = ServiceProviderOrders::with("serviceprovider")->where("receipt_id", $orders->id)->first();
-        // return $ledgerDetails;
-        // return $orders;
-        return view("order.order-details", compact("orders", "received", "statuses", "ledgerDetails", "provider"));
+        $ledgerDetails = $orderService->getCustomerLedgerDetails($customer, $order->customer->id, $orderId);
+        $provider = $orderService->getServiceProvider($order->id);
+        return view('order.order-details', compact('order', 'received', 'statuses', 'ledgerDetails', 'provider'));
+
+
+
+        // $orders = OrderModel::with("orderdetails", "orderdetails.inventory", "orderdetails.itemstatus", "orderdetails.statusLogs", "orderdetails.statusLogs.status", "orderAccount", "orderAccountSub", "customer", "branchrelation", "orderStatus", "statusLogs", "statusLogs.status", "statusLogs.branch", "statusLogs.user", "payment", "address", "website")->where("id", $request->id)->first();
+        // // return $orders;
+        // // Check if the order exists
+        // if (!empty($orders) && !empty($orders->website)) {
+        //     // Wrap the order using the SalesReceiptResource
+        //     $products = ProductResource::customCollection(DB::table('inventory_general')
+        //         ->join('sales_receipt_details', 'sales_receipt_details.item_code', 'inventory_general.id')
+        //         ->where('sales_receipt_details.receipt_id', $orders->id)
+        //         ->where('sales_receipt_details.mode', 'inventory-general')
+        //         ->select(
+        //             'sales_receipt_details.receipt_id',
+        //             'sales_receipt_details.item_code',
+        //             'sales_receipt_details.item_name',
+        //             'sales_receipt_details.total_qty',
+        //             'sales_receipt_details.item_price',
+        //             'sales_receipt_details.total_amount',
+        //             'sales_receipt_details.calcu_amount_webcart',
+        //             'sales_receipt_details.receipt_detail_id',
+        //             'sales_receipt_details.discount_value',
+        //             'sales_receipt_details.discount_code',
+        //             'sales_receipt_details.group_id',
+        //             'sales_receipt_details.actual_price',
+        //             'inventory_general.image',
+        //             'inventory_general.url'
+        //         )
+        //         ->get(), $orders->website->type, $orders->website->id);
+
+        //     // return $products;
+        //     // Add the resource to the order object
+        //     $orders->products = $products; // Attach it as an additional property
+        // }
+
+        // $received = CustomerAccount::where("receipt_no", $request->id)->sum('received');
+        // $statuses = OrderStatus::all();
+        // $ledgerDetails = $customer->LedgerDetailsShowInOrderDetails($orders->customer->id, $request->id);
+        // $provider = ServiceProviderOrders::with("serviceprovider")->where("receipt_id", $orders->id)->first();
+
+        // return view("order.order-details", compact("orders", "received", "statuses", "ledgerDetails", "provider"));
     }
 
     public function orderStatusChange(Request $request, order $order)
@@ -241,7 +304,7 @@ class OrderController extends Controller
         // DB::table('inventory_general')->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')->where('sales_receipt_details.receipt_id',$request->id)->where('sales_receipt_details.mode','inventory-general')->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code','sales_receipt_details.item_name','sales_receipt_details.total_qty','sales_receipt_details.total_amount','sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id','sales_receipt_details.discount_value','sales_receipt_details.discount_code','sales_receipt_details.actual_price')->get()
 
         $record = $order->web_onlineOrderDetails($request->id);
-        //   return $record;
+
         if ($record == null) {
             Session::flash('error', 'Error! order detail not found.');
             return redirect('web-orders-view');
@@ -290,7 +353,7 @@ class OrderController extends Controller
         return view('order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders', 'website', 'websiteId'));
     }
 
-   /* public function inline_receiptDetails(Request $request){
+    /* public function inline_receiptDetails(Request $request){
            return DB::table('sales_receipt_details')->where('receipt_id',$request->receipt)->get();
     }*/
 

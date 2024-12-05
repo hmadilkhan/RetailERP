@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\WebsiteDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
@@ -97,5 +98,10 @@ class Order extends Model
     public function address()
     {
         return $this->belongsTo(CustomerAddress::class,"cust_location_id","id")->where("status",1);
+    }
+
+    public function website()
+    {
+        return $this->belongsTo(WebsiteDetail::class,"website_id","id");
     }
 }

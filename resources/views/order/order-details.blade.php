@@ -191,26 +191,26 @@
                                 <div class="  bg-transparent py-2 px-4">
                                     <label class="">
                                         <h5 class="font-size-24 text-sm-end text-muted mb-5">Booking Date :
-                                            {{ date('d M Y', strtotime($orders->date)) . ' ' . date('H:i a', strtotime($orders->time)) }}
+                                            {{ date('d M Y', strtotime($order->date)) . ' ' . date('H:i a', strtotime($order->time)) }}
                                         </h5>
                                     </label>
 
                                     <label
-                                        class="label {{ Custom_Helper::getColorName($orders->orderStatus->order_status_name) }} font-size-28 border border-white rounded my-5 mt-3">
-                                        @if ($orders->orderStatus->order_status_name == 'Ready for Delivery')
+                                        class="label {{ Custom_Helper::getColorName($order->orderStatus->order_status_name) }} font-size-28 border border-white rounded my-5 mt-3">
+                                        @if ($order->orderStatus->order_status_name == 'Ready for Delivery')
                                             Ready
-                                        @elseif($orders->orderStatus->order_status_name == 'Dispatch')
+                                        @elseif($order->orderStatus->order_status_name == 'Dispatch')
                                             Dispatch from workshop
-                                        @elseif($orders->orderStatus->order_status_name == 'Order Picked Up')
+                                        @elseif($order->orderStatus->order_status_name == 'Order Picked Up')
                                             Picked Up By Branch
                                         @else
-                                            {{ $orders->orderStatus->order_status_name }}
+                                            {{ $order->orderStatus->order_status_name }}
                                         @endif
                                     </label>
-                                    @if ($orders->delivery_date != '')
+                                    @if ($order->delivery_date != '')
                                         <label class="mt-5">
                                             <h5 class="font-size-24 text-sm-end text-muted float-left ">Delivery Date :
-                                                {{ date('d M Y', strtotime($orders->delivery_date)) }}</h5>
+                                                {{ date('d M Y', strtotime($order->delivery_date)) }}</h5>
                                         </label>
                                     @endif
                                 </div>
@@ -219,12 +219,12 @@
                         </div>
                         <div class="col-xl-4 ">
                             <h3 class="font-size-24 text-center mb-4">Branch #</h3>
-                            <h1 class="fs-1 text-center mb-4">{{ $orders->branchrelation->branch_name }}</h1>
-                            <h2 class="font-size-28 text-center mb-2">Customer : {{ ucwords($orders->customer->name) }}</h2>
-                            @if ($orders->web == 1)
-                                <h3 class="font-size-24 text-center mb-2">Order ID : {{ $orders->url_orderid }}</h3>
+                            <h1 class="fs-1 text-center mb-4">{{ $order->branchrelation->branch_name }}</h1>
+                            <h2 class="font-size-28 text-center mb-2">Customer : {{ ucwords($order->customer->name) }}</h2>
+                            @if ($order->web == 1)
+                                <h3 class="font-size-24 text-center mb-2">Order ID : {{ $order->url_orderid }}</h3>
                             @else
-                                <h3 class="font-size-24 text-center mb-2">Receipt No : {{ $orders->receipt_no }}</h3>
+                                <h3 class="font-size-24 text-center mb-2">Receipt No : {{ $order->receipt_no }}</h3>
                             @endif
 
                         </div>
@@ -232,29 +232,29 @@
                             <div class="flex-shrink-0 items-center ms-2 py-2 ">
                                 <div class="text-sm-end mt-2 mt-sm-0 float-end">
                                     @if (session('roleId') == 19 or session('roleId') == 2)
-                                        @if ($orders->orderStatus->order_status_name == 'Pending')
-                                            <a href="{{ url('change-order-status') }}/{{ $orders->id }}/2"
+                                        @if ($order->orderStatus->order_status_name == 'Pending')
+                                            <a href="{{ url('change-order-status') }}/{{ $order->id }}/2"
                                                 class="btn btn-warning text-white  ml-2">
                                                 <i class="mdi mdi-cart-outline me-1"></i> Processing </a>
-                                        @elseif($orders->orderStatus->order_status_name == 'Processing')
-                                            <a href="{{ url('change-order-status') }}/{{ $orders->id }}/3"
+                                        @elseif($order->orderStatus->order_status_name == 'Processing')
+                                            <a href="{{ url('change-order-status') }}/{{ $order->id }}/3"
                                                 class="btn btn-primary  ml-2">
                                                 <i class="mdi mdi-cart-outline me-1"></i> Ready </a>
-                                        @elseif($orders->orderStatus->order_status_name == 'Ready for Delivery')
-                                            <a href="{{ url('change-order-status') }}/{{ $orders->id }}/6"
+                                        @elseif($order->orderStatus->order_status_name == 'Ready for Delivery')
+                                            <a href="{{ url('change-order-status') }}/{{ $order->id }}/6"
                                                 class="btn btn-success  ml-2">
                                                 <i class="mdi mdi-cart-outline me-1"></i> Dispatch </a>
                                         @endif
                                     @endif
                                     @if (
-                                        $orders->orderStatus->order_status_id >= 6 &&
+                                        $order->orderStatus->order_status_id >= 6 &&
                                             (session('roleId') == 19 or session('roleId') == 20 or session('roleId') == 2))
-                                        <a href="{{ url('voucher') }}/{{ $orders->receipt_no }}"
+                                        <a href="{{ url('voucher') }}/{{ $order->receipt_no }}"
                                             class="btn btn-danger  ml-2" target="_blank">
                                             <i class="mdi mdi-cloud-print me-1"></i> Print </a>
                                     @endif
-                                    @if ($orders->orderStatus->order_status_id >= 2 && session('company_id') == 102)
-                                        <a href="{{ url('factory-operation-report') }}?order={{ $orders->id }}"
+                                    @if ($order->orderStatus->order_status_id >= 2 && session('company_id') == 102)
+                                        <a href="{{ url('factory-operation-report') }}?order={{ $order->id }}"
                                             class="btn btn-danger  ml-2" target="_blank">
                                             <i class="mdi mdi-cloud-print me-1"></i> Operation Report </a>
                                     @endif
@@ -267,7 +267,7 @@
                 </div>
             </div>
             <div class="col-xl-8">
-                @foreach ($orders->orderdetails as $key => $item)
+                @foreach ($order->orderdetails as $key => $item)
                     @if (session('roleId') == 19 && $item->mode == 'worker')
                         <div class="card border shadow-none">
                             <div class="card-body">
@@ -280,7 +280,7 @@
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')"> --}}
 
                                         <img id="myImg{{ $key }}"
-                                            src="{{ Custom_Helper::getProductImage($item->inventory->url, $item->inventory->image) }}"
+                                            src="{{ Custom_Helper::getProductImage(optional($item->inventory)->url, optional($item->inventory)->image) }}"
                                             alt="{{ $item->note }}"
                                             class="avatar-lg rounded productImage{{ $key }} "
                                             style="cursor:pointer;" onclick="showImage('{{ $key }}')">
@@ -302,24 +302,24 @@
                                     <div class="flex-shrink-0 ms-2">
                                         <div>
 
-                                            @if ($orders->orderStatus->order_status_id == 1 && $item->mode == '' && session('company_id') == 104)
+                                            @if ($order->orderStatus->order_status_id == 1 && $item->mode == '' && session('company_id') == 104)
                                                 <label
                                                     class="label {{ Custom_Helper::getColorName($item->itemstatus->order_status_name) }} font-size-18 border border-white rounded my-5 mt-3">{{ $item->itemstatus->order_status_name }}</label>
-                                                <a href="{{ url('sent-to-workshop') }}/{{ $orders->id }}/{{ $item->receipt_detail_id }}"
+                                                <a href="{{ url('sent-to-workshop') }}/{{ $order->id }}/{{ $item->receipt_detail_id }}"
                                                     class="btn btn-warning text-white  ml-2">
                                                     <i class="mdi mdi-cart-outline me-1"></i> Sent to Workshop </a>
                                             @endif
                                             @if (session('roleId') == 19)
                                                 @if ($item->status == 1)
-                                                    <a href="{{ url('change-item-status') }}/{{ $orders->id }}/{{ $item->receipt_detail_id }}/2"
+                                                    <a href="{{ url('change-item-status') }}/{{ $order->id }}/{{ $item->receipt_detail_id }}/2"
                                                         class="btn btn-warning text-white  ml-2">
                                                         <i class="mdi mdi-cart-outline me-1"></i> Processing </a>
                                                 @elseif($item->status == 2)
-                                                    <a href="{{ url('change-item-status') }}/{{ $orders->id }}/{{ $item->receipt_detail_id }}/3"
+                                                    <a href="{{ url('change-item-status') }}/{{ $order->id }}/{{ $item->receipt_detail_id }}/3"
                                                         class="btn btn-primary  ml-2">
                                                         <i class="mdi mdi-cart-outline me-1"></i> Ready </a>
                                                 @elseif($item->status == 3)
-                                                    <a href="{{ url('change-item-status') }}/{{ $orders->id }}/{{ $item->receipt_detail_id }}/6"
+                                                    <a href="{{ url('change-item-status') }}/{{ $order->id }}/{{ $item->receipt_detail_id }}/6"
                                                         class="btn btn-success  ml-2">
                                                         <i class="mdi mdi-cart-outline me-1"></i> Dispatch </a>
                                                 @endif
@@ -367,97 +367,99 @@
                             </div>
                         </div>
                     @else
-                        <div class="card border shadow-none">
-                            <div class="card-body">
-                                <div class="d-flex align-items-start border-bottom pb-3">
-                                    <div class="me-4">
-                                        <img id="myImg{{ $key }}"
-                                            src="{{ Custom_Helper::getProductImage($item->inventory->url, $item->inventory->image) }}"
-                                            alt="{{ $item->note }}"
-                                            class="avatar-lg rounded productImage{{ $key }} "
-                                            style="cursor:pointer;" onclick="showImage('{{ $key }}')">
+                        @if(!empty($item->inventory))
+                            <div class="card border shadow-none">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-start border-bottom pb-3">
+                                        <div class="me-4">
+                                            <img id="myImg{{ $key }}"
+                                                src="{{ Custom_Helper::getProductImage(optional($item->inventory)->url, optional($item->inventory)->image) }}"
+                                                alt="{{ $item->note }}"
+                                                class="avatar-lg rounded productImage{{ $key }} "
+                                                style="cursor:pointer;" onclick="showImage('{{ $key }}')">
 
-                                    </div>
-                                    <div class="flex-grow-1 align-self-center overflow-hidden">
-                                        <div>
-                                            <h5 class="text-truncate font-size-18"><a href="#"
-                                                    class="code{{ $key }} text-dark fw-bold">({{ $item->inventory->item_code }})
-                                                </a> <a href="#"
-                                                    class="name{{ $key }} text-dark">{{ $item->item_name }} </a>
-                                            </h5>
-                                            <p class="mb-0 mt-1  fs-5"><span class="fw-bold">Comments : </span><span
-                                                    class="comments{{ $key }} fs-5">{{ $item->note }}</span>
-                                            </p>
                                         </div>
-
-                                    </div>
-                                    <div class="flex-shrink-0 ms-2">
-                                        <div>
-
-                                            @if ($orders->orderStatus->order_status_id == 1 && $item->mode == '' && session('company_id') == 104)
-                                                <label
-                                                    class="label {{ Custom_Helper::getColorName($item->itemstatus->order_status_name) }} font-size-18 border border-white rounded my-5 mt-3">{{ $item->itemstatus->order_status_name }}</label>
-                                                <a href="{{ url('sent-to-workshop') }}/{{ $orders->id }}/{{ $item->receipt_detail_id }}"
-                                                    class="btn btn-warning text-white  ml-2">
-                                                    <i class="mdi mdi-cart-outline me-1"></i> Sent to Workshop </a>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <div class="row border-bottom pb-3">
-                                        <div class="col-md-4">
-                                            <div class="mt-3">
-                                                <p class="text-muted mb-2">Price</p>
-                                                <h5 class="mb-0 mt-2">
-                                                    {{ session('currency') . ' ' . ($item->item_price != '' ? number_format($item->item_price, 0) : 0) }}
+                                        <div class="flex-grow-1 align-self-center overflow-hidden">
+                                            <div>
+                                                <h5 class="text-truncate font-size-18"><a href="#"
+                                                        class="code{{ $key }} text-dark fw-bold">({{ $item->inventory->item_code }})
+                                                    </a> <a href="#"
+                                                        class="name{{ $key }} text-dark">{{ $item->item_name }} </a>
                                                 </h5>
+                                                <p class="mb-0 mt-1  fs-5"><span class="fw-bold">Comments : </span><span
+                                                        class="comments{{ $key }} fs-5">{{ $item->note }}</span>
+                                                </p>
                                             </div>
+
                                         </div>
-                                        <div class="col-md-5">
-                                            <div class="mt-3">
-                                                <p class="text-muted mb-2">Quantity</p>
-                                                <div class="d-inline-flex">
-                                                    <select class="form-select form-select-sm w-xl" disabled>
-                                                        <option value="1" selected>
-                                                            {{ number_format($item->total_qty, 0) }}</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="mt-3">
-                                                <p class="text-muted mb-2">Total</p>
-                                                <h5>{{ session('currency') . ' ' . number_format(($item->item_price != '' ? $item->item_price : 1) * $item->total_qty, 0) }}
-                                                </h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <h3 class="mb-0 mt-2 text-dark fw-bold">Item Logs</h3>
-                                        </div>
-                                        <div class="col-md-12">
-                                            <div class="mt-3">
-                                                @if (!empty($item->statusLogs))
-                                                    <ol class="list-group list-group-numbered">
-                                                        @foreach ($item->statusLogs as $log)
-                                                            <li class="list-group-item">Order
-                                                                <strong>{{ $log->status->order_status_name }}</strong> at
-                                                                {{ date('d M Y', strtotime($log->date)) . ' ' . date('H:i a', strtotime($log->time)) }}
-                                                            </li>
-                                                        @endforeach
-                                                    </ol>
+                                        <div class="flex-shrink-0 ms-2">
+                                            <div>
+
+                                                @if ($order->orderStatus->order_status_id == 1 && $item->mode == '' && session('company_id') == 104)
+                                                    <label
+                                                        class="label {{ Custom_Helper::getColorName($item->itemstatus->order_status_name) }} font-size-18 border border-white rounded my-5 mt-3">{{ $item->itemstatus->order_status_name }}</label>
+                                                    <a href="{{ url('sent-to-workshop') }}/{{ $order->id }}/{{ $item->receipt_detail_id }}"
+                                                        class="btn btn-warning text-white  ml-2">
+                                                        <i class="mdi mdi-cart-outline me-1"></i> Sent to Workshop </a>
                                                 @endif
                                             </div>
                                         </div>
-
                                     </div>
-                                </div>
 
+                                    <div>
+                                        <div class="row border-bottom pb-3">
+                                            <div class="col-md-4">
+                                                <div class="mt-3">
+                                                    <p class="text-muted mb-2">Price</p>
+                                                    <h5 class="mb-0 mt-2">
+                                                        {{ session('currency') . ' ' . ($item->item_price != '' ? number_format($item->item_price, 0) : 0) }}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <div class="mt-3">
+                                                    <p class="text-muted mb-2">Quantity</p>
+                                                    <div class="d-inline-flex">
+                                                        <select class="form-select form-select-sm w-xl" disabled>
+                                                            <option value="1" selected>
+                                                                {{ number_format($item->total_qty, 0) }}</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="mt-3">
+                                                    <p class="text-muted mb-2">Total</p>
+                                                    <h5>{{ session('currency') . ' ' . number_format(($item->item_price != '' ? $item->item_price : 1) * $item->total_qty, 0) }}
+                                                    </h5>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-8">
+                                                <h3 class="mb-0 mt-2 text-dark fw-bold">Item Logs</h3>
+                                            </div>
+                                            <div class="col-md-12">
+                                                <div class="mt-3">
+                                                    @if (!empty($item->statusLogs))
+                                                        <ol class="list-group list-group-numbered">
+                                                            @foreach ($item->statusLogs as $log)
+                                                                <li class="list-group-item">Order
+                                                                    <strong>{{ $log->status->order_status_name }}</strong> at
+                                                                    {{ date('d M Y', strtotime($log->date)) . ' ' . date('H:i a', strtotime($log->time)) }}
+                                                                </li>
+                                                            @endforeach
+                                                        </ol>
+                                                    @endif
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
+                        @endif
                     @endif
                     <!-- end card -->
                 @endforeach
@@ -471,7 +473,7 @@
                     <div class="card border shadow-none">
                         <div class="card-header bg-transparent border-bottom py-3 px-4">
                             <h5 class="font-size-16 mb-0">Order Details <span
-                                    class="float-end">#{{ $orders->id }}</span></h5>
+                                    class="float-end">#{{ $order->id }}</span></h5>
                         </div>
                         <div class="card-body p-4 pt-2">
 
@@ -482,25 +484,25 @@
                                             <th>Branch :</th>
                                             <td class="text-end">
                                                 <span class="fw-bold">
-                                                    {{ $orders->branchrelation->branch_name }}
+                                                    {{ $order->branchrelation->branch_name }}
                                                 </span>
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Receipt Number :</td>
-                                            <td class="text-end">{{ $orders->receipt_no }}</td>
+                                            <td class="text-end">{{ $order->receipt_no }}</td>
                                         </tr>
                                         <tr>
                                             <td>Customer : </td>
-                                            <td class="text-end">{{ $orders->customer->name }}</td>
+                                            <td class="text-end">{{ $order->customer->name }}</td>
                                         </tr>
                                         <tr>
                                             <td>Contact Number :</td>
-                                            <td class="text-end">{{ $orders->customer->mobile }}</td>
+                                            <td class="text-end">{{ $order->customer->mobile }}</td>
                                         </tr>
                                         <tr>
                                             <td>Payment Method :</td>
-                                            <td class="text-end">{{ $orders->payment->payment_mode }}</td>
+                                            <td class="text-end">{{ $order->payment->payment_mode }}</td>
                                         </tr>
                                         <tr>
                                             <td>Sales Person :</td>
@@ -510,11 +512,11 @@
                                         </tr>
                                         <tr>
                                             <td>Land Mark :</td>
-                                            <td class="text-end">{{ (!empty($orders->address) ? $orders->address->landmark : '-' )}}</td>
+                                            <td class="text-end">{{ (!empty($order->address) ? $order->address->landmark : '-' )}}</td>
                                         </tr>
                                         <tr>
                                             <td>Address :</td>
-                                            <td class="text-end">{{(!empty($orders->address) ? $orders->address->address : '-' ) }}</td>
+                                            <td class="text-end">{{(!empty($order->address) ? $order->address->address : '-' ) }}</td>
                                         </tr>
 
                                     </tbody>
@@ -537,11 +539,11 @@
     
                                         <tr>
                                             <td>Area Name :</td>
-                                            <td class="text-end">{{($orders->delivery_area_name != "" ? $orders->delivery_area_name : '-' )}}</td>
+                                            <td class="text-end">{{($order->delivery_area_name != "" ? $order->delivery_area_name : '-' )}}</td>
                                         </tr>
                                         <tr>
                                             <td>Instructions :</td>
-                                            <td class="text-end">{{($orders->delivery_instructions != "" ? $orders->delivery_instructions : '-')}}</td>
+                                            <td class="text-end">{{($order->delivery_instructions != "" ? $order->delivery_instructions : '-')}}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -562,40 +564,40 @@
                                     <tbody>
                                         <tr>
                                             <td>Sub Total :</td>
-                                            <td class="text-end">{{ session('currency') . ' ' . $orders->actual_amount }}
+                                            <td class="text-end">{{ session('currency') . ' ' . $order->actual_amount }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Discount : </td>
                                             <td class="text-end">-
-                                                {{ session('currency') . ' ' . (!empty($orders->orderAccountSub) ? $orders->orderAccountSub->discount_amount : '') }}
+                                                {{ session('currency') . ' ' . (!empty($order->orderAccountSub) ? $order->orderAccountSub->discount_amount : '') }}
                                             </td>
                                         </tr>
-                                        @if ($orders->payment_id == 3)
+                                        @if ($order->payment_id == 3)
                                             <tr>
                                                 <td>Amount Received : </td>
                                                 <td class="text-end">-
-                                                    {{ session('currency') . ' ' . (!empty($orders->orderAccountSub) ? $orders->orderAccount->receive_amount + $received : '') }}
+                                                    {{ session('currency') . ' ' . (!empty($order->orderAccountSub) ? $order->orderAccount->receive_amount + $received : '') }}
                                                 </td>
                                             </tr>
                                         @endif
                                         <tr>
                                             <td>Shipping Charge :</td>
                                             <td class="text-end">
-                                                {{ session('currency') . ' ' . (!empty($orders->orderAccountSub) ? $orders->orderAccountSub->delivery_charges_amount : '') }}
+                                                {{ session('currency') . ' ' . (!empty($order->orderAccountSub) ? $order->orderAccountSub->delivery_charges_amount : '') }}
                                             </td>
                                         </tr>
                                         <tr>
                                             <td>Tax Charge: </td>
                                             <td class="text-end">
-                                                {{ session('currency') . ' ' . (!empty($orders->orderAccountSub) ? $orders->orderAccountSub->sales_tax_amount : '') }}
+                                                {{ session('currency') . ' ' . (!empty($order->orderAccountSub) ? $order->orderAccountSub->sales_tax_amount : '') }}
                                             </td>
                                         </tr>
                                         <tr class="bg-light">
-                                            <th>{{ $orders->payment_id == 3 ? 'Balance :' : 'Total :' }}</th>
+                                            <th>{{ $order->payment_id == 3 ? 'Balance :' : 'Total :' }}</th>
                                             <td class="text-end">
                                                 <span class="fw-bold">
-                                                    {{ session('currency') . ' ' . number_format($orders->payment_id == 3 ? $orders->total_amount - $orders->orderAccount->receive_amount - $received : $orders->total_amount, 0) }}
+                                                    {{ session('currency') . ' ' . number_format($order->payment_id == 3 ? $order->total_amount - $order->orderAccount->receive_amount - $received : $order->total_amount, 0) }}
                                                 </span>
                                             </td>
                                         </tr>
@@ -612,7 +614,7 @@
                             <h5 class="font-size-16 mb-0">Order Status Logs </h5>
                         </div>
                         <div class="card-body p-4 pt-2">
-                            @foreach ($orders->statusLogs as $log)
+                            @foreach ($order->statusLogs as $log)
                                 <div class="row">
                                     <!-- timeline item 1 left dot -->
                                     <div class="col-auto text-center flex-column d-none d-sm-flex">
@@ -661,7 +663,7 @@
                     </div>
                 </div>
             </div>
-            @if ($orders->payment_id == 3 && session('roleId') == 2)
+            @if ($order->payment_id == 3 && session('roleId') == 2)
                 <div class="col-xl-8">
                     <div class="mt-5 mt-lg-0">
                         <div class="card border shadow-none">

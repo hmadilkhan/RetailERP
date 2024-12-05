@@ -65,9 +65,10 @@
                 @foreach ($record as $value)
                     <?php
                     $totalItem++;
-                    $cashInHand = $value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash - ($value->cashOut + $value->Expenses + $value->SalesReturn + $value->voidSales); //- $value->Discount - $value->promo - $value->coupon;
+                    $cashInHand = $value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash - ($value->cashOut + $value->Expenses + $value->SalesReturn + $value->voidSalesCash); //- $value->Discount - $value->promo - $value->coupon;
                     $balance = (float) $value->closingBal - (float) $cashInHand;
                     $totalCashWithCard = $cashInHand + $value->CreditCard + $value->adv_booking_card + $value->order_delivered_card;
+                    $totalVoid = ($value->voidSalesCash + $value->voidSalesCard);
                     $totalOpenings += $value->bal;
                     $totalCashSales += $value->Cash;
                     $totalCardSales += $value->CreditCard;
@@ -81,7 +82,7 @@
                     $totalCashIn += $value->cashIn;
                     $totalCashOut += $value->cashOut;
                     $totalSalesReturn += $value->SalesReturn;
-                    $totalVoidSales += $value->voidSales;
+                    $totalVoidSales += $totalVoid;
                     $totalExpenses += $value->Expenses;
                     $totalCashInHand += $cashInHand;
                     $totalClosing += $value->closingBal;
@@ -108,13 +109,12 @@
                         <td style="text-align: center;">{{ number_format($value->cashIn, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->cashOut, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->SalesReturn, 0) }}</td>
-                        <td style="text-align: center;">{{ number_format($value->voidSales, 0) }}</td>
+                        <td style="text-align: center;">{{ number_format($totalVoid, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->Expenses, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($cashInHand, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->closingBal, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($balance, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($totalCashWithCard, 0) }}</td>
-
                     </tr>
                 @endforeach
                 <tr>

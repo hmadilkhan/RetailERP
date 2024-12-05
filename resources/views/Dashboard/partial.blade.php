@@ -1,7 +1,8 @@
 <?php $positive = (isset($heads[0]->bal) ? $heads[0]->bal : 0) +(isset($heads[0]->order_delivered_cash) ? $heads[0]->order_delivered_cash : 0)  + (isset($heads[0]->Cash) ? $heads[0]->Cash : 0) + (isset($heads[0]->adv_booking_cash) ? $heads[0]->adv_booking_cash : 0) + (isset($heads[0]->cashIn) ? $heads[0]->cashIn : 0);
-$negative =  (isset($heads[0]->Discount) ? $heads[0]->Discount : 0) + (isset($heads[0]->SalesReturn) ? $heads[0]->SalesReturn : 0) + (isset($heads[0]->cashOut) ? $heads[0]->cashOut : 0) + (isset($heads[0]->VoidReceipts) ? $heads[0]->VoidReceipts : 0); //+ $heads[0]->CreditCard +$heads[0]->CustomerCredit;
+$negative =  (isset($heads[0]->Discount) ? $heads[0]->Discount : 0) + (isset($heads[0]->SalesReturn) ? $heads[0]->SalesReturn : 0) + (isset($heads[0]->cashOut) ? $heads[0]->cashOut : 0) + (isset($heads[0]->VoidReceiptsCash) ? $heads[0]->VoidReceiptsCash : 0); //+ $heads[0]->CreditCard +$heads[0]->CustomerCredit;
 // Raza na ye Void ka code 22-11-2024 ko add kraya ha 
-$CashInHand = $positive - $negative + (isset($heads[0]->CardCustomerDiscount) ? $heads[0]->CardCustomerDiscount : 0) + $heads[0]->Delivery;
+$CashInHand = $positive - $negative + + $heads[0]->Delivery;// (isset($heads[0]->CardCustomerDiscount) ? $heads[0]->CardCustomerDiscount : 0) ;
+$totalVoidReceipts = (isset($heads[0]->VoidReceiptsCash) ? $heads[0]->VoidReceiptsCash : 0) + (isset($heads[0]->VoidReceiptsCard) ? $heads[0]->VoidReceiptsCard : 0);
 if (isset($result[0]->expenses) && $result[0]->expenses == 1) {
     $CashInHand = $CashInHand - $heads[0]->expenses;
 }
@@ -53,7 +54,7 @@ $closingBalance = round($heads[0]->closingBal);
     <div class=" col-xl-12 col-sm-12 col-md-12 dashboard-header mt-4 ">
         <div class="col-xl-4 col-lg-6 col-md-6  col-sm-12">
             <div class="card tilebox-one">
-                <div class="card-header">OPENING</div>
+                <div class="card-header">OPENING </div>
                 <div class="card-body">
                     <h2>{{ session('currency') }} {{ number_format(isset($heads[0]->bal) ? $heads[0]->bal : 0, 0) }}
                     </h2>
@@ -270,7 +271,8 @@ $closingBalance = round($heads[0]->closingBal);
                     <tr id="discounthead">
                         <td style="width:500px">Void Receipts</td>
                         <td id="void_receipt" style="width:500px" class="text-end">{{ session('currency') }}
-                            {{ number_format($heads[0]->VoidReceipts, 0) }}</td>
+                            {{-- {{ number_format($heads[0]->VoidReceipts, 0) }}</td> --}}
+                            {{ number_format($totalVoidReceipts, 0) }}</td>
                     </tr>
                 @endif
                 @if (isset($result[0]->discount) && $result[0]->discount == 1)

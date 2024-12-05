@@ -881,9 +881,9 @@ class order extends Model
 
 	public function web_onlineOrderDetails($id)
 	{
-
+		$filter = "";
 		//if (session('roleId') == 2) {
-		$filter = " and sales_receipts.branch IN (SELECT branch_id FROM branch where company_id = " . session("company_id") . " )";
+		// $filter = " and sales_receipts.branch IN (SELECT branch_id FROM branch where company_id = " . session("company_id") . " )";
 		// } else {
 		// 	$filter = " and sales_receipts.branch = " . session("branch") . " ";
 		// }
