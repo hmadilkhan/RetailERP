@@ -77,7 +77,7 @@ class OrderController extends Controller
         return view('order.orderview', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'orders', 'serviceproviders'));
     }
 
-    public function orderdetails(Request $request, Customer $customer, OrderService $orderService)
+    public function orderdetails(Request $request, Customer $customer, OrderService $orderService, order $orderApp)
     {
         $orderId = $request->id;
 
@@ -85,7 +85,7 @@ class OrderController extends Controller
         $order = $orderService->getOrderWithRelations($orderId);
 
         if ($order && $order->website) {
-            $record = $order->web_onlineOrderDetails($request->id);
+            $record = $orderApp->web_onlineOrderDetails($request->id);
 
             if ($record == null) {
                 Session::flash('error', 'Error! order detail not found.');
