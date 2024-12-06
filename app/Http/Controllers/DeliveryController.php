@@ -206,9 +206,11 @@ class DeliveryController extends Controller
         $chk = $delivery->exsist_chk_provider($request->providername,$request->branch);
         if ($chk[0]->counts == 0) {
             if(!empty($request->image)){
-                $imageName = time().".".$request->image->getClientOriginalExtension();
-                $img = Image::make($request->image)->resize(250, 250);
-                $img->save(public_path('assets/images/service-provider/'.$imageName), 75);
+                // $imageName = time().".".$request->image->getClientOriginalExtension();
+                // $img = Image::make($request->image)->resize(250, 250);
+                // $img->save(public_path('assets/images/service-provider/'.$imageName), 75);
+                $result = $this->uploads($request->image, "images/service-provider/", "", []);
+                $imageName = $result["fileName"];
             }
             $items=[
                 'provider_name' => $request->providername,
