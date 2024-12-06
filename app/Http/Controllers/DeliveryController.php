@@ -19,7 +19,7 @@ use \dPDF;
 class DeliveryController extends Controller
 {
     use MediaTrait;
-    
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -486,7 +486,7 @@ class DeliveryController extends Controller
                     unlink($path);
                 }
             }
-            $this->uploads($request->image, "images/service-provider/", "", []);
+            $result = $this->uploads($request->image, "images/service-provider/", "", []);
             // $imageName = time().".".$request->image->getClientOriginalExtension();
             // $img = Image::make($request->image)->resize(250, 250);
             // $img->save(public_path('assets/images/service-provider/'.$imageName), 75);
@@ -503,7 +503,7 @@ class DeliveryController extends Controller
             // 'percentage_id' => $request->percentage,
 			'payment_type_id' => $request->paymenttype,
 			'payment_value' => $request->paymentValue,
-            'image' => (!empty($request->image) ? $imageName : $request->prev_image)
+            'image' => (!empty($request->image) ? $result["fileName"] : $request->prev_image)
         ];
 
         $provider = $delivery->update_provider($request->proid,$items);
