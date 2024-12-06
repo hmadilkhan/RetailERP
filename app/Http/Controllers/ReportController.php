@@ -688,7 +688,7 @@ class ReportController extends Controller
                 $q->where("order_mode_id", $request->ordermode);
             })
             ->when($request->department != "", function ($q) use ($request) {
-                $q->whereIn("id", OrderDetails::where("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"))->groupBy("receipt_id")->pluck("receipt_id"));
+                $q->whereIn("id", OrderDetails::whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"))->groupBy("receipt_id")->pluck("receipt_id"));
             })
             ->select(DB::raw('Count(*) as total_receipts'), DB::raw('SUM(total_amount) as total_amount'));
         return $q->get();
