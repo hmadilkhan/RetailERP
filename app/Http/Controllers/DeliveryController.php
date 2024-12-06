@@ -11,12 +11,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use App\Vendor;
 use App\ServiceProvider;
+use App\Traits\MediaTrait;
 use Image;
 use \dPDF;
 
 
 class DeliveryController extends Controller
 {
+    use MediaTrait;
+    
     public function __construct()
     {
         $this->middleware('auth');
@@ -483,9 +486,10 @@ class DeliveryController extends Controller
                     unlink($path);
                 }
             }
-            $imageName = time().".".$request->image->getClientOriginalExtension();
-            $img = Image::make($request->image)->resize(250, 250);
-            $img->save(public_path('assets/images/service-provider/'.$imageName), 75);
+            $this->uploads($request->image, "images/service-provider/", "", []);
+            // $imageName = time().".".$request->image->getClientOriginalExtension();
+            // $img = Image::make($request->image)->resize(250, 250);
+            // $img->save(public_path('assets/images/service-provider/'.$imageName), 75);
         }
         $items=[
             'provider_name' => $request->providername,
