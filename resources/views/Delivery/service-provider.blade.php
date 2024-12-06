@@ -228,7 +228,7 @@
    <div class="col-md-4">
      <label for="image" class="form-control-label">Image</label>
      <a href="#">
-       <img id="simg" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
+       <img id="simg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
      </a>
      <div class="form-group {{ $errors->has('image') ? 'has-danger' : '' }} m-t-10">
        <label for="image" class="custom-file">
