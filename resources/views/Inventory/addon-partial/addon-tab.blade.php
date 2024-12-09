@@ -309,7 +309,7 @@
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
-                            <h4 class="modal-title">Copy Variable </h4>
+                            <h4 class="modal-title">Copy Addon Product: <span id="cpyAddonName_head"></span> </h4>
                         </div>
                         <form id="copy_addonForm" method="POST">
                             @csrf

@@ -532,7 +532,8 @@ let table_row_editAddonmdId = [];
 
  function copyAddonProduct_modal(addonId,addonName){
     $("#addonId_cpymd").val(addonId);
-    $("#addonName_cpymd").val(addonName)
+    $("#addonName_cpymd").val(addonName);
+    $("#cpyAddonName_head").val(addonName);
 
     $("#tbl_productListcpymd tbody").empty();
     $("#subDepartment_cpymd").val('');
