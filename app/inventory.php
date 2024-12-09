@@ -315,6 +315,12 @@ public function updateProductName($id,$name)
                  ->where('pos_products_gen_details.status_id', '=', 1)
                  ->groupBy('pos_products_gen_details.product_id');
         })
+        ->leftJoin('inventory_addons', function($join) {
+            $join->on('inventory_addons.product_id', '=', 'invent.id')
+                 ->where('inventory_addons.status', '=', 1)
+                 ->where('inventory_addons.inventory_addon_type', '=','general-inventory')
+                 ->groupBy('inventory_addons.product_id');
+        })
         ->leftJoin("website_details",'website_details.id','website_products.website_id')
 		->leftJoin("inventory_stock",'inventory_stock.product_id','=','invent.id')
         ->leftJoin('inventory_tags as itag', function ($join) {
@@ -370,7 +376,7 @@ public function updateProductName($id,$name)
 
 			}
 		})
-		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name',DB::raw('COUNT(pos_products_gen_details.product_id) as pos_product_count'), DB::raw("GROUP_CONCAT(DISTINCT t.name ORDER BY t.name ASC SEPARATOR ', ') as tags"))
+		->select('invent.*','u.name','dept.department_name','sdept.sub_depart_name','inventory_product_mode.product_name as category','inventory_price.*','invent.image as product_image','invent.url as product_image_url',DB::raw('SUM(inventory_stock.balance) As stock'),'website_details.id as website_id','website_details.name as website_name',DB::raw('COUNT(pos_products_gen_details.product_id) as pos_product_count'),DB::raw('COUNT(inventory_addons.product_id) as addon_product'), DB::raw("GROUP_CONCAT(DISTINCT t.name ORDER BY t.name ASC SEPARATOR ', ') as tags"))
 		->where('invent.company_id',session('company_id'))
         // ->where('website_products.status',1)
         // ,'website_details.id as website_id','website_details.name as website_name'

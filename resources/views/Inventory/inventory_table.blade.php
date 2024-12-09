@@ -107,7 +107,7 @@
                           {{-- <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
                               title='Create Variable & Addon Product'><i
                                   class='icofont icofont-plus text-success'></i></a> --}}
-                            @if($inventory->pos_product_count != 0)
+                            @if($inventory->pos_product_count != 0 || $inventory->addon_product != 0)
                               <a href='/inventory/{{ $inventory->id }}/variable-products' class="dropdown-item waves-light waves-effect"
                                   title='View Variable and Addon Products' data-toggle='tooltip' data-placement='left' data-original-title='View Variable and Addon Products'>
                                   View Variable & Addon
