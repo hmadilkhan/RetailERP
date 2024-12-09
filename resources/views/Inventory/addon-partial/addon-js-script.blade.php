@@ -530,7 +530,34 @@ let table_row_editAddonmdId = [];
 	      }
 	   });
 
+ function copyAddonProduct_modal(addonId,addonName){
+    $("#addonId_cpymd").val(addonId);
+    $("#addonName_cpymd").val(addonName)
 
+    $("#tbl_productListcpymd tbody").empty();
+    $("#subDepartment_cpymd").val('');
+    $("#department_cpymd").val('').change();
+
+    $("#copy-addon-modal").modal('show');
+}
+
+
+// $("#department_cpymd").on('change',function(){
+//            if($(this).val() != ''){
+//                load_subdept($(this).val(),'subDepartment_variableTab');
+//            }else{
+//                $("#subDepartment_cpymd").val('');
+//     			 if(!$("#subDepartment_cpymd").attr('disabled')){
+//     			     $("#subDepartment_cpymd").attr('disabled',true);
+//     			 }
+//            }
+// });
+
+// $("#subDepartment_cpymd").on('change',function(){
+//     if($(this).val() != ''){
+//         get_allGeneralItem($("#department_cpymd").val(),$(this).val());
+//     }
+// });
 
 </script>
 

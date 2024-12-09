@@ -160,7 +160,8 @@
                                 onclick="remove_addon({{ $head_val->id }},'{{ $head_val->name }}',{{ $generalItem[0]->id }})"></i>
 
                                 <a href="javascript:void(0)" class="text-primary" data-toggle="tooltip"
-                                data-placement="top" title="" data-original-title="Copy addon product">
+                                data-placement="top" title="" data-original-title="Copy addon product"
+                                onclick="copyAddonProduct_modal({{ $head_val->id }},'{{ $head_val->name }}')">
                                     <i class="icofont icofont-share-alt f-18"></i>
                                 </a>
                             </td>
@@ -299,3 +300,60 @@
 					</div>
 				</div>
 			</div>
+
+
+            <div class="modal fade modal-flex" id="copy-addon-modal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                            <h4 class="modal-title">Copy Variable </h4>
+                        </div>
+                        <form id="copy_addonForm" method="POST">
+                            @csrf
+                            <input type="hidden" name="addonId_cpymd" id="addonId_cpymd">
+                            <input type="hidden" id="addonName_cpymd">
+                         <div class="modal-body">
+                            <h3>General Product Lists</h3>
+
+                            <div class="row">
+                            <div class="col-md-6">
+                             <div class="form-group">
+                                       <label>Department</label>
+                                       <select class="select2" data-placeholder="Select Depatrment" id="department_cpymd">
+                                           <option value="">Select</option>
+                                           @foreach($department as $val)
+                                              <option value="{{ $val->department_id }}">{{ $val->department_name }}</option>
+                                           @endforeach
+                                       </select>
+                                       <span class="text-danger" id="department_cpymd_alert"></span>
+                                    </div>
+                             </div>
+                             <div class="col-md-6">
+                                 <div class="form-group">
+                                   <label>Sub-Department</label>
+                                   <select class="select2" data-placeholder="Select Depatrment" id="subDepartment_cpymd" disabled></select>
+                                   <span class="text-danger" id="subDepartment_cpymd_alert"></span>
+                                </div>
+                            </div>
+                          </div>
+
+                            <table class="table" id="tbl_productListcpymd" width="100%">
+                                <thead>
+                                    <tr>
+                                      <th>Item Name</th>
+                                   </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success waves-effect waves-light" id="btn_past_addonTogeneral">Past</button>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
