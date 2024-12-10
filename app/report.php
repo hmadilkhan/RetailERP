@@ -756,7 +756,7 @@ class report extends Model
 
     public function bookingDeliveryReport($from,$to,$terminalId)
     {
-        return DB::select("SELECT a.id,a.machine_terminal_count,a.actual_amount,SUM(c.srb+c.sales_tax_amount) as taxamount,a.total_amount,b.receive_amount as received FROM sales_receipts a LEFT JOIN sales_account_general b on b.receipt_id = a.id LEFT JOIN sales_account_subdetails c on c.receipt_id = a.id where date between ? and ? and terminal_id = ? and order_mode_id = 2 group by a.id;",[$from,$to,$terminalId]);
+        return DB::select("SELECT a.id,a.machine_terminal_count,a.actual_amount,SUM(c.srb+c.sales_tax_amount) as taxamount,c.discount_amount as discount,a.total_amount,b.receive_amount as received FROM sales_receipts a LEFT JOIN sales_account_general b on b.receipt_id = a.id LEFT JOIN sales_account_subdetails c on c.receipt_id = a.id where date between ? and ? and terminal_id = ? and order_mode_id = 2 group by a.id;",[$from,$to,$terminalId]);
     }
 
     public function bookingDeliveryEmailReport($openingId,$terminalId)
