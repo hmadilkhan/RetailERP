@@ -4791,7 +4791,8 @@ class ReportController extends Controller
     public function testDeclarationEmail(Request $request, dashboard $dash, userDetails $users)
     {
         $date = date("Y-m-d", strtotime("-1 day"));
-        $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1");
+        $terminalId = 250;
+        $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and a.terminal_id = ?", [$terminalId]);
         foreach ($terminals as $key => $terminal) {
             $emails  = DB::table("branch_emails")->where("branch_id", $terminal->branch_id)->pluck("email");
             if (!empty($emails)) {
@@ -4821,9 +4822,11 @@ class ReportController extends Controller
                         $subject = "Sales Declaration Email of " . $terminal_name[0]->branch_name . " (" . $terminal_name[0]->terminal_name . ") ";
                         $declarationNo =  $heads[0]->opening_id;
 
-                        $this->generateCompleteReportForEmail($terminal->company_id, $terminal->branch_id, $terminal, $opening->opening_id);
+                        $this->generateCompleteReportForEmail($terminal->company_id, $terminal->branch_id, $terminal->terminal_id, $opening->opening_id);
                         // print($emails);
-                        Mail::to($emails)->cc(["humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
+                        $emails = ["hmadilkhan@gmail.com"];
+                        //->cc(["humayunshamimbarry@gmail.com"])
+                        Mail::to($emails)->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
                 } // Opening Id not found
             } // Email Not found bracket
@@ -4876,8 +4879,8 @@ class ReportController extends Controller
 
                         $this->generateCompleteReportForEmail($terminal->company_id, $terminal->branch_id, $terminal->terminal_id, $opening->opening_id);
                         // print($emails);
-                        //$emails = ["hmadilkhan@gmail.com"]; 
-
+                        // $emails = ["hmadilkhan@gmail.com"]; 
+                        //->cc(["humayunshamimbarry@gmail.com"])
                         Mail::to($emails)->cc(["humayunshamimbarry@gmail.com"])->send(new DeclarationEmail($branchName, $subject, $declarationNo, $data, $currency, $date, $companyLogo));
                     } // Details not found
                 } // Opening Id not found
@@ -4899,6 +4902,7 @@ class ReportController extends Controller
         $heads = $dash->getheadsDetailsFromOpeningIdForClosing($opening);
         $CashInHand = "";
         $declarationNo =  $heads[0]->opening_id  ?? 0;
+        $voidReceipts = $heads[0]->VoidReceiptsCash + $heads[0]->VoidReceiptsCard;
 
         $positive =
             ($heads[0]->bal ?? 0) +
@@ -4909,7 +4913,7 @@ class ReportController extends Controller
         $negative =
             ($heads[0]->Discount ?? 0) +
             ($heads[0]->SalesReturn ?? 0) +
-            ($heads[0]->VoidReceipts ?? 0) +
+            ($heads[0]->VoidReceiptsCash ?? 0) +
             ($heads[0]->cashOut ?? 0);
         $CashInHand =
             $positive -
@@ -5066,7 +5070,7 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
             $pdf->Cell(38, 6, "Void Receipts", 0, 0, 'L', 1);
             $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
-            $pdf->Cell(30, 6, number_format($heads[0]->VoidReceipts, 0) ?? 0, 0, 1, 'R', 1);
+            $pdf->Cell(30, 6, number_format($voidReceipts, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->discount == 1) {
             $pdf->SetFont('Arial', '', 10);
@@ -5129,7 +5133,7 @@ class ReportController extends Controller
             $pdf->SetTextColor(34, 139, 34);
         }
 
-        if ($permissions[0]->cb == 1) {
+        if ($permissions[0]->cb == 1 && $status != "") {
             $pdf->SetFont('Arial', '', 8);
             $pdf->Cell(38, 6, "", 0, 0, 'L', 1);
             $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
@@ -5143,55 +5147,122 @@ class ReportController extends Controller
 
         $pdf->AddPage();
 
-        $pdf->ln(6);
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(78, 6, 'ITEM SALES DETAILS', 0, 0, 'C', 1);
-        $pdf->ln(6);
+        if ($permissions[0]->isdb == 1) {
 
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
+            $pdf->ln(6);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(78, 6, 'ITEM SALES DETAILS', 0, 0, 'C', 1);
+            $pdf->ln(6);
 
-        $pdf->setFillColor(233, 233, 233);
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(40, 7, 'Product', 0, 0, 'L', 1);
-        $pdf->Cell(13, 7, 'Price', 0, 0, 'L', 1);
-        $pdf->Cell(11, 7, 'Qty', 0, 0, 'C', 1);
-        $pdf->Cell(14, 7, 'Amount', 0, 1, 'C', 1);
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
 
-        $items = $report->itemsalesdatabaseforpdf($opening);
+            $pdf->setFillColor(233, 233, 233);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(40, 7, 'Product', 0, 0, 'L', 1);
+            $pdf->Cell(13, 7, 'Price', 0, 0, 'L', 1);
+            $pdf->Cell(11, 7, 'Qty', 0, 0, 'C', 1);
+            $pdf->Cell(14, 7, 'Amount', 0, 1, 'C', 1);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
 
-        $totalPrice = 0;
-        $totalQty = 0;
-        $totalWeightQty = 0;
-        $totalAmount = 0;
-        foreach ($items as $key => $item) {
-            $totalPrice += $item->price;
-            $totalQty += $item->qty;
-            $totalWeightQty += ($item->qty * $item->weight_qty);
-            $totalAmount += $item->amount;
+            $items = $report->itemsalesdatabaseforpdf($opening);
 
-            $pdf->Cell(78, 7, "(" . $item->item_code . ") " . $item->product_name, 0, 1, 'L', 1);
-            $pdf->Cell(40, 7, number_format($item->price, 0), 0, 0, 'L', 1);
-            $pdf->Cell(13, 7, $item->qty, 0, 0, 'L', 1);
-            $pdf->Cell(11, 7, $item->qty * $item->weight_qty, 0, 0, 'C', 1);
-            $pdf->Cell(14, 7, number_format($item->amount, 0), 0, 1, 'C', 1);
+            $totalPrice = 0;
+            $totalQty = 0;
+            $totalWeightQty = 0;
+            $totalAmount = 0;
+            foreach ($items as $key => $item) {
+                $totalPrice += $item->price;
+                $totalQty += $item->qty;
+                $totalWeightQty += ($item->qty * $item->weight_qty);
+                $totalAmount += $item->amount;
+
+                $pdf->Cell(78, 7, "(" . $item->item_code . ") " . $item->product_name, 0, 1, 'L', 1);
+                $pdf->Cell(40, 7, number_format($item->price, 0), 0, 0, 'L', 1);
+                $pdf->Cell(13, 7, $item->qty, 0, 0, 'L', 1);
+                $pdf->Cell(11, 7, $item->qty * $item->weight_qty, 0, 0, 'C', 1);
+                $pdf->Cell(14, 7, number_format($item->amount, 0), 0, 1, 'C', 1);
+            }
+
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(40, 7, number_format($totalPrice, 0), 0, 0, 'L', 1);
+            $pdf->Cell(13, 7, number_format($totalQty, 0), 0, 0, 'L', 1);
+            $pdf->Cell(11, 7, number_format($totalWeightQty, 0), 0, 0, 'C', 1);
+            $pdf->Cell(14, 7, number_format($totalAmount, 0), 0, 1, 'C', 1);
+            $pdf->ln(6);
+
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+
+            $pdf->AddPage();
         }
 
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(40, 7, number_format($totalPrice, 0), 0, 0, 'L', 1);
-        $pdf->Cell(13, 7, number_format($totalQty, 0), 0, 0, 'L', 1);
-        $pdf->Cell(11, 7, number_format($totalWeightQty, 0), 0, 0, 'C', 1);
-        $pdf->Cell(14, 7, number_format($totalAmount, 0), 0, 1, 'C', 1);
-        $pdf->ln(6);
+        // BOOKING DELIVERY REPORT
+        if ($permissions[0]->delivery_report == 1) {
+            $pdf->ln(6);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(78, 6, 'BOOKING DELIVERY REPORT', 0, 0, 'C', 1);
+            $pdf->ln(6);
 
-        $pdf->setFillColor(255, 255, 255);
-        $pdf->SetTextColor(0, 0, 0);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
 
-        $pdf->AddPage();
+            $records = $report->bookingDeliveryEmailReport($opening, $terminal);
+
+            $totalCount = 0;
+            $totalActualAmount = 0;
+            $totalTaxAmount = 0;
+            $totalDiscountAmount = 0;
+            $totalAmount = 0;
+            $totalReceivedAmount = 0;
+            $pdf->SetFont('Arial', '', 6);
+            $pdf->setFillColor(233, 233, 233);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(9, 7, 'Machine#', 0, 0, 'L', 1);
+            $pdf->Cell(15, 7, 'Actual Amount', 0, 0, 'L', 1);
+            $pdf->Cell(13, 7, 'Tax ', 0, 0, 'C', 1);
+            $pdf->Cell(13, 7, 'Discount', 0, 0, 'L', 1);
+            $pdf->Cell(14, 7, 'Total Amount', 0, 0, 'L', 1);
+            $pdf->Cell(14, 7, 'Received', 0, 1, 'C', 1);
+            $pdf->SetFont('Arial', '', 9);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+            if (count($records) > 0) {
+                foreach ($records as $key => $record) {
+                    $totalCount++;
+                    $totalActualAmount += $record->actual_amount;
+                    $totalTaxAmount += $record->taxamount;
+                    $totalDiscountAmount += $record->discount;
+                    $totalAmount += $record->total_amount;
+                    $totalReceivedAmount += $record->received;
+
+                    $pdf->Cell(10, 7, $record->machine_terminal_count, 0, 0, 'L', 1);
+                    $pdf->Cell(14, 7, number_format($record->actual_amount, 0), 0, 0, 'C', 1);
+                    $pdf->Cell(13, 7, number_format($record->taxamount, 0), 0, 0, 'C', 1);
+                    $pdf->Cell(13, 7, number_format($record->discount, 0), 0, 0, 'C', 1);
+                    $pdf->Cell(14, 7, number_format($record->total_amount, 0), 0, 0, 'C', 1);
+                    $pdf->Cell(14, 7, number_format($record->received, 0), 0, 1, 'C', 1);
+                }
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(10, 7, "Total", 0, 0, 'L', 1);
+                $pdf->Cell(14, 7, number_format($totalActualAmount, 0), 0, 0, 'C', 1);
+                $pdf->Cell(13, 7, number_format($totalTaxAmount, 0), 0, 0, 'C', 1);
+                $pdf->Cell(13, 7, number_format($totalDiscountAmount, 0), 0, 0, 'C', 1);
+                $pdf->Cell(14, 7, number_format($totalAmount, 0), 0, 0, 'C', 1);
+                $pdf->Cell(14, 7, number_format($totalReceivedAmount, 0), 0, 1, 'C', 1);
+                $pdf->ln(6);
+
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
+            } else {
+                $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
+            }
+        }
 
         // EXPENSES
         if ($permissions[0]->expenses == 1) {
@@ -6572,5 +6643,159 @@ class ReportController extends Controller
 
         //save file
         $pdf->Output('order_amount_receivable.pdf', 'I');
+    }
+
+    public function bookingDeliveryReport(Request $request, Vendor $vendor, report $report)
+    {
+        $branches = Branch::query();
+        if ($request->branch == "all") {
+            $branches->where("company_id", session("company_id"));
+        } else {
+            $branches->where("branch_id", $request->branch);
+        }
+        $branches = $branches->get();
+
+
+
+        $company = $vendor->company(session('company_id'));
+
+        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+        //     \QrCode::size(200)
+        //         ->format('png')
+        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        // }
+
+        $pdf = new pdfClass();
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        //first row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        //second row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+        // $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        // $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+
+        //third row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        //forth row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company[0]->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        //fifth row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        //sixth row
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        //filter section
+        $fromdate = date('F-d-Y', strtotime($request->fromdate));
+        $todate = date('F-d-Y', strtotime($request->todate));
+
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromdate . ' through ' . $todate, 0, 1, 'C');
+
+        //report name
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'Order Amount Receivable', 'B,T', 1, 'L');
+        $pdf->ln(1);
+        if ($request->branch == "all") {
+            $terminals = $report->getTerminals($request->branch);
+        } else {
+            $terminals = DB::table("terminal_details")->where("branch_id", $request->branch)->get();
+        }
+        $totalCount = 0;
+        $totalActualAmount = 0;
+        $totalTaxAmount = 0;
+        $totalDiscountAmount = 0;
+        $totalAmount = 0;
+        $totalReceivedAmount = 0;
+
+        foreach ($terminals as $key => $terminal) {
+            $totalReceivedAmount = 0;
+
+            $pdf->SetFont('Arial', 'B', 14);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(275, 10, "Terminal Name: " . $terminal->terminal_name, 0, 1, 'L');
+
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
+            $pdf->Cell(30, 7, 'Machine #', 'B', 0, 'C', 1);
+            $pdf->Cell(30, 7, 'Actual Amount', 'B', 0, 'L', 1);
+            $pdf->Cell(30, 7, 'Tax Amount', 'B', 0, 'L', 1); 
+            $pdf->Cell(30, 7, 'Discount Amount', 'B', 0, 'L', 1); 
+            $pdf->Cell(30, 7, 'Total Amount', 'B', 0, 'C', 1);
+            $pdf->Cell(30, 7, 'Amount Received', 'B', 1, 'C', 1);
+
+            $pdf->setFillColor(232, 232, 232);
+            $pdf->SetTextColor(0, 0, 0);
+
+            $details = $report->bookingDeliveryReport($request->fromdate, $request->todate, $terminal->terminal_id);
+            foreach ($details as $key => $value) {
+
+                $totalCount++;
+                $totalActualAmount += $value->actual_amount;
+                $totalTaxAmount += $value->taxamount;
+                $totalDiscountAmount += $value->discount;
+                $totalAmount += $value->total_amount;
+                $totalReceivedAmount += $value->received;
+
+                $pdf->SetFont('Arial', '', 9);
+                $pdf->setFillColor(232, 232, 232);
+                $pdf->SetTextColor(0, 0, 0);
+
+                $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
+                $pdf->Cell(30, 6, $value->machine_terminal_count, 0, 0, 'C', 1);
+                $pdf->Cell(30, 6, $value->actual_amount, 0, 0, 'C', 1);
+                $pdf->Cell(30, 6, $value->taxamount, 0, 0, 'C', 1);
+                $pdf->Cell(30, 6, $value->discount, 0, 0, 'C', 1);
+                $pdf->Cell(30, 6, $value->total_amount, 0, 0, 'C', 1);
+                $pdf->Cell(30, 6, $value->received, 0, 1, 'C', 1);
+
+                $pdf->ln(1);
+            }
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+
+            $pdf->Cell(10, 6, "Total:", 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, number_format($totalCount, 0), 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, number_format($totalActualAmount, 0), 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, number_format($totalTaxAmount, 0), 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, number_format($totalDiscountAmount, 0), 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, number_format($totalAmount, 0), 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, number_format($totalReceivedAmount, 0), 0, 1, 'C', 1);
+        }
+
+        //save file
+        $pdf->Output('booking_delivery_order_report.pdf', 'I');
     }
 }

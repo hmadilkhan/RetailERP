@@ -191,7 +191,7 @@
                                     <tr>
                                         <td style="padding: 6px 0;">Void Receipts:</td>
                                         <td style="padding: 6px 0; text-align: right;">
-                                            {{ number_format($salesData['heads'][0]->VoidReceipts, 0) ?? 0 }}</td>
+                                            {{ number_format($salesData['heads'][0]->VoidReceiptsCash + $salesData['heads'][0]->VoidReceiptsCard, 0) ?? 0 }}</td>
                                     </tr>
                                 @endif
                                 @if ($salesData['permissions'][0]->discount == 1)

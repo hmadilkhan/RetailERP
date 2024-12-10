@@ -170,6 +170,27 @@
                     </div>
                 </div>
 
+                <div class="row m-t-2">
+                    <div id="dvbookingdeliveryreport" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
+                            title="Booking Delivery Report">
+                            <h4 class="text-sm-center">Booking Delivery Report</h4>
+                        </div>
+                    </div>
+                    {{-- <div id="dvordertimingsummary" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
+                            title="Website Items Summary">
+                            <h4 class="text-sm-center">Orders Timing Summary</h4>
+                        </div>
+                    </div>
+                    <div id="dvorderamountreceivable" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
+                            title="Orders Amount Receivable">
+                            <h4 class="text-sm-center">Orders Amount Receivable</h4>
+                        </div>
+                    </div> --}}
+                </div>
+
 
 
             </div>
@@ -250,6 +271,7 @@
                     <input type="hidden" value="0" id="txtwebsiteitemssummary" />
                     <input type="hidden" value="0" id="txtordertimingsummary" />
                     <input type="hidden" value="0" id="txtorderamountreceivable" />
+                    <input type="hidden" value="0" id="txtbookingdeliveryreport" />
 
 
 
@@ -532,16 +554,17 @@
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
                 '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport', '#txtordertimingsummary',
-                '#txtorderamountreceivable'
+                '#txtorderamountreceivable', '#txtbookingdeliveryreport'
             ];
 
             fields.forEach(field => {
                 $(field).val(0);
             });
 
-            const filters = ['#dvbranch', '#dvdepartments', '#dvmultipledepartments', '#dvsubdepartments', '#dvterminal',
-                '#dvtype', '#dvitemcode',
-                '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory', '#dvordermode'
+            const filters = [
+                '#dvbranch', '#dvdepartments', '#dvmultipledepartments', '#dvsubdepartments', '#dvterminal',
+                '#dvtype', '#dvitemcode', '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory',
+                '#dvordermode'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -778,6 +801,15 @@
                 showExcelButton: true,
             }]);
         });
+        $('#dvbookingdeliveryreport').on('click', function() {
+            handleButtonClick('#dvdbookingdeliveryreport', 'Booking Delivery Report', [{
+                field: '#txtbookingdeliveryreport',
+                value: 1,
+                showDateFilter: true,
+                showBranch: true,
+                showTerminal: true,
+            }]);
+        });
 
         function copydate() {
             let date = $('#datefrom').val();
@@ -883,6 +915,11 @@
             }
             if ($('#txtorderamountreceivable').val() == 1) {
                 window.location = "{{ url('order-amount-receivable') }}?fromdate=" + date + "&todate=" + todate +
+                    "&branch=" + branch + "&terminalid=" +
+                    terminalid;
+            }
+            if ($('#txtbookingdeliveryreport').val() == 1) {
+                window.location = "{{ url('booking-delivery-report') }}?fromdate=" + date + "&todate=" + todate +
                     "&branch=" + branch + "&terminalid=" +
                     terminalid;
             }
