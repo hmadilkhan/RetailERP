@@ -33,7 +33,7 @@
                             <div class="form-group">
                                 <label class="form-control-label "><i class="icofont icofont-barcode"></i>
                                     Customers</label>
-                                <select id="customers" class="select2" wire:model="selectedOption" style="width: 100%;">
+                                <select id="customers" class="select2" wire:model="customerId" style="width: 100%;">
                                     <option value="">Select an option</option>
                                     @if (is_array($options) && !empty($options))
                                         @foreach ($options as $option)
