@@ -209,6 +209,8 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3 and b.status != 12),0)  as CustomerCredit,
         (SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,
         IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id and void_receipt = 0)),0) as Discount,
+        IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id and void_receipt = 0 and payment_id = 1)),0) as DiscountCash,
+        IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id and void_receipt = 0 and payment_id = 2)),0) as DiscountCard,
         IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,
         IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,
         IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,

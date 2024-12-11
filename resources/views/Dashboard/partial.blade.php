@@ -1,5 +1,5 @@
 <?php $positive = (isset($heads[0]->bal) ? $heads[0]->bal : 0) +(isset($heads[0]->order_delivered_cash) ? $heads[0]->order_delivered_cash : 0)  + (isset($heads[0]->Cash) ? $heads[0]->Cash : 0) + (isset($heads[0]->adv_booking_cash) ? $heads[0]->adv_booking_cash : 0) + (isset($heads[0]->cashIn) ? $heads[0]->cashIn : 0);
-$negative =  (isset($heads[0]->Discount) ? $heads[0]->Discount : 0) + (isset($heads[0]->SalesReturn) ? $heads[0]->SalesReturn : 0) + (isset($heads[0]->cashOut) ? $heads[0]->cashOut : 0) + (isset($heads[0]->VoidReceiptsCash) ? $heads[0]->VoidReceiptsCash : 0); //+ $heads[0]->CreditCard +$heads[0]->CustomerCredit;
+$negative =  (isset($heads[0]->DiscountCash) ? $heads[0]->DiscountCash : 0) + (isset($heads[0]->SalesReturn) ? $heads[0]->SalesReturn : 0) + (isset($heads[0]->cashOut) ? $heads[0]->cashOut : 0) + (isset($heads[0]->VoidReceiptsCash) ? $heads[0]->VoidReceiptsCash : 0); //+ $heads[0]->CreditCard +$heads[0]->CustomerCredit;
 // Raza na ye Void ka code 22-11-2024 ko add kraya ha 
 $CashInHand = $positive - $negative + + $heads[0]->Delivery;// (isset($heads[0]->CardCustomerDiscount) ? $heads[0]->CardCustomerDiscount : 0) ;
 $totalVoidReceipts = (isset($heads[0]->VoidReceiptsCash) ? $heads[0]->VoidReceiptsCash : 0) + (isset($heads[0]->VoidReceiptsCard) ? $heads[0]->VoidReceiptsCard : 0);
