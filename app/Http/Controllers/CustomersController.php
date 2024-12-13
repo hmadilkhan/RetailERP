@@ -896,7 +896,8 @@ class CustomersController extends Controller
         $pdf->Cell(190, 10, 'Customers Report (' . (session("roleId") != 2 ? $branch[0]->branch_name : "") . ')', 'B,T', 1, 'L');
         $pdf->SetFont('Arial', 'B', 11);
         $pdf->Cell(10, 8, 'Sr.', 'B', 0, 'L');
-        $pdf->Cell(105, 8, 'Name', 'B', 0, 'L');
+        $pdf->Cell(80, 8, 'Name', 'B', 0, 'L');
+        $pdf->Cell(25, 8, 'Branch', 'B', 0, 'L');
         $pdf->Cell(25, 8, 'Balance', 'B', 0, 'C');
         $pdf->Cell(25, 8, 'Mobile', 'B', 0, 'C');
         $pdf->Cell(25, 8, 'CNIC', 'B', 1, 'C');
@@ -910,7 +911,8 @@ class CustomersController extends Controller
             // $pdf->Cell(25, 6, $value->nic,'R', 1);
             // $pdf->Cell(80, 6, $value->branch_name, 'C',1);
             $pdf->Cell(10, 8, $key + 1, 0, 'L');
-            $pdf->Cell(105, 8, $value->name, 0, 'L');
+            $pdf->Cell(80, 8, $value->name, 0, 'L');
+            $pdf->Cell(25, 8, $value->branch_name, 0, 'L');
             $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 'C');
             $pdf->Cell(25, 8, $value->mobile, 0, 'C');
             $pdf->Cell(25, 8, $value->nic, 0, 1, 'C');

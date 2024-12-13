@@ -8,9 +8,12 @@ use App\Models\Branch;
 use App\Models\CustomerAccount;
 use App\Models\Order;
 use App\Models\OrderMode;
+use App\Models\OrderPayment;
 use App\Models\OrderStatus;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
+use App\Models\Terminal;
+use App\tax;
 use Illuminate\Support\Facades\DB;
 
 class OrderService
@@ -51,9 +54,29 @@ class OrderService
         return OrderMode::all();
     }
 
+    public function getPaymentModes()
+    {
+        return OrderPayment::all();
+    }
+
+    public function getOrderTaxes()
+    {
+        return tax::where("company_id", session('company_id'))->where("status_id", 1)->where("show_in_pos", 1)->get();
+    }
+
     public function getOrderDetailsFromItems($from,$to,$branch,$productId)
     {
         return DB::select("SELECT * FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id and b.date between ? and ? and b.branch = ? INNER JOIN sales_order_status c on c.order_status_id = b.status where a.item_code = ? group by receipt_id",[$from,$to,$branch,$productId]);
+    }
+
+    public function getTerminalsFromBranch($branchId)
+    {
+        return Terminal::where("branch_id", $branchId)->get();
+    }
+
+    public function getSalesPersonFromBranch($branchId)
+    {
+        return ServiceProvider::with("serviceprovideruser")->where("branch_id", $branchId)->where("categor_id", 1)->where("status_id", 1)->get();
     }
 
     /**
@@ -154,4 +177,6 @@ class OrderService
     {
         return ServiceProviderOrders::with('serviceprovider')->where('receipt_id', $orderId)->first();
     }
+
+
 }
