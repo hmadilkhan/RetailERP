@@ -919,7 +919,7 @@ class CustomersController extends Controller
             // $pdf->Cell(25, 8, $value->nic, 1, 'C');
 
             $pdf->Cell(10, 5, $key + 1, 0, 0, 'L', 1);
-            $pdf->Cell(80, 5, $value->namee, 0, 0, 'L', 1);
+            $pdf->Cell(80, 5, $value->name, 0, 0, 'L', 1);
             $pdf->Cell(25, 5, $value->branch_name, 0, 0, 'L', 1);
             $pdf->Cell(25, 5, number_format($value->balance, 2), 0, 0, 'R', 1);
             $pdf->Cell(25, 5, $value->mobile, 0, 0, 'R', 1);
