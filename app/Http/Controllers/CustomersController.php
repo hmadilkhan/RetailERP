@@ -885,7 +885,7 @@ class CustomersController extends Controller
         $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
         $pdf->Cell(50, 28, "", 0, 1, 'L');
         //sixth row
-        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(35, -18, '', 0, 0);
         $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
         $pdf->SetFont('Arial', 'B', 10);
@@ -915,7 +915,7 @@ class CustomersController extends Controller
             $pdf->Cell(25, 8, $value->branch_name, 0, 'L');
             $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 'C');
             $pdf->Cell(25, 8, $value->mobile, 0, 'C');
-            $pdf->Cell(25, 8, $value->nic, 0, 1, 'C');
+            $pdf->Cell(25, 8, $value->nic, 1, 'C');
             // $pdf->Cell(55, 8, $value->branch_name,0,1, 'C');
         }
         //save file
