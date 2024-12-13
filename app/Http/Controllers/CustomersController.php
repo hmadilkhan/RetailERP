@@ -898,9 +898,9 @@ class CustomersController extends Controller
         $pdf->Cell(10, 8, 'Sr.', 'B', 0, 'L');
         $pdf->Cell(80, 8, 'Name', 'B', 0, 'L');
         $pdf->Cell(25, 8, 'Branch', 'B', 0, 'L');
-        $pdf->Cell(25, 8, 'Balance', 'B', 0, 'C');
-        $pdf->Cell(25, 8, 'Mobile', 'B', 0, 'C');
-        $pdf->Cell(25, 8, 'CNIC', 'B', 1, 'C');
+        $pdf->Cell(25, 8, 'Balance', 'B', 0, 'L');
+        $pdf->Cell(25, 8, 'Mobile', 'B', 0, 'L');
+        $pdf->Cell(25, 8, 'CNIC', 'B', 1, 'L');
         $pdf->SetFont('Arial', '', 9);
         foreach ($details as $key => $value) {
 
