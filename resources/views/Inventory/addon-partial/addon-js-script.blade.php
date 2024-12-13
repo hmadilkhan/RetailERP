@@ -543,22 +543,27 @@ let table_row_editAddonmdId = [];
 }
 
 
-// $("#department_cpymd").on('change',function(){
-//            if($(this).val() != ''){
-//                load_subdept($(this).val(),'subDepartment_variableTab');
-//            }else{
-//                $("#subDepartment_cpymd").val('');
-//     			 if(!$("#subDepartment_cpymd").attr('disabled')){
-//     			     $("#subDepartment_cpymd").attr('disabled',true);
-//     			 }
-//            }
-// });
+$("#department_cpymd").on('change',function(){
+           if($(this).val() != ''){
+               load_subdept($(this).val(),'subDepartment_cpymd');
+           }else{
+               $("#subDepartment_cpymd").val('');
+    			 if(!$("#subDepartment_cpymd").attr('disabled')){
+    			     $("#subDepartment_cpymd").attr('disabled',true);
+    			 }
+           }
+});
 
-// $("#subDepartment_cpymd").on('change',function(){
-//     if($(this).val() != ''){
-//         get_allGeneralItem($("#department_cpymd").val(),$(this).val());
-//     }
-// });
+$("#subDepartment_cpymd").on('change',function(){
+    if($(this).val() != ''){
+        // get_allGeneralItem($("#department_cpymd").val(),$(this).val());
+    }
+});
 
+
+const hash = window.location.hash.substring(1);
+if(hash==='addonTab'){
+    $("#tab_btn_addon").trigger('click');
+}
 </script>
 

@@ -11,9 +11,9 @@
 <section class="panels-wells m-t-5 p-t-20">
     <h3>Product Name :{{ $generalItem[0]->product_name }}</h3>
 
-    @if(isset($addonTabBox))
+    {{-- @if(isset($addonTabBox))
        <script>alert('{{ $addonTabBox }}')</script>
-    @endif
+    @endif --}}
 
     <a href="{{ route('invent-list') }}">
         <i class="text-primary text-center icofont icofont-arrow-left f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Back to list">Back to list</i>
@@ -327,13 +327,12 @@ input+.slider:before {
         });
 
 		function load_subdept(id,elementId){
+            $('#'+elementId).empty();
             $.ajax({
                 url: "{{ url('get_sub_departments') }}",
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",id:id},
                 success:function(resp){
-                    $('#'+elementId).empty();
-
     				 if($("#"+elementId).attr('disabled')){
     				     $("#"+elementId).attr('disabled',false);
     				 }
