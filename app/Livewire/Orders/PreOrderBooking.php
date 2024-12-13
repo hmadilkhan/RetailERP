@@ -46,6 +46,7 @@ class PreOrderBooking extends Component
     public $discountType = "";
     public $discountText = "";
     public $discountValue = "";
+    public $salesPersonId = "";
 
     // ORDER ITEMS MODELS
     public $productId = "";
@@ -58,7 +59,7 @@ class PreOrderBooking extends Component
     public $taxAmount = 0;
     public $totalAmount = 0;
 
-    public $selectedOption = null;
+    // public $selectedOption = null;
     public $options = [];
 
     protected $rules = [
@@ -75,7 +76,7 @@ class PreOrderBooking extends Component
         $this->orderTypes = OrderMode::all();
         $this->discountType = "percentage";
         $this->discountText = "Enter Percentage";
-        // dd($this->discountType);
+        $this->resetErrorBag();
     }
 
     public function hydrate()
@@ -105,12 +106,12 @@ class PreOrderBooking extends Component
         $this->customerId = $value;
     }
 
-    public function updatedDiscountType($value)  
+    public function updatedDiscountType($value)
     {
         $this->discountType = $value;
         if ($value == "percentage") {
             $this->discountText = "Enter Percentage";
-        }else if ($value == "amount") {
+        } else if ($value == "amount") {
             $this->discountText = "Enter Amount";
         }
         $this->calculateTotal();
@@ -174,17 +175,16 @@ class PreOrderBooking extends Component
             $this->subTotal += $item["amount"];
         });
         if ($this->taxValue != "") {
-           $taxvalue = $this->taxValue / 100;
-           $this->taxAmount  = $this->subTotal *  $taxvalue;
+            $taxvalue = $this->taxValue / 100;
+            $this->taxAmount  = $this->subTotal *  $taxvalue;
         }
-        
+
         if ($this->discountType == "percentage") {
             $this->discount = $this->subTotal * ((float) $this->discountValue / 100);
-        }else{
+        } else {
             $this->discount = (float) $this->discountValue;
-
         }
-       
+
         $this->totalAmount = $this->subTotal + $this->taxAmount  - $this->discount;
     }
 
@@ -219,9 +219,39 @@ class PreOrderBooking extends Component
     #[On('placeOrder')]
     public function placeOrder($customerId, $type, $branchId, $terminalId, $salesPersonId, $paymentId)
     {
-        $this->validate();
+        // Clear the error bag if validation passes
+        $this->resetErrorBag();
+        $this->resetValidation();
 
-        $this->dispatch("reinitializeSelect2");
+        $this->customerId = $customerId;
+        $this->orderTypeId = $type;
+        $this->branchId = $branchId;
+        $this->terminalId = $terminalId;
+        $this->paymentId = $paymentId;
+        $this->salesPersonId = $salesPersonId;
+
+        $validated = $this->validate([ 
+            "customerId" => "required",
+            "orderTypeId" => "required",
+            "paymentId" => "required",
+            "branchId" => "required",
+            "terminalId" => "required",
+        ]);
+
+        dump($this->customerId);
+        dump($this->orderTypeId);
+        dump($this->branchId);
+        dump($this->terminalId);
+        dump($this->paymentId);
+
+
+        $this->validate($this->rules);
+
+        if ($errors = $this->getErrorBag()) {
+            dump($errors);
+        }
+
+        
 
         if (count($this->orderItems) == 0) {
             $this->addError('orderItems', 'Please select items.');
@@ -269,6 +299,7 @@ class PreOrderBooking extends Component
                 "sales_tax_amount" => 0,
             ]);
             DB::commit();
+            $this->dispatch("reinitializeSelect2");
             dd($order->id . " has been placed");
         } catch (\Throwable $th) {
             DB::rollBack();
@@ -279,7 +310,7 @@ class PreOrderBooking extends Component
     public function render()
     {
         // $this->dispatch('childRendered'); // Emit event after child render
-        $products = Inventory::where("company_id", session('company_id'))->where("status", 1)->get();
+        $products = Inventory::where("company_id", session('company_id'))->where("status", 1)->take(10)->get();
         $payments = OrderPayment::all();
         $taxes = tax::where("company_id", session('company_id'))->where("status_id", 1)->where("show_in_pos", 1)->get();
         return view('livewire.orders.pre-order-booking', [

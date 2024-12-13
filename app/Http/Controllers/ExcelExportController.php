@@ -60,6 +60,7 @@ class ExcelExportController extends Controller
 		foreach ($details as $key => $value) { 
 			 $items = [
 				"Name" => $value->name,
+				"Branch" => $value->branch_name,
 				"Mobile" => $value->mobile,
 				"CNIC" => $value->nic,
 				"Address" => $value->address,

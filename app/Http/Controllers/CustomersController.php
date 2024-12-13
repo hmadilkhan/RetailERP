@@ -862,7 +862,7 @@ class CustomersController extends Controller
         //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Image(public_path('assets/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
         $pdf->Cell(110, 12, $company[0]->name, 0, 0, 'L');
         // $pdf->Cell(45, 12, $urduname, 0, 0, 'L');
         $pdf->Cell(30, 0, "", 0, 1, 'R');
@@ -885,7 +885,7 @@ class CustomersController extends Controller
         $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
         $pdf->Cell(50, 28, "", 0, 1, 'L');
         //sixth row
-        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->SetFont('Arial', 'B', 9);
         $pdf->Cell(35, -18, '', 0, 0);
         $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
         $pdf->SetFont('Arial', 'B', 10);
@@ -896,25 +896,21 @@ class CustomersController extends Controller
         $pdf->Cell(190, 10, 'Customers Report (' . (session("roleId") != 2 ? $branch[0]->branch_name : "") . ')', 'B,T', 1, 'L');
         $pdf->SetFont('Arial', 'B', 11);
         $pdf->Cell(10, 8, 'Sr.', 'B', 0, 'L');
-        $pdf->Cell(105, 8, 'Name', 'B', 0, 'L');
-        $pdf->Cell(25, 8, 'Balance', 'B', 0, 'C');
-        $pdf->Cell(25, 8, 'Mobile', 'B', 0, 'C');
-        $pdf->Cell(25, 8, 'CNIC', 'B', 1, 'C');
-        // $pdf->Cell(55, 8, 'Branch Name', 'B', 1, 'C');
+        $pdf->Cell(80, 8, 'Name', 'B', 0, 'L');
+        $pdf->Cell(25, 8, 'Branch', 'B', 0, 'L');
+        $pdf->Cell(25, 8, 'Balance', 'B', 0, 'L');
+        $pdf->Cell(25, 8, 'Mobile', 'B', 0, 'L');
+        $pdf->Cell(25, 8, 'CNIC', 'B', 1, 'L');
         $pdf->SetFont('Arial', '', 9);
         foreach ($details as $key => $value) {
-            // $pdf->Cell(10, 6, $key + 1, 'L', 1);
-            // $pdf->Cell(25, 6, $value->name,  'L', 1);
-            // $pdf->Cell(25, 6, number_format($value->balance, 2),'R', 1);
-            // $pdf->Cell(25, 6, $value->mobile, 'R', 1);
-            // $pdf->Cell(25, 6, $value->nic,'R', 1);
-            // $pdf->Cell(80, 6, $value->branch_name, 'C',1);
-            $pdf->Cell(10, 8, $key + 1, 0, 'L');
-            $pdf->Cell(105, 8, $value->name, 0, 'L');
-            $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 'C');
-            $pdf->Cell(25, 8, $value->mobile, 0, 'C');
-            $pdf->Cell(25, 8, $value->nic, 0, 1, 'C');
-            // $pdf->Cell(55, 8, $value->branch_name,0,1, 'C');
+
+            $pdf->Cell(10, 5, $key + 1, 0, 0, 'L', 0);
+            $pdf->Cell(80, 5, $value->name, 0, 0, 'L', 0);
+            $pdf->Cell(25, 5, $value->branch_name, 0, 0, 'L', 0);
+            $pdf->Cell(25, 5, number_format($value->balance, 2), 0, 0, 'L', 0);
+            $pdf->Cell(25, 5, $value->mobile, 0, 0, 'L', 0);
+            $pdf->Cell(28, 5, $value->nic, 0, 1, 'L', 0);
+
         }
         //save file
         $pdf->Output('Customer Report' . '.pdf', 'I');
