@@ -901,29 +901,15 @@ class CustomersController extends Controller
         $pdf->Cell(25, 8, 'Balance', 'B', 0, 'C');
         $pdf->Cell(25, 8, 'Mobile', 'B', 0, 'C');
         $pdf->Cell(25, 8, 'CNIC', 'B', 1, 'C');
-        // $pdf->Cell(55, 8, 'Branch Name', 'B', 1, 'C');
         $pdf->SetFont('Arial', '', 9);
         foreach ($details as $key => $value) {
-            // $pdf->Cell(10, 6, $key + 1, 'L', 1);
-            // $pdf->Cell(25, 6, $value->name,  'L', 1);
-            // $pdf->Cell(25, 6, number_format($value->balance, 2),'R', 1);
-            // $pdf->Cell(25, 6, $value->mobile, 'R', 1);
-            // $pdf->Cell(25, 6, $value->nic,'R', 1);
-            // $pdf->Cell(80, 6, $value->branch_name, 'C',1);
-        
-            // $pdf->Cell(10, 8, $key + 1, 0, 'L');
-            // $pdf->Cell(80, 8, $value->name, 0, 'L');
-            // $pdf->Cell(25, 8, $value->branch_name, 0, 'L');
-            // $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 'C');
-            // $pdf->Cell(25, 8, $value->mobile, 0, 'C');
-            // $pdf->Cell(25, 8, $value->nic, 1, 'C');
 
             $pdf->Cell(10, 5, $key + 1, 0, 0, 'L', 0);
             $pdf->Cell(80, 5, $value->name, 0, 0, 'L', 0);
             $pdf->Cell(25, 5, $value->branch_name, 0, 0, 'L', 0);
-            $pdf->Cell(25, 5, number_format($value->balance, 2), 0, 0, 'R', 0);
-            $pdf->Cell(25, 5, $value->mobile, 0, 0, 'R', 0);
-            $pdf->Cell(28, 5, $value->nic, 0, 1, 'R', 0);
+            $pdf->Cell(25, 5, number_format($value->balance, 2), 0, 0, 'L', 0);
+            $pdf->Cell(25, 5, $value->mobile, 0, 0, 'L', 0);
+            $pdf->Cell(28, 5, $value->nic, 0, 1, 'L', 0);
 
         }
         //save file
