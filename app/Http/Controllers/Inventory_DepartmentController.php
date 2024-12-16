@@ -673,7 +673,7 @@ class Inventory_DepartmentController extends Controller
             ->pluck('id');
 
         if ($inventoryIds->isEmpty()) {
-            return response()->json('No active inventories found for this department.', 404);
+            return response()->json('No active inventories found for this department.', 500);
         }
 
         if ($statusCode === 'link') {
@@ -716,9 +716,9 @@ class Inventory_DepartmentController extends Controller
                 return response()->json('Success!', 200);
             }
 
-            return response()->json('No inventories were updated.', 404);
+            return response()->json('No inventories were updated.', 500);
         }
 
-        return response()->json('Invalid status code!', 400);
+        return response()->json('Invalid status code!', 500);
     }
 }
