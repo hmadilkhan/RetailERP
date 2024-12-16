@@ -523,6 +523,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/inventory/get-addon-values', [InventoryController::class, 'loadAddonValues'])->name('loadAddonValues');
     Route::post('/inventory/remove-addon', [InventoryController::class, 'removeAddon'])->name('removeAddon');
     Route::post('/inventory/remove-addon-value', [InventoryController::class, 'removeAddonValue'])->name('removeAddonValue');
+    Route::post('/inventory/get-product-without-addon-bind', [InventoryController::class, 'get_generalItem_withoutAddonBind'])->name('get_generalItem_withoutAddonBind');
 
 
 

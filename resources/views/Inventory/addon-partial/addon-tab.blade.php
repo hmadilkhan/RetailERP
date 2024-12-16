@@ -340,7 +340,7 @@
                             </div>
                           </div>
 
-                            <table class="table" id="tbl_productListcpymd" width="100%">
+                            <table class="table" id="tbl_productListcpyaddonmd" width="100%">
                                 <thead>
                                     <tr>
                                       <th>Item Name</th>
@@ -351,7 +351,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success waves-effect waves-light" id="btn_past_addonTogeneral">Past</button>
+                            <button type="button" class="btn btn-success waves-effect waves-light">Past</button>
                         </div>
                         </form>
                     </div>

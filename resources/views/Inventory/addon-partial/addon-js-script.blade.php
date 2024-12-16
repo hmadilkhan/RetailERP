@@ -556,9 +556,35 @@ $("#department_cpymd").on('change',function(){
 
 $("#subDepartment_cpymd").on('change',function(){
     if($(this).val() != ''){
-        // get_allGeneralItem($("#department_cpymd").val(),$(this).val());
+        get_allGeneralItemWithAddonBind($("#department_cpymd").val(),$(this).val(),$("#addonId_cpymd").val());
     }
 });
+
+
+function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId){
+              $.ajax({
+                url: "{{ route('get_generalItem_withoutAddonBind') }}",
+                type: 'POST',
+                data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId},
+                success:function(resp){
+                   if(resp == ''){
+                       swal('Product not found!','','error');
+                       $('#tbl_productListcpyaddonmd tbody').empty();
+                   }else{
+                    // datatableVariable.destroy();
+                    $('#tbl_productListcpyaddonmd tbody').empty();
+                    $.each(resp, function( index, value ) {
+                       if(value.id != $('#m_finishgood').val()){
+                            $("#tbl_productListcpyaddonmd tbody").append('<tr><td><label class="pointer" onclick="addToVariableProduct_basket()"> <input type="checkbox" value="'+value.id+'" class="form-control pointer m-r-1" name="tble_chk_vcpymd">'+value.product_name+'</label></td></tr>');
+                        // datatableVariable.row.add(['<label class="pointer"> <input type="checkbox" value="'+value.id+'" class="form-control pointer m-r-1" name="tble_chk_vcpymd">'+value.product_name+'</label>']);
+                       }
+                    });
+                    //datatableVariable.draw();
+                   }
+
+                }
+            });
+        }
 
 
 const hash = window.location.hash.substring(1);

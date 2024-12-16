@@ -2765,11 +2765,13 @@ class InventoryController extends Controller
     public function get_generalItem_withoutAddonBind(Request $request)
     {
         return DB::table('inventory_general')
-            ->where('company_id', session('company_id'))
-            ->where('department_id', $request->depart)
-            ->where('sub_department_id', $request->subDepart)
-            ->where('status', 1)
-            ->get();
+                ->where('company_id', session('company_id'))
+                ->where('department_id', $request->depart)
+                ->where('sub_department_id', $request->subDepart)
+                ->where('status', 1)
+                ->get();
+
+                // $getInvent
     }
 
     public function autoGenerateCode_variableProduct(Request $request)
