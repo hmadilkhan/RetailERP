@@ -585,8 +585,9 @@ class Inventory_DepartmentController extends Controller
 
         $result = $in_depart->update_depart($request->departid, $items);
 
+
+        $in_depart->remove_section($request->departid);
         if (!empty($request->sections)) {
-            $in_depart->remove_section($request->departid);
             foreach ($request->sections as $value) {
                 $in_depart->insert_section(['department_id' => $request->departid, 'section_id' => $value, 'created_at' => date('Y-m-d H:i:s')]);
             }

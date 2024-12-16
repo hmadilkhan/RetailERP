@@ -2762,6 +2762,16 @@ class InventoryController extends Controller
             ->get();
     }
 
+    public function get_generalItem_withoutAddonBind(Request $request)
+    {
+        return DB::table('inventory_general')
+            ->where('company_id', session('company_id'))
+            ->where('department_id', $request->depart)
+            ->where('sub_department_id', $request->subDepart)
+            ->where('status', 1)
+            ->get();
+    }
+
     public function autoGenerateCode_variableProduct(Request $request)
     {
         $code = rand(1000000, 9999999);
