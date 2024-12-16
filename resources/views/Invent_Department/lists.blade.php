@@ -665,12 +665,7 @@
                             });
                     }
 
-                    if (jqXHR.status == 500) {
-                        swal('Error',resp,'error');
-                    }
-
-
-                },error: function(xhr, status, error) {  // Callback function if there is an error
+                },error: function(xhr, status, error) {
                     swal('Error',xhr.responseText,'error');
                 },
 
