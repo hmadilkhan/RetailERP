@@ -667,7 +667,7 @@
 
 
                 },error: function(xhr, status, error) {  // Callback function if there is an error
-                    swal('Error',error.responseText(),'error');
+                    swal('Error',xhr.responseText,'error');
                 },
 
             })
