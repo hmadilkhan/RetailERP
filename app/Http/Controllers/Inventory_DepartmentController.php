@@ -655,7 +655,7 @@ class Inventory_DepartmentController extends Controller
     //     }
     // }
 
-    public function departmentWebsiteConnect(Request $request)
+    public function departmentWebsiteConnect(Request $request,inventory_department $in_depart)
     {
         $statusCode = $request->input('status_code');
         $department = $request->input('department');
@@ -712,6 +712,7 @@ class Inventory_DepartmentController extends Controller
                 ->update(['status' => 0, 'updated_at' => now()]);
 
             if ($updated) {
+                $in_depart->remove_section($request->departid);
                 return response()->json('Success!', 200);
             }
 
