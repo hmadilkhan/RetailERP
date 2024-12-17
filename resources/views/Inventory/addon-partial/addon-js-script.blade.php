@@ -575,9 +575,15 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                     $('#tbl_productListcpyaddonmd tbody').empty();
                     $.each(resp, function( index, value ) {
                        if(value.id != $('#m_finishgood').val()){
-                            $("#tbl_productListcpyaddonmd tbody").append('<tr><td><label class="pointer" onclick="addToVariableProduct_basket()"> <input type="checkbox" value="'+value.id+'" class="form-control pointer m-r-1" name="tble_chk_vcpymd">'+value.product_name+'</label></td></tr>');
+                            $("#tbl_productListcpyaddonmd tbody")
+                            .append('<tr><td><div class="form-check">'+
+                                 '<label class="form-check-label">'+
+                                            '<input class="form-check-input" type="checkbox" value="'+value.id+'" name="tble_chk_prodcpyaddonmd">'+value.product_name+
+                                        '</label>'+
+                              '</div></td></tr>');
                         // datatableVariable.row.add(['<label class="pointer"> <input type="checkbox" value="'+value.id+'" class="form-control pointer m-r-1" name="tble_chk_vcpymd">'+value.product_name+'</label>']);
-                       }
+
+                      }
                     });
                     //datatableVariable.draw();
                    }
@@ -586,6 +592,20 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
             });
         }
 
+        function selectedProduct_bindAddon(){
+           let products = [];
+            $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
+                 if($(this).is(':checked')){
+                     if($.inArray($(this).val(),products) == -1){
+                        products.push($(this).val())
+                     }
+                 }
+            })
+
+            if(products.length > 0){
+                alert(products)
+            }
+        }
 
 const hash = window.location.hash.substring(1);
 if(hash==='addonTab'){
