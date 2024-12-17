@@ -594,6 +594,8 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
 
         function selectedProduct_bindAddon(){
            let products = [];
+           let process = true;
+
             $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
                  if($(this).is(':checked')){
                      if($.inArray($(this).val(),products) == -1){
@@ -602,14 +604,25 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                  }
             })
 
-            if(products.length > 0){
-                alert(products)
+            if(products.length == 0){
+                swal('Error','Product not selected!','error');
+                process = false;
             }
+
+            // if(process){
+            //     $.ajax({
+            //     url: "",
+            //     type: 'POST',
+            //     data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId,addonName:addonHeadName},
+            //     success:function(resp){
+            //     }
+            // });
+            //}
         }
 
-const hash = window.location.hash.substring(1);
-if(hash==='addonTab'){
-    $("#tab_btn_addon").trigger('click');
-}
+  const hash = window.location.hash.substring(1);
+    if(hash==='addonTab'){
+        $("#tab_btn_addon").trigger('click');
+    }
 </script>
 
