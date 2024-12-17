@@ -68,8 +68,9 @@
                 ?>
                 @foreach ($record as $value)
                     <?php
+                    //$value->bal +
                     $totalItem++;
-                    $cashInHand = $value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash - ($value->cashOut + $value->Expenses + $value->SalesReturn + $value->voidSalesCash); //- $value->Discount - $value->promo - $value->coupon;
+                    $cashInHand =  $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash - ($value->cashOut + $value->Expenses + $value->SalesReturn + $value->voidSalesCash); //- $value->Discount - $value->promo - $value->coupon;
                     $balance = (float) $value->closingBal - (float) $cashInHand;
                     $totalCashWithCard = $cashInHand + $value->CreditCard + $value->adv_booking_card + $value->order_delivered_card;
                     $totalVoid = ($value->voidSalesCash + $value->voidSalesCard + $value->voidSalesBooking);
