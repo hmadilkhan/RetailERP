@@ -156,20 +156,11 @@ class dashboard extends Model
         sales_receipts b
       WHERE opening_id = a.opening_id
         AND b.order_mode_id = 3),0) as Delivery,
-    IFNULL((SELECT
-        SUM(b.actual_amount) AS sales
-      FROM
-        sales_receipts b
-      WHERE opening_id = a.opening_id
-        AND b.payment_id = 1
-        AND b.void_receipt = 1),0) as VoidReceiptsCash,
-    IFNULL((SELECT
-        SUM(b.actual_amount) AS sales
-      FROM
-        sales_receipts b
-      WHERE opening_id = a.opening_id
-      AND b.payment_id = 2
-        AND b.void_receipt = 1),0) as VoidReceiptsCard,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1),0) as Cash,
+    
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id = 1 and b.order_mode_id != 2),0) as VoidReceiptsCash,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id != 1 and b.order_mode_id != 2),0) as VoidReceiptsCard,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.order_mode_id = 2),0) as VoidReceiptsBooking,
+    IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1),0) as Cash,
 IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2) + (Select SUM(credit_card_transaction) from sales_account_subdetails where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2)),0) as CreditCard,
 IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id ),0)  as CustomerCredit,
 (SELECT SUM(total_cost) FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.opening_id = a.opening_id) as cost,IFNULL((SELECT SUM(discount_amount) FROM sales_account_subdetails where receipt_id IN (Select id from sales_receipts where opening_id = a.opening_id and void_receipt = 0)),0) as Discount,IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 1),0) as CardReturn,IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 4 and received = 1),0) as ChequeReturn,IFNULL((Select SUM(receive_amount) from sales_account_general where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 3 and b.payment_id = 3 and b.status != 12 and b.is_sale_return = 0)),0) as paidByCustomer,(SELECT SUM(b.discount_amount) FROM sales_receipts c inner join sales_account_subdetails b on b.receipt_id = c.id where c.opening_id = a.opening_id and c.payment_id IN(2,3)) as CardCustomerDiscount, (SELECT
@@ -193,6 +184,21 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         return $result;
     }
 
+    // IFNULL((SELECT
+    //     SUM(b.actual_amount) AS sales
+    //   FROM
+    //     sales_receipts b
+    //   WHERE opening_id = a.opening_id
+    //     AND b.payment_id = 1
+    //     AND b.void_receipt = 1),0) as VoidReceiptsCash,
+    // IFNULL((SELECT
+    //     SUM(b.actual_amount) AS sales
+    //   FROM
+    //     sales_receipts b
+    //   WHERE opening_id = a.opening_id
+    //   AND b.payment_id = 2
+    //     AND b.void_receipt = 1),0) as VoidReceiptsCard,
+
     public function getheadsDetailsFromOpeningIdForClosing($openingId)
     {
         $result = DB::select("SELECT a.opening_id,a.status,a.balance as bal,a.date,a.time,a.terminal_id,a.user_id,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id ),0) as TotalSales,IFNULL((Select balance from sales_closing where opening_id = a.opening_id),0) as closingBal,(Select date from sales_closing where opening_id = a.opening_id) as closingDate,(Select time from sales_closing where opening_id = a.opening_id) as closingTime,IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,IFNULL((SELECT
@@ -201,8 +207,9 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         sales_receipts b
       WHERE opening_id = a.opening_id
         AND b.order_mode_id = 3),0) as Delivery,
-        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id = 1),0) as VoidReceiptsCash,
-        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id = 2),0) as VoidReceiptsCard,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id = 1 and b.order_mode_id != 2),0) as VoidReceiptsCash,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id != 1 and b.order_mode_id != 2),0) as VoidReceiptsCard,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.order_mode_id = 2),0) as VoidReceiptsBooking,
         IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,
         IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1 and b.status != 12),0) as Cash,
         IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2 and b.status != 12) + (Select SUM(credit_card_transaction) from sales_account_subdetails where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2 and b.status != 12)),0) as CreditCard,
@@ -243,8 +250,9 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.order_mode_id = 1),0) as TakeAway,
         IFNULL((SELECT SUM(b.total_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.order_mode_id = 3),0) as Delivery,
 
-        IFNULL((SELECT SUM(b.total_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 AND b.payment_id = 1),0) as VoidReceiptsCash,
-        IFNULL((SELECT SUM(b.total_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 AND b.payment_id = 2),0) as VoidReceiptsCard,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id = 1 and b.order_mode_id != 2),0) as VoidReceiptsCash,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id != 1 and b.order_mode_id != 2),0) as VoidReceiptsCard,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.order_mode_id = 2),0) as VoidReceiptsBooking,
         IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,
         IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1),0) as Cash,
         IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2)+ (SELECT SUM(credit_card_transaction) FROM sales_account_subdetails WHERE receipt_id IN
