@@ -611,9 +611,9 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
 
             // if(process){
             //     $.ajax({
-            //     url: "",
+            //     url: "{{ route('copyGeneralProduct_bind_addon') }}",
             //     type: 'POST',
-            //     data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId,addonName:addonHeadName},
+            //     data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
             //     success:function(resp){
             //     }
             // });
