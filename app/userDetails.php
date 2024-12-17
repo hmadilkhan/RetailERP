@@ -100,7 +100,7 @@ class userDetails extends Model
     		$filter .= " and b.branch_id = ".session('branch');
     	}
     	// return  $filter;
-    	$result = DB::select('SELECT a.id, a.fullname, a.username, c.role, d.branch_name, e.status_name, b.authorization_id,a.image,b.isLoggedIn FROM user_details a
+    	$result = DB::select('SELECT a.id, a.fullname, a.username, c.role, d.branch_name, e.status_name, b.authorization_id,a.image,b.isLoggedIn,a.show_password FROM user_details a
 		INNER JOIN user_authorization b ON b.user_id = a.id
 		INNER JOIN user_roles c ON c.role_id = b.role_id
 		INNER JOIN branch d ON d.branch_id = b.branch_id

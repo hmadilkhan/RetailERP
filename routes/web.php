@@ -106,6 +106,7 @@ Route::get('/customers-list', CustomerList::class);
 Route::get('/pre-order-booking',[PreOrderBookingController::class, "index"]);
 Route::post('/place-order',[PreOrderBookingController::class, "placeOrder"]);
 Route::post('/get-terminals-and-salespersons',[PreOrderBookingController::class, "getTerminalsAndSalesPerson"])->name("get.terminals.and.salespersons");
+Route::post('/get-price-of-product',[PreOrderBookingController::class, "getProductPrice"])->name("get-price-of-product");
 
 Route::resource('addons', AddonController::class);
 Route::resource('addon-category', AddonCategoryController::class);

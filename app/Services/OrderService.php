@@ -71,7 +71,7 @@ class OrderService
 
     public function getTerminalsFromBranch($branchId)
     {
-        return Terminal::where("branch_id", $branchId)->get();
+        return Terminal::where("branch_id", $branchId)->where("status_id",1)->get();
     }
 
     public function getSalesPersonFromBranch($branchId)
@@ -105,6 +105,7 @@ class OrderService
             'payment',
             'address',
             'website',
+            'salesperson',
         ])->find($orderId);
     }
 

@@ -329,6 +329,7 @@
             }
         );
 
+         // Getting Terminal and Sales person according to selected Branch
         $("#branchId").change(function() {
             $.ajax({
                 url: "{{ url('get-terminals-and-salespersons') }}",
@@ -357,6 +358,28 @@
             })
         })
 
+        // Getting Price of Selected product
+        $("#productId").change(function() {
+            $("#price").prop("disabled", true);
+            $.ajax({
+                url: "{{ url('get-price-of-product') }}",
+                type: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: $(this).val()
+                },
+                success: function(result) {
+                    $("#price").prop("disabled", false);
+                    if (result.status == 200) {
+                        $("#price").val(result.price.retail_price);
+
+                    }
+                },
+            });
+
+        });
+
+        // Check if the item already exist in the cart
         function checkExistence(firstval) {
             let result = false;
             $("#itemsTable tbody tr").each(function(index) {
@@ -370,10 +393,11 @@
             return result;
         }
 
+        // Main method of Calculating cart items Total
         function calculateTotals() {
             let subTotal = 0;
             $("#itemsTable tbody tr").each(function(index) {
-                subTotal += $(this).children().eq(7).text() * 1;
+                subTotal += $(this).children().eq(9).text() * 1;
             });
 
             let taxAmount = calculateTax(subTotal);
@@ -426,6 +450,7 @@
             $("#price").val('');
         }
 
+        // Add Item To Cart
         $("#add-order-item").click(function() {
             $(".item-message").html('');
             if ($("#productId").val() == null) {
@@ -474,6 +499,7 @@
 
         })
 
+        // Place Order 
         $("#placeOrder").click(function(e) {
             e.preventDefault();
             $(".message").html('');
@@ -516,6 +542,7 @@
             })
         })
 
+        // Delete item From Cart
         function deleteItem(id) {
             $("#row" + id).remove();
             calculateTotals();

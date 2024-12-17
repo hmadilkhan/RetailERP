@@ -6,7 +6,10 @@ use App\Models\Order;
 use App\Models\OrderAccount;
 use App\Models\OrderDetails;
 use App\Models\OrderSubAccount;
+use App\Models\ServiceProviderOrders;
+use App\Models\ServiceProviderRelation;
 use App\Services\BranchService;
+use App\Services\InventoryService;
 use App\Services\OrderService;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -33,6 +36,14 @@ class PreOrderBookingController extends Controller
         ]);
     }
 
+    public function getProductPrice(Request $request, InventoryService $inventoryService)
+    {
+        if ($request->id != "") {
+            return $inventoryService->getPriceFromProduct($request->id);
+        }
+
+        return response()->json(["status" => 500, "message" => "Product Id is null"]);
+    }
     public function getTerminalsAndSalesPerson(Request $request): JsonResponse
     {
         if ($request->branchId != "") {
@@ -98,6 +109,16 @@ class PreOrderBookingController extends Controller
                 "discount_amount" => $request->discountAmount,
                 "sales_tax_amount" => $request->taxAmount,
             ]);
+            // Checking Service Provider selected or not
+            if ($request->salespersonId != "") {
+                $sp = ServiceProviderRelation::where("user_id", $request->salespersonId)->first();
+                if (!empty($sp)) {
+                    ServiceProviderOrders::create([
+                        "service_provider_id" => $sp->provider_id,
+                        "receipt_id" => $order->id,
+                    ]);
+                }
+            }
             DB::commit();
 
             return response()->json(["status" => 200, "orderId" => $order->id]);
