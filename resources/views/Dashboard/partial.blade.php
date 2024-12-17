@@ -269,10 +269,19 @@ $closingBalance = round($heads[0]->closingBal);
                 @endif
                 @if (isset($result[0]->void_receipt) && $result[0]->void_receipt == 1)
                     <tr id="discounthead">
-                        <td style="width:500px">Void Receipts</td>
+                        <td style="width:500px">Void Receipts (Cash)</td>
                         <td id="void_receipt" style="width:500px" class="text-end">{{ session('currency') }}
-                            {{-- {{ number_format($heads[0]->VoidReceipts, 0) }}</td> --}}
-                            {{ number_format($totalVoidReceipts, 0) }}</td>
+                            {{ number_format($voidReceiptsCash, 0) }}</td>
+                    </tr>
+                    <tr id="discounthead">
+                        <td style="width:500px">Void Receipts (Card)</td>
+                        <td id="void_receipt" style="width:500px" class="text-end">{{ session('currency') }}
+                            {{ number_format($voidReceiptsCard, 0) }}</td>
+                    </tr>
+                    <tr id="discounthead">
+                        <td style="width:500px">Void Receipts (Booking)</td>
+                        <td id="void_receipt" style="width:500px" class="text-end">{{ session('currency') }}
+                            {{ number_format($voidReceiptsBooking, 0) }}</td>
                     </tr>
                 @endif
                 @if (isset($result[0]->discount) && $result[0]->discount == 1)
