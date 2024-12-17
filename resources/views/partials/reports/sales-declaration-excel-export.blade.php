@@ -28,7 +28,9 @@
                 <th style="background-color: #1a4567;color:white;text-align: center;">Cash In</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Cash Out</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Sales Return</th>
-                <th style="background-color: #1a4567;color:white;text-align: center;">Void Sales</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Void Sales (Cash)</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Void Sales (Card)</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Void Sales (Booking)</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Expenses</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Cash In Hand</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Closing</th>
@@ -54,7 +56,9 @@
                 $totalCashOut = 0;
                 $totalCashOut = 0;
                 $totalSalesReturn = 0;
-                $totalVoidSales = 0;
+                $totalVoidSalesCash = 0;
+                $totalVoidSalesCard = 0;
+                $totalVoidSalesBooking = 0;
                 $totalExpenses = 0;
                 $totalCashInHand = 0;
                 $totalClosing = 0;
@@ -68,7 +72,7 @@
                     $cashInHand = $value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash - ($value->cashOut + $value->Expenses + $value->SalesReturn + $value->voidSalesCash); //- $value->Discount - $value->promo - $value->coupon;
                     $balance = (float) $value->closingBal - (float) $cashInHand;
                     $totalCashWithCard = $cashInHand + $value->CreditCard + $value->adv_booking_card + $value->order_delivered_card;
-                    $totalVoid = ($value->voidSalesCash + $value->voidSalesCard);
+                    $totalVoid = ($value->voidSalesCash + $value->voidSalesCard + $value->voidSalesBooking);
                     $totalOpenings += $value->bal;
                     $totalCashSales += $value->Cash;
                     $totalCardSales += $value->CreditCard;
@@ -82,7 +86,9 @@
                     $totalCashIn += $value->cashIn;
                     $totalCashOut += $value->cashOut;
                     $totalSalesReturn += $value->SalesReturn;
-                    $totalVoidSales += $totalVoid;
+                    $totalVoidSalesCash += $value->voidSalesCash;
+                    $totalVoidSalesCard += $value->voidSalesCard;
+                    $totalVoidSalesBooking += $value->voidSalesBooking;
                     $totalExpenses += $value->Expenses;
                     $totalCashInHand += $cashInHand;
                     $totalClosing += $value->closingBal;
@@ -109,7 +115,9 @@
                         <td style="text-align: center;">{{ number_format($value->cashIn, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->cashOut, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->SalesReturn, 0) }}</td>
-                        <td style="text-align: center;">{{ number_format($totalVoid, 0) }}</td>
+                        <td style="text-align: center;">{{ number_format($value->voidSalesCash, 0) }}</td>
+                        <td style="text-align: center;">{{ number_format($value->voidSalesCard, 0) }}</td>
+                        <td style="text-align: center;">{{ number_format($value->voidSalesBooking, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->Expenses, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($cashInHand, 0) }}</td>
                         <td style="text-align: center;">{{ number_format($value->closingBal, 0) }}</td>
@@ -132,7 +140,9 @@
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalCashIn,0)}}</td>
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalCashOut,0)}}</td>
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalSalesReturn,0)}}</td>
-                    <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalVoidSales,0)}}</td>
+                    <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalVoidSalesCash,0)}}</td>
+                    <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalVoidSalesCard,0)}}</td>
+                    <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalVoidSalesBooking,0)}}</td>
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalExpenses,0)}}</td>
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalCashInHand,0)}}</td>
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalClosing,0)}}</td>
