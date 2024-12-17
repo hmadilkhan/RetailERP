@@ -460,7 +460,7 @@ class report extends Model
 		IFNULL((SELECT SUM(net_amount) FROM `expenses` where opening_id = a.opening_id),0) as Expenses,
 		IFNULL((SELECT SUM(amount) FROM sales_return where opening_id = a.opening_id),0) as SalesReturn,
         IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.void_receipt = 1 and b.payment_id = 1),0) as voidSalesCash,
-        IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.void_receipt = 1 and b.payment_id = 2),0) as voidSalesCard,
+        IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.void_receipt = 1 and b.payment_id != 1),0) as voidSalesCard,
 		IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_in where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashIn,
 		IFNULL((SELECT SUM(amount) as cashout FROM sales_cash_out where terminal_id = a.terminal_id and opening_id = a.opening_id),0) as cashOut,
 		IFNULL((SELECT SUM(debit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 1),0) as CashReturn,

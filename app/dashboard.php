@@ -202,7 +202,7 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
       WHERE opening_id = a.opening_id
         AND b.order_mode_id = 3),0) as Delivery,
         IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id = 1),0) as VoidReceiptsCash,
-        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id = 2),0) as VoidReceiptsCard,
+        IFNULL((SELECT SUM(b.actual_amount) AS sales FROM sales_receipts b WHERE opening_id = a.opening_id AND b.void_receipt = 1 and b.payment_id != 1),0) as VoidReceiptsCard,
         IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where opening_id = a.opening_id and b.order_mode_id = 4),0) as Online,
         IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 1 and b.status != 12),0) as Cash,
         IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2 and b.status != 12) + (Select SUM(credit_card_transaction) from sales_account_subdetails where receipt_id IN (SELECT id as sales from sales_receipts b where b.opening_id = a.opening_id and b.payment_id = 2 and b.status != 12)),0) as CreditCard,
