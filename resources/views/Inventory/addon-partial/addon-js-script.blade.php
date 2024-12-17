@@ -577,7 +577,7 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                        if(value.id != $('#m_finishgood').val()){
                             $("#tbl_productListcpyaddonmd tbody")
                             .append('<tr><td><div class="form-check">'+
-                                 '<label class="form-check-label">'+
+                                 '<label class="form-check-label f-18">'+
                                             '<input class="form-check-input" type="checkbox" value="'+value.id+'" name="tble_chk_prodcpyaddonmd"> '+value.product_name+
                                         '</label>'+
                               '</div></td></tr>');
