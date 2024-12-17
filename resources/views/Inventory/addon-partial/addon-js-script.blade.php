@@ -556,16 +556,16 @@ $("#department_cpymd").on('change',function(){
 
 $("#subDepartment_cpymd").on('change',function(){
     if($(this).val() != ''){
-        get_allGeneralItemWithAddonBind($("#department_cpymd").val(),$(this).val(),$("#addonId_cpymd").val());
+        get_allGeneralItemWithAddonBind($("#department_cpymd").val(),$(this).val(),$("#addonId_cpymd").val(),$("#addonName_cpymd").val());
     }
 });
 
 
-function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId){
+function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,addonHeadName){
               $.ajax({
                 url: "{{ route('get_generalItem_withoutAddonBind') }}",
                 type: 'POST',
-                data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId},
+                data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId,addonName:addonHeadName},
                 success:function(resp){
                    if(resp == ''){
                        swal('Product not found!','','error');
