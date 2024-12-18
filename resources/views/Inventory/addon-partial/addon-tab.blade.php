@@ -359,7 +359,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-default waves-effect waves-light" onclick="clearSelectedProduct_bindAddon()">Close</button>
+                            <button type="button" class="btn btn-default waves-effect waves-light m-r-15" onclick="clearSelectedProduct_bindAddon()">Close</button>
                             <button type="button" class="btn btn-success waves-effect waves-light" onclick="selectedProduct_bindAddon()">Past</button>
                         </div>
                         </form>
