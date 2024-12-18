@@ -1201,7 +1201,7 @@ input+.slider:before {
              }
 
          }else{
-            $("#item_name_alert").text('');
+            $("#item_name_alert").text('Valid format');
             if($(this).hasClass('input-danger')){
                 $(this).removeClass('input-danger')
              }
