@@ -344,12 +344,10 @@
                                 <thead>
                                     <tr>
                                       <th>
-                                        <div class="form-check">
-                                            <label class="form-check-label f-18">
-                                                <input class="form-check-input" type="checkbox"
-                                                 name="tble_chk_allprodcpyaddonmd"> Select All
-                                            </label>
-                                         </div>
+                                        <label class="form-check-label">
+                                            <input class="form-check-input" type="checkbox"
+                                             name="tble_chk_allprodcpyaddonmd"> Select All
+                                        </label>
                                       </th>
                                       <th>Item Name</th>
                                    </tr>
