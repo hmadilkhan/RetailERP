@@ -347,7 +347,7 @@
                                         <div class="form-check">
                                             <label class="form-check-label f-18">
                                                 <input class="form-check-input" type="checkbox"
-                                                 name="tble_chk_allprodcpyaddonmd">
+                                                 name="tble_chk_allprodcpyaddonmd"> Select All
                                             </label>
                                          </div>
                                       </th>
