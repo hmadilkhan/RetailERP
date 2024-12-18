@@ -2778,7 +2778,7 @@ class InventoryController extends Controller
                     ->where('department_id', $request->depart)
                     ->where('sub_department_id', $request->subDepart)
                     ->where('status', 1)
-                    ->get();
+                    ->tosql();
 
         // return DB::table('inventory_general')
         //         ->where('company_id', session('company_id'))
