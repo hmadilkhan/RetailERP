@@ -2764,9 +2764,14 @@ class InventoryController extends Controller
 
     public function get_generalItem_withoutAddonBind(Request $request)
     {
-        return DB::table('addon_categories')
-        ->where('name',$request->addonName)
-        ->pluck('id');
+        return DB::table('inventory_addons')
+                        ->where('product_id',DB::table('addon_categories')
+                                            ->where('name',$request->addonName)
+                                            ->pluck('id')
+                                )
+                                ->where('status',1)
+                                ->where('inventory_addon_type','general-inventory')
+                                ->pluck('product_id');
         //  DB::table('inventory_general')
         //             ->whereNotIn('id',DB::table('inventory_addons')
         //                 ->where('product_id',DB::table('addon_categories')
