@@ -2764,29 +2764,21 @@ class InventoryController extends Controller
 
     public function get_generalItem_withoutAddonBind(Request $request)
     {
-        return DB::table('inventory_addons')
+        return DB::table('inventory_general')
+                    ->whereNotIn('id',DB::table('inventory_addons')
                         ->whereIn('addon_id',DB::table('addon_categories')
                                             ->where('name',$request->addonName)
                                             ->pluck('id')
                                 )
                                 ->where('status',1)
                                 ->where('inventory_addon_type','general-inventory')
-                                ->pluck('product_id');
-        //  DB::table('inventory_general')
-        //             ->whereNotIn('id',DB::table('inventory_addons')
-        //                 ->where('product_id',DB::table('addon_categories')
-        //                                     ->where('name',$request->addonName)
-        //                                     ->pluck('id')
-        //                         )
-        //                         ->where('status',1)
-        //                         ->where('inventory_addon_type','general-inventory')
-        //                         ->pluck('product_id')
-        //             )
-        //             ->where('company_id', session('company_id'))
-        //             ->where('department_id', $request->depart)
-        //             ->where('sub_department_id', $request->subDepart)
-        //             ->where('status', 1)
-        //             ->get();
+                                ->pluck('product_id')
+                    )
+                    ->where('company_id', session('company_id'))
+                    ->where('department_id', $request->depart)
+                    ->where('sub_department_id', $request->subDepart)
+                    ->where('status', 1)
+                    ->get();
 
         // return DB::table('inventory_general')
         //         ->where('company_id', session('company_id'))
