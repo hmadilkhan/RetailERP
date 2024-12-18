@@ -343,6 +343,14 @@
                             <table class="table" id="tbl_productListcpyaddonmd" width="100%">
                                 <thead>
                                     <tr>
+                                      <th>
+                                        <div class="form-check">
+                                            <label class="form-check-label f-18">
+                                                <input class="form-check-input" type="checkbox"
+                                                 name="tble_chk_allprodcpyaddonmd">
+                                            </label>
+                                         </div>
+                                      </th>
                                       <th>Item Name</th>
                                    </tr>
                                 </thead>
