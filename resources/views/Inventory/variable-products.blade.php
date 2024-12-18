@@ -1187,6 +1187,31 @@ input+.slider:before {
             }
      }
 
+     $("#item_name").on(,function(){
+        let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
+          if(!regex.test($("#item_name").val())){
+            swal('Error!','Special characters are not allowed!','error');
+             $("#item_name_alert").text('Special characters are not allowed!');
+             if(!$(this).hasClass('input-danger')){
+                $(this).addClass('input-danger')
+             }
+
+             if($(this).hasClass('input-success')){
+                $(this).removeClass('input-success')
+             }
+
+         }else{
+            $("#item_name_alert").text('');
+            if($(this).hasClass('input-danger')){
+                $(this).removeClass('input-danger')
+             }
+
+             if(!$(this).hasClass('input-success')){
+                $(this).addClass('input-success')
+             }
+          }
+     });
+
  </script>
 
     {{-- @include('Inventory.variable-product-partial.variable-product-js-script') --}}

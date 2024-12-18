@@ -50,7 +50,7 @@
                     @if($errors->has('variable_product_name_error'))
                         <div class="form-control-feedback">{{ $errors->get('variable_product_name_error') }}</div>
                     @endif
-
+                    <span class="text-danger" id="item_name_alert"></span>
                 </div>
 
                 <div class="form-group {{ $errors->has('item_price') ? 'has-danger' : '' }} ">
