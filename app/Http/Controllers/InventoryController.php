@@ -2765,7 +2765,7 @@ class InventoryController extends Controller
     public function get_generalItem_withoutAddonBind(Request $request)
     {
         return DB::table('inventory_addons')
-                        ->where('product_id',DB::table('addon_categories')
+                        ->where('addon_id',DB::table('addon_categories')
                                             ->where('name',$request->addonName)
                                             ->pluck('id')
                                 )
