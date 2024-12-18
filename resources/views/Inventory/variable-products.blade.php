@@ -1188,29 +1188,35 @@ input+.slider:before {
      }
 
      $("#item_name").on('change',function(){
+
+     });
+
+     function itemName_formatChecking(inputId){
         let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
-          if(!regex.test($("#item_name").val())){
+        let inputValue = $("#"+inputId);
+          if(!regex.test(inputValue.val())){
             swal('Error!','Special characters are not allowed!','error');
-             $("#item_name_alert").text('Special characters are not allowed!');
-             if(!$(this).hasClass('input-danger')){
-                $(this).addClass('input-danger')
+             $("#"+inputId+"_alert").text('Special characters are not allowed!');
+             if(!inputValue.hasClass('input-danger')){
+                inputValue.addClass('input-danger')
              }
 
-             if($(this).hasClass('input-success')){
-                $(this).removeClass('input-success')
+             if(inputValue.hasClass('input-success')){
+                inputValue.removeClass('input-success')
              }
 
          }else{
-            $("#item_name_alert").text('Valid format');
-            if($(this).hasClass('input-danger')){
-                $(this).removeClass('input-danger')
+            $("#"+inputId+"_alert").text('Valid format');
+            if(inputValue.hasClass('input-danger')){
+                inputValue.removeClass('input-danger')
              }
 
-             if(!$(this).hasClass('input-success')){
-                $(this).addClass('input-success')
+             if(!inputValue.hasClass('input-success')){
+                inputValue.addClass('input-success')
              }
           }
-     });
+
+     }
 
  </script>
 
