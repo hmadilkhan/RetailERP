@@ -2856,7 +2856,7 @@ class InventoryController extends Controller
 
         $rules = [
             'item_code'  => 'required',
-            'item_name'  => 'required',
+            'item_name'  => 'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)\.]+$/u',
             'attribute'  => 'required',
             'uom'        => 'required',
             'item_price' => 'required',
