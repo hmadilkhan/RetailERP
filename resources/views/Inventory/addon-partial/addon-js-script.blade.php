@@ -567,6 +567,7 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId,addonName:addonHeadName},
                 success:function(resp){
+                    console.log(resp);
                    if(resp == ''){
                        swal('Product not found!','','error');
                        $('#tbl_productListcpyaddonmd tbody').empty();
