@@ -1217,7 +1217,12 @@ input+.slider:before {
              }
 
          }else{
-            $("#"+inputId+"_alert").text('Valid format');
+            if (position !== -1) {
+                $("#"+inputId.replace('vpmd','alert_vpmd')).text('Valid format');
+            }else{
+             $("#"+inputId+"_alert").text('Valid format');
+            }
+
             if(inputValue.hasClass('input-danger')){
                 inputValue.removeClass('input-danger')
              }
