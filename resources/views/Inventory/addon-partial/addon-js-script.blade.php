@@ -568,10 +568,9 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId,addonName:addonHeadName},
                 success:function(resp){
-                    console.log(resp);
+                    $('#tbl_productListcpyaddonmd tbody').empty();
                    if(resp == ''){
                        swal('Product not found!','','error');
-                       $('#tbl_productListcpyaddonmd tbody').empty();
                    }else{
                     // datatableVariable.destroy();
                     $('#tbl_productListcpyaddonmd tbody').empty();
@@ -621,6 +620,14 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
             // });
             //}
         }
+
+
+   function clearSelectedProduct_bindAddon(){
+        $("#subDepartment_cpymd").val('').attr('disabled',true);
+        $("#department_cpymd").val('').change();
+        $('#tbl_productListcpyaddonmd tbody').empty();
+        $("#copy-addon-modal").modal('hide');
+   }
 
   const hash = window.location.hash.substring(1);
     if(hash==='addonTab'){
