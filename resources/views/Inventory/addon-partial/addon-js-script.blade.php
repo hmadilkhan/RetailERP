@@ -623,8 +623,8 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
 
 
    function clearSelectedProduct_bindAddon(){
-        $("#subDepartment_cpymd").val('').attr('disabled',true);
         $("#department_cpymd").val('').change();
+        $("#subDepartment_cpymd").val('').attr('disabled',true);
         $('#tbl_productListcpyaddonmd tbody').empty();
         $("#copy-addon-modal").modal('hide');
    }
