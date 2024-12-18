@@ -2765,13 +2765,76 @@ class InventoryController extends Controller
     public function get_generalItem_withoutAddonBind(Request $request)
     {
         return DB::table('inventory_general')
-                ->where('company_id', session('company_id'))
-                ->where('department_id', $request->depart)
-                ->where('sub_department_id', $request->subDepart)
-                ->where('status', 1)
-                ->get();
+                    ->whereNotIn('id',DB::table('inventory_addons')
+                        ->where('product_id',DB::table('addon_categories')
+                                            ->where('name',$request->addonName)
+                                            ->pluck('id')
+                                )
+                                ->where('status',1)
+                                ->where('inventory_addon_type','general-inventory')
+                                ->pluck('product_id')
+                    )
+                    ->where('company_id', session('company_id'))
+                    ->where('department_id', $request->depart)
+                    ->where('sub_department_id', $request->subDepart)
+                    ->where('status', 1)
+                    ->get();
 
-                // $getInvent
+        // return DB::table('inventory_general')
+        //         ->where('company_id', session('company_id'))
+        //         ->where('department_id', $request->depart)
+        //         ->where('sub_department_id', $request->subDepart)
+        //         ->where('status', 1)
+        //         ->get();
+    }
+
+    public function copyGeneralProduct_bind_addon(Request $request){
+
+        // foreach ($request-> as $val_positem) {
+        //     DB::beginTransaction();
+        //     $count = AddonCategory::whereIn("id", DB::table('inventory_variations')->where('product_id', $val_positem)->where('status', 1)->pluck('variation_id'))->where("status", 1)->where("name", AddonCategory::where('id', $request->variationId)->pluck('name'))->count();
+
+        //     if ($count == 0) {
+        //         $getVariation = AddonCategory::where('id', $request->variationId)->first();
+
+        //         if ($getVariation == null) {
+        //             return response()->json('variation not found!', 500);
+        //         }
+
+        //         $getAddonCategoryId = AddonCategory::create([
+        //             "name"               => $getVariation->name,
+        //             "show_website_name"  => $getVariation->name,
+        //             "user_id"            => auth()->user()->id,
+        //             "company_id"         => session("company_id"),
+        //             "type"               => $getVariation->type,
+        //             "is_required"        => 1,
+        //             "mode"                 => 'variations',
+        //             "addon_limit"        => $getVariation->addon_limit,
+        //         ]);
+
+        //         if ($getAddonCategoryId) {
+        //             $getproducts = Addon::where('addon_category_id', $request->variationId)->where('status', 1)->get();
+
+        //             foreach ($getproducts as $val_prod) {
+        //                 Addon::create([
+        //                     "inventory_product_id"   => $val_prod->inventory_product_id,
+        //                     "name"                   => $val_prod->name,
+        //                     "price"                  => $val_prod->price,
+        //                     "addon_category_id"      => $getAddonCategoryId->id,
+        //                     "user_id"                => auth()->user()->id,
+        //                 ]);
+        //             }
+
+        //             $getInventoryVariation_ID = InventoryVariation::create([
+        //                 'product_id'    => $val_positem,
+        //                 'variation_id'  => $getAddonCategoryId->id,
+        //                 'status'        => 1,
+        //                 'created_at'    => date("Y-m-d H:i:s"),
+        //                 'updated_at'    => date("Y-m-d H:i:s"),
+        //             ]);
+        //         }
+        //     }
+        // }
     }
 
     public function autoGenerateCode_variableProduct(Request $request)

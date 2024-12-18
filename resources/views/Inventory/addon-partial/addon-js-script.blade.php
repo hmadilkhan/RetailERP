@@ -556,16 +556,16 @@ $("#department_cpymd").on('change',function(){
 
 $("#subDepartment_cpymd").on('change',function(){
     if($(this).val() != ''){
-        get_allGeneralItemWithAddonBind($("#department_cpymd").val(),$(this).val(),$("#addonId_cpymd").val());
+        get_allGeneralItemWithAddonBind($("#department_cpymd").val(),$(this).val(),$("#addonId_cpymd").val(),$("#addonName_cpymd").val());
     }
 });
 
 
-function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId){
+function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,addonHeadName){
               $.ajax({
                 url: "{{ route('get_generalItem_withoutAddonBind') }}",
                 type: 'POST',
-                data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId},
+                data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId,addonName:addonHeadName},
                 success:function(resp){
                    if(resp == ''){
                        swal('Product not found!','','error');
@@ -575,9 +575,15 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId){
                     $('#tbl_productListcpyaddonmd tbody').empty();
                     $.each(resp, function( index, value ) {
                        if(value.id != $('#m_finishgood').val()){
-                            $("#tbl_productListcpyaddonmd tbody").append('<tr><td><label class="pointer" onclick="addToVariableProduct_basket()"> <input type="checkbox" value="'+value.id+'" class="form-control pointer m-r-1" name="tble_chk_vcpymd">'+value.product_name+'</label></td></tr>');
+                            $("#tbl_productListcpyaddonmd tbody")
+                            .append('<tr><td><div class="form-check">'+
+                                 '<label class="form-check-label f-18">'+
+                                            '<input class="form-check-input" type="checkbox" value="'+value.id+'" name="tble_chk_prodcpyaddonmd"> '+value.product_name+
+                                        '</label>'+
+                              '</div></td></tr>');
                         // datatableVariable.row.add(['<label class="pointer"> <input type="checkbox" value="'+value.id+'" class="form-control pointer m-r-1" name="tble_chk_vcpymd">'+value.product_name+'</label>']);
-                       }
+
+                      }
                     });
                     //datatableVariable.draw();
                    }
@@ -586,10 +592,37 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId){
             });
         }
 
+        function selectedProduct_bindAddon(){
+           let products = [];
+           let process = true;
 
-const hash = window.location.hash.substring(1);
-if(hash==='addonTab'){
-    $("#tab_btn_addon").trigger('click');
-}
+            $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
+                 if($(this).is(':checked')){
+                     if($.inArray($(this).val(),products) == -1){
+                        products.push($(this).val())
+                     }
+                 }
+            })
+
+            if(products.length == 0){
+                swal('Error','Product not selected!','error');
+                process = false;
+            }
+
+            // if(process){
+            //     $.ajax({
+            //     url: "{{ route('copyGeneralProduct_bind_addon') }}",
+            //     type: 'POST',
+            //     data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
+            //     success:function(resp){
+            //     }
+            // });
+            //}
+        }
+
+  const hash = window.location.hash.substring(1);
+    if(hash==='addonTab'){
+        $("#tab_btn_addon").trigger('click');
+    }
 </script>
 

@@ -2167,6 +2167,7 @@
     function productSetting(id){
       $("#productSetting-modal").modal('show');
       $("#linkVariableProd").attr('href','/inventory/'+id+'/variable-products');
+      $("#linkAddon").attr('href','/inventory/'+id+'/variable-products?#addonTab');
       $("#linkDeal").attr('href','/inventory/'+id+'/deal-products');
     }
 

@@ -351,7 +351,7 @@
 
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success waves-effect waves-light">Past</button>
+                            <button type="button" class="btn btn-success waves-effect waves-light" onclick="selectedProduct_bindAddon()">Past</button>
                         </div>
                         </form>
                     </div>
