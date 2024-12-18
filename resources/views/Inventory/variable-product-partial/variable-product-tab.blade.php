@@ -44,7 +44,7 @@
                     <label class="form-control-label">Item Name <span class="text-danger">*</span></label>
                     <input type="text" name="item_name" id="item_name" class="form-control"  value="{{ old('item_name') }}" />
                     @if ($errors->has('item_name'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <div class="form-control-feedback">{{ $errors->get('item_name') }}</div>
                     @endif
 
                     @if($errors->has('variable_product_name_error'))
