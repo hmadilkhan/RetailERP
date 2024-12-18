@@ -476,7 +476,7 @@ class report extends Model
         (SELECT SUM(credit) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no where customer_account.opening_id = a.opening_id and customer_account.payment_mode_id = 1 and received = 0 and sales_receipts.status != 12) as adv_booking_cash,
         (SELECT SUM(credit) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no where customer_account.opening_id = a.opening_id and customer_account.payment_mode_id = 2 and received = 0 and sales_receipts.status != 12 ) as adv_booking_card,
         (SELECT SUM(received) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no  where customer_account.opening_id = a.opening_id and customer_account.payment_mode_id = 1 and customer_account.total_amount = 0 and sales_receipts.status != 12) AS order_delivered_cash,
-        (SELECT SUM(received) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no  where customer_account.opening_id = a.opening_id and customer_account.payment_mode_id = 2 and sales_receipts.status != 12) AS order_delivered_card,
+        (SELECT SUM(received) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no  where customer_account.opening_id = a.opening_id and customer_account.payment_mode_id = 2 and sales_receipts.status != 12) AS order_delivered_card 
         FROM sales_opening a INNER join terminal_details b on b.terminal_id = a.terminal_id 
         INNER join branch c on c.branch_id = b.branch_id 
         where  ".$filter  ."
