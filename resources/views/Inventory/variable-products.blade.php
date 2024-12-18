@@ -1187,7 +1187,7 @@ input+.slider:before {
             }
      }
 
-     $("#item_name").on(,function(){
+     $("#item_name").on('change',function(){
         let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
           if(!regex.test($("#item_name").val())){
             swal('Error!','Special characters are not allowed!','error');
