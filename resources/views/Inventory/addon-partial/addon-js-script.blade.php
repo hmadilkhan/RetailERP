@@ -579,9 +579,9 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                             $("#tbl_productListcpyaddonmd tbody")
                             .append('<tr><td><div class="form-check">'+
                                  '<label class="form-check-label f-18">'+
-                                            '<input class="form-check-input" type="checkbox" value="'+value.id+'" name="tble_chk_prodcpyaddonmd">'+
+                                            '<input class="form-check-input" type="checkbox" value="'+value.id+'" name="tble_chk_prodcpyaddonmd"> '+value.product_name+
                                         '</label>'+
-                              '</div></td><td>'+value.product_name+'</td></tr>');
+                              '</div></td></tr>');
                         // datatableVariable.row.add(['<label class="pointer"> <input type="checkbox" value="'+value.id+'" class="form-control pointer m-r-1" name="tble_chk_vcpymd">'+value.product_name+'</label>']);
 
                       }
