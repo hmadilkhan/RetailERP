@@ -228,10 +228,10 @@ IFNULL((SELECT SUM(b.actual_amount) as sales from sales_receipts b where b.openi
         (SELECT SUM(b.discount_amount) FROM sales_receipts c inner join sales_account_subdetails b on b.receipt_id = c.id where c.opening_id = a.opening_id and c.payment_id IN(2,3)) as CardCustomerDiscount, 
         (SELECT SUM(b.credit_card_transaction) FROM sales_receipts c INNER JOIN sales_account_subdetails b ON b.receipt_id = c.id WHERE c.opening_id = a.opening_id
         AND c.payment_id IN (2, 3)) AS credit_card_transaction,
-        (SELECT SUM(credit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 1 and received = 0) as adv_booking_cash,
-        (SELECT SUM(credit) FROM customer_account where opening_id = a.opening_id and payment_mode_id = 2 and received = 0 ) as adv_booking_card,
-        (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 1 and total_amount = 0) AS order_delivered_cash,
-        (SELECT SUM(received) FROM customer_account  where opening_id = a.opening_id and payment_mode_id = 2) AS order_delivered_card,
+        (SELECT SUM(credit) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no where opening_id = a.opening_id and payment_mode_id = 1 and received = 0 and sales_receipts.status != 12) as adv_booking_cash,
+        (SELECT SUM(credit) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no where opening_id = a.opening_id and payment_mode_id = 2 and received = 0 and sales_receipts.status != 12 ) as adv_booking_card,
+        (SELECT SUM(received) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no  where opening_id = a.opening_id and payment_mode_id = 1 and total_amount = 0 and sales_receipts.status != 12) AS order_delivered_cash,
+        (SELECT SUM(received) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no  where opening_id = a.opening_id and payment_mode_id = 2 and sales_receipts.status != 12) AS order_delivered_card,
         (SELECT SUM(sales_tax_amount) FROM `sales_account_subdetails` where receipt_id IN (Select id from sales_receipts where terminal_id = a.terminal_id and opening_id = a.opening_id)) as fbr,
         (SELECT SUM(srb) FROM `sales_account_subdetails` where receipt_id IN (Select id from sales_receipts where terminal_id = a.terminal_id and opening_id = a.opening_id)) as srb, 
         (SELECT IFNULL(SUM(net_amount),0) FROM `expenses` where terminal_id = a.terminal_id and opening_id = a.opening_id) as expenses  FROM sales_opening a where a.status = 2 and a.opening_id = ?", [$openingId]);
