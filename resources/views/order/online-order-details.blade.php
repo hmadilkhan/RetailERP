@@ -129,11 +129,14 @@
                                     </div>
                                 </div>
 
-                                @if(isset($item->laundryPackage))
+                                @if(isset($item->laundryPackage) && sizeof($item->laundryPackage) > 0)
                                    <div class="">
                                       <div>
                                          <h5 class="text-muted font-size-18 m-t-1 m-b-0">Laundry Package</h5>
-                                         <p><strong class="m-l-2">{{ $item->laundryPackage->name }}</strong></p>
+                                         <p>
+                                            <strong class="m-l-2">{{ $item->laundryPackage->name }}</strong>
+                                            {{ $item->laundryPackage->price }}
+                                         </p>
                                       </div>
                                    </div>
                                 @endif
