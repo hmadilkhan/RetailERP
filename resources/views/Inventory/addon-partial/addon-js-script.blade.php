@@ -566,7 +566,6 @@ $("#subDepartment_cpymd").on('change',function(){
 
 
 function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,addonHeadName){
-    console.log(depart_val+'-'+subDepart_val+'-'+addonHeadId+'-'+addonHeadName)
               $.ajax({
                 url: "{{ route('get_generalItem_withoutAddonBind') }}",
                 type: 'POST',
