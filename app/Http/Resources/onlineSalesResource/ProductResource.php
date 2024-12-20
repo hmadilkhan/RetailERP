@@ -20,7 +20,7 @@ class ProductResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $setItem = [
             "item_code"          => $this->item_code,
 			"product_name"       => $this->item_name,
             "total_qty"          => $this->total_qty,
@@ -41,6 +41,12 @@ class ProductResource extends JsonResource
 
             // DB::table('addon_categories')->whereIn('id',DB::table('addons')->whereIn('id',DB::table('sales_receipt_addons')->where(['receipt_id'=>$this->receipt_id,'product_id'=>$this->item_code])->pluck('addon_id'))->groupBy('addon_category_id')->pluck('addon_category_id'))->get()
 		];
+
+        if(!empty($this->laundry_package_id)){
+            $setItem['laundryPackage'] = ['id'=>$this->laundry_package_id,'name'=>$this->laundry_package_name,'price'=>$this->laundry_package_price];
+        }
+
+        return $setItem;
     }
 
 	//I made custom function that returns collection type

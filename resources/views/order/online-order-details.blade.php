@@ -129,6 +129,15 @@
                                     </div>
                                 </div>
 
+                                @if(count($item->laundryPackage) > 0)
+                                   <div class="">
+                                      <div>
+                                         <h5 class="text-muted font-size-18 m-t-1 m-b-0">Laundry Package</h5>
+                                         <p><strong class="m-l-2">{{ $item->laundryPackage->name }}</strong></p>
+                                      </div>
+                                   </div>
+                                @endif
+
 
 
                                         @if($item->prod_variation != null)
