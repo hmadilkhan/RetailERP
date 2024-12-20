@@ -2837,10 +2837,10 @@ class InventoryController extends Controller
                 }
             }
             DB::commit();
-            return response()->json(["status" => 200]);
+            return response()->json("This addon set to selected product",200);
         } catch (\Exception $e) {
             DB::rollback();
-            return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+            return response()->json($e->getMessage(),500);
         }
 
     }
