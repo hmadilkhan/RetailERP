@@ -129,7 +129,7 @@
                                     </div>
                                 </div>
 
-                                @if(isset($item->laundryPackage) && count($item->laundryPackage) > 0)
+                                @if(isset($item->laundryPackage) && count($item['laundryPackage']) > 0)
                                    <div class="">
                                       <div>
                                          <h5 class="text-muted font-size-18 m-t-1 m-b-0">Laundry Package</h5>
