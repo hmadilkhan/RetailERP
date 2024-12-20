@@ -614,15 +614,16 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                 process = false;
             }
 
-            // if(process){
-            //     $.ajax({
-            //     url: "{{ route('copyGeneralProduct_bind_addon') }}",
-            //     type: 'POST',
-            //     data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
-            //     success:function(resp){
-            //     }
-            // });
-            //}
+            if(process){
+                $.ajax({
+                url: "{{ route('copyGeneralProduct_bind_addon') }}",
+                type: 'POST',
+                data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
+                success:function(resp){
+                    console.log(resp)
+                }
+            });
+            }
         }
 
 
@@ -632,6 +633,18 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
         $('#tbl_productListcpyaddonmd tbody').empty();
         $("#copy-addon-modal").modal('hide');
    }
+
+   $("#tble_chk_allprodcpyaddonmd").on('click',function(){
+      if($(this).is(':checked') == true){
+           $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
+                   $(this).prop('checked', true);
+            });
+      }else{
+           $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
+                   $(this).prop('checked', false);
+            });
+      }
+   });
 
   const hash = window.location.hash.substring(1);
     if(hash==='addonTab'){
