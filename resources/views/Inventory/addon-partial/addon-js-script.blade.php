@@ -618,14 +618,12 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                     url: "{{ route('copyGeneralProduct_bind_addon') }}",
                     type: 'POST',
                     data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
-                    success:function(resp){
-                        console.log(resp)
+                    success:function(resp, textStatus, xhr){
+                        if(xhr.status == 200){
+                            swal('Success!',resp,'success');
+                        }
                     },error: function(xhr, status, error) {
-                        // alert('An error occurred: ' + error);
-                        console.log('Error details:');
-                        console.log('Status: ' + status);
-                        console.log('Error: ' + error);
-                        console.log('Response Text: ' + xhr.responseText);
+                        swal('Error','Response Text: ' + xhr.responseText,'error');
                     }
               });
             }
