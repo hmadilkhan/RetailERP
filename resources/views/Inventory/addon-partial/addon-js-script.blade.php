@@ -620,6 +620,12 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                     data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
                     success:function(resp){
                         console.log(resp)
+                    },error: function(xhr, status, error) {
+                        // alert('An error occurred: ' + error);
+                        console.log('Error details:');
+                        console.log('Status: ' + status);
+                        console.log('Error: ' + error);
+                        console.log('Response Text: ' + xhr.responseText);
                     }
               });
             }
