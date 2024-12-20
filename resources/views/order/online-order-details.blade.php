@@ -135,7 +135,7 @@
                                          <h5 class="text-muted font-size-18 m-t-1 m-b-0">Laundry Package</h5>
                                          <p>
                                             <strong class="m-l-2">{{ $item->laundryPackage->name }}</strong>
-                                            {{ $item->laundryPackage->price }}
+                                            <span class="pull-right">{{ 'PKR '.$item->laundryPackage->price }}</span>
                                          </p>
                                       </div>
                                    </div>
