@@ -539,7 +539,11 @@ let table_row_editAddonmdId = [];
     $("#subDepartment_cpymd").val('');
     $("#department_cpymd").val('').change();
 
-    $("#copy-addon-modal").modal('show');
+    $("#copy-addon-modal")
+                .modal({
+                        backdrop: "static",
+                        keyboard: false
+                    }).modal('show');
 }
 
 
