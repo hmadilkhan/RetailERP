@@ -615,13 +615,13 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
 
             if(process){
                 $.ajax({
-                url: "{{ route('copyGeneralProduct_bind_addon') }}",
-                type: 'POST',
-                data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
-                success:function(resp){
-                    console.log(resp)
-                }
-            });
+                    url: "{{ route('copyGeneralProduct_bind_addon') }}",
+                    type: 'POST',
+                    data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
+                    success:function(resp){
+                        console.log(resp)
+                    }
+              });
             }
         }
 
