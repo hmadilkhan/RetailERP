@@ -509,7 +509,7 @@ let table_row_editAddonmdId = [];
 			  data:$("#editAddon_Form").serialize(),
 			  dataType:'json',
 			  success: function(resp){
-		            console.log(resp)
+		            //console.log(resp)
 			    if(resp.status == 200){
 	                $("#editAddon-modal").modal('hide');
 	                swal("Success!", "", "success");
