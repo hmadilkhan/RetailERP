@@ -2794,9 +2794,8 @@ class InventoryController extends Controller
           if(empty($request->products) || empty($request->addonId)){
             return response()->json('Product not selected!', 500);
           }
-
+        DB::beginTransaction();
         foreach ($request->products as $prodId) {
-            DB::beginTransaction();
             $getAddon = AddonCategory::where('id', $request->addonId)->where('company_id',session("company_id"))->first();
 
                 if ($getAddon == null) {
