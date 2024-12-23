@@ -26,7 +26,7 @@ class OrderService
         //
     }
 
-    public function getServiceProviders($branch="")
+    public function getServiceProviders($branch = "")
     {
         $serviceProvider = ServiceProvider::query();
 
@@ -37,7 +37,7 @@ class OrderService
         }
         if (is_array($branch) && $branch != "" && $branch != "all") {
             $serviceProvider->whereIn("branch_id", $branch);
-        }else{
+        } else {
             $serviceProvider->where("branch_id", $branch);
         }
         $serviceProvider->with("serviceprovideruser")->where("status_id", 1)->groupBy('id');
@@ -51,7 +51,7 @@ class OrderService
 
     public function getOrderModes()
     {
-        return OrderMode::all();
+        return OrderMode::whereIn("order_mode_id", [6, 10])->get();
     }
 
     public function getPaymentModes()
@@ -64,14 +64,14 @@ class OrderService
         return tax::where("company_id", session('company_id'))->where("status_id", 1)->where("show_in_pos", 1)->get();
     }
 
-    public function getOrderDetailsFromItems($from,$to,$branch,$productId)
+    public function getOrderDetailsFromItems($from, $to, $branch, $productId)
     {
-        return DB::select("SELECT * FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id and b.date between ? and ? and b.branch = ? INNER JOIN sales_order_status c on c.order_status_id = b.status where a.item_code = ? group by receipt_id",[$from,$to,$branch,$productId]);
+        return DB::select("SELECT * FROM sales_receipt_details a INNER JOIN sales_receipts b on b.id = a.receipt_id and b.date between ? and ? and b.branch = ? INNER JOIN sales_order_status c on c.order_status_id = b.status where a.item_code = ? group by receipt_id", [$from, $to, $branch, $productId]);
     }
 
     public function getTerminalsFromBranch($branchId)
     {
-        return Terminal::where("branch_id", $branchId)->where("status_id",1)->get();
+        return Terminal::where("branch_id", $branchId)->where("status_id", 1)->get();
     }
 
     public function getSalesPersonFromBranch($branchId)
@@ -144,7 +144,7 @@ class OrderService
         return ProductResource::customCollection($products, $websiteType, $websiteId);
     }
 
-     /**
+    /**
      * Calculate total amount received for the order.
      *
      * @param int $orderId
@@ -178,6 +178,4 @@ class OrderService
     {
         return ServiceProviderOrders::with('serviceprovider')->where('receipt_id', $orderId)->first();
     }
-
-
 }
