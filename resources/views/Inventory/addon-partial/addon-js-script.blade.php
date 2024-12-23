@@ -635,6 +635,7 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                                 $("#copy-addon-modal").modal('hide');
                             }
                         });
+                        clearSelectedProduct_bindAddon();
                         }
                     },error: function(xhr, status, error) {
                         swal('Error','Response Text: ' + xhr.responseText,'error');
