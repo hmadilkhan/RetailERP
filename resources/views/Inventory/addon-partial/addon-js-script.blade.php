@@ -639,6 +639,7 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
 
    $("input[type='tble_chk_allprodcpyaddonmd'").on('click',function(){
       if($(this).is(':checked')){
+          alert()
            $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
                    $(this).prop('checked', true);
             });
