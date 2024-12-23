@@ -564,7 +564,6 @@
                             $taxAmount = $order->orderAccountSub->srb;
                         }
                     }
-
                 @endphp
                 <div class="mt-5 mt-lg-0">
                     <div class="card border shadow-none">
