@@ -552,6 +552,19 @@
                         </div>
                     </div>
                 </div>  
+                @php
+                    $taxName = "";
+                    $taxAmount = 0;
+                    if (!empty($order->orderAccountSub) && $order->orderAccountSub->sales_tax_amount != "") {
+                        $taxName = "FBR";
+                        $taxAmount = $order->orderAccountSub->sales_tax_amount;
+
+                    }else if (!empty($order->orderAccountSub) && $order->orderAccountSub->srb != "") {
+                        $taxName = "SRB";
+                        $taxAmount = $order->orderAccountSub->srb;
+                    }
+
+                @endphp
                 <div class="mt-5 mt-lg-0">
                     <div class="card border shadow-none">
                         <div class="card-header bg-transparent border-bottom py-3 px-4">
@@ -588,9 +601,10 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Tax Charge: </td>
+                                            <td>Tax Charge: {{$taxName}}</td>
                                             <td class="text-end">
-                                                {{ session('currency') . ' ' . (!empty($order->orderAccountSub) ? $order->orderAccountSub->sales_tax_amount : '') }}
+                                                {{-- (!empty($order->orderAccountSub) ? $order->orderAccountSub->sales_tax_amount : '') --}}
+                                                {{ session('currency') . ' ' .$taxAmount  }} 
                                             </td>
                                         </tr>
                                         <tr class="bg-light">
