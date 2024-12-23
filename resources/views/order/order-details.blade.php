@@ -555,13 +555,14 @@
                 @php
                     $taxName = "";
                     $taxAmount = 0;
-                    if (!empty($order->orderAccountSub) && $order->orderAccountSub->sales_tax_amount != "") {
-                        $taxName = "FBR";
-                        $taxAmount = $order->orderAccountSub->sales_tax_amount;
-
-                    }else if (!empty($order->orderAccountSub) && $order->orderAccountSub->srb != "") {
-                        $taxName = "SRB";
-                        $taxAmount = $order->orderAccountSub->srb;
+                    if (!empty($order->orderAccountSub)) {
+                        if ($order->orderAccountSub->sales_tax_amount != "") {
+                            $taxName = "FBR";
+                            $taxAmount = $order->orderAccountSub->sales_tax_amount;
+                        }else if ($order->orderAccountSub->srb != "") {
+                            $taxName = "SRB";
+                            $taxAmount = $order->orderAccountSub->srb;
+                        }
                     }
 
                 @endphp
@@ -601,7 +602,7 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Tax Charge: {{$taxName}}</td>
+                                            <td>Tax Charge: {{"(".$taxName.")"}}</td>
                                             <td class="text-end">
                                                 {{-- (!empty($order->orderAccountSub) ? $order->orderAccountSub->sales_tax_amount : '') --}}
                                                 {{ session('currency') . ' ' .$taxAmount  }} 
