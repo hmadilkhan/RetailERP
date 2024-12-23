@@ -621,6 +621,11 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                     success:function(resp, textStatus, xhr){
                         if(xhr.status == 200){
                             swal('Success!',resp,'success');
+                            products = [];
+                            $("input[name='tble_chk_allprodcpyaddonmd']").prop('checked', false);
+                            $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
+                                $(this).prop('checked', false);
+                            });
                         }
                     },error: function(xhr, status, error) {
                         swal('Error','Response Text: ' + xhr.responseText,'error');
