@@ -556,10 +556,10 @@
                     $taxName = "";
                     $taxAmount = 0;
                     if (!empty($order->orderAccountSub)) {
-                        if ($order->orderAccountSub->sales_tax_amount != "") {
+                        if ($order->orderAccountSub->sales_tax_amount > 0) {
                             $taxName = "FBR";
                             $taxAmount = $order->orderAccountSub->sales_tax_amount;
-                        }else if ($order->orderAccountSub->srb != "") {
+                        }else if ($order->orderAccountSub->srb > 0) {
                             $taxName = "SRB";
                             $taxAmount = $order->orderAccountSub->srb;
                         }
