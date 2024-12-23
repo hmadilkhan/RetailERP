@@ -44,13 +44,13 @@
                     <label class="form-control-label">Item Name <span class="text-danger">*</span></label>
                     <input type="text" name="item_name" id="item_name" class="form-control"  value="{{ old('item_name') }}" />
                     @if ($errors->has('item_name'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                        <div class="form-control-feedback">{{ $errors->first('item_name') }}</div>
                     @endif
 
                     @if($errors->has('variable_product_name_error'))
                         <div class="form-control-feedback">{{ $errors->get('variable_product_name_error') }}</div>
                     @endif
-
+                    <span class="text-danger" id="item_name_alert"></span>
                 </div>
 
                 <div class="form-group {{ $errors->has('item_price') ? 'has-danger' : '' }} ">

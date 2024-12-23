@@ -1187,6 +1187,53 @@ input+.slider:before {
             }
      }
 
+     $("#item_name").on('change',function(){
+        itemName_formatChecking($(this).attr('id'));
+     });
+
+     $("#item_name_vpmd").on('change',function(){
+        itemName_formatChecking($(this).attr('id'));
+     });
+
+     function itemName_formatChecking(inputId){
+        let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
+        let inputValue = $("#"+inputId);
+        let position = name.indexOf("vpmd");
+          if(!regex.test(inputValue.val())){
+            swal('Error!','Special characters are not allowed!','error');
+
+            if (position !== -1) {
+                $("#"+inputId.replace('vpmd','alert_vpmd')).text('Special characters are not allowed!');
+            }else{
+             $("#"+inputId+"_alert").text('Special characters are not allowed!');
+            }
+
+             if(!inputValue.hasClass('input-danger')){
+                inputValue.addClass('input-danger')
+             }
+
+             if(inputValue.hasClass('input-success')){
+                inputValue.removeClass('input-success')
+             }
+
+         }else{
+            if (position !== -1) {
+                $("#"+inputId.replace('vpmd','alert_vpmd')).text('Valid format');
+            }else{
+             $("#"+inputId+"_alert").text('Valid format');
+            }
+
+            if(inputValue.hasClass('input-danger')){
+                inputValue.removeClass('input-danger')
+             }
+
+             if(!inputValue.hasClass('input-success')){
+                inputValue.addClass('input-success')
+             }
+          }
+
+     }
+
  </script>
 
     {{-- @include('Inventory.variable-product-partial.variable-product-js-script') --}}

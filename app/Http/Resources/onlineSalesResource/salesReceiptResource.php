@@ -54,7 +54,7 @@ class salesReceiptResource extends JsonResource
 																		  'sales_receipt_details.item_price','sales_receipt_details.total_amount',
 																		  'sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id',
 																		  'sales_receipt_details.discount_value','sales_receipt_details.discount_code','sales_receipt_details.group_id',
-																		  'sales_receipt_details.actual_price','inventory_general.image','inventory_general.url')
+																		  'sales_receipt_details.actual_price','sales_receipt_details.laundry_package_id','sales_receipt_details.laundry_package_name','sales_receipt_details.laundry_package_price','inventory_general.image','inventory_general.url')
 																		  ->get(),$this->website_type,$this->website_id),
 
 

@@ -129,6 +129,18 @@
                                     </div>
                                 </div>
 
+                                @if(isset($item->laundryPackage) && isset($item->laundryPackage->id))
+                                   <div class="">
+                                      <div>
+                                         <h5 class="text-muted font-size-18 m-t-1 m-b-0">Laundry Package</h5>
+                                         <p>
+                                            <strong class="m-l-2">{{ $item->laundryPackage->name }}</strong>
+                                            <span class="m-l-15">{{ 'PKR '.$item->laundryPackage->price }}</span>
+                                         </p>
+                                      </div>
+                                   </div>
+                                @endif
+
 
 
                                         @if($item->prod_variation != null)

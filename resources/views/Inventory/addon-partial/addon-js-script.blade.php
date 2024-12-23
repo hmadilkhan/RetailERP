@@ -509,7 +509,7 @@ let table_row_editAddonmdId = [];
 			  data:$("#editAddon_Form").serialize(),
 			  dataType:'json',
 			  success: function(resp){
-		            console.log(resp)
+		            //console.log(resp)
 			    if(resp.status == 200){
 	                $("#editAddon-modal").modal('hide');
 	                swal("Success!", "", "success");
@@ -539,7 +539,11 @@ let table_row_editAddonmdId = [];
     $("#subDepartment_cpymd").val('');
     $("#department_cpymd").val('').change();
 
-    $("#copy-addon-modal").modal('show');
+    $("#copy-addon-modal")
+                .modal({
+                        backdrop: "static",
+                        keyboard: false
+                    }).modal('show');
 }
 
 
@@ -567,9 +571,9 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                 type: 'POST',
                 data:{_token:"{{ csrf_token() }}",depart:depart_val,subDepart:subDepart_val,addonId:addonHeadId,addonName:addonHeadName},
                 success:function(resp){
+                    $('#tbl_productListcpyaddonmd tbody').empty();
                    if(resp == ''){
                        swal('Product not found!','','error');
-                       $('#tbl_productListcpyaddonmd tbody').empty();
                    }else{
                     // datatableVariable.destroy();
                     $('#tbl_productListcpyaddonmd tbody').empty();
@@ -609,16 +613,41 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                 process = false;
             }
 
-            // if(process){
-            //     $.ajax({
-            //     url: "{{ route('copyGeneralProduct_bind_addon') }}",
-            //     type: 'POST',
-            //     data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
-            //     success:function(resp){
-            //     }
-            // });
-            //}
+            if(process){
+                $.ajax({
+                    url: "{{ route('copyGeneralProduct_bind_addon') }}",
+                    type: 'POST',
+                    data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
+                    success:function(resp, textStatus, xhr){
+                        if(xhr.status == 200){
+                            swal('Success!',resp,'success');
+                        }
+                    },error: function(xhr, status, error) {
+                        swal('Error','Response Text: ' + xhr.responseText,'error');
+                    }
+              });
+            }
         }
+
+
+   function clearSelectedProduct_bindAddon(){
+        $("#department_cpymd").val('').change();
+        $("#subDepartment_cpymd").val('').attr('disabled',true);
+        $('#tbl_productListcpyaddonmd tbody').empty();
+        $("#copy-addon-modal").modal('hide');
+   }
+
+   $("#tble_chk_allprodcpyaddonmd").on('click',function(){
+      if($(this).is(':checked')){
+           $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
+                   $(this).prop('checked', true);
+            });
+      }else{
+           $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
+                   $(this).prop('checked', false);
+            });
+      }
+   });
 
   const hash = window.location.hash.substring(1);
     if(hash==='addonTab'){

@@ -306,7 +306,7 @@
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <button type="button" class="close" data-dismiss="modal" onclick="clearSelectedProduct_bindAddon()" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
                             <h4 class="modal-title">Copy Addon Product: <span id="cpyAddonName_head"></span> </h4>
@@ -343,7 +343,14 @@
                             <table class="table" id="tbl_productListcpyaddonmd" width="100%">
                                 <thead>
                                     <tr>
-                                      <th>Item Name</th>
+                                      <th>
+                                        <div class="form-check">
+                                            <label class="form-check-label f-18">
+                                                <input class="form-check-input" type="checkbox"
+                                                 name="tble_chk_allprodcpyaddonmd"> Select all Item
+                                            </label>
+                                         </div>
+                                      </th>
                                    </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -351,6 +358,7 @@
 
                         </div>
                         <div class="modal-footer">
+                            <button type="button" class="btn btn-default waves-effect waves-light m-r-15" onclick="clearSelectedProduct_bindAddon()">Close</button>
                             <button type="button" class="btn btn-success waves-effect waves-light" onclick="selectedProduct_bindAddon()">Past</button>
                         </div>
                         </form>
