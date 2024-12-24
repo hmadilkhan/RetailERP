@@ -53,6 +53,14 @@
                     <span class="text-danger" id="item_name_alert"></span>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-control-label">Item Name</label>
+                    <textarea name="description" id="description" rows="3" class="form-control"></textarea>
+                    @if ($errors->has('description'))
+                        <div class="form-control-feedback">{{ $errors->first('description') }}</div>
+                    @endif
+                </div>
+
                 <div class="form-group {{ $errors->has('item_price') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Item Price <span class="text-danger">*</span></label>
                     <input type="text" name="item_price" id="item_price" class="form-control"  value="{{ old('item_price') }}" />
