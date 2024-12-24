@@ -12,9 +12,9 @@
             <div class="col-md-5">
                 <div  id="positemcode" class="form-group {{ $errors->has('item_code') ? 'has-danger' : '' }} ">
                     <label class="form-control-label"><i class="icofont icofont-barcode"></i> Item Code <span class="text-danger">*</span></label>
-                    <a href="javascript:void(0)" class="f-right text-primary" data-toggle="tooltip" placeholder="Item code like 'barcode'" data-placement="top" title="Auto Code Generate"
+                    <a href="javascript:void(0)" class="f-right text-primary" data-toggle="tooltip" data-placement="top" title="Auto Code Generate"
                     onclick="autoCodeGenerate({{ $generalItem[0]->id }},'item_code')" >Auto Generate</a>
-                    <input type="text" name="item_code" id="item_code" class="form-control"  value="{{ old('item_code') }}" />
+                    <input type="text" name="item_code" id="item_code" class="form-control" placeholder="Item code like 'barcode'" value="{{ old('item_code') }}" />
                     @if ($errors->has('item_code'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
