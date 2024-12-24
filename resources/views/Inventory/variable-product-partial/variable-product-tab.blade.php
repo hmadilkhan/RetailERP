@@ -102,7 +102,7 @@
             <div class="col-md-6">
                <label for="productImage" class="form-control-label">Product Image</label>
              <a href="#">
-                        <img id="productImages_preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
+                        <img id="productImages_preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="max-height-100 width-100 m-b-15" alt="img" style="width: 100px;height: 100px;">
                         </a>
 
                     <div class="form-group {{ $errors->has('productImage') ? 'has-danger' : '' }} m-t-10">
@@ -301,6 +301,12 @@
                                 <input type="hidden" name="item_id" id="item_id_vpmd" class="form-control"  />
                                 <input type="hidden" name="prevImageName" id="prevImageName_vpmd" class="form-control" />
                                 <span id="item_name_alert_vpmd" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-control-label">Item Description</label>
+                                <textarea type="text" name="item_description" id="item_description_vpmd" placeholder="Item Description" rows="3" class="form-control"></textarea>
+                                <span id="item_description_alert_vpmd" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">
