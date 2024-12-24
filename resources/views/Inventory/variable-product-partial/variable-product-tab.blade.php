@@ -12,7 +12,7 @@
             <div class="col-md-5">
                 <div  id="positemcode" class="form-group {{ $errors->has('item_code') ? 'has-danger' : '' }} ">
                     <label class="form-control-label"><i class="icofont icofont-barcode"></i> Item Code <span class="text-danger">*</span></label>
-                    <a href="javascript:void(0)" class="f-right text-primary" data-toggle="tooltip" data-placement="top" title="Auto Code Generate"
+                    <a href="javascript:void(0)" class="f-right text-primary" data-toggle="tooltip" placeholder="Item code like 'barcode'" data-placement="top" title="Auto Code Generate"
                     onclick="autoCodeGenerate({{ $generalItem[0]->id }},'item_code')" >Auto Generate</a>
                     <input type="text" name="item_code" id="item_code" class="form-control"  value="{{ old('item_code') }}" />
                     @if ($errors->has('item_code'))
@@ -42,7 +42,7 @@
 
                 <div class="form-group {{ $errors->has('item_name') || $errors->has('item_name') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Item Name <span class="text-danger">*</span></label>
-                    <input type="text" name="item_name" id="item_name" class="form-control"  value="{{ old('item_name') }}" />
+                    <input type="text" name="item_name" id="item_name" class="form-control" placeholder="Item Name"  value="{{ old('item_name') }}" />
                     @if ($errors->has('item_name'))
                         <div class="form-control-feedback">{{ $errors->first('item_name') }}</div>
                     @endif
@@ -54,8 +54,8 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-control-label">Item Name</label>
-                    <textarea name="description" id="description" rows="3" class="form-control"></textarea>
+                    <label class="form-control-label">Item Description</label>
+                    <textarea name="description" id="description" placeholder="Item Description" rows="3" class="form-control"></textarea>
                     @if ($errors->has('description'))
                         <div class="form-control-feedback">{{ $errors->first('description') }}</div>
                     @endif
@@ -63,7 +63,7 @@
 
                 <div class="form-group {{ $errors->has('item_price') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Item Price <span class="text-danger">*</span></label>
-                    <input type="text" name="item_price" id="item_price" class="form-control"  value="{{ old('item_price') }}" />
+                    <input type="text" name="item_price" id="item_price" placeholder="0" class="form-control"  value="{{ old('item_price') }}" />
                     @if($errors->has('item_price'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
