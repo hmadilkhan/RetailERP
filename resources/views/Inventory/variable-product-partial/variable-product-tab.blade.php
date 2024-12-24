@@ -164,7 +164,7 @@
                                 <img width="64" height="64" src="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
                               </a>
                             </td>
-                            <td>{{$value->item_code}} | {{$value->item_name}} </td>
+                            <td>{{$value->item_code}} | {{$value->item_name}} @if(!empty($value->description)) <p> {{ $value->description }} </p> @endif </td>
                             <td >{{ $value->attribute }}</td>
                             <td id="cell-3-{{ $value->pos_item_id }}">
 
