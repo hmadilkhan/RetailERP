@@ -28,7 +28,7 @@ class PreOrderBookingController extends Controller
     }
     public function index(): View
     {
-        return view("orderbooking.pre-order-booking", [
+        return view("orderbooking.pre-order-booking-retail", [
             "branches" => $this->branchService->getBranches(),
             "orderTypes" => $this->orderService->getOrderModes(),
             "payments" => $this->orderService->getPaymentModes(),
