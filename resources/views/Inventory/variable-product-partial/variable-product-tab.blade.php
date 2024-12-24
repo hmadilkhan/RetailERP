@@ -14,7 +14,7 @@
                     <label class="form-control-label"><i class="icofont icofont-barcode"></i> Item Code <span class="text-danger">*</span></label>
                     <a href="javascript:void(0)" class="f-right text-primary" data-toggle="tooltip" data-placement="top" title="Auto Code Generate"
                     onclick="autoCodeGenerate({{ $generalItem[0]->id }},'item_code')" >Auto Generate</a>
-                    <input type="text" name="item_code" id="item_code" class="form-control"  value="{{ old('item_code') }}" />
+                    <input type="text" name="item_code" id="item_code" class="form-control" placeholder="Item code like 'barcode'" value="{{ old('item_code') }}" />
                     @if ($errors->has('item_code'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
@@ -42,7 +42,7 @@
 
                 <div class="form-group {{ $errors->has('item_name') || $errors->has('item_name') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Item Name <span class="text-danger">*</span></label>
-                    <input type="text" name="item_name" id="item_name" class="form-control"  value="{{ old('item_name') }}" />
+                    <input type="text" name="item_name" id="item_name" class="form-control" placeholder="Item Name"  value="{{ old('item_name') }}" />
                     @if ($errors->has('item_name'))
                         <div class="form-control-feedback">{{ $errors->first('item_name') }}</div>
                     @endif
@@ -53,9 +53,17 @@
                     <span class="text-danger" id="item_name_alert"></span>
                 </div>
 
+                <div class="form-group">
+                    <label class="form-control-label">Item Description</label>
+                    <textarea name="description" id="description" placeholder="Item Description" rows="3" class="form-control"></textarea>
+                    @if ($errors->has('description'))
+                        <div class="form-control-feedback">{{ $errors->first('description') }}</div>
+                    @endif
+                </div>
+
                 <div class="form-group {{ $errors->has('item_price') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Item Price <span class="text-danger">*</span></label>
-                    <input type="text" name="item_price" id="item_price" class="form-control"  value="{{ old('item_price') }}" />
+                    <input type="text" name="item_price" id="item_price" placeholder="0" class="form-control"  value="{{ old('item_price') }}" />
                     @if($errors->has('item_price'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
@@ -94,7 +102,7 @@
             <div class="col-md-6">
                <label for="productImage" class="form-control-label">Product Image</label>
              <a href="#">
-                        <img id="productImages_preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
+                        <img id="productImages_preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="max-height-100 width-100 m-b-15" alt="img" style="width: 100px;height: 100px;">
                         </a>
 
                     <div class="form-group {{ $errors->has('productImage') ? 'has-danger' : '' }} m-t-10">
@@ -293,6 +301,12 @@
                                 <input type="hidden" name="item_id" id="item_id_vpmd" class="form-control"  />
                                 <input type="hidden" name="prevImageName" id="prevImageName_vpmd" class="form-control" />
                                 <span id="item_name_alert_vpmd" class="text-danger"></span>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-control-label">Item Description</label>
+                                <textarea type="text" name="item_description" id="item_description_vpmd" placeholder="Item Description" rows="3" class="form-control"></textarea>
+                                <span id="item_description_alert_vpmd" class="text-danger"></span>
                             </div>
 
                             <div class="form-group">

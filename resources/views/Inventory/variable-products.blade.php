@@ -1234,6 +1234,10 @@ input+.slider:before {
 
      }
 
+     @if(old('description'))
+        $("#description").val("{{ old('description') }}");
+     @endif
+
  </script>
 
     {{-- @include('Inventory.variable-product-partial.variable-product-js-script') --}}

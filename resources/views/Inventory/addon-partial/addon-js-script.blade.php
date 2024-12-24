@@ -620,7 +620,22 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
                     data:{_token:"{{ csrf_token() }}",products:products,addonId:$("#addonId_cpymd").val()},
                     success:function(resp, textStatus, xhr){
                         if(xhr.status == 200){
-                            swal('Success!',resp,'success');
+                            products = [];
+                            $("input[name='tble_chk_allprodcpyaddonmd']").prop('checked', false);
+                            $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
+                                $(this).prop('checked', false);
+                            });
+
+                        swal({
+                            title: "Success!",
+                            text:  resp,
+                            type: "success"
+                        }, function(isConfirm) {
+                            if (isConfirm) {
+                                $("#copy-addon-modal").modal('hide');
+                            }
+                        });
+                        clearSelectedProduct_bindAddon();
                         }
                     },error: function(xhr, status, error) {
                         swal('Error','Response Text: ' + xhr.responseText,'error');
@@ -637,7 +652,7 @@ function get_allGeneralItemWithAddonBind(depart_val,subDepart_val,addonHeadId,ad
         $("#copy-addon-modal").modal('hide');
    }
 
-   $("#tble_chk_allprodcpyaddonmd").on('click',function(){
+   $("input[name='tble_chk_allprodcpyaddonmd']").on('click',function(){
       if($(this).is(':checked')){
            $.each($('input[name="tble_chk_prodcpyaddonmd"]'),function(){
                    $(this).prop('checked', true);
