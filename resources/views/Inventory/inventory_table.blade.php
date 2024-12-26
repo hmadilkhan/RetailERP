@@ -102,21 +102,43 @@
 
                          @if ($inventory->is_deal == 1)
                           <a href='/inventory/{{ $inventory->id }}/deal-products' class="dropdown-item waves-light waves-effect"
-                            data-original-title='View Deal Products' data-toggle='tooltip' data-placement='left'>View Deal Products</a>
+                            data-original-title='View Deal Products' data-toggle='tooltip' data-placement='left'>View Deal</a>
                          @else
                           {{-- <a href='/inventory/{{ $inventory->id }}/variable-products' class='m-r-1'
                               title='Create Variable & Addon Product'><i
                                   class='icofont icofont-plus text-success'></i></a> --}}
-                            @if($inventory->pos_product_count != 0 || $inventory->addon_product != 0)
-                              <a href='/inventory/{{ $inventory->id }}/variable-products{{ $inventory->addon_product != 0  ? "/?#addonTab" : ""}}' class="dropdown-item waves-light waves-effect"
-                                  title='View Variable and Addon Products' data-toggle='tooltip' data-placement='left' data-original-title='View Variable and Addon Products'>
-                                  View Variable & Addon
-                              </a>
-                            @else
-                                  <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class="dropdown-item waves-light waves-effect"
-                                      title='Make a Deal & Variable Product' data-toggle='tooltip' data-placement='left' data-original-title='Make a Deal & Variable Product'>Create Variable & Addon</a>
-                            @endif
+                                  <a href='/inventory/{{ $inventory->id }}/deal-products' class="dropdown-item waves-light waves-effect"
+                                    data-original-title='View Deal Products' data-toggle='tooltip' data-placement='left'>Create Deal</a>
                           @endif
+
+                        @if($inventory->addon_product != 0)
+                          <a href='/inventory/{{ $inventory->id }}/variable-products{{ $inventory->addon_product != 0  ? "/?#addonTab" : ""}}' class="dropdown-item waves-light waves-effect"
+                              title='View Variable and Addon Products' data-toggle='tooltip' data-placement='left' data-original-title='View addon products'>
+                              View addon products
+                          </a>
+                        @else
+                            <a href='/inventory/{{ $inventory->id }}/variable-products{{ $inventory->addon_product != 0  ? "/?#addonTab" : ""}}' class="dropdown-item waves-light waves-effect"
+                                title='View Variable and Addon Products' data-toggle='tooltip' data-placement='left' data-original-title='Create addon products'>
+                                Create addon products
+                            </a>
+                              {{-- <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class="dropdown-item waves-light waves-effect"
+                                  title='Make a Deal & Variable Product' data-toggle='tooltip' data-placement='left' data-original-title='Make a Deal & Variable Product'>Create Variable & Addon</a> --}}
+                        @endif
+
+                        @if($inventory->pos_product_count != 0)
+                          <a href='/inventory/{{ $inventory->id }}/variable-products' class="dropdown-item waves-light waves-effect"
+                              title='View Variable and Addon Products' data-toggle='tooltip' data-placement='left' data-original-title='View variable products'>
+                              View variable products
+                          </a>
+                        @else
+                            <a href='/inventory/{{ $inventory->id }}/variable-products' class="dropdown-item waves-light waves-effect"
+                                title='View Variable and Addon Products' data-toggle='tooltip' data-placement='left' data-original-title='Create variable products'>
+                                Create variable products
+                            </a>
+                              {{-- <a href='javascript:void(0)' onclick="productSetting({{ $inventory->id }})" class="dropdown-item waves-light waves-effect"
+                                  title='Make a Deal & Variable Product' data-toggle='tooltip' data-placement='left' data-original-title='Make a Deal & Variable Product'>Create Variable & Addon</a> --}}
+                        @endif
+
                       <a href="javascript:void(0)" onclick='show_barcode("{{ $inventory->item_code }}","{{ $inventory->product_name }}","{{ $inventory->retail_price }}")'
                         class="dropdown-item waves-light waves-effect" data-toggle='tooltip' data-placement='left'
                         title='Print Barcode' data-original-title='Barcode'>Print Barcode</a>
