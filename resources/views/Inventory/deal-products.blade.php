@@ -834,6 +834,18 @@
 		  //  $('#selection_limit_editmd').val('');
 		});
 
+    $("#group_name").on('change',function(){
+        let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
+
+        if(!regex.test($(this).val())){
+            $(this).focus();
+            $("#group_name_alert").text('This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!');
+            swal('Error!','This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!','error');
+        }else{
+            $("#group_name_alert").text('');
+        }
+    });
+
 	$("#btn_storeDeal").on('click',function(){
 
 		   let process = true;
