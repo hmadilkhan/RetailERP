@@ -181,7 +181,8 @@ let table_row_editAddonmdId = [];
 	       if(!regex.test($("#addon_name_addonTab").val())){
 	           process = false;
 	           $("#addon_name_addonTab").focus();
-	           $("#addon_name_addonTab_alert").text('Field is requried.');
+	           $("#addon_name_addonTab_alert").text('Field is requried and special characters are not allowed!.');
+               swal('Error!','Field is requried and special characters are not allowed!','error');
 	       }
 
 	       if($("#addon_type_addonTab").val() == ''){
