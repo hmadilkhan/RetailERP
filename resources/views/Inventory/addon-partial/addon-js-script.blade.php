@@ -176,8 +176,9 @@ let table_row_editAddonmdId = [];
 	   $("#btn_save_addon").on('click',function(){
 
 	       let process = true;
+           let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
 
-	       if($("#addon_name_addonTab").val() == ''){
+	       if(!regex.test($("#addon_name_addonTab").val())){
 	           process = false;
 	           $("#addon_name_addonTab").focus();
 	           $("#addon_name_addonTab_alert").text('Field is requried.');
