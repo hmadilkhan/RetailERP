@@ -227,6 +227,11 @@
                             <th>Product</th>
                             <th>Price</th>
                             <th>Qty</th>
+                            <th>Total Amount</th>
+                            <th>Tax Rate</th>
+                            <th>Tax Amount</th>
+                            <th>Discount Type</th>
+                            <th>Discount Amount</th>
                             <th>Amount</th>
                             <th>Action</th>
                         </thead>
@@ -458,24 +463,32 @@
         // Main method of Calculating cart items Total
         function calculateTotals() {
             let subTotal = 0;
+            let discountAmount = 0;
+            let taxAmount = 0;
+            let netTotal = 0;
             $("#itemsTable tbody tr").each(function(index) {
-                subTotal += $(this).children().eq(9).text() * 1;
+                console.log($(this).children());
+                
+                subTotal += $(this).children().eq(13).text() * 1;
+                discountAmount += $(this).children().eq(17).text() * 1;
+                taxAmount += $(this).children().eq(15).text() * 1;
+                netTotal += $(this).children().eq(18).text() * 1;
             });
 
-            let taxAmount = calculateTax(subTotal);
-            let discountAmount = calculateDiscount(subTotal);
-            let totalAmount = subTotal + taxAmount - discountAmount;
+            // let taxAmount = calculateTax(subTotal);
+            // let discountAmount = calculateDiscount(subTotal);
+            // let totalAmount = subTotal + taxAmount - discountAmount;
 
             // SETTING HIDDEN VARIABLE TO SEND WITH FORM DATA
             $("#subTotalAmount").val(subTotal);
             $("#taxAmount").val(taxAmount);
             $("#discountAmount").val(discountAmount);
-            $("#netAmount").val(totalAmount);
+            $("#netAmount").val(netTotal);
 
             $("#subTotal").html(subTotal.toLocaleString());
             $("#totalTax").html(taxAmount.toLocaleString());
             $("#totalDiscount").html(discountAmount.toLocaleString());
-            $("#totalAmount").html(totalAmount.toLocaleString());
+            $("#totalAmount").html(netTotal.toLocaleString());
         }
 
         function calculateTax(subTotal) {
@@ -509,7 +522,12 @@
         function emptyControls() {
             $("#productId").val('').change();
             $("#qty").val('')
-            $("#price").val('');
+            $("#taxValue").val('').change();
+            $("#discountValue").val('').change();
+            $("#totalPrice").val('');
+            $("#itemTax").val('');
+            $("#itemDiscount").val('');
+            $("#itemGross").val('');
         }
 
         // Add Item To Cart
@@ -529,6 +547,11 @@
                 let qty = $("#qty").val();
                 let price = $("#price").val();
                 let amount = qty * price;
+                let taxRate = $("#taxValue").val();
+                let taxAmount = $("#itemTax").val();
+                let discountType = $('input[name="percentage"]:checked').val();
+                let discountAmount = $("#itemDiscount").val();
+                let grossAmount = $("#itemGross").val();
 
                 let result = checkExistence(productId);
 
@@ -538,7 +561,11 @@
                         '<input type="hidden" value="' + productName + '" name="productnames[]" />' +
                         '<input type="hidden" value="' + qty + '" name="qty[]" />' +
                         '<input type="hidden" value="' + price + '" name="price[]" />' +
-                        '<input type="hidden" value="' + amount + '" name="amount[]" />' +
+                        '<input type="hidden" value="' + grossAmount + '" name="amount[]" />' +
+                        '<input type="hidden" value="' + taxRate + '" name="itemTaxRate[]" />' +
+                        '<input type="hidden" value="' + taxAmount + '" name="itemTaxAmount[]" />' +
+                        '<input type="hidden" value="' + discountType + '" name="itemDiscountType[]" />' +
+                        '<input type="hidden" value="' + discountAmount + '" name="itemDiscountAmount[]" />' +
 
 
                         "<td>" + (rowLength + 1) + "</td>" +
@@ -546,6 +573,11 @@
                         "<td>" + price + "</td>" +
                         "<td>" + qty + "</td>" +
                         "<td>" + amount + "</td>" +
+                        "<td>" + taxRate + "</td>" +
+                        "<td>" + taxAmount + "</td>" +
+                        "<td>" + discountType + "</td>" +
+                        "<td>" + discountAmount + "</td>" +
+                        "<td>" + grossAmount + "</td>" +
 
                         "<td colspan='4'>&nbsp;&nbsp;<i style='cursor: pointer;' class='icofont icofont-trash text-danger' onClick=deleteItem(" +
                         (rowLength + 1) + ")>&nbsp;&nbsp;Delete</i></td>" +

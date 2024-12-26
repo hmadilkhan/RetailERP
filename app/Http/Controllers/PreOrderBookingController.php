@@ -96,6 +96,10 @@ class PreOrderBookingController extends Controller
                     "total_amount" => $request->amount[$i],
                     "item_price" => $request->price[$i],
                     "item_name" => $request->productnames[$i],
+                    "taxrate" => $request->itemTaxRate[$i],
+                    "taxamount" => $request->itemTaxAmount[$i],
+                    "discount_value" => $request->itemDiscountType[$i] == "percentage" ? 1 : 3,
+                    "discount" => $request->itemDiscountAmount[$i],
                 ]);
             }
             OrderAccount::create([
