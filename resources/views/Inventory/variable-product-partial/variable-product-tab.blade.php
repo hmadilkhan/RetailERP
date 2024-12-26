@@ -55,9 +55,9 @@
 
                 <div class="form-group">
                     <label class="form-control-label">Item Description</label>
-                    <textarea name="description" id="description" placeholder="Item Description" rows="3" class="form-control"></textarea>
-                    @if ($errors->has('description'))
-                        <div class="form-control-feedback">{{ $errors->first('description') }}</div>
+                    <textarea name="item_description" id="item_description" placeholder="Item Description" rows="3" class="form-control"></textarea>
+                    @if ($errors->has('item_description'))
+                        <div class="form-control-feedback">{{ $errors->first('item_description') }}</div>
                     @endif
                 </div>
 
@@ -164,7 +164,7 @@
                                 <img width="64" height="64" src="{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}"/>
                               </a>
                             </td>
-                            <td>{{$value->item_code}} | {{$value->item_name}} </td>
+                            <td>{{$value->item_code}} | {{$value->item_name}} @if(!empty($value->description)) <p> {{ $value->description }} </p> @endif </td>
                             <td >{{ $value->attribute }}</td>
                             <td id="cell-3-{{ $value->pos_item_id }}">
 
@@ -188,7 +188,7 @@
 
                                 <i class="icofont icofont-plus text-success pointer m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" onclick="createVariation({{ $value->pos_item_id }},'{{ $value->item_name }}')"></i>
 
-                                <a  class="m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit({{$value->pos_item_id}},{{$value->product_id}},'{{$value->item_code}}','{{$value->item_name}}','{{$value->online_price}}','{{$value->uom_id}}','{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}',{{$value->priority}},{{ $value->attribute_id }},{{ $value->is_hidden_attribute }})" ></i> </a>
+                                <a  class="m-r-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit({{$value->pos_item_id}},{{$value->product_id}},'{{$value->item_code}}','{{$value->item_name}}','{{$value->online_price}}','{{$value->uom_id}}','{{ asset('storage/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}',{{$value->priority}},{{ $value->attribute_id }},{{ $value->is_hidden_attribute }},'{{ $value->description }}')" ></i> </a>
 
                                 <i class="icofont icofont-ui-delete text-danger m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete" onclick="remove('{{$value->item_name}}','{{$value->pos_item_id}}')"></i>
 

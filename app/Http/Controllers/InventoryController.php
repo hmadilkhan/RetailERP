@@ -2892,6 +2892,7 @@ class InventoryController extends Controller
             'item_code'           => $request->item_code,
             'priority'            => empty($request->item_priority) ?? 0,
             'attribute'           => $request->attribute,
+            'description'         => $request->item_description,
             'item_name'           => $request->item_name,
             'product_id'          => $request->finishgood,
             'uom'                 => $request->uom,
@@ -3045,12 +3046,13 @@ class InventoryController extends Controller
             }
 
             $items = [
-                'item_code' => $request->item_code,
-                'item_name' => $request->item_name,
-                'quantity'  => 1,
-                'uom'       => $request->uom,
-                'priority'  => $request->priority,
-                'attribute' => $request->attribute,
+                'item_code'   => $request->item_code,
+                'item_name'   => $request->item_name,
+                'quantity'    => 1,
+                'uom'         => $request->uom,
+                'priority'    => $request->priority,
+                'attribute'   => $request->attribute,
+                'description' => $request->item_description,
                 'is_hidden_attribute' => isset($request->attribute_mode) ? 1 : 0,
             ];
 

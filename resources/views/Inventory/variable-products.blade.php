@@ -537,7 +537,7 @@ input+.slider:before {
                         });
         }
 
-        function edit(id,fnhgood,code,name,price,uomId,src,image,priority,attribute,attr_mode){
+        function edit(id,fnhgood,code,name,price,uomId,src,image,priority,attribute,attr_mode,description){
             $("#attribute_mode_vpmd").prop('checked', false);
 
             $('#update-modal').modal('show');
@@ -545,6 +545,7 @@ input+.slider:before {
             $('#item_id_vpmd').val(id);
             $('#item_code_vpmd').val(code);
             $('#item_name_vpmd').val(name);
+            $('#item_description_vpmd').val(description);
             $('#price_vpmd').val(price);
             $('#priority_vpmd').val(priority);
             $('#uom_vpmd').val(uomId).change();
@@ -1234,8 +1235,8 @@ input+.slider:before {
 
      }
 
-     @if(old('description'))
-        $("#description").val("{{ old('description') }}");
+     @if(old('item_description'))
+        $("#item_description").val("{{ old('item_description') }}");
      @endif
 
  </script>

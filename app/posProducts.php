@@ -53,7 +53,7 @@ class posProducts extends Model
     // get pos product filter by inventory general id
     public function getposproducts_filter_by_productId($productId)
     {
-        $result = DB::select('SELECT a.pos_item_id,a.priority, a.item_code,a.product_id, a.item_name, a.image,a.is_hidden_attribute, c.branch_name, d.product_name, e.department_name, f.status_name, b.*, a.quantity,a.uom ,g.uom_id,g.name as uomname, h.name as attribute,h.id as attribute_id FROM pos_products_gen_details a
+        $result = DB::select('SELECT a.pos_item_id,a.priority, a.item_code,a.product_id, a.item_name,a.description, a.image,a.is_hidden_attribute, c.branch_name, d.product_name, e.department_name, f.status_name, b.*, a.quantity,a.uom ,g.uom_id,g.name as uomname, h.name as attribute,h.id as attribute_id FROM pos_products_gen_details a
 			INNER JOIN pos_product_price b on b.pos_item_id = a.pos_item_id AND a.status_id = b.status_id
 			INNER JOIN branch c ON c.branch_id = a.branch_id
 			INNER JOIN inventory_general d ON d.id = a.product_id
