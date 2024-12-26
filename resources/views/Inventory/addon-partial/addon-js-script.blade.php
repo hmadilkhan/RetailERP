@@ -173,6 +173,18 @@ let table_row_editAddonmdId = [];
 	     }
 	   }
 
+       $("#addon_name_addonTab").on('change',function(){
+          if(!regex.test($("#addon_name_addonTab").val())){
+	           process = false;
+	           $("#addon_name_addonTab").focus();
+	           $("#addon_name_addonTab_alert").text('This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!');
+               swal('Error!','This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!','error');
+	       }else{
+               $("#addon_name_addonTab_alert").text('');
+           }
+
+       })
+
 	   $("#btn_save_addon").on('click',function(){
 
 	       let process = true;
@@ -254,6 +266,8 @@ let table_row_editAddonmdId = [];
 	          $("#"+v).remove();
 	      });
 	   }
+
+
 
 	   function loadAddon_table(productId){
             $.ajax({
