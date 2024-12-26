@@ -837,11 +837,13 @@
 	$("#btn_storeDeal").on('click',function(){
 
 		   let process = true;
+           let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
 
-		    if($("#group_name").val() == ''){
+		    if(!regex.test($("#group_name").val())){
 		        process = false;
 		        $("#group_name").focus();
-		        $("#group_name_alert").text('Field is required!')
+		        $("#group_name_alert").text('This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!');
+                swal('Error!','This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!','error');
 		    }
 
 		    if($("#group_type").val() == ''){
