@@ -85,7 +85,7 @@ class OrderController extends Controller
         $order = $orderService->getOrderWithRelations($orderId);
 
         if ($order && $order->website) {
-            $record = $orderApp->web_onlineOrderDetails($request->id);
+            $record = $orderApp->web_onlineOrderDetails($order->url_orderid);
 
             if ($record == null) {
                 Session::flash('error', 'Error! order detail not found.');
