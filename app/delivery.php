@@ -132,6 +132,27 @@ class delivery extends Model
         return $result;
     }
 
+    public function update_service_provider_user($userId,$name,$branchId)
+    {
+        if ($userId != "") {
+            DB::table("user_details")->where("id",$userId)->update(["fullname" => $name]);
+            DB::table("user_authorization")->where("user_id",$userId)->update(["branch_id" => $branchId]);
+            return 1;
+        }else{
+            return 0;
+        }
+    }
+
+    public function getUserIdFromServiceProvider($providerId)
+    {
+        $result = DB::table("user_salesprovider_relation")->where("provider_id",$providerId)->get();
+        if (!empty($result)) {
+            return $result[0]->user_id;
+        }else{
+            return 0;
+        }
+    }
+
 
     public function getdetails($providerid){
         $result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id WHERE a.id = ?',[$providerid]);
