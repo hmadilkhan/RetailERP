@@ -48,6 +48,14 @@
             <div class="form-control-feedback"></div>
           </div>
         </div>
+        
+        <div class="col-lg-3 col-md-3">
+          <div class="form-group">
+            <label class="form-control-label">Device Serial Number:</label>
+            <input type="text" name="serial_no" id="serial_no" class="form-control" />
+            <div class="form-control-feedback"></div>
+          </div>
+        </div>
 		
 		<div class="col-lg-3 col-md-3">
           <div class="form-group">
@@ -92,6 +100,7 @@
             <th>Branch</th>
             <th>Terminal Name</th>
             <th>MAC Address</th>
+            <th>Serial Number</th>
 			<th>Model No</th>
             <th>Status</th>
             <th>Action</th>
@@ -105,11 +114,12 @@
             <td>{{$value->branch_name}}</td>
             <td>{{$value->terminal_name}}</td>
             <td>{{$value->mac_address}}</td>
+            <td>{{$value->serial_no}}</td>
 			<td>{{$value->model_no}}</td>
             <td>{{$value->status_name}}</td>
 
             <td class="action-icon">
-              <a class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" onclick="edit('{{ $value->terminal_id }}','{{ $value->terminal_name }}','{{ $value->mac_address }}','{{ $value->branch_id }}')"><i class="icofont icofont-ui-edit text-primary f-18"></i> </a>
+              <a class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" onclick="edit('{{ $value->terminal_id }}','{{ $value->terminal_name }}','{{ $value->mac_address }}','{{ $value->branch_id }}','{{ $value->serial_no }}')"><i class="icofont icofont-ui-edit text-primary f-18"></i> </a>
 
               <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" data-id="{{ $value->terminal_id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
 
@@ -321,11 +331,12 @@
 
 
 
-  function edit(id, name, mac, branchid) {
+  function edit(id, name, mac, branchid,serialNo) {
     $('#update-modal').modal('show');
     $('#terminalnamemodal').val(name);
     $('#macmodal').val(mac);
     $('#terminalid').val(id);
+    $('#serial_no').val(serialNo);
     $('#branchmodal').val(branchid).change();
 
   }
@@ -342,6 +353,7 @@
         branch: '{{$branch}}',
         terminalname: $('#terminalnamemodal').val(),
         macaddress: $('#macmodal').val(),
+        serial_no: $('#serial_no').val(),
 		modelno: $('#modelnoupdate').val(),
       },
       dataType: "json",

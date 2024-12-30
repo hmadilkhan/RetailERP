@@ -37,6 +37,7 @@ class TerminalController extends Controller
                 'branch_id' => $request->branch,
                 'terminal_name' => $request->terminalname,
                 'mac_address' => $request->macaddress,
+                'serial_no' => $request->serial_no,
                 'model_no' => $request->modelno,
                 'status_id' => 1,
             ];
@@ -107,6 +108,7 @@ class TerminalController extends Controller
             'branch_id' => $request->branch,
             'terminal_name' => $request->terminalname,
             'mac_address' => $request->macaddress,
+            'serial_no' => $request->serial_no,
             'model_no' => $request->modelno,
             'status_id' => 1,
         ];
