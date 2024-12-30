@@ -467,12 +467,13 @@ class DeliveryController extends Controller
 
 
     public function edit(delivery $delivery, request $request){
+        $providerId = Crypt::decrypt($request->id);
         $getbranch = $delivery->getbranches();
         $getcategory = $delivery->getcategory();
         $getpercen = $delivery->getpercentages();
 		$providersPaymentType = $delivery->getServiceProviderPaymentInfo();
-        $details = $delivery->getdetails(Crypt::decrypt($request->id));
-        $getAdditionalCharges = $delivery->getAdditionalCharges(Crypt::decrypt($request->id));
+        $details = $delivery->getdetails($providerId);
+        $getAdditionalCharges = $delivery->getAdditionalCharges($providerId);
         $id = $request->id;
         return view('Delivery.service-provider-edit', compact('getbranch','getcategory','getpercen','details','id','getAdditionalCharges','providersPaymentType'));
     }
@@ -509,6 +510,11 @@ class DeliveryController extends Controller
         ];
 
         $provider = $delivery->update_provider($request->proid,$items);
+
+        $userId = $delivery->getUserIdFromServiceProvider($request->proid);
+        if ($userId > 0) {
+            $result = $delivery->update_service_provider_user($userId,$request->person,$request->branch);
+        }
 
          /* Service Provide bulk insertion */
             $arrData =array();
