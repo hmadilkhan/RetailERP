@@ -179,7 +179,7 @@ class ExpenseController extends Controller
         $pdf->AliasNbPages();
         $pdf->AddPage();
 
-        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) 
         {
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
