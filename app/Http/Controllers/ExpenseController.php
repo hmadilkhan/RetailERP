@@ -180,12 +180,12 @@ class ExpenseController extends Controller
         $pdf->AliasNbPages();
         $pdf->AddPage();
 
-        if (!file_exists(public_path('assets/images/company/qrcode.png')))
+        if (!file_exists(asset('assets/images/company/qrcode.png')))
         {
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('assets/images/company/qrcode.png'));
+                ->generate($qrcodetext, asset('assets/images/company/qrcode.png'));
         }
 
         //first row
@@ -197,10 +197,10 @@ class ExpenseController extends Controller
         //second row
         $pdf->SetFont('Arial','B',14);
         $pdf->Cell(35,0,'',0,0);
-        $pdf->Image(public_path('assets/images/company/'.$company[0]->logo),12,10,-200);
+        $pdf->Image(asset('assets/images/company/'.$company[0]->logo),12,10,-200);
         $pdf->Cell(105,12,$company[0]->name,0,0,'L');
         $pdf->Cell(50,0,"",0,1,'R');
-        $pdf->Image(public_path('assets/images/company/qrcode.png'),175,10,-200);
+        $pdf->Image(asset('assets/images/company/qrcode.png'),175,10,-200);
 
         //third row
         $pdf->SetFont('Arial','',10);
