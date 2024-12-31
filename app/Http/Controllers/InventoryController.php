@@ -162,9 +162,11 @@ class InventoryController extends Controller
         // }
         //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size
 //regex:/^[a-zA-Z0-9\s]+$/ old regex
+
+// /^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)\.]+$/u (12/30/2024)
         $rules = [
             'code'          => 'required',
-            'name'          => 'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)\.]+$/u',
+            'name'          => 'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)\.\+\/]+$/u',
             'reminder'      => 'required',
             'uom'           => 'required',
             'cuom'          => 'required',
