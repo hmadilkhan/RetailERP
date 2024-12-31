@@ -185,7 +185,7 @@ class ExpenseController extends Controller
             $qrcodetext = $company[0]->name." | ".$company[0]->ptcl_contact." | ".$company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, asset('assets/images/company/qrcode.png'));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
         }
 
         //first row
