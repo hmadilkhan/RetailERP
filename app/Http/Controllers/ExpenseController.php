@@ -11,8 +11,7 @@ use PDF;
 use Terbilang;
 use App\bank;
 use App\pdfClass;
-
-
+use Illuminate\Support\Facades\Storage;
 
 class ExpenseController extends Controller
 {
