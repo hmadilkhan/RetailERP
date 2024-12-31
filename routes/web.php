@@ -144,6 +144,7 @@ Route::get('/4020double', [PrintController::class, 'labelPrintingdouble4020']);
 /******************************* BARCODE PRINTING ENDS HERE **********************************/
 // EXCEL EXPORTS
 Route::get('/export-vendor-ledger/{vendor?}/{first?}/{second?}', [ExcelExportController::class, 'VendorLedgerReportExport']);
+Route::get('/export-expense-report/{category?}/{first?}/{second?}', [ExcelExportController::class, 'ExpenseReportExport']);
 Route::get('/export-customer-ledger/{customer?}/{first?}/{second?}', [ExcelExportController::class, 'CustomerLedgerReportExport']);
 Route::get('/export-customer-balance', [ExcelExportController::class, 'CustomerBalances']);
 Route::get('/export-isdb', [ExcelExportController::class, 'ItemSalesDatabaseReportInExcel']);

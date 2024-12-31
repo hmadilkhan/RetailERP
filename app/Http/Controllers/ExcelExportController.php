@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Vendor;
 use App\Customer;
+use App\expense;
 use App\report;
 use Illuminate\Http\Request;
 use App\Exports\CustomerLedgerExport;
 use App\Exports\CustomerExport;
+use App\Exports\ExpenseReportExport;
 use App\Exports\ReceiptExport;
 use App\Exports\ItemSalesDatabaseExport;
 use App\Exports\FBRReportExport;
@@ -121,4 +123,22 @@ class ExcelExportController extends Controller
     {
         return Excel::download(new ReceiptExport($request->id), 'invoices.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
     }
+
+	public function ExpenseReportExport(Request $request,expense $expense)
+	{
+		$vendordata = [];
+		$result  = $expense->expense_report($request->category,$request->first,$request->second);
+		
+		foreach ($result as $key => $value) { 
+			 $items = [
+				"serial" => ++$key,
+				"Date" => $value->date,
+				"Category" => $value->expense_category,
+				"Amount" => number_format($value->balance,2),
+				"Details" => $value->expense_details,
+			 ]; 
+			 array_push($vendordata, $items);
+		}
+		return  Excel::download(new ExpenseReportExport($vendordata), "Expense Report.xlsx");
+	}
 }

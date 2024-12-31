@@ -643,7 +643,8 @@
             handleButtonClick('#dvexpensesheet', 'Expense Sheet', [{
                 field: '#txtexpensesheet',
                 value: 1,
-                showDateFilter: true
+                showDateFilter: true,
+                showExcelButton: true
             }]);
         });
 
@@ -951,6 +952,10 @@
                 window.location = "{{ url('reports/excel-export-orders-receivables') }}?fromdate=" + from + "&todate=" +
                     to + "&terminal=" +
                     terminal + "&branch=" + branch;
+            }
+
+            if ($('#txtexpensesheet').val() == 1) {
+                window.location = "{{ url('export-expense-report') }}?first=" + from + "&second=" + to;
             }
 
             // if ($('#txtitemsale').val() == 1) {
