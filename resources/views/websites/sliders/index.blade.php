@@ -229,6 +229,7 @@
 
                      <div class="form-group">
                            <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
+                           <video for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideVdImgMD" width="250" height="128" controls style="display: none;"></video>
                      </div>
                      <div class="form-group">
                           <label for="slide_md" class="custom-file">
@@ -425,7 +426,11 @@
     $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/no-image.png').hide();
        $("#slideEdit_Modal").modal('show');
 
+     if($.inArray(ftype,['mp4','',''])){
+        $("#slideVdImgMD").attr('src',$("#slide"+unqid).attr('src'));
+     }else{
        $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'));
+     }
 
        $("#webname_md").val(webName);
        $("#webid_md").val(webId);
@@ -531,7 +536,22 @@
   });
 
   $("#slide_md").on('change',function(){
-      readURL(this,'slideImgMD');
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
+        var file = this.files[0];  // Get the selected file
+        // Check if a file is selected
+            var fileName = file.name;  // Get the name of the file
+            if (!allowedExtensions.exec(fileName)) {
+                alert("Invalid file type. Please select an image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
+                $(this).val('');  // Clear the input field
+            }
+
+            if (inAyaar(file,['webm','mp4','ogg'])) {
+                readURL(this,'slideVdImgMD');
+            }else{
+                readURL(this,'slideImgMD');
+            }
+
+
   });
 
   $("#mobile_slide_md").on('change',function(){
