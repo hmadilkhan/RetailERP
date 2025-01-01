@@ -106,7 +106,10 @@
       </div>
 
         <div class="form-group @error('image') 'has-danger' @enderror m-r-2">
-            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="328" height="128" id="previewImg"/></br>
+            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="328" height="128" id="previewImg"/>
+            <video id="videoPreview" style="display:none;" controls></video>
+          </br>
+
           <label for="image" class="form-control-label">Slide</label></br>
 
           <label for="image" class="custom-file">
@@ -577,7 +580,38 @@
 
     function readURL(input,id) {
 
-        if (input.files && input.files[0]) {
+  // Allowed file extensions for image and video
+  var allowedImageExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
+    var allowedVideoExtensions = /(\.mp4|\.webm|\.ogg)$/i;
+
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
+        var reader = new FileReader();
+
+        // Image preview
+        if (allowedImageExtensions.test(file.name)) {
+            reader.onload = function(e) {
+                $('#' + id).attr('src', e.target.result); // Image preview
+                $('#' + id).show(); // Show image element
+                $('#videoPreview').hide(); // Hide video element
+            }
+            reader.readAsDataURL(file);
+        }
+        // Video preview
+        else if (allowedVideoExtensions.test(file.name)) {
+            reader.onload = function(e) {
+                $('#videoPreview').attr('src', e.target.result); // Video preview
+                $('#videoPreview').show(); // Show video element
+                $('#' + id).hide(); // Hide image element
+            }
+            reader.readAsDataURL(file);
+        } else {
+            alert("Invalid file type. Please select a valid image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
+        }
+    }
+
+
+      /*  if (input.files && input.files[0]) {
             var reader = new FileReader();
 
             reader.onload = function(e) {
@@ -587,7 +621,7 @@
             }
 
             reader.readAsDataURL(input.files[0]);
-        }
+        }*/
     }
 
  		$("#depart_prod").on('change',function(){
