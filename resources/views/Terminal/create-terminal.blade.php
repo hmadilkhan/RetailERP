@@ -124,7 +124,7 @@
                                 <td class="action-icon">
                                     <a class="m-r-10" data-toggle="tooltip" data-placement="top" title=""
                                         data-original-title="Edit"
-                                        onclick="edit('{{ $value->terminal_id }}','{{ $value->terminal_name }}','{{ $value->mac_address }}','{{ $value->branch_id }}','{{ $value->serial_no }}')"><i
+                                        onclick="edit('{{ $value->terminal_id }}','{{ $value->terminal_name }}','{{ $value->mac_address }}','{{ $value->branch_id }}','{{ $value->serial_no }}','{{ $value->model_no }}')"><i
                                             class="icofont icofont-ui-edit text-primary f-18"></i> </a>
 
                                     <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm"
@@ -174,6 +174,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
+                        {{--
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group">
                                 <label class="form-control-label">Branch</label>
@@ -189,7 +190,7 @@
                                 <div class="form-control-feedback"></div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                     <div class="row">
                         <div class="col-lg-6 col-md-6">
                             <label class="form-control-label">Terminal Name:</label>
@@ -351,12 +352,13 @@
                 });
         });
 
-        function edit(id, name, mac, branchid, serialNo) {
+        function edit(id, name, mac, branchid, serialNo,modelNo) {
             $('#update-modal').modal('show');
             $('#terminalnamemodal').val(name);
             $('#macmodal').val(mac);
             $('#terminalid').val(id);
-            $('#serial_no').val(serialNo);
+            $('#model_serial_no').val(serialNo);
+            $('#modelnoupdate').val(modelNo);
             $('#branchmodal').val(branchid).change();
 
         }

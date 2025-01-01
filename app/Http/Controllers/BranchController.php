@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\branch;
+use App\Services\BranchService;
 use App\Traits\MediaTrait;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -21,9 +22,10 @@ class BranchController extends Controller
 		$this->middleware('auth');
 	}
 
-	public function show(branch $branch)
+	public function show(branch $branch,BranchService $branchService)
 	{
-		$details = $branch->get_branches(session('company_id'));
+		// $details = $branch->get_branches(session('company_id'));
+		$details = $branchService->getBranchesPaginated();
 		return view('Branch.list', compact('details'));
 	}
 

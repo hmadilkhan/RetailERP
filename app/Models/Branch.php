@@ -16,4 +16,15 @@ class Branch extends Model
     {
         return $this->belongsTo(Company::class, 'company_id', 'company_id');
     }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class, 'city_id', 'city_id');
+    }
+
+    public function terminals()
+    {
+        return $this->hasMany(Terminal::class, 'branch_id', 'branch_id');
+    }
+
 }
