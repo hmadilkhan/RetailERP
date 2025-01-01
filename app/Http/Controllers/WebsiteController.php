@@ -321,8 +321,8 @@ class WebsiteController extends Controller
 
         $rules = [
             'website'       => 'required',
-            'image'         => 'required|mimes:jpg,jpeg,png,webp|max:1024',
-            'mobile_slide'  => 'nullable|mimes:jpg,jpeg,png,webp|max:1024'
+            'image'         => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024',
+            'mobile_slide'  => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
         ];
 
         $this->validate($request, $rules);

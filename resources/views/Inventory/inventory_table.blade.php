@@ -66,7 +66,7 @@
                         </a>
                     </td>
                     <td>{{ $inventory->item_code }}</td>
-                    <td><span class="f-16">{{ $inventory->product_name }}</span>
+                    <td><p class="f-16 wrap-text">{{ $inventory->product_name }}</p>
                          @if(isset($inventory->tags))
                            <br/>
                            @php $tagValues = explode(',',$inventory->tags) @endphp

@@ -122,7 +122,8 @@
         </div>
 
         <div class="form-group @error('mobile_slide') 'has-danger' @enderror m-r-2">
-            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/></br>
+            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/>
+            <video id="videoMobilePreview" width="200" height="250" style="display:none;" controls></video></br>
           <label for="mobile_slide" class="form-control-label">Slide</label></br>
 
           <label for="mobile_slide" class="custom-file">
@@ -180,8 +181,12 @@
            @foreach($websiteSliderList as $val)
               @if($val->website_id == $value->id )
                 <!--<input type="hidden" value="{{-- route('updateSliderImage',$val->id) --}}" id="updateUrlslideImg{{-- $val->id --}}">-->
-                <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="128" height="64" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}')" class="pointer"/>
-              @endif
+                   @if(in_array(strtolower(pathinfo($val->slide,PATHINFO_EXTENSION)),['mp4','webm','ogg']))
+                       <video src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" width="128" height="64" controls class="pointer"></video>
+                   @else
+                       <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="128" height="64" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}')" class="pointer"/>
+                   @endif
+             @endif
            @endforeach
           </td>
 				  <td>{{($value->status == 1 ? "Active" : "In-Active")}}</td>
@@ -512,11 +517,11 @@
   });
 
   $("#image").on('change',function(){
-      readURL(this,'previewImg');
+      readURL(this,'previewImg','videoPreview');
   });
 
   $("#mobile_slide").on('change',function(){
-      readURL(this,'previewMobileSlide');
+      readURL(this,'previewMobileSlide','videoMobilePreview');
   });
 
   $("#slide_md").on('change',function(){
@@ -578,7 +583,7 @@
             });
     }
 
-    function readURL(input,id) {
+    function readURL(input,id,msp_Id) {
 
   // Allowed file extensions for image and video
   var allowedImageExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
@@ -593,15 +598,15 @@
             reader.onload = function(e) {
                 $('#' + id).attr('src', e.target.result); // Image preview
                 $('#' + id).show(); // Show image element
-                $('#videoPreview').hide(); // Hide video element
+                $('#'+msp_Id).hide(); // Hide video element
             }
             reader.readAsDataURL(file);
         }
         // Video preview
         else if (allowedVideoExtensions.test(file.name)) {
             reader.onload = function(e) {
-                $('#videoPreview').attr('src', e.target.result); // Video preview
-                $('#videoPreview').show(); // Show video element
+                $('#'+msp_Id).attr('src', e.target.result); // Video preview
+                $('#'+msp_Id).show(); // Show video element
                 $('#' + id).hide(); // Hide image element
             }
             reader.readAsDataURL(file);
