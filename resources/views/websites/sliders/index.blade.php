@@ -106,8 +106,8 @@
       </div>
 
         <div class="form-group @error('image') 'has-danger' @enderror m-r-2">
-            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="256" height="128" id="previewImg"/>
-            <video id="videoPreview" width="256" height="128" style="display:none;" controls></video>
+            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="512" height="256" id="previewImg"/>
+            <video id="videoPreview" width="512" height="256" style="display:none;" controls></video>
           </br>
 
           <label for="image" class="form-control-label">Slide</label></br>
