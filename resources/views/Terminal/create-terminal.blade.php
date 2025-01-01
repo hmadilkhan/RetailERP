@@ -173,7 +173,7 @@
                     <h4 class="modal-title">Update Modal</h4>
                 </div>
                 <div class="modal-body">
-                    <div class="row">
+                    <div class="card">
                         {{--
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group">
