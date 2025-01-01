@@ -29,11 +29,13 @@ class expense extends Model
     	{
     		if($filter == "")
     		{
-    			$filter .= " and date(a.created_at) BETWEEN '".$first."' and '".$second."' ";
+    			// $filter .= " and date(a.created_at) BETWEEN '".$first."' and '".$second."' ";
+    			$filter .= " and date BETWEEN '".$first."' and '".$second."' ";
     		}
     		else
     		{
-    			$filter .= " and date(a.created_at) BETWEEN '".$first."' and '".$second."' ";
+    			// $filter .= " and date(a.created_at) BETWEEN '".$first."' and '".$second."' ";
+    			$filter .= " and date BETWEEN '".$first."' and '".$second."' ";
     		}
     	}
     	
