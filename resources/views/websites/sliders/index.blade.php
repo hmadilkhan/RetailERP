@@ -122,7 +122,8 @@
         </div>
 
         <div class="form-group @error('mobile_slide') 'has-danger' @enderror m-r-2">
-            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/></br>
+            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/>
+            <video id="videoMobilePreview" width="200" height="250" style="display:none;" controls></video></br>
           <label for="mobile_slide" class="form-control-label">Slide</label></br>
 
           <label for="mobile_slide" class="custom-file">
@@ -512,11 +513,11 @@
   });
 
   $("#image").on('change',function(){
-      readURL(this,'previewImg');
+      readURL(this,'previewImg','videoPreview');
   });
 
   $("#mobile_slide").on('change',function(){
-      readURL(this,'previewMobileSlide');
+      readURL(this,'previewMobileSlide','videoMobilePreview');
   });
 
   $("#slide_md").on('change',function(){
@@ -578,7 +579,7 @@
             });
     }
 
-    function readURL(input,id) {
+    function readURL(input,id,msp_Id) {
 
   // Allowed file extensions for image and video
   var allowedImageExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
@@ -593,15 +594,15 @@
             reader.onload = function(e) {
                 $('#' + id).attr('src', e.target.result); // Image preview
                 $('#' + id).show(); // Show image element
-                $('#videoPreview').hide(); // Hide video element
+                $('#'+msp_Id).hide(); // Hide video element
             }
             reader.readAsDataURL(file);
         }
         // Video preview
         else if (allowedVideoExtensions.test(file.name)) {
             reader.onload = function(e) {
-                $('#videoPreview').attr('src', e.target.result); // Video preview
-                $('#videoPreview').show(); // Show video element
+                $('#'+msp_Id).attr('src', e.target.result); // Video preview
+                $('#'+msp_Id).show(); // Show video element
                 $('#' + id).hide(); // Hide image element
             }
             reader.readAsDataURL(file);
