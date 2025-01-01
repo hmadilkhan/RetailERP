@@ -182,7 +182,7 @@
               @if($val->website_id == $value->id )
                 <!--<input type="hidden" value="{{-- route('updateSliderImage',$val->id) --}}" id="updateUrlslideImg{{-- $val->id --}}">-->
                    @if(in_array(strtolower(pathinfo($val->slide,PATHINFO_EXTENSION)),['mp4','webm','ogg']))
-                       <video src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" width="128" height="64" controls></video>
+                       <video src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" width="128" height="64" controls class="pointer"></video>
                    @else
                        <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="128" height="64" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}')" class="pointer"/>
                    @endif
