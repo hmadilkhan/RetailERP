@@ -6883,7 +6883,6 @@ class ReportController extends Controller
         $pdf->ln(1);
 
         $totalCount = 0;
-        $totalActualAmount = 0;
         $totalAmount = 0;
 
         $pdf->SetFont('Arial', 'B', 10);
@@ -6920,8 +6919,8 @@ class ReportController extends Controller
         $pdf->SetTextColor(255, 255, 255);
 
         $pdf->Cell(10, 6, "Total:", 0, 0, 'C', 1);
-        $pdf->Cell(120, 6, number_format($totalCount, 0), 0, 0, 'C', 1);
-        $pdf->Cell(60, 6, number_format($totalActualAmount, 0), 0, 1, 'C', 1);
+        $pdf->Cell(160, 6, number_format($totalCount, 0), 0, 0, 'C', 1);
+        $pdf->Cell(10, 6, number_format($totalAmount, 0), 0, 1, 'C', 1);
 
 
         //save file
