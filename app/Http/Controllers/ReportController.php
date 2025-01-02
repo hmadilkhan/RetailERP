@@ -6890,9 +6890,9 @@ class ReportController extends Controller
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
-        $pdf->Cell(120, 7, 'Name', 'B', 0, 'C', 1);
-        $pdf->Cell(30, 7, 'Contact Number', 'B', 0, 'L', 1);
-        $pdf->Cell(30, 7, 'Total Sales', 'B', 1, 'L', 1);
+        $pdf->Cell(80, 7, 'Name', 'B', 0, 'L', 1);
+        $pdf->Cell(50, 7, 'Contact Number', 'B', 0, 'C', 1);
+        $pdf->Cell(50, 7, 'Total Sales', 'B', 1, 'C', 1);
 
 
         $pdf->setFillColor(232, 232, 232);
@@ -6909,9 +6909,9 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
 
             $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
-            $pdf->Cell(120, 6, $value->name, 0, 0, 'C', 1);
-            $pdf->Cell(30, 6, $value->mobile, 0, 0, 'C', 1);
-            $pdf->Cell(30, 6, $value->total_sales, 0, 1, 'C', 1);
+            $pdf->Cell(80, 6, $value->name, 0, 0, 'L', 1);
+            $pdf->Cell(50, 6, $value->mobile, 0, 0, 'C', 1);
+            $pdf->Cell(50, 6, $value->total_sales, 0, 1, 'C', 1);
 
             $pdf->ln(1);
         }
