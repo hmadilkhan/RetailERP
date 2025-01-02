@@ -56,7 +56,7 @@
 			?>
 		   <tr>
 			  <td style="text-align: center;">{{ number_format($qty,2) }}</td>
-			  <td style="text-align: center;">{{$value->inventory->item_code}}</td>
+			  <td style="text-align: center;">{{$value->inventory->item_code ?? "-"}}</td>
 			  <td style="text-align: center;">{{$value->order->branchrelation->code}}</td>
 			  <td style="text-align: left;padding-left:1px;">{{$value->inventory->product_name}}</td>
 			  @if($mode == "normal")
