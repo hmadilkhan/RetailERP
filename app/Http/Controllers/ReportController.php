@@ -6918,9 +6918,9 @@ class ReportController extends Controller
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
 
-        $pdf->Cell(10, 6, "Total:", 0, 0, 'C', 1);
-        $pdf->Cell(160, 6, number_format($totalCount, 0), 0, 0, 'C', 1);
-        $pdf->Cell(10, 6, number_format($totalAmount, 0), 0, 1, 'C', 1);
+        $pdf->Cell(90, 6, "Total:", 0, 0, 'C', 1);
+        $pdf->Cell(50, 6, number_format($totalCount, 0), 0, 0, 'C', 1);
+        $pdf->Cell(50, 6, number_format($totalAmount, 0), 0, 1, 'C', 1);
 
 
         //save file
