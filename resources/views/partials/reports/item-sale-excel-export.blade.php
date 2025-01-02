@@ -37,7 +37,7 @@
 		@foreach ($record as $value)
 			<?php 
 				$itemqty = 0;
-				if($value->inventory->id == 817947 or $value->inventory->id == 817992 ){
+				if(!empty($value->inventory) && $value->inventory->id == 817947 or $value->inventory->id == 817992 ){
 					$itemqty = $itemqty + ($value->total_qty * 2);
 				}else{
 					$itemqty = $itemqty + $value->total_qty;
