@@ -182,9 +182,9 @@
               @if($val->website_id == $value->id )
                 <!--<input type="hidden" value="{{-- route('updateSliderImage',$val->id) --}}" id="updateUrlslideImg{{-- $val->id --}}">-->
                    @if(in_array(strtolower(pathinfo($val->slide,PATHINFO_EXTENSION)),['mp4','webm','ogg']))
-                       <video src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" width="128" height="64" controls class="pointer"></video>
+                       <img src="{{ asset('storage/images/video-icon-image.png') }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}','vd')" width="128" height="128" class="pointer"/>
                    @else
-                       <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="128" height="64" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}')" class="pointer"/>
+                       <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="256" height="128" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}','img')" class="pointer"/>
                    @endif
              @endif
            @endforeach
@@ -229,6 +229,7 @@
 
                      <div class="form-group">
                            <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
+                           <video for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideVdImgMD" width="250" height="128" controls style="display: none;"></video>
                      </div>
                      <div class="form-group">
                           <label for="slide_md" class="custom-file">
@@ -239,7 +240,8 @@
 
                     <div class="form-group">
                          <img for="mobile_slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
-                   </div>
+                         <video id="previewMobileSlideVd_md" width="200" height="250" style="display:none;" controls></video></br>
+                        </div>
                    <div class="form-group">
                         <label for="mobile_slide_md" class="custom-file">
                         <input type="file" name="mobile_slide" id="mobile_slide_md" class="custom-file-input">
@@ -418,13 +420,17 @@
         $('#btn_update_md').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
     });
 
-   function editSlide(unqid,webId,webName,depart,prod,prod_depart,prod_sbdepart,mobileSlide){
+   function editSlide(unqid,webId,webName,depart,prod,prod_depart,prod_sbdepart,mobileSlide,ftype){
     $("#slideImgMD").attr('src',location.origin+'/storage/images/no-image.png');
-    $("#previewMobileSlide_md").attr('src',location.origin+'/storage/images/no-image.png');
-
+    $("#previewMobileSlide_md").attr('src',location.origin+'/storage/images/no-image.png').show();
+    $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/no-image.png').hide();
        $("#slideEdit_Modal").modal('show');
 
+     if($.inArray(ftype,['mp4','',''])){
+        $("#slideVdImgMD").attr('src',$("#slide"+unqid).attr('src'));
+     }else{
        $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'));
+     }
 
        $("#webname_md").val(webName);
        $("#webid_md").val(webId);
@@ -433,7 +439,12 @@
        id=unqid;
 
        if(mobileSlide != ''){
-        $("#previewMobileSlide_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide)
+        if($.inArray(ftype,['mp4','',''])){
+            $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide)
+        }else{
+            $("#previewMobileSlide_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide);
+        }
+
        }
 
 
@@ -525,11 +536,41 @@
   });
 
   $("#slide_md").on('change',function(){
-      readURL(this,'slideImgMD');
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
+        var file = this.files[0];  // Get the selected file
+        // Check if a file is selected
+            var fileName = file.name;  // Get the name of the file
+            if (!allowedExtensions.exec(fileName)) {
+                alert("Invalid file type. Please select an image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
+                $(this).val('');  // Clear the input field
+            }
+
+            if (inAyaar(file,['webm','mp4','ogg'])) {
+                readURL(this,'slideVdImgMD');
+            }else{
+                readURL(this,'slideImgMD');
+            }
+
+
   });
 
   $("#mobile_slide_md").on('change',function(){
-      readURL(this,'previewMobileSlide_md');
+
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
+        var file = this.files[0];  // Get the selected file
+        // Check if a file is selected
+            var fileName = file.name;  // Get the name of the file
+            if (!allowedExtensions.exec(fileName)) {
+                alert("Invalid file type. Please select an image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
+                $(this).val('');  // Clear the input field
+            }
+
+            if (inAyaar(file,['webm','mp4','ogg'])) {
+                readURL(this,'previewMobileSlideVd_md');
+            }else{
+                readURL(this,'previewMobileSlide_md');
+            }
+
   });
 
   function getProduct(webId,elemId,prod,sub_depart){
