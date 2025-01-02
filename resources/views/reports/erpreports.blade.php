@@ -177,6 +177,12 @@
                             <h4 class="text-sm-center">Booking Delivery Report</h4>
                         </div>
                     </div>
+                    <div id="dvcustomersalesreport" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
+                            title="Customer Sales Repor">
+                            <h4 class="text-sm-center">Customer Sales Report</h4>
+                        </div>
+                    </div>
                     {{-- <div id="dvordertimingsummary" class="col-lg-4" style="cursor: pointer;">
                         <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
                             title="Website Items Summary">
@@ -272,7 +278,8 @@
                     <input type="hidden" value="0" id="txtordertimingsummary" />
                     <input type="hidden" value="0" id="txtorderamountreceivable" />
                     <input type="hidden" value="0" id="txtbookingdeliveryreport" />
-
+                    <input type="hidden" value="0" id="txtcustomersalesreport" />
+                    
 
 
 
@@ -510,6 +517,23 @@
                         </div>
                     </div>
 
+                    <div class="row" id="dvcustomers" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Customer</label>
+                                <select name="customer" id="customer" data-placeholder="Select Customer"
+                                    class="form-control select2">
+                                    <option value="all">All</option>
+                                    @foreach ($customers as $customer)
+                                        <option value="{{ $customer->id }}">{{ $customer->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button id="ExcelButton" style="display:none;" type="button"
@@ -554,7 +578,7 @@
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
                 '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport', '#txtordertimingsummary',
-                '#txtorderamountreceivable', '#txtbookingdeliveryreport'
+                '#txtorderamountreceivable', '#txtbookingdeliveryreport','#txtcustomersalesreport'
             ];
 
             fields.forEach(field => {
@@ -564,7 +588,7 @@
             const filters = [
                 '#dvbranch', '#dvdepartments', '#dvmultipledepartments', '#dvsubdepartments', '#dvterminal',
                 '#dvtype', '#dvitemcode', '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory',
-                '#dvordermode'
+                '#dvordermode','#dvcustomers'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -597,6 +621,7 @@
             if (fieldMappings.some(mapping => mapping.showStatus)) showStatus();
             if (fieldMappings.some(mapping => mapping.showCategory)) showCategory();
             if (fieldMappings.some(mapping => mapping.showOrderMode)) showOrderMode();
+            if (fieldMappings.some(mapping => mapping.showCustomers)) showCustomers();
         }
 
         $('#dvprofitstandard').on('click', function() {
@@ -812,6 +837,16 @@
             }]);
         });
 
+        $('#dvcustomersalesreport').on('click', function() {
+            handleButtonClick('#dvcustomersalesreport', 'Customer Sales Report', [{
+                field: '#txtcustomersalesreport',
+                value: 1,
+                showDateFilter: true,
+                showBranch: true,
+                showCustomers : true
+            }]);
+        });
+
         function copydate() {
             let date = $('#datefrom').val();
             $('#dateto').val(date);
@@ -835,6 +870,7 @@
             let status = $('#status').val();
             let category = $('#category').val();
             let ordermode = $('#ordermode').val();
+            let customer = $('#customer').val();
 
             // Convert the array to query string format
             let departmentQuery = multidepartments.map(dep => `department[]=${dep}`).join('&');
@@ -923,6 +959,11 @@
                 window.location = "{{ url('booking-delivery-report') }}?fromdate=" + date + "&todate=" + todate +
                     "&branch=" + branch + "&terminalid=" +
                     terminalid;
+            }
+            if ($('#txtcustomersalesreport').val() == 1) {
+                window.location = "{{ url('customer-sales-report') }}?fromdate=" + date + "&todate=" + todate +
+                    "&branch=" + branch + "&customer=" +
+                    customer;
             }
         }
 
@@ -1014,6 +1055,10 @@
 
         function showOrderMode() {
             $("#dvordermode").css("display", "block");
+        }
+
+        function showCustomers() {
+            $("#dvcustomers").css("display", "block");
         }
 
         function showCategory() {
