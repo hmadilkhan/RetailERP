@@ -6889,9 +6889,11 @@ class ReportController extends Controller
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
-        $pdf->Cell(80, 7, 'Name', 'B', 0, 'L', 1);
+        $pdf->Cell(40, 7, 'Name', 'B', 0, 'L', 1);
+        $pdf->Cell(40, 7, 'Branch', 'B', 0, 'L', 1);
         $pdf->Cell(50, 7, 'Contact Number', 'B', 0, 'C', 1);
-        $pdf->Cell(50, 7, 'Total Sales', 'B', 1, 'C', 1);
+        $pdf->Cell(25, 7, 'Total Orders', 'B', 0, 'C', 1);
+        $pdf->Cell(25, 7, 'Total Sales', 'B', 1, 'C', 1);
 
 
         $pdf->setFillColor(232, 232, 232);
@@ -6908,9 +6910,11 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
 
             $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
-            $pdf->Cell(80, 6, $value->name, 0, 0, 'L', 1);
+            $pdf->Cell(40, 6, $value->name, 0, 0, 'L', 1);
+            $pdf->Cell(40, 6, $value->branch_name, 0, 0, 'L', 1);
             $pdf->Cell(50, 6, $value->mobile, 0, 0, 'C', 1);
-            $pdf->Cell(50, 6, $value->total_sales, 0, 1, 'C', 1);
+            $pdf->Cell(25, 6, $value->total_orders, 0, 0, 'C', 1);
+            $pdf->Cell(25, 6, $value->total_sales, 0, 1, 'C', 1);
 
             $pdf->ln(1);
         }
@@ -6918,9 +6922,9 @@ class ReportController extends Controller
         $pdf->setFillColor(0, 0, 0);
         $pdf->SetTextColor(255, 255, 255);
 
-        $pdf->Cell(90, 6, "Total:", 0, 0, 'C', 1);
-        $pdf->Cell(50, 6, number_format($totalCount, 0), 0, 0, 'C', 1);
-        $pdf->Cell(50, 6, number_format($totalAmount, 0), 0, 1, 'C', 1);
+        $pdf->Cell(140, 6, "Total:", 0, 0, 'C', 1);
+        $pdf->Cell(25, 6, number_format($totalCount, 0), 0, 0, 'C', 1);
+        $pdf->Cell(25, 6, number_format($totalAmount, 0), 0, 1, 'C', 1);
 
 
         //save file
