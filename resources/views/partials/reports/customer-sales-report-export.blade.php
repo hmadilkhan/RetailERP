@@ -10,7 +10,7 @@
         </tr>
         <tr>
             <td colspan="6" style="font-size:18px;font-weight:bold;">
-                From : $dates["from"] - To : $dates["to"]</td>
+                From : {{$dates["from"]}} - To : {{$dates["to"]}}</td>
         </tr>
         <thead>
             <tr>

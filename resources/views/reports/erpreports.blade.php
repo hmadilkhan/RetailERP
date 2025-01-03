@@ -964,7 +964,7 @@
                     terminalid;
             }
             if ($('#txtcustomersalesreport').val() == 1) {
-                window.location = "{{ url('reports/excel-export-customer-sales') }}?fromdate=" + date + "&todate=" + todate +
+                window.location = "{{ url('customer-sales-report') }}?fromdate=" + date + "&todate=" + todate +
                     "&branch=" + branch + "&customer=" +
                     customer;
             }
