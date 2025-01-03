@@ -34,6 +34,7 @@ use App\Exports\StockReport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\IsdbDatewiseExport;
 use App\Exports\ConsolidatedIsdbDatewiseExport;
+use App\Exports\CustomerSalesExport;
 use App\Exports\OrderReceivingReportExport;
 use App\Exports\OrderReportExport;
 use App\Exports\SalesDeclarationExport;
@@ -57,6 +58,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\OrderReportPDF;
+use App\Services\CustomerService;
 
 class ReportController extends Controller
 {
@@ -67,7 +69,7 @@ class ReportController extends Controller
         // $this->middleware('auth');
     }
 
-    public function erpreportdashboard(report $report, OrderService $orderService)
+    public function erpreportdashboard(report $report, OrderService $orderService, CustomerService $customerService)
     {
         $branches = $report->get_branches();
         $terminals = $report->get_terminals();
@@ -76,7 +78,7 @@ class ReportController extends Controller
         $salespersons = $orderService->getServiceProviders();
         $statuses = $orderService->getOrderStatus();
         $ordermodes = $orderService->getOrderModes();
-
+        
         return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons', 'statuses', 'ordermodes'));
     }
 
@@ -452,6 +454,18 @@ class ReportController extends Controller
             "to" => $request->todate,
         ];
         return Excel::download(new OrderReceivingReportExport($details, $companyName, $datearray), "Order Receiving Report.xlsx");
+    }
+
+    public function getCustomerSalesExport(Request $request, report $report)
+    {
+        $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
+        $companyName = Company::findOrFail(session("company_id"));
+        $companyName = $companyName->name;
+        $datearray = [
+            "from" => $request->fromdate,
+            "to" => $request->todate,
+        ];
+        return Excel::download(new CustomerSalesExport($details, $companyName, $datearray), "Customer Sales Report.xlsx");
     }
 
     public function getOrdersReportExcelExport(Request $request, report $report, order $order)
@@ -3300,7 +3314,7 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
-                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category);
+                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category,$request->customer);
                 $permission = $report->terminalPermission($values->terminal_id);
 
                 $pdf->SetFont('Arial', 'B', 12);
@@ -3417,7 +3431,7 @@ class ReportController extends Controller
             $pdf->Cell(15, 7, 'Disc.', 'B', 0, 'C', 1);
             $pdf->Cell(30, 7, 'Total Amount', 'B', 1, 'R', 1);
             $pdf->ln(2);
-            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, $request->category);
+            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, $request->category,$request->customer);
             $permission = $report->terminalPermission($request->terminalid);
             foreach ($details as $value) {
 
@@ -6750,8 +6764,8 @@ class ReportController extends Controller
             $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
             $pdf->Cell(30, 7, 'Machine #', 'B', 0, 'C', 1);
             $pdf->Cell(30, 7, 'Actual Amount', 'B', 0, 'L', 1);
-            $pdf->Cell(30, 7, 'Tax Amount', 'B', 0, 'L', 1); 
-            $pdf->Cell(30, 7, 'Discount Amount', 'B', 0, 'L', 1); 
+            $pdf->Cell(30, 7, 'Tax Amount', 'B', 0, 'L', 1);
+            $pdf->Cell(30, 7, 'Discount Amount', 'B', 0, 'L', 1);
             $pdf->Cell(30, 7, 'Total Amount', 'B', 0, 'C', 1);
             $pdf->Cell(30, 7, 'Amount Received', 'B', 1, 'C', 1);
 
@@ -6794,6 +6808,136 @@ class ReportController extends Controller
             $pdf->Cell(30, 6, number_format($totalAmount, 0), 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($totalReceivedAmount, 0), 0, 1, 'C', 1);
         }
+
+        //save file
+        $pdf->Output('booking_delivery_order_report.pdf', 'I');
+    }
+
+    public function customerSalesReport(Request $request, Vendor $vendor, report $report)
+    {
+        $branches = Branch::query();
+        if ($request->branch == "all") {
+            $branches->where("company_id", session("company_id"));
+        } else {
+            $branches->where("branch_id", $request->branch);
+        }
+        $branches = $branches->get();
+
+
+
+        $company = $vendor->company(session('company_id'));
+
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
+
+        $pdf = new pdfClass();
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        //first row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        //second row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+
+        //third row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        //forth row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company[0]->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        //fifth row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        //sixth row
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        //filter section
+        $fromdate = date('F-d-Y', strtotime($request->fromdate));
+        $todate = date('F-d-Y', strtotime($request->todate));
+
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromdate . ' through ' . $todate, 0, 1, 'C');
+
+        //report name
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'Customer Sales', 'B,T', 1, 'L');
+        $pdf->ln(1);
+
+        $totalCount = 0;
+        $totalAmount = 0;
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+        $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
+        $pdf->Cell(40, 7, 'Name', 'B', 0, 'L', 1);
+        $pdf->Cell(40, 7, 'Branch', 'B', 0, 'L', 1);
+        $pdf->Cell(50, 7, 'Contact Number', 'B', 0, 'C', 1);
+        $pdf->Cell(25, 7, 'Total Orders', 'B', 0, 'C', 1);
+        $pdf->Cell(25, 7, 'Total Sales', 'B', 1, 'C', 1);
+
+
+        $pdf->setFillColor(232, 232, 232);
+        $pdf->SetTextColor(0, 0, 0);
+
+        $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
+        foreach ($details as $key => $value) {
+
+            $totalCount++;
+            $totalAmount += $value->total_sales;
+
+            $pdf->SetFont('Arial', '', 9);
+            $pdf->setFillColor(232, 232, 232);
+            $pdf->SetTextColor(0, 0, 0);
+
+            $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
+            $pdf->Cell(40, 6, $value->name, 0, 0, 'L', 1);
+            $pdf->Cell(40, 6, $value->branch_name, 0, 0, 'L', 1);
+            $pdf->Cell(50, 6, $value->mobile, 0, 0, 'C', 1);
+            $pdf->Cell(25, 6, $value->total_orders, 0, 0, 'C', 1);
+            $pdf->Cell(25, 6, number_format($value->total_sales,0), 0, 1, 'C', 1);
+
+            $pdf->ln(1);
+        }
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->setFillColor(0, 0, 0);
+        $pdf->SetTextColor(255, 255, 255);
+
+        $pdf->Cell(140, 6, "Total:", 0, 0, 'C', 1);
+        $pdf->Cell(25, 6, number_format($totalCount, 0), 0, 0, 'C', 1);
+        $pdf->Cell(25, 6, number_format($totalAmount, 0), 0, 1, 'C', 1);
+
 
         //save file
         $pdf->Output('booking_delivery_order_report.pdf', 'I');

@@ -34,7 +34,7 @@ class userDetails extends Model
     	$filter = "";
     	if (session("roleId") == 2) 
     	{
-    		$filter .= " where company_id = ".session("company_id");
+    		$filter .= " where company_id = ".session("company_id")." and status_id = 1";
     	}
 
     	$branch = DB::select('Select * from branch '.$filter);

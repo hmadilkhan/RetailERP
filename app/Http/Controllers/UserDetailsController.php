@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\BranchService;
 use App\Traits\MediaTrait;
 use App\userDetails;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class UserDetailsController extends Controller
     public function getBranchesByCompany(Request $request)
     {
         if ($request->company != "") {
-            return DB::table("branch")->where("company_id", $request->company)->get();
+            return DB::table("branch")->where("company_id", $request->company)->where("status_id",1)->get();
         }
     }
 
@@ -41,12 +42,13 @@ class UserDetailsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(userDetails $users)
+    public function create(userDetails $users,BranchService $branchService)
     {
         $country = $users->getcountry();
         $city = $users->getcity();
         $role = $users->getroles();
-        $branch = $users->getbranches();
+        // $branch = $users->getbranches();
+        $branch = $branchService->getBranches();
         $company = $users->getCompany();
         return view('Users.create', compact('country', 'city', 'role', 'branch', 'company'));
     }

@@ -37,35 +37,35 @@
 		@foreach ($record as $value)
 			<?php 
 				$itemqty = 0;
-				if($value->inventory->id == 817947 or $value->inventory->id == 817992 ){
+				if(!empty($value->inventory) && ($value->inventory->id == 817947 or $value->inventory->id == 817992 )){
 					$itemqty = $itemqty + ($value->total_qty * 2);
 				}else{
 					$itemqty = $itemqty + $value->total_qty;
 				}
 				$actualQty = $actualQty + $value->total_qty;
-				$qty = $itemqty / $value->inventory->weight_qty ;
-				$originalqty = $value->total_qty / $value->inventory->weight_qty ;
+				$qty = $itemqty / (!empty($value->inventory) ? $value->inventory->weight_qty : 1 ) ;
+				$originalqty = $value->total_qty / (!empty($value->inventory) ? $value->inventory->weight_qty : 1 );
 				$totalamount = $originalqty  * $value->item_price;
 				// $totalamount = $itemqty  * $value->avg_price;
 				$calcTotalQty = $calcTotalQty + $qty ;
 				$totalQtySold = $totalQtySold + $itemqty   ;
 				$grandTotal = $grandTotal + $value->total_amount;//+ $totalamount ;
-				$totalQty  = $value->total_qty * $value->inventory->weight_qty;
+				$totalQty  = $value->total_qty * (!empty($value->inventory) ? $value->inventory->weight_qty : 1 );
 				$gtotal += $totalQty ;
 
 			?>
 		   <tr>
 			  <td style="text-align: center;">{{ number_format($qty,2) }}</td>
-			  <td style="text-align: center;">{{$value->inventory->item_code}}</td>
-			  <td style="text-align: center;">{{$value->order->branchrelation->code}}</td>
-			  <td style="text-align: left;padding-left:1px;">{{$value->inventory->product_name}}</td>
+			  <td style="text-align: center;">{{$value->inventory->item_code ?? "-"}}</td>
+			  <td style="text-align: center;">{{$value->order->branchrelation->code ?? "-"}}</td>
+			  <td style="text-align: left;padding-left:1px;">{{$value->inventory->product_name ?? "-"}}</td>
 			  @if($mode == "normal")
 			  <td style="text-align: center;">{{ $value->item_price }}</td>
 			  <td style="text-align: center;">{{ number_format($value->total_amount,2) }}</td>
 			  @endif
 			  <td style="text-align: center;"></td>
 			  <td style="text-align: center;">{{ $value->total_qty }}</td>
-			  <td style="text-align: center;">{{$value->inventory->weight_qty}}</td>
+			  <td style="text-align: center;">{{(!empty($value->inventory) ? $value->inventory->weight_qty : 1 )}}</td>
 			  <td style="text-align: center;">{{$totalQty}}</td>
 		   </tr>
 		  @endforeach

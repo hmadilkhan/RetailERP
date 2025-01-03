@@ -362,19 +362,22 @@ class report extends Model
         return $result;
     }
 
-    public function totalSales($terminal, $fromdate, $todate, $type,$category)
+    public function totalSales($terminal, $fromdate, $todate, $type, $category,$customer)
     {
         $filter = "";
         if ($category != "all" && $category == 1) {
-           $type = "datewise";
-           $filter .= " and a.web = 1"; 
-        }else{ 
-            $filter .= " and a.web = 0"; 
+            $type = "datewise";
+            $filter .= " and a.web = 1";
+        } else {
+            $filter .= " and a.web = 0";
         }
         if ($type != "" && $type == "datewise") {
             $filter .= " and a.date between '" . $fromdate . "' and '" . $todate . "' and a.terminal_id = " . $terminal;
         } else {
             $filter .= " and opening_id IN (SELECT opening_id FROM `sales_opening` WHERE date between '" . $fromdate . "' and '" . $todate . "' and terminal_id = " . $terminal . ")";
+        }
+        if ($customer != "") {
+            $filter .= " and a.customer_id = ".$customer;
         }
         $terminalFilter = " and a.terminal_id = " . ($terminal != "" && $terminal != 0  ? $terminal : "(SELECT terminal_id FROM `terminal_details` where branch_id IN (SELECT branch_id FROM `branch` WHERE `company_id` = " . session('company_id') . "))");
         $result = DB::select("SELECT (SELECT COUNT(*) FROM `sales_receipt_details` where receipt_id = a.id) as countItems,(SELECT SUM(total_qty) FROM `sales_receipt_details` where receipt_id = a.id) as totalItems,a.id,a.receipt_no,a.terminal_id,a.actual_amount,a.total_amount,b.sales_tax_amount,b.srb,a.date,b.discount_amount,c.name as customer,d.order_mode,a.void_receipt,e.receive_amount FROM sales_receipts a LEFT JOIN sales_account_subdetails b on b.receipt_id = a.id LEFT JOIN customers c on c.id = a.customer_id INNER JOIN sales_order_mode d on d.order_mode_id = a.order_mode_id LEFT JOIN sales_account_general e on e.receipt_id = a.id where 1=1 " . $filter); //[$fromdate,$todate,$terminal]
@@ -428,19 +431,19 @@ class report extends Model
         return $result;
     }
 
-    public function sales_details_excel_query($branch,$terminal, $fromdate, $todate)
+    public function sales_details_excel_query($branch, $terminal, $fromdate, $todate)
     {
         $filter = "";
         $branchFilter = "";
         if ($branch == "all") {
-            $branchFilter = "(Select branch_id from branch where company_id = ".session('company_id').")";
-        }else{
-            $branchFilter = "(Select branch_id from branch where branch_id = ".session('branch').")";
+            $branchFilter = "(Select branch_id from branch where company_id = " . session('company_id') . ")";
+        } else {
+            $branchFilter = "(Select branch_id from branch where branch_id = " . session('branch') . ")";
         }
         if ($terminal == 0) {
             $filter = " a.terminal_id IN (select terminal_id from terminal_details where branch_id IN $branchFilter )";
-        }else{
-            $filter = " a.terminal_id = ".$terminal;
+        } else {
+            $filter = " a.terminal_id = " . $terminal;
         }
         $result = DB::select("SELECT a.opening_id,a.balance as bal,a.date,a.time,a.terminal_id,c.branch_name,b.terminal_name,
 		IFNULL((SELECT SUM(b.total_amount) as sales from sales_receipts b where b.opening_id = a.opening_id),0) as TotalSales,
@@ -479,7 +482,7 @@ class report extends Model
         (SELECT SUM(received) FROM customer_account INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no  where customer_account.opening_id = a.opening_id and customer_account.payment_mode_id = 2 and sales_receipts.status != 12) AS order_delivered_card 
         FROM sales_opening a INNER join terminal_details b on b.terminal_id = a.terminal_id 
         INNER join branch c on c.branch_id = b.branch_id 
-        where  ".$filter  ."
+        where  " . $filter  . "
         and a.date BETWEEN ? and ? order by c.branch_id,b.terminal_id,a.date ASC", [$fromdate, $todate]);
         return $result;
     }
@@ -502,21 +505,21 @@ class report extends Model
         return $result;
     }
 
-    public function itemSalesOrderMode($fromdate, $todate, $terminalid,$mode,$status)
+    public function itemSalesOrderMode($fromdate, $todate, $terminalid, $mode, $status)
     {
         $filter = "";
 
         if ($mode != "all") {
-            $filter .= " and b.order_mode_id = ".$mode; 
+            $filter .= " and b.order_mode_id = " . $mode;
         }
         if ($status != "all") {
-            $filter .= " and b.status = ".$mode; 
+            $filter .= " and b.status = " . $mode;
         }
-        $result = DB::select("SELECT e.order_mode_id,e.order_mode as ordermode FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ? ".$filter.") GROUP BY e.order_mode_id", [$fromdate, $todate, $terminalid]);
+        $result = DB::select("SELECT e.order_mode_id,e.order_mode as ordermode FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ? " . $filter . ") GROUP BY e.order_mode_id", [$fromdate, $todate, $terminalid]);
         return $result;
     }
     //item sale database
-    public function  itemsale_details($fromdate, $todate, $terminalid, $type, $department, $subdepartment = "",$mode,$status)
+    public function  itemsale_details($fromdate, $todate, $terminalid, $type, $department, $subdepartment = "", $mode, $status)
     {
         $filter = "";
         if ($type != "") {
@@ -528,7 +531,7 @@ class report extends Model
         //     $filter = "  a.opening_id IN (SELECT a.opening_id FROM `sales_opening` a WHERE a.date between '" . $fromdate . "' and '" . $todate . "' and a.terminal_id = " . $terminalid . ")";
         // }
         if ($department != "") {
-            $filter .= " and c.department_id IN ( " . implode(",",$department) .")";
+            $filter .= " and c.department_id IN ( " . implode(",", $department) . ")";
         }
         if ($subdepartment != "") {
             $filter .= " and c.sub_department_id = " . $subdepartment;
@@ -540,13 +543,13 @@ class report extends Model
         //     $filter .= " and b.status = ".$mode; 
         // }
         // $result = DB::select('SELECT c.id as itemId,c.item_code as code ,c.product_name, SUM(b.total_qty) as qty, SUM(b.total_amount) as amount,item_price as price, b.total_cost as cost,a.void_receipt,c.weight_qty,b.is_sale_return,d.order_status_name,e.order_mode as ordermode FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN inventory_general c ON c.id = b.item_code INNER JOIN sales_order_status d on d.order_status_id = a.status INNER JOIN sales_order_mode e on e.order_mode_id = a.order_mode_id WHERE ' . $filter . ' GROUP BY b.item_code,a.status');
-        $result = DB::select('SELECT c.id as itemId,c.item_code as code ,c.product_name, SUM(a.total_qty) as qty, SUM(a.total_amount) as amount,a.item_price as price, a.total_cost as cost,b.void_receipt,c.weight_qty,a.is_sale_return,d.order_status_name,e.order_mode as ordermode,c.department_id FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN inventory_general c ON c.id = a.item_code INNER JOIN sales_order_status d on d.order_status_id = b.status INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id where receipt_id IN (Select id from sales_receipts where opening_id IN (SELECT opening_id FROM `sales_opening` where  date between ? and ? and terminal_id = ? )  and web = 0 and order_mode_id = '.$mode.' and status = '.$status.') ' . $filter . ' GROUP BY a.item_code,b.status', [$fromdate, $todate, $terminalid]);
+        $result = DB::select('SELECT c.id as itemId,c.item_code as code ,c.product_name, SUM(a.total_qty) as qty, SUM(a.total_amount) as amount,a.item_price as price, a.total_cost as cost,b.void_receipt,c.weight_qty,a.is_sale_return,d.order_status_name,e.order_mode as ordermode,c.department_id FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN inventory_general c ON c.id = a.item_code INNER JOIN sales_order_status d on d.order_status_id = b.status INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id where receipt_id IN (Select id from sales_receipts where opening_id IN (SELECT opening_id FROM `sales_opening` where  date between ? and ? and terminal_id = ? )  and web = 0 and order_mode_id = ' . $mode . ' and status = ' . $status . ') ' . $filter . ' GROUP BY a.item_code,b.status', [$fromdate, $todate, $terminalid]);
         return $result;
     }
 
-    public function groupByItemSaleStatus($fromdate, $todate, $terminalid, $type,$department,$subdepartment="",$mode,$status)
+    public function groupByItemSaleStatus($fromdate, $todate, $terminalid, $type, $department, $subdepartment = "", $mode, $status)
     {
-        $filter ="";
+        $filter = "";
         // if ($department != "") {
         //     $filter .= " and c.department_id IN ( " . implode(",",$department) .")";
         // }
@@ -554,13 +557,13 @@ class report extends Model
         //     $filter .= " and c.sub_department_id = " . $subdepartment;
         // }
         if ($mode != "all") {
-            $filter .= " and order_mode_id = ".$mode; 
+            $filter .= " and order_mode_id = " . $mode;
         }
         if ($status != "all") {
-            $filter .= " and status = ".$mode; 
+            $filter .= " and status = " . $mode;
         }
 
-        $result = DB::select('SELECT SUM(a.total_qty) as totalorders,SUM(a.total_amount) as totalamount,d.order_status_name as status FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id INNER JOIN sales_order_status d on d.order_status_id = b.status where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ? '.$filter.') and b.order_mode_id = ? GROUP BY b.status', [$fromdate, $todate, $terminalid, $type]);
+        $result = DB::select('SELECT SUM(a.total_qty) as totalorders,SUM(a.total_amount) as totalamount,d.order_status_name as status FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id INNER JOIN sales_order_status d on d.order_status_id = b.status where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ? ' . $filter . ') and b.order_mode_id = ? GROUP BY b.status', [$fromdate, $todate, $terminalid, $type]);
         return $result;
     }
 
@@ -750,34 +753,49 @@ class report extends Model
         return DB::select("SELECT c.id as itemId,c.item_code as code ,c.product_name, SUM(a.total_qty) as qty, SUM(a.total_amount) as amount,a.item_price as price, a.total_cost as cost,b.void_receipt,c.weight_qty,a.is_sale_return,d.order_status_name,e.order_mode as ordermode FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN inventory_general c ON c.id = a.item_code INNER JOIN sales_order_status d on d.order_status_id = b.status INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id where receipt_id IN (Select id from sales_receipts where date between ? and ? and branch IN (Select branch_id from branch where company_id = ?) and web = 1) GROUP BY a.item_code,b.status order by qty desc", [$from, $to, session('company_id')]);
     }
 
-    public function orderAmountReceivableTerminal($from,$to,$terminalId)
+    public function orderAmountReceivableTerminal($from, $to, $terminalId)
     {
-        return DB::select("SELECT sales_receipts.id,sales_receipts.receipt_no,sales_receipts.total_amount,sales_account_general.receive_amount as paid,sales_receipts.date,SUM(customer_account.received) as receive_amount,date(customer_account.created_at) as received_date,sales_payment.payment_mode,customers.name,terminal_details.terminal_name FROM `customer_account` INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no INNER JOIN customers on customers.id = sales_receipts.customer_id INNER JOIN sales_account_general on sales_account_general.receipt_id = customer_account.receipt_no INNER JOIN sales_payment on sales_payment.payment_id = customer_account.payment_mode_id INNER JOIN terminal_details on terminal_details.terminal_id = sales_receipts.terminal_id where date(customer_account.created_at) Between ? and ? and customer_account.terminal_id = ? and sales_receipts.order_mode_id = 2 and customer_account.total_amount = 0 and sales_receipts.status = 4 group by customer_account.receipt_no",[$from,$to,$terminalId]);
+        return DB::select("SELECT sales_receipts.id,sales_receipts.receipt_no,sales_receipts.total_amount,sales_account_general.receive_amount as paid,sales_receipts.date,SUM(customer_account.received) as receive_amount,date(customer_account.created_at) as received_date,sales_payment.payment_mode,customers.name,terminal_details.terminal_name FROM `customer_account` INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no INNER JOIN customers on customers.id = sales_receipts.customer_id INNER JOIN sales_account_general on sales_account_general.receipt_id = customer_account.receipt_no INNER JOIN sales_payment on sales_payment.payment_id = customer_account.payment_mode_id INNER JOIN terminal_details on terminal_details.terminal_id = sales_receipts.terminal_id where date(customer_account.created_at) Between ? and ? and customer_account.terminal_id = ? and sales_receipts.order_mode_id = 2 and customer_account.total_amount = 0 and sales_receipts.status = 4 group by customer_account.receipt_no", [$from, $to, $terminalId]);
     }
 
-    public function bookingDeliveryReport($from,$to,$terminalId)
+    public function bookingDeliveryReport($from, $to, $terminalId)
     {
-        return DB::select("SELECT a.id,a.machine_terminal_count,a.actual_amount,SUM(c.srb+c.sales_tax_amount) as taxamount,c.discount_amount as discount,a.total_amount,b.receive_amount as received FROM sales_receipts a LEFT JOIN sales_account_general b on b.receipt_id = a.id LEFT JOIN sales_account_subdetails c on c.receipt_id = a.id where date between ? and ? and terminal_id = ? and order_mode_id = 2 group by a.id;",[$from,$to,$terminalId]);
+        return DB::select("SELECT a.id,a.machine_terminal_count,a.actual_amount,SUM(c.srb+c.sales_tax_amount) as taxamount,c.discount_amount as discount,a.total_amount,b.receive_amount as received FROM sales_receipts a LEFT JOIN sales_account_general b on b.receipt_id = a.id LEFT JOIN sales_account_subdetails c on c.receipt_id = a.id where date between ? and ? and terminal_id = ? and order_mode_id = 2 group by a.id;", [$from, $to, $terminalId]);
     }
 
-    public function bookingDeliveryEmailReport($openingId,$terminalId)
-    {
-        return DB::select("SELECT a.id,a.machine_terminal_count,a.actual_amount,SUM(c.srb+c.sales_tax_amount) as taxamount,c.discount_amount as discount,a.total_amount,b.receive_amount as received FROM sales_receipts a LEFT JOIN sales_account_general b on b.receipt_id = a.id LEFT JOIN sales_account_subdetails c on c.receipt_id = a.id where opening_id = ? and terminal_id = ? and order_mode_id = 2 group by a.id;",[$openingId,$terminalId]);
-    }
-
-    public function orderAmountReceivableTerminalExcel($from,$to,$branch)
+    public function customerSalesReport($from, $to, $branch, $customer)
     {
         $filter = "";
         if ($branch == "all") {
-            $filter = " (Select terminal_id from terminal_details where branch_id IN (Select branch_id from branch where company_id = ".session("company_id")."))" ;
-        }else{
-            $filter = " (Select terminal_id from terminal_details where branch_id = ".$branch.")" ;
+            $filter = " and branch IN (Select branch_id from branch where company_id =  " . session("company_id") . ")";
+        } else {
+            $filter = " and branch = " . $branch;
         }
-        return DB::select("SELECT sales_receipts.id,sales_receipts.receipt_no,sales_receipts.total_amount,sales_account_general.receive_amount as paid,sales_receipts.date,SUM(customer_account.received) as receive_amount,date(customer_account.created_at) as received_date,sales_payment.payment_mode,customers.name,terminal_details.terminal_name,user_details.fullname FROM `customer_account` INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no INNER JOIN customers on customers.id = sales_receipts.customer_id INNER JOIN sales_account_general on sales_account_general.receipt_id = customer_account.receipt_no INNER JOIN sales_payment on sales_payment.payment_id = customer_account.payment_mode_id INNER JOIN terminal_details on terminal_details.terminal_id = sales_receipts.terminal_id LEFT JOIN user_details on user_details.id = sales_receipts.sales_person_id where date(customer_account.created_at) Between ? and ? and customer_account.terminal_id In ".$filter."  and sales_receipts.order_mode_id = 2 and customer_account.total_amount = 0 and sales_receipts.status = 4 group by customer_account.receipt_no",[$from,$to]);
+
+        if ($customer != "all") {
+            $filter = " and customer_id =" . $customer;
+        }
+        return DB::select("SELECT customers.id,customers.name,customers.mobile,SUM(sales_receipts.total_amount) as total_sales,COUNT(sales_receipts.id) as total_orders,branch.branch_name FROM `sales_receipts` INNER JOIN customers on customers.id = sales_receipts.customer_id LEFT JOIN branch on branch.branch_id = sales_receipts.branch where sales_receipts.date between ? and ? " . $filter . " group by customer_id order by total_sales DESC;", [$from, $to]);
+    }
+
+    public function bookingDeliveryEmailReport($openingId, $terminalId)
+    {
+        return DB::select("SELECT a.id,a.machine_terminal_count,a.actual_amount,SUM(c.srb+c.sales_tax_amount) as taxamount,c.discount_amount as discount,a.total_amount,b.receive_amount as received FROM sales_receipts a LEFT JOIN sales_account_general b on b.receipt_id = a.id LEFT JOIN sales_account_subdetails c on c.receipt_id = a.id where opening_id = ? and terminal_id = ? and order_mode_id = 2 group by a.id;", [$openingId, $terminalId]);
+    }
+
+    public function orderAmountReceivableTerminalExcel($from, $to, $branch)
+    {
+        $filter = "";
+        if ($branch == "all") {
+            $filter = " (Select terminal_id from terminal_details where branch_id IN (Select branch_id from branch where company_id = " . session("company_id") . "))";
+        } else {
+            $filter = " (Select terminal_id from terminal_details where branch_id = " . $branch . ")";
+        }
+        return DB::select("SELECT sales_receipts.id,sales_receipts.receipt_no,sales_receipts.total_amount,sales_account_general.receive_amount as paid,sales_receipts.date,SUM(customer_account.received) as receive_amount,date(customer_account.created_at) as received_date,sales_payment.payment_mode,customers.name,terminal_details.terminal_name,user_details.fullname FROM `customer_account` INNER JOIN sales_receipts on sales_receipts.id = customer_account.receipt_no INNER JOIN customers on customers.id = sales_receipts.customer_id INNER JOIN sales_account_general on sales_account_general.receipt_id = customer_account.receipt_no INNER JOIN sales_payment on sales_payment.payment_id = customer_account.payment_mode_id INNER JOIN terminal_details on terminal_details.terminal_id = sales_receipts.terminal_id LEFT JOIN user_details on user_details.id = sales_receipts.sales_person_id where date(customer_account.created_at) Between ? and ? and customer_account.terminal_id In " . $filter . "  and sales_receipts.order_mode_id = 2 and customer_account.total_amount = 0 and sales_receipts.status = 4 group by customer_account.receipt_no", [$from, $to]);
     }
 
     public function itemsalesdatabaseforpdf($opening)
     {
-        return DB::select("SELECT inventory_general.product_name,inventory_general.weight_qty,inventory_general.item_code,item_price as price,SUM(total_qty) as qty,SUM(total_amount) as amount FROM `sales_receipt_details` INNER JOIN inventory_general on inventory_general.id = sales_receipt_details.item_code where receipt_id IN (Select id from sales_receipts where opening_id = ?) group by item_name",[$opening]);
+        return DB::select("SELECT inventory_general.product_name,inventory_general.weight_qty,inventory_general.item_code,item_price as price,SUM(total_qty) as qty,SUM(total_amount) as amount FROM `sales_receipt_details` INNER JOIN inventory_general on inventory_general.id = sales_receipt_details.item_code where receipt_id IN (Select id from sales_receipts where opening_id = ?) group by item_name", [$opening]);
     }
 }
