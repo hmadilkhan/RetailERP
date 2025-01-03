@@ -34,6 +34,7 @@ use App\Exports\StockReport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\IsdbDatewiseExport;
 use App\Exports\ConsolidatedIsdbDatewiseExport;
+use App\Exports\CustomerSalesExport;
 use App\Exports\OrderReceivingReportExport;
 use App\Exports\OrderReportExport;
 use App\Exports\SalesDeclarationExport;
@@ -78,7 +79,7 @@ class ReportController extends Controller
         $statuses = $orderService->getOrderStatus();
         $ordermodes = $orderService->getOrderModes();
         $customers = $customerService->getCustomers();
-
+        
         return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons', 'statuses', 'ordermodes', 'customers'));
     }
 
@@ -454,6 +455,18 @@ class ReportController extends Controller
             "to" => $request->todate,
         ];
         return Excel::download(new OrderReceivingReportExport($details, $companyName, $datearray), "Order Receiving Report.xlsx");
+    }
+
+    public function getCustomerSalesExport(Request $request, report $report)
+    {
+        $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
+        $companyName = Company::findOrFail(session("company_id"));
+        $companyName = $companyName->name;
+        $datearray = [
+            "from" => $request->fromdate,
+            "to" => $request->todate,
+        ];
+        return Excel::download(new CustomerSalesExport($details, $companyName, $datearray), "Customer Sales Report.xlsx");
     }
 
     public function getOrdersReportExcelExport(Request $request, report $report, order $order)
@@ -3302,7 +3315,7 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
-                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category);
+                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category,$request->customer);
                 $permission = $report->terminalPermission($values->terminal_id);
 
                 $pdf->SetFont('Arial', 'B', 12);
@@ -6914,7 +6927,7 @@ class ReportController extends Controller
             $pdf->Cell(40, 6, $value->branch_name, 0, 0, 'L', 1);
             $pdf->Cell(50, 6, $value->mobile, 0, 0, 'C', 1);
             $pdf->Cell(25, 6, $value->total_orders, 0, 0, 'C', 1);
-            $pdf->Cell(25, 6, $value->total_sales, 0, 1, 'C', 1);
+            $pdf->Cell(25, 6, number_format($value->total_sales,0), 0, 1, 'C', 1);
 
             $pdf->ln(1);
         }

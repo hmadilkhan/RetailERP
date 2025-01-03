@@ -279,7 +279,7 @@
                     <input type="hidden" value="0" id="txtorderamountreceivable" />
                     <input type="hidden" value="0" id="txtbookingdeliveryreport" />
                     <input type="hidden" value="0" id="txtcustomersalesreport" />
-                    
+
 
 
 
@@ -525,7 +525,7 @@
                                     class="form-control select2">
                                     <option value="all">All</option>
                                     @foreach ($customers as $customer)
-                                        <option value="{{ $customer->id }}">{{ $customer->name }}
+                                        <option value="{{ $customer->id }}">{{ $customer->name." (".$customer->branch_name.") " }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -578,7 +578,7 @@
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
                 '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport', '#txtordertimingsummary',
-                '#txtorderamountreceivable', '#txtbookingdeliveryreport','#txtcustomersalesreport'
+                '#txtorderamountreceivable', '#txtbookingdeliveryreport', '#txtcustomersalesreport'
             ];
 
             fields.forEach(field => {
@@ -588,7 +588,7 @@
             const filters = [
                 '#dvbranch', '#dvdepartments', '#dvmultipledepartments', '#dvsubdepartments', '#dvterminal',
                 '#dvtype', '#dvitemcode', '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory',
-                '#dvordermode','#dvcustomers'
+                '#dvordermode', '#dvcustomers'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -764,7 +764,8 @@
                 showBranch: true,
                 showType: true,
                 showTerminal: true,
-                showCategory: true
+                showCategory: true,
+                showCustomers:true
             }]);
         });
 
@@ -843,7 +844,8 @@
                 value: 1,
                 showDateFilter: true,
                 showBranch: true,
-                showCustomers : true
+                showCustomers: true,
+                showExcelButton: true
             }]);
         });
 
@@ -924,7 +926,8 @@
 
             if ($('#txtsalesinvoicesreport').val() == 1) {
                 window.location = "{{ url('sales-invoices-report') }}?fromdate=" + date + "&todate=" + todate +
-                    "&terminalid=" + terminalid + "&type=" + type + "&branch=" + branch + "&category=" + category;
+                    "&terminalid=" + terminalid + "&type=" + type + "&branch=" + branch + "&category=" + category+ "&customer=" +
+                    customer;
             }
 
             if ($('#txtstockreport').val() == 1) {
@@ -961,7 +964,7 @@
                     terminalid;
             }
             if ($('#txtcustomersalesreport').val() == 1) {
-                window.location = "{{ url('customer-sales-report') }}?fromdate=" + date + "&todate=" + todate +
+                window.location = "{{ url('reports/excel-export-customer-sales') }}?fromdate=" + date + "&todate=" + todate +
                     "&branch=" + branch + "&customer=" +
                     customer;
             }
@@ -973,6 +976,7 @@
             let branch = $('#branch').val();
             let terminal = $('#terminal').val();
             let type = $('#type').val();
+            let customer = $('#customer').val();
 
             if ($('#txtsaledec').val() == 1) {
                 window.location = "{{ url('reports/excel-export-sales-declartion') }}" + "/" + from + "/" + to + "/" +
@@ -993,6 +997,13 @@
                 window.location = "{{ url('reports/excel-export-orders-receivables') }}?fromdate=" + from + "&todate=" +
                     to + "&terminal=" +
                     terminal + "&branch=" + branch;
+            }
+
+            if ($('#txtcustomersalesreport').val() == 1) {
+                window.location = "{{ url('reports/excel-export-customer-sales') }}?fromdate=" + from + "&todate=" +
+                    to +
+                    "&branch=" + branch + "&customer=" +
+                    customer;
             }
 
             if ($('#txtexpensesheet').val() == 1) {
