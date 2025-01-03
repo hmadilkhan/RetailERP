@@ -33,7 +33,7 @@ class UserDetailsController extends Controller
     public function getBranchesByCompany(Request $request)
     {
         if ($request->company != "") {
-            return DB::table("branch")->where("company_id", $request->company)->get();
+            return DB::table("branch")->where("company_id", $request->company)->where("status_id",1)->get();
         }
     }
 
