@@ -18,9 +18,9 @@ class BranchService
     {
         $branches = [];
         if (session("roleId") == 2) {
-            $branches = Branch::where("company_id",session("company_id"))->get();
+            $branches = Branch::where("company_id",session("company_id"))->where("status_id",1)->get();
         } else{
-            $branches = Branch::where("branch_id",session("branch"))->get();
+            $branches = Branch::where("branch_id",session("branch"))->where("status_id",1)->get();
         }   
 
         return $branches;
