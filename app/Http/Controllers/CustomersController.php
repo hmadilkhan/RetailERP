@@ -576,7 +576,7 @@ class CustomersController extends Controller
     }
     public function get_customer_names(Request $request, Customer $customer)
     {
-        $result = $customer->search_by_customer_name($request->q);
+        $result = $customer->search_by_customer_name($request->q,$request->branch);
         if ($result) {
             return response()->json(array('items' => $result));
         } else {

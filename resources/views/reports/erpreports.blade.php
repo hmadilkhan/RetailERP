@@ -521,14 +521,16 @@
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group">
                                 <label class="form-control-label">Select Customer</label>
-                                <select name="customer" id="customer" data-placeholder="Select Customer"
+                                {{-- <select name="customer" id="customer" data-placeholder="Select Customer"
                                     class="form-control select2">
                                     <option value="all">All</option>
                                     @foreach ($customers as $customer)
-                                        <option value="{{ $customer->id }}">{{ $customer->name." (".$customer->branch_name.") " }}
+                                        <option value="{{ $customer->id }}">
+                                            {{ $customer->name . ' (' . $customer->branch_name . ') ' }}
                                         </option>
                                     @endforeach
-                                </select>
+                                </select> --}}
+                                <select id="customer" name="customer" class="form-control select2"></select>
                                 <div class="form-control-feedback"></div>
                             </div>
                         </div>
@@ -765,7 +767,7 @@
                 showType: true,
                 showTerminal: true,
                 showCategory: true,
-                showCustomers:true
+                showCustomers: true
             }]);
         });
 
@@ -926,7 +928,8 @@
 
             if ($('#txtsalesinvoicesreport').val() == 1) {
                 window.location = "{{ url('sales-invoices-report') }}?fromdate=" + date + "&todate=" + todate +
-                    "&terminalid=" + terminalid + "&type=" + type + "&branch=" + branch + "&category=" + category+ "&customer=" +
+                    "&terminalid=" + terminalid + "&type=" + type + "&branch=" + branch + "&category=" + category +
+                    "&customer=" +
                     customer;
             }
 
@@ -1123,6 +1126,36 @@
         $("#multipledepartment").change(function() {
             if ($(this).val() != "") {
                 load_sub_dept($(this).val());
+            }
+        });
+
+        $("#customer").select2({
+            ajax: {
+                url: "{{ route('search-customer-by-names') }}",
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: params.term, // search term from the input
+                        branch: $("#branch").val(), // additional parameter 1
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: $.map(data.items, function(item) {
+                            return {
+                                text: item.name + " | " + item.branch_name + " | " +item.mobile,
+                                id: item.id
+                            };
+                        })
+                    };
+                }
+            },
+            placeholder: "Search Customer",
+            minimumInputLength: 1,
+            language: {
+                searching: function() {
+                    return "Searching...";
+                }
             }
         });
 
