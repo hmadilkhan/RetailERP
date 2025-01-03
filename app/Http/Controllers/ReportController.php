@@ -78,9 +78,8 @@ class ReportController extends Controller
         $salespersons = $orderService->getServiceProviders();
         $statuses = $orderService->getOrderStatus();
         $ordermodes = $orderService->getOrderModes();
-        $customers = $customerService->getCustomers();
         
-        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons', 'statuses', 'ordermodes', 'customers'));
+        return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons', 'statuses', 'ordermodes'));
     }
 
     public function show(report $report, salary $salary)
