@@ -427,9 +427,12 @@
        $("#slideEdit_Modal").modal('show');
 
      if($.inArray(ftype,['mp4','webm','ogg'])){
-        $("#slideVdImgMD").attr('src',$("#slide"+unqid).attr('src'));
+        $("#slideVdImgMD").attr('src',$("#slide"+unqid).attr('src')).show();
+        $("#slideImgMD").hide();
+
      }else{
-       $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'));
+       $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src')).show();
+       $("#slideVdImgMD").hide();
      }
 
        $("#webname_md").val(webName);
