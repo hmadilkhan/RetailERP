@@ -18,6 +18,7 @@
                 <th style="background-color: #1a4567;color:white;text-align: left;">Customer Name</th>
                 <th style="background-color: #1a4567;color:white;text-align: left;">Branch Name</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Contact Number</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Membership Number</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Total Orders</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Total Sales</th>
             </tr>
@@ -38,6 +39,7 @@
                         <td style="text-align: left;">{{ $value->name }}</td>
                         <td style="text-align: left;">{{ $value->branch_name }}</td>
                         <td style="text-align: left;">{{ $value->mobile }}</td>
+                        <td style="text-align: left;">{{ $value->membership_card_no }}</td>
                         <td style="text-align: left;">{{ number_format($value->total_orders, 0) }}</td>
                         <td style="text-align: left;">{{ number_format($value->total_sales, 0) }}</td>
                     </tr>
