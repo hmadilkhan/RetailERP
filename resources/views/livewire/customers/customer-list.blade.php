@@ -1,7 +1,5 @@
 <div>
     <div class="card">
-
-
         <div class="card-header">
             <h5 class="card-header-text">Upload Customer</h5>
             <a href="{{ route('customer.create') }}" data-toggle="tooltip" data-placement="bottom" title=""
@@ -34,6 +32,64 @@
     </div>
     <div class="card">
         <div class="card-header">
+            <h5 class="card-header-text">Filter Customer</h5>
+        </div>
+        <div class="card-block">
+            <div class="row">
+                <div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">
+                    <div class="form-group {{ $errors->has('branch') ? 'has-danger' : '' }}">
+                        <label class="form-control-label">Select Branch</label>
+                        <select name="branch" id="branch" class="form-control select2">
+                            <option value="">Select Branch</option>
+                            @if ($branches)
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        @if ($errors->has('branch'))
+                            <div class="form-control-feedback">Required field can not be blank.</div>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">
+                    <div class="form-group {{ $errors->has('branch') ? 'has-danger' : '' }}">
+                        <label class="form-control-label">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Search Customer" />
+                        @if ($errors->has('branch'))
+                            <div class="form-control-feedback">Required field can not be blank.</div>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">
+                    <div class="form-group {{ $errors->has('branch') ? 'has-danger' : '' }}">
+                        <label class="form-control-label">Contact</label>
+                        <input type="text" class="form-control" id="contact" placeholder="Search Contact" />
+                        @if ($errors->has('branch'))
+                            <div class="form-control-feedback">Required field can not be blank.</div>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-3 col-lg-3 col-sm-12 col-xl-3">
+                    <div class="form-group {{ $errors->has('branch') ? 'has-danger' : '' }}">
+                        <label class="form-control-label">Membership</label>
+                        <input type="text" class="form-control" id="membership" placeholder="Search Membership" />
+                        @if ($errors->has('branch'))
+                            <div class="form-control-feedback">Required field can not be blank.</div>
+                        @endif
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <button id="searchcustomer" data-toggle="tooltip" data-placement="bottom" title=""
+                        data-original-title="Search"
+                        class="btn btn-success waves-effect waves-light f-right d-inline-block m-r-10"> <i
+                            class="icofont icofont-plus m-r-5"></i> Search</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-header">
             {{-- <h5 class="card-header-text">Customer List</h5> --}}
             <div class="button-group m-l-1 f-right">
                 <a style="color:white;" target="_blank" href="{{ URL::to('customers-report-pdf') }}"
@@ -54,7 +110,7 @@
             <div class="button-group f-left">
                 <div class="rkmd-checkbox checkbox-rotate">
                     <label class="input-checkbox checkbox-primary">
-                        <input type="checkbox" id="statuscheckbox"  class="f-left" >
+                        <input type="checkbox" id="statuscheckbox" class="f-left">
                         <span class="checkbox"></span>
                     </label>
                     <div class="captions">{{ $checkboxText }}</div>
@@ -101,12 +157,13 @@
                         </th>
                         <th>Image</th>
                         <th>Customer Name</th>
-                        <th>Balance</th>
-                        <th>Mobile</th>
-                        <th>CNIC</th>
                         @if (session('roleId') == 2)
                             <th>Branch Name</th>
                         @endif
+                        <th>Balance</th>
+                        <th>Mobile</th>
+                        <th>CNIC</th>
+                        <th>Membership</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -131,12 +188,14 @@
                                         alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                                 </td>
                                 <td>{{ $value->name }}</td>
+                                @if (session('roleId') == 2)
+                                    <td>{{ isset($value->userauthorization->branch->branch_name) ? $value->userauthorization->branch->branch_name : '' }}
+                                    </td>
+                                @endif
                                 <td>{{ number_format($value->balance, 2) }}</td>
                                 <td>{{ $value->mobile }}</td>
                                 <td>{{ $value->nic }}</td>
-                                @if (session('roleId') == 2)
-                                    <td>{{ isset($value->userauthorization->branch->branch_name) ? $value->userauthorization->branch->branch_name : '' }}</td>
-                                @endif
+                                <td>{{ $value->membership_card_no }}</td>
                                 <td class="action-icon">
 
                                     <a href="{{ url('/discount-panel') }}/{{ $value->slug }}"
@@ -175,6 +234,7 @@
 </div>
 @script
     <script>
+        $(".select2").select2();
         $('#downloadsample').click(function() {
             $.ajax({
                 url: 'https://sabsoft.com.pk/Retail/assets/samples/sample_customer.csv',
@@ -206,5 +266,27 @@
         $("#pageNo").change(function() {
             @this.set('pageNo', $(this).val());
         });
+        $("#searchcustomer").click(function() {
+            let branch = $("#branch").val();
+            let name = $("#name").val();
+            let contact = $("#contact").val();
+            let membership = $("#membership").val();
+            console.log("customer filter", branch + name + contact + membership);
+
+            Livewire.dispatch('searchCustomer', {
+                branch: branch,
+                name: name,
+                contact: contact,
+                membership: membership
+            });
+        })
+
+        Livewire.hook('morph.updating', ({
+            component,
+            cleanup
+        }) => {
+            $('.select2').select2();
+            // initializeSearchAndSelect();
+        })
     </script>
 @endscript

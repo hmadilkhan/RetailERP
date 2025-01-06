@@ -86,7 +86,7 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
         return $customers;
     }
 
-    public function getCustomersForLivewire($id = "", $name, $status,$page)
+    public function getCustomersForLivewire($id = "", $name, $status,$page,$branch,$contact,$membership)
     {
         $query = ModelsCustomer::query();
         $query->with("branch", "userauthorization", "userauthorization.branch");
@@ -104,11 +104,11 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             ->leftJoin('customer_account', 'customer_account.cust_id', '=', 'customers.id')
             ->groupBy('customers.id');
 
-        if (session("roleId") == 2) {
+        if (session("roleId") == 2 && $branch == "") {
             $query->where("company_id", session("company_id"));
         } else {
-            $query->whereHas("userauthorization", function ($q) {
-                $q->where('branch_id', session("branch"));
+            $query->whereHas("userauthorization", function ($q) use ($branch) {
+                $q->where('branch_id', $branch);
             });
         }
 
@@ -117,6 +117,12 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
         }
         if (!empty($name)) {
             $query->where('name', 'LIKE', "%{$name}%");
+        }
+        if (!empty($contact)) {
+            $query->where('mobile', '=', $contact);
+        }
+        if (!empty($membership)) {
+            $query->where('membership_card_no', '=', $membership);
         }
         if (!empty($status)) {
             $query->where('status_id', $status);

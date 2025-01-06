@@ -458,6 +458,9 @@ class ReportController extends Controller
 
     public function getCustomerSalesExport(Request $request, report $report)
     {
+        if($request->customer == "null"){
+            $request->customer = "all";
+        }
         $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
         $companyName = Company::findOrFail(session("company_id"));
         $companyName = $companyName->name;
@@ -3160,7 +3163,7 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, 'B.Amount', 'B', 1, 'R', 1);
             }
 
-            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, "all");
+            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, "all",$request->customer);
             $permission = $report->terminalPermission($request->terminalid);
             foreach ($details as $value) {
 
@@ -6822,8 +6825,9 @@ class ReportController extends Controller
             $branches->where("branch_id", $request->branch);
         }
         $branches = $branches->get();
-
-
+        if($request->customer == "null"){
+            $request->customer = "all";
+        }
 
         $company = $vendor->company(session('company_id'));
 
@@ -6902,8 +6906,9 @@ class ReportController extends Controller
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
         $pdf->Cell(40, 7, 'Name', 'B', 0, 'L', 1);
-        $pdf->Cell(40, 7, 'Branch', 'B', 0, 'L', 1);
-        $pdf->Cell(50, 7, 'Contact Number', 'B', 0, 'C', 1);
+        $pdf->Cell(35, 7, 'Branch', 'B', 0, 'L', 1);
+        $pdf->Cell(25, 7, 'Contact', 'B', 0, 'C', 1);
+        $pdf->Cell(30, 7, 'Membership #', 'B', 0, 'C', 1);
         $pdf->Cell(25, 7, 'Total Orders', 'B', 0, 'C', 1);
         $pdf->Cell(25, 7, 'Total Sales', 'B', 1, 'C', 1);
 
@@ -6912,6 +6917,7 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
 
         $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
+
         foreach ($details as $key => $value) {
 
             $totalCount++;
@@ -6923,8 +6929,9 @@ class ReportController extends Controller
 
             $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
             $pdf->Cell(40, 6, $value->name, 0, 0, 'L', 1);
-            $pdf->Cell(40, 6, $value->branch_name, 0, 0, 'L', 1);
-            $pdf->Cell(50, 6, $value->mobile, 0, 0, 'C', 1);
+            $pdf->Cell(35, 6, $value->branch_name, 0, 0, 'L', 1);
+            $pdf->Cell(30, 6, $value->mobile, 0, 0, 'C', 1);
+            $pdf->Cell(25, 6, $value->membership_card_no, 0, 0, 'C', 1);
             $pdf->Cell(25, 6, $value->total_orders, 0, 0, 'C', 1);
             $pdf->Cell(25, 6, number_format($value->total_sales,0), 0, 1, 'C', 1);
 

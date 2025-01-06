@@ -767,15 +767,16 @@ class report extends Model
     {
         $filter = "";
         if ($branch == "all") {
-            $filter = " and branch IN (Select branch_id from branch where company_id =  " . session("company_id") . ")";
+            $filter .= " and sales_receipts.branch IN (Select branch_id from branch where company_id =  " . session("company_id") . ")";
         } else {
-            $filter = " and branch = " . $branch;
+            $filter .= " and sales_receipts.branch = " . $branch;
         }
 
         if ($customer != "all") {
-            $filter = " and customer_id =" . $customer;
+            $filter .= " and sales_receipts.customer_id =" . $customer;
         }
-        return DB::select("SELECT customers.id,customers.name,customers.mobile,SUM(sales_receipts.total_amount) as total_sales,COUNT(sales_receipts.id) as total_orders,branch.branch_name FROM `sales_receipts` INNER JOIN customers on customers.id = sales_receipts.customer_id LEFT JOIN branch on branch.branch_id = sales_receipts.branch where sales_receipts.date between ? and ? " . $filter . " group by customer_id order by total_sales DESC;", [$from, $to]);
+        // dump( "SELECT customers.id,customers.name,customers.mobile,SUM(sales_receipts.total_amount) as total_sales,COUNT(sales_receipts.id) as total_orders,branch.branch_name FROM `sales_receipts` INNER JOIN customers on customers.id = sales_receipts.customer_id LEFT JOIN branch on branch.branch_id = sales_receipts.branch where sales_receipts.date between $from and $to " . $filter . " group by customer_id order by total_sales DESC");
+        return DB::select("SELECT customers.id,customers.name,customers.mobile,customers.membership_card_no,SUM(sales_receipts.total_amount) as total_sales,COUNT(sales_receipts.id) as total_orders,branch.branch_name FROM `sales_receipts` INNER JOIN customers on customers.id = sales_receipts.customer_id LEFT JOIN branch on branch.branch_id = sales_receipts.branch where sales_receipts.date between ? and ? " . $filter . " group by customer_id order by total_sales DESC;", [$from, $to]);
     }
 
     public function bookingDeliveryEmailReport($openingId, $terminalId)

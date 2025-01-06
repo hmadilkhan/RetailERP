@@ -70,11 +70,46 @@ class PrintController extends Controller
         $pdf->Multicell(80,7,$branch[0]->branch_address,0,'C',0);
         $pdf->Cell(80,1,$branch[0]->branch_ptcl." | ".$branch[0]->branch_mobile,0,1,'C');
 //        $pdf->Cell(50,6,"www.sabsons.com.pk",0,1,'C');
+        // $pdf->ln(2);
+        // $pdf->SetFont('Arial','B',10);
+        // $pdf->Cell(80,5,"RECEIPT",0,1,'C');
+        // $pdf->Cell(80,4,$general[0]->receipt_no,0,1,'C');
+        // $pdf->Cell(80,5,$general[0]->customerName,0,1,'C');
+
+        // NEW WORK
         $pdf->ln(2);
         $pdf->SetFont('Arial','B',10);
-        $pdf->Cell(80,5,"RECEIPT",0,1,'C');
-        $pdf->Cell(80,4,$general[0]->receipt_no,0,1,'C');
-        $pdf->Cell(80,5,$general[0]->customerName,0,1,'C');
+        $pdf->Cell(25,6,"Receipt No",'T',0,'L');
+        $pdf->Cell(5,6,":",'T',0,'L');
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(50,6,$general[0]->receipt_no ?? "N/A",'T',1,'L');
+
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(25,6,"Customer",0,0,'L');
+        $pdf->Cell(5,6,":",0,0,'L');
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(50,6,$general[0]->customerName ?? "N/A",0,1,'L');
+
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(25,6,"Contact",0,0,'L');
+        $pdf->Cell(5,6,":",0,0,'L');
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(50,6,$general[0]->mobile ?? "N/A",0,1,'L');
+       
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(25,6,"Membership",0,0,'L');
+        $pdf->Cell(5,6,":",0,0,'L');
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(50,6,$general[0]->membership_card_no ?? "N/A",0,1,'L');
+
+        $pdf->SetFont('Arial','B',10);
+        $pdf->Cell(25,6,"Delivery Date",'B',0,'L');
+        $pdf->Cell(5,6,":",'B',0,'L');
+        $pdf->SetFont('Arial','',10);
+        $pdf->Cell(50,6,date("d-m-Y",strtotime($general[0]->delivery_date)) ?? "N/A",'B',1,'L');
+        
+        $pdf->ln(2);
+        $pdf->SetFont('Arial','B',12);
         $pdf->SetTextColor(255,0,0);
         $pdf->Cell(80,4,strtoupper($general[0]->payment_mode. " payment"),0,1,'C');
         $pdf->ln(2);
@@ -103,7 +138,7 @@ class PrintController extends Controller
 //        $pdf->SetFont('Arial','',10);
 //        $pdf->Cell(60,5,$general[0]->address,0,1,'L');
 
-        $pdf->ln(1);
+        // $pdf->ln(1);
         $pdf->SetFont('Arial','B',10);
         $pdf->Cell(10,6,"Date  ",'T,B',0,'L');
         $pdf->SetFont('Arial','',10);

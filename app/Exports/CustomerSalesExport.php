@@ -28,8 +28,9 @@ class CustomerSalesExport implements FromView, WithTitle, WithColumnWidths
             'B' => 35,
             'C' => 35,
             'D' => 15,
-            'E' => 15,
+            'E' => 35,
             'F' => 15,
+            'G' => 15,
         ];
     }
 
