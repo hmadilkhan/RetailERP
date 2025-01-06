@@ -428,11 +428,13 @@
 
      if($.inArray(ftype,['mp4','webm','ogg'])){
         $("#slideVdImgMD").attr('src',$("#slide"+unqid).attr('src')).show();
+        $("#slideVdImgMD").show();
         $("#slideImgMD").hide();
 
      }else{
        $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src')).show();
        $("#slideVdImgMD").hide();
+       $("#slideImgMD").show();
      }
 
        $("#webname_md").val(webName);
