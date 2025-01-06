@@ -1,15 +1,15 @@
 @if (isset($record))
     <table id="widget-product-list" class="table table-striped nowrap dt-responsive nowrap" width="100%" cellspacing="0">
         <tr>
-            <td colspan="6" style="font-size:18px;font-weight:bold;">
+            <td colspan="7" style="font-size:18px;font-weight:bold;">
                 {{ $company }}</td>
         </tr>
         <tr>
-            <td colspan="6" style="font-size:18px;font-weight:bold;">
+            <td colspan="7" style="font-size:18px;font-weight:bold;">
                 Customer Sales Report</td>
         </tr>
         <tr>
-            <td colspan="6" style="font-size:18px;font-weight:bold;">
+            <td colspan="7" style="font-size:18px;font-weight:bold;">
                 From : {{$dates["from"]}} - To : {{$dates["to"]}}</td>
         </tr>
         <thead>

@@ -458,6 +458,9 @@ class ReportController extends Controller
 
     public function getCustomerSalesExport(Request $request, report $report)
     {
+        if($request->customer == "null"){
+            $request->customer = "all";
+        }
         $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
         $companyName = Company::findOrFail(session("company_id"));
         $companyName = $companyName->name;
