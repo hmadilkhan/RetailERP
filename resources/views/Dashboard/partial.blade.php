@@ -1,11 +1,13 @@
-<?php $positive = (isset($heads[0]->bal) ? $heads[0]->bal : 0) +(isset($heads[0]->order_delivered_cash) ? $heads[0]->order_delivered_cash : 0)  + (isset($heads[0]->Cash) ? $heads[0]->Cash : 0) + (isset($heads[0]->adv_booking_cash) ? $heads[0]->adv_booking_cash : 0) + (isset($heads[0]->cashIn) ? $heads[0]->cashIn : 0);
-$negative =  (isset($heads[0]->DiscountCash) ? $heads[0]->DiscountCash : 0) + (isset($heads[0]->SalesReturn) ? $heads[0]->SalesReturn : 0) + (isset($heads[0]->cashOut) ? $heads[0]->cashOut : 0) + (isset($heads[0]->VoidReceiptsCash) ? $heads[0]->VoidReceiptsCash : 0); //+ $heads[0]->CreditCard +$heads[0]->CustomerCredit;
+<?php $positive = (isset($heads[0]->bal) ? $heads[0]->bal : 0) +(isset($heads[0]->order_delivered_cash) ? $heads[0]->order_delivered_cash : 0)  + (isset($heads[0]->Cash) ? $heads[0]->Cash : 0) + (isset($heads[0]->adv_booking_cash) ? $heads[0]->adv_booking_cash : 0) + (isset($heads[0]->cashIn) ? $heads[0]->cashIn : 0) + (isset($heads[0]->TaxCash) ? $heads[0]->TaxCash : 0);
+
+$negative =  (isset($heads[0]->DiscountCash) ? $heads[0]->DiscountCash : 0)  + (isset($heads[0]->SalesReturn) ? $heads[0]->SalesReturn : 0) + (isset($heads[0]->cashOut) ? $heads[0]->cashOut : 0) + (isset($heads[0]->VoidReceiptsCash) ? $heads[0]->VoidReceiptsCash : 0); //+ $heads[0]->CreditCard +$heads[0]->CustomerCredit;
 // Raza na ye Void ka code 22-11-2024 ko add kraya ha 
 $CashInHand = $positive - $negative + $heads[0]->Delivery;// (isset($heads[0]->CardCustomerDiscount) ? $heads[0]->CardCustomerDiscount : 0) ;
 $totalVoidReceipts = (isset($heads[0]->VoidReceiptsCash) ? $heads[0]->VoidReceiptsCash : 0) + (isset($heads[0]->VoidReceiptsCard) ? $heads[0]->VoidReceiptsCard : 0)  + (isset($heads[0]->VoidReceiptsBooking) ? $heads[0]->VoidReceiptsBooking : 0);
 if (isset($result[0]->expenses) && $result[0]->expenses == 1) {
     $CashInHand = $CashInHand - $heads[0]->expenses;
 }
+
 if (session('company_id') == 102) {
     $CashInHand = $CashInHand - (isset($heads[0]->bal) ? $heads[0]->bal : 0);
 }
