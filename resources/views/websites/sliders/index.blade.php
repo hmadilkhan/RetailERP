@@ -229,7 +229,7 @@
 
                      <div class="form-group">
                            <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
-                           <video  class="img-fluid" id="slideVdMD" width="250" height="128" controls style="display: none;"></video>
+                           <video id="slideVdMD" width="250" height="128" controls style="display: none;"></video>
                      </div>
                      <div class="form-group">
                           <label for="slide_md" class="custom-file">
