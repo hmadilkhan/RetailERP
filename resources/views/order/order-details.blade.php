@@ -501,6 +501,10 @@
                                             <td class="text-end">{{ $order->customer->mobile }}</td>
                                         </tr>
                                         <tr>
+                                            <td>Membership Number :</td>
+                                            <td class="text-end">{{ $order->customer->membership_card_no }}</td>
+                                        </tr>
+                                        <tr>
                                             <td>Payment Method :</td>
                                             <td class="text-end">{{ $order->payment->payment_mode }}</td>
                                         </tr>
