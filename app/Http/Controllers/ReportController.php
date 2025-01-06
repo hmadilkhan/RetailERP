@@ -6822,7 +6822,9 @@ class ReportController extends Controller
             $branches->where("branch_id", $request->branch);
         }
         $branches = $branches->get();
-
+        if($request->customer == null){
+            $request->customer = "all";
+        }
 
 
         $company = $vendor->company(session('company_id'));
