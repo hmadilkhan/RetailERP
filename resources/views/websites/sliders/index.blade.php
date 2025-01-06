@@ -229,7 +229,7 @@
 
                      <div class="form-group">
                            <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
-                           <video for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideVdImgMD" width="250" height="128" controls style="display: none;"></video>
+                           <video src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideVdMD" width="250" height="128" controls style="display: none;"></video>
                      </div>
                      <div class="form-group">
                           <label for="slide_md" class="custom-file">
@@ -426,14 +426,14 @@
     $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/no-image.png').hide();
        $("#slideEdit_Modal").modal('show');
 
-     if($.inArray(ftype,['mp4','webm','ogg'])){
-        $("#slideVdImgMD").attr('src',$("#slide"+unqid).attr('src')).show();
-        $("#slideVdImgMD").show();
+     if(ftype == 'vd'){
+        $("#slideVdMD").attr('src',$("#slide"+unqid).attr('src'));
+        $("#slideVdMD").show();
         $("#slideImgMD").hide();
 
      }else{
-       $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src')).show();
-       $("#slideVdImgMD").hide();
+       $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'));
+       $("#slideVdMD").hide();
        $("#slideImgMD").show();
      }
 
@@ -444,7 +444,7 @@
        id=unqid;
 
        if(mobileSlide != ''){
-        if($.inArray(ftype,['mp4','webm','ogg'])){
+        if(ftype == 'vd'){
             $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide);
             $("#previewMobileSlideVd_md").show();
             $("#previewMobileSlide_md").hide();
