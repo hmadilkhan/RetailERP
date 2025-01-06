@@ -6913,7 +6913,7 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
 
         $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
-        return $details;
+
         foreach ($details as $key => $value) {
 
             $totalCount++;
