@@ -6905,7 +6905,7 @@ class ReportController extends Controller
         $pdf->Cell(40, 7, 'Name', 'B', 0, 'L', 1);
         $pdf->Cell(35, 7, 'Branch', 'B', 0, 'L', 1);
         $pdf->Cell(25, 7, 'Contact', 'B', 0, 'C', 1);
-        $pdf->Cell(30, 7, 'Membership#', 'B', 0, 'C', 1);
+        $pdf->Cell(30, 7, 'Membership #', 'B', 0, 'C', 1);
         $pdf->Cell(25, 7, 'Total Orders', 'B', 0, 'C', 1);
         $pdf->Cell(25, 7, 'Total Sales', 'B', 1, 'C', 1);
 
@@ -6928,7 +6928,7 @@ class ReportController extends Controller
             $pdf->Cell(40, 6, $value->name, 0, 0, 'L', 1);
             $pdf->Cell(35, 6, $value->branch_name, 0, 0, 'L', 1);
             $pdf->Cell(30, 6, $value->mobile, 0, 0, 'C', 1);
-            $pdf->Cell(25, 6, $value->membership_card_no, 0, 0, 'L', 1);
+            $pdf->Cell(25, 6, $value->membership_card_no, 0, 0, 'C', 1);
             $pdf->Cell(25, 6, $value->total_orders, 0, 0, 'C', 1);
             $pdf->Cell(25, 6, number_format($value->total_sales,0), 0, 1, 'C', 1);
 
