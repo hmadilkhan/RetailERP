@@ -3,6 +3,8 @@
 namespace App\Livewire\Customers;
 
 use App\Customer;
+use App\Services\BranchService;
+use Livewire\Attributes\On;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -15,6 +17,9 @@ class CustomerList extends Component
 
     public $id;
     public $name;
+    public $contact;
+    public $membership;
+    public $branch;
     public $status = 1;
     public $checkboxValue;
     public $checkboxText = "Show In-Active";
@@ -42,10 +47,21 @@ class CustomerList extends Component
         dd($this->status);
     }
 
-    public function render(Customer $customer)
+    #[On("searchCustomer")]
+    public function searchCustomer($branch,$name,$contact,$membership)
+    {
+        $this->branch = $branch;
+        $this->name = $name;
+        $this->contact = $contact;
+        $this->membership = $membership;
+        $this->applyFilter();
+    }
+
+    public function render(Customer $customer,BranchService $branchService)
     {
        
-        $customers = $customer->getCustomersForLivewire($this->id, $this->name, $this->status,$this->pageNo);
-        return view('livewire.customers.customer-list', compact('customers'));
+        $customers = $customer->getCustomersForLivewire($this->id, $this->name, $this->status,$this->pageNo,$this->branch,$this->contact,$this->membership);
+        $branches = $branchService->getBranches();
+        return view('livewire.customers.customer-list', compact('customers','branches'));
     }
 }
