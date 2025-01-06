@@ -6826,7 +6826,6 @@ class ReportController extends Controller
             $request->customer = "all";
         }
 
-
         $company = $vendor->company(session('company_id'));
 
         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
@@ -6914,6 +6913,7 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
 
         $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
+        return $details;
         foreach ($details as $key => $value) {
 
             $totalCount++;
