@@ -375,7 +375,7 @@ class WebsiteController extends Controller
                 'slide'                  => $imageName,
                 'mobile_slide'           => $mobile_slideName,
                 'status'                 => 1,
-                'type'                   => 'web'
+                'type'                   => 'default'
             ]);
 
         if ($result) {
