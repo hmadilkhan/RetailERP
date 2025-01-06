@@ -426,10 +426,13 @@
     $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/no-image.png').hide();
        $("#slideEdit_Modal").modal('show');
 
-     if($.inArray(ftype,['mp4','',''])){
-        $("#slideVdImgMD").attr('src',$("#slide"+unqid).attr('src'));
+     if($.inArray(ftype,['mp4','webm','ogg'])){
+        $("#slideVdImgMD").attr('src',$("#slide"+unqid).attr('src')).show();
+        $("#slideImgMD").hide();
+
      }else{
-       $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src'));
+       $("#slideImgMD").attr('src',$("#slide"+unqid).attr('src')).show();
+       $("#slideVdImgMD").hide();
      }
 
        $("#webname_md").val(webName);
@@ -439,7 +442,7 @@
        id=unqid;
 
        if(mobileSlide != ''){
-        if($.inArray(ftype,['mp4','',''])){
+        if($.inArray(ftype,['mp4','webm','ogg'])){
             $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide)
         }else{
             $("#previewMobileSlide_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide);
