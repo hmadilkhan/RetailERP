@@ -443,9 +443,13 @@
 
        if(mobileSlide != ''){
         if($.inArray(ftype,['mp4','webm','ogg'])){
-            $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide)
+            $("#previewMobileSlideVd_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide);
+            $("#previewMobileSlideVd_md").show();
+            $("#previewMobileSlide_md").hide();
         }else{
             $("#previewMobileSlide_md").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide);
+            $("#previewMobileSlideVd_md").hide();
+            $("#previewMobileSlide_md").show();
         }
 
        }
