@@ -6927,8 +6927,8 @@ class ReportController extends Controller
             $pdf->Cell(10, 6, ++$key, 0, 0, 'L', 1);
             $pdf->Cell(40, 6, $value->name, 0, 0, 'L', 1);
             $pdf->Cell(35, 6, $value->branch_name, 0, 0, 'L', 1);
-            $pdf->Cell(25, 6, $value->membership_card_no, 0, 0, 'L', 1);
             $pdf->Cell(30, 6, $value->mobile, 0, 0, 'C', 1);
+            $pdf->Cell(25, 6, $value->membership_card_no, 0, 0, 'L', 1);
             $pdf->Cell(25, 6, $value->total_orders, 0, 0, 'C', 1);
             $pdf->Cell(25, 6, number_format($value->total_sales,0), 0, 1, 'C', 1);
 
