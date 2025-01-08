@@ -249,6 +249,7 @@ class WebsiteController extends Controller
                 ->select('website_details.*')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
+                ->where('website_sliders.type', 'default')
                 ->groupBy('website_details.name')
                 ->get(),
             "websiteSliderList" => DB::table('website_sliders')
@@ -256,6 +257,7 @@ class WebsiteController extends Controller
                 ->leftJoin('inventory_general', 'inventory_general.id', 'website_sliders.prod_id')
                 ->select('website_sliders.id', 'website_sliders.website_id', 'website_sliders.slide',  'website_sliders.mobile_slide','website_sliders.invent_department_id', 'website_sliders.invent_department_name', 'website_sliders.prod_id', 'inventory_general.department_id as prod_dept_id', 'inventory_general.sub_department_id as prod_subdept_id')
                 ->where('website_details.company_id', $companyId)
+                ->where('website_sliders.type', 'default')
                 ->where('website_sliders.status', 1)
                 ->get()
         ]);
@@ -373,7 +375,7 @@ class WebsiteController extends Controller
                 'slide'                  => $imageName,
                 'mobile_slide'           => $mobile_slideName,
                 'status'                 => 1,
-                'type'                   => 'web'
+                'type'                   => 'default'
             ]);
 
         if ($result) {
