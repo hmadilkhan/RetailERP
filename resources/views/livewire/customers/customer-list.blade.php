@@ -92,7 +92,7 @@
         <div class="card-header">
             {{-- <h5 class="card-header-text">Customer List</h5> --}}
             <div class="button-group m-l-1 f-right">
-                <a style="color:white;" target="_blank" href="{{ URL::to('customers-report-pdf') }}"
+                <a style="color:white;" id="btnPdf" target="_blank" href="{{ URL::to('customers-report-pdf') }}"
                     class="btn btn-md btn-danger waves-effect waves-light f-right"><i
                         class="icofont icofont-file-excel">
                     </i>
@@ -100,12 +100,12 @@
                 </a>
             </div>
             <div class="button-group f-right">
-                <a style="color:white;" target="_blank" href="{{ URL::to('export-customer-balance') }}"
+                <button style="color:white;" id="btnExcel"
                     class="btn btn-md btn-success waves-effect waves-light f-right"><i
                         class="icofont icofont-file-excel">
                     </i>
                     Export to Excel
-                </a>
+                </button>
             </div>
             <div class="button-group f-left">
                 <div class="rkmd-checkbox checkbox-rotate">
@@ -271,7 +271,6 @@
             let name = $("#name").val();
             let contact = $("#contact").val();
             let membership = $("#membership").val();
-            console.log("customer filter", branch + name + contact + membership);
 
             Livewire.dispatch('searchCustomer', {
                 branch: branch,
@@ -279,6 +278,21 @@
                 contact: contact,
                 membership: membership
             });
+        })
+
+        $("#btnExcel").click(function(){
+            let branch = $("#branch").val();
+            let name = $("#name").val();
+            let contact = $("#contact").val();
+            let membership = $("#membership").val();
+            window.open("{{ URL::to('export-customer-balance') }}"+"?branch="+branch+"&name="+name+"&contact="+contact+"&membership="+membership);
+        })
+        $("#btnPdf").click(function(){
+            let branch = $("#branch").val();
+            let name = $("#name").val();
+            let contact = $("#contact").val();
+            let membership = $("#membership").val();
+            window.open("{{ URL::to('customers-report-pdf') }}"+"?branch="+branch+"&name="+name+"&contact="+contact+"&membership="+membership);
         })
 
         Livewire.hook('morph.updating', ({

@@ -841,7 +841,7 @@ class CustomersController extends Controller
     public function customerPDF(Request $request, Vendor $vendor, Customer $customer)
     {
         $company = $vendor->company(session('company_id'));
-        $details = $customer->getcustomers();
+        $details = $customer->getcustomers("",$request->branch,$request->name,$request->contact,$request->membership);
         $branch = DB::table("branch")->where("branch_id", session("branch"))->get();
         $pdf = new pdfClass();
         $pdf->AliasNbPages();

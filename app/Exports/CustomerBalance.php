@@ -20,6 +20,7 @@ class CustomerBalance implements FromArray, WithHeadings,WithTitle
         return [
             'Name',
             'Branch',
+            'Membership',
             'Mobile',
             'CNIC',
 			'Address',

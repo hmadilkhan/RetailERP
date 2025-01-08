@@ -57,12 +57,13 @@ class ExcelExportController extends Controller
 	{
 		$balance = [];
 		$advance = [];
-		$details = $customer->getcustomerBalances();
+		$details = $customer->getcustomerBalances($request->branch,$request->name,$request->contact,$request->membership);
 		
 		foreach ($details as $key => $value) { 
 			 $items = [
 				"Name" => $value->name,
 				"Branch" => $value->branch_name,
+				"Membership" => $value->membership_card_no,
 				"Mobile" => $value->mobile,
 				"CNIC" => $value->nic,
 				"Address" => $value->address,
