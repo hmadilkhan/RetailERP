@@ -249,15 +249,21 @@ class WebsiteController extends Controller
                 ->select('website_details.*')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
-                ->where('website_sliders.type', 'default')
+                // ->where('website_sliders.type', 'default')
                 ->groupBy('website_details.name')
                 ->get(),
             "websiteSliderList" => DB::table('website_sliders')
                 ->join('website_details', 'website_details.id', 'website_sliders.website_id')
                 ->leftJoin('inventory_general', 'inventory_general.id', 'website_sliders.prod_id')
-                ->select('website_sliders.id', 'website_sliders.website_id', 'website_sliders.slide',  'website_sliders.mobile_slide','website_sliders.invent_department_id', 'website_sliders.invent_department_name', 'website_sliders.prod_id', 'inventory_general.department_id as prod_dept_id', 'inventory_general.sub_department_id as prod_subdept_id')
+                ->leftJoin('inventory_department', 'inventory_department.department_id', 'website_sliders.department_slider')
+                ->select('website_sliders.id', 'website_sliders.website_id',
+                 'website_sliders.slide',  'website_sliders.mobile_slide',
+                 'website_sliders.invent_department_id','website_sliders.type as slider_type',
+                 'website_sliders.invent_department_name', 'website_sliders.prod_id',
+                 'inventory_general.department_id as prod_dept_id',
+                  'inventory_general.sub_department_id as prod_subdept_id','website_sliders.department_slider','inventory_department.department_name as department_slider_name')
                 ->where('website_details.company_id', $companyId)
-                ->where('website_sliders.type', 'default')
+                // ->where('website_sliders.type', 'default')
                 ->where('website_sliders.status', 1)
                 ->get()
         ]);
@@ -308,30 +314,56 @@ class WebsiteController extends Controller
         }
 
         return DB::table('website_products')
+        ->join('inventory_general', 'inventory_general.id', 'website_products.inventory_id')
+        ->where('website_products.website_id', $request->id)
+        ->where('website_products.status', 1)
+        ->when($request->department, function($query) use ($request) {
+            return $query->where('inventory_general.department_id', $request->department);
+        })
+        ->when($request->subDepart, function($query) use ($request) {
+            return $query->where('inventory_general.sub_department_id', $request->subDepart);
+        })
+        ->select('inventory_general.id', 'inventory_general.product_name')
+        ->get();
+        /* DB::table('website_products')
             ->join('inventory_general', 'inventory_general.id', 'website_products.inventory_id')
             ->where('website_products.website_id', $request->id)
             ->where('website_products.status', 1)
             ->where('inventory_general.sub_department_id', $request->subDepart)
             ->select('inventory_general.id', 'inventory_general.product_name')
-            ->get();
+            ->get();*/
     }
 
 
     public function store_slider(Request $request)
     {
         // dimensions:width=1520,height=460
+       if(isset($request->slider_type) && \Hash::check('department', $request->slider_type)){
+            $rules = [
+                       'website_dept_slide'     => 'required',
+                       'department_dpt_slide'   => 'required',
+                       'desktop_slide_dept'     => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024',
+                       'mobile_slide_dept'      => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
+            ];
+       }else{
+            $rules = [
+                       'website'       => 'required',
+                       'desktop_slide' => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024',
+                       'mobile_slide'  => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
+            ];
+       }
 
-        $rules = [
-            'website'       => 'required',
-            'image'         => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024',
-            'mobile_slide'  => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
-        ];
+       $validator = \Validator::make($request->all(), $rules);
 
-        $this->validate($request, $rules);
+        if ($validator->fails()) {
+            return redirect('website/slider/lists?#departmentSliderNav')->withErrors($validator)->withInput();
+        }
 
-        $image             = $request->file('image');
-        $imageName         = time() . '.' . strtolower($image->getClientOriginalExtension());
-        $mobile_slide      = $request->file('mobile_slide') ?? null;
+        //$this->validate($request, $rules);
+
+        $desktop_slide     = $request->file('desktop_slide') ? $request->file('desktop_slide') : $request->file('desktop_slide_dept') ;
+        $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
+        $mobile_slide      = $request->file('mobile_slide') ? ($request->file('mobile_slide') ?? null) : ($request->file('mobile_slide_dept') ?? null);
         $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower($mobile_slide->getClientOriginalExtension());
         $productSlug       = null;
         $invent_department = null;
@@ -342,7 +374,7 @@ class WebsiteController extends Controller
             return response()->json('slider not uploaded.', 500);
         }
 
-        if (!$image->move($path, $imageName)) {
+        if (!$desktop_slide->move($path, $imageName)) {
             return response()->json('slider not uploaded.', 500);
         }
 
@@ -367,15 +399,16 @@ class WebsiteController extends Controller
 
         $result = DB::table('website_sliders')
             ->insertGetId([
-                'website_id'             => $request->website,
+                'website_id'             => isset($request->website) ? $request->website : $request->website_dept_slide,
                 'invent_department_id'   => !empty($request->product) ? null : $request->post('depart'),
                 'invent_department_name' => $invent_department,
                 'prod_id'                => !empty($request->depart) ? null : $request->post('product'),
                 'prod_slug'              => $productSlug,
-                'slide'                  => $imageName,
+                'slide'                  => $desktop_slide,
                 'mobile_slide'           => $mobile_slideName,
                 'status'                 => 1,
-                'type'                   => 'default'
+                'department_slider'      => $request->department_dpt_slide ?? null,
+                'type'                   => isset($request->department_dpt_slide) ? 'deaprtment' : 'default'
             ]);
 
         if ($result) {
@@ -385,7 +418,7 @@ class WebsiteController extends Controller
 
             Session::flash('error', 'Invalid record');
         }
-        return redirect()->route('sliderLists');
+        return redirect()->route('sliderLists'.isset($request->department_dpt_slide) ? '?#departmentSliderNav' : null);
     }
 
     public function update_slide(Request $request)
