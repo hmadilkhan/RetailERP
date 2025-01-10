@@ -9,7 +9,7 @@
        <div class="row">
           <div class="col-md-6">
             <div class="form-group @error('desktop_slide') 'has-danger' @enderror m-r-2">
-                <img src="https://retail.sabsoft.com.pk/storage/images/placeholder.jpg" alt="placeholder.jpg" width="512" height="256" id="previewImg"/>
+                <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="512" height="256" id="previewImg"/>
                 <video id="videoPreview" width="512" height="256" style="display:none;" controls></video>
               </br>
 
@@ -26,7 +26,7 @@
           </div>
           <div class="col-md-6">
             <div class="form-group @error('mobile_slide') 'has-danger' @enderror m-r-2">
-                <img src="https://retail.sabsoft.com.pk/storage/images/placeholder.jpg" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/>
+                <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/>
                 <video id="videoMobilePreview" width="200" height="250" style="display:none;" controls></video></br>
               <label for="mobile_slide" class="form-control-label">Mobile Slide</label></br>
 
