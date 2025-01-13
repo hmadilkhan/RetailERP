@@ -7060,13 +7060,16 @@ class ReportController extends Controller
             $pdf->SetTextColor(0, 0, 0);
 
             $cashInDetails = $report->cashIn($request->fromdate, $request->todate, $terminal->terminal_id);
-
-            foreach ($cashInDetails as $key => $cashIn) {
-                $pdf->Cell(10, 7, ++$key, 'B', 0, 'L', 1);
-                $pdf->Cell(40, 7, $cashIn->amount, 'B', 0, 'L', 1);
-                $pdf->Cell(70, 7, $cashIn->narration, 'B', 0, 'L', 1);
-                $pdf->Cell(35, 7, date("d M Y",strtotime($cashIn->datetime)), 'B', 0, 'C', 1);
-                $pdf->Cell(35, 7, date("H:i:s",strtotime($cashIn->datetime)), 'B', 1, 'C', 1);
+            if (!empty($cashInDetails)) {
+                foreach ($cashInDetails as $key => $cashIn) {
+                    $pdf->Cell(10, 7, ++$key, 'B', 0, 'L', 1);
+                    $pdf->Cell(40, 7, $cashIn->amount, 'B', 0, 'L', 1);
+                    $pdf->Cell(70, 7, $cashIn->narration, 'B', 0, 'L', 1);
+                    $pdf->Cell(35, 7, date("d M Y",strtotime($cashIn->datetime)), 'B', 0, 'C', 1);
+                    $pdf->Cell(35, 7, date("H:i:s",strtotime($cashIn->datetime)), 'B', 1, 'C', 1);
+                }
+            }else{
+                $pdf->Cell(190, 7, 'No Record Found', 0, 1, 'C', 1);
             }
         }
 
