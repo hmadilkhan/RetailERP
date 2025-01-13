@@ -414,6 +414,16 @@ class WebsiteController extends Controller
 
         if ($result) {
 
+            if(isset($request->department_dpt_slide) && !empty($request->product_dpt_slide)){
+                  foreach($request->product_dpt_slide as $value){
+                          DB::table('website_slider_product_binds')
+                              ->insert([
+                                         'slider_id'  => $result,
+                                         'product_id' => $value
+                                       ]);
+                  }
+            }
+
             Session::flash('success', 'Success!');
         } else {
 
