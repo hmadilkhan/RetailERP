@@ -7035,16 +7035,15 @@ class ReportController extends Controller
             $terminals = $report->getTerminals($request->branch);
         } else {
             $terminals = DB::table("terminal_details")
-                        ->where("branch_id", $request->branch)
-                        ->when($request->terminalid != "",function($query) use ($request){
-                            return $query->where("terminal_id", $request->terminalid);
-                        })
-                        ->toSql();
-            return $terminals;           
+                ->where("branch_id", $request->branch)
+                ->when($request->terminalid != "", function ($query) use ($request) {
+                    return $query->where("terminal_id", $request->terminalid);
+                })
+                ->get();
         }
 
         foreach ($terminals as $key => $terminal) {
-            
+
             $pdf->ln(2);
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->SetTextColor(0, 0, 0);
@@ -7076,15 +7075,15 @@ class ReportController extends Controller
                     $pdf->Cell(10, 7, ++$key, 'B', 0, 'L', 1);
                     $pdf->Cell(40, 7, $cashIn->amount, 'B', 0, 'C', 1);
                     $pdf->Cell(70, 7, $cashIn->narration, 'B', 0, 'L', 1);
-                    $pdf->Cell(35, 7, date("d M Y",strtotime($cashIn->datetime)), 'B', 0, 'C', 1);
-                    $pdf->Cell(35, 7, date("H:i:s",strtotime($cashIn->datetime)), 'B', 1, 'C', 1);
+                    $pdf->Cell(35, 7, date("d M Y", strtotime($cashIn->datetime)), 'B', 0, 'C', 1);
+                    $pdf->Cell(35, 7, date("H:i:s", strtotime($cashIn->datetime)), 'B', 1, 'C', 1);
                 }
                 $pdf->SetFont('Arial', 'B', 10);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->Cell(95, 7, "Totals", 'B', 0, 'L', 1);
                 $pdf->Cell(95, 7, $totalCashIn, 'B', 1, 'R', 1);
-            }else{
+            } else {
                 $pdf->Cell(190, 7, 'No Record Found', 0, 1, 'C', 1);
             }
 
@@ -7116,19 +7115,17 @@ class ReportController extends Controller
                     $pdf->Cell(10, 7, ++$key, 'B', 0, 'L', 1);
                     $pdf->Cell(40, 7, $cashOut->amount, 'B', 0, 'C', 1);
                     $pdf->Cell(70, 7, $cashOut->narration, 'B', 0, 'L', 1);
-                    $pdf->Cell(35, 7, date("d M Y",strtotime($cashOut->datetime)), 'B', 0, 'C', 1);
-                    $pdf->Cell(35, 7, date("H:i:s",strtotime($cashOut->datetime)), 'B', 1, 'C', 1);
+                    $pdf->Cell(35, 7, date("d M Y", strtotime($cashOut->datetime)), 'B', 0, 'C', 1);
+                    $pdf->Cell(35, 7, date("H:i:s", strtotime($cashOut->datetime)), 'B', 1, 'C', 1);
                 }
                 $pdf->SetFont('Arial', 'B', 10);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->Cell(95, 7, "Totals", 'B', 0, 'L', 1);
                 $pdf->Cell(95, 7, $totalCashOut, 'B', 1, 'R', 1);
-            }else{
+            } else {
                 $pdf->Cell(190, 7, 'No Record Found', 0, 1, 'C', 1);
             }
-
-
         }
 
         //save file
