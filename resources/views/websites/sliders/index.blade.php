@@ -19,195 +19,30 @@
         <div class="alert alert-success">{{ Session::get('success') }}</div>
   @endif
 
-<div class="card">
-  <div class="card-header">
-    <h5 class="card-header-text">Create Slider</h5>
-  </div>
-    <div class="card-block">
-     <form id="sliderCreateForm " action="{{ route('sliderStore') }}" method="post" enctype="multipart/form-data">
-      @csrf
-      <div class="col-md-4">
-      <div class="form-group m-r-2">
-        <label class="form-control-label">Website</label>
-        <select name="website" id="website" data-placeholder="Select" class="form-control select2">
-          <option value="">Select</option>
-          @if($websites)
-             @php $oldWebsite = old('website') @endphp
-            @foreach($websites as $val)
-              <option {{ old('website') == $val->id ? 'selected' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
-            @endforeach
-          @endif
-        </select>
-        @error('website')
-          <div class="form-control-feedback text-danger">Field is required please select it</div>
-        @enderror
-       </div>
-       <div class="form-group m-r-2">
-   			<label class="pointer">
-				<input type="radio" name="navigato" value="department"/>
-					<i class="helper"></i>Navigate to department
-			</label>
+  <ul class="nav nav-tabs  tabs" role="tablist">
+    <li class="nav-item">
+       <a class="nav-link active" data-toggle="tab" id="sliderTabNav" href="#sliderTab" role="tab">Slider</a>
+    </li>
+    <li class="nav-item">
+       <a class="nav-link" data-toggle="tab" id="departmentSliderNav" href="#departmentSliderTab" role="tab">Department Slider</a>
+    </li>
+ </ul>
 
-   			<label class="pointer m-l-2">
-				<input type="radio" name="navigato" value="product"/>
-					<i class="helper"></i>Navigate to product
-			</label>
-       </div>
-       <div class="d-none" id="departmentbox">
-        <div class="form-group m-r-2">
-          <label class="form-control-label">Inventory Department</label>
-          <select name="depart" id="depart" data-placeholder="Select" class="form-control select2">
-            <option value="">Select</option>
-          @if($departments)
-
-             @php $oldDepart = old('depart') @endphp
-            @foreach($departments as $val)
-              <option {{ old('depart') == $val->department_id ? 'selected' : '' }} value="{{ $val->department_id }}">{{ $val->department_name }}</option>
-            @endforeach
-          @endif
-          </select>
-          @error('depart')
-            <div class="form-control-feedback text-danger">Field is required please select it</div>
-          @enderror
+    <!-- Tab panes -->
+    <div class="tab-content tabs">
+        <div class="tab-pane active" id="sliderTab" role="tabpanel">
+            @include('websites.sliders.partials.default')
         </div>
-      </div>
-
-      <div class="d-none" id="productbox">
-
-        <div class="form-group m-r-2">
-          <label class="form-control-label">Select Department</label>
-          <select id="depart_prod" data-placeholder="Select" class="form-control select2" disabled>
-            <option value="">Select</option>
-          </select>
-          @error('depart')
-            <div class="form-control-feedback text-danger">Field is required please select it</div>
-          @enderror
+        <div class="tab-pane" id="departmentSliderTab" role="tabpanel">
+            @include('websites.sliders.partials.department-slider')
         </div>
-
-        <div class="form-group m-r-2">
-          <label class="form-control-label">Select Sub Department</label>
-          <select id="subDepartment_prod" data-placeholder="Select" class="form-control select2" disabled>
-            <option value="">Select</option>
-          </select>
-          @error('sub-depart')
-            <div class="form-control-feedback text-danger">Field is required please select it</div>
-          @enderror
-        </div>
-
-        <div class="form-group m-r-2">
-          <label class="form-control-label">Select Inventory</label>
-          <select name="product" id="product" data-placeholder="Select" class="form-control select2" disabled>
-            <option value="">Select</option>
-          </select>
-          @error('product')
-            <div class="form-control-feedback text-danger">Field is required please select it</div>
-          @enderror
-        </div>
-      </div>
-
-        <div class="form-group @error('image') 'has-danger' @enderror m-r-2">
-            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="512" height="256" id="previewImg"/>
-            <video id="videoPreview" width="512" height="256" style="display:none;" controls></video>
-          </br>
-
-          <label for="image" class="form-control-label">Slide</label></br>
-
-          <label for="image" class="custom-file">
-          <input type="file" name="image" id="image" class="custom-file-input">
-          <span class="custom-file-control"></span>
-          </label>
-          @error('image')
-            <div class="form-control-feedback text-danger">{{ $message }}</div>
-          @enderror
-        </div>
-
-        <div class="form-group @error('mobile_slide') 'has-danger' @enderror m-r-2">
-            <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/>
-            <video id="videoMobilePreview" width="200" height="250" style="display:none;" controls></video></br>
-          <label for="mobile_slide" class="form-control-label">Slide</label></br>
-
-          <label for="mobile_slide" class="custom-file">
-          <input type="file" name="mobile_slide" id="mobile_slide" class="custom-file-input">
-          <span class="custom-file-control"></span>
-          </label>
-          @error('mobile_slide')
-            <div class="form-control-feedback text-danger">{{ $message }}</div>
-          @enderror
-        </div>
+     </div>
 
 
-           <div class="alert alert-info">
-               Be informed that the required image size not exceeding 1MB.
-           </div>
-         <button class="btn btn-primary m-l-1 m-t-1" id="btn_create" type="submit"> Submit</button>
-       </div>
-      </form>
-    </div>
-  </div>
+
 
 </section>
-<section class="panels-wells">
 
-    @if(Session::has('error'))
-         <div class="alert alert-danger">{{ Session::get('error') }}</div>
-    @endif
-
-    @if(Session::has('success'))
-         <div class="alert alert-success">{{ Session::get('success') }}</div>
-    @endif
-    <div class="card">
-     <div class="card-header">
-         <h5 class="card-header-text">Websites Slider</h5>
-         </div>
-       <div class="card-block">
-
-     <table class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
-         <thead>
-            <tr>
-               <th class="d-none">#</th>
-               <th>Website</th>
-               <th>Slider</th>
-               <th>Status</th>
-               <th>Action</th>
-            </tr>
-		</thead>
-		<tbody>
-
-       @foreach($websiteSlider as $value)
-				<tr>
-				  <td class="d-none">{{ $value->id }}</td>
-				  <td>{{ $value->name }}</td>
-				  <td>
-           @foreach($websiteSliderList as $val)
-              @if($val->website_id == $value->id )
-                <!--<input type="hidden" value="{{-- route('updateSliderImage',$val->id) --}}" id="updateUrlslideImg{{-- $val->id --}}">-->
-                   @if(in_array(strtolower(pathinfo($val->slide,PATHINFO_EXTENSION)),['mp4','webm','ogg']))
-                       <img src="{{ asset('storage/images/video-icon-image.png') }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}','vd')" width="128" height="128" class="pointer"/>
-                   @else
-                       <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="256" height="128" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}','img')" class="pointer"/>
-                   @endif
-             @endif
-           @endforeach
-          </td>
-				  <td>{{($value->status == 1 ? "Active" : "In-Active")}}</td>
-				  <td class="action-icon">
-
-					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="warning({{ $value->id }},'{{ addslashes($value->name) }}')" data-toggle="tooltip" data-placement="top" data-original-title="Delete"></i>
-
-					<form id="DestroyForm{{ $value->id }}" action="{{ route('destroySliderImage',[$value->id]) }}" method="post" class="d-none">
-					    @csrf
-					    @method('DELETE')
-					    <input type="hidden" name="mode{{ $value->id }}" id="mode{{ $value->id }}">
-					    <input type="hidden" name="id" value="{{ $value->id }}">
-					</form>
-				  </td>
-				</tr>
-       @endforeach
-         </tbody>
-     </table>
-  </div>
-</div>
-</section>
 
 
 <div class="modal fade modal-flex" id="slideEdit_Modal" tabindex="-1" role="dialog">
@@ -463,7 +298,7 @@
            $("#depart_editmd").val(prod_depart).trigger('change');
 
            load_subdept(prod_depart,webId,'subDepartment_prod_editmd',prod_sbdepart);
-          getProduct(webId,'product_editmd',prod,prod_sbdepart);
+          getProduct(webId,'product_editmd',prod,depart,prod_sbdepart);
        }
 
        if(depart != '' && prod == ''){
@@ -536,7 +371,7 @@
       load_dept($(this).val(),'depart_prod','');
   });
 
-  $("#image").on('change',function(){
+  $("#desktop_slide").on('change',function(){
       readURL(this,'previewImg','videoPreview');
   });
 
@@ -582,16 +417,16 @@
 
   });
 
-  function getProduct(webId,elemId,prod,sub_depart){
+  function getProduct(webId,elemId,prod,depart,sub_depart){
 
            $.ajax({
              url: '{{ route("getWebsiteProd") }}',
              type:'POST',
-             data:{_token:'{{ csrf_token() }}',id:webId,subDepart:sub_depart},
+             data:{_token:'{{ csrf_token() }}',id:webId,department:depart,subDepart:sub_depart},
              async:true,
              success:function(data){
+                $("#"+elemId).empty().attr('disabled',false);
                if(data != null){
-                    $("#"+elemId).empty().attr('disabled',false);
                     $.each(data,function(i,v){
                         if(i == 0){
                             $("#"+elemId).append('<option value="">Select</option>')
@@ -723,7 +558,7 @@
 		            $("#product_editmd").val('');
 		        }
 		    } else{
-		          getProduct($('#webid_md').val(),'product_editmd','',$(this).val());
+		          getProduct($('#webid_md').val(),'product_editmd','','',$(this).val());
 		    }
 		});
 
@@ -783,6 +618,38 @@
             });
         }
 
+        $("#website_dept_slide").on('change',function(){
+		    if($(this).val() == ''){
+		        $("#product_dpt_slide").val('change');
+		        if(!$("#product_dpt_slide").attr('disabled')){
+		            $("#product_dpt_slide").attr('disabled',true);
+		            $("#product_dpt_slide").val('');
+		        }
+		    } else{
+                $("#department_dpt_slide").trigger('change');
+		    }
+		});
+
+        $("#department_dpt_slide").on('change',function(){
+		    if($(this).val() == ''){
+		        $("#product_dpt_slide").val('change');
+		        if(!$("#product_dpt_slide").attr('disabled')){
+		            $("#product_dpt_slide").attr('disabled',true);
+		            $("#product_dpt_slide").val('');
+		        }
+		    } else{
+		          getProduct($('#website_dept_slide').val(),'product_dpt_slide',$(this).val(),'');
+		    }
+		});
+
+    $(document).ready(function() {
+        // Check if there is a hash in the URL
+        if (window.location.hash) {
+            var hash = window.location.hash; // Get the hash part of the URL
+            // Trigger click on the tab if it exists
+            $('#departmentSliderNav').trigger('click');
+        }
+    });
 
  </script>
 @endsection
