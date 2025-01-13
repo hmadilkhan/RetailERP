@@ -7040,8 +7040,8 @@ class ReportController extends Controller
                         ->when($request->terminalid != "",function($query) use ($request){
                             $query->terminal_id = $request->terminalid;
                         })
-                        ->get();
-
+                        ->toSql();
+            return $terminals;           
         }
 
         foreach ($terminals as $key => $terminal) {
