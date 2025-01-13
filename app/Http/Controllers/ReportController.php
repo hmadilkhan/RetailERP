@@ -7056,14 +7056,14 @@ class ReportController extends Controller
             $pdf->SetTextColor(255, 255, 255);
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
-            $pdf->Cell(40, 7, 'Amount', 'B', 0, 'L', 1);
+            $pdf->Cell(40, 7, 'Amount', 'B', 0, 'C', 1);
             $pdf->Cell(70, 7, 'Narration', 'B', 0, 'L', 1);
             $pdf->Cell(35, 7, 'Date', 'B', 0, 'C', 1);
             $pdf->Cell(35, 7, 'Time', 'B', 1, 'C', 1);
 
             $pdf->setFillColor(232, 232, 232);
             $pdf->SetTextColor(0, 0, 0);
-
+            $pdf->SetFont('Arial', '', 10);
             $totalCashIn = 0;
 
             $cashInDetails = $report->cashIn($request->fromdate, $request->todate, $terminal->terminal_id);
@@ -7071,7 +7071,7 @@ class ReportController extends Controller
                 foreach ($cashInDetails as $key => $cashIn) {
                     $totalCashIn += $cashIn->amount;
                     $pdf->Cell(10, 7, ++$key, 'B', 0, 'L', 1);
-                    $pdf->Cell(40, 7, $cashIn->amount, 'B', 0, 'L', 1);
+                    $pdf->Cell(40, 7, $cashIn->amount, 'B', 0, 'C', 1);
                     $pdf->Cell(70, 7, $cashIn->narration, 'B', 0, 'L', 1);
                     $pdf->Cell(35, 7, date("d M Y",strtotime($cashIn->datetime)), 'B', 0, 'C', 1);
                     $pdf->Cell(35, 7, date("H:i:s",strtotime($cashIn->datetime)), 'B', 1, 'C', 1);
@@ -7094,13 +7094,14 @@ class ReportController extends Controller
             $pdf->SetTextColor(255, 255, 255);
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
-            $pdf->Cell(40, 7, 'Amount', 'B', 0, 'L', 1);
+            $pdf->Cell(40, 7, 'Amount', 'B', 0, 'C', 1);
             $pdf->Cell(70, 7, 'Narration', 'B', 0, 'L', 1);
             $pdf->Cell(35, 7, 'Date', 'B', 0, 'C', 1);
             $pdf->Cell(35, 7, 'Time', 'B', 1, 'C', 1);
 
             $pdf->setFillColor(232, 232, 232);
             $pdf->SetTextColor(0, 0, 0);
+            $pdf->SetFont('Arial', '', 10);
 
             $totalCashOut = 0;
 
@@ -7109,7 +7110,7 @@ class ReportController extends Controller
                 foreach ($cashOutDetails as $key => $cashOut) {
                     $totalCashOut += $cashOut->amount;
                     $pdf->Cell(10, 7, ++$key, 'B', 0, 'L', 1);
-                    $pdf->Cell(40, 7, $cashOut->amount, 'B', 0, 'L', 1);
+                    $pdf->Cell(40, 7, $cashOut->amount, 'B', 0, 'C', 1);
                     $pdf->Cell(70, 7, $cashOut->narration, 'B', 0, 'L', 1);
                     $pdf->Cell(35, 7, date("d M Y",strtotime($cashOut->datetime)), 'B', 0, 'C', 1);
                     $pdf->Cell(35, 7, date("H:i:s",strtotime($cashOut->datetime)), 'B', 1, 'C', 1);
