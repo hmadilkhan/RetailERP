@@ -115,7 +115,7 @@
                <tr>
                  <td class="d-none">{{ $value->id }}</td>
                  <td>{{ $value->name }}</td>
-                 <td></td>
+                 <td>{{ $value->department_slider_name }}</td>
                  <td>
           @foreach($websiteSliderList as $val)
            @if($val->website_id == $value->id )
