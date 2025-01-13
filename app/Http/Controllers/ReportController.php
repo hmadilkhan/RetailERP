@@ -7037,7 +7037,7 @@ class ReportController extends Controller
 
             $terminals = DB::table("terminal_details")
                         ->where("branch_id", $request->branch)
-                        ->when($request->terminalid != "" or $request->terminalid != 0,function($query) use ($request){
+                        ->when($request->terminalid != "",function($query) use ($request){
                             $query->terminal_id = $request->terminalid;
                         })
                         ->get();
