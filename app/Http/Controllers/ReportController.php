@@ -6959,18 +6959,15 @@ class ReportController extends Controller
             $branches->where("branch_id", $request->branch);
         }
         $branches = $branches->get();
-        if ($request->customer == "null") {
-            $request->customer = "all";
-        }
 
         $company = $vendor->company(session('company_id'));
 
-        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
-        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
-        //     \QrCode::size(200)
-        //         ->format('png')
-        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
-        // }
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
 
         $pdf = new pdfClass();
 
@@ -6986,10 +6983,10 @@ class ReportController extends Controller
         //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
-        // $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
         $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
         $pdf->Cell(50, 0, "", 0, 1, 'R');
-        // $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
 
         //third row
         $pdf->SetFont('Arial', '', 10);
@@ -7037,7 +7034,14 @@ class ReportController extends Controller
         if ($request->branch == "all") {
             $terminals = $report->getTerminals($request->branch);
         } else {
-            $terminals = DB::table("terminal_details")->where("branch_id", $request->branch)->get();
+
+            $terminals = DB::table("terminal_details")
+                        ->where("branch_id", $request->branch)
+                        ->when($request->terminalid != "",function($query) use ($request){
+                            $query->terminal_id = $request->terminalid;
+                        })
+                        ->get();
+
         }
 
         foreach ($terminals as $key => $terminal) {
