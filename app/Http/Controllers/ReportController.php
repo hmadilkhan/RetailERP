@@ -7041,10 +7041,11 @@ class ReportController extends Controller
         }
 
         foreach ($terminals as $key => $terminal) {
-
+            
+            $pdf->ln(2);
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(275, 10, "Terminal Name: " . $terminal->terminal_name, 'B', 1, 'L');
+            $pdf->Cell(190, 10, "Terminal Name: " . $terminal->terminal_name, 'T,B', 1, 'L');
             $pdf->ln(2);
 
             $pdf->SetFont('Arial', 'B', 10);
