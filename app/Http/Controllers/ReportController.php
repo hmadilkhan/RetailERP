@@ -7044,7 +7044,8 @@ class ReportController extends Controller
 
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(275, 10, "Terminal Name: " . $terminal->terminal_name, 0, 1, 'L');
+            $pdf->Cell(275, 10, "Terminal Name: " . $terminal->terminal_name, 'B', 1, 'L');
+            $pdf->ln(2);
 
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->setFillColor(232, 232, 232);
