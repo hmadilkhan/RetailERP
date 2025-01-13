@@ -245,8 +245,8 @@ class WebsiteController extends Controller
             "websites"          => WebsiteDetail::where('company_id', $companyId)->get(),
             "departments"       => InventoryDepartment::where('company_id', $companyId)->get(),
             "websiteSlider"     => DB::table('website_sliders')
-                ->join('website_details', 'website_details.id', 'website_sliders.website_id')
                 ->leftJoin('inventory_department', 'inventory_department.department_id', 'website_sliders.department_slider')
+                ->join('website_details', 'website_details.id', 'website_sliders.website_id')
                 ->select('website_details.*','inventory_department.department_name as department_slider_name')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
