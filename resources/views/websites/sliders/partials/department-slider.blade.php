@@ -97,6 +97,7 @@
         <h5 class="card-header-text">Lists</h5>
         </div>
       <div class="card-block">
+        {{ $websiteSlider }}
     <table class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
         <thead>
            <tr>
@@ -115,7 +116,7 @@
                <tr>
                  <td class="d-none">{{ $value->id }}</td>
                  <td>{{ $value->name }}</td>
-                 <td></td>
+                 <td>{{ $value->department_slider_name }}</td>
                  <td>
           @foreach($websiteSliderList as $val)
            @if($val->website_id == $value->id )
