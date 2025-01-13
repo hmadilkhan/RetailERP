@@ -7034,13 +7034,14 @@ class ReportController extends Controller
         if ($request->branch == "all") {
             $terminals = $report->getTerminals($request->branch);
         } else {
-            return ($request->terminal != "" or $request->terminal);
+
             $terminals = DB::table("terminal_details")
                         ->where("branch_id", $request->branch)
-                        ->when($request->terminal != "" or $request->terminal != 0,function($query) use ($request){
-                            return $query->terminal_id = $request->terminal;
+                        ->when($request->terminalid != "" or $request->terminalid != 0,function($query) use ($request){
+                            return $query->terminal_id = $request->terminalid;
                         })
                         ->get();
+                        
         }
 
         foreach ($terminals as $key => $terminal) {
