@@ -7034,7 +7034,7 @@ class ReportController extends Controller
         if ($request->branch == "all") {
             $terminals = $report->getTerminals($request->branch);
         } else {
-            return ($request->terminalid != "");
+
             $terminals = DB::table("terminal_details")
                         ->where("branch_id", $request->branch)
                         ->when($request->terminalid != "",function($query) use ($request){
