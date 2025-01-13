@@ -7076,6 +7076,7 @@ class ReportController extends Controller
                     $pdf->Cell(35, 7, date("d M Y",strtotime($cashIn->datetime)), 'B', 0, 'C', 1);
                     $pdf->Cell(35, 7, date("H:i:s",strtotime($cashIn->datetime)), 'B', 1, 'C', 1);
                 }
+                $pdf->SetFont('Arial', 'B', 10);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->Cell(95, 7, "Totals", 'B', 0, 'L', 1);
@@ -7115,6 +7116,7 @@ class ReportController extends Controller
                     $pdf->Cell(35, 7, date("d M Y",strtotime($cashOut->datetime)), 'B', 0, 'C', 1);
                     $pdf->Cell(35, 7, date("H:i:s",strtotime($cashOut->datetime)), 'B', 1, 'C', 1);
                 }
+                $pdf->SetFont('Arial', 'B', 10);
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
                 $pdf->Cell(95, 7, "Totals", 'B', 0, 'L', 1);
