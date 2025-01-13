@@ -78,7 +78,7 @@ class ReportController extends Controller
         $salespersons = $orderService->getServiceProviders();
         $statuses = $orderService->getOrderStatus();
         $ordermodes = $orderService->getOrderModes();
-        
+
         return view('reports.erpreports', compact('terminals', 'departments', 'branches', 'paymentModes', 'salespersons', 'statuses', 'ordermodes'));
     }
 
@@ -458,10 +458,10 @@ class ReportController extends Controller
 
     public function getCustomerSalesExport(Request $request, report $report)
     {
-        if($request->customer == "null"){
+        if ($request->customer == "null") {
             $request->customer = "all";
         }
-        $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
+        $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch, $request->customer);
         $companyName = Company::findOrFail(session("company_id"));
         $companyName = $companyName->name;
         $datearray = [
@@ -3163,7 +3163,7 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, 'B.Amount', 'B', 1, 'R', 1);
             }
 
-            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, "all",$request->customer);
+            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, "all", $request->customer);
             $permission = $report->terminalPermission($request->terminalid);
             foreach ($details as $value) {
 
@@ -3317,7 +3317,7 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
-                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category,$request->customer);
+                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category, $request->customer);
                 $permission = $report->terminalPermission($values->terminal_id);
 
                 $pdf->SetFont('Arial', 'B', 12);
@@ -3434,7 +3434,7 @@ class ReportController extends Controller
             $pdf->Cell(15, 7, 'Disc.', 'B', 0, 'C', 1);
             $pdf->Cell(30, 7, 'Total Amount', 'B', 1, 'R', 1);
             $pdf->ln(2);
-            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, $request->category,$request->customer);
+            $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, $request->category, $request->customer);
             $permission = $report->terminalPermission($request->terminalid);
             foreach ($details as $value) {
 
@@ -6825,7 +6825,7 @@ class ReportController extends Controller
             $branches->where("branch_id", $request->branch);
         }
         $branches = $branches->get();
-        if($request->customer == "null"){
+        if ($request->customer == "null") {
             $request->customer = "all";
         }
 
@@ -6916,7 +6916,7 @@ class ReportController extends Controller
         $pdf->setFillColor(232, 232, 232);
         $pdf->SetTextColor(0, 0, 0);
 
-        $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch,$request->customer);
+        $details = $report->customerSalesReport($request->fromdate, $request->todate, $request->branch, $request->customer);
 
         foreach ($details as $key => $value) {
 
@@ -6933,7 +6933,7 @@ class ReportController extends Controller
             $pdf->Cell(30, 6, $value->mobile, 0, 0, 'C', 1);
             $pdf->Cell(25, 6, $value->membership_card_no, 0, 0, 'C', 1);
             $pdf->Cell(25, 6, $value->total_orders, 0, 0, 'C', 1);
-            $pdf->Cell(25, 6, number_format($value->total_sales,0), 0, 1, 'C', 1);
+            $pdf->Cell(25, 6, number_format($value->total_sales, 0), 0, 1, 'C', 1);
 
             $pdf->ln(1);
         }
@@ -6948,5 +6948,123 @@ class ReportController extends Controller
 
         //save file
         $pdf->Output('booking_delivery_order_report.pdf', 'I');
+    }
+
+    public function cashInOutReport(Request $request, Vendor $vendor, report $report)
+    {
+        $branches = Branch::query();
+        if ($request->branch == "all") {
+            $branches->where("company_id", session("company_id"));
+        } else {
+            $branches->where("branch_id", $request->branch);
+        }
+        $branches = $branches->get();
+        if ($request->customer == "null") {
+            $request->customer = "all";
+        }
+
+        $company = $vendor->company(session('company_id'));
+
+        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+        //     \QrCode::size(200)
+        //         ->format('png')
+        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        // }
+
+        $pdf = new pdfClass();
+
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        //first row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        //second row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+        // $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        // $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
+
+        //third row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        //forth row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company[0]->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        //fifth row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        //sixth row
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company[0]->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        //filter section
+        $fromdate = date('F-d-Y', strtotime($request->fromdate));
+        $todate = date('F-d-Y', strtotime($request->todate));
+
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromdate . ' through ' . $todate, 0, 1, 'C');
+
+        //report name
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'Cash In/Out Report', 'B,T', 1, 'L');
+        $pdf->ln(1);
+
+
+
+        if ($request->branch == "all") {
+            $terminals = $report->getTerminals($request->branch);
+        } else {
+            $terminals = DB::table("terminal_details")->where("branch_id", $request->branch)->get();
+        }
+
+        foreach ($terminals as $key => $terminal) {
+
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(190, 7, 'CASH-IN', 0, 1, 'C', 1);
+            $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
+            $pdf->Cell(40, 7, 'Amount', 'B', 0, 'L', 1);
+            $pdf->Cell(70, 7, 'Narration', 'B', 0, 'L', 1);
+            $pdf->Cell(35, 7, 'Date', 'B', 0, 'C', 1);
+            $pdf->Cell(35, 7, 'Time', 'B', 1, 'C', 1);
+
+            $cashInDetails = $report->cashIn($request->fromdate, $request->todate, $terminal);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+            foreach ($cashInDetails as $key => $cashIn) {
+                $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
+                $pdf->Cell(40, 7, 'Amount', 'B', 0, 'L', 1);
+                $pdf->Cell(70, 7, 'Narration', 'B', 0, 'L', 1);
+                $pdf->Cell(35, 7, 'Date', 'B', 0, 'C', 1);
+                $pdf->Cell(35, 7, 'Time', 'B', 1, 'C', 1);
+            }
+        }
+
+        //save file
+        $pdf->Output('cash_in_and_out_report.pdf', 'I');
     }
 }

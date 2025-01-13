@@ -179,8 +179,14 @@
                     </div>
                     <div id="dvcustomersalesreport" class="col-lg-4" style="cursor: pointer;">
                         <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
-                            title="Customer Sales Repor">
+                            title="Customer Sales Report">
                             <h4 class="text-sm-center">Customer Sales Report</h4>
+                        </div>
+                    </div>
+                    <div id="dvcashinoutreport" class="col-lg-4" style="cursor: pointer;">
+                        <div class="p-20 z-depth-top-0 waves-effect" data-toggle="tooltip" data-placement="top"
+                            title="Cash In/out Report">
+                            <h4 class="text-sm-center">Cash In/Out Report</h4>
                         </div>
                     </div>
                     {{-- <div id="dvordertimingsummary" class="col-lg-4" style="cursor: pointer;">
@@ -279,6 +285,7 @@
                     <input type="hidden" value="0" id="txtorderamountreceivable" />
                     <input type="hidden" value="0" id="txtbookingdeliveryreport" />
                     <input type="hidden" value="0" id="txtcustomersalesreport" />
+                    <input type="hidden" value="0" id="txtcashinoutreport" />
 
 
 
@@ -580,7 +587,7 @@
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
                 '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport', '#txtordertimingsummary',
-                '#txtorderamountreceivable', '#txtbookingdeliveryreport', '#txtcustomersalesreport'
+                '#txtorderamountreceivable', '#txtbookingdeliveryreport', '#txtcustomersalesreport','#txtcashinoutreport'
             ];
 
             fields.forEach(field => {
@@ -850,6 +857,16 @@
                 showExcelButton: true
             }]);
         });
+        $('#dvcashinoutreport').on('click', function() {
+            handleButtonClick('#dvcashinoutreport', 'Cash In/Out Report', [{
+                field: '#txtcashinoutreport',
+                value: 1,
+                showDateFilter: true,
+                showBranch: true,
+                showTerminal: true,
+                showExcelButton: true
+            }]);
+        });
 
         function copydate() {
             let date = $('#datefrom').val();
@@ -970,6 +987,11 @@
                 window.location = "{{ url('customer-sales-report') }}?fromdate=" + date + "&todate=" + todate +
                     "&branch=" + branch + "&customer=" +
                     customer;
+            }
+            if ($('#txtcashinoutreport').val() == 1) {
+                window.location = "{{ url('cash-in-out-report') }}?fromdate=" + date + "&todate=" + todate +
+                    "&branch=" + branch + "&terminalid=" +
+                    terminalid;
             }
         }
 

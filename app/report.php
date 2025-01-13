@@ -779,6 +779,11 @@ class report extends Model
         return DB::select("SELECT customers.id,customers.name,customers.mobile,customers.membership_card_no,SUM(sales_receipts.total_amount) as total_sales,COUNT(sales_receipts.id) as total_orders,branch.branch_name FROM `sales_receipts` INNER JOIN customers on customers.id = sales_receipts.customer_id LEFT JOIN branch on branch.branch_id = sales_receipts.branch where sales_receipts.date between ? and ? " . $filter . " group by customer_id order by total_sales DESC;", [$from, $to]);
     }
 
+    public function cashIn($from,$to,$terminal)
+    {
+        return DB::select("SELECT * FROM `sales_cash_in` where opening_id IN (Select opening_id from sales_opening where date between ? and ? and terminal_id = ?)",[$from,$to,$terminal]);
+    }
+
     public function bookingDeliveryEmailReport($openingId, $terminalId)
     {
         return DB::select("SELECT a.id,a.machine_terminal_count,a.actual_amount,SUM(c.srb+c.sales_tax_amount) as taxamount,c.discount_amount as discount,a.total_amount,b.receive_amount as received FROM sales_receipts a LEFT JOIN sales_account_general b on b.receipt_id = a.id LEFT JOIN sales_account_subdetails c on c.receipt_id = a.id where opening_id = ? and terminal_id = ? and order_mode_id = 2 group by a.id;", [$openingId, $terminalId]);

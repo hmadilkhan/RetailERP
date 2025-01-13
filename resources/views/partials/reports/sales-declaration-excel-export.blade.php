@@ -127,7 +127,7 @@
                     </tr>
                 @endforeach
                 <tr>
-                    <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;" colspan="2">Total</td>
+                    <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;" colspan="4">Total</td>p
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalOpenings,0)}}</td>
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalCashSales,0)}}</td>
                     <td style="background-color: #1a4567;color:white;color:font-size:12px;font-weight:bold;text-align: center; border: 1px solid black;">{{number_format($totalCardSales,0)}}</td>
