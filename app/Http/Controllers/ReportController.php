@@ -7073,6 +7073,38 @@ class ReportController extends Controller
             }else{
                 $pdf->Cell(190, 7, 'No Record Found', 0, 1, 'C', 1);
             }
+
+            $pdf->ln(3);
+
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->setFillColor(232, 232, 232);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(190, 7, 'CASH-OUT', 0, 1, 'C', 1);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L', 1);
+            $pdf->Cell(40, 7, 'Amount', 'B', 0, 'L', 1);
+            $pdf->Cell(70, 7, 'Narration', 'B', 0, 'L', 1);
+            $pdf->Cell(35, 7, 'Date', 'B', 0, 'C', 1);
+            $pdf->Cell(35, 7, 'Time', 'B', 1, 'C', 1);
+
+            $pdf->setFillColor(232, 232, 232);
+            $pdf->SetTextColor(0, 0, 0);
+
+            $cashOutDetails = $report->cashOut($request->fromdate, $request->todate, $terminal->terminal_id);
+            if (!empty($cashOutDetails)) {
+                foreach ($cashOutDetails as $key => $cashOut) {
+                    $pdf->Cell(10, 7, ++$key, 'B', 0, 'L', 1);
+                    $pdf->Cell(40, 7, $cashOut->amount, 'B', 0, 'L', 1);
+                    $pdf->Cell(70, 7, $cashOut->narration, 'B', 0, 'L', 1);
+                    $pdf->Cell(35, 7, date("d M Y",strtotime($cashOut->datetime)), 'B', 0, 'C', 1);
+                    $pdf->Cell(35, 7, date("H:i:s",strtotime($cashOut->datetime)), 'B', 1, 'C', 1);
+                }
+            }else{
+                $pdf->Cell(190, 7, 'No Record Found', 0, 1, 'C', 1);
+            }
+
+
         }
 
         //save file
