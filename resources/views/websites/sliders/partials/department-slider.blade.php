@@ -97,8 +97,7 @@
         <h5 class="card-header-text">Lists</h5>
         </div>
       <div class="card-block">
-        {{ $websiteSlider }}
-    <table class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
+    <table class="table dt-responsive table-striped nowrap" width="100%" cellspacing="0">
         <thead>
            <tr>
               <th class="d-none">#</th>
