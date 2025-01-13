@@ -43,23 +43,7 @@
        </div>
     </div>
 
-        <div class="col-md-4">
-        <div class="form-group m-r-2">
-          <label class="form-control-label">Website</label>
-          <select name="website_dept_slide" id="website_dept_slide" data-placeholder="Select" class="form-control select2">
-            <option value="">Select</option>
-            @if($websites)
-               @php $oldWebsite = old('website_dept_slide') @endphp
-              @foreach($websites as $val)
-                <option {{ old('website_dept_slide') == $val->id ? 'selected' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
-              @endforeach
-            @endif
-          </select>
-          @error('website_dept_slide')
-            <div class="form-control-feedback text-danger">Field is required please select it</div>
-          @enderror
-     </div>
-
+  <div class="col-md-4">
      <div class="form-group m-r-2">
         <label class="form-control-label">Inventory Department</label>
         <select name="department_dpt_slide" id="department_dpt_slide" data-placeholder="Select" class="form-control select2">
@@ -76,6 +60,22 @@
           <span class="form-control-feedback text-danger">Field is required please select it</span>
         @enderror
       </div>
+
+      <div class="form-group m-r-2">
+        <label class="form-control-label">Website</label>
+        <select name="website_dept_slide" id="website_dept_slide" data-placeholder="Select" class="form-control select2">
+          <option value="">Select</option>
+          @if($websites)
+             @php $oldWebsite = old('website_dept_slide') @endphp
+            @foreach($websites as $val)
+              <option {{ old('website_dept_slide') == $val->id ? 'selected' : '' }} value="{{ $val->id }}">{{ $val->name }}</option>
+            @endforeach
+          @endif
+        </select>
+        @error('website_dept_slide')
+          <div class="form-control-feedback text-danger">Field is required please select it</div>
+        @enderror
+   </div>
 
      <div class="form-group m-r-2">
         <label class="form-control-label">Select Inventory</label>
