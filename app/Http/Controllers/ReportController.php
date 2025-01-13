@@ -7052,7 +7052,7 @@ class ReportController extends Controller
             $pdf->Cell(35, 7, 'Date', 'B', 0, 'C', 1);
             $pdf->Cell(35, 7, 'Time', 'B', 1, 'C', 1);
 
-            $cashInDetails = $report->cashIn($request->fromdate, $request->todate, $terminal);
+            $cashInDetails = $report->cashIn($request->fromdate, $request->todate, $terminal->terminal_id);
             $pdf->setFillColor(255, 255, 255);
             $pdf->SetTextColor(0, 0, 0);
             foreach ($cashInDetails as $key => $cashIn) {
