@@ -7078,9 +7078,8 @@ class ReportController extends Controller
                 }
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
-                $pdf->Cell(10, 7, "Totals", 'B', 0, 'L', 1);
-                $pdf->Cell(40, 7, $totalCashIn, 'B', 0, 'L', 1);
-                $pdf->Cell(140, 7, "", 'B', 1, 'L', 1);
+                $pdf->Cell(145, 7, "Totals", 'B', 0, 'L', 1);
+                $pdf->Cell(145, 7, $totalCashIn, 'B', 1, 'R', 1);
             }else{
                 $pdf->Cell(190, 7, 'No Record Found', 0, 1, 'C', 1);
             }
@@ -7117,9 +7116,8 @@ class ReportController extends Controller
                 }
                 $pdf->setFillColor(0, 0, 0);
                 $pdf->SetTextColor(255, 255, 255);
-                $pdf->Cell(10, 7, "Totals", 'B', 0, 'L', 1);
-                $pdf->Cell(40, 7, $totalCashOut, 'B', 0, 'L', 1);
-                $pdf->Cell(140, 7, "", 'B', 1, 'L', 1);
+                $pdf->Cell(145, 7, "Totals", 'B', 0, 'L', 1);
+                $pdf->Cell(145, 7, $totalCashOut, 'B', 1, 'R', 1);
             }else{
                 $pdf->Cell(190, 7, 'No Record Found', 0, 1, 'C', 1);
             }
