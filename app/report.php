@@ -781,7 +781,7 @@ class report extends Model
 
     public function cashIn($from,$to,$terminal)
     {
-        return DB::select("SELECT * FROM `sales_cash_in` where opening_id IN (Select opening_id from sales_opening where date between ? and ? and terminal_id = ?)",[$from,$to,$terminal]);
+        return DB::select('SELECT * FROM `sales_cash_in` where opening_id IN (Select opening_id from sales_opening where date between ? and ? and terminal_id = ?)',[$from,$to,$terminal]);
     }
 
     public function bookingDeliveryEmailReport($openingId, $terminalId)
