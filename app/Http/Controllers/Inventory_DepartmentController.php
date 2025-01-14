@@ -492,7 +492,7 @@ class Inventory_DepartmentController extends Controller
     }
     public function updatedepart(inventory_department $in_depart, Request $request)
     {
-        return $request;
+        //return $request;
         $imageName = null;
         $bannerImageName = null;
         $mobile_banner = null;
@@ -550,18 +550,13 @@ class Inventory_DepartmentController extends Controller
             }
         }
 
-        $priority = 0;
-        if(!empty($request->priority)){
-            $priority = $request->priority;
-        }
-
         $items = [
             'code'                     => $request->editcode,
             'department_name'          => $request->departname,
             'website_department_name'  => (empty($request->webdeptname) ?  $request->departname : $request->webdeptname),
             'slug'                     => preg_replace("/[\s_]/", "-", strtolower($request->departname)),
             'website_mode'             => (isset($request->showWebsite) ? 1 : 0),
-            'priority'                 => $priority,
+            'priority'                 => empty($request->priority) ? 0 : $request->priority,
             'date'                     => date('Y-m-d'),
             'time'                     => date('H:i:s'),
         ];

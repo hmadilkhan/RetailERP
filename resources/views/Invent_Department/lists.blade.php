@@ -1171,7 +1171,7 @@
                     contentType: false,
                     processData: false,
                     success: function(resp) {
-                        console.log(resp)
+                        //console.log(resp)
                         if (resp.state == 1) {
                             swal_alert('Alert!', resp.msg, 'error', false);
                         } else {
