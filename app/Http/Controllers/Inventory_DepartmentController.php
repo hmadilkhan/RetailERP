@@ -167,7 +167,7 @@ class Inventory_DepartmentController extends Controller
 
             $priority = 0;
             if(!empty($request->priority)){
-                $priority = $priority + 1;
+                $priority = $request->priority;
             }
 
 
@@ -552,7 +552,7 @@ class Inventory_DepartmentController extends Controller
 
         $priority = 0;
         if(!empty($request->priority)){
-            $priority = $priority + 1;
+            $priority = $request->priority;
         }
 
         $items = [
