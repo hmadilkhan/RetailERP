@@ -94,17 +94,8 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="form-control-label">Priority</label>
-                        <select class="select2" name="priority" id="priority" data-placeholder='Select'>
-                          <option value="">Select</option>
-                          @if($depart)
-                          @php $oldPriority = old('priority') @endphp
-                          @foreach($depart as $val)
-                           <option {{ $val->department_id == $oldPriority ? 'select' : '' }} value="{{ $val->department_id }}">{{ $val->department_name }}</option>
-                          @endforeach
-                          <option value="0">Last</option>
-                          @endif
-                        </select>
-                         <span class="form-control-feedback text-danger" id="priority_alert"></span>
+                        <input type="number" class="form-control" name="priority" id="priority" min="0">
+                        <span class="form-control-feedback text-danger" id="priority_alert"></span>
                     </div>
                   </div>
               </div>

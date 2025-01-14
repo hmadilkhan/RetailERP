@@ -32,6 +32,7 @@
                                             <th class="d-none">Code</th>
                                             <th>Code</th>
                                             <th>Image</th>
+                                            <th>Priority</th>
                                             <th>Department</th>
                                             <th>Website Department</th>
                                             <th>Sub Department</th>
@@ -61,6 +62,7 @@
                                                                 width="64" />
                                                         @endif
                                                     </td>
+                                                    <td>{{ $depart[$d]->priority }}</td>
                                                     <td class="pointer"
                                                         onclick="editdepart({{ $depart[$d]->department_id }})">
                                                         {{ $depart[$d]->department_name }}</td>
@@ -202,16 +204,8 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="form-control-label">Priority</label>
-                                                <select class="select2" name="priority" id="priority" data-placeholder='Select'>
-                                                  <option value="">Select</option>
-                                                  @if($depart)
-                                                  @foreach($depart as $departPriority)
-                                                   <option value="{{ $departPriority->department_id }}">{{ $departPriority->department_name }}</option>
-                                                  @endforeach
-                                                  <option value="0">Last</option>
-                                                  @endif
-                                                </select>
-                                                 <span class="form-control-feedback text-danger" id="priority_alert"></span>
+                                                <input type="number" class="form-control" name="priority" id="priority" min="0">
+                                                <span class="form-control-feedback text-danger" id="priority_alert"></span>
                                             </div>
                                         </div>
 
