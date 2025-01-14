@@ -206,7 +206,7 @@
                                                   <option value="">Select</option>
                                                   @if($departPriority)
                                                   @foreach($departPriority as $val)
-                                                   <option value="{{ $val->priority }}">{{ $val->department_name }}</option>
+                                                   <option value="{{ $val->department_id }}">{{ $val->department_name }}</option>
                                                   @endforeach
                                                   <option value="0">Last</option>
                                                   @endif
