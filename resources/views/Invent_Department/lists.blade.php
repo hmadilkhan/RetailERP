@@ -204,9 +204,9 @@
                                                 <label class="form-control-label">Priority</label>
                                                 <select class="select2" name="priority" id="priority" data-placeholder='Select'>
                                                   <option value="">Select</option>
-                                                  @if($departPriority)
-                                                  @foreach($departPriority as $val)
-                                                   <option value="{{ $val->department_id }}">{{ $val->department_name }}</option>
+                                                  @if($depart)
+                                                  @foreach($depart as $departPriority)
+                                                   <option value="{{ $departPriority->department_id }}">{{ $departPriority->department_name }}</option>
                                                   @endforeach
                                                   <option value="0">Last</option>
                                                   @endif
