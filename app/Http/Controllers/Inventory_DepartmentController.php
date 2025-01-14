@@ -492,7 +492,7 @@ class Inventory_DepartmentController extends Controller
     }
     public function updatedepart(inventory_department $in_depart, Request $request)
     {
-        //return $request;
+        return $request;
         $imageName = null;
         $bannerImageName = null;
         $mobile_banner = null;
