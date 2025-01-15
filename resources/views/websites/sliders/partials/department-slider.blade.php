@@ -110,7 +110,7 @@
        </thead>
        <tbody>
 
-      @foreach($websiteSlider as $value)
+      @foreach($websiteDeaprtmentSlider as $value)
         {{-- @if($value->slider_type == 'department') --}}
                <tr>
                  <td class="d-none">{{ $value->id }}</td>
