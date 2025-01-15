@@ -87,6 +87,7 @@
                     @if ($errors->has('name'))
                       <div class="form-control-feedback" id="nameerror">{{ $errors->first('name') }}</div>
                     @endif
+                    <span class="text-danger" id="product_name_alert"></span>
               </div>
              </div>
      </div>
@@ -807,7 +808,32 @@
    $(".select2").select2();
 
    $('#inventCreateForm').on('submit', function() {
-                $('#btnSubmit').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+      let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
+      $('#btnSubmit').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+      let itemName = $("#name");
+        if (regex.test(itemName.val())){
+            event.preventDefault();
+            $('#btnSubmit').prop('disabled', false).html('Submit');
+            itemName.focus();
+            swal('Error!','This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!','error');
+            $("#product_name_alert").text('This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!');
+            if(!itemName.hasClass('input-danger')){
+                itemName.addClass('input-danger')
+             }
+
+             if(itemName.hasClass('input-success')){
+                itemName.removeClass('input-success')
+             }
+        }else{
+            $("#product_name_alert").text('');
+            if(itemName.hasClass('input-danger')){
+                itemName.removeClass('input-danger')
+             }
+
+             if(!itemName.hasClass('input-success')){
+                itemName.addClass('input-success')
+             }
+        }
    });
 
        $("#btn_uom").on('click',function(){
