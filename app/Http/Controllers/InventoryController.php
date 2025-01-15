@@ -229,8 +229,8 @@ class InventoryController extends Controller
             // } else {
             $transFormation = [];
             if (!isset($request->actual_image_size)) {
-                // $transFormation['width']  = 400;
-                // $transFormation['height'] = 400;
+                $transFormation['width']  = 400;
+                $transFormation['height'] = 400;
             }
             $returnImageValue = $this->uploads($request->file('image'), "images/products/", "", $transFormation);
             $imageName = $returnImageValue['fileName'];
@@ -1004,13 +1004,13 @@ class InventoryController extends Controller
             }
         }
 
-        if (!empty($request->urlGalleryImage)) {
-            $gallery = explode(',', $request->get('urlGalleryImage'));
-            for ($i = 0; $i < count($gallery); $i++) {
-                Cloudinary::destroy($gallery[$i]);
-                DB::table('inventory_images')->where('image', $gallery[$i])->where('item_id', $request->id)->delete();
-            }
-        }
+        // if (!empty($request->urlGalleryImage)) {
+        //     $gallery = explode(',', $request->get('urlGalleryImage'));
+        //     for ($i = 0; $i < count($gallery); $i++) {
+        //         Cloudinary::destroy($gallery[$i]);
+        //         DB::table('inventory_images')->where('image', $gallery[$i])->where('item_id', $request->id)->delete();
+        //     }
+        // }
 
         if (!empty($request->file('image'))) {
             $image = $request->file('image');
@@ -1066,7 +1066,7 @@ class InventoryController extends Controller
             // } else {
             $transFormation = [];
             if (!isset($request->actual_image_size)) {
-                $transFormation = ['width' => 400, "height" => 400];
+                // $transFormation = ['width' => 400, "height" => 400];
             }
 
             $returnImageValue = $this->uploads($image, "images/products/", "", $transFormation);
