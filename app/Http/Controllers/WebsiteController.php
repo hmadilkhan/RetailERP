@@ -347,6 +347,7 @@ class WebsiteController extends Controller
 
     public function store_slider(Request $request)
     {
+        return $request;
         // dimensions:width=1520,height=460
        if(isset($request->slider_type) && \Hash::check('department', $request->slider_type)){
             $rules = [
