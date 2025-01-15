@@ -259,6 +259,7 @@ class WebsiteController extends Controller
                 ->select('website_details.*','inventory_department.department_name as department_slider_name')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
+                ->where('website_sliders.department_slider','!=', '')
                 ->groupBy('website_sliders.department_slider')
                 ->get(),
             "websiteSliderList" => DB::table('website_sliders')
