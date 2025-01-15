@@ -78,8 +78,8 @@
       </div>
 
      <div class="form-group m-r-2">
-        <label class="form-control-label">Select Inventory</label>
-        <select name="product_dpt_slide" id="product_dpt_slide" data-placeholder="Select" class="form-control select2 multiple" multiple disabled>
+        <label class="form-control-label">Select Products</label>
+        <select name="product_dpt_slide[]" id="product_dpt_slide" data-placeholder="Select" class="form-control select2 multiple" multiple disabled>
           <option value="">Select</option>
         </select>
         @error('product_dpt_slide')
