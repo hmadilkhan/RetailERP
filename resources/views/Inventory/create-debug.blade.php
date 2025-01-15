@@ -811,7 +811,7 @@
       let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
       $('#btnSubmit').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
       let itemName = $("#name");
-        if (regex.test(itemName.val())){
+        if (!regex.test(itemName.val())){
             event.preventDefault();
             $('#btnSubmit').prop('disabled', false).html('<i class="icofont icofont-plus"></i>  Submit Details');
             itemName.focus();
