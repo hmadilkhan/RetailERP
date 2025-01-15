@@ -813,7 +813,7 @@
       let itemName = $("#name");
         if (regex.test(itemName.val())){
             event.preventDefault();
-            $('#btnSubmit').prop('disabled', false).html('Submit');
+            $('#btnSubmit').prop('disabled', false).html('<i class="icofont icofont-plus"></i>  Submit Details');
             itemName.focus();
             swal('Error!','This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!','error');
             $("#product_name_alert").text('This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!');
