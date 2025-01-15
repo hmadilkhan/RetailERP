@@ -1100,6 +1100,7 @@ class WebsiteController extends Controller
                         'estimate_of_days'   => $request->estimate_day,
                         'charge'             => $request->charges,
                         'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
+                        'min_order'          => $request->delivery_free_on_min_order == '' ? 0 : $request->delivery_free_on_min_order,
                         'status'             => 1,
                     ]);
             }
