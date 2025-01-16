@@ -418,7 +418,7 @@ class WebsiteController extends Controller
                 'mobile_slide'           => $mobile_slideName,
                 'status'                 => 1,
                 'department_slider'      => $request->department_dpt_slide ?? null,
-                'type'                   => isset($request->department_dpt_slide) ? 'deaprtment' : 'default'
+                'type'                   => isset($request->department_dpt_slide) ? 'department' : 'default'
             ]);
 
         if ($result) {
