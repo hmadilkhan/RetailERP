@@ -10,8 +10,8 @@
        <div class="row">
           <div class="col-md-6">
             <div class="form-group @error('desktop_slide_dept') 'has-danger' @enderror m-r-2">
-                <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="512" height="256" id="previewImg"/>
-                <video id="videoPreview" width="512" height="256" style="display:none;" controls></video>
+                <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="512" height="256" id="previewImg_deptslide"/>
+                <video id="videoPreview_deptslide" width="512" height="256" style="display:none;" controls></video>
               </br>
 
               <label for="desktop_slide_dept" class="form-control-label">Desktop Slide</label></br>
@@ -27,8 +27,8 @@
           </div>
           <div class="col-md-6">
             <div class="form-group @error('mobile_slide_dept') 'has-danger' @enderror m-r-2">
-                <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide"/>
-                <video id="videoMobilePreview" width="200" height="250" style="display:none;" controls></video></br>
+                <img src="{{ asset('storage/images/placeholder.jpg') }}" alt="placeholder.jpg" width="200" height="250" id="previewMobileSlide_deptslide"/>
+                <video id="videoMobilePreview_deptslide" width="200" height="250" style="display:none;" controls></video></br>
               <label for="mobile_slide_dept" class="form-control-label">Mobile Slide</label></br>
 
               <label for="mobile_slide_dept" class="custom-file">

@@ -379,6 +379,14 @@
       readURL(this,'previewMobileSlide','videoMobilePreview');
   });
 
+  $("#desktop_slide_dept").on('change',function(){
+      readURL(this,'previewImg_deptslide','videoPreview_deptslide');
+  });
+
+  $("#mobile_slide_dept").on('change',function(){
+      readURL(this,'previewMobileSlide_deptslide','videoMobilePreview_deptslide');
+  });
+
   $("#slide_md").on('change',function(){
     var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
         var file = this.files[0];  // Get the selected file
