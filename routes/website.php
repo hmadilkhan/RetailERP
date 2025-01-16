@@ -21,7 +21,7 @@ Route::middleware(['statusCheck'])->group(function () {
         Route::post('/store', [WebsiteController::class, 'store_slider'])->name('sliderStore');
         Route::post('update-slide', [WebsiteController::class, 'update_slide'])->name('updateSliderImage');
         Route::delete('{id}/destroy-slide', [WebsiteController::class, 'destroy_slide'])->name('destroySliderImage');
-    });
+  });
 
     Route::prefix('website/social-link')->group(function () {
         Route::get('/lists', [WebsiteController::class, 'getSocialLink'])->name('socialList');
@@ -73,7 +73,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::resource('website/testimonials', WebsiteTestimonialController::class);
     Route::get('website/testimonials/{id}/filter', [WebsiteTestimonialController::class,'index'])->name('filterTestimonial');
-    
+
    Route::prefix('website/')->group(function () {
     Route::get('customer-reviews/lists', [WebsiteController::class,'getCustomer_reviews'])->name('customerReviewsList');
     Route::get('customer-reviews/{id}/filter', [WebsiteController::class, 'getCustomer_reviews'])->name('filterCustomerReviews');

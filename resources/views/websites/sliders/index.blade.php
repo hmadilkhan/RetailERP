@@ -448,10 +448,10 @@
 
   }
 
-    function warning(webId,webName){
+    function warning(webId,webName,departSlider = null){
             swal({
                 title: 'Remove Slider',
-                text:  'Are you sure remove slider from '+webName+' website?',
+                text:  'Are you sure remove '+(departSlider != '' ? 'department' : '')+' slider from '+webName+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
@@ -461,12 +461,17 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                     $("#DestroyForm"+webId).submit();
+                    if(departSlider != ''){
+                        $("#DestroyFormDepartSlide"+webId).submit();
+                    }else{
+                        $("#DestroyForm"+webId).submit();
+                    }
                 }else{
                     swal.close();
                 }
             });
     }
+
 
     function readURL(input,id,msp_Id) {
 

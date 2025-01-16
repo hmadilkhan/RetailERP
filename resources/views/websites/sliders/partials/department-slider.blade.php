@@ -133,13 +133,14 @@
                  <td>{{($value->status == 1 ? "Active" : "In-Active")}}</td>
                  <td class="action-icon">
 
-                   <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="warning({{ $value->id }},'{{ addslashes($value->name) }}')" data-toggle="tooltip" data-placement="top" data-original-title="Delete"></i>
+                   <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="warning({{ $value->id }},'{{ addslashes($value->name) }}','{{ $value->department_slider }}')" data-toggle="tooltip" data-placement="top" data-original-title="Delete"></i>
 
-                   <form id="DestroyForm{{ $value->id }}" action="{{ route('destroySliderImage',[$value->id]) }}" method="post" class="d-none">
+                   <form id="DestroyFormDepartSlide{{ $value->id }}" action="{{ route('destroySliderImage',[$value->id]) }}" method="post" class="d-none">
                        @csrf
                        @method('DELETE')
-                       <input type="hidden" name="mode{{ $value->id }}" id="mode{{ $value->id }}">
+                       <input type="hidden" name="mode{{ $value->id }}" id="deptslide_mode{{ $value->id }}">
                        <input type="hidden" name="id" value="{{ $value->id }}">
+                       <input type="hidden" name="depart" value="{{ $value->department_slider }}">
                    </form>
                  </td>
                </tr>
