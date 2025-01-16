@@ -371,9 +371,9 @@ class WebsiteController extends Controller
 
         //$this->validate($request, $rules);
 
-        $desktop_slide     = $request->file('desktop_slide') ? $request->file('desktop_slide') : $request->file('desktop_slide_dept') ;
+        $desktop_slide     = $request->file('desktop_slide') ?? $request->file('desktop_slide_dept');
         $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
-        $mobile_slide      = $request->file('mobile_slide') ? ($request->file('mobile_slide') ?? null) : ($request->file('mobile_slide_dept') ?? null);
+        $mobile_slide      = $request->file('mobile_slide') ?? $request->file('mobile_slide_dept') ?? null;
         $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower($mobile_slide->getClientOriginalExtension());
         $productSlug       = null;
         $invent_department = null;
