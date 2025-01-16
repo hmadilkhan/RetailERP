@@ -91,7 +91,7 @@
     </form>
   </div>
 </div>
- {{ $websiteDeaprtmentSlider }}
+ {{ $websiteDeaprtmentSlider->tosql() }}
 <div class="card">
     <div class="card-header">
         <h5 class="card-header-text">Lists</h5>
