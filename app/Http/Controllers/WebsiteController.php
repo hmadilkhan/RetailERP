@@ -347,7 +347,10 @@ class WebsiteController extends Controller
     public function store_slider(Request $request)
     {
         // dimensions:width=1520,height=460
-        return $request;
+        $desktop_slide     = $request->file('desktop_slide') ?? $request->file('desktop_slide_dept');
+        $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
+
+        return $imageName;
        if(isset($request->slider_type) && \Hash::check('department', $request->slider_type)){
             $rules = [
                        'website_dept_slide'     => 'required',
