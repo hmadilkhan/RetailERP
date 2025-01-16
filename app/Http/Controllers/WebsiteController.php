@@ -256,7 +256,7 @@ class WebsiteController extends Controller
             "websiteDeaprtmentSlider"  => DB::table('website_sliders')
                 ->join('inventory_department', 'inventory_department.department_id', 'website_sliders.department_slider')
                 ->join('website_details', 'website_details.id', 'website_sliders.website_id')
-                ->select('website_details.*','inventory_department.department_name as department_slider_name')
+                ->select('website_details.*','inventory_department.department_name as department_slider_name','website_sliders.department_slider')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
                 ->where('website_sliders.department_slider','!=', '')
