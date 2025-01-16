@@ -559,7 +559,7 @@ class WebsiteController extends Controller
     {
 
         if(isset($request->depart)){
-           return$this->destroy_department_slide($request);
+           return $this->destroy_department_slide($request);
            die();
         }
 
