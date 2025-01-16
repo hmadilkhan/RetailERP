@@ -347,10 +347,10 @@ class WebsiteController extends Controller
     public function store_slider(Request $request)
     {
         // dimensions:width=1520,height=460
-        $desktop_slide     = $request->file('desktop_slide') ?? $request->file('desktop_slide_dept');
-        $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
+        // $desktop_slide     = $request->file('desktop_slide') ?? $request->file('desktop_slide_dept');
+        // $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
 
-        return $imageName;
+        // return $imageName;
        if(isset($request->slider_type) && \Hash::check('department', $request->slider_type)){
             $rules = [
                        'website_dept_slide'     => 'required',
@@ -380,8 +380,9 @@ class WebsiteController extends Controller
         $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower($mobile_slide->getClientOriginalExtension());
         $productSlug       = null;
         $invent_department = null;
+        $websiteId = isset($request->website) ? $request->website : $request->website_dept_slide;
 
-        $path = $this->create_folder('sliders/' . session('company_id'), $request->website);
+        $path = $this->create_folder('sliders/' . session('company_id'), $websiteId);
 
         if ($path == false) {
             return response()->json('slider not uploaded.', 500);
@@ -412,7 +413,7 @@ class WebsiteController extends Controller
 
         $result = DB::table('website_sliders')
             ->insertGetId([
-                'website_id'             => isset($request->website) ? $request->website : $request->website_dept_slide,
+                'website_id'             => $websiteId,
                 'invent_department_id'   => !empty($request->product) ? null : $request->post('depart'),
                 'invent_department_name' => $invent_department,
                 'prod_id'                => !empty($request->depart) ? null : $request->post('product'),
