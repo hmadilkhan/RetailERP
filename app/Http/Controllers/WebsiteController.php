@@ -249,8 +249,7 @@ class WebsiteController extends Controller
                 ->select('website_details.*')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
-                ->where('website_sliders.department_slider','=','')
-                // ->where('website_sliders.type', 'default')
+                ->where('website_sliders.type', 'default')
                 ->groupBy('website_details.name')
                 ->get(),
             "websiteDeaprtmentSlider"  => DB::table('website_sliders')
@@ -259,7 +258,7 @@ class WebsiteController extends Controller
                 ->select('website_details.*','inventory_department.department_name as department_slider_name','website_sliders.department_slider')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
-                ->where('website_sliders.department_slider','!=', '')
+                ->where('website_sliders.type', 'department')
                 ->groupBy('website_sliders.department_slider')
                 ->get(),
             "websiteSliderList" => DB::table('website_sliders')
