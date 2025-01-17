@@ -654,6 +654,10 @@ class WebsiteController extends Controller
                             ->where('department_slider', '=', $department_slider)
                             ->where('website_id', '=', $id)
                             ->delete();
+
+                            DB::table('website_slider_product_binds')
+                            ->whereIn('slider_id', $get->pluck('id'))
+                            ->delete();
             }
         } else {
             $get = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->first();
