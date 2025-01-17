@@ -186,3 +186,113 @@
         </table>
      </div>
    </div>
+
+   <!-- Slide edit modal box -->
+   <div class="modal fade modal-flex" id="slideEdit_Modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+             <h4 class="modal-title" id="title_md_mf">Edit Slide</h4>
+          </div>
+          <div class="modal-body">
+              <form id="editSlideForm_md" action="{{ route('updateSliderImage') }}" method="post" enctype="multipart/form-data">
+                @csrf
+
+                <input type="hidden" id="webname_md" name="webName">
+                <input type="hidden" id="webid_md" name="webId">
+                <input type="hidden" id="id_md" name="id">
+
+                <div class="form-group">
+                      <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
+                      <video id="slideVdMD" width="250" height="128" controls style="display: none;"></video>
+                </div>
+                <div class="form-group">
+                     <label for="slide_md" class="custom-file">
+                     <input type="file" name="slide_md" id="slide_md" class="custom-file-input">
+                     <span class="custom-file-control"></span>
+                     </label>
+                </div>
+
+               <div class="form-group">
+                    <img for="mobile_slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
+                    <video id="previewMobileSlideVd_md" width="200" height="250" style="display:none;" controls></video></br>
+                   </div>
+              <div class="form-group">
+                   <label for="mobile_slide_md" class="custom-file">
+                   <input type="file" name="mobile_slide" id="mobile_slide_md" class="custom-file-input">
+                   <span class="custom-file-control"></span>
+                   </label>
+             </div>
+
+
+             <div class="alert alert-info">
+               Be informed that the required image size not exceeding 1MB.
+           </div>
+
+
+              <div class="form-group">
+                      <label class="pointer">
+                       <input type="radio" name="navigato_md" id="navigat_depart_md" value="department"/>
+                           <i class="helper"></i>Navigate to department
+                   </label>
+
+                      <label class="pointer m-l-2">
+                       <input type="radio" name="navigato_md" id="navigat_prod_md" value="product"/>
+                           <i class="helper"></i>Navigate to product
+                   </label>
+              </div>
+
+              <div class="d-none" id="departmentbox_md">
+                <div class="form-group">
+                     <label class="form-control-label">Inventory Department</label>
+                     <select name="depart_md" id="depart_md" data-placeholder="Select" class="form-control select2">
+                       <option value="">Select</option>
+                     @if($departments)
+                        @php $oldDepart = old('depart_md') @endphp
+                       @foreach($departments as $val)
+                         <option {{ old('depart_md') == $val->department_id ? 'selected' : '' }} value="{{ $val->department_id }}">{{ $val->department_name }}</option>
+                       @endforeach
+                     @endif
+                     </select>
+               </div>
+              </div>
+              <div class="d-none" id="productbox_md">
+                <div class="form-group">
+                    <label class="form-control-label">Department</label>
+                     <select id="depart_editmd" data-placeholder="Select" class="form-control select2">
+                       <option value="">Select</option>
+                     @if($departments)
+                       @foreach($departments as $val)
+                         <option value="{{ $val->department_id }}">{{ $val->department_name }}</option>
+                       @endforeach
+                     @endif
+                     </select>
+                </div>
+               <div class="form-group">
+                 <label class="form-control-label">Select Sub Department</label>
+                 <select id="subDepartment_prod_editmd" data-placeholder="Select" class="form-control select2" disabled>
+                   <option value="">Select</option>
+                 </select>
+               </div>
+                <div class="form-group">
+                     <label class="form-control-label">Product</label>
+                     <select name="product_md" id="product_editmd" data-placeholder="Select" class="form-control select2" disabled>
+                       <option value="">Select</option>
+                     </select>
+
+               </div>
+              </div>
+
+              </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" id="btn_remove_md" class="btn btn-danger waves-effect waves-light f-left">Remove</button>
+              <button type="button" data-dismiss="modal" class="btn btn-default waves-effect waves-light m-r-1">Close</button>
+             <button type="button" id="btn_update_md" class="btn btn-success waves-effect waves-light">Save Changes</button>
+          </div>
+       </div>
+    </div>
+ </div>

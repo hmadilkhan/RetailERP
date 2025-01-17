@@ -548,6 +548,10 @@ class WebsiteController extends Controller
         return redirect()->route('sliderLists');
     }
 
+    public function department_slider_singleFile_modify(Request $request){
+
+    }
+
     public function create_folder($comFOldName, $webFoldName)
     {
         $path   = 'storage/images/website/'. $comFOldName . '/' . $webFoldName;

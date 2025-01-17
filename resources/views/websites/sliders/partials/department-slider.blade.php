@@ -122,9 +122,9 @@
              @if($val->slider_type == 'department')
                <!--<input type="hidden" value="{{-- route('updateSliderImage',$val->id) --}}" id="updateUrlslideImg{{-- $val->id --}}">-->
                   @if(in_array(strtolower(pathinfo($val->slide,PATHINFO_EXTENSION)),['mp4','webm','ogg']))
-                      <img src="{{ asset('storage/images/video-icon-image.png') }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}','vd')" width="128" height="128" class="pointer"/>
+                      <img src="{{ asset('storage/images/video-icon-image.png') }}" onclick="editDepartSlide({{ $val->id }},{{ $value->id }},{{ $value->department_slider }},'{{ addslashes($value->name) }}','{{ $val->mobile_slide }}','vd')" width="128" height="128" class="pointer"/>
                   @else
-                      <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="256" height="128" id="slide{{ $val->id }}" onclick="editSlide({{ $val->id }},{{ $value->id }},'{{ addslashes($value->name) }}','{{ addslashes($val->invent_department_id) }}','{{ addslashes($val->prod_id) }}','{{ addslashes($val->prod_dept_id) }}','{{ addslashes($val->prod_subdept_id) }}','{{ $val->mobile_slide }}','img')" class="pointer"/>
+                      <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="256" height="128" id="slide{{ $val->id }}" onclick="editDepartSlide({{ $val->id }},{{ $value->id }},{{ $value->department_slider }},'{{ addslashes($value->name) }}','{{ $val->mobile_slide }}','img')" class="pointer"/>
                   @endif
              @endif
             @endif
@@ -150,3 +150,64 @@
     </table>
  </div>
 </div>
+
+
+
+<div class="modal fade modal-flex" id="departmentslideEdit_Modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-md" role="document">
+       <div class="modal-content">
+          <div class="modal-header">
+             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                         <span aria-hidden="true">&times;</span>
+                     </button>
+             <h4 class="modal-title" id="title_md_mf">Edit Slide</h4>
+          </div>
+          <div class="modal-body">
+              <form id="editSlideForm_md" action="{{ route('updateSliderImage') }}" method="post" enctype="multipart/form-data">
+                @csrf
+
+                <input type="hidden" id="webname_dpetslideEdMd" name="webName">
+                <input type="hidden" id="webid_dpetslideEdMd" name="webId">
+                <input type="hidden" id="departSlider_dpetslideEdMd" name="deaprtment_slider">
+                <input type="hidden" id="id_dpetslideEdMd" name="id">
+
+                <div class="form-group">
+                      <img for="desktopslide_deptEdtmd" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewslide_deptEdtmd" width="250" height="128"/>
+                      <video id="slideVd_deptEdtmd" width="250" height="128" controls style="display: none;"></video>
+                </div>
+                <div class="form-group">
+                     <label for="desktopslide_deptEdtmd" class="custom-file">
+                     <input type="file" name="desktop_slide" id="desktopslide_deptEdtmd" class="custom-file-input">
+                     <span class="custom-file-control"></span>
+                     </label>
+                </div>
+
+               <div class="form-group">
+                    <img for="mobile_slide_deptEdtmd" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewMobileSlide_deptEdtmd" width="100" height="150"/>
+                    <video id="previewMobileSlideVd_deptEdtmd" width="200" height="250" style="display:none;" controls></video></br>
+                   </div>
+              <div class="form-group">
+                   <label for="mobile_slide_md" class="custom-file">
+                   <input type="file" name="mobile_slide" id="mobile_slide_deptEdtmd" class="custom-file-input">
+                   <span class="custom-file-control"></span>
+                   </label>
+             </div>
+
+
+             <div class="alert alert-info">
+               Be informed that the required image size not exceeding 1MB.
+            </div>
+
+
+
+
+             </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" id="btn_remove_md" class="btn btn-danger waves-effect waves-light f-left">Remove</button>
+              <button type="button" data-dismiss="modal" class="btn btn-default waves-effect waves-light m-r-1">Close</button>
+             <button type="button" id="btn_update_md" class="btn btn-success waves-effect waves-light">Save Changes</button>
+          </div>
+       </div>
+    </div>
+ </div>
