@@ -672,7 +672,13 @@ class WebsiteController extends Controller
                 //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide);
                 // }
 
-                $process = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->delete();
+                $process = DB::table('website_sliders')
+                              ->where('id', '=', $request->post('mode' . $id))
+                              ->delete();
+
+                           DB::table('website_slider_product_binds')
+                              ->whereIn('slider_id', $request->post('mode' . $id))
+                              ->delete();
             }
         }
 
