@@ -198,15 +198,18 @@
                Be informed that the required image size not exceeding 1MB.
             </div>
 
-
-
-
+            <div class="form-group m-r-2">
+                <label class="form-control-label">Select Products</label>
+                <select name="product_dpt_slide[]" id="product_dpt_slide_deptEdtmd" data-placeholder="Select" class="form-control select2 multiple" multiple disabled>
+                  <option value="">Select</option>
+                </select>
+              </div>
              </form>
           </div>
           <div class="modal-footer">
-              <button type="button" id="btn_remove_md" class="btn btn-danger waves-effect waves-light f-left">Remove</button>
+              <button type="button" id="" class="btn btn-danger waves-effect waves-light f-left">Remove</button>
               <button type="button" data-dismiss="modal" class="btn btn-default waves-effect waves-light m-r-1">Close</button>
-             <button type="button" id="btn_update_md" class="btn btn-success waves-effect waves-light">Save Changes</button>
+             <button type="button" id="" class="btn btn-success waves-effect waves-light">Save Changes</button>
           </div>
        </div>
     </div>

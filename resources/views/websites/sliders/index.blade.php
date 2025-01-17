@@ -207,6 +207,11 @@
     $("#previewslide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png');
     $("#previewMobileSlide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').show();
     $("#previewMobileSlideVd_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').hide();
+
+       if(departSlider != ''){
+           getProduct(webId,'product_dpt_slide_deptEdtmd',departSlider,'');
+       }
+
        $("#departmentslideEdit_Modal").modal('show');
 
      if(ftype == 'vd'){
