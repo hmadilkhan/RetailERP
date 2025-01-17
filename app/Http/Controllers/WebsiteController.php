@@ -418,7 +418,7 @@ class WebsiteController extends Controller
                 'invent_department_name' => $invent_department,
                 'prod_id'                => !empty($request->depart) ? null : $request->post('product'),
                 'prod_slug'              => $productSlug,
-                'slide'                  => $desktop_slide,
+                'slide'                  => $imageName,
                 'mobile_slide'           => $mobile_slideName,
                 'status'                 => 1,
                 'department_slider'      => $request->department_dpt_slide ?? null,
