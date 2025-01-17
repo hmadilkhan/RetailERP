@@ -442,7 +442,7 @@ class WebsiteController extends Controller
 
             Session::flash('error', 'Invalid record');
         }
-        return redirect('website/slider/lists'.isset($request->department_dpt_slide) ? '?#departmentSliderNav' : null);
+        return redirect('website/slider/lists'.isset($request->department_dpt_slide) ? '?#departmentSliderNav' : '');
     }
 
     public function update_slide(Request $request)
