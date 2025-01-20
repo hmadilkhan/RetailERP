@@ -557,7 +557,101 @@ class WebsiteController extends Controller
     }
 
     public function department_slider_singleFile_modify(Request $request){
+        $Slide        = $request->file('desktop_slide');
+        $mobile_slide = $request->file('mobile_slide');
+        $products     = $request->product_dpt_slide;
 
+
+        $columnArray = ['updated_at' => date("Y-m-d H:i:s")];
+
+        $get = DB::table('website_sliders')
+                  ->where('id', '=', $request->id)
+                  ->where('department_slider', '=', $request->deaprtment_slider)
+                  ->first();
+
+        if ($Slide != '') {
+
+            $rules = [
+                'desktop_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+            ];
+
+            $this->validate($request, $rules);
+
+            $imageName   = time() . '.' . $Slide->getClientOriginalExtension();
+
+            $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
+
+            if ($path == false) {
+                Session::flash('error', 'Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+            if (!$Slide->move($path, $imageName)) {
+                Session::flash('error', 'Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+              $this->removeImage('images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' , $get->slide);
+            // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
+            //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide);
+            // }
+            $columnArray['slide'] = $imageName;
+        }
+
+        if ($mobile_slide != '') {
+
+            $rules = [
+                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+            ];
+
+            $this->validate($request, $rules);
+
+            $mobile_slideName   = 'mobile_size'.time() . '.' . $mobile_slide->getClientOriginalExtension();
+
+            $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
+
+            if ($path == false) {
+                Session::flash('error', 'Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+            if (!$mobile_slide->move($path, $mobile_slideName)) {
+                Session::flash('error', 'Server Issue slide image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+            $this->removeImage('images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' , $get->mobile_slide);
+
+            // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide)) {
+            //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide);
+            // }
+            $columnArray['mobile_slide'] = $mobile_slideName;
+        }
+
+        //   return $columnArray;
+        $result = DB::table('website_sliders')
+            ->where('id', '=', $request->id)
+            ->update($columnArray);
+
+        if ($result) {
+
+              if($products != null){
+                 DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
+                foreach($products as $value){
+                    DB::table('website_slider_product_binds')->insert(
+                            [
+                                        'slider_id'=>$request->id,
+                                        'product_id'=>$value,
+                                    ]);
+                }
+              }
+
+            Session::flash('success', 'Success!');
+        } else {
+            Session::flash('error', 'Server Issue record not updated.');
+        }
+
+        return redirect()->route('sliderLists');
     }
 
     public function create_folder($comFOldName, $webFoldName)
