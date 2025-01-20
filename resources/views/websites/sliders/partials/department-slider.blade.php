@@ -122,7 +122,7 @@
                <tr>
                  <td class="d-none">{{ $value->id }}</td>
                  <td>{{ $value->name }}</td>
-                 <td>{{ $value->department_slider_name }}</td>
+                 <td id="department_name_deptslider{{ $value->id }}">{{ $value->department_slider_name }}</td>
                  <td>
           @foreach($websiteSliderList as $val)
            @if($val->website_id == $value->id )
@@ -214,7 +214,7 @@
              </form>
           </div>
           <div class="modal-footer">
-              <button type="button" id="" class="btn btn-danger waves-effect waves-light f-left">Remove</button>
+              <button type="button" id="btn_remove_deptslidmd" class="btn btn-danger waves-effect waves-light f-left">Remove</button>
               <button type="button" data-dismiss="modal" class="btn btn-default waves-effect waves-light m-r-1">Close</button>
              <button type="button" id="" class="btn btn-success waves-effect waves-light">Save Changes</button>
           </div>

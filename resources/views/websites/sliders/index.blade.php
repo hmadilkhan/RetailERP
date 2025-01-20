@@ -266,8 +266,7 @@
                     swal.close();
                 }
             });
-
-   })
+   });
 
 //   $("#btn_create").on('click',function(){
 //       var webid = $("#website").val();
@@ -591,6 +590,28 @@
 		          getProduct($('#website_dept_slide').val(),'product_dpt_slide',$(this).val(),'');
 		    }
 		});
+
+
+        $("#btn_remove_deptslidmd").on('click',function(){
+            swal({
+                title: 'Remove Slider',
+                text:  'Are you sure remove '+$("#department_name_deptslider"+id).val()+' department slider from '+$("#webname_dpetslideEdMd").val()+' website?',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: 'btn btn-danger',
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },function(isConfirm){
+                if(isConfirm){
+                    $("#deptslide_mode"+$("#webid_dpetslideEdMd").val()).val(id);
+                    $("#DestroyFormDepartSlide"+id).submit();
+                }else{
+                    swal.close();
+                }
+            });
+   });
 
     $(document).ready(function() {
         // Check if there is a hash in the URL
