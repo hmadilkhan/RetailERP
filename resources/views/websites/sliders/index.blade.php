@@ -211,9 +211,11 @@
        if(departSlider != ''){
            getProduct(webId,'product_dpt_slide_deptEdtmd',departSlider,'');
 
-          if(products != null){
-           setTimeout( $("#product_dpt_slide_deptEdtmd").val(products).change() , 2000);
-          }
+           if (products != null) {
+                setTimeout(function() {
+                    $("#product_dpt_slide_deptEdtmd").val(products).change();
+                }, 2000);
+            }
        }
 
        $("#departmentslideEdit_Modal").modal('show');
