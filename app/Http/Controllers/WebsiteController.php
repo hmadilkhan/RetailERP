@@ -418,6 +418,8 @@ class WebsiteController extends Controller
                 'invent_department_name' => $invent_department,
                 'prod_id'                => !empty($request->depart) ? null : $request->post('product'),
                 'prod_slug'              => $productSlug,
+                'slider_name'            => $request->slider_name,
+                'slug'                   => preg_replace("/[\s_]/", "-", strtolower($request->slider_name)),
                 'slide'                  => $imageName,
                 'mobile_slide'           => $mobile_slideName,
                 'status'                 => 1,

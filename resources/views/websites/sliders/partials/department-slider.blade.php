@@ -44,8 +44,15 @@
     </div>
 
     <div class="col-md-4">
+      <div class="form-group m-r-2">
+        <label class="form-control-label">Slider Name <span class="text-danger">*</span></label>
+        <input type="text" name="slider_name" id="slider_name" class="form-control">
+        @error('slider_name')
+          <div class="form-control-feedback text-danger">Field is required please enter the slider name</div>
+        @enderror
+   </div>
         <div class="form-group m-r-2">
-          <label class="form-control-label">Website</label>
+          <label class="form-control-label">Website <span class="text-danger">*</span></label>
           <select name="website_dept_slide" id="website_dept_slide" data-placeholder="Select" class="form-control select2">
             <option value="">Select</option>
             @if($websites)
@@ -61,7 +68,7 @@
      </div>
 
      <div class="form-group m-r-2">
-        <label class="form-control-label">Select Department (Displays on Department Page)</label>
+        <label class="form-control-label">Select Department (Displays on Department Page) <span class="text-danger">*</span></label>
         <select name="department_dpt_slide" id="department_dpt_slide" data-placeholder="Select" class="form-control select2">
           <option value="">Select</option>
         @if($departments)
