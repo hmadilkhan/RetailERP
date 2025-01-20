@@ -605,7 +605,7 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                    $("#deptslide_mode"+$("#webid_dpetslideEdMd").val()).val(id);
+                    $("#deptslide_mode"+id).val(id);
                     $("#DestroyFormDepartSlide"+id).submit();
                 }else{
                     swal.close();
