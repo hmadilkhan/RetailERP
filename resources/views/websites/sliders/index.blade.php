@@ -230,7 +230,7 @@
        $("#departSlider_dpetslideEdMd").val(departSlider);
        $("#id_dpetslideEdMd").val(unqid);
 
-       id=unqid;
+       id=webId;
 
        if(mobileSlide != ''){
         if(ftype == 'vd'){
