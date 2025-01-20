@@ -230,7 +230,7 @@
        $("#departSlider_dpetslideEdMd").val(departSlider);
        $("#id_dpetslideEdMd").val(unqid);
 
-       id=webId;
+       id=unqid;
 
        if(mobileSlide != ''){
         if(ftype == 'vd'){
@@ -595,7 +595,7 @@
         $("#btn_remove_deptslidmd").on('click',function(){
             swal({
                 title: 'Remove Slider',
-                text:  'Are you sure remove '+$("#department_name_deptslider"+id).text()+' department slider from '+$("#webname_dpetslideEdMd").val()+' website?',
+                text:  'Are you sure remove '+$("#department_name_deptslider"+$("#webid_dpetslideEdMd").val()).text()+' department slider from '+$("#webname_dpetslideEdMd").val()+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
@@ -605,8 +605,8 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                    $("#deptslide_mode"+id).val(id);
-                    $("#DestroyFormDepartSlide"+id).submit();
+                    $("#deptslide_mode"+$("#webid_dpetslideEdMd").val()).val(id);
+                    $("#DestroyFormDepartSlide"+$("#webid_dpetslideEdMd").val()).submit();
                 }else{
                     swal.close();
                 }
