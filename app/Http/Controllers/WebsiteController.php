@@ -683,7 +683,7 @@ class WebsiteController extends Controller
                               ->delete();
 
                            DB::table('website_slider_product_binds')
-                              ->whereIn('slider_id', $request->post('mode' . $id))
+                              ->where('slider_id', $request->post('mode' . $id))
                               ->delete();
             }
         }
