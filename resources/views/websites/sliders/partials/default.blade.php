@@ -47,7 +47,7 @@
 
         <div class="col-md-4">
         <div class="form-group m-r-2">
-          <label class="form-control-label">Website</label>
+          <label class="form-control-label">Website <span class="text-danger">*</span></label>
           <select name="website" id="website" data-placeholder="Select" class="form-control select2">
             <option value="">Select</option>
             @if($websites)
