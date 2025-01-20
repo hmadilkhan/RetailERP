@@ -605,7 +605,6 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                    alert(id)
                     $("#deptslide_mode"+id).val(id);
                     $("#DestroyFormDepartSlide"+id).submit();
                 }else{
