@@ -1462,6 +1462,32 @@ class WebsiteController extends Controller
         }
     }
 
+    public function modify_delivery_parent_detail(Request $request){
+        if (!isset($request->website) || !isset($request->branch)) {
+            Session::flash('error', 'The required some parameter is missing. Please check and try again.');
+            return redirect()->route('deliveryAreasList');
+        }
+
+        $column = [
+                    'min_order' => $request->min_order,
+                    'delivery_free_on_min_order' =>  $request->delivery_free,
+                    'estimate_time'              => $request->estimate_time,
+                    'estimate_of_days'           => $request->estimate_days
+
+        ];
+
+        if(DB::table('website_delivery_areas')
+                  ->where(['website_id' => $request->website,'branch_id'=>$request->branch])
+                  ->update($column))
+        {
+            Session::flash('success', 'Successfully');
+        }else{
+            Session::flash('error', 'Server issue record is not updated!');
+        }
+
+        return redirect()->route('deliveryAreasList');
+    }
+
     public function destroy_deliveryArea(Request $request)
     {
 
