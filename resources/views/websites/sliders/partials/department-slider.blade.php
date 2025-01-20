@@ -128,10 +128,16 @@
            @if($val->website_id == $value->id )
              @if($val->slider_type == 'department')
                <!--<input type="hidden" value="{{-- route('updateSliderImage',$val->id) --}}" id="updateUrlslideImg{{-- $val->id --}}">-->
+                  @php
+                      $products = null;
+                    if($slider_bin_products != null){
+                        $products = $slider_bin_products->where('slider_id',$val->id)->pluck('product_id');
+                    }
+                  @endphp
                   @if(in_array(strtolower(pathinfo($val->slide,PATHINFO_EXTENSION)),['mp4','webm','ogg']))
-                      <img src="{{ asset('storage/images/video-icon-image.png') }}" onclick="editDepartSlide({{ $val->id }},{{ $value->id }},{{ $value->department_slider }},'{{ addslashes($value->name) }}','{{ $val->mobile_slide }}','vd')" width="128" height="128" class="pointer"/>
+                      <img src="{{ asset('storage/images/video-icon-image.png') }}" onclick="editDepartSlide({{ $val->id }},{{ $value->id }},{{ $value->department_slider }},'{{ addslashes($value->name) }}','{{ $val->mobile_slide }}',{{ $products }},'vd')" width="128" height="128" class="pointer"/>
                   @else
-                      <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="256" height="128" id="slide{{ $val->id }}" onclick="editDepartSlide({{ $val->id }},{{ $value->id }},{{ $value->department_slider }},'{{ addslashes($value->name) }}','{{ $val->mobile_slide }}','img')" class="pointer"/>
+                      <img src="{{ asset('storage/images/website/sliders/'.session('company_id').'/'.$value->id.'/'.$val->slide) }}" alt=" {{ $val->slide }}" width="256" height="128" id="slide{{ $val->id }}" onclick="editDepartSlide({{ $val->id }},{{ $value->id }},{{ $value->department_slider }},'{{ addslashes($value->name) }}','{{ $val->mobile_slide }}',{{ $products }},'img')" class="pointer"/>
                   @endif
              @endif
             @endif

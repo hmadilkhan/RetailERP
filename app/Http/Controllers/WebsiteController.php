@@ -274,7 +274,13 @@ class WebsiteController extends Controller
                 ->where('website_details.company_id', $companyId)
                 // ->where('website_sliders.type', 'default')
                 ->where('website_sliders.status', 1)
-                ->get()
+                ->get(),
+                'slider_bin_products'=> DB::table('website_slider_product_binds')
+                                          ->join('website_sliders','website_sliders.id','website_slider_product_binds.slider_id')
+                                          ->join('website_details','website_details.id','website_sliders.website_id')
+                                          ->where('website_details.company_id', $companyId)
+                                          ->select('website_slider_product_binds.*')
+                                          ->get(),
         ]);
     }
 

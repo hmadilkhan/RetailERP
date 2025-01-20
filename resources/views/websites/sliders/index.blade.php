@@ -203,13 +203,17 @@
        //$("#editSlideForm_md").attr('action',$("#updateSliderImage"+id).val());
    }
 
-   function editDepartSlide(unqid,webId,departSlider,webName,mobileSlide,ftype){
+   function editDepartSlide(unqid,webId,departSlider,webName,mobileSlide,products,ftype){
     $("#previewslide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png');
     $("#previewMobileSlide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').show();
     $("#previewMobileSlideVd_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').hide();
 
        if(departSlider != ''){
            getProduct(webId,'product_dpt_slide_deptEdtmd',departSlider,'');
+
+          if(products != null){
+           setTimeout( $("#product_dpt_slide_deptEdtmd").val(products).change() , 2000);
+          }
        }
 
        $("#departmentslideEdit_Modal").modal('show');
