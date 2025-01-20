@@ -637,6 +637,8 @@ class WebsiteController extends Controller
         $department_slider = $request->depart;
         $path = 'storage/images/website/sliders/'. session('company_id') . '/' . $id . '/';
 
+        $process = false;
+
         if ($request->post('mode' . $id) == '') {
             $get = DB::table('website_sliders')
                         ->where('department_slider', '=', $department_slider)
