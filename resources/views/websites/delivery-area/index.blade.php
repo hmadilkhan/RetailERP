@@ -357,10 +357,9 @@
               <div class="modal-body">
                   <form id="editDeliveryDetailForm_edtmd" method="post">
                     @csrf
-
                     <input type="hidden" name="website" id="webid_mneditmd">
                     <input type="hidden" name="branch" id="branchId_mneditmd">
-                    <div class="form-group d-none" id="min_order_mneditmd">
+                    <div class="form-group">
                         <label>Min Order</label>
                       <input type="text" name="min_order" id="min_order_mneditmd" class="form-control" placeholder="Min Order">
                       <span id="min_order_mneditmd_alert"></span>
