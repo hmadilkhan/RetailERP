@@ -191,7 +191,7 @@
 
                     <i class="icofont icofont-ui-wifi {{ $parent_rowVal->status == 1 ? 'text-success' : 'text-muted' }} f-18 m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Live " onclick="swalModal({{ $parent_rowVal->branch_id }},1,'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->status }})"></i>
 
-                    <i class="icofont icofont-ui-pencel text-warning f-18 alert-confirm pointer m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Delete" onclick="editMainDetail({{ $parent_rowVal->website_id }},{{ $parent_rowVal->branch_id }},'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->min_order }},{{ $parent_rowVal->delivery_free_on_min_order }},{{ $parent_rowVal->estimate_time }},{{ $parent_rowVal->estimate_of_days }})"></i>
+                    <i class="icofont icofont-edit text-warning f-18 alert-confirm pointer m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Delete" onclick="editMainDetail({{ $parent_rowVal->website_id }},{{ $parent_rowVal->branch_id }},'{{ addslashes($parent_rowVal->branch_name) }}','{{ $parent_rowVal->min_order }}','{{ $parent_rowVal->delivery_free_on_min_order }}','{{ $parent_rowVal->estimate_time }}','{{ $parent_rowVal->estimate_of_days }}')"></i>
 
 					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm pointer m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Delete" onclick="swalModal({{ $parent_rowVal->branch_id }},0,'{{ addslashes($parent_rowVal->branch_name) }}','')"></i>
 
