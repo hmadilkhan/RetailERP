@@ -191,6 +191,8 @@
 
                     <i class="icofont icofont-ui-wifi {{ $parent_rowVal->status == 1 ? 'text-success' : 'text-muted' }} f-18 m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Live " onclick="swalModal({{ $parent_rowVal->branch_id }},1,'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->status }})"></i>
 
+                    <i class="icofont icofont-ui-pencel text-warning f-18 alert-confirm pointer m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Delete" onclick="editMainDetail({{ $parent_rowVal->website_id }},{{ $parent_rowVal->branch_id }},'{{ addslashes($parent_rowVal->branch_name) }}',{{ $parent_rowVal->min_order }},{{ $parent_rowVal->delivery_free_on_min_order }},{{ $parent_rowVal->estimate_time }},{{ $parent_rowVal->estimate_of_days }})"></i>
+
 					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm pointer m-r-1" data-toggle="tooltip" data-placement="top" data-original-title="Delete" onclick="swalModal({{ $parent_rowVal->branch_id }},0,'{{ addslashes($parent_rowVal->branch_name) }}','')"></i>
 
 					<form id="removeDeliveryArea{{ $parent_rowVal->branch_id }}" action="{{ route('deliveryAreaDestroy',$parent_rowVal->branch_id) }}" method="post">
@@ -341,6 +343,52 @@
          </div>
       </div>
 
+
+
+      <div class="modal fade modal-flex" id="DeliveryparentDetail_Modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+           <div class="modal-content">
+              <div class="modal-header">
+                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                             <span aria-hidden="true">&times;</span>
+                         </button>
+                 <h4 class="modal-title">Edit Delivery Details</h4>
+              </div>
+              <div class="modal-body">
+                  <form id="editDeliveryDetailForm_edtmd" method="post">
+                    @csrf
+
+                    <input type="hidden" name="website" id="webid_mneditmd">
+                    <input type="hidden" name="branch" id="branchId_mneditmd">
+                    <div class="form-group d-none" id="min_order_mneditmd">
+                        <label>Min Order</label>
+                      <input type="text" name="min_order" id="min_order_mneditmd" class="form-control" placeholder="Min Order">
+                      <span id="min_order_mneditmd_alert"></span>
+                    </div>
+                    <div class="form-group">
+                      <label>Delivery on free min order</label>
+                      <input type="text" name="delivery_free" id="delivery_free_mneditmd" class="form-control" placeholder="Delivery on free min order">
+                      <span id="delivery_free_mneditmd_alert"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Estimate of Time</label>
+                      <input type="text" name="estimate_time" id="estimate_time_mneditmd" class="form-control" placeholder="Estimate of time">
+                      <span id="estimate_time_mneditmd_alert"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Estimate of Days</label>
+                      <input type="text" name="estimate_day" id="estimate_day_mneditmd" class="form-control" placeholder="Estimate of days">
+                      <span id="estimate_day_mneditmd_alert"></span>
+                    </div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                 <button type="button" id="btn_modify_deliveryDetail" class="btn btn-success waves-effect waves-light">Save</button>
+              </div>
+           </div>
+        </div>
+     </div>
+
 @endsection
 
 
@@ -474,6 +522,17 @@ input+.slider:before {
     $("#btn_remove_md").on('click',function(){
         $("#removeDeliveryAreaValueForm"+$("#id_md_edarea").val()).submit();
     });
+
+ function editMainDetail(webId,branchId,branchName,minOrder,deliveryFreeMinOrder,estiTime,estiDays){
+    $('#webid_mneditmd').val(webId);
+    $('#branchId_mneditmd').val(branchId);
+
+     $('#min_order_mneditmd').val(minOrder);
+     $('#delivery_free_mneditmd').val(deliveryFreeMinOrder);
+     $('#estimate_time_mneditmd').val(estiTime);
+     $('#estimate_day_mneditmd').val(estiDays);
+    $("#DeliveryparentDetail_Modal").modal('show');
+ }
 
  function switchMode(element){
   var currentName = $("#city").attr('name');
