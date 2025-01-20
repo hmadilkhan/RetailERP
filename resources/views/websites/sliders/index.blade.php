@@ -619,6 +619,11 @@
             });
    });
 
+
+   $("#btn_modify_deptslidmd").on('click',function(){
+       $("#editSlideForm_md").submit();
+   });
+
     $(document).ready(function() {
         // Check if there is a hash in the URL
         if (window.location.hash) {

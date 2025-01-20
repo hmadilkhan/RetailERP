@@ -222,7 +222,7 @@
           <div class="modal-footer">
               <button type="button" id="btn_remove_deptslidmd" class="btn btn-danger waves-effect waves-light f-left">Remove</button>
               <button type="button" data-dismiss="modal" class="btn btn-default waves-effect waves-light m-r-1">Close</button>
-             <button type="button" id="" class="btn btn-success waves-effect waves-light">Save Changes</button>
+             <button type="button" id="btn_modify_deptslidmd" class="btn btn-success waves-effect waves-light">Save Changes</button>
           </div>
        </div>
     </div>

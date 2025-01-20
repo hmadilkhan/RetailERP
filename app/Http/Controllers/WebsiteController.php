@@ -456,6 +456,11 @@ class WebsiteController extends Controller
     public function update_slide(Request $request)
     {
 
+        if(isset($request->deaprtment_slider)){
+            return $this->department_slider_singleFile_modify($request);
+            die();
+        }
+
         $Slide        = $request->file('slide_md');
         $mobile_slide = $request->file('mobile_slide');
         $productSlug  = null;
