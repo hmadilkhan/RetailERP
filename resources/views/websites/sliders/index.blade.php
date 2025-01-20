@@ -595,7 +595,7 @@
         $("#btn_remove_deptslidmd").on('click',function(){
             swal({
                 title: 'Remove Slider',
-                text:  'Are you sure remove '+$("#department_name_deptslider"+id).val()+' department slider from '+$("#webname_dpetslideEdMd").val()+' website?',
+                text:  'Are you sure remove '+$("#department_name_deptslider"+id).text()+' department slider from '+$("#webname_dpetslideEdMd").val()+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
@@ -605,6 +605,7 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
+                    alert(id)
                     $("#deptslide_mode"+id).val(id);
                     $("#DestroyFormDepartSlide"+id).submit();
                 }else{
