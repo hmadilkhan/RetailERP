@@ -64,7 +64,7 @@ class Inventory_DepartmentController extends Controller
      */
     public function create()
     {
-        $depart = inventory_department::getdepartment('',['priority','department_name']);
+        $depart = inventory_department::getdepartment('',['department_id','priority','department_name']);
         // $sdepart = inventory_department::get_subdepart('');
            // return $depart;
         $sections = Section::getSection();
@@ -165,10 +165,10 @@ class Inventory_DepartmentController extends Controller
 
             $this->validate($request, $rules); // validation module
 
-            $priority = 0;
-            if(!empty($request->priority)){
-                $priority = $priority + 1;
-            }
+            // $priority = 0;
+            // if(!empty($request->priority)){
+            //     $priority = $request->priority;
+            // }
 
 
             //department form details save array value
@@ -186,7 +186,7 @@ class Inventory_DepartmentController extends Controller
                 "meta_title"               => $request->metatitle,
                 "meta_description"         => $request->metadescript,
                 'website_mode'             => isset($request->showWebsite) ? 1 : 0,
-                'priority'                 => $priority
+                'priority'                 => $request->priority
             ];
 
             // department save to database
@@ -550,18 +550,13 @@ class Inventory_DepartmentController extends Controller
             }
         }
 
-        $priority = 0;
-        if(!empty($request->priority)){
-            $priority = $priority + 1;
-        }
-
         $items = [
             'code'                     => $request->editcode,
             'department_name'          => $request->departname,
             'website_department_name'  => (empty($request->webdeptname) ?  $request->departname : $request->webdeptname),
             'slug'                     => preg_replace("/[\s_]/", "-", strtolower($request->departname)),
             'website_mode'             => (isset($request->showWebsite) ? 1 : 0),
-            'priority'                 => $priority,
+            'priority'                 => $request->priority,
             'date'                     => date('Y-m-d'),
             'time'                     => date('H:i:s'),
         ];

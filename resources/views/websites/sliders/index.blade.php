@@ -45,114 +45,7 @@
 
 
 
-<div class="modal fade modal-flex" id="slideEdit_Modal" tabindex="-1" role="dialog">
-         <div class="modal-dialog modal-md" role="document">
-            <div class="modal-content">
-               <div class="modal-header">
-                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                              <span aria-hidden="true">&times;</span>
-                          </button>
-                  <h4 class="modal-title" id="title_md_mf">Edit Slide</h4>
-               </div>
-               <div class="modal-body">
-                   <form id="editSlideForm_md" action="{{ route('updateSliderImage') }}" method="post" enctype="multipart/form-data">
-                     @csrf
 
-                     <input type="hidden" id="webname_md" name="webName">
-                     <input type="hidden" id="webid_md" name="webId">
-                     <input type="hidden" id="id_md" name="id">
-
-                     <div class="form-group">
-                           <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
-                           <video id="slideVdMD" width="250" height="128" controls style="display: none;"></video>
-                     </div>
-                     <div class="form-group">
-                          <label for="slide_md" class="custom-file">
-                          <input type="file" name="slide_md" id="slide_md" class="custom-file-input">
-                          <span class="custom-file-control"></span>
-                          </label>
-                     </div>
-
-                    <div class="form-group">
-                         <img for="mobile_slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
-                         <video id="previewMobileSlideVd_md" width="200" height="250" style="display:none;" controls></video></br>
-                        </div>
-                   <div class="form-group">
-                        <label for="mobile_slide_md" class="custom-file">
-                        <input type="file" name="mobile_slide" id="mobile_slide_md" class="custom-file-input">
-                        <span class="custom-file-control"></span>
-                        </label>
-                  </div>
-
-
-                  <div class="alert alert-info">
-                    Be informed that the required image size not exceeding 1MB.
-                </div>
-
-
-                   <div class="form-group">
-               			<label class="pointer">
-            				<input type="radio" name="navigato_md" id="navigat_depart_md" value="department"/>
-            					<i class="helper"></i>Navigate to department
-            			</label>
-
-               			<label class="pointer m-l-2">
-            				<input type="radio" name="navigato_md" id="navigat_prod_md" value="product"/>
-            					<i class="helper"></i>Navigate to product
-            			</label>
-                   </div>
-
-                   <div class="d-none" id="departmentbox_md">
-                     <div class="form-group">
-                          <label class="form-control-label">Inventory Department</label>
-                          <select name="depart_md" id="depart_md" data-placeholder="Select" class="form-control select2">
-                            <option value="">Select</option>
-                          @if($departments)
-                             @php $oldDepart = old('depart_md') @endphp
-                            @foreach($departments as $val)
-                              <option {{ old('depart_md') == $val->department_id ? 'selected' : '' }} value="{{ $val->department_id }}">{{ $val->department_name }}</option>
-                            @endforeach
-                          @endif
-                          </select>
-                    </div>
-                   </div>
-                   <div class="d-none" id="productbox_md">
-                     <div class="form-group">
-                         <label class="form-control-label">Department</label>
-                          <select id="depart_editmd" data-placeholder="Select" class="form-control select2">
-                            <option value="">Select</option>
-                          @if($departments)
-                            @foreach($departments as $val)
-                              <option value="{{ $val->department_id }}">{{ $val->department_name }}</option>
-                            @endforeach
-                          @endif
-                          </select>
-                     </div>
-                    <div class="form-group">
-                      <label class="form-control-label">Select Sub Department</label>
-                      <select id="subDepartment_prod_editmd" data-placeholder="Select" class="form-control select2" disabled>
-                        <option value="">Select</option>
-                      </select>
-                    </div>
-                     <div class="form-group">
-                          <label class="form-control-label">Product</label>
-                          <select name="product_md" id="product_editmd" data-placeholder="Select" class="form-control select2" disabled>
-                            <option value="">Select</option>
-                          </select>
-
-                    </div>
-                   </div>
-
-                   </form>
-               </div>
-               <div class="modal-footer">
-                   <button type="button" id="btn_remove_md" class="btn btn-danger waves-effect waves-light f-left">Remove</button>
-                   <button type="button" data-dismiss="modal" class="btn btn-default waves-effect waves-light m-r-1">Close</button>
-                  <button type="button" id="btn_update_md" class="btn btn-success waves-effect waves-light">Save Changes</button>
-               </div>
-            </div>
-         </div>
-      </div>
 @endsection
 
 @section('scriptcode_one')
@@ -310,6 +203,56 @@
        //$("#editSlideForm_md").attr('action',$("#updateSliderImage"+id).val());
    }
 
+   function editDepartSlide(unqid,webId,departSlider,webName,mobileSlide,products,ftype){
+    $("#previewslide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png');
+    $("#previewMobileSlide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').show();
+    $("#previewMobileSlideVd_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').hide();
+
+       if(departSlider != ''){
+           getProduct(webId,'product_dpt_slide_deptEdtmd',departSlider,'');
+
+           if (products != null) {
+                setTimeout(function() {
+                    $("#product_dpt_slide_deptEdtmd").val(products).change();
+                }, 2000);
+            }
+       }
+
+       $("#departmentslideEdit_Modal").modal('show');
+
+     if(ftype == 'vd'){
+        $("#slideVd_deptEdtmd").attr('src',$("#slide"+unqid).attr('src'));
+        $("#slideVd_deptEdtmd").show();
+        $("#previewslide_deptEdtmd").hide();
+
+     }else{
+       $("#previewslide_deptEdtmd").attr('src',$("#slide"+unqid).attr('src'));
+       $("#slideVd_deptEdtmd").hide();
+       $("#previewslide_deptEdtmd").show();
+     }
+
+       $("#webname_dpetslideEdMd").val(webName);
+       $("#webid_dpetslideEdMd").val(webId);
+       $("#departSlider_dpetslideEdMd").val(departSlider);
+       $("#id_dpetslideEdMd").val(unqid);
+
+       id=unqid;
+
+       if(mobileSlide != ''){
+        if(ftype == 'vd'){
+            $("#previewMobileSlideVd_deptEdtmd").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide);
+            $("#previewMobileSlideVd_deptEdtmd").show();
+            $("#previewMobileSlide_deptEdtmd").hide();
+        }else{
+            $("#previewMobileSlide_deptEdtmd").attr('src',location.origin+'/storage/images/website/sliders/{{ session("company_id") }}/'+webId+'/'+mobileSlide);
+            $("#previewMobileSlideVd_deptEdtmd").hide();
+            $("#previewMobileSlide_deptEdtmd").show();
+        }
+
+       }
+
+   }
+
    $("#btn_remove_md").on('click',function(){
             swal({
                 title: 'Remove Slider',
@@ -329,8 +272,7 @@
                     swal.close();
                 }
             });
-
-   })
+   });
 
 //   $("#btn_create").on('click',function(){
 //       var webid = $("#website").val();
@@ -377,6 +319,14 @@
 
   $("#mobile_slide").on('change',function(){
       readURL(this,'previewMobileSlide','videoMobilePreview');
+  });
+
+  $("#desktop_slide_dept").on('change',function(){
+      readURL(this,'previewImg_deptslide','videoPreview_deptslide');
+  });
+
+  $("#mobile_slide_dept").on('change',function(){
+      readURL(this,'previewMobileSlide_deptslide','videoMobilePreview_deptslide');
   });
 
   $("#slide_md").on('change',function(){
@@ -448,10 +398,10 @@
 
   }
 
-    function warning(webId,webName){
+    function warning(webId,webName,departSlider = null){
             swal({
                 title: 'Remove Slider',
-                text:  'Are you sure remove slider from '+webName+' website?',
+                text:  'Are you sure remove '+(departSlider != '' ? 'department' : '')+' slider from '+webName+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
@@ -461,12 +411,17 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                     $("#DestroyForm"+webId).submit();
+                    if(departSlider != ''){
+                        $("#DestroyFormDepartSlide"+webId).submit();
+                    }else{
+                        $("#DestroyForm"+webId).submit();
+                    }
                 }else{
                     swal.close();
                 }
             });
     }
+
 
     function readURL(input,id,msp_Id) {
 
@@ -641,6 +596,33 @@
 		          getProduct($('#website_dept_slide').val(),'product_dpt_slide',$(this).val(),'');
 		    }
 		});
+
+
+        $("#btn_remove_deptslidmd").on('click',function(){
+            swal({
+                title: 'Remove Slider',
+                text:  'Are you sure remove '+$("#department_name_deptslider"+$("#webid_dpetslideEdMd").val()).text()+' department slider from '+$("#webname_dpetslideEdMd").val()+' website?',
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: 'btn btn-danger',
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },function(isConfirm){
+                if(isConfirm){
+                    $("#deptslide_mode"+$("#webid_dpetslideEdMd").val()).val(id);
+                    $("#DestroyFormDepartSlide"+$("#webid_dpetslideEdMd").val()).submit();
+                }else{
+                    swal.close();
+                }
+            });
+   });
+
+
+   $("#btn_modify_deptslidmd").on('click',function(){
+       $("#editSlideForm_md").submit();
+   });
 
     $(document).ready(function() {
         // Check if there is a hash in the URL

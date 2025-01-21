@@ -245,13 +245,21 @@ class WebsiteController extends Controller
             "websites"          => WebsiteDetail::where('company_id', $companyId)->get(),
             "departments"       => InventoryDepartment::where('company_id', $companyId)->get(),
             "websiteSlider"     => DB::table('website_sliders')
-                ->leftJoin('inventory_department', 'inventory_department.department_id', 'website_sliders.department_slider')
                 ->join('website_details', 'website_details.id', 'website_sliders.website_id')
-                ->select('website_details.*','inventory_department.department_name as department_slider_name')
+                ->select('website_details.*')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
-                // ->where('website_sliders.type', 'default')
+                ->where('website_sliders.type', 'default')
                 ->groupBy('website_details.name')
+                ->get(),
+            "websiteDeaprtmentSlider"  => DB::table('website_sliders')
+                ->join('inventory_department', 'inventory_department.department_id', 'website_sliders.department_slider')
+                ->join('website_details', 'website_details.id', 'website_sliders.website_id')
+                ->select('website_details.*','inventory_department.department_name as department_slider_name','website_sliders.department_slider')
+                ->where('website_details.company_id', $companyId)
+                ->where('website_sliders.status', 1)
+                ->where('website_sliders.type', 'department')
+                ->groupBy('website_sliders.department_slider')
                 ->get(),
             "websiteSliderList" => DB::table('website_sliders')
                 ->join('website_details', 'website_details.id', 'website_sliders.website_id')
@@ -266,7 +274,13 @@ class WebsiteController extends Controller
                 ->where('website_details.company_id', $companyId)
                 // ->where('website_sliders.type', 'default')
                 ->where('website_sliders.status', 1)
-                ->get()
+                ->get(),
+                'slider_bin_products'=> DB::table('website_slider_product_binds')
+                                          ->join('website_sliders','website_sliders.id','website_slider_product_binds.slider_id')
+                                          ->join('website_details','website_details.id','website_sliders.website_id')
+                                          ->where('website_details.company_id', $companyId)
+                                          ->select('website_slider_product_binds.*')
+                                          ->get(),
         ]);
     }
 
@@ -339,6 +353,10 @@ class WebsiteController extends Controller
     public function store_slider(Request $request)
     {
         // dimensions:width=1520,height=460
+        // $desktop_slide     = $request->file('desktop_slide') ?? $request->file('desktop_slide_dept');
+        // $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
+
+        // return $imageName;
        if(isset($request->slider_type) && \Hash::check('department', $request->slider_type)){
             $rules = [
                        'website_dept_slide'     => 'required',
@@ -362,14 +380,15 @@ class WebsiteController extends Controller
 
         //$this->validate($request, $rules);
 
-        $desktop_slide     = $request->file('desktop_slide') ? $request->file('desktop_slide') : $request->file('desktop_slide_dept') ;
+        $desktop_slide     = $request->file('desktop_slide') ?? $request->file('desktop_slide_dept');
         $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
-        $mobile_slide      = $request->file('mobile_slide') ? ($request->file('mobile_slide') ?? null) : ($request->file('mobile_slide_dept') ?? null);
+        $mobile_slide      = $request->file('mobile_slide') ?? $request->file('mobile_slide_dept') ?? null;
         $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower($mobile_slide->getClientOriginalExtension());
         $productSlug       = null;
         $invent_department = null;
+        $websiteId = isset($request->website) ? $request->website : $request->website_dept_slide;
 
-        $path = $this->create_folder('sliders/' . session('company_id'), $request->website);
+        $path = $this->create_folder('sliders/' . session('company_id'), $websiteId);
 
         if ($path == false) {
             return response()->json('slider not uploaded.', 500);
@@ -400,30 +419,47 @@ class WebsiteController extends Controller
 
         $result = DB::table('website_sliders')
             ->insertGetId([
-                'website_id'             => isset($request->website) ? $request->website : $request->website_dept_slide,
+                'website_id'             => $websiteId,
                 'invent_department_id'   => !empty($request->product) ? null : $request->post('depart'),
                 'invent_department_name' => $invent_department,
                 'prod_id'                => !empty($request->depart) ? null : $request->post('product'),
                 'prod_slug'              => $productSlug,
-                'slide'                  => $desktop_slide,
+                'slider_name'            => $request->slider_name,
+                'slug'                   => preg_replace("/[\s_]/", "-", strtolower($request->slider_name)),
+                'slide'                  => $imageName,
                 'mobile_slide'           => $mobile_slideName,
                 'status'                 => 1,
                 'department_slider'      => $request->department_dpt_slide ?? null,
-                'type'                   => isset($request->department_dpt_slide) ? 'deaprtment' : 'default'
+                'type'                   => isset($request->department_dpt_slide) ? 'department' : 'default'
             ]);
 
         if ($result) {
+
+            if(isset($request->department_dpt_slide) && !empty($request->product_dpt_slide)){
+                  foreach($request->product_dpt_slide as $value){
+                          DB::table('website_slider_product_binds')
+                              ->insert([
+                                         'slider_id'  => $result,
+                                         'product_id' => $value
+                                       ]);
+                  }
+            }
 
             Session::flash('success', 'Success!');
         } else {
 
             Session::flash('error', 'Invalid record');
         }
-        return redirect()->route('sliderLists'.isset($request->department_dpt_slide) ? '?#departmentSliderNav' : null);
+        return redirect('website/slider/lists'.isset($request->department_dpt_slide) ? '?#departmentSliderNav' : '');
     }
 
     public function update_slide(Request $request)
     {
+
+        if(isset($request->deaprtment_slider)){
+            return $this->department_slider_singleFile_modify($request);
+            die();
+        }
 
         $Slide        = $request->file('slide_md');
         $mobile_slide = $request->file('mobile_slide');
@@ -525,6 +561,104 @@ class WebsiteController extends Controller
         return redirect()->route('sliderLists');
     }
 
+    public function department_slider_singleFile_modify(Request $request){
+        $Slide        = $request->file('desktop_slide');
+        $mobile_slide = $request->file('mobile_slide');
+        $products     = $request->product_dpt_slide;
+
+
+        $columnArray = ['updated_at' => date("Y-m-d H:i:s")];
+
+        $get = DB::table('website_sliders')
+                  ->where('id', '=', $request->id)
+                  ->where('department_slider', '=', $request->deaprtment_slider)
+                  ->first();
+
+        if ($Slide != '') {
+
+            $rules = [
+                'desktop_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+            ];
+
+            $this->validate($request, $rules);
+
+            $imageName   = time() . '.' . $Slide->getClientOriginalExtension();
+
+            $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
+
+            if ($path == false) {
+                Session::flash('error', 'Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+            if (!$Slide->move($path, $imageName)) {
+                Session::flash('error', 'Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+              $this->removeImage('images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' , $get->slide);
+            // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
+            //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide);
+            // }
+            $columnArray['slide'] = $imageName;
+        }
+
+        if ($mobile_slide != '') {
+
+            $rules = [
+                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+            ];
+
+            $this->validate($request, $rules);
+
+            $mobile_slideName   = 'mobile_size'.time() . '.' . $mobile_slide->getClientOriginalExtension();
+
+            $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
+
+            if ($path == false) {
+                Session::flash('error', 'Server Issue image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+            if (!$mobile_slide->move($path, $mobile_slideName)) {
+                Session::flash('error', 'Server Issue slide image not uploaded route issue.');
+                return redirect()->route('sliderLists');
+            }
+
+            $this->removeImage('images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' , $get->mobile_slide);
+
+            // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide)) {
+            //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide);
+            // }
+            $columnArray['mobile_slide'] = $mobile_slideName;
+        }
+
+        //   return $columnArray;
+        $result = DB::table('website_sliders')
+            ->where('id', '=', $request->id)
+            ->update($columnArray);
+
+        if ($result) {
+
+              if($products != null){
+                 DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
+                foreach($products as $value){
+                    DB::table('website_slider_product_binds')->insert(
+                            [
+                                        'slider_id'=>$request->id,
+                                        'product_id'=>$value,
+                                    ]);
+                }
+              }
+
+            Session::flash('success', 'Success!');
+        } else {
+            Session::flash('error', 'Server Issue record not updated.');
+        }
+
+        return redirect()->route('sliderLists');
+    }
+
     public function create_folder($comFOldName, $webFoldName)
     {
         $path   = 'storage/images/website/'. $comFOldName . '/' . $webFoldName;
@@ -539,25 +673,33 @@ class WebsiteController extends Controller
     public function destroy_slide(Request $request)
     {
 
+        if(isset($request->depart)){
+           return $this->destroy_department_slide($request);
+           die();
+        }
+
         if (!isset($request->id)) {
             Session::flash('error', 'Server Issue invalid fields');
             return redirect()->route('sliderLists');
         }
 
         $id = $request->id;
+        $path = 'storage/images/website/sliders/'. session('company_id') . '/' . $id . '/';
 
         if ($request->post('mode' . $id) == '') {
             $get = DB::table('website_sliders')->where('website_id', '=', $id)->get();
 
             if ($get != null) {
                 foreach ($get as $val) {
-                    if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide)) {
-                        \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide);
-                    }
+                    $this->removeImage($path,$val->slide);
+                    $this->removeImage($path,$val->mobile_slide);
+                    // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide)) {
+                    //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide);
+                    // }
 
-                    if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide)) {
-                        \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide);
-                    }
+                    // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide)) {
+                    //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide);
+                    // }
                 }
 
                 $process = DB::table('website_sliders')->where('website_id', '=', $id)->delete();
@@ -565,14 +707,15 @@ class WebsiteController extends Controller
         } else {
             $get = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->first();
             if ($get != null) {
+                $this->removeImage($path,$get->slide);
+                $this->removeImage($path,$get->mobile_slide);
+                // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide)) {
+                //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide);
+                // }
 
-                if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide)) {
-                    \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide);
-                }
-
-                if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide)) {
-                    \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide);
-                }
+                // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide)) {
+                //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide);
+                // }
 
                 $process = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->delete();
             }
@@ -585,6 +728,80 @@ class WebsiteController extends Controller
         }
 
         return redirect()->route('sliderLists');
+    }
+
+    public function destroy_department_slide(Request $request)
+    {
+
+        if (!isset($request->id) || !isset($request->depart)) {
+            Session::flash('error', 'Server Issue invalid fields');
+            return redirect('website/slider/lists?#departmentSliderNav');
+        }
+
+        $id = $request->id;
+        $department_slider = $request->depart;
+        $path = 'storage/images/website/sliders/'. session('company_id') . '/' . $id . '/';
+
+        $process = false;
+
+        if ($request->post('mode' . $id) == '') {
+            $get = DB::table('website_sliders')
+                        ->where('department_slider', '=', $department_slider)
+                        ->where('website_id', '=', $id)
+                        ->get();
+
+            if ($get != null) {
+                foreach ($get as $val) {
+                    $this->removeImage($path,$val->slide);
+                    $this->removeImage($path,$val->mobile_slide);
+                    // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide)) {
+                    //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide);
+                    // }
+
+                    // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide)) {
+                    //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->mobile_slide);
+                    // }
+                }
+
+                $process = DB::table('website_sliders')
+                            ->where('department_slider', '=', $department_slider)
+                            ->where('website_id', '=', $id)
+                            ->delete();
+
+                            DB::table('website_slider_product_binds')
+                            ->whereIn('slider_id', $get->pluck('id'))
+                            ->delete();
+            }
+        } else {
+            $get = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->first();
+            if ($get != null) {
+                $this->removeImage($path,$get->slide);
+                $this->removeImage($path,$get->mobile_slide);
+                // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide)) {
+                //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide);
+                // }
+
+                // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide)) {
+                //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->mobile_slide);
+                // }
+
+                $process = DB::table('website_sliders')
+                              ->where('id', '=', $request->post('mode' . $id))
+                              ->delete();
+
+                           DB::table('website_slider_product_binds')
+                              ->where('slider_id', $request->post('mode' . $id))
+                              ->delete();
+            }
+        }
+
+        if ($process) {
+            Session::flash('success', 'Success!');
+        } else {
+            Session::flash('error', 'Server Issue slide not removed.');
+        }
+
+        return redirect('website/slider/lists?#departmentSliderNav');
     }
 
     // ======================================================================================
@@ -1081,6 +1298,7 @@ class WebsiteController extends Controller
                         'estimate_of_days'   => $request->estimate_day,
                         'charge'             => $request->charges,
                         'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
+                        'min_order'          => $request->delivery_free_on_min_order == '' ? 0 : $request->delivery_free_on_min_order,
                         'status'             => 1,
                     ]);
             }
@@ -1242,6 +1460,32 @@ class WebsiteController extends Controller
         } else {
             return response()->json(['status' => 500, 'msg' => 'Server issue record is not updated.']);
         }
+    }
+
+    public function modify_delivery_parent_detail(Request $request){
+        if (!isset($request->website) || !isset($request->branch)) {
+            Session::flash('error', 'The required some parameter is missing. Please check and try again.');
+            return redirect()->route('deliveryAreasList');
+        }
+
+        $column = [
+                    'min_order' => $request->min_order,
+                    'delivery_free_on_min_order' =>  $request->delivery_free,
+                    'estimate_time'              => $request->estimate_time,
+                    'estimate_of_days'           => $request->estimate_days
+
+        ];
+
+        if(DB::table('website_delivery_areas')
+                  ->where(['website_id' => $request->website,'branch_id'=>$request->branch])
+                  ->update($column))
+        {
+            Session::flash('success', 'Successfully');
+        }else{
+            Session::flash('error', 'Server issue record is not updated!');
+        }
+
+        return redirect()->route('deliveryAreasList');
     }
 
     public function destroy_deliveryArea(Request $request)

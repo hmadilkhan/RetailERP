@@ -87,6 +87,7 @@
                     @if ($errors->has('name'))
                       <div class="form-control-feedback" id="nameerror">{{ $errors->first('name') }}</div>
                     @endif
+                    <span class="text-danger" id="product_name_alert"></span>
               </div>
              </div>
      </div>
@@ -763,120 +764,7 @@
 @section('scriptcode_one')
  <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-  @if(in_array(Auth::user()->username,['demoadmin','urs.sb.gs']))
     <style>
-        /*
-.nav-tabs1 {
-    border-bottom: 1px solid #ddd
-}
-.nav-tabs1::after {
-    content: "";
-    display: table;
-      clear: both
-}
-.nav-tabs1 .nav-item {
-    float: left;
-    margin-bottom: -1px
-}
-.nav-tabs1 .nav-item+.nav-item {
-    margin-left: .2rem
-}
-.nav-tabs1 .nav-link {
-    display: block;
-    padding: .5em 1em;
-    border: 1px solid transparent;
-    border-top-right-radius: .25rem;
-    border-top-left-radius: .25rem
-}
-.nav-tabs1 .nav-link:focus,
-.nav-tabs1 .nav-link:hover {
-    border-color: #eceeef #eceeef #ddd
-}
-.nav-tabs1 .nav-link.disabled,
-.nav-tabs1 .nav-link.disabled:focus,
-.nav-tabs1 .nav-link.disabled:hover {
-    color: #818a91;
-    background-color: transparent;
-    border-color: transparent
-}
-.nav-tabs1 .nav-item.open .nav-link,
-.nav-tabs1 .nav-item.open .nav-link:focus,
-.nav-tabs1 .nav-item.open .nav-link:hover,
-.nav-tabs1 .nav-link.active,
-.nav-tabs1 .nav-link.active:focus,
-.nav-tabs1 .nav-link.active:hover {
-    color: #55595c;
-    background-color: #fff;
-    border-color: #ddd #ddd transparent
-}
-.nav-tabs1 .dropdown-menu {
-    margin-top: -1px;
-    border-top-right-radius: 0;
-    border-top-left-radius: 0
-}
-
- .nav-tabs1 .nav-item .nav-link{
-    color: #55595c;
-    font-size: 22px;
-    font-weight: 400;
-    cursor: pointer;
-    -webkit-transition: all 0.3s 0s;
-    -moz-transition: all 0.3s 0s;
-    -ms-transition: all 0.3s 0s;
-    transition: all 0.3s 0s;
-}
-*/
-
-        /* Product Gallery */
-/* ----------------------------------------- */
-        /* .image-container {
-            position: relative;
-            display: inline-block;
-            margin: 10px;
-        }
-        .image-container img {
-            max-width: 50px; /* Adjust as needed */
-       /*     max-height: 50px; /* Adjust as needed */
-       /*     object-fit: cover;
-        }
-        .remove-button {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background-color: red;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 12px;
-        } */
-        /* Product Video */
-/* ----------------------------------------- */
-        /*.video-container {
-            position: relative;
-            display: inline-block;
-            margin: 10px;
-        }
-        .video-container video {
-            max-width: 300px; /* Adjust as needed */
-       /*     max-height: 300px; /* Adjust as needed */
-       /*     object-fit: cover;
-        }
-        .remove-button {
-            position: absolute;
-            top: -6px;
-            right: -6px;
-            background-color: red;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 12px;
-            padding: 5px;
-        }
-        */
-
         .video-remove-button {
             position: absolute;
             top: 65px;
@@ -897,8 +785,6 @@
             }
         }
     </style>
-
-  @endif
 @endsection
 @section('scriptcode_three')
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
@@ -922,7 +808,32 @@
    $(".select2").select2();
 
    $('#inventCreateForm').on('submit', function() {
-                $('#btnSubmit').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+      let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
+      $('#btnSubmit').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
+      let itemName = $("#name");
+        if (!regex.test(itemName.val())){
+            event.preventDefault();
+            $('#btnSubmit').prop('disabled', false).html('<i class="icofont icofont-plus"></i>  Submit Details');
+            itemName.focus();
+            swal('Error!','This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!','error');
+            $("#product_name_alert").text('This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!');
+            if(!itemName.hasClass('input-danger')){
+                itemName.addClass('input-danger')
+             }
+
+             if(itemName.hasClass('input-success')){
+                itemName.removeClass('input-success')
+             }
+        }else{
+            $("#product_name_alert").text('');
+            if(itemName.hasClass('input-danger')){
+                itemName.removeClass('input-danger')
+             }
+
+             if(!itemName.hasClass('input-success')){
+                itemName.addClass('input-success')
+             }
+        }
    });
 
        $("#btn_uom").on('click',function(){
@@ -1171,97 +1082,6 @@ function updateFileInput() {
     // Update the file input's files property
     fileInput.files = dataTransfer.files;
 }
-
-
-//   let filesArray = []; // Array to keep track of the files
-
-// function readURL_multiple(input, containerId) {
-//     if (input.files && input.files.length) {
-//         // Get the container element where images will be appended
-//         const container = document.getElementById(containerId);
-
-//         // Update the filesArray with new files
-//         for (let i = 0; i < input.files.length; i++) {
-//             filesArray.push(input.files[i]);
-//         }
-
-//         // Loop through the filesArray and display images
-//         updateImageContainer(container);
-
-//         // Reset the file input to allow selecting the same files again
-//         // input.value = '';
-//     }
-// }
-
-// function updateImageContainer(container) {
-//     // Clear the container
-//     container.innerHTML = '';
-
-//     filesArray.forEach((file, index) => {
-//         const reader = new FileReader();
-
-//         reader.onload = function(e) {
-//             // Create a container for each image and remove button
-//             const imageContainer = document.createElement('div');
-//             imageContainer.style.position = 'relative';
-//             imageContainer.style.display = 'inline-block';
-//             imageContainer.style.margin = '10px';
-
-//             // Create a new image element
-//             const img = document.createElement('img');
-//             img.src = e.target.result;
-//             img.style.maxWidth = '75px'; // Adjust as needed
-//             img.style.maxHeight = '75px'; // Adjust as needed
-//             img.style.objectFit = 'cover'; // Ensures images fit well
-
-//             // Create a remove button
-//             const removeButton = document.createElement('button');
-//             removeButton.innerHTML = '✖'; // Cross symbol
-//             removeButton.style.position = 'absolute';
-//             removeButton.style.top = '-6px';
-//             removeButton.style.right = '-6px';
-//             removeButton.style.backgroundColor = 'red';
-//             removeButton.style.color = 'white';
-//             removeButton.style.border = 'none';
-//             removeButton.style.borderRadius = '50%';
-//             removeButton.style.cursor = 'pointer';
-//             removeButton.style.fontSize = '12px';
-
-//             // Add event listener to remove button
-//             removeButton.addEventListener('click', function() {
-//                 // Remove the file from filesArray
-//                 filesArray.splice(index, 1);
-//                 // Remove the image from the container
-//                 container.removeChild(imageContainer);
-//                 // Update the file input to reflect changes
-//                 updateFileInput();
-//             });
-
-//             // Append image and button to the container
-//             imageContainer.appendChild(img);
-//             imageContainer.appendChild(removeButton);
-//             container.appendChild(imageContainer);
-//         }
-
-//         // Read the file as a Data URL
-//         reader.readAsDataURL(file);
-//     });
-// }
-
-// function updateFileInput() {
-//     // Get the file input element
-//     const fileInput = document.getElementById('prodgallery');
-//     // Create a new DataTransfer object
-//     const dataTransfer = new DataTransfer();
-
-//     // Add files to the DataTransfer object
-//     filesArray.forEach(file => dataTransfer.items.add(file));
-
-//     // Update the file input's files property
-//     fileInput.files = dataTransfer.files;
-
-//     // console.log($("#prodgallery").get)
-// }
 
 function handleVideo(input, containerId) {
             if (input.files && input.files[0]) {
