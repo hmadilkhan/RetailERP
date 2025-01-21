@@ -218,8 +218,6 @@
             }
        }
 
-       $("#departmentslideEdit_Modal").modal('show');
-
      if(ftype == 'vd'){
         $("#slideVd_deptEdtmd").attr('src',$("#slide"+unqid).attr('src'));
         $("#slideVd_deptEdtmd").show();
@@ -251,6 +249,7 @@
 
        }
 
+       $("#departmentslideEdit_Modal").modal('show');
    }
 
    $("#btn_remove_md").on('click',function(){
