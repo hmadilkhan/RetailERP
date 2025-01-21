@@ -324,6 +324,11 @@
       readURL(this,'previewImg_deptslide','videoPreview_deptslide');
   });
 
+  $("#desktopslide_deptEdtmd").on('change',function(){
+      readURL(this,'previewslide_deptEdtmd','slideVd_deptEdtmd');
+  });
+
+
   $("#mobile_slide_dept").on('change',function(){
       readURL(this,'previewMobileSlide_deptslide','videoMobilePreview_deptslide');
   });
