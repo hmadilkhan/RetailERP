@@ -378,7 +378,7 @@
                     </div>
                     <div class="form-group">
                         <label>Estimate of Days</label>
-                      <input type="text" name="estimate_day" id="estimate_day_mneditmd" class="form-control" placeholder="Estimate of days">
+                      <input type="text" name="estimate_days" id="estimate_day_mneditmd" class="form-control" placeholder="Estimate of days">
                       <span id="estimate_day_mneditmd_alert"></span>
                     </div>
                   {{-- </div>
