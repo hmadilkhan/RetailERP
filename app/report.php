@@ -376,7 +376,7 @@ class report extends Model
         } else {
             $filter .= " and opening_id IN (SELECT opening_id FROM `sales_opening` WHERE date between '" . $fromdate . "' and '" . $todate . "' and terminal_id = " . $terminal . ")";
         }
-        if ($customer != "") {
+        if ($customer != "" && $customer != "null") {
             $filter .= " and a.customer_id = ".$customer;
         }
         $terminalFilter = " and a.terminal_id = " . ($terminal != "" && $terminal != 0  ? $terminal : "(SELECT terminal_id FROM `terminal_details` where branch_id IN (SELECT branch_id FROM `branch` WHERE `company_id` = " . session('company_id') . "))");

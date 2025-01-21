@@ -3234,12 +3234,12 @@ class ReportController extends Controller
             $branchname = " (All Branches) ";
         }
 
-        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
-            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
-            \QrCode::size(200)
-                ->format('png')
-                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
-        }
+        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+        //     \QrCode::size(200)
+        //         ->format('png')
+        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        // }
 
         $pdf = new pdfClass();
         $pdf->AliasNbPages();
@@ -7029,8 +7029,6 @@ class ReportController extends Controller
         $pdf->Cell(190, 10, 'Cash In/Out Report', 'B,T', 1, 'L');
         $pdf->ln(1);
 
-
-
         if ($request->branch == "all") {
             $terminals = $report->getTerminals($request->branch);
         } else {
@@ -7041,14 +7039,13 @@ class ReportController extends Controller
                 })
                 ->get();
         }
-
+        // TERMINALS 
         foreach ($terminals as $key => $terminal) {
 
             $pdf->ln(2);
             $pdf->SetFont('Arial', 'B', 14);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminal->terminal_name, 'T,B', 1, 'L');
-
 
             $pdf->SetFont('Arial', 'B', 15);
             $pdf->setFillColor(232, 232, 232);
@@ -7068,6 +7065,7 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
             $totalCashIn = 0;
 
+            // CASH IN
             $cashInDetails = $report->cashIn($request->fromdate, $request->todate, $terminal->terminal_id);
             if (!empty($cashInDetails)) {
                 foreach ($cashInDetails as $key => $cashIn) {
@@ -7089,6 +7087,7 @@ class ReportController extends Controller
 
             $pdf->ln(2);
 
+            // CASH OUT
             $pdf->SetFont('Arial', 'B', 15);
             $pdf->setFillColor(232, 232, 232);
             $pdf->SetTextColor(0, 0, 0);
