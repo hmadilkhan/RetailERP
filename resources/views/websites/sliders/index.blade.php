@@ -329,8 +329,14 @@
   });
 
 
+
+
   $("#mobile_slide_dept").on('change',function(){
       readURL(this,'previewMobileSlide_deptslide','videoMobilePreview_deptslide');
+  });
+
+  $("#mobile_slide_deptEdtmd").on('change',function(){
+      readURL(this,'previewMobileSlide_deptEdtmd','previewMobileSlideVd_deptEdtmd');
   });
 
   $("#slide_md").on('change',function(){
