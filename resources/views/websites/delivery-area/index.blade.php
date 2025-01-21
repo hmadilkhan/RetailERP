@@ -354,8 +354,8 @@
                          </button>
                  <h4 class="modal-title">Edit Delivery Details</h4>
               </div>
+              <form id="editDeliveryDetailForm_edtmd" action="{{ route('modify_delivery_parent_detail') }}" method="post">
               <div class="modal-body">
-                  <form id="editDeliveryDetailForm_edtmd" action="{{ route('modify_delivery_parent_detail') }}" method="post">
                     @csrf
                     <input type="hidden" name="website" id="webid_mneditmd">
                     <input type="hidden" name="branch" id="branchId_mneditmd">
@@ -383,11 +383,12 @@
                     </div>
                   {{-- </div>
                 </div> --}}
-                  </form>
+
               </div>
               <div class="modal-footer">
                  <button type="submit" id="btn_modify_deliveryDetail" class="btn btn-success waves-effect waves-light">Save</button>
               </div>
+            </form>
            </div>
         </div>
      </div>
