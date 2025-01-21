@@ -359,6 +359,7 @@
                     @csrf
                     <input type="hidden" name="website" id="webid_mneditmd">
                     <input type="hidden" name="branch" id="branchId_mneditmd">
+                  <div class="col-md-6">
                     <div class="form-group">
                         <label>Min Order</label>
                       <input type="text" name="min_order" id="min_order_mneditmd" class="form-control" placeholder="Min Order">
@@ -379,6 +380,7 @@
                       <input type="text" name="estimate_day" id="estimate_day_mneditmd" class="form-control" placeholder="Estimate of days">
                       <span id="estimate_day_mneditmd_alert"></span>
                     </div>
+                  </div>
                   </form>
               </div>
               <div class="modal-footer">
