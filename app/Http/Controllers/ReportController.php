@@ -3234,12 +3234,12 @@ class ReportController extends Controller
             $branchname = " (All Branches) ";
         }
 
-        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
-        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
-        //     \QrCode::size(200)
-        //         ->format('png')
-        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
-        // }
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
 
         $pdf = new pdfClass();
         $pdf->AliasNbPages();
