@@ -214,7 +214,7 @@
            if (products != null) {
                 setTimeout(function() {
                     $("#product_dpt_slide_deptEdtmd").val(products).change();
-                }, 2000);
+                }, 1000);
             }
        }
 
