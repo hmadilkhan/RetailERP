@@ -37,6 +37,7 @@ Route::middleware(['statusCheck'])->group(function () {
         Route::post('/store', [WebsiteController::class, 'store_deliveryArea'])->name('deliveryAreaStore');
         Route::post('/add-area', [WebsiteController::class, 'single_deliveryAreaName_store'])->name('deliveryAreaNameStore');
         Route::post('/update-area-detail', [WebsiteController::class, 'update_deliveryArea'])->name('deliveryAreaNameUpdate');
+        Route::post('/update-detail', [WebsiteController::class, 'modify_delivery_parent_detail'])->name('modify_delivery_parent_detail');
         // Route::patch('/{id}/',[WebsiteController::class,' update_deliveryArea'])->name('deliveryAreaNameUpdate');
         Route::patch('/{branchid}/update', [WebsiteController::class, 'update_deliveryAreaSpecificField'])->name('deliveryAreaUpdate');
         Route::delete('/{branchid}/destroy', [WebsiteController::class, 'destroy_deliveryArea'])->name('deliveryAreaDestroy');

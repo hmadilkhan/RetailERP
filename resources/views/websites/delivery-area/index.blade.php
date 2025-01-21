@@ -355,7 +355,7 @@
                  <h4 class="modal-title">Edit Delivery Details</h4>
               </div>
               <div class="modal-body">
-                  <form id="editDeliveryDetailForm_edtmd" method="post">
+                  <form id="editDeliveryDetailForm_edtmd" action="{{ route('modify_delivery_parent_detail') }}" method="post">
                     @csrf
                     <input type="hidden" name="website" id="webid_mneditmd">
                     <input type="hidden" name="branch" id="branchId_mneditmd">
@@ -386,7 +386,7 @@
                   </form>
               </div>
               <div class="modal-footer">
-                 <button type="button" id="btn_modify_deliveryDetail" class="btn btn-success waves-effect waves-light">Save</button>
+                 <button type="submit" id="btn_modify_deliveryDetail" class="btn btn-success waves-effect waves-light">Save</button>
               </div>
            </div>
         </div>
@@ -525,6 +525,8 @@ input+.slider:before {
     $("#btn_remove_md").on('click',function(){
         $("#removeDeliveryAreaValueForm"+$("#id_md_edarea").val()).submit();
     });
+
+
 
  function editMainDetail(webId,branchId,branchName,minOrder,deliveryFreeMinOrder,estiTime,estiDays){
     $('#webid_mneditmd').val(webId);
@@ -945,7 +947,6 @@ input+.slider:before {
           });
       }
   })
-
 
   function modifyField(id,value,md){
 
