@@ -560,7 +560,7 @@ class WebsiteController extends Controller
         return redirect()->route('sliderLists');
     }
 
-    public function department_slider_singleFile_modify(Request $request){
+    public function department_slider_slide_modify(Request $request){
         $Slide        = $request->file('desktop_slide');
         $mobile_slide = $request->file('mobile_slide');
         $products     = $request->product_dpt_slide;
