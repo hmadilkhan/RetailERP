@@ -655,7 +655,7 @@ class WebsiteController extends Controller
             Session::flash('error', 'Server Issue record not updated.');
         }
 
-        return redirect()->route('sliderLists');
+        return redirect('website/slider/lists?#departmentSliderNav');
     }
 
     public function create_folder($comFOldName, $webFoldName)
