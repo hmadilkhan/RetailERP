@@ -206,7 +206,7 @@
    function editDepartSlide(unqid,webId,departSlider,webName,mobileSlide,products,ftype){
     $("#previewslide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png');
     $("#previewMobileSlide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').show();
-    $("#previewMobileSlideVd_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').hide();
+    $("#previewMobileSlideVd_deptEdtmd").attr('src','').hide();
 
        if(departSlider != ''){
            getProduct(webId,'product_dpt_slide_deptEdtmd',departSlider,'');
@@ -434,7 +434,7 @@
     }
 
 
-    function readURL(input,id,msp_Id) {
+  function readURL(input,id,msp_Id) {
 
   // Allowed file extensions for image and video
   var allowedImageExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
