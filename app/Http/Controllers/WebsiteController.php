@@ -455,7 +455,7 @@ class WebsiteController extends Controller
     public function update_slide(Request $request)
     {
 
-        if(isset($request->deaprtment_slider)){
+        if(isset($request->department_slider)){
             return $this->department_slider_slide_modify($request);
             die();
         }
@@ -564,7 +564,7 @@ class WebsiteController extends Controller
         $Slide        = $request->file('desktop_slide');
         $mobile_slide = $request->file('mobile_slide');
         $products     = $request->product_dpt_slide;
-           return $request;
+        //    return $request;
 
         $columnArray = ['updated_at' => date("Y-m-d H:i:s")];
 
