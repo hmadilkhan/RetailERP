@@ -49,7 +49,7 @@ class WebsiteTestimonialController extends Controller
             "customer_name"  => "required|max:255|unique:website_testimonials",
             "rating"         => "required",
             "content"        => "required",
-            "image"          => "required",
+            "image"          => 'required|mimes:jpg,jpeg,png,webp|max:1024',
         ]);
 
         try {
