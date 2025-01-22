@@ -445,6 +445,7 @@
 
         // Image preview
         if (allowedImageExtensions.test(file.name)) {
+             alert('image')
             reader.onload = function(e) {
                 $('#' + id).attr('src', e.target.result); // Image preview
                 $('#' + id).show(); // Show image element
