@@ -26,7 +26,9 @@ class WebsiteTestimonialController extends Controller
 
         if(isset($request->id)){
             $data['websiteId']=$request->id;
-            $data["testimonials"] = Testimonial::where('website_id',$request->id)->get();
+            $data["testimonials"] = Testimonial::where('website_id',$request->id)
+                                                ->orderBy('website_id','DESC')
+                                                ->get();
         }
 
         $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
