@@ -107,6 +107,7 @@
 	$('.table').DataTable({
 
         bLengthChange: true,
+        order: [[0, 'desc']],
         displayLength: 10,
         info: false,
         language: {
