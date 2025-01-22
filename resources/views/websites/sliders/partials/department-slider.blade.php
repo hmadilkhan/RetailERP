@@ -181,7 +181,7 @@
 
                 <input type="hidden" id="webname_dpetslideEdMd" name="webName">
                 <input type="hidden" id="webid_dpetslideEdMd" name="webId">
-                <input type="hidden" id="departSlider_dpetslideEdMd" name="deaprtment_slider">
+                <input type="hidden" id="departSlider_dpetslideEdMd" name="department_slider">
                 <input type="hidden" id="id_dpetslideEdMd" name="id">
 
                 <div class="form-group">
