@@ -340,12 +340,12 @@
   });
 
   $("#slide_md").on('change',function(){
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
+    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
         var file = this.files[0];  // Get the selected file
         // Check if a file is selected
             var fileName = file.name;  // Get the name of the file
             if (!allowedExtensions.exec(fileName)) {
-                alert("Invalid file type. Please select an image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
+                alert("Invalid file type. Please select an image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
                 $(this).val('');  // Clear the input field
             }
 
