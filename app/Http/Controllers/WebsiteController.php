@@ -639,8 +639,7 @@ class WebsiteController extends Controller
 
         if ($result) {
 
-              if($products != null){
-                 DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
+              DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
                 foreach($products as $value){
                     DB::table('website_slider_product_binds')->insert(
                             [
@@ -648,7 +647,6 @@ class WebsiteController extends Controller
                                         'product_id'=>$value,
                                     ]);
                 }
-              }
 
             Session::flash('success', 'Success!');
         } else {
