@@ -206,7 +206,7 @@
                 <input type="hidden" id="id_md" name="id">
 
                 <div class="form-group">
-                      <img for="slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
+                      <img for="slide_md" src="{{ asset('storage/images/no-image.png') }}" class="img-fluid" id="slideImgMD" width="250" height="128"/>
                       <video id="slideVdMD" width="250" height="128" controls style="display: none;"></video>
                 </div>
                 <div class="form-group">
@@ -217,7 +217,7 @@
                 </div>
 
                <div class="form-group">
-                    <img for="mobile_slide_md" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
+                    <img for="mobile_slide_md" src="{{ asset('storage/images/no-image.png') }}" class="img-fluid" id="previewMobileSlide_md" width="100" height="150"/>
                     <video id="previewMobileSlideVd_md" width="200" height="250" style="display:none;" controls></video></br>
                    </div>
               <div class="form-group">

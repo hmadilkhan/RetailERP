@@ -185,7 +185,7 @@
                 <input type="hidden" id="id_dpetslideEdMd" name="id">
 
                 <div class="form-group">
-                      <img for="desktopslide_deptEdtmd" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewslide_deptEdtmd" width="250" height="128"/>
+                      <img for="desktopslide_deptEdtmd" src="{{ asset('storage/images/no-image.png') }}" class="img-fluid" id="previewslide_deptEdtmd" width="250" height="128"/>
                       <video id="slideVd_deptEdtmd" width="250" height="128" controls style="display: none;"></video>
                 </div>
                 <div class="form-group">
@@ -196,7 +196,7 @@
                 </div>
 
                <div class="form-group">
-                    <img for="mobile_slide_deptEdtmd" src="{{ asset('storage/images/no-image.jpg') }}" class="img-fluid" id="previewMobileSlide_deptEdtmd" width="100" height="150"/>
+                    <img for="mobile_slide_deptEdtmd" src="{{ asset('storage/images/no-image.png') }}" class="img-fluid" id="previewMobileSlide_deptEdtmd" width="100" height="150"/>
                     <video id="previewMobileSlideVd_deptEdtmd" width="200" height="250" style="display:none;" controls></video></br>
                    </div>
               <div class="form-group">

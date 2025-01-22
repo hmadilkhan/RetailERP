@@ -57,7 +57,7 @@
                                                                 width="64" />
                                                         @else
                                                             <img id="img-tble-{{ $depart[$d]->department_id }}"
-                                                                src="{{ asset('storage/images/no-image.jpg') }}"
+                                                                src="{{ asset('storage/images/no-image.png') }}"
                                                                 alt="{{ $depart[$d]->image }}" height="64"
                                                                 width="64" />
                                                         @endif
@@ -233,7 +233,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
+                                        <img src="{{ asset('storage/images/no-image.png') }}" alt="placeholder.jpg"
                                             width="128" height="128" id="previewImg" /></br>
                                         <label for="departImage_md" class="form-control-label">Department
                                             Image</label></br>
@@ -418,7 +418,7 @@
                             @endif
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
+                                    <img src="{{ asset('storage/images/no-image.png') }}" alt="placeholder.jpg"
                                         width="128" height="128" id="previewImg_sbmd" /></br>
                                     <label for="subdepartImage_add" class="form-control-label">Sub Department
                                         Image</label></br>
@@ -433,7 +433,7 @@
                           <div class="d-none" id="website_module_bannersbdept_md">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
+                                    <img src="{{ asset('storage/images/no-image.png') }}" alt="placeholder.jpg"
                                         width="180" height="256" id="previewBanner_sbmd" /></br>
                                     <label for="subdepartBanner_add" class="form-control-label">Sub Department
                                         Banner Image</label></br>
@@ -450,7 +450,7 @@
                           <div class="d-none" id="website_module_mobileBannersbdept_md">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <img src="{{ asset('storage/images/no-image.jpg') }}" alt="placeholder.jpg"
+                                    <img src="{{ asset('storage/images/no-image.png') }}" alt="placeholder.jpg"
                                         width="150" height="200" id="previewMobileBanner_sbmd" /></br>
                                     <label for="subdepartMobileBanner_add" class="form-control-label">Sub Department
                                         Mobile Banner</label></br>
