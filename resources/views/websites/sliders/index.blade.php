@@ -464,7 +464,7 @@
             alert("Invalid file type. Please select a valid image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
         }
     }
-  }
+   }
 
  		$("#depart_prod").on('change',function(){
 		    if($(this).val() == ''){
