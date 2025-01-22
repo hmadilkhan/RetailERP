@@ -324,58 +324,59 @@
       readURL(this,'previewImg_deptslide','videoPreview_deptslide');
   });
 
-  $("#desktopslide_deptEdtmd").on('change',function(){
-      readURL(this,'previewslide_deptEdtmd','slideVd_deptEdtmd');
-  });
-
-
-
-
   $("#mobile_slide_dept").on('change',function(){
       readURL(this,'previewMobileSlide_deptslide','videoMobilePreview_deptslide');
+  });
+
+  $("#desktopslide_deptEdtmd").on('change',function(){
+      readURL(this,'previewslide_deptEdtmd','slideVd_deptEdtmd');
   });
 
   $("#mobile_slide_deptEdtmd").on('change',function(){
       readURL(this,'previewMobileSlide_deptEdtmd','previewMobileSlideVd_deptEdtmd');
   });
 
-  $("#slide_md").on('change',function(){
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
-        var file = this.files[0];  // Get the selected file
-        // Check if a file is selected
-            var fileName = file.name;  // Get the name of the file
-            if (!allowedExtensions.exec(fileName)) {
-                alert("Invalid file type. Please select an image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
-                $(this).val('');  // Clear the input field
-            }
-
-            if (inAyaar(file,['webm','mp4','ogg'])) {
-                readURL(this,'slideVdImgMD');
-            }else{
-                readURL(this,'slideImgMD');
-            }
 
 
-  });
 
-  $("#mobile_slide_md").on('change',function(){
 
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
-        var file = this.files[0];  // Get the selected file
-        // Check if a file is selected
-            var fileName = file.name;  // Get the name of the file
-            if (!allowedExtensions.exec(fileName)) {
-                alert("Invalid file type. Please select an image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
-                $(this).val('');  // Clear the input field
-            }
+//   $("#slide_md").on('change',function(){
+//     var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
+//         var file = this.files[0];  // Get the selected file
+//         // Check if a file is selected
+//             var fileName = file.name;  // Get the name of the file
+//             if (!allowedExtensions.exec(fileName)) {
+//                 alert("Invalid file type. Please select an image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
+//                 $(this).val('');  // Clear the input field
+//             }
 
-            if (inAyaar(file,['webm','mp4','ogg'])) {
-                readURL(this,'previewMobileSlideVd_md');
-            }else{
-                readURL(this,'previewMobileSlide_md');
-            }
+//             if (inAyaar(file,['webm','mp4','ogg'])) {
+//                 readURL(this,'slideVdImgMD');
+//             }else{
+//                 readURL(this,'slideImgMD');
+//             }
 
-  });
+
+//   });
+
+//   $("#mobile_slide_md").on('change',function(){
+
+//     var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
+//         var file = this.files[0];  // Get the selected file
+//         // Check if a file is selected
+//             var fileName = file.name;  // Get the name of the file
+//             if (!allowedExtensions.exec(fileName)) {
+//                 alert("Invalid file type. Please select an image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
+//                 $(this).val('');  // Clear the input field
+//             }
+
+//             if (inAyaar(file,['webm','mp4','ogg'])) {
+//                 readURL(this,'previewMobileSlideVd_md');
+//             }else{
+//                 readURL(this,'previewMobileSlide_md');
+//             }
+
+//   });
 
   function getProduct(webId,elemId,prod,depart,sub_depart){
 
