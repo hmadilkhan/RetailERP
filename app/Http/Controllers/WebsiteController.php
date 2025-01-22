@@ -637,21 +637,20 @@ class WebsiteController extends Controller
             ->where('id', '=', $request->id)
             ->update($columnArray);
 
-        if ($result) {
+            DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
+            foreach($products as $value){
+                DB::table('website_slider_product_binds')->insert(
+                        [
+                                    'slider_id'=>$request->id,
+                                    'product_id'=>$value,
+                                ]);
+            }
 
-              DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
-                foreach($products as $value){
-                    DB::table('website_slider_product_binds')->insert(
-                            [
-                                        'slider_id'=>$request->id,
-                                        'product_id'=>$value,
-                                    ]);
-                }
-
+        // if ($result) {
             Session::flash('success', 'Success!');
-        } else {
-            Session::flash('error', 'Server Issue record not updated.');
-        }
+        // } else {
+        //     Session::flash('error', 'Server Issue record not updated.');
+        // }
 
         return redirect('website/slider/lists?#departmentSliderNav');
     }
