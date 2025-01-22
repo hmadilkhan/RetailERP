@@ -456,7 +456,7 @@ class WebsiteController extends Controller
     {
 
         if(isset($request->deaprtment_slider)){
-            return $this->department_slider_singleFile_modify($request);
+            return $this->department_slider_slide_modify($request);
             die();
         }
 
