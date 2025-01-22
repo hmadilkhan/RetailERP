@@ -461,23 +461,10 @@
             }
             reader.readAsDataURL(file);
         } else {
-            alert("Invalid file type. Please select a valid image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
+            alert("Invalid file type. Please select a valid image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
         }
     }
-
-
-      /*  if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function(e) {
-
-              $('#'+id).attr('src', e.target.result);
-
-            }
-
-            reader.readAsDataURL(input.files[0]);
-        }*/
-    }
+  }
 
  		$("#depart_prod").on('change',function(){
 		    if($(this).val() == ''){
