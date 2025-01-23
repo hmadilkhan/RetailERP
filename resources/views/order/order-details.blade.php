@@ -514,6 +514,14 @@
                                                 {{ !empty($provider) ? $provider->serviceprovider->provider_name : '-' }}
                                             </td>
                                         </tr>
+                                        @if($order->wallet_id > 0)
+                                        <tr>
+                                            <td>Wallet :</td>
+                                            <td class="text-end">
+                                                {{ !empty($provider) ? $provider->serviceprovider->provider_name : '-' }}
+                                            </td>
+                                        </tr>
+                                        @endif
                                         <tr>
                                             <td>Land Mark :</td>
                                             <td class="text-end">{{ (!empty($order->address) ? $order->address->landmark : '-' )}}</td>

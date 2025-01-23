@@ -107,6 +107,7 @@ class OrderController extends Controller
         $statuses = OrderStatus::all();
         $ledgerDetails = $orderService->getCustomerLedgerDetails($customer, $order->customer->id, $orderId);
         $provider = $orderService->getServiceProvider($order->id);
+        return $provider;
         return view('order.order-details', compact('order', 'received', 'statuses', 'ledgerDetails', 'provider'));
 
 
