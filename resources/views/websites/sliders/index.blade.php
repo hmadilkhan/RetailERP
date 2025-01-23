@@ -206,7 +206,7 @@
    function editDepartSlide(unqid,webId,departSlider,webName,mobileSlide,products,ftype){
     $("#previewslide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png');
     $("#previewMobileSlide_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').show();
-    $("#previewMobileSlideVd_deptEdtmd").attr('src',location.origin+'/storage/images/no-image.png').hide();
+    $("#previewMobileSlideVd_deptEdtmd").attr('src','').hide();
 
        if(departSlider != ''){
            getProduct(webId,'product_dpt_slide_deptEdtmd',departSlider,'');
@@ -214,11 +214,9 @@
            if (products != null) {
                 setTimeout(function() {
                     $("#product_dpt_slide_deptEdtmd").val(products).change();
-                }, 2000);
+                }, 1000);
             }
        }
-
-       $("#departmentslideEdit_Modal").modal('show');
 
      if(ftype == 'vd'){
         $("#slideVd_deptEdtmd").attr('src',$("#slide"+unqid).attr('src'));
@@ -251,6 +249,7 @@
 
        }
 
+       $("#departmentslideEdit_Modal").modal('show');
    }
 
    $("#btn_remove_md").on('click',function(){
@@ -329,43 +328,55 @@
       readURL(this,'previewMobileSlide_deptslide','videoMobilePreview_deptslide');
   });
 
-  $("#slide_md").on('change',function(){
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
-        var file = this.files[0];  // Get the selected file
-        // Check if a file is selected
-            var fileName = file.name;  // Get the name of the file
-            if (!allowedExtensions.exec(fileName)) {
-                alert("Invalid file type. Please select an image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
-                $(this).val('');  // Clear the input field
-            }
-
-            if (inAyaar(file,['webm','mp4','ogg'])) {
-                readURL(this,'slideVdImgMD');
-            }else{
-                readURL(this,'slideImgMD');
-            }
-
-
+  $("#desktopslide_deptEdtmd").on('change',function(){
+      readURL(this,'previewslide_deptEdtmd','slideVd_deptEdtmd');
   });
 
-  $("#mobile_slide_md").on('change',function(){
-
-    var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.gif|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
-        var file = this.files[0];  // Get the selected file
-        // Check if a file is selected
-            var fileName = file.name;  // Get the name of the file
-            if (!allowedExtensions.exec(fileName)) {
-                alert("Invalid file type. Please select an image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
-                $(this).val('');  // Clear the input field
-            }
-
-            if (inAyaar(file,['webm','mp4','ogg'])) {
-                readURL(this,'previewMobileSlideVd_md');
-            }else{
-                readURL(this,'previewMobileSlide_md');
-            }
-
+  $("#mobile_slide_deptEdtmd").on('change',function(){
+      readURL(this,'previewMobileSlide_deptEdtmd','previewMobileSlideVd_deptEdtmd');
   });
+
+
+
+
+
+//   $("#slide_md").on('change',function(){
+//     var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
+//         var file = this.files[0];  // Get the selected file
+//         // Check if a file is selected
+//             var fileName = file.name;  // Get the name of the file
+//             if (!allowedExtensions.exec(fileName)) {
+//                 alert("Invalid file type. Please select an image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
+//                 $(this).val('');  // Clear the input field
+//             }
+
+//             if (inAyaar(file,['webm','mp4','ogg'])) {
+//                 readURL(this,'slideVdImgMD');
+//             }else{
+//                 readURL(this,'slideImgMD');
+//             }
+
+
+//   });
+
+//   $("#mobile_slide_md").on('change',function(){
+
+//     var allowedExtensions = /(\.jpg|\.jpeg|\.png|\.webp|\.mp4|\.webm|\.ogg)$/i;  // Add the allowed extensions
+//         var file = this.files[0];  // Get the selected file
+//         // Check if a file is selected
+//             var fileName = file.name;  // Get the name of the file
+//             if (!allowedExtensions.exec(fileName)) {
+//                 alert("Invalid file type. Please select an image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
+//                 $(this).val('');  // Clear the input field
+//             }
+
+//             if (inAyaar(file,['webm','mp4','ogg'])) {
+//                 readURL(this,'previewMobileSlideVd_md');
+//             }else{
+//                 readURL(this,'previewMobileSlide_md');
+//             }
+
+//   });
 
   function getProduct(webId,elemId,prod,depart,sub_depart){
 
@@ -423,7 +434,7 @@
     }
 
 
-    function readURL(input,id,msp_Id) {
+  function readURL(input,id,msp_Id) {
 
   // Allowed file extensions for image and video
   var allowedImageExtensions = /(\.jpg|\.jpeg|\.png|\.webp)$/i;
@@ -432,9 +443,10 @@
     if (input.files && input.files[0]) {
         var file = input.files[0];
         var reader = new FileReader();
-
+        alert(file.name)
         // Image preview
         if (allowedImageExtensions.test(file.name)) {
+
             reader.onload = function(e) {
                 $('#' + id).attr('src', e.target.result); // Image preview
                 $('#' + id).show(); // Show image element
@@ -451,23 +463,10 @@
             }
             reader.readAsDataURL(file);
         } else {
-            alert("Invalid file type. Please select a valid image (jpg, jpeg, png, gif) or video (mp4, webm, ogg).");
+            alert("Invalid file type. Please select a valid image (jpg, jpeg, png, webp) or video (mp4, webm, ogg).");
         }
     }
-
-
-      /*  if (input.files && input.files[0]) {
-            var reader = new FileReader();
-
-            reader.onload = function(e) {
-
-              $('#'+id).attr('src', e.target.result);
-
-            }
-
-            reader.readAsDataURL(input.files[0]);
-        }*/
-    }
+   }
 
  		$("#depart_prod").on('change',function(){
 		    if($(this).val() == ''){

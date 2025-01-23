@@ -346,7 +346,7 @@
 
 
       <div class="modal fade modal-flex" id="DeliveryparentDetail_Modal" tabindex="-1" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-dialog modal-sm" role="document">
            <div class="modal-content">
               <div class="modal-header">
                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -354,11 +354,13 @@
                          </button>
                  <h4 class="modal-title">Edit Delivery Details</h4>
               </div>
+              <form id="editDeliveryDetailForm_edtmd" action="{{ route('modify_delivery_parent_detail') }}" method="post">
               <div class="modal-body">
-                  <form id="editDeliveryDetailForm_edtmd" method="post">
                     @csrf
                     <input type="hidden" name="website" id="webid_mneditmd">
                     <input type="hidden" name="branch" id="branchId_mneditmd">
+                {{-- <div class="row">
+                  <div class="col-md-6"> --}}
                     <div class="form-group">
                         <label>Min Order</label>
                       <input type="text" name="min_order" id="min_order_mneditmd" class="form-control" placeholder="Min Order">
@@ -376,14 +378,17 @@
                     </div>
                     <div class="form-group">
                         <label>Estimate of Days</label>
-                      <input type="text" name="estimate_day" id="estimate_day_mneditmd" class="form-control" placeholder="Estimate of days">
+                      <input type="text" name="estimate_days" id="estimate_day_mneditmd" class="form-control" placeholder="Estimate of days">
                       <span id="estimate_day_mneditmd_alert"></span>
                     </div>
-                  </form>
+                  {{-- </div>
+                </div> --}}
+
               </div>
               <div class="modal-footer">
-                 <button type="button" id="btn_modify_deliveryDetail" class="btn btn-success waves-effect waves-light">Save</button>
+                 <button type="submit" id="btn_modify_deliveryDetail" class="btn btn-success waves-effect waves-light">Save</button>
               </div>
+            </form>
            </div>
         </div>
      </div>
@@ -521,6 +526,8 @@ input+.slider:before {
     $("#btn_remove_md").on('click',function(){
         $("#removeDeliveryAreaValueForm"+$("#id_md_edarea").val()).submit();
     });
+
+
 
  function editMainDetail(webId,branchId,branchName,minOrder,deliveryFreeMinOrder,estiTime,estiDays){
     $('#webid_mneditmd').val(webId);
@@ -941,7 +948,6 @@ input+.slider:before {
           });
       }
   })
-
 
   function modifyField(id,value,md){
 

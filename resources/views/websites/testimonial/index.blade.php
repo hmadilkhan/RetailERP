@@ -60,9 +60,9 @@
               @foreach($testimonials as $value)
                  @php
                    $website_name = $websites->where('id',$value->website_id)->pluck('name');
-                      $image = asset('storage/images/no-image.jpg');
+                      $image = asset('storage/images/no-image.png');
 
-                      if(File::exists('storage/images/testimonials/'.$value->image)){
+                      if(!empty($value->image) && File::exists('storage/images/testimonials/'.$value->image)){
                           $image = asset('storage/images/testimonials/'.$value->image);
                       }
                  @endphp
@@ -107,6 +107,7 @@
 	$('.table').DataTable({
 
         bLengthChange: true,
+        order: [[0, 'desc']],
         displayLength: 10,
         info: false,
         language: {

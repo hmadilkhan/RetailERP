@@ -447,17 +447,16 @@ class WebsiteController extends Controller
 
             Session::flash('success', 'Success!');
         } else {
-
             Session::flash('error', 'Invalid record');
         }
-        return redirect('website/slider/lists'.isset($request->department_dpt_slide) ? '?#departmentSliderNav' : '');
+      return redirect('website/slider/lists'.(isset($request->department_dpt_slide) ? '?#departmentSliderNav' : ''));
     }
 
     public function update_slide(Request $request)
     {
 
-        if(isset($request->deaprtment_slider)){
-            return $this->department_slider_singleFile_modify($request);
+        if(isset($request->department_slider)){
+            return $this->department_slider_slide_modify($request);
             die();
         }
 
@@ -561,11 +560,11 @@ class WebsiteController extends Controller
         return redirect()->route('sliderLists');
     }
 
-    public function department_slider_singleFile_modify(Request $request){
+    public function department_slider_slide_modify(Request $request){
         $Slide        = $request->file('desktop_slide');
         $mobile_slide = $request->file('mobile_slide');
         $products     = $request->product_dpt_slide;
-
+        //    return $request;
 
         $columnArray = ['updated_at' => date("Y-m-d H:i:s")];
 
@@ -638,25 +637,22 @@ class WebsiteController extends Controller
             ->where('id', '=', $request->id)
             ->update($columnArray);
 
-        if ($result) {
+            DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
+            foreach($products as $value){
+                DB::table('website_slider_product_binds')->insert(
+                        [
+                                    'slider_id'=>$request->id,
+                                    'product_id'=>$value,
+                                ]);
+            }
 
-              if($products != null){
-                 DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
-                foreach($products as $value){
-                    DB::table('website_slider_product_binds')->insert(
-                            [
-                                        'slider_id'=>$request->id,
-                                        'product_id'=>$value,
-                                    ]);
-                }
-              }
-
+        // if ($result) {
             Session::flash('success', 'Success!');
-        } else {
-            Session::flash('error', 'Server Issue record not updated.');
-        }
+        // } else {
+        //     Session::flash('error', 'Server Issue record not updated.');
+        // }
 
-        return redirect()->route('sliderLists');
+        return redirect('website/slider/lists?#departmentSliderNav');
     }
 
     public function create_folder($comFOldName, $webFoldName)

@@ -26,7 +26,9 @@ class WebsiteTestimonialController extends Controller
 
         if(isset($request->id)){
             $data['websiteId']=$request->id;
-            $data["testimonials"] = Testimonial::where('website_id',$request->id)->get();
+            $data["testimonials"] = Testimonial::where('website_id',$request->id)
+                                                ->orderBy('id','DESC')
+                                                ->get();
         }
 
         $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
@@ -49,7 +51,7 @@ class WebsiteTestimonialController extends Controller
             "customer_name"  => "required|max:255|unique:website_testimonials",
             "rating"         => "required",
             "content"        => "required",
-            "image"          => "required",
+            "image"          => 'nullable|mimes:jpg,jpeg,png,webp|max:1024',
         ]);
 
         try {

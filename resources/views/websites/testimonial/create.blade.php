@@ -8,12 +8,12 @@
 <div class="card ">
 	<div class="card-header">
 		<h5 class="card-header-text">Create Website Testimonial</h5>
-	</div>      
+	</div>
     <div class="card-block">
 
    <div class="col-md-6">
     <form role="form" method="POST" action="{{ route('testimonials.store') }}" enctype="multipart/form-data">
-		@csrf 
+		@csrf
 
 			<div class="form-group">
 				<label class="form-control-label">Website <span class="text-danger">*</span></label>
@@ -35,7 +35,7 @@
                     <input name="customer_name" type="text" class="form-control" placeholder="Customer Name" value="{{ old('customer_name') }}" />
                     @error('customer_name')
                      <span class="form-control-feedback text-danger">{{ $message }}</span>
-                    @enderror 
+                    @enderror
                 </div>
 
                 <div class="form-group">
@@ -43,22 +43,22 @@
                     <input type="text" class="form-control" name="rating" placeholder="Rating" value="{{ old('rating') }}"/>
                     @error('rating')
                      <span class="form-control-feedback text-danger">{{ $message }}</span>
-                    @enderror                
-                </div>                
+                    @enderror
+                </div>
 
                 <div class="form-group">
                     <label class="control-label">Content <span class="text-danger">*</span></label>
                     <textarea class="form-control" name="content" id="content" placeholder="Content" rows="5"></textarea>
                     @error('rating')
                      <span class="form-control-feedback text-danger">{{ $message }}</span>
-                    @enderror                
-                </div> 
+                    @enderror
+                </div>
 
 				<div class="form-group @error('image') 'has-danger' @enderror ">
 				<a href="#">
 					<img id="preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
-				</a>					
-					<label for="image" class="form-control-label">Customer Image <span class="text-danger">*</span></label></br>
+				</a>
+					<label for="image" class="form-control-label">Customer Image</label></br>
 
 					<label for="image" class="custom-file">
 					<input type="file" name="image" id="image" class="custom-file-input">
@@ -67,16 +67,16 @@
 					@error('image')
 						<div class="form-control-feedback text-danger">{{ $message }}</div>
 					@enderror
-				</div> 
+				</div>
 
 
-				<a class="btn btn-danger m-r-2" href="{{ route('testimonials.index') }}">Cancel</a>			               
+				<a class="btn btn-danger m-r-2" href="{{ route('testimonials.index') }}">Cancel</a>
                 <button class="btn btn-primary position-right" type="submit">Submit</button>
-              </form> 
-        </div>   
+              </form>
+        </div>
     </div>
-  </div>  
-	
+  </div>
+
 </section>
 @endsection
 
@@ -93,11 +93,11 @@
 	function readURL(input,id) {
 	  if (input.files && input.files[0]) {
 		var reader = new FileReader();
-		
+
 		reader.onload = function(e) {
 		  $('#'+id).attr('src', e.target.result);
 		}
-		
+
 		reader.readAsDataURL(input.files[0]);
 	  }
 	}
@@ -105,14 +105,14 @@
 	$("#image").change(function() {
 	  readURL(this,'preview');
 	});
-	
+
 </script>
 
- 
+
 @endsection
 
 
 @section('css_code')
    <link rel="stylesheet" type="text/css" href="{{ asset('storage/css/wizardform.css') }}">
-   
+
 @endsection

@@ -73,24 +73,24 @@
             @if($images)
               @foreach($images as $img_val)
                 @php
-                  $image = asset('storage/images/no-image.jpg');
+                  $image = asset('storage/images/no-image.png');
                 @endphp
                   @if($img_val->review_id == $value->id)
                     @if(File::exists('storage/images/customer-reviews/'.$img_val->image))
                         @php $image = asset('storage/images/customer-reviews/'.$img_val->image) @endphp
-                        <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'no-image.jpg' }}">
-                          <img width="32" height="32" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'no-image.jpg' }}">
+                        <a href="{{ $image }}" data-fancybox data-caption="{{ !empty($img_val->image) ? $img_val->image : 'no-image.png' }}">
+                          <img width="32" height="32" src="{{ $image }}" class="d-inline-block img-circle " alt="{{ !empty($img_val->image) ? $img_val->image : 'no-image.png' }}">
                         </a>
                     @else
-                        <a href="{{ asset('storage/images/no-image.jpg') }}" data-fancybox data-caption="no-image.jpg">
-                          <img width="32" height="32" src="{{ asset('storage/images/no-image.jpg') }}" class="d-inline-block img-circle " alt="no-image.jpg">
+                        <a href="{{ asset('storage/images/no-image.png') }}" data-fancybox data-caption="no-image.png">
+                          <img width="32" height="32" src="{{ asset('storage/images/no-image.png') }}" class="d-inline-block img-circle " alt="no-image.png">
                          </a>
                     @endif
                   @endif
               @endforeach
             @else
-            <a href="{{ asset('storage/images/no-image.jpg') }}" data-fancybox data-caption="no-image.jpg">
-              <img width="32" height="32" src="{{ asset('storage/images/no-image.jpg') }}" class="d-inline-block img-circle " alt="no-image.jpg">
+            <a href="{{ asset('storage/images/no-image.png') }}" data-fancybox data-caption="no-image.png">
+              <img width="32" height="32" src="{{ asset('storage/images/no-image.png') }}" class="d-inline-block img-circle " alt="no-image.png">
              </a>
             @endif
           </td>

@@ -76,10 +76,10 @@ trait MediaTrait
 
     public function notFoundImage(){
         $headers = array(
-            'Content-Type'        => 'image/jpg',
-            'Content-Description' => 'no-image.jpg',
+            'Content-Type'        => 'image/png',
+            'Content-Description' => 'no-image.png',
         );
-        return response()->file(Storage::disk('public')->path('/images/no-image.jpg'), $headers);
+        return response()->file(Storage::disk('public')->path('/images/no-image.png'), $headers);
     }
 
 //     public function setImageOptimize($path){
