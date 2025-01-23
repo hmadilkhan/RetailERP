@@ -514,11 +514,11 @@
                                                 {{ !empty($provider) ? $provider->serviceprovider->provider_name : '-' }}
                                             </td>
                                         </tr>
-                                        @if($order->wallet_id > 0)
+                                        @if(!empty($wallet))
                                         <tr>
                                             <td>Wallet :</td>
                                             <td class="text-end">
-                                                {{ !empty($provider) ? $provider->serviceprovider->provider_name : '-' }}
+                                                {{ !empty($wallet) ? $wallet->serviceprovider->provider_name : '-' }}
                                             </td>
                                         </tr>
                                         @endif
