@@ -723,7 +723,8 @@
                 showDateFilter: true,
                 showBranch: true,
                 showTerminal: true,
-                showCode: true
+                showCode: true,
+                showExcelButton: true
             }]);
         });
         $('#dvphysical').on('click', function() {
@@ -1002,6 +1003,7 @@
             let terminal = $('#terminal').val();
             let type = $('#type').val();
             let customer = $('#customer').val();
+            let code = $('#itemcode').val();
 
             if ($('#txtsaledec').val() == 1) {
                 window.location = "{{ url('reports/excel-export-sales-declartion') }}" + "/" + from + "/" + to + "/" +
@@ -1033,6 +1035,11 @@
 
             if ($('#txtexpensesheet').val() == 1) {
                 window.location = "{{ url('export-expense-report') }}?first=" + from + "&second=" + to;
+            }
+
+            if ($('#txtsalereturn').val() == 1) {
+                window.location = "{{ url('reports/sales-return-export') }}?fromdate=" + from + "&todate=" + to + "&terminalid=" +
+                terminal + "&code=" + code + "&branch=" + branch;
             }
 
             // if ($('#txtitemsale').val() == 1) {

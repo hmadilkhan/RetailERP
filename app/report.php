@@ -586,6 +586,24 @@ class report extends Model
         return $result;
     }
 
+    public  function  salereturn_excel_details($fromdate, $todate, $terminalid, $code)
+    {
+        $filter = "";
+        
+        if ($terminalid == "") {
+            $filter .= " WHERE a.opening_id IN (SELECT a.opening_id FROM sales_opening a WHERE a.date BETWEEN '".$fromdate."' AND '".$todate."' AND a.terminal_id IN (Select terminal_id from terminal_details where branch_id IN (Select branch_id from branch where company_id = ".session("company_id").")))";
+        }else{
+            $filter .= " WHERE a.opening_id IN (SELECT a.opening_id FROM sales_opening a WHERE a.date BETWEEN '".$fromdate."' AND '".$todate."' AND a.terminal_id = ".$terminalid.")";
+        }
+
+        if ($code != "") {
+            $filter .= " and c.item_code = " . $code;
+        }
+
+        $result = DB::select('SELECT d.receipt_no,c.product_name, SUM(qty) as qty, SUM(amount) as amount, e.date,e.time,f.terminal_name FROM sales_return a  INNER JOIN inventory_general c ON c.id = a.item_id INNER JOIN sales_receipts d on d.id = a.receipt_id INNER JOIN terminal_details f on f.terminal_id = d.terminal_id INNER JOIN sales_opening e on e.opening_id = a.opening_id  ' . $filter . ' GROUP BY a.receipt_id,a.item_id order by d.terminal_id');
+        return $result;
+    }
+
     // 
     public  function  orderBookingQuery($fromdate, $todate, $paymentmethod, $branch, $mode)
     {

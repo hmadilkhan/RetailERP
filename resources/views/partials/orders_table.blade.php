@@ -18,6 +18,7 @@
                 <th>Amount</th>
                 <th>Items/Total</th>
                 <th>Sales Person</th>
+                <th>Wallet</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -64,6 +65,7 @@
                         <td>{{ $order->total_amount }}</td>
                         <td>{{ $order->itemcount }}/{{ $order->itemstotalqty }}</td>
                         <td>{{ !empty($order->provider_name) ? $order->provider_name : '-' }}</td>
+                        <td>{{ !empty($order->wallet) ? $order->wallet : '-' }}</td>
                         <td>
                             <!-- Large button groups (default and split) -->
                             <div class="btn-group border border-black">

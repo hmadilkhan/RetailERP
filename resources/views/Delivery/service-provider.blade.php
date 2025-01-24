@@ -786,6 +786,7 @@ function clone_field(){
 		  type: 'POST',
 		  data:{_token:"{{ csrf_token() }}",
 			providername:$(this).val(),
+			branch:$("#branch").val(),
 		  },
 		  success:function(resp){
 				console.log(resp)

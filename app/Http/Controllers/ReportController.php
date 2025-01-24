@@ -41,6 +41,7 @@ use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExcelExport;
 use App\Exports\StockReportExport;
 use App\Exports\WebsiteItemSummaryExport;
+use App\Exports\SaleReturnExport;
 use App\Mail\DeclarationEmail;
 use App\Models\Company;
 use App\Models\DailyStock;
@@ -1573,6 +1574,8 @@ class ReportController extends Controller
         $pdf->Cell(40, 7, 'Category', 'B', 0, 'L', 1);
         $pdf->Cell(25, 7, 'Total', 'B', 1, 'C', 1);
 
+        
+
         //Income START HERE
 
 
@@ -1587,19 +1590,21 @@ class ReportController extends Controller
 
 
         $totalsales = 0;
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->setFillColor(255, 255, 255);
+        $pdf->SetTextColor(0, 0, 0);
 
         foreach ($salesreceipts as $value) {
 
             $totalsales = $totalsales + $value->total_amount;
-            $pdf->SetFont('Arial', '', 10);
-            $pdf->setFillColor(255, 255, 255);
-            $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(25, 5, 'Sales Receipt', 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->date, 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->id, 0, 'R', 1);
-            $pdf->Cell(50, 5, $value->name, 0, 'L', 1);
-            $pdf->Cell(40, 5, $value->payment_mode, 0, 'C', 1);
-            $pdf->Cell(25, 5, number_format($value->total_amount, 2), 0, 1, 'R', 1);
+            
+            $pdf->Cell(25, 5, 'Sales Receipt',0, 0, 'L', 1);
+            $pdf->Cell(25, 5, $value->date, 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->id, 0,0, 'C', 1);
+            $pdf->Cell(50, 5, $value->name, 0,0, 'L', 1);
+            $pdf->Cell(40, 5, $value->payment_mode, 0, 0,'C', 1);
+            $pdf->Cell(25, 5, number_format($value->total_amount, 2), 0,1, 'R', 1);
+
         }
 
         $pdf->SetFont('Arial', 'B', 10);
@@ -1624,11 +1629,11 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->setFillColor(255, 255, 255);
                 $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(25, 5, 'Credited', 0, 'L', 1);
-                $pdf->Cell(25, 5, '', 0, 'L', 1);
-                $pdf->Cell(25, 5, '', 0, 'R', 1);
-                $pdf->Cell(50, 5, $value->name, 0, 'L', 1);
-                $pdf->Cell(40, 5, '', 0, 'C', 1);
+                $pdf->Cell(25, 5, 'Credited', 0,0, 'L', 1);
+                $pdf->Cell(25, 5, '', 0,0, 'L', 1);
+                $pdf->Cell(25, 5, '', 0,0, 'R', 1);
+                $pdf->Cell(50, 5, $value->name, 0,0, 'L', 1);
+                $pdf->Cell(40, 5, '', 0,0, 'C', 1);
                 $pdf->Cell(25, 5, number_format($value->balance, 2), 0, 1, 'R', 1);
             }
         }
@@ -1664,11 +1669,11 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
             $pdf->setFillColor(255, 255, 255);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(25, 5, 'Sales Receipt', 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->date, 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->id, 0, 'R', 1);
-            $pdf->Cell(50, 5, $value->name, 0, 'L', 1);
-            $pdf->Cell(40, 5, $value->payment_mode, 0, 'C', 1);
+            $pdf->Cell(25, 5, 'Sales Receipt', 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->date, 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->id, 0,0, 'C', 1);
+            $pdf->Cell(50, 5, $value->name, 0,0, 'L', 1);
+            $pdf->Cell(40, 5, $value->payment_mode, 0,0, 'C', 1);
             $pdf->Cell(25, 5, number_format((int)$value->total_cost, 2), 0, 1, 'R', 1);
         }
 
@@ -1704,11 +1709,11 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
             $pdf->setFillColor(255, 255, 255);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(25, 5, 'Voucher', 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->date, 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->exp_id, 0, 'R', 1);
-            $pdf->Cell(50, 5, $value->expense_details, 0, 'L', 1);
-            $pdf->Cell(40, 5, $value->expense_category, 0, 'C', 1);
+            $pdf->Cell(25, 5, 'Voucher', 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->date, 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->exp_id, 0,0, 'R', 1);
+            $pdf->Cell(50, 5, $value->expense_details, 0,0, 'L', 1);
+            $pdf->Cell(40, 5, $value->expense_category, 0,0, 'C', 1);
             $pdf->Cell(25, 5, number_format($value->net_amount, 2), 0, 1, 'R', 1);
         }
 
@@ -1731,11 +1736,11 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
             $pdf->setFillColor(255, 255, 255);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(25, 5, 'PO', 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->order_date, 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->po_no, 0, 'R', 1);
-            $pdf->Cell(50, 5, $value->vendor_name, 0, 'L', 1);
-            $pdf->Cell(40, 5, $value->name, 0, 'C', 1);
+            $pdf->Cell(25, 5, 'PO', 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->order_date, 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->po_no, 0,0, 'R', 1);
+            $pdf->Cell(50, 5, $value->vendor_name, 0,0, 'L', 1);
+            $pdf->Cell(40, 5, $value->name, 0,0, 'C', 1);
             $pdf->Cell(25, 5, number_format($value->net_amount, 2), 0, 1, 'R', 1);
         }
 
@@ -1758,11 +1763,11 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', '', 10);
                 $pdf->setFillColor(255, 255, 255);
                 $pdf->SetTextColor(0, 0, 0);
-                $pdf->Cell(25, 5, 'Sales Receipt', 0, 'L', 1);
-                $pdf->Cell(25, 5, $value->date, 0, 'L', 1);
-                $pdf->Cell(25, 5, $value->receipt_id, 0, 'R', 1);
-                $pdf->Cell(50, 5, $value->name, 0, 'L', 1);
-                $pdf->Cell(40, 5, $value->payment_mode, 0, 'C', 1);
+                $pdf->Cell(25, 5, 'Sales Receipt', 0,0, 'L', 1);
+                $pdf->Cell(25, 5, $value->date, 0,0, 'L', 1);
+                $pdf->Cell(25, 5, $value->receipt_id, 0,0, 'C', 1);
+                $pdf->Cell(50, 5, $value->name, 0,0, 'L', 1);
+                $pdf->Cell(40, 5, $value->payment_mode, 0,0, 'C', 1);
                 $pdf->Cell(25, 5, number_format($value->discount_amount, 2), 0, 1, 'R', 1);
             }
         }
@@ -1787,11 +1792,11 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
             $pdf->setFillColor(255, 255, 255);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(25, 5, 'Sales Receipt', 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->timestamp, 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->receipt_id, 0, 'R', 1);
-            $pdf->Cell(50, 5, $value->name, 0, 'L', 1);
-            $pdf->Cell(40, 5, $value->payment_mode, 0, 'C', 1);
+            $pdf->Cell(25, 5, 'Sales Return', 0,0, 'L', 1);
+            $pdf->Cell(40, 5, date("d-M-Y h:i A",strtotime($value->timestamp)), 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->receipt_id, 0,0, 'C', 1);
+            $pdf->Cell(35, 5, $value->name, 0,0, 'L', 1);
+            $pdf->Cell(40, 5, $value->payment_mode, 0,0, 'C', 1);
             $pdf->Cell(25, 5, number_format($value->amount, 2), 0, 1, 'R', 1);
             // }
         }
@@ -1814,11 +1819,11 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', '', 10);
             $pdf->setFillColor(255, 255, 255);
             $pdf->SetTextColor(0, 0, 0);
-            $pdf->Cell(25, 5, 'Payslip', 0, 'L', 1);
-            $pdf->Cell(25, 5, $value->date, 0, 'L', 1);
-            $pdf->Cell(25, 5, '', 0, 'R', 1);
-            $pdf->Cell(50, 5, $value->emp_name, 0, 'L', 1);
-            $pdf->Cell(40, 5, '', 0, 'C', 1);
+            $pdf->Cell(25, 5, 'Payslip', 0,0, 'L', 1);
+            $pdf->Cell(25, 5, $value->date, 0,0, 'L', 1);
+            $pdf->Cell(25, 5, '', 0,0, 'R', 1);
+            $pdf->Cell(50, 5, $value->emp_name, 0,0, 'L', 1);
+            $pdf->Cell(40, 5, '', 0,0, 'C', 1);
             $pdf->Cell(25, 5, number_format($value->net_salary, 2), 0, 1, 'R', 1);
         }
 
@@ -2044,10 +2049,15 @@ class ReportController extends Controller
 
         $qty = 0;
         $totalQty = 0;
+        $totalRetail = 0;
+        $totalCost = 0;
         $asset = 0;
         foreach ($inventory as $value) {
             $qty = $qty + $value->qty;
             $totalQty = $totalQty + $value->totalqty;
+            $totalRetail = $totalRetail + $value->retail_price;
+            $totalCost = $totalCost + $value->cost_price;
+
             $asset = $asset + ($value->qty * $value->cost);
             $pdf->Cell(28, 5, $value->item_code, 0, 0, 'L', 1);
             $pdf->Cell(50, 5, $value->product_name, 0, 0, 'L', 1);
@@ -2063,13 +2073,11 @@ class ReportController extends Controller
         $pdf->Cell(190, 2, '', '', 1); //SPACE
         //total
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(50, 7, "Total", 'T,B', 0, 'L', 1);
-        $pdf->Cell(23, 7, '', 'T,B', 0, 'L', 1);
-        $pdf->Cell(10, 7, "", 'T,B', 0, 'L', 1);
-        $pdf->Cell(28, 7, "", 'T,B', 0, 'L', 1);
-        $pdf->Cell(33, 7, '', 'T,B', 0, 'R', 1);
-        $pdf->Cell(23, 7, number_format($totalQty, 2), 'T,B', 0, 'R', 1);
-        $pdf->Cell(23, 7, number_format($qty, 2), 'T,B', 1, 'R', 1);
+        $pdf->Cell(88, 7, "Total", 'T,B', 0, 'L', 1);
+        $pdf->Cell(23, 7, number_format($totalCost, 2), 'T,B', 0, 'R', 1);
+        $pdf->Cell(23, 7, number_format($totalRetail, 2), 'T,B', 0, 'R', 1);
+        $pdf->Cell(28, 7, number_format($totalQty, 2), 'T,B', 0, 'R', 1);
+        $pdf->Cell(28, 7, number_format($qty, 2), 'T,B', 1, 'R', 1);
 
 
 
@@ -6354,10 +6362,27 @@ class ReportController extends Controller
         return Excel::download(new WebsiteItemSummaryExport($details, $datearray, $companyName), "Website Items Summary Report.xlsx");
     }
 
+    public function salesReturnReportExportExcel(Request $request, report $report)
+    {
+        // $branch = "";
+        $companyName = Company::where("company_id", session("company_id"))->first();
+        $companyName = $companyName->name;
+        $branchName  = "";
+
+        $datearray = [
+            "from" => $request->fromdate,
+            "to" => $request->todate,
+        ];
+
+        $details =  $report->salereturn_excel_details($request->fromdate, $request->todate,$request->terminalid,$request->code);
+        $details =  collect($details);
+        return Excel::download(new SaleReturnExport($details, $datearray, $companyName), "Sales Return Report.xlsx");
+    }
+
     public function salesInvoicesReportExcel(Request $request, report $report)
     {
         $terminals = $report->getTerminals($request->branch);
-        $details = $report->totalSales($request->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category);
+        $details = $report->totalSales($request->terminal_id, $request->fromdate, $request->todate, $request->type, $request->category, $request->customer);
         $permission = $report->terminalPermission($request->terminal_id);
         return $request;
     }

@@ -12,6 +12,7 @@ use App\Models\OrderPayment;
 use App\Models\OrderStatus;
 use App\Models\ServiceProvider;
 use App\Models\ServiceProviderOrders;
+use App\Models\ServiceProviderRelation;
 use App\Models\Terminal;
 use App\tax;
 use Illuminate\Support\Facades\DB;
@@ -172,10 +173,23 @@ class OrderService
      * Retrieve service provider details for the order.
      *
      * @param int $orderId
-     * @return ServiceProviderOrders|null
+     * @return ServiceProviderRelation|null
      */
-    public function getServiceProvider(int $orderId): ?ServiceProviderOrders
+    public function getServiceProvider(int $salesPersonId): ?ServiceProviderRelation
     {
-        return ServiceProviderOrders::with('serviceprovider')->where('receipt_id', $orderId)->first();
+        // return ServiceProviderOrders::with('serviceprovider')->where('receipt_id', $orderId)->first();
+        return ServiceProviderRelation::with('serviceprovider')->where('user_id', $salesPersonId)->first();
+    }
+
+    /**
+     * Retrieve service provider details for the order.
+     *
+     * @param int $orderId
+     * @return ServiceProviderRelation|null
+     */
+    public function getWallet(int $walletId): ?ServiceProviderRelation
+    {
+        // return ServiceProviderOrders::with('serviceprovider')->where('receipt_id', $orderId)->first();
+        return ServiceProviderRelation::with('serviceprovider')->where('user_id', $walletId)->first();
     }
 }

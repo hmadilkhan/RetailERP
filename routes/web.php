@@ -926,6 +926,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('reports/excel-export-stock-report',  [ReportController::class, 'getStockReportExcelExport'])->name('excelExportStock');
     Route::get('reports/excel-export-daily-stock-report/{from}/{to}/{branch}/{department?}/{subdepartment?}',  [ReportController::class, 'dailyStockReportExport'])->name('dailyStockReportExport');
     Route::get('reports/website-items-summary/{from}/{to}',  [ReportController::class, 'websiteItemsSummaryExcel'])->name('websiteItemsSummary');
+    Route::get('reports/sales-return-export',  [ReportController::class, 'salesReturnReportExportExcel'])->name('salesReturnReportExportExcel');
     Route::get('raw-usage-report',  [ReportController::class, 'rawUsage'])->name('raw.usage');
     Route::get('generate-daily-usage/{from}/{to}',  [ReportController::class, 'generateDailyUsage'])->name('generate.raw.usage');
     Route::get('testDeclarationEmail',  [ReportController::class, 'testDeclarationEmail'])->name('testDeclarationEmail');

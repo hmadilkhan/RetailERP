@@ -12,4 +12,15 @@ class ServiceProviderRelation extends Model
     protected $table = "user_salesprovider_relation";
     protected $guarded = [];
     public $timestamps = false;
+
+
+    public function serviceprovider()
+    {
+        return $this->belongsTo(ServiceProvider::class, 'provider_id', 'id');
+    }
+	
+	public function user()
+    {
+        return $this->belongsTo(Order::class,"user_id","id");
+    }
 }

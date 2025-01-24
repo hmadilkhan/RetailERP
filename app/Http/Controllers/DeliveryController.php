@@ -174,7 +174,13 @@ class DeliveryController extends Controller
 	
 	public function checkServiceProviderName(delivery $delivery, Request $request)
 	{
-		$chk = $delivery->exsist_chk_provider($request->providername,session('branch'));
+        $branch = "";
+        if (session("roleId") == 2) {
+            $branch = $request->branch;
+        }else{
+            $branch = session('branch');
+        }
+		$chk = $delivery->exsist_chk_provider($request->providername,$branch);
 		return $chk; 
 	}
 
