@@ -637,6 +637,8 @@ class WebsiteController extends Controller
             ->update($columnArray);
 
             DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
+
+           if(!empty($products)){
             foreach($products as $value){
                 DB::table('website_slider_product_binds')->insert(
                         [
@@ -644,6 +646,7 @@ class WebsiteController extends Controller
                                     'product_id'=>$value,
                                 ]);
             }
+           }
 
         // if ($result) {
             Session::flash('success', 'Success!');
