@@ -2049,10 +2049,15 @@ class ReportController extends Controller
 
         $qty = 0;
         $totalQty = 0;
+        $totalRetail = 0;
+        $totalCost = 0;
         $asset = 0;
         foreach ($inventory as $value) {
             $qty = $qty + $value->qty;
             $totalQty = $totalQty + $value->totalqty;
+            $totalRetail = $totalRetail + $value->retail_price;
+            $totalCost = $totalCost + $value->cost_price;
+
             $asset = $asset + ($value->qty * $value->cost);
             $pdf->Cell(28, 5, $value->item_code, 0, 0, 'L', 1);
             $pdf->Cell(50, 5, $value->product_name, 0, 0, 'L', 1);
@@ -2068,13 +2073,11 @@ class ReportController extends Controller
         $pdf->Cell(190, 2, '', '', 1); //SPACE
         //total
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(50, 7, "Total", 'T,B', 0, 'L', 1);
-        $pdf->Cell(23, 7, '', 'T,B', 0, 'L', 1);
-        $pdf->Cell(10, 7, "", 'T,B', 0, 'L', 1);
-        $pdf->Cell(28, 7, "", 'T,B', 0, 'L', 1);
-        $pdf->Cell(33, 7, '', 'T,B', 0, 'R', 1);
-        $pdf->Cell(23, 7, number_format($totalQty, 2), 'T,B', 0, 'R', 1);
-        $pdf->Cell(23, 7, number_format($qty, 2), 'T,B', 1, 'R', 1);
+        $pdf->Cell(88, 7, "Total", 'T,B', 0, 'L', 1);
+        $pdf->Cell(23, 7, number_format($totalCost, 2), 'T,B', 0, 'L', 1);
+        $pdf->Cell(23, 7, number_format($totalRetail, 2), 'T,B', 0, 'L', 1);
+        $pdf->Cell(28, 7, number_format($totalQty, 2), 'T,B', 0, 'R', 1);
+        $pdf->Cell(28, 7, number_format($qty, 2), 'T,B', 1, 'R', 1);
 
 
 
