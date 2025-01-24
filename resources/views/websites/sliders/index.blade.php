@@ -320,6 +320,15 @@
       readURL(this,'previewMobileSlide','videoMobilePreview');
   });
 
+  $("#slide_md").on('change',function(){
+      readURL(this,'slideImgMD','slideVdMD');
+  });
+
+  $("#mobile_slide_md").on('change',function(){
+      readURL(this,'previewMobileSlide_md','previewMobileSlideVd_md');
+  });
+
+
   $("#desktop_slide_dept").on('change',function(){
       readURL(this,'previewImg_deptslide','videoPreview_deptslide');
   });
