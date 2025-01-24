@@ -200,7 +200,7 @@
                     <video id="previewMobileSlideVd_deptEdtmd" width="200" height="250" style="display:none;" controls></video></br>
                    </div>
               <div class="form-group">
-                   <label for="mobile_slide_md" class="custom-file">
+                   <label for="mobile_slide_deptEdtmd" class="custom-file">
                    <input type="file" name="mobile_slide" id="mobile_slide_deptEdtmd" class="custom-file-input">
                    <span class="custom-file-control"></span>
                    </label>
