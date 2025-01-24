@@ -176,7 +176,7 @@
              <h4 class="modal-title" id="title_md_mf">Edit Slide</h4>
           </div>
           <div class="modal-body">
-              <form id="editSlideForm_md" action="{{ route('updateSliderImage') }}" method="post" enctype="multipart/form-data">
+              <form id="editSlideForm_dpetslideEdMd" action="{{ route('updateSliderImage') }}" method="post" enctype="multipart/form-data">
                 @csrf
 
                 <input type="hidden" id="webname_dpetslideEdMd" name="webName">
