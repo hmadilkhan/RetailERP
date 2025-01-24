@@ -2074,8 +2074,8 @@ class ReportController extends Controller
         //total
         $pdf->SetFont('Arial', 'B', 10);
         $pdf->Cell(88, 7, "Total", 'T,B', 0, 'L', 1);
-        $pdf->Cell(23, 7, number_format($totalCost, 2), 'T,B', 0, 'L', 1);
-        $pdf->Cell(23, 7, number_format($totalRetail, 2), 'T,B', 0, 'L', 1);
+        $pdf->Cell(23, 7, number_format($totalCost, 2), 'T,B', 0, 'R', 1);
+        $pdf->Cell(23, 7, number_format($totalRetail, 2), 'T,B', 0, 'R', 1);
         $pdf->Cell(28, 7, number_format($totalQty, 2), 'T,B', 0, 'R', 1);
         $pdf->Cell(28, 7, number_format($qty, 2), 'T,B', 1, 'R', 1);
 
