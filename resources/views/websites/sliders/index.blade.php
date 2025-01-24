@@ -620,7 +620,7 @@
 
 
    $("#btn_modify_deptslidmd").on('click',function(){
-       $("#editSlideForm_md").submit();
+       $("#editSlideForm_dpetslideEdMd").submit();
    });
 
     $(document).ready(function() {
