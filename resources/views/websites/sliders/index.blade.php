@@ -443,7 +443,7 @@
     if (input.files && input.files[0]) {
         var file = input.files[0];
         var reader = new FileReader();
-        alert(file.name)
+        //alert(file.name)
         // Image preview
         if (allowedImageExtensions.test(file.name)) {
 
