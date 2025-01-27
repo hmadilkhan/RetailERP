@@ -320,6 +320,15 @@
       readURL(this,'previewMobileSlide','videoMobilePreview');
   });
 
+  $("#slide_md").on('change',function(){
+      readURL(this,'slideImgMD','slideVdMD');
+  });
+
+  $("#mobile_slide_md").on('change',function(){
+      readURL(this,'previewMobileSlide_md','previewMobileSlideVd_md');
+  });
+
+
   $("#desktop_slide_dept").on('change',function(){
       readURL(this,'previewImg_deptslide','videoPreview_deptslide');
   });
@@ -443,7 +452,7 @@
     if (input.files && input.files[0]) {
         var file = input.files[0];
         var reader = new FileReader();
-        alert(file.name)
+        //alert(file.name)
         // Image preview
         if (allowedImageExtensions.test(file.name)) {
 
@@ -620,7 +629,7 @@
 
 
    $("#btn_modify_deptslidmd").on('click',function(){
-       $("#editSlideForm_md").submit();
+       $("#editSlideForm_dpetslideEdMd").submit();
    });
 
     $(document).ready(function() {

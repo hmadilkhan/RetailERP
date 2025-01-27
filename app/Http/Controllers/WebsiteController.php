@@ -454,7 +454,6 @@ class WebsiteController extends Controller
 
     public function update_slide(Request $request)
     {
-
         if(isset($request->department_slider)){
             return $this->department_slider_slide_modify($request);
             die();
@@ -472,7 +471,7 @@ class WebsiteController extends Controller
         if ($Slide != '') {
 
             $rules = [
-                'slide_md'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+                'slide_md'   => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
             ];
 
             $this->validate($request, $rules);
@@ -500,7 +499,7 @@ class WebsiteController extends Controller
         if ($mobile_slide != '') {
 
             $rules = [
-                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
             ];
 
             $this->validate($request, $rules);
@@ -576,7 +575,7 @@ class WebsiteController extends Controller
         if ($Slide != '') {
 
             $rules = [
-                'desktop_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+                'desktop_slide'   => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
             ];
 
             $this->validate($request, $rules);
@@ -605,7 +604,7 @@ class WebsiteController extends Controller
         if ($mobile_slide != '') {
 
             $rules = [
-                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp|max:1024'
+                'mobile_slide'   => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
             ];
 
             $this->validate($request, $rules);
@@ -638,6 +637,8 @@ class WebsiteController extends Controller
             ->update($columnArray);
 
             DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
+
+           if(!empty($products)){
             foreach($products as $value){
                 DB::table('website_slider_product_binds')->insert(
                         [
@@ -645,6 +646,7 @@ class WebsiteController extends Controller
                                     'product_id'=>$value,
                                 ]);
             }
+           }
 
         // if ($result) {
             Session::flash('success', 'Success!');
