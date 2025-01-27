@@ -80,6 +80,7 @@ class OrderController extends Controller
     public function orderdetails(Request $request, Customer $customer, OrderService $orderService, order $orderApp)
     {
         $orderId = $request->id;
+        $wallet = [];
 
         // Fetch order details
         $order = $orderService->getOrderWithRelations($orderId);
@@ -107,7 +108,9 @@ class OrderController extends Controller
         $statuses = OrderStatus::all();
         $ledgerDetails = $orderService->getCustomerLedgerDetails($customer, $order->customer->id, $orderId);
         $provider = $orderService->getServiceProvider($order->sales_person_id);
-        $wallet = $orderService->getServiceProvider($order->wallet_id);
+        if ($order->wallet_id != "") {
+            $wallet = $orderService->getServiceProvider($order->wallet_id);
+        }
  
         return view('order.order-details', compact('order', 'received', 'statuses', 'ledgerDetails', 'provider','wallet'));
 
