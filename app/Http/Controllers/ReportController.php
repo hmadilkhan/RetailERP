@@ -5046,15 +5046,21 @@ class ReportController extends Controller
         }
         if ($permissions[0]->cash_sale == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(38, 6, "Cash Sale", 0, 0, 'L', 1);
+            $pdf->Cell(38, 6, "Cash Sales", 0, 0, 'L', 1);
             $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->Cash, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->customer_credit_sale == 1) {
             $pdf->SetFont('Arial', '', 10);
-            $pdf->Cell(38, 6, "Credit Card Sale", 0, 0, 'L', 1);
+            $pdf->Cell(38, 6, "Credit Card Sales", 0, 0, 'L', 1);
             $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->CreditCard, 0) ?? 0, 0, 1, 'R', 1);
+        }
+        if ($permissions[0]->wallets_sales == 1) {
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(38, 6, "Wallet Sales", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, number_format($heads[0]->WalletSales, 0) ?? 0, 0, 1, 'R', 1);
         }
 
         $pdf->SetFont('Arial', '', 10);
@@ -5280,6 +5286,46 @@ class ReportController extends Controller
                 $pdf->Cell(13, 7, number_format($totalDiscountAmount, 0), 0, 0, 'C', 1);
                 $pdf->Cell(14, 7, number_format($totalAmount, 0), 0, 0, 'C', 1);
                 $pdf->Cell(14, 7, number_format($totalReceivedAmount, 0), 0, 1, 'C', 1);
+                $pdf->ln(6);
+
+                $pdf->setFillColor(255, 255, 255);
+                $pdf->SetTextColor(0, 0, 0);
+            } else {
+                $pdf->Cell(78, 7, "No Record Found", 0, 1, 'C', 1);
+            }
+        }
+
+        // WALLET SALES
+        if ($permissions[0]->wallets_sales == 1) {
+            $pdf->ln(6);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(78, 6, 'WALLET DETAILS', 0, 0, 'C', 1);
+            $pdf->ln(6);
+
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+
+            $walletSales = DB::table("sales_receipts")->where("opening_id", $opening)->where("payment_id", 8)->get();
+            $totalWalletSales = 0;
+
+            $pdf->setFillColor(233, 233, 233);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(20, 7, 'Date', 0, 0, 'L', 1);
+            $pdf->Cell(20, 7, 'Amount', 0, 0, 'L', 1);
+            $pdf->Cell(38, 7, 'Narration', 0, 1, 'C', 1);
+            $pdf->setFillColor(255, 255, 255);
+            $pdf->SetTextColor(0, 0, 0);
+            if (count($walletSales) > 0) {
+                foreach ($walletSales as $key => $walletSale) {
+                    $totalWalletSales += $walletSale->total_amount;
+                    $pdf->Cell(40, 7, $walletSale->receipt_no, 0, 0, 'L', 1);
+                    $pdf->Cell(38, 7, $walletSale->total_amount, 0, 1, 'C', 1);
+                }
+                $pdf->setFillColor(0, 0, 0);
+                $pdf->SetTextColor(255, 255, 255);
+                $pdf->Cell(40, 7, "Totals", 0, 0, 'L', 1);
+                $pdf->Cell(38, 7, number_format($totalWalletSales, 0), 0, 1, 'L', 1);
                 $pdf->ln(6);
 
                 $pdf->setFillColor(255, 255, 255);

@@ -193,6 +193,14 @@ $closingBalance = round($heads[0]->closingBal);
                             {{ number_format($heads[0]->CustomerCredit, 0) }}</td>
                     </tr>
                 @endif
+                @if (isset($result[0]->wallets_sales) && $result[0]->wallets_sales == 1)
+                    <tr id="wallets_sales"
+                        onClick="cashDetails('{{ Crypt::encrypt($heads[0]->opening_id) }}','{{ Crypt::encrypt($heads[0]->terminal_id) }}',8 )">
+                        <td style="width:500px; cursor: pointer;">Wallet Sale</td>
+                        <td id="cashSales" class="text-end" style="width:500px">{{ session('currency') }}
+                            {{ number_format($heads[0]->WalletSales, 0) }}</td>
+                    </tr>
+                @endif
 
                 <tr class="f-24 form-control-label">
                     <td style="width:500px">Total Sales</td>
@@ -254,6 +262,7 @@ $closingBalance = round($heads[0]->closingBal);
                             {{ number_format($heads[0]->CardReturn, 0) }}</td>
                     </tr>
                 @endif
+                
                 @if (isset($result[0]->r_cheque) && $result[0]->r_cheque == 1)
                     <tr id="r_cheque">
                         <td style="width:500px">Customer Credit Return Cheque</td>
