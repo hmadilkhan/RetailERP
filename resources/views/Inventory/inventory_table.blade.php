@@ -14,6 +14,7 @@
                 </th>
                 <th>Preview</th>
                 <th>Code</th>
+                <th>Priority</th>
                 <th>Name</th>
                 <th>Depart</th>
                 <th>Sub-Depart</th>
@@ -68,6 +69,7 @@
                         </a>
                     </td>
                     <td>{{ $inventory->item_code }}</td>
+                    <td>{{ $inventory->priority }}</td>
                     <td><p class="f-16 wrap-text">{{ $inventory->product_name }}</p>
                          @if(isset($inventory->tags))
                            <br/>
