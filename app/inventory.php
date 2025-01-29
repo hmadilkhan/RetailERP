@@ -384,7 +384,7 @@ public function updateProductName($id,$name)
 		->where('inventory_price.status_id',1)
 		// ->where('inventory_stock.branch_id',session('branch'))
 		->groupBy("invent.id")
-		->orderBy("invent.priority");
+		->orderBy("invent.priority","DESC");
 
 		return $query->paginate(20);
 
