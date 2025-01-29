@@ -2316,26 +2316,7 @@
          }
     })
 
-   function ClontoThisProduct(prodId,productName){
-    swal({
-                title: "Clone to This Product "+productName,
-                text: "Do you want to unlink from "+websiteName+" website?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "YES",
-                cancelButtonText: "NO",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },function(isConfirm){
-                if(isConfirm){
 
-                }else{
-                    swal("Cancel!","This "+productName+" product to clone","error");
-                }
-
-            });
-   }
     </script>
 
 @endsection
