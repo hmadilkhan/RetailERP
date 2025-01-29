@@ -159,6 +159,10 @@
                         <a href="javascript:void(0)" class="dropdown-item waves-light waves-effect" onclick="UnLinkTag({{ $inventory->id }})"
                             data-toggle='tooltip' data-placement='left' title='' data-original-title='Un-link to tag'>
                             Un-link to tags</a>
+
+                        <a href="javascript:void(0)" class="dropdown-item waves-light waves-effect" onclick="ClonetoThisProduct({{ $inventory->id }})"
+                                data-toggle='tooltip' data-placement='left' title='' data-original-title='Clone to this product'>
+                                Clone to this product</a>
                         </div>
                       </div>
 
