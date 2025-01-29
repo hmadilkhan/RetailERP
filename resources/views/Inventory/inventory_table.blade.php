@@ -624,8 +624,8 @@
 
     function ClontoThisProduct(prodId,productName){
     swal({
-                title: "Clone to This Product "+productName,
-                text: "Do you want to unlink from "+websiteName+" website?",
+                title: "Clone Product ",
+                text: "Do you want to clone this "+productName+" product?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
