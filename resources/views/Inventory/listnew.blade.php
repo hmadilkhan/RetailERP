@@ -2316,6 +2316,26 @@
          }
     })
 
+ function ClonetoThisProduct(prodId,productName){
+    swal({
+                title: "Clone Product ",
+                text: "Do you want to clone this "+productName+" product?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },function(isConfirm){
+                if(isConfirm){
+
+                }else{
+                    swal("Cancel!","This "+productName+" product to clone","error");
+                }
+
+            });
+   }
 
     </script>
 
