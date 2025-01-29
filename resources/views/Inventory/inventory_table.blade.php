@@ -2,6 +2,7 @@
     <table id="inventtbl" class="table table-striped nowrap m-t-10 dataTable" width="100%" cellspacing="0">
         <thead>
             <tr>
+                <th class="d-none"></th>
                 <th style="text-align:center;vertical-align: middle;">
                     <div class="rkmd-checkbox checkbox-rotate">
                         <label class="input-checkbox checkbox-primary">
@@ -47,6 +48,7 @@
                   }
               @endphp --}}
                 <tr class="parent">
+                    <td class="d-none">{{ $inventory->priority }}</td>
                     <td style="text-align:center;vertical-align: middle;">
                         <div class='rkmd-checkbox checkbox-rotate'>
                             <label class='input-checkbox checkbox-primary'>
