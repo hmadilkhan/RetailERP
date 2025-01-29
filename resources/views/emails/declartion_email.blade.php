@@ -150,6 +150,13 @@
                                             {{ number_format($salesData['heads'][0]->CreditCard, 0) ?? 0 }}</td>
                                     </tr>
                                 @endif
+                                @if ($salesData['permissions'][0]->wallets_sales == 1)
+                                    <tr>
+                                        <td style="padding: 6px 0;">Wallet Sale:</td>
+                                        <td style="padding: 6px 0; text-align: right;">
+                                            {{ number_format($salesData['heads'][0]->WalletSales, 0) ?? 0 }}</td>
+                                    </tr>
+                                @endif
                                 <tr>
                                     <td style="padding: 6px 0; font-weight: 600;font-size:20px;">Total Sales:</td>
                                     <td style="padding: 6px 0; text-align: right;font-weight: 600;font-size:20px;">

@@ -145,7 +145,7 @@
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item waves-light waves-effect" id="btn_removeall"><i
                                         class="icofont icofont-close-line"></i>&nbsp;Inactive All</a>
-                                @if(session("roleId") == 1)
+                                @if(session("roleId") == 2)
                                 <a class="dropdown-item waves-light waves-effect" id="btn_deleteall"><i
                                         class="icofont icofont-close-line"></i>&nbsp;Delete All</a>
                                 @endif

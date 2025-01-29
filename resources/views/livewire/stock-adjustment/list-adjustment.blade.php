@@ -101,8 +101,8 @@
                                 <tr>
                                     <td>{{ !empty($stock->productstock) ? $stock->productstock->grn_id : 0 }}</td>
                                     <td>{{ date('d-m-Y', strtotime($stock->date)) }}</td>
-                                    <td>{{ $stock->products->item_code }}</td>
-                                    <td>{{ $stock->products->product_name }}</td>
+                                    <td>{{ $stock->products->item_code ?? "-" }}</td>
+                                    <td>{{ $stock->products->product_name  ?? "-" }}</td>
                                     <td>{{ $stock->qty }}</td>
                                     {{-- <td>{{ $stock->stock }}</td> --}}
                                     <td>{{ !empty($stock->productstock) ? $stock->productstock->grn->user->fullname : '-' }}
