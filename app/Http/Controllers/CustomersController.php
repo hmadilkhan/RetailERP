@@ -14,6 +14,8 @@ use App\Helpers\custom_helper;
 use App\inventory;
 use App\Models\Customer as ModelsCustomer;
 use App\Traits\MediaTrait;
+use Illuminate\Support\Facades\Storage;
+
 class CustomersController extends Controller
 {
     use MediaTrait;
