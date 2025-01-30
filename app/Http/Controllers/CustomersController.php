@@ -14,6 +14,8 @@ use App\Helpers\custom_helper;
 use App\inventory;
 use App\Models\Customer as ModelsCustomer;
 use App\Traits\MediaTrait;
+use Illuminate\Support\Facades\Storage;
+
 class CustomersController extends Controller
 {
     use MediaTrait;
@@ -926,11 +928,11 @@ class CustomersController extends Controller
         $pdf->AliasNbPages();
         $pdf->AddPage();
         $qrimage = "qr" . $name[0]->name . ".png";
-        if (!file_exists(public_path('assets/images/customers/qrcode/' . $qrimage))) {
+        if (!file_exists(asset('assets/images/customers/qrcode/' . $qrimage))) {
             $qrcodetext = $name[0]->mobile . " | " . $name[0]->user_id . " | 2"; //mode 2 for customer (or bt suno yeh company id nh USER ID HA) :-)
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('assets/images/customers/qrcode/' . $qrimage));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
         }
         //first row
         $pdf->SetFont('Arial', '', 10);
@@ -941,11 +943,11 @@ class CustomersController extends Controller
         //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Image(public_path('assets/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
         $pdf->Cell(65, 12, $company[0]->name, 0, 0, 'L');
         $pdf->Cell(45, 12, $urduname, 0, 0, 'L');
         $pdf->Cell(30, 0, "", 0, 1, 'R');
-        $pdf->Image(public_path('assets/images/customers/qrcode/' . $qrimage), 175, 10, -200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
         //third row
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(35, 25, '', 0, 0);

@@ -530,7 +530,7 @@ class TransferController extends Controller
         $totalcp =  $totalcp + ($trfdetails[$i]->cp * $trfdetails[$i]->Transfer_Qty);
 
         $amount = $trfdetails[$i]->cp * $trfdetails[$i]->Transfer_Qty;
-        $amount = ($amount / $totalcp) * 100;
+        $amount = ($amount ?? 1 / $totalcp ?? 1) * 100;
         $unitcp = ($amount * $request->shipmentamt) / 100;
         $unitcp = ($unitcp / $trfdetails[$i]->Transfer_Qty);
 
