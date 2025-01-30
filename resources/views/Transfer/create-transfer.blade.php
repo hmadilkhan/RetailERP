@@ -541,6 +541,7 @@
             $.ajax({
                 url: "{{ url('/insert_direct_chalan') }}",
                 type: 'POST',
+                async: false, // Make the request synchronous
                 data: {
                     _token: "{{ csrf_token() }}",
                     transferid: '{{ $addtransfer }}',
