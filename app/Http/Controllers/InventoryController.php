@@ -499,7 +499,6 @@ class InventoryController extends Controller
             }
             return null;
         }
-
         return null;
     }
 

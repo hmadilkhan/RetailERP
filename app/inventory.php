@@ -991,4 +991,12 @@ public function updateProductName($id,$name)
         return $result != null ? $result->image : null;
     }
 
+    // public function itemCode_checkExists($itemCode){
+    //     $result = DB::table('inventory_general')
+    //                 ->where('company_id',session('company_id'))
+    //                 ->where('item_code',$itemCode)
+    //                 ->count();
+    //     return $result > 0 ? true : false;
+    // }
+
 }
