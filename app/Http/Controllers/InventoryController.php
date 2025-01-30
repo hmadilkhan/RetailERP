@@ -493,13 +493,7 @@ class InventoryController extends Controller
     {
         // $code = "";
         if ($departmentId != "" && $subDepartmentId != "") {
-            $result =  DB::table('inventory_department')
-                            ->join("inventory_sub_department","inventory_sub_department.department_id","inventory_department.department_id")
-                            ->where("inventory_department.department_id",$departId)
-                            ->where("inventory_sub_department.sub_department_id",$subDepartId)
-                            ->select("inventory_department.code as deptcode","inventory_department.department_name","inventory_sub_department.code as sdeptcode","inventory_sub_department.sub_depart_name")
-                            ->get();
-
+            $result = $inventory->getDepartAndSubDepart($departmentId, $subDepartmentId);
             if ($result != null) {
                 return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
             }
@@ -688,7 +682,7 @@ class InventoryController extends Controller
             // Generate a new video name by appending a random string or timestamp
             $videoName = pathinfo($originalVideoName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalVideoName, PATHINFO_EXTENSION);
             // Copy the video to the new name
-            Storage::copy('video/products/' . $originalImageName, 'video/products/' . $videoName);
+            Storage::copy('video/products/' . $originalVideoName, 'video/products/' . $videoName);
 
 
             // $prodVideo = Storage::disk('public')->get('/video/products/' . $get_productVideo->prodvideo);
