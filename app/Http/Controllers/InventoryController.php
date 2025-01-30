@@ -545,8 +545,8 @@ class InventoryController extends Controller
 
         // Generate item code
         $item_code = $this->autoGenerateCode_duplicateProduct($inventory_record->department_id, $inventory_record->sub_department_id);
-return response()->json($item_code,500);
-die;
+// return response()->json($item_code,500);
+// die;
         // Prepare product fields for insertion
         $fields = [
             'company_id'          => session('company_id'),
