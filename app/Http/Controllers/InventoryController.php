@@ -489,7 +489,7 @@ class InventoryController extends Controller
         return  redirect()->back();
     }
 
-    public function autoGenerateCode_cloneGeneralProduct($departmentId,$subDepartmentId,inventory $inventory)
+    public function autoGenerateCode_duplicateProduct($departmentId,$subDepartmentId,inventory $inventory)
     {
         // $code = "";
         if ($departmentId != "" && $subDepartmentId != "") {
@@ -503,8 +503,7 @@ class InventoryController extends Controller
         return null;
     }
 
-    public function duplicateProductToGeneralInventory(Request $request, inventory $inventory)
-{
+    public function duplicateProductToGeneralInventory(Request $request, inventory $inventory){
     try {
         // Validate the product ID
         if (empty($request->productId)) {
@@ -539,7 +538,7 @@ class InventoryController extends Controller
         }
 
         // Generate item code
-        $item_code = $this->autoGenerateCode_cloneGeneralProduct($inventory_record->department_id, $inventory_record->sub_department_id);
+        $item_code = $this->autoGenerateCode_duplicateProduct($inventory_record->department_id, $inventory_record->sub_department_id,$inventory);
 
         // Prepare product fields for insertion
         $fields = [
