@@ -650,6 +650,7 @@ class InventoryController extends Controller
                 $originalImageName = $val->image;
                 // Generate a new image name by appending a random string or timestamp
                 $imageName = pathinfo($originalImageName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalImageName, PATHINFO_EXTENSION);
+                if(Storage::disk('public')->get('images/products/'.$originalImageName)){
                 // Copy the image to the new name
                 Storage::copy('images/products/' . $originalImageName, 'images/products/' . $imageName);
 
@@ -670,6 +671,7 @@ class InventoryController extends Controller
                     $count++;
                 }
             }
+          }
         }
 
         // Clone product video
@@ -681,6 +683,7 @@ class InventoryController extends Controller
             $originalVideoName = $get_productVideo->file;
             // Generate a new video name by appending a random string or timestamp
             $videoName = pathinfo($originalVideoName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalVideoName, PATHINFO_EXTENSION);
+            if(Storage::disk('public')->get('video/products/'.$originalVideoName)){
             // Copy the video to the new name
             Storage::copy('video/products/' . $originalVideoName, 'video/products/' . $videoName);
 
@@ -696,6 +699,7 @@ class InventoryController extends Controller
                     'created_at'   => now(),
                 ]);
             }
+          }
         }
 
         // Send push notification
