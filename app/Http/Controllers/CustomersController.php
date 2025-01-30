@@ -943,11 +943,11 @@ class CustomersController extends Controller
         //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Image(asset('assets/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
         $pdf->Cell(65, 12, $company[0]->name, 0, 0, 'L');
         $pdf->Cell(45, 12, $urduname, 0, 0, 'L');
         $pdf->Cell(30, 0, "", 0, 1, 'R');
-        $pdf->Image(asset('assets/images/customers/qrcode/' . $qrimage), 175, 10, -200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
         //third row
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(35, 25, '', 0, 0);
