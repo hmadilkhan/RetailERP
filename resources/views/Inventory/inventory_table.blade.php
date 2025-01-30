@@ -2,6 +2,7 @@
     <table id="inventtbl" class="table table-striped nowrap m-t-10 dataTable" width="100%" cellspacing="0">
         <thead>
             <tr>
+                <th class="d-none"></th>
                 <th style="text-align:center;vertical-align: middle;">
                     <div class="rkmd-checkbox checkbox-rotate">
                         <label class="input-checkbox checkbox-primary">
@@ -13,6 +14,7 @@
                 </th>
                 <th>Preview</th>
                 <th>Code</th>
+                <th>Priority</th>
                 <th>Name</th>
                 <th>Depart</th>
                 <th>Sub-Depart</th>
@@ -47,6 +49,7 @@
                   }
               @endphp --}}
                 <tr class="parent">
+                    <td class="d-none">{{ $inventory->priority }}</td>
                     <td style="text-align:center;vertical-align: middle;">
                         <div class='rkmd-checkbox checkbox-rotate'>
                             <label class='input-checkbox checkbox-primary'>
@@ -66,6 +69,7 @@
                         </a>
                     </td>
                     <td>{{ $inventory->item_code }}</td>
+                    <td>{{ $inventory->priority }}</td>
                     <td><p class="f-16 wrap-text">{{ $inventory->product_name }}</p>
                          @if(isset($inventory->tags))
                            <br/>
@@ -155,6 +159,10 @@
                         <a href="javascript:void(0)" class="dropdown-item waves-light waves-effect" onclick="UnLinkTag({{ $inventory->id }})"
                             data-toggle='tooltip' data-placement='left' title='' data-original-title='Un-link to tag'>
                             Un-link to tags</a>
+
+                        <a href="javascript:void(0)" class="dropdown-item waves-light waves-effect" onclick="ClonetoThisProduct({{ $inventory->id }},'{{ $inventory->product_name }}')"
+                                data-toggle='tooltip' data-placement='left' title='' data-original-title='Clone to this product'>
+                                Clone to this product</a>
                         </div>
                       </div>
 
@@ -612,4 +620,7 @@
             }); //ajax end
         } //else end
     });
+
+
+
 </script>
