@@ -503,10 +503,10 @@ class InventoryController extends Controller
             if (!empty($result) && $result[0]->deptcode != "") {
                 return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
             }
-            return null;
+            return $departmentId;
         }
 
-        return null;
+        return $departmentId;
     }
 
     public function duplicateProductToGeneralInventory(Request $request, inventory $inventory){
