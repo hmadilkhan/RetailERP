@@ -926,11 +926,11 @@ class CustomersController extends Controller
         $pdf->AliasNbPages();
         $pdf->AddPage();
         $qrimage = "qr" . $name[0]->name . ".png";
-        if (!file_exists(public_path('assets/images/customers/qrcode/' . $qrimage))) {
+        if (!file_exists(asset('assets/images/customers/qrcode/' . $qrimage))) {
             $qrcodetext = $name[0]->mobile . " | " . $name[0]->user_id . " | 2"; //mode 2 for customer (or bt suno yeh company id nh USER ID HA) :-)
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('assets/images/customers/qrcode/' . $qrimage));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
         }
         //first row
         $pdf->SetFont('Arial', '', 10);
