@@ -489,11 +489,17 @@ class InventoryController extends Controller
         return  redirect()->back();
     }
 
-    public function autoGenerateCode_duplicateProduct($departmentId,$subDepartmentId,inventory $inventory)
+    public function autoGenerateCode_duplicateProduct($departmentId,$subDepartmentId)
     {
         // $code = "";
         if ($departmentId != "" && $subDepartmentId != "") {
-            $result = $inventory->getDepartAndSubDepart($departmentId, $subDepartmentId);
+            $result =  DB::table('inventory_department')
+                            ->join("inventory_sub_department","inventory_sub_department.department_id","inventory_department.department_id")
+                            ->where("inventory_department.department_id",$departmentId)
+                            ->where("inventory_sub_department.sub_department_id",$subDepartmentId)
+                            ->select("inventory_department.code as deptcode","inventory_department.department_name","inventory_sub_department.code as sdeptcode","inventory_sub_department.sub_depart_name")
+                            ->get();
+
             if (!empty($result) && $result[0]->deptcode != "") {
                 return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
             }
@@ -538,7 +544,7 @@ class InventoryController extends Controller
         }
 
         // Generate item code
-        $item_code = $this->autoGenerateCode_duplicateProduct($inventory_record->department_id, $inventory_record->sub_department_id,$inventory);
+        $item_code = $this->autoGenerateCode_duplicateProduct($inventory_record->department_id, $inventory_record->sub_department_id);
              return $item_code;
              die();
         // Prepare product fields for insertion
