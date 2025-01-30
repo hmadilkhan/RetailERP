@@ -674,33 +674,33 @@ class InventoryController extends Controller
           }
         }
 
-        // Clone product video
-        $get_productVideo = DB::table('inventory_video')
-            ->where('inventory_id', $inventory_record->id)
-            ->get();
+        // // Clone product video
+        // $get_productVideo = DB::table('inventory_video')
+        //     ->where('inventory_id', $inventory_record->id)
+        //     ->get();
 
-        if ($get_productVideo != null) {
-            $originalVideoName = $get_productVideo->file;
-            // Generate a new video name by appending a random string or timestamp
-            $videoName = pathinfo($originalVideoName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalVideoName, PATHINFO_EXTENSION);
-            if(Storage::disk('public')->get('video/products/'.$originalVideoName)){
-            // Copy the video to the new name
-            Storage::copy('video/products/' . $originalVideoName, 'video/products/' . $videoName);
+        // if ($get_productVideo != null) {
+        //     $originalVideoName = $get_productVideo->file;
+        //     // Generate a new video name by appending a random string or timestamp
+        //     $videoName = pathinfo($originalVideoName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalVideoName, PATHINFO_EXTENSION);
+        //     if(Storage::disk('public')->get('video/products/'.$originalVideoName)){
+        //     // Copy the video to the new name
+        //     Storage::copy('video/products/' . $originalVideoName, 'video/products/' . $videoName);
 
 
-            // $prodVideo = Storage::disk('public')->get('/video/products/' . $get_productVideo->prodvideo);
-            // $path = '/video/products/';
-            // $prodVideoName = $this->uploads($prodVideo, $path);
+        //     // $prodVideo = Storage::disk('public')->get('/video/products/' . $get_productVideo->prodvideo);
+        //     // $path = '/video/products/';
+        //     // $prodVideoName = $this->uploads($prodVideo, $path);
 
-            if ($videoName != null) {
-                DB::table('inventory_video')->insert([
-                    "inventory_id" => $productid,
-                    "file"         => $videoName,
-                    'created_at'   => now(),
-                ]);
-            }
-          }
-        }
+        //     if ($videoName != null) {
+        //         DB::table('inventory_video')->insert([
+        //             "inventory_id" => $productid,
+        //             "file"         => $videoName,
+        //             'created_at'   => now(),
+        //         ]);
+        //     }
+        //   }
+        // }
 
         // Send push notification
         $this->sendPushNotification($item_code, $inventory_record->product_name, "store");
