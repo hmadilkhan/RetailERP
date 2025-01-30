@@ -489,24 +489,24 @@ class InventoryController extends Controller
         return  redirect()->back();
     }
 
-    public function autoGenerateCode_duplicateProduct($departmentId,$subDepartmentId)
+    public function autoGenerateCode_duplicateProduct($departmentId,$subDepartmentId,inventory $inventory)
     {
         // $code = "";
         if ($departmentId != "" && $subDepartmentId != "") {
             $result =  DB::table('inventory_department')
                             ->join("inventory_sub_department","inventory_sub_department.department_id","inventory_department.department_id")
-                            ->where("inventory_department.department_id",$departmentId)
-                            ->where("inventory_sub_department.sub_department_id",$subDepartmentId)
+                            ->where("inventory_department.department_id",$departId)
+                            ->where("inventory_sub_department.sub_department_id",$subDepartId)
                             ->select("inventory_department.code as deptcode","inventory_department.department_name","inventory_sub_department.code as sdeptcode","inventory_sub_department.sub_depart_name")
                             ->get();
 
-            if (!empty($result) && $result[0]->deptcode != "") {
+            if ($result != null) {
                 return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
             }
-            return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
+            return null;
         }
 
-        return $result;
+        return null;
     }
 
     public function duplicateProductToGeneralInventory(Request $request, inventory $inventory){
@@ -544,9 +544,8 @@ class InventoryController extends Controller
         }
 
         // Generate item code
-        $item_code = $this->autoGenerateCode_duplicateProduct($inventory_record->department_id, $inventory_record->sub_department_id);
-// return response()->json($item_code,500);
-// die;
+        $item_code = $this->autoGenerateCode_duplicateProduct($inventory_record->department_id, $inventory_record->sub_department_id,$inventory);
+
         // Prepare product fields for insertion
         $fields = [
             'company_id'          => session('company_id'),
@@ -685,7 +684,7 @@ class InventoryController extends Controller
             ->get();
 
         if ($get_productVideo != null) {
-            $originalVideoName = $get_productVideo->prodvideo;
+            $originalVideoName = $get_productVideo->file;
             // Generate a new video name by appending a random string or timestamp
             $videoName = pathinfo($originalVideoName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalVideoName, PATHINFO_EXTENSION);
             // Copy the video to the new name
