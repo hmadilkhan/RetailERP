@@ -2316,10 +2316,10 @@
          }
     })
 
- function ClonetoThisProduct(prodId,productName){
+ function ClonetoThisProduct(prodId,prodName){
     swal({
                 title: "Clone Product ",
-                text: "Do you want to clone this "+productName+" product?",
+                text: "Do you want to clone this "+prodName+" product?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
@@ -2329,13 +2329,46 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
+                       $.ajax({
+                                url: '{{ route("duplicateProductToGeneralInventory") }}',
+                                type: 'POST',
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    productId: prodId,
+                                    productName: prodName
+                                },
+                                dataType: 'json',
+                                success: function(resp, textStatus, jqXHR) {
+                                    // Get the HTTP status code
+                                    var statusCode = jqXHR.status;
+
+                                    // Handle the response based on the status code
+                                    if (statusCode === 200) {
+                                        // If status code is 200, show success message
+                                        swal("Success!","Product successfully duplicated!","success");
+
+                                        // Optionally, you can reload the page or perform other actions
+                                        // location.reload(); // Reload the page (optional)
+                                    } else {
+                                        // If status code is not 200, handle error
+                                        swal("Error!","Error: " + resp.message || "Something went wrong!","error");
+                                    }
+                                },
+                                error: function(xhr, status, error) {
+                                    // If there is an error in the AJAX request (e.g., server error)
+                                    var errorMessage = xhr.status + ': ' + xhr.statusText;
+                                    swal("Error!","AJAX error - " + errorMessage,"error");;
+                                }
+                            });
 
                 }else{
-                    swal("Cancel!","This "+productName+" product to clone","error");
+                    swal("Cancel!","This "+prodName+" product to clone","error");
                 }
 
             });
    }
+
+
 
     </script>
 

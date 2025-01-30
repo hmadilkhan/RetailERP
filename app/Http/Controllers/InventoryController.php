@@ -249,7 +249,7 @@ class InventoryController extends Controller
             'item_code'           => $request->code,
             'product_name'        => $request->name,
             'product_description' => $request->description,
-            'image'               => isset($folder) ? $folder . '/' . strtolower($imageName) : $imageName,
+            'image'               => $imageName,
             'url'                 => $imageData,
             'status'              => 1,
             'created_at'          => date('Y-m-d H:s:i'),
@@ -461,8 +461,7 @@ class InventoryController extends Controller
                 if ($imageName != null) {
                     DB::table('inventory_images')->insert([
                         "item_id" => $productid,
-                        "image"   => isset($folder) ? $folder . '/' . strtolower($imageName) : $imageName,
-                        "url"     => isset($imageData) ? $imageData : null,
+                        "image"   => $imageName,
                     ]);
 
                     $count++;
@@ -480,7 +479,7 @@ class InventoryController extends Controller
 
                 DB::table('inventory_video')->insert([
                     "inventory_id" => $productid,
-                    "file"         => $$prodVideoName['filename'],
+                    "file"         => $prodVideoName['filename'],
                     'created_at'   => date("Y-m-d H:i:s")
                 ]);
             }
@@ -489,6 +488,232 @@ class InventoryController extends Controller
         $this->sendPushNotification($request->code, $request->name, "store");
         return  redirect()->back();
     }
+
+    public function autoGenerateCode_cloneGeneralProduct($departmentId,$subDepartmentId,inventory $inventory)
+    {
+        // $code = "";
+        if ($departmentId != "" && $subDepartmentId != "") {
+            $result = $inventory->getDepartAndSubDepart($departmentId, $subDepartmentId);
+            if (!empty($result) && $result[0]->deptcode != "") {
+                return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
+            }
+            return null;
+        }
+
+        return null;
+    }
+
+    public function duplicateProductToGeneralInventory(Request $request, inventory $inventory)
+{
+    try {
+        // Validate the product ID
+        if (empty($request->productId)) {
+            return response()->json("Invalid product", 500);
+        }
+
+        $inventoryId = $request->productId;
+        $productName = $request->productName;
+
+        // Fetch the existing inventory record
+        $inventory_record = DB::table('inventory_general')
+            ->where('id', $inventoryId)
+            ->where('company_id', session('company_id'))
+            ->first();
+
+        if ($inventory_record == null) {
+            return response()->json("This " . $productName . " product not found", 500);
+        }
+
+        DB::beginTransaction();
+
+        // Initialize image name
+        $imageName = NULL;
+
+        // Handle image cloning with a new unique name
+        if (!empty($inventory_record->image)) {
+            $originalImageName = $inventory_record->image;
+            // Generate a new image name by appending a random string or timestamp
+            $imageName = pathinfo($originalImageName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalImageName, PATHINFO_EXTENSION);
+            // Copy the image to the new name
+            Storage::copy('images/products/' . $originalImageName, 'images/products/' . $imageName);
+        }
+
+        // Generate item code
+        $item_code = $this->autoGenerateCode_cloneGeneralProduct($inventory_record->department_id, $inventory_record->sub_department_id);
+
+        // Prepare product fields for insertion
+        $fields = [
+            'company_id'          => session('company_id'),
+            'department_id'       => $inventory_record->department_id,
+            'sub_department_id'   => $inventory_record->sub_department_id,
+            'uom_id'              => $inventory_record->uom_id,
+            'cuom'                => $inventory_record->cuom,
+            'product_mode'        => $inventory_record->product_mode,
+            'priority'            => $inventory_record->priority,
+            'item_code'           => $item_code,
+            'product_name'        => $inventory_record->product_name,
+            'product_description' => $inventory_record->product_description,
+            'image'               => $imageName,
+            'status'              => 1,
+            'created_at'          => now(),
+            'updated_at'          => now(),
+            'weight_qty'          => $inventory_record->weight_qty,
+            'slug'                => strtolower(str_replace(' ', '-', $inventory_record->product_name)) . "-" . strtolower(Str::random(4)),
+            'is_deal'             => $inventory_record->is_deal,
+            'short_description'   => $inventory_record->short_description,
+            'details'             => $inventory_record->details,
+            'brand_id'            => $inventory_record->brand_id,
+            'actual_image_size'   => $inventory_record->actual_image_size,
+        ];
+
+        // Insert the new product and get the product ID
+        $productid = $inventory->insert($fields);
+
+        // Handle quantity reminder (if any)
+        $check_QtyReminder = DB::table('inventory_qty_reminders')->where('inventory_id', $inventory_record->id)->first();
+        if ($check_QtyReminder != null) {
+            $result = $inventory->ReminderInsert($productid, $check_QtyReminder->reminder_qty);
+        }
+
+        // Clone inventory references
+        $get_inventory_refrences = DB::table("inventory_reference")->where('product_id', $inventory_record->id)->get();
+        if ($get_inventory_refrences != null) {
+            foreach ($get_inventory_refrences as $value) {
+                DB::table("inventory_reference")->insert([
+                    "product_id" => $productid,
+                    "refrerence" => $value->refrerence
+                ]);
+            }
+        }
+
+        // Clone inventory price details
+        $inventory_price_record = DB::table('inventory_price')
+            ->where('product_id', $inventory_record->id)
+            ->where('status_id', 1)
+            ->first();
+        if ($inventory_price_record != null) {
+            $items = [
+                'cost_price'      => $inventory_price_record->cost_price,
+                'actual_price'    => $inventory_price_record->actual_price,
+                'tax_rate'        => $inventory_price_record->tax_rate,
+                'tax_amount'      => $inventory_price_record->tax_amount,
+                'retail_price'    => $inventory_price_record->retail_price,
+                'wholesale_price' => $inventory_price_record->wholesale_price,
+                'online_price'    => $inventory_price_record->online_price,
+                'discount_price'  => $inventory_price_record->discount_price,
+                'product_id'      => $productid,
+                'status_id'       => 1,
+            ];
+            $price = $inventory->insertgeneral('inventory_price', $items);
+        }
+
+        // Clone terminal details
+        $terminals = DB::table("terminal_details")
+            ->where("branch_id", session("branch"))
+            ->where("status_id", 1)
+            ->get();
+
+        foreach ($terminals as $value) {
+            $items = [
+                "branchId"   => session("branch"),
+                "terminalId" => $value->terminal_id,
+                "productId"  => $productid,
+                "status"     => 1,
+                "date"       => now()->toDateString(),
+                "time"       => now()->toTimeString(),
+            ];
+            DB::table("inventory_download_status")->insert($items);
+        }
+
+        // Clone vendor product details
+        $get_venderProduct = DB::table('vendor_product')
+            ->where('product_id', $inventory_record->id)
+            ->where('status', 1)
+            ->get();
+
+        if ($get_venderProduct != null) {
+            foreach ($get_venderProduct as $singleVendor) {
+                DB::table('vendor_product')->insert([
+                    "vendor_id" => $singleVendor->vendor_id,
+                    "product_id" => $productid,
+                    "status" => 1,
+                ]);
+            }
+        }
+
+        // Clone product gallery with unique image names
+        $get_productGallery = DB::table('inventory_images')
+            ->where('item_id', $inventory_record->id)
+            ->get();
+        if ($get_productGallery != null) {
+            $count = 1;
+            foreach ($get_productGallery as $val) {
+                $originalImageName = $val->image;
+                // Generate a new image name by appending a random string or timestamp
+                $imageName = pathinfo($originalImageName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalImageName, PATHINFO_EXTENSION);
+                // Copy the image to the new name
+                Storage::copy('images/products/' . $originalImageName, 'images/products/' . $imageName);
+
+                // $prodGallery = Storage::disk('public')->get('/images/products/' . $val->image);
+                // $path = '/images/products/';
+
+                // // Generate a new unique name for the gallery image
+                // $newImageName = pathinfo($val->image, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($val->image, PATHINFO_EXTENSION);
+                // $returnImageValue = $this->uploads($prodGallery, $path, $newImageName);  // Upload the new image with a unique name
+
+                // $imageName = $returnImageValue['fileName'];
+
+                if ($imageName != null) {
+                    DB::table('inventory_images')->insert([
+                        "item_id" => $productid,
+                        "image"   => $imageName,
+                    ]);
+                    $count++;
+                }
+            }
+        }
+
+        // Clone product video
+        $get_productVideo = DB::table('inventory_video')
+            ->where('inventory_id', $inventory_record->id)
+            ->get();
+
+        if ($get_productVideo != null) {
+            $originalVideoName = $get_productVideo->prodvideo;
+            // Generate a new video name by appending a random string or timestamp
+            $videoName = pathinfo($originalVideoName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalVideoName, PATHINFO_EXTENSION);
+            // Copy the video to the new name
+            Storage::copy('video/products/' . $originalImageName, 'video/products/' . $videoName);
+
+
+            // $prodVideo = Storage::disk('public')->get('/video/products/' . $get_productVideo->prodvideo);
+            // $path = '/video/products/';
+            // $prodVideoName = $this->uploads($prodVideo, $path);
+
+            if ($videoName != null) {
+                DB::table('inventory_video')->insert([
+                    "inventory_id" => $productid,
+                    "file"         => $videoName,
+                    'created_at'   => now(),
+                ]);
+            }
+        }
+
+        // Send push notification
+        $this->sendPushNotification($item_code, $inventory_record->product_name, "store");
+
+        // Commit the transaction
+        DB::commit();
+
+        return response()->json("Success!", 200);
+
+    } catch (\Exception $e) {
+        // Rollback transaction in case of error
+        DB::rollBack();
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+}
+
 
     public function getProduct_attribute(Request $request, Brand $brand)
     {
