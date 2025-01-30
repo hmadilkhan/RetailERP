@@ -503,7 +503,7 @@ class InventoryController extends Controller
             if (!empty($result) && $result[0]->deptcode != "") {
                 return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
             }
-            return $result;
+            return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
         }
 
         return $result;
