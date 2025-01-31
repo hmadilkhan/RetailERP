@@ -1158,7 +1158,7 @@ class InventoryController extends Controller
         $inventoryBrand = DB::table("inventory_brands")->where("inventory_id", $data[0]->id)->pluck("brand_id");
 
         $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->where("status",1)->pluck("tag_id");
-        $inventoryVideo = DB::table("inventory_video")->where("inventory_id", $data[0]->id)->pluck("file");
+        $inventoryVideo = DB::table("inventory_video")->where("inventory_id", $data[0]->id)->first();
         foreach ($references as $refval) {
             $ref[] = $refval->refrerence;
         }
