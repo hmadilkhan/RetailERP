@@ -654,6 +654,7 @@ class InventoryController extends Controller
                 if(Storage::disk('public')->exists('images/products/'.$originalImageName)){
                     // Copy the image to the new name
                     Storage::disk('public')->copy('images/products/' . $originalImageName, 'images/products/' . $imageName);
+
                 if ($imageName != null) {
                     DB::table('inventory_images')->insert([
                         "item_id" => $productid,
