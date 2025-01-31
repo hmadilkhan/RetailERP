@@ -473,7 +473,7 @@ class InventoryController extends Controller
         if (!empty($request->file('prodvideo'))) {
             $prodVideo     = $request->file('prodvideo');
             $path          = '/video/products/';
-            $prodVideoName = $this->uploads($prodVideo, $path);
+            $prodVideoName = $this->uploads($request->file('prodvideo'), $path);
 
             if (isset($prodVideoName['filename'])) {
 
@@ -1440,7 +1440,7 @@ class InventoryController extends Controller
         if (!empty($request->file('prodvideo'))) {
             $prodVideo     = $request->file('prodvideo');
             $path          = '/video/products/';
-            $prodVideoName = $this->uploads($prodVideo, $path);
+            $prodVideoName = $this->uploads($request->file('prodvideo'), $path);
 
             if (isset($prodVideoName['filename'])) {
 
