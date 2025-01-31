@@ -1454,8 +1454,8 @@ class InventoryController extends Controller
 
 
         $this->sendPushNotification($request->code, $request->name, "update");
-          return redirect()->back();
-        // return  1;
+        //   return redirect()->back();
+        return  1;
     }
 
 
