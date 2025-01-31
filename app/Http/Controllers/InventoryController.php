@@ -491,12 +491,31 @@ class InventoryController extends Controller
 
     public function autoGenerateCode_duplicateProduct($departmentId,$subDepartmentId,inventory $inventory)
     {
-        // $code = "";
         if ($departmentId != "" && $subDepartmentId != "") {
             $result = $inventory->getDepartAndSubDepart($departmentId, $subDepartmentId);
             if ($result != null) {
-                return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
+                // return substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
+
+                $isUnique = false;
+                while (!$isUnique) {
+                    // Generate the ID
+                    $generatedId = substr($result[0]->department_name, 0, 1) . substr($result[0]->sub_depart_name, 0, 1) . "-" . rand(1000, 9999);
+
+                    // Check if the ID already exists in the inventory database
+                    if ($inventory->itemCode_checkExists($generatedId)) {
+                        // If ID exists, generate a new one
+                        continue;
+                    } else {
+                        // If ID doesn't exist, it's unique, so break the loop
+                        $isUnique = true;
+                    }
+                }
+
+                // Return the unique generated ID
+                return $generatedId;
             }
+
+
             return null;
         }
         return null;
@@ -1435,8 +1454,8 @@ class InventoryController extends Controller
 
 
         $this->sendPushNotification($request->code, $request->name, "update");
-        //   return redirect()->back();
-        return  1;
+          return redirect()->back();
+        // return  1;
     }
 
 
