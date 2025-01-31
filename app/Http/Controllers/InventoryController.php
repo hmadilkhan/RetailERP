@@ -528,12 +528,14 @@ class InventoryController extends Controller
         $imageName = NULL;
 
         // Handle image cloning with a new unique name
-        if (!empty($inventory_record->image)) {
+        if ($inventory_record->image != null ) {
             $originalImageName = $inventory_record->image;
+           if(Storage::disk('public')->exists('images/products/' . $originalImageName)){
             // Generate a new image name by appending a random string or timestamp
             $imageName = pathinfo($originalImageName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalImageName, PATHINFO_EXTENSION);
             // Copy the image to the new name
-            Storage::copy('images/products/' . $originalImageName, 'images/products/' . $imageName);
+            Storage::disk('public')->copy('images/products/' . $originalImageName, 'images/products/' . $imageName);
+          }
         }
 
         // Generate item code
