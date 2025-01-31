@@ -1446,7 +1446,7 @@ class InventoryController extends Controller
 
                 DB::table('inventory_video')->insert([
                     "inventory_id" => $request->id,
-                    "file"         => $$prodVideoName['filename'],
+                    "file"         => $prodVideoName['filename'],
                     'created_at'   => date("Y-m-d H:i:s")
                 ]);
             }
