@@ -465,7 +465,10 @@
                <div class="card-block p-2 p-t-0">
                <div id="videoPreviewBox">
                  @if($inventoryVideo != null)
-                 <video controls src="{{ asset('storage/video/products'.$inventoryVideo->file) }}" width="300" height="300"></video>
+                   @php $videoExtension = strtolower(pathinfo($inventoryVideo->file,PATHINFO_EXTENSION)); @endphp
+                 <video controls width="300" height="300">
+                    <source src="{{ asset('storage/video/products'.$inventoryVideo->file) }}" type="video/{{ $videoExtension }}">
+                </video>
                  @endif
                </div>
                 <div class="form-group">
