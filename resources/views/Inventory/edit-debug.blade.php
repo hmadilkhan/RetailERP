@@ -463,7 +463,11 @@
                <h4 >Product Video</h4>
                </div>
                <div class="card-block p-2 p-t-0">
-               <div id="videoPreviewBox"></div>
+               <div id="videoPreviewBox">
+                 @if($inventoryVideo != null)
+                   <video src="{{ asset('storage/video/products'.$inventoryVideo->file) }}" width="300px" height="300px"></video>
+                 @endif
+               </div>
                 <div class="form-group">
                     <br/>
                      <label for="productvideo" class="custom-file">

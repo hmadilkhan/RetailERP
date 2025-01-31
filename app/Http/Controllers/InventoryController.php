@@ -1158,7 +1158,7 @@ class InventoryController extends Controller
         $inventoryBrand = DB::table("inventory_brands")->where("inventory_id", $data[0]->id)->pluck("brand_id");
 
         $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->where("status",1)->pluck("tag_id");
-
+        $inventory_video = DB::table("inventory_video")->where("inventory_id", $data[0]->id)->pluck("file");
         foreach ($references as $refval) {
             $ref[] = $refval->refrerence;
         }
@@ -1169,7 +1169,7 @@ class InventoryController extends Controller
         }
 
         // if(Auth::user()->username == 'demoadmin'){
-        return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
+        return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo'));
 
         // }else{
         //  return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
