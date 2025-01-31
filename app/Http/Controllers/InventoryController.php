@@ -651,19 +651,9 @@ class InventoryController extends Controller
                 $originalImageName = $val->image;
                 // Generate a new image name by appending a random string or timestamp
                 $imageName = pathinfo($originalImageName, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($originalImageName, PATHINFO_EXTENSION);
-                if(Storage::disk('public')->get('images/products/'.$originalImageName)){
-                // Copy the image to the new name
-                Storage::copy('images/products/' . $originalImageName, 'images/products/' . $imageName);
-
-                // $prodGallery = Storage::disk('public')->get('/images/products/' . $val->image);
-                // $path = '/images/products/';
-
-                // // Generate a new unique name for the gallery image
-                // $newImageName = pathinfo($val->image, PATHINFO_FILENAME) . '-' . time() . '.' . pathinfo($val->image, PATHINFO_EXTENSION);
-                // $returnImageValue = $this->uploads($prodGallery, $path, $newImageName);  // Upload the new image with a unique name
-
-                // $imageName = $returnImageValue['fileName'];
-
+                if(Storage::disk('public')->exists('images/products/'.$originalImageName)){
+                    // Copy the image to the new name
+                    Storage::disk('public')->copy('images/products/' . $originalImageName, 'images/products/' . $imageName);
                 if ($imageName != null) {
                     DB::table('inventory_images')->insert([
                         "item_id" => $productid,
