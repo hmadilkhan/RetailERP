@@ -470,6 +470,7 @@
                  <video controls width="300" height="300">
                     <source src="{{ asset('storage/video/products/'.$inventoryVideo->file) }}" type="video/{{ $videoExtension }}">
                 </video>
+                <button type="button" onclick="removeOldVideo('{{ $inventoryVideo->file }}')" class="btn btn-danger">Remove</button>
                  @endif
                </div>
                 <div class="form-group">
@@ -1467,6 +1468,11 @@ function handleVideo(input, containerId) {
                     }
                   });
             }
+     }
+
+     function removeOldVideo(video){
+        $("#oldvideo").val(video);
+        $("#videoPreviewBox").html("");
      }
   </script>
 
