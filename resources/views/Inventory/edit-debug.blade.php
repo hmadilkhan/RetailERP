@@ -27,6 +27,7 @@
       <input type="hidden" id="reminder_id" name="reminder_id" value="{{$data[0]->reminder_id}}">
       <input type="hidden" id="oldGalleryImage" name="galleryImage">
       <input type="hidden" id="oldurlGalleryImage" name="urlGalleryImage">
+      <input type="hidden" id="oldvideo" name="oldvideo">
 
       <div class="row">
           <div class="col-md-9">
