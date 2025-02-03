@@ -467,7 +467,7 @@
                  @if($inventoryVideo != null)
                    @php $videoExtension = strtolower(pathinfo($inventoryVideo->file,PATHINFO_EXTENSION)); @endphp
                  <video controls width="300" height="300">
-                    <source src="{{ asset('storage/video/products'.$inventoryVideo->file) }}" type="video/{{ $videoExtension }}">
+                    <source src="{{ asset('storage/video/products/'.$inventoryVideo->file) }}" type="video/{{ $videoExtension }}">
                 </video>
                  @endif
                </div>
