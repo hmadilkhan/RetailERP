@@ -1243,6 +1243,13 @@ class InventoryController extends Controller
             }
         }
 
+        if(!empty($request->oldvideo)){
+            if (File::exists('storage/video/products/'.$request->oldvideo)) {
+                File::delete('storage/video/products/'.$request->oldvideo);
+            }
+            DB::table('inventory_video')->where('file', $request->oldvideo)->where('inventory_id', $request->id)->delete();
+        }
+
         // if (!empty($request->urlGalleryImage)) {
         //     $gallery = explode(',', $request->get('urlGalleryImage'));
         //     for ($i = 0; $i < count($gallery); $i++) {
