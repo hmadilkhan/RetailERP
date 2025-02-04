@@ -3195,7 +3195,7 @@ class InventoryController extends Controller
                         ->first();
 
                     if ($getPosProduct == null) {
-                        return response()->json(["status" => 500, "msg" => $e->getMessage()]);
+                        return response()->json(["status" => 500, "msg" => 'server issue! product not found.']);
                     }
                     if (!empty($getPosProduct->image)) {
                         $pname     = strtolower(str_replace(' ', '', $getPosProduct->item_name));
