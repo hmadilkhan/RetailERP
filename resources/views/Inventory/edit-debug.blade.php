@@ -227,7 +227,7 @@
                     <select class="select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
                        <option value="">Select</option>
                           @if($tagsList)
-                            @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray() @endphp
+                            @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray(); @endphp
                               @foreach($tagsList as $val)
                                   <option {{ (in_array($val->id,$tagsOld_val)) ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
                               @endforeach
