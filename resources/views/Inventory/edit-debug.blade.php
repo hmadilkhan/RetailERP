@@ -226,12 +226,12 @@
                   <i data-toggle="modal" data-target="#createtag-modal" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
                     <select class="select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
                        <option value="">Select</option>
-                          {{-- @if($tagsList)
+                          @if($tagsList)
                             @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray(); @endphp
                               @foreach($tagsList as $val)
                                   <option {{ (in_array($val->id,$tagsOld_val)) ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
                               @endforeach
-                          @endif --}}
+                          @endif
                     </select>
                     @if ($errors->has('tags'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
@@ -685,7 +685,7 @@ $(document).ready(function(){
     $("#showProductWebsite").trigger('click');
     $("#showProductWebsite").attr('checked',true);
     @endif
-})
+});
 
 function removeImage(id, img) {
     $("#gallery-" + id).remove();
@@ -739,7 +739,7 @@ $("#showProductWebsite").on('click',function(){
             $("#prodAdvans_Media").addClass('d-none');
         }
     }
-})
+});
 
 
     $("#website").on('change',function(){
