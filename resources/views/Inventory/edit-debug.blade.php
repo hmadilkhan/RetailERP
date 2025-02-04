@@ -199,7 +199,7 @@
                 <div class="form-group">
                     <label class="form-control-label">References</label>
                     <div class="tags_add">
-                        <input class="form-control" id="reference" name="reference" type="text" value="{{ $data->references != '' ? $data->references : '' }}">
+                        <input class="form-control" id="reference" name="reference" type="text" value="{{ $references != '' ? $references : '' }}">
                     </div>
                 </div>
             </div>
