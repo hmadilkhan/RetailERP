@@ -3283,12 +3283,12 @@ class InventoryController extends Controller
                 }
 
                 if ($request->prevImageName != "") {
-                    $file_path = 'storage/images/products/' . $request->prevImageName;
-                    if (File::exists($file_path)) {
-                        File::delete($file_path);
+                    $file_path = 'images/products/' . $request->prevImageName;
+                    if (Storage::disk('public')->exists($file_path)) {
+                        Storage::disk('public')->delete($file_path);
                     }
                 }
-                $getImage = $this->upload($request->item_image, 'storage/images/products/', $request->prevImageName);
+                $getImage = $this->upload($request->item_image, 'images/products/', $request->prevImageName);
                 $imageName = !empty($getImage) ? $getImage['fileName'] : null;
                 // $pname = str_replace(' ', '', $request->item_name);
                 // $imageName = time() . '.' . $request->item_image->getClientOriginalExtension();
