@@ -3181,6 +3181,8 @@ class InventoryController extends Controller
         try {
 
             $item_code = $request->item_code;
+            $imageName = null;
+
             foreach ($item_code as $val) {
                 DB::beginTransaction();
                 $exsist = $posProducts->exsist_chk($request->variableName, $val);
