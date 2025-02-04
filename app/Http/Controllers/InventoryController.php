@@ -3201,8 +3201,8 @@ class InventoryController extends Controller
                         $pname     = strtolower(str_replace(' ', '', $getPosProduct->item_name));
                         $imageName = $pname . '-' . $val . '.' . pathinfo($getPosProduct->image, PATHINFO_EXTENSION);
 
-                        if (File::exists('storage/images/products/' . $getPosProduct->image)) {
-                            File::move('storage/images/products/' . $getPosProduct->image, 'storage/images/products/' . $imageName);
+                        if (Storage::disk('public')->exists('images/products/'.$getPosProduct->image)) {
+                            Storage::disk('public')->copy('images/products/' . $getPosProduct->image, 'images/products/' . $imageName);
                         }
                     }
 
