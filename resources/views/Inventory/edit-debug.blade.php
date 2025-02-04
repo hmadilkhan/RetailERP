@@ -174,7 +174,7 @@
                   <label class="form-control-label">Qty Reminder <span class="text-danger">*</span></label>
                   <input class="form-control" type="Number" min="0"
                          name="reminder" id="reminder" value="{{ old('reminder') ?  old('reminder') : $data[0]->reminder_qty }}" placeholder="Enter Quantity Reminder" />
-                  @if ($errors->has('reminder'))
+                  @if($errors->has('reminder'))
                       <span class="form-control-feedback">Required field can not be blank.</span>
                   @endif
              </div>
@@ -187,7 +187,7 @@
 
                   <textarea class="form-control"
                    name="description" id="description" rows="5" ></textarea>
-                    @if ($errors->has('description'))
+                    @if($errors->has('description'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
               </div>
@@ -199,7 +199,7 @@
                 <div class="form-group">
                     <label class="form-control-label">References</label>
                     <div class="tags_add">
-                        <input class="form-control" id="reference" name="reference" type="text" value="{{ $references != '' ? $references : '' }}">
+                        <input class="form-control" id="reference" name="reference" type="text" value="{{ $data->references != '' ? $data->references : '' }}">
                     </div>
                 </div>
             </div>
