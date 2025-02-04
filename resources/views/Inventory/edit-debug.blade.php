@@ -233,7 +233,7 @@
                               @endforeach
                           @endif
                     </select>
-                    @if ($errors->has('tags'))
+                    @if($errors->has('tags'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
               </div>
@@ -264,7 +264,7 @@
 						  @endforeach
                        @endif
                     </select>
-                    @if ($errors->has('website'))
+                    @if($errors->has('website'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
 				</div>
@@ -284,7 +284,7 @@
                 <div class="form-group ">
                     <label class="form-control-label">Short Description <i>(For Website Only)</i></label>
                     <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" >{{ old('sdescription') }}</textarea>
-                    @if ($errors->has('sdescription'))
+                    @if($errors->has('sdescription'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
                 </div>
@@ -293,7 +293,7 @@
                 <div class="form-group ">
                     <label class="form-control-label">Details <i>(For Website Only)</i></label>
                     <textarea class="form-control" name="details" id="details" rows="6"></textarea>
-                    @if ($errors->has('details'))
+                    @if($errors->has('details'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
                 </div>
@@ -344,7 +344,7 @@
                 <div class="form-group {{ $errors->has('rp') ? 'has-danger' : '' }}">
                     <label class="form-control-label">Retail Price<span class="text-danger m-l-5">*</span></label>
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="rp" id="rp" placeholder="0" value="{{ old('rp') ? old('rp') : $prices[0]->retail_price }}" />
-                    @if ($errors->has('rp'))
+                    @if($errors->has('rp'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
                 </div>
@@ -411,7 +411,7 @@
                                 <div>
                                     <label class="pointer"><input type="checkbox" name="actual_image_size" class="" {{ $data[0]->actual_image_size == 1 ? 'checked' : ''}}> You want to actual image size</label>
                                 </div>
-                            @if ($errors->has('image'))
+                            @if($errors->has('image'))
                                 <span class="form-control-feedback">{{ $errors->first('image') }}</span>
                             @endif
                         </div>
