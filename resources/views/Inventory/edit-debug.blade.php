@@ -670,7 +670,7 @@
        @if(old('description'))
           $("#description").val("{{ old('description') }}")
        @else
-          $("#description").val('{{ e($data[0]->product_description) }}');
+          $("#description").val('{{ html_entity_decode($data[0]->product_description) }}');
        @endif
 
        $(".select2").select2();
