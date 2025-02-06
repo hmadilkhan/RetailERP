@@ -1078,4 +1078,4 @@ Route::middleware(['statusCheck'])->group(function () {
 
 
 // optimize image link
-Route::get('image-optimize/{image}', [InventoryController::class, 'imageOptimize'])->name("imageOptimize");
+// Route::get('image-optimize/{image}', [InventoryController::class, 'imageOptimize'])->name("imageOptimize");

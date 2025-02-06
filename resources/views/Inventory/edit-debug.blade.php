@@ -389,9 +389,10 @@
                                   {{-- @php $imageUrl = $data[0]->url @endphp --}}
                                   {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
                                @else --}}
-                                @if(!empty($data[0]->image) && File::exists('storage/images/products/'.$data[0]->image))
+                                @if(!empty($data[0]->image) && Storage::disk('public')->exists('images/products/' . $data[0]->image))
                                     {{-- @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp --}}
-                                    @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
+                                    {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp --}}
+                                    @php $imageUrl = Storage::disk('public')->get('images/products/' . $data[0]->image) @endphp
                                 @endif
                                {{-- @endif
                         @else --}}
@@ -813,12 +814,9 @@ $("#showProductWebsite").on('click',function(){
                 },
 				success: function(data,statusText,getStatus)
 				{
-				  if(data == 1)
-				  {
+				  if(getStatus.status == 200){
 					  location.reload();
 				  }
-
-
 				}
 			});
 

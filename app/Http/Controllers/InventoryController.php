@@ -4301,54 +4301,54 @@ class InventoryController extends Controller
 
     public function imageOptimize(Request $request)
     {
-       if (!empty($request->image)) {
-            // Define the path to the image
-            $pathToImage = Storage::disk('public')->path('/images/products/' . $request->image);
+    //    if (!empty($request->image)) {
+    //         // Define the path to the image
+    //         $pathToImage = Storage::disk('public')->path('/images/products/' . $request->image);
 
-            if(!in_array(strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),['jpg','jpeg'])){
-                if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
-                    // Set headers for the image response
-                        $headers = array(
-                            'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
-                            'Content-Description' => $request->image,
-                            'Cache-Control'      => 'public, max-age=604800',
-                        );
+    //         if(!in_array(strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),['jpg','jpeg'])){
+    //             if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
+    //                 // Set headers for the image response
+    //                     $headers = array(
+    //                         'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)),
+    //                         'Content-Description' => $request->image,
+    //                         'Cache-Control'      => 'public, max-age=604800',
+    //                     );
 
-                        return response()->file($pathToImage,$headers);
-                }else{
-                    return  $this->notFoundImage();
-                }
-            }
+    //                     return response()->file($pathToImage,$headers);
+    //             }else{
+    //                 return  $this->notFoundImage();
+    //             }
+    //         }
 
-            // Ensure the image exists before proceeding
-            if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
-                $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$request->image);
-                 // Copy the image to the new location
-                copy($pathToImage, $optimizedPath);
+    //         // Ensure the image exists before proceeding
+    //         if (Storage::disk('public')->exists('/images/products/' .$request->image)) {
+    //             $optimizedPath = Storage::disk('public')->path('images/optimize_images/'.$request->image);
+    //              // Copy the image to the new location
+    //             copy($pathToImage, $optimizedPath);
 
-                // Now process the copied image
-                $process = new Process(['jpegoptim', '--max=75', $optimizedPath]);
-                $process->run();
-                // Check if the process was successful
-                if (!$process->isSuccessful()) {
-                    return  $this->notFoundImage();
-                }
+    //             // Now process the copied image
+    //             $process = new Process(['jpegoptim', '--max=75', $optimizedPath]);
+    //             $process->run();
+    //             // Check if the process was successful
+    //             if (!$process->isSuccessful()) {
+    //                 return  $this->notFoundImage();
+    //             }
 
-                // Set headers for the image response
-                $headers = array(
-                    'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)), // Assuming it's a JPEG, you can change as per your image type
-                    'Content-Description' => $request->image,
-                     'Cache-Control'      => 'public, max-age=604800',
-                );
+    //             // Set headers for the image response
+    //             $headers = array(
+    //                 'Content-Type'        => 'image/'.strtolower(pathinfo($request->image,PATHINFO_EXTENSION)), // Assuming it's a JPEG, you can change as per your image type
+    //                 'Content-Description' => $request->image,
+    //                  'Cache-Control'      => 'public, max-age=604800',
+    //             );
 
-                // Show the optimized image path
-                return response()->file($optimizedPath,$headers)->deleteFileAfterSend(true);
+    //             // Show the optimized image path
+    //             return response()->file($optimizedPath,$headers)->deleteFileAfterSend(true);
 
-            } else {
-               return  $this->notFoundImage();
-            }
-        }
+    //         } else {
+    //            return  $this->notFoundImage();
+    //         }
+    //     }
 
-        return  $this->notFoundImage();
+    //     return  $this->notFoundImage();
     }
 }
