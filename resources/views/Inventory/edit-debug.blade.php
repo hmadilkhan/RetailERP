@@ -667,11 +667,7 @@
 	<script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 	<script type="text/javascript">
 
-       @if(old('description'))
-          $("#description").val("{{ old('description') }}")
-       @else
-          $("#description").val('{!! $data[0]->product_description !!}');
-       @endif
+
 
        $(".select2").select2();
 
