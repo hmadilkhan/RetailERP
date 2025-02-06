@@ -182,9 +182,16 @@
 
 
              <div class="col-md-6">
+                @php $product_description = ''; @endphp
+                @if(!empty($data[0]->product_description))
+                    @php
+                        $product_description = htmlentities($data[0]->product_description);
+                        $product_description = html_entity_decode($product_description);
+                    @endphp
+                @endif
               <div class="form-group {{ $errors->has('description') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Description</label>
-                  <textarea class="form-control" name="description" id="description" rows="5"></textarea>
+                  <textarea class="form-control" name="description" id="description" rows="5">{{$product_description}}</textarea>
                     @if($errors->has('description'))
                       <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
@@ -630,13 +637,7 @@
               </div>
           </div>
 
-    @php $product_description = ''; @endphp
-    @if(!empty($data[0]->product_description))
-        @php
-            $product_description = htmlentities($data[0]->product_description);
-            $product_description = html_entity_decode($product_description);
-        @endphp
-    @endif
+
 @endsection
 
 @section('css_code')
@@ -672,13 +673,6 @@
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 	<script type="text/javascript">
-
-       @if(old('description'))
-          $("#description").val("{{ e(old('description')) }}")
-       @else
-          $("#description").val('{{ e($product_description) }}');
-       @endif
-
        $(".select2").select2();
 
 //light box
