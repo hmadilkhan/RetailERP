@@ -678,7 +678,7 @@
        @if(old('description'))
           $("#description").val("{{ e(old('description')) }}")
        @else
-
+          $("#description").val('{{ e($product_description) }}');
        @endif
 
        $(".select2").select2();
