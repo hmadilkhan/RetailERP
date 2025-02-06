@@ -9,9 +9,11 @@
 @section('content')
 
 @php $product_description = null; @endphp
-{{ $data[0]->product_description }}
 @if(!empty($data[0]->product_description))
-   @php $product_description = htmlentities($data[0]->product_description) @endphp
+   @php
+         $product_description = htmlentities($data[0]->product_description);
+         $product_description = html_entity_decode($product_description);
+   @endphp
 @endif
 
 <div class="main-header m-t-0">
