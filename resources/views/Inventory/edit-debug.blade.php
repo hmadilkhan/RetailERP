@@ -188,7 +188,7 @@
                   <textarea class="form-control"
                    name="description" id="description" rows="5" ></textarea>
                     @if($errors->has('description'))
-                      <div class="form-control-feedback">Required field can not be blank.</div>
+                      <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
               </div>
             </div>
@@ -670,7 +670,7 @@
        @if(old('description'))
           $("#description").val("{{ old('description') }}")
        @else
-          $("#description").val('{{ $data[0]->product_description }}');
+          $("#description").val('{!! $data[0]->product_description !!}');
        @endif
 
        $(".select2").select2();
