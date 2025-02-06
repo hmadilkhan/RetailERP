@@ -670,7 +670,7 @@ class WebsiteController extends Controller
 
     public function destroy_slide(Request $request)
     {
-
+         return $request;
         if(isset($request->depart)){
            return $this->destroy_department_slide($request);
            die();
