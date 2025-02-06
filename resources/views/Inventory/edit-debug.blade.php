@@ -392,7 +392,7 @@
                                 @if(!empty($data[0]->image) && Storage::disk('public')->exists('images/products/' . $data[0]->image))
                                     {{-- @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp --}}
                                     {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp --}}
-                                    @php $imageUrl = Storage::disk('public')->get('images/products/' . $data[0]->image) @endphp
+                                    @php $imageUrl = asset('storage/images/products/' . $data[0]->image) @endphp
                                 @endif
                                {{-- @endif
                         @else --}}
