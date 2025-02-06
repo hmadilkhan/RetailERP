@@ -8,7 +8,7 @@
 @section('nav_addinventory','active')
 @section('content')
 
-@php $product_description = null; @endphp
+@php $product_description = ''; @endphp
 @if(!empty($data[0]->product_description))
    @php
          $product_description = htmlentities($data[0]->product_description);
