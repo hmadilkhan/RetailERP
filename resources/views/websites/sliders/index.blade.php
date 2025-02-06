@@ -418,7 +418,7 @@
 
   }
 
-    function warning(webId,webName,departSlider = null){
+    function warning(webId,webName,departSlider = ''){
             swal({
                 title: 'Remove Slider',
                 text:  'Are you sure remove '+(departSlider != '' ? 'department' : '')+' slider from '+webName+' website?',
@@ -431,11 +431,9 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-
                     if(departSlider != ''){
                         $("#DestroyFormDepartSlide"+webId).submit();
                     }else{
-                        alert(webId)
                         $("#DestroyForm"+webId).submit();
                     }
                 }else{
