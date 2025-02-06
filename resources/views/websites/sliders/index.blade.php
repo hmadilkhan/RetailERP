@@ -431,6 +431,7 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
+                    alert(webId)
                     if(departSlider != ''){
                         $("#DestroyFormDepartSlide"+webId).submit();
                     }else{
