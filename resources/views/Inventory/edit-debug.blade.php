@@ -182,7 +182,7 @@
 
 
              <div class="col-md-6">
-                @php $product_description = ''; @endphp
+                @php $product_description = null; @endphp
                 @if(!empty($data[0]->product_description))
                     @php
                         $product_description = htmlentities($data[0]->product_description);
