@@ -8,6 +8,12 @@
 @section('nav_addinventory','active')
 @section('content')
 
+@php $product_description = null; @endphp
+{{ $data[0]->product_description }}
+@if(!empty($data[0]->product_description))
+   @php $product_description = e($data[0]->product_description) @endphp
+@endif
+
 <div class="main-header m-t-0">
      <h4>Edit Inventory</h4>
      <br/>
@@ -670,7 +676,7 @@
        @if(old('description'))
           $("#description").val("{{ old('description') }}")
        @else
-          $("#description").val('{{ html_entity_decode($data[0]->product_description) }}');
+          $("#description").val('{{ $product_description }}');
        @endif
 
        $(".select2").select2();
