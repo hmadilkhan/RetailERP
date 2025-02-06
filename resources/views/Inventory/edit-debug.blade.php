@@ -8,14 +8,6 @@
 @section('nav_addinventory','active')
 @section('content')
 
-@php $product_description = ''; @endphp
-@if(!empty($data[0]->product_description))
-   @php
-         $product_description = htmlentities($data[0]->product_description);
-         $product_description = html_entity_decode($product_description);
-   @endphp
-@endif
-
 <div class="main-header m-t-0">
      <h4>Edit Inventory</h4>
      <br/>
@@ -192,9 +184,7 @@
              <div class="col-md-6">
               <div class="form-group {{ $errors->has('description') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Description</label>
-
-                  <textarea class="form-control"
-                   name="description" id="description" rows="5" ></textarea>
+                  <textarea class="form-control" name="description" id="description" rows="5"></textarea>
                     @if($errors->has('description'))
                       <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
@@ -639,6 +629,14 @@
                   </div>
               </div>
           </div>
+
+    @php $product_description = ''; @endphp
+    @if(!empty($data[0]->product_description))
+        @php
+            $product_description = htmlentities($data[0]->product_description);
+            $product_description = html_entity_decode($product_description);
+        @endphp
+    @endif
 @endsection
 
 @section('css_code')
