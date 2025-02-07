@@ -131,7 +131,7 @@ class DiscountController extends Controller
                   ];
 
           $this->validate($request, $rules);
-          
+
         // return $request;
         $status = 0;
         $onetimeuse = 0;

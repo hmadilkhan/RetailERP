@@ -126,7 +126,7 @@
       <div class="card-block">
         <div class="col-lg-6 col-md-6">
           <div class="form-group">
-            <label class="form-control-label">Discount Type</label>
+            <label class="form-control-label">Discount Type <span class="text-danger">*</span></label>
             <select name="type" id="type" data-placeholder="Select Discount Type" class="form-control select2">
               <option value="">Select Discount Type</option>
               @if($discountType)
@@ -136,7 +136,10 @@
               @endif
 
             </select>
-            <div class="form-control-feedback"></div>
+            {{-- <div class="form-control-feedback"></div> --}}
+            @error('type')
+             <span class="text-danger">Select discount type field is requried</span>
+            @enderror
           </div>
         </div>
 
@@ -145,6 +148,9 @@
             <label class="form-control-label">Discount Value <span class="text-danger">*</span></label>
             <input class="form-control" type="text" name="discountvalue" id="discountvalue" />
           </div>
+          @error('discountvalue')
+           <span class="text-danger">Field is requried</span>
+          @enderror         
         </div>
 
 
