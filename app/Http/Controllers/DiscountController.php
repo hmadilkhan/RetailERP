@@ -122,6 +122,14 @@ class DiscountController extends Controller
 
     public function saveDiscount(Request $request, discount $discount)
     {
+
+               
+         $rules = [
+                    'code'=>'required',
+                    'type'=>'required',
+                  ];
+        
+          $this->validate($request, $rules);
         // return $request;
         $status = 0;
         $onetimeuse = 0;
