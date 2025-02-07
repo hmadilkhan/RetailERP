@@ -125,12 +125,13 @@ class DiscountController extends Controller
 
 
          $rules = [
-                    'code'=>'required',
-                    'type'=>'required',
+                    'code'          =>'required',
+                    'type'          =>'required',
                     'discountvalue' =>'required',
                   ];
 
           $this->validate($request, $rules);
+          
         // return $request;
         $status = 0;
         $onetimeuse = 0;
