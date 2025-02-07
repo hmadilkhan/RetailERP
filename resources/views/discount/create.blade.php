@@ -32,6 +32,9 @@
           <input class="form-control" type="text" name="code" id="code" value="{{ old('code') }}" required/>
 
           <div class="form-control-feedback"><i>Customer will enter this discount code at checkout.</i></div>
+          @error('code')
+            <span class="text-danger">Field is required!</span>   
+          @enderror
         </div>
       </div>
     </div>
@@ -55,7 +58,7 @@
             </select>
             @error('website')
               <span class="text-danger">Field is required!</span>
-            @enderror  
+            @enderror
           </div>
         </div>
       </div>
