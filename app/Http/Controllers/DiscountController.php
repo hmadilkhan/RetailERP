@@ -127,6 +127,7 @@ class DiscountController extends Controller
          $rules = [
                     'code'          =>'required',
                     'type'          =>'required',
+                    'website'       =>'required',
                     'discountvalue' =>'required',
                   ];
 
