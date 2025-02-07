@@ -53,7 +53,9 @@
               @endforeach
               @endif
             </select>
-            <div class="form-control-feedback"></div>
+            @error('website')
+              <span class="text-danger">Field is required!</span>
+            @enderror  
           </div>
         </div>
       </div>
@@ -150,7 +152,7 @@
           </div>
           @error('discountvalue')
            <span class="text-danger">Field is requried</span>
-          @enderror         
+          @enderror
         </div>
 
 
