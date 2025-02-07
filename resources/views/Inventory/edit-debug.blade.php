@@ -287,7 +287,7 @@
         <div class="row">
             <div class="col-lg-6 col-md-6">
                 <div class="form-group ">
-                    <label class="form-control-label">Short Description <i>(For Website Only)</i></label>
+                    <label class="form-control-label">Short Description <i>(For Website Only) - Features</i></label>
                     <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" >{{ old('sdescription') }}</textarea>
                     @if($errors->has('sdescription'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
@@ -296,7 +296,7 @@
             </div>
             <div class="col-lg-6 col-md-6">
                 <div class="form-group ">
-                    <label class="form-control-label">Details <i>(For Website Only)</i></label>
+                    <label class="form-control-label">Details <i>(For Website Only) - Applications</i></label>
                     <textarea class="form-control" name="details" id="details" rows="6"></textarea>
                     @if($errors->has('details'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
