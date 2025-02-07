@@ -8,7 +8,7 @@
 
 @section('content')
 
-<section class="panels-wells p-t-30 sm-m-t-50">
+<section class="panels-wells p-t-30  m-t-10 sm-m-t-50">
 
 <form id="discountform" method="post" action="{{url('save-discount')}}">
   @method('post')
