@@ -8,6 +8,8 @@
 
 @section('content')
 
+<section class="panels-wells p-t-30 sm-m-t-50">
+
 <form id="discountform" method="post" action="{{url('save-discount')}}">
   @method('post')
   @csrf
@@ -505,6 +507,7 @@
     </div>
   </div>
 </div>
+</section>
 @endsection
 
 @section('scriptcode_three')
