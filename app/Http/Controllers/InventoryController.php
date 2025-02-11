@@ -1207,7 +1207,7 @@ class InventoryController extends Controller
 
 
     public function modify(Request $request)
-    {  return $request;
+    {  return $request->input('sdescription');
         $invent = new inventory();
         $websiteMode = null;
 
