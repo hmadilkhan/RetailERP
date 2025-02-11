@@ -257,7 +257,7 @@ class InventoryController extends Controller
             'weight_qty'          => $request->weight,
             'slug'                => strtolower(str_replace(' ', '-', $request->name)) . "-" . strtolower(Str::random(4)),
             'is_deal'             => (isset($request->is_deal) ? 1 : 0),
-            'short_description'   => htmlentities($request->sdescription),
+            'short_description'   => htmlentities($request->input('$request->sdescription')),
             'details'             => htmlentities($request->details),
             'brand_id'            => $request->brand,
             'actual_image_size'   => isset($request->actual_image_size) ? 1 : 0,
@@ -1207,7 +1207,7 @@ class InventoryController extends Controller
 
 
     public function modify(Request $request)
-    {     return $request;
+    {
         $invent = new inventory();
         $websiteMode = null;
 
