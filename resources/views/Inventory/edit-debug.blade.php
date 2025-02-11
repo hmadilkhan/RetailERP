@@ -830,9 +830,9 @@ $("#showProductWebsite").on('click',function(){
                   $("#btn_submit_save_changes").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
                 },
 				success: function(data,statusText,getStatus)
-				{
+				{ console.log(data);
 				  if(getStatus.status == 200){
-					  location.reload();
+					  //location.reload();
 				  }
 				}
 			});
