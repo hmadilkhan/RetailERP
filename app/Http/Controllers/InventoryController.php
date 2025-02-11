@@ -1226,7 +1226,7 @@ class InventoryController extends Controller
             'created_at'           => date('Y-m-d H:s:i'),
             'updated_at'           => date('Y-m-d H:s:i'),
             'weight_qty'           => $request->weight,
-            'short_description'    => htmlentities($request->sdescription),
+            'short_description'    => htmlentities($request->input('sdescription')),
             'details'              => htmlentities($request->details),
             'brand_id'             => $request->brand,
             'actual_image_size'    => isset($request->actual_image_size) ? 1 : 0,
