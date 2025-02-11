@@ -33,7 +33,7 @@
 
           <div class="form-control-feedback"><i>Customer will enter this discount code at checkout.</i></div>
           @error('code')
-            <span class="text-danger">Field is required!</span>   
+            <span class="text-danger">Field is required!</span>
           @enderror
         </div>
       </div>
