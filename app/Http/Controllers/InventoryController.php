@@ -1207,7 +1207,7 @@ class InventoryController extends Controller
 
 
     public function modify(Request $request)
-    {
+    {  return $request;
         $invent = new inventory();
         $websiteMode = null;
 
