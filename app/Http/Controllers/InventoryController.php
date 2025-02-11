@@ -157,6 +157,7 @@ class InventoryController extends Controller
 
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
+        return $request;
         // if(Auth::user()->username == 'demoadmin'){
         //       return empty($request->file('productvideo')) ? 1 : 0;
         // }
