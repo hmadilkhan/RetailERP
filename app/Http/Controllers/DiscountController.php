@@ -122,6 +122,17 @@ class DiscountController extends Controller
 
     public function saveDiscount(Request $request, discount $discount)
     {
+
+
+         $rules = [
+                    'code'          =>'required',
+                    'type'          =>'required',
+                    'website'       =>'required',
+                    'discountvalue' =>'required',
+                  ];
+
+          $this->validate($request, $rules);
+
         // return $request;
         $status = 0;
         $onetimeuse = 0;
@@ -289,19 +300,19 @@ class DiscountController extends Controller
         // return $request;
         return redirect()->action('DiscountController@index');
     }
-    
+
     public function reactiveDiscount(Request $request, discount $discount){
-        
+
         $generalData = [
                 "startdate" => $request->startdate,
                 "starttime" => $request->startime,
             ];
-            
+
             if($discount->updateData('discount_period', $generalData, "discount_id", $request->id)){
                 return $discount->updateData('discount_general', ['status'=>1], "discount_id", $request->id) ? 1 : 0;
             }else{
                 return 0;
-            } 
+            }
     }
 
     public function updateDiscount(Request $request, discount $discount)

@@ -419,6 +419,7 @@ Route::middleware(['statusCheck'])->group(function () {
     // inventory module //
     Route::get('/create-inventory', [InventoryController::class, "create"])->name('create-invent');
     Route::get('/inventory-list', [InventoryController::class, "index"])->name('invent-list');
+    Route::post('/generate-duplicate-product',[InventoryController::class,"duplicateProductToGeneralInventory"])->name('duplicateProductToGeneralInventory');
     Route::post('/get-inventory-department_wise', [InventoryController::class, "getDeparmtent_wise_Inventory"])->name('invent-list-department');
     Route::get('/edit-invent/{id}/', [InventoryController::class, 'getData'])->name('edit-invent');
     Route::post('/insert-inventory', [InventoryController::class, 'insert'])->name('insert');
@@ -1077,4 +1078,4 @@ Route::middleware(['statusCheck'])->group(function () {
 
 
 // optimize image link
-Route::get('image-optimize/{image}', [InventoryController::class, 'imageOptimize'])->name("imageOptimize");
+// Route::get('image-optimize/{image}', [InventoryController::class, 'imageOptimize'])->name("imageOptimize");

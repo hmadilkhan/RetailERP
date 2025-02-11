@@ -27,6 +27,7 @@
       <input type="hidden" id="reminder_id" name="reminder_id" value="{{$data[0]->reminder_id}}">
       <input type="hidden" id="oldGalleryImage" name="galleryImage">
       <input type="hidden" id="oldurlGalleryImage" name="urlGalleryImage">
+      <input type="hidden" id="oldvideo" name="oldvideo">
 
       <div class="row">
           <div class="col-md-9">
@@ -173,7 +174,7 @@
                   <label class="form-control-label">Qty Reminder <span class="text-danger">*</span></label>
                   <input class="form-control" type="Number" min="0"
                          name="reminder" id="reminder" value="{{ old('reminder') ?  old('reminder') : $data[0]->reminder_qty }}" placeholder="Enter Quantity Reminder" />
-                  @if ($errors->has('reminder'))
+                  @if($errors->has('reminder'))
                       <span class="form-control-feedback">Required field can not be blank.</span>
                   @endif
              </div>
@@ -181,13 +182,18 @@
 
 
              <div class="col-md-6">
+                @php $product_description = ''; @endphp
+                @if(!empty($data[0]->product_description))
+                    @php
+                        $product_description = htmlentities($data[0]->product_description);
+                        $product_description = html_entity_decode($product_description);
+                    @endphp
+                @endif
               <div class="form-group {{ $errors->has('description') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Description</label>
-
-                  <textarea class="form-control"
-                   name="description" id="description" rows="5" ></textarea>
-                    @if ($errors->has('description'))
-                      <div class="form-control-feedback">Required field can not be blank.</div>
+                  <textarea class="form-control" name="description" id="description" rows="5">{{$product_description}}</textarea>
+                    @if($errors->has('description'))
+                      <span class="form-control-feedback">Required field can not be blank.</span>
                     @endif
               </div>
             </div>
@@ -225,12 +231,14 @@
                   <i data-toggle="modal" data-target="#createtag-modal" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Tag"></i>
                     <select class="select2" data-placeholder="Select Tags" id="tags" name="tags[]" multiple>
                        <option value="">Select</option>
-                            @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray() @endphp
+                          @if($tagsList)
+                            @php $tagsOld_val = old('tags') ? (array) old('tags') : $inventoryTags->toArray(); @endphp
                               @foreach($tagsList as $val)
                                   <option {{ (in_array($val->id,$tagsOld_val)) ? 'selected' : '' }} value="{{$val->id}}">{{$val->name}}</option>
                               @endforeach
+                          @endif
                     </select>
-                    @if ($errors->has('tags'))
+                    @if($errors->has('tags'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
               </div>
@@ -261,7 +269,7 @@
 						  @endforeach
                        @endif
                     </select>
-                    @if ($errors->has('website'))
+                    @if($errors->has('website'))
                       <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
 				</div>
@@ -278,19 +286,33 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-6">
+                @php $short_description = ''; @endphp
+                @if(!empty($data[0]->short_description))
+                    @php
+                        $short_description = htmlentities($data[0]->short_description);
+                        $short_description = html_entity_decode($short_description);
+                    @endphp
+                @endif
                 <div class="form-group ">
-                    <label class="form-control-label">Short Description <i>(For Website Only)</i></label>
-                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" >{{ old('sdescription') }}</textarea>
-                    @if ($errors->has('sdescription'))
+                    <label class="form-control-label">Short Description <i>(For Website Only) - Features</i></label>
+                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" >{{ $short_description }}</textarea>
+                    @if($errors->has('sdescription'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
+                @php $product_details = ''; @endphp
+                @if(!empty($data[0]->details))
+                    @php
+                        $product_details = htmlentities($data[0]->details);
+                        $product_details = html_entity_decode($product_details);
+                    @endphp
+                @endif                
                 <div class="form-group ">
-                    <label class="form-control-label">Details <i>(For Website Only)</i></label>
-                    <textarea class="form-control" name="details" id="details" rows="6"></textarea>
-                    @if ($errors->has('details'))
+                    <label class="form-control-label">Details <i>(For Website Only) - Applications</i></label>
+                    <textarea class="form-control" name="details" id="details" rows="6">{{ $product_details }}</textarea>
+                    @if($errors->has('details'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
                 </div>
@@ -341,7 +363,7 @@
                 <div class="form-group {{ $errors->has('rp') ? 'has-danger' : '' }}">
                     <label class="form-control-label">Retail Price<span class="text-danger m-l-5">*</span></label>
                     <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)" min="0" name="rp" id="rp" placeholder="0" value="{{ old('rp') ? old('rp') : $prices[0]->retail_price }}" />
-                    @if ($errors->has('rp'))
+                    @if($errors->has('rp'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
                 </div>
@@ -386,9 +408,10 @@
                                   {{-- @php $imageUrl = $data[0]->url @endphp --}}
                                   {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
                                @else --}}
-                                @if(!empty($data[0]->image) && File::exists('storage/images/products/'.$data[0]->image))
+                                @if(!empty($data[0]->image) && Storage::disk('public')->exists('images/products/' . $data[0]->image))
                                     {{-- @php $imageUrl = asset('storage/images/products/'.$data[0]->image) @endphp --}}
-                                    @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp
+                                    {{-- @php $imageUrl = route('imageOptimize',$data[0]->image) @endphp --}}
+                                    @php $imageUrl = asset('storage/images/products/' . $data[0]->image) @endphp
                                 @endif
                                {{-- @endif
                         @else --}}
@@ -408,7 +431,7 @@
                                 <div>
                                     <label class="pointer"><input type="checkbox" name="actual_image_size" class="" {{ $data[0]->actual_image_size == 1 ? 'checked' : ''}}> You want to actual image size</label>
                                 </div>
-                            @if ($errors->has('image'))
+                            @if($errors->has('image'))
                                 <span class="form-control-feedback">{{ $errors->first('image') }}</span>
                             @endif
                         </div>
@@ -463,7 +486,15 @@
                <h4 >Product Video</h4>
                </div>
                <div class="card-block p-2 p-t-0">
-               <div id="videoPreviewBox"></div>
+               <div id="videoPreviewBox">
+                 @if($inventoryVideo != null)
+                   @php $videoExtension = strtolower(pathinfo($inventoryVideo->file,PATHINFO_EXTENSION)); @endphp
+                 <video controls width="300" height="300">
+                    <source src="{{ asset('storage/video/products/'.$inventoryVideo->file) }}" type="video/{{ $videoExtension }}">
+                </video>
+                <button type="button" onclick="removeOldVideo('{{ $inventoryVideo->file }}')" class="btn btn-danger">Remove</button>
+                 @endif
+               </div>
                 <div class="form-group">
                     <br/>
                      <label for="productvideo" class="custom-file">
@@ -619,6 +650,8 @@
                   </div>
               </div>
           </div>
+
+
 @endsection
 
 @section('css_code')
@@ -654,13 +687,6 @@
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
 	<script src="https://cdn.jsdelivr.net/npm/md5-js-tools@1.0.2/lib/md5.min.js"></script>
 	<script type="text/javascript">
-
-       @if(old('description'))
-          $("#description").val("{{ old('description') }}")
-       @else
-          $("#description").val('{{ $data[0]->product_description }}');
-       @endif
-
        $(".select2").select2();
 
 //light box
@@ -674,7 +700,7 @@ $(document).ready(function(){
     $("#showProductWebsite").trigger('click');
     $("#showProductWebsite").attr('checked',true);
     @endif
-})
+});
 
 function removeImage(id, img) {
     $("#gallery-" + id).remove();
@@ -728,7 +754,7 @@ $("#showProductWebsite").on('click',function(){
             $("#prodAdvans_Media").addClass('d-none');
         }
     }
-})
+});
 
 
     $("#website").on('change',function(){
@@ -802,12 +828,9 @@ $("#showProductWebsite").on('click',function(){
                 },
 				success: function(data,statusText,getStatus)
 				{
-				  if(data == 1)
-				  {
+				  if(getStatus.status == 200){
 					  location.reload();
 				  }
-
-
 				}
 			});
 
@@ -1459,6 +1482,11 @@ function handleVideo(input, containerId) {
                     }
                   });
             }
+     }
+
+     function removeOldVideo(video){
+        $("#oldvideo").val(video);
+        $("#videoPreviewBox").html("");
      }
   </script>
 

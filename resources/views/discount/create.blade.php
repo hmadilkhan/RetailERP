@@ -8,6 +8,8 @@
 
 @section('content')
 
+<section class="panels-wells p-t-30  m-t-10 sm-m-t-50">
+
 <form id="discountform" method="post" action="{{url('save-discount')}}">
   @method('post')
   @csrf
@@ -17,23 +19,26 @@
   <div class=" col-lg-7 col-md-7">
     <div class="card card-block">
       <div class="col-lg-12 col-md-12">
-          
+
         <div class="form-group">
           <label class="input-checkbox checkbox-primary">
             <input type="checkbox" id="applyToVoucher" name="applyToVoucher">
              Do you want to create a discount through this code</label>
         </div>
-          
+
         <div class="form-group">
-          <label class="form-control-label">Discount Code</label>
+          <label class="form-control-label">Discount Code <span class="text-danger">*</span></label>
           <label class="form-control-label f-right text-primary" style="cursor :pointer" onclick="makeid(8)">Generate Code</label>
-          <input class="form-control" type="text" name="code" id="code" value="{{ old('code') }}" />
+          <input class="form-control" type="text" name="code" id="code" value="{{ old('code') }}" required/>
 
           <div class="form-control-feedback"><i>Customer will enter this discount code at checkout.</i></div>
+          @error('code')
+            <span class="text-danger">Field is required!</span>   
+          @enderror
         </div>
       </div>
     </div>
-    
+
     <div class="card">
       <div class="card-header">
         <h5 class="card-header-text">Select Website</h5>
@@ -51,11 +56,13 @@
               @endforeach
               @endif
             </select>
-            <div class="form-control-feedback"></div>
+            @error('website')
+              <span class="text-danger">Field is required!</span>
+            @enderror
           </div>
         </div>
       </div>
-    </div>    
+    </div>
 
 <!--Applies to-->
     <div class="card" id="divappliesTo">
@@ -124,7 +131,7 @@
       <div class="card-block">
         <div class="col-lg-6 col-md-6">
           <div class="form-group">
-            <label class="form-control-label">Discount Type</label>
+            <label class="form-control-label">Discount Type <span class="text-danger">*</span></label>
             <select name="type" id="type" data-placeholder="Select Discount Type" class="form-control select2">
               <option value="">Select Discount Type</option>
               @if($discountType)
@@ -134,15 +141,21 @@
               @endif
 
             </select>
-            <div class="form-control-feedback"></div>
+            {{-- <div class="form-control-feedback"></div> --}}
+            @error('type')
+             <span class="text-danger">Select discount type field is requried</span>
+            @enderror
           </div>
         </div>
 
         <div id="divdiscountvalue" class="col-lg-6 col-md-6">
           <div class="form-group">
-            <label class="form-control-label">Discount Value</label>
+            <label class="form-control-label">Discount Value <span class="text-danger">*</span></label>
             <input class="form-control" type="text" name="discountvalue" id="discountvalue" />
           </div>
+          @error('discountvalue')
+           <span class="text-danger">Field is requried</span>
+          @enderror
         </div>
 
 
@@ -316,16 +329,16 @@
     <div class="card">
       <div class="card-header">
         <h5 class="card-header-text">Select Days</h5>
-        
-     <div class="rkmd-checkbox checkbox-rotate checkbox-ripple f-right"> 
+
+     <div class="rkmd-checkbox checkbox-rotate checkbox-ripple f-right">
       <label class="input-checkbox checkbox-primary">
             <input type="checkbox" id="selectedAlldays">
             <span class="checkbox"></span>
             <span class="ripple"></span></label>
           <div class="captions2" for="selectedAlldays">Select All</div>
-        </div>          
+        </div>
       </div>
-      
+
       <div class="card-block">
         <div class="col-lg-2 col-md-2 rkmd-checkbox checkbox-rotate checkbox-ripple">
           <label class="input-checkbox checkbox-primary">
@@ -493,7 +506,7 @@
             </tbody>
           </table>
         </div>
-        
+
         <div id="showProduct_md"></div>
       </div>
       <div class="modal-footer">
@@ -505,6 +518,7 @@
     </div>
   </div>
 </div>
+</section>
 @endsection
 
 @section('scriptcode_three')
@@ -538,21 +552,21 @@
       previous: "icofont icofont-rounded-left"
     }
   });
-  
+
   $("#website").on('change',function(){
-      
+
       if($(this).val()!=''){
           $("#disc_website").html('<b>Website:</b> '+$("#website option:selected").text());
       }else{
           $("#disc_website").text('');
       }
   });
-  
+
   $("#applyToVoucher").on('change',function(){
       if($(this).is(':checked')){
           $("#code").attr('readonly',true);
       }else{
-          $("#code").attr('readonly',false); 
+          $("#code").attr('readonly',false);
       }
   });
 
@@ -571,11 +585,11 @@
     //   $('#divcategories').css('display', 'block');
     //   $('#divproducts').css('display', 'none');
       divBox_OnOff(0,'divproducts');
-      divBox_OnOff(1,'divcategories');    
+      divBox_OnOff(1,'divcategories');
       $('#product').empty();
       loadDepartments();
       $('#discount_applies_to').val("2");
-      
+
       miniPurchaseBox(0);
     } else if (id == "product") {
       page = 1;
@@ -587,36 +601,36 @@
       loadProducts(page);
       $('#details-modal').modal("show");
       $('#discount_applies_to').val("3");
-      
+
       miniPurchaseBox(0);
 
     } else {
       divBox_OnOff(0,'divproducts');
-      divBox_OnOff(0,'divcategories');    
+      divBox_OnOff(0,'divcategories');
       $('#discount_applies_to').val("1");
       miniPurchaseBox(1);
     }
     discountValueSet();
   }
-  
+
   function divBox_OnOff(md,elementId){
-    if(md == 1){  
+    if(md == 1){
       if($("#"+elementId).hasClass('d-none')){
           $("#"+elementId).removeClass('d-none');
       }
     }else{
        if(!$("#"+elementId).hasClass('d-none')){
           $("#"+elementId).addClass('d-none');
-      }        
-    } 
+      }
+    }
   }
-  
+
   function miniPurchaseBox(mode){
-   if(mode == 1){  
+   if(mode == 1){
      if($("#divminChkBox").hasClass('d-none')){
          $("#divminChkBox").removeClass('d-none').addClass('rkmd-checkbox');
-         
-     } 
+
+     }
    }else{
      if(!$("#divminChkBox").hasClass('d-none')){
          $("#divminChkBox").addClass('d-none').removeClass('rkmd-checkbox');
@@ -636,18 +650,18 @@
       usageLimitsBox(0)
     }
   }
-  
+
   function usageLimitsBox(mode){
-   if(mode == 1){  
+   if(mode == 1){
      if($("#usageLimitsBox").hasClass('d-none')){
          $("#usageLimitsBox").removeClass('d-none');
-         
-     } 
+
+     }
    }else{
      if(!$("#usageLimitsBox").hasClass('d-none')){
          $("#usageLimitsBox").addClass('d-none');
      }
-   }      
+   }
   }
 
   $('#chkEndDate').change(function() {
@@ -714,7 +728,7 @@
               removeToArray(removedValue);
               $('#ddlproduct').trigger('change.select2');
             }
-            
+
         }
     });
 
@@ -741,7 +755,7 @@
         });
       }
     });
-    
+
     showProductSelected_list();
   }
 
@@ -776,17 +790,17 @@
   function addToArray(id) {
     if (!products.includes(id)) {
          products.push(id);
-          
+
         //  $("#btn-add-prod-"+id).remove();
          $("#action-cell-"+id).append("<i class='icofont icofont-trash text-danger f-18 m-l-1' id='removeAction-"+id+"' onclick='removeToArray("+id+")' data-id='" + id + "' data-toggle='tooltip' data-placement='top' title='' data-original-title='Remove Product'></i>");
-         
+
          $("#btn-add-prod-"+id).remove();
          showProductSelected_list();
     }
   }
-  
+
   function showProductSelected_list(){
-     if(products.length == 0){ 
+     if(products.length == 0){
          $("#showProduct_md").empty();
      }else{
          $("#showProduct_md").empty();
@@ -796,30 +810,30 @@
       });
      }
   }
-  
+
   function removeToArray(id) {
-      
+
     //   let index = products.indexOf(parseInt(id));
-  
+
         //   if (index == 1) { // only splice array when item is found
         //     products.splice(index, 1); // 2nd parameter means remove one item only
         //     alert()
-        //   }   
-             
+        //   }
+
     products = jQuery.grep(products, function(value) {
       return value != id;
-    });    
-    
+    });
+
     $('#ddlproduct option[value="'+id+'"]').remove()
-            
+
     //  $("#btn-add-prod-"+id).removeClass('icofont-ui-checked').addClass('icofont-ui-add');
-     
+
      $("#action-cell-"+id).append("<i class='icofont icofont-ui-add text-success f-18' id='btn-add-prod-"+id+"' onclick='addToArray("+id+")' data-id='"+id+"' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add Product'></i>");
-     
-     $("#removeAction-"+id).remove();    
+
+     $("#removeAction-"+id).remove();
      showProductSelected_list();
-  }  
-  
+  }
+
 $('#details-modal').on('hidden.bs.modal', function () {
     if($("#ddlproduct option:selected").length == 0){
         $("#showProduct_md").empty();
@@ -830,12 +844,12 @@ $('#details-modal').on('hidden.bs.modal', function () {
             //   alert($("#action-cell-"+products[i]).length)
                if($("#action-cell-"+products[i]).length == 0){
                    $("#action-cell-"+products[i]).empty();
-                $("#action-cell-"+products[i]).append("<i class='icofont icofont-ui-add text-success f-18' id='btn-add-prod-"+products[i]+"' onclick='addToArray("+products[i]+")' data-id='"+products[i]+"' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add Product'></i>"); 
+                $("#action-cell-"+products[i]).append("<i class='icofont icofont-ui-add text-success f-18' id='btn-add-prod-"+products[i]+"' onclick='addToArray("+products[i]+")' data-id='"+products[i]+"' data-toggle='tooltip' data-placement='top' title='' data-original-title='Add Product'></i>");
                }
             }
         })
     }
-})  
+})
 
   $("#btnSearch").click(function() {
     page = 1;
@@ -1042,18 +1056,18 @@ $('#details-modal').on('hidden.bs.modal', function () {
     return n;
   }
   var daysArray = [];
-  
+
   $("#selectedAlldays").on('click',function(){
       var Alldays = ['mon','tue','wed','thu','fri','sat','sun'];
-      
-     if($(this).is(':checked')){ 
+
+     if($(this).is(':checked')){
       $.each(Alldays,function(i,v){
           if(!$('#'+v).is(':checked')){
               $('#'+v).attr('checked',true);
-              
+
               if(jQuery.inArray(v, daysArray) === -1){
                    daysArray.push(v);
-                 
+
               }
           }
       })
@@ -1061,18 +1075,18 @@ $('#details-modal').on('hidden.bs.modal', function () {
       $.each(Alldays,function(i,v){
           if($('#'+v).is(':checked')){
               $('#'+v).attr('checked',false);
-              
+
               const index = daysArray.indexOf(v);
               // console.log(index)
               if (index > -1) { // only splice array when item is found
-              
+
                 daysArray.splice(index, 1); // 2nd parameter means remove one item only
-               
-              }              
+
+              }
           }
-      })         
+      })
      }
-      
+
   });
 
   function selectedCheckbox(id, val) {
@@ -1086,7 +1100,7 @@ $('#details-modal').on('hidden.bs.modal', function () {
       if (index > -1) { // only splice array when item is found
         daysArray.splice(index, 1); // 2nd parameter means remove one item only
       }
-      
+
       if($('#selectedAlldays').is(':checked')){
           $('#selectedAlldays').prop('checked', false);
       }

@@ -224,8 +224,8 @@ class custom_helper
         //     }
         // } else {
             if (!empty($inventory->product_image)) {
-                // $imageUrl = asset('storage/images/products/' . $inventory->product_image);
-                $imageUrl = route('imageOptimize',$inventory->product_image);
+                $imageUrl = asset('storage/images/products/' . $inventory->product_image);
+                // $imageUrl = route('imageOptimize',$inventory->product_image);
             }
         // }
 
