@@ -286,9 +286,18 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-6">
-                <div class="form-group ">
+                <div class="form-group">
+
+                    @php $short_description = ''; @endphp
+                    @if(!empty($data[0]->short_description))
+                        @php
+                            $short_description = htmlentities($data[0]->short_description);
+                            $short_description = html_entity_decode($short_description);
+                        @endphp
+                    @endif
+
                     <label class="form-control-label">Short Description <i>(For Website Only) - Features</i></label>
-                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" ></textarea>
+                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3">{{ $short_description }}</textarea>
                     @if($errors->has('sdescription'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
@@ -693,16 +702,6 @@ $(document).ready(function(){
     $("#showProductWebsite").trigger('click');
     $("#showProductWebsite").attr('checked',true);
     @endif
-
-
-    @php $short_description = ''; @endphp
-                @if(!empty($data[0]->short_description))
-                    @php
-                        $short_description = htmlentities($data[0]->short_description);
-                        $short_description = html_entity_decode($short_description);
-                    @endphp
-                    $('#summary-ckeditor').val('{{ $short_description }}');
-                @endif
 });
 
 function removeImage(id, img) {
@@ -830,9 +829,9 @@ $("#showProductWebsite").on('click',function(){
                   $("#btn_submit_save_changes").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
                 },
 				success: function(data,statusText,getStatus)
-				{ console.log(data);
+				{
 				  if(getStatus.status == 200){
-					  //location.reload();
+					  location.reload();
 				  }
 				}
 			});
