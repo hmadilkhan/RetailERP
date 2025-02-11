@@ -286,16 +286,9 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-6">
-                @php $short_description = ''; @endphp
-                @if(!empty($data[0]->short_description))
-                    @php
-                        $short_description = htmlentities($data[0]->short_description);
-                        $short_description = html_entity_decode($short_description);
-                    @endphp
-                @endif
                 <div class="form-group ">
                     <label class="form-control-label">Short Description <i>(For Website Only) - Features</i></label>
-                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" >{{ $short_description }}</textarea>
+                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" ></textarea>
                     @if($errors->has('sdescription'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
@@ -308,7 +301,7 @@
                         $product_details = htmlentities($data[0]->details);
                         $product_details = html_entity_decode($product_details);
                     @endphp
-                @endif                
+                @endif
                 <div class="form-group ">
                     <label class="form-control-label">Details <i>(For Website Only) - Applications</i></label>
                     <textarea class="form-control" name="details" id="details" rows="6">{{ $product_details }}</textarea>
@@ -700,6 +693,16 @@ $(document).ready(function(){
     $("#showProductWebsite").trigger('click');
     $("#showProductWebsite").attr('checked',true);
     @endif
+
+
+    @php $short_description = ''; @endphp
+                @if(!empty($data[0]->short_description))
+                    @php
+                        $short_description = htmlentities($data[0]->short_description);
+                        $short_description = html_entity_decode($short_description);
+                    @endphp
+                    $('#summary-ckeditor').val('{{ $short_description }}');
+                @endif   
 });
 
 function removeImage(id, img) {
