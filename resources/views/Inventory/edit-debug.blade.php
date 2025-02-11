@@ -702,7 +702,7 @@ $(document).ready(function(){
                         $short_description = html_entity_decode($short_description);
                     @endphp
                     $('#summary-ckeditor').val('{{ $short_description }}');
-                @endif   
+                @endif
 });
 
 function removeImage(id, img) {
