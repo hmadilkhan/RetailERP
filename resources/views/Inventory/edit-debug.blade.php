@@ -772,7 +772,7 @@ $("#showProductWebsite").on('click',function(){
     });
 
 
-      CKEDITOR.replace( 'summary-ckeditor' );
+      //CKEDITOR.replace( 'summary-ckeditor' );
 	  var rem_id = [];
 
       $("#name").on('change',function(){
