@@ -185,8 +185,8 @@
                 @php $product_description = ''; @endphp
                 @if(!empty($data[0]->product_description))
                     @php
-                        $product_description = htmlentities($data[0]->product_description);
-                        $product_description = html_entity_decode($product_description);
+                        $product_description = html_entity_decode($data[0]->product_description);
+                        // $product_description = html_entity_decode($product_description);
                     @endphp
                 @endif
               <div class="form-group {{ $errors->has('description') ? 'has-danger' : '' }}">
@@ -286,20 +286,29 @@
 
         <div class="row">
             <div class="col-lg-6 col-md-6">
-                <div class="form-group ">
-                    <label class="form-control-label">Short Description <i>(For Website Only) - Features</i></label>
-                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3" ></textarea>
-                    @if($errors->has('sdescription'))
-                        <div class="form-control-feedback">Required field can not be blank.</div>
+                <div class="form-group">
+
+                    @php $short_description = ''; @endphp
+                    @if(!empty($data[0]->short_description))
+                        @php
+                            $short_description = html_entity_decode($data[0]->short_description);
+                            // $short_description = html_entity_decode($short_description);
+                        @endphp
                     @endif
+
+                    <label class="form-control-label">Short Description <i>(For Website Only) - Features</i></label>
+                    <textarea class="form-control" name="summary-ckeditor" id="summary-ckeditor" rows="3">{{ $short_description }}</textarea>
+                    {{-- @if($errors->has('summary-ckeditor'))
+                        <div class="form-control-feedback">Required field can not be blank.</div>
+                    @endif --}}
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
                 @php $product_details = ''; @endphp
                 @if(!empty($data[0]->details))
                     @php
-                        $product_details = htmlentities($data[0]->details);
-                        $product_details = html_entity_decode($product_details);
+                        $product_details = html_entity_decode($data[0]->details);
+                        // $product_details = html_entity_decode($product_details);
                     @endphp
                 @endif
                 <div class="form-group ">
@@ -693,16 +702,6 @@ $(document).ready(function(){
     $("#showProductWebsite").trigger('click');
     $("#showProductWebsite").attr('checked',true);
     @endif
-
-
-    @php $short_description = ''; @endphp
-                @if(!empty($data[0]->short_description))
-                    @php
-                        $short_description = htmlentities($data[0]->short_description);
-                        $short_description = html_entity_decode($short_description);
-                    @endphp
-                    $('#summary-ckeditor').val('{{ $short_description }}');
-                @endif   
 });
 
 function removeImage(id, img) {

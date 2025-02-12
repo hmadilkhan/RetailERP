@@ -257,8 +257,8 @@ class InventoryController extends Controller
             'weight_qty'          => $request->weight,
             'slug'                => strtolower(str_replace(' ', '-', $request->name)) . "-" . strtolower(Str::random(4)),
             'is_deal'             => (isset($request->is_deal) ? 1 : 0),
-            'short_description'   => $request->sdescription,
-            'details'             => $request->details,
+            'short_description'   => htmlentities($request->input('$request->sdescription')),
+            'details'             => htmlentities($request->details),
             'brand_id'            => $request->brand,
             'actual_image_size'   => isset($request->actual_image_size) ? 1 : 0,
         ];
@@ -579,8 +579,8 @@ class InventoryController extends Controller
             'weight_qty'          => $inventory_record->weight_qty,
             'slug'                => strtolower(str_replace(' ', '-', $inventory_record->product_name)) . "-" . strtolower(Str::random(4)),
             'is_deal'             => $inventory_record->is_deal,
-            'short_description'   => htmlentities($inventory_record->short_description),
-            'details'             => htmlentities($inventory_record->details),
+            'short_description'   => $inventory_record->sdescription,
+            'details'             => $inventory_record->details,
             'brand_id'            => $inventory_record->brand_id,
             'actual_image_size'   => $inventory_record->actual_image_size,
         ];
@@ -1207,7 +1207,7 @@ class InventoryController extends Controller
 
 
     public function modify(Request $request)
-    {
+    { // return $request->input('sdescription');
         $invent = new inventory();
         $websiteMode = null;
 
@@ -1226,7 +1226,7 @@ class InventoryController extends Controller
             'created_at'           => date('Y-m-d H:s:i'),
             'updated_at'           => date('Y-m-d H:s:i'),
             'weight_qty'           => $request->weight,
-            'short_description'    => htmlentities($request->sdescription),
+            'short_description'    => htmlentities($request->input('summary-ckeditor')),
             'details'              => htmlentities($request->details),
             'brand_id'             => $request->brand,
             'actual_image_size'    => isset($request->actual_image_size) ? 1 : 0,

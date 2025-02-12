@@ -42,16 +42,16 @@
 
    	<!-- Date picker.js-->
 	<script src="{{ asset('assets/plugins/datepicker/js/moment-with-locales.min.js') }}"></script>
-	<script src="{{ asset('components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script> 
+	<script src="{{ asset('components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
 
-	<!-- Max-Length js --> 
+	<!-- Max-Length js -->
 	<script src="{{ asset('components/bootstrap-maxlength/src/bootstrap-maxlength.js') }}"></script>
 
-	<!-- switchery js --> 
+	<!-- switchery js -->
 	<script type="text/javascript" src="{{ asset('components/switchery/dist/switchery.min.js') }}"></script>
 
 	<!-- Select 2 js -->
-	<script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script> 
+	<script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
 		<!-- Multi Select js -->
 	<script src="{{ asset('components/bootstrap-multiselect/dist/js/bootstrap-multiselect.js') }}"></script>
 	<script src="{{ asset('components/multiselect/js/jquery.multi-select.js') }}"></script>
@@ -69,8 +69,8 @@
    <script src="{{ asset('components/moment/moment.js') }}"></script>
    <script src="{{ asset('components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
 
-      
-   
+
+
 
 	<!-- bootstrap range picker -->
 	<script type="text/javascript" src="{{ asset('components/bootstrap-daterangepicker/daterangepicker.js') }}"></script>
@@ -100,8 +100,8 @@
    <script src="{{ asset('assets/js/owl.min.js') }}"></script>
 
    <script src="{{ asset('assets/plugins/light-box/js/ekko-lightbox.js') }}"></script>
-   <script src="{{ asset('components//lightbox2/dist/js/lightbox.js')}}"></script>
-   
+   <script src="{{ asset('components/lightbox2/dist/js/lightbox.js')}}"></script>
+
     <!-- Slider -->
     <script type="text/javascript" src="{{ asset('assets/pages/slider.js') }}"></script>
 
@@ -121,6 +121,6 @@
       SyntaxHighlighter.all();
    </script>
 
-	
+
 
 
