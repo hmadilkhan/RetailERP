@@ -100,7 +100,7 @@
    <script src="{{ asset('assets/js/owl.min.js') }}"></script>
 
    <script src="{{ asset('assets/plugins/light-box/js/ekko-lightbox.js') }}"></script>
-   <script src="{{ asset('components//lightbox2/dist/js/lightbox.js')}}"></script>
+   <script src="{{ asset('components/lightbox2/dist/js/lightbox.js')}}"></script>
    
     <!-- Slider -->
     <script type="text/javascript" src="{{ asset('assets/pages/slider.js') }}"></script>
