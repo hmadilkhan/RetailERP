@@ -297,10 +297,10 @@
                     @endif
 
                     <label class="form-control-label">Short Description <i>(For Website Only) - Features</i></label>
-                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3">{{ $short_description }}</textarea>
-                    @if($errors->has('sdescription'))
+                    <textarea class="form-control" name="summary-ckeditor" id="summary-ckeditor" rows="3">{{ $short_description }}</textarea>
+                    {{-- @if($errors->has('summary-ckeditor'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
-                    @endif
+                    @endif --}}
                 </div>
             </div>
             <div class="col-lg-6 col-md-6">
@@ -772,7 +772,7 @@ $("#showProductWebsite").on('click',function(){
     });
 
 
-      //CKEDITOR.replace( 'summary-ckeditor' );
+      CKEDITOR.replace( 'summary-ckeditor' );
 	  var rem_id = [];
 
       $("#name").on('change',function(){
