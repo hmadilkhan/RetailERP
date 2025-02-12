@@ -60,6 +60,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\OrderReportPDF;
 use App\Services\CustomerService;
+use Mpdf\Mpdf;
 
 class ReportController extends Controller
 {
