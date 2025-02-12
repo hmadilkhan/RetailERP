@@ -291,8 +291,8 @@
                     @php $short_description = ''; @endphp
                     @if(!empty($data[0]->short_description))
                         @php
-                            $short_description = htmlentities($data[0]->short_description);
-                            $short_description = html_entity_decode($short_description);
+                            $short_description = html_entity_decode($data[0]->short_description);
+                            // $short_description = html_entity_decode($short_description);
                         @endphp
                     @endif
 
