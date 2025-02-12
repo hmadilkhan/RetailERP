@@ -43,7 +43,6 @@ use App\Exports\StockReportExport;
 use App\Exports\WebsiteItemSummaryExport;
 use App\Exports\SaleReturnExport;
 use App\Mail\DeclarationEmail;
-use App\MdfClass;
 use App\Models\Company;
 use App\Models\DailyStock;
 use App\Models\InventoryDepartment;
@@ -61,7 +60,6 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\OrderReportPDF;
 use App\Services\CustomerService;
-use Mpdf\Mpdf;
 
 class ReportController extends Controller
 {
@@ -3558,7 +3556,7 @@ class ReportController extends Controller
                 ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
         }
 
-        $pdf = new Mpdf();
+        $pdf = new pdfClass();
 
         $pdf->AliasNbPages();
         $pdf->AddPage();
@@ -3575,7 +3573,7 @@ class ReportController extends Controller
         $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
         $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
         $pdf->Cell(50, 0, "", 0, 1, 'R');
-        $pdf->Image(asset('storage/images/company/qrcode.png'), 100, 50, -10);
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
 
         //third row
         $pdf->SetFont('Arial', '', 10);
