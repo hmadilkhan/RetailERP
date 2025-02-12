@@ -43,6 +43,7 @@ use App\Exports\StockReportExport;
 use App\Exports\WebsiteItemSummaryExport;
 use App\Exports\SaleReturnExport;
 use App\Mail\DeclarationEmail;
+use App\MdfClass;
 use App\Models\Company;
 use App\Models\DailyStock;
 use App\Models\InventoryDepartment;
@@ -3557,7 +3558,7 @@ class ReportController extends Controller
                 ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
         }
 
-        $pdf = new pdfClass();
+        $pdf = new MdfClass();
 
         $pdf->AliasNbPages();
         $pdf->AddPage();
