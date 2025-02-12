@@ -297,7 +297,7 @@
                     @endif
 
                     <label class="form-control-label">Short Description <i>(For Website Only) - Features</i></label>
-                    <textarea class="form-control" name="summary-ckeditor" id="summary-ckeditor" rows="3">{{ $short_description }}</textarea>
+                    <textarea class="form-control" name="sdescription" id="summary-ckeditor" rows="3">{{ $short_description }}</textarea>
                     {{-- @if($errors->has('summary-ckeditor'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif --}}
@@ -810,6 +810,9 @@ $("#showProductWebsite").on('click',function(){
           let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
         //let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.\+\/]+$/;
 
+        let ckeditorContent = CKEDITOR.instances['summary-ckeditor'].getData();
+        document.getElementById('summary-ckeditor').value = ckeditorContent;
+// console.log(document.getElementById('summary-ckeditor').value)
           if(!regex.test($("#name").val())){
             process = false;
             swal('Error!','Special characters are not allowed!','error');
@@ -829,9 +832,9 @@ $("#showProductWebsite").on('click',function(){
                   $("#btn_submit_save_changes").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
                 },
 				success: function(data,statusText,getStatus)
-				{
+				{console.log(data)
 				  if(getStatus.status == 200){
-					  location.reload();
+					 // location.reload();
 				  }
 				}
 			});
