@@ -7269,7 +7269,7 @@ class ReportController extends Controller
         $pdf->SetFont('JameelNooriNastaleeq', '', 14);
 
         // Write Urdu Text
-        $urduText = iconv('UTF-8', 'windows-1256', 'یہ اردو کا جملہ ہے');
+        $urduText = utf8_decode('UTF-8', 'windows-1256', 'یہ اردو کا جملہ ہے');
 
         $pdf->Cell(0, 10, $urduText, 0, 1, 'C');
 
