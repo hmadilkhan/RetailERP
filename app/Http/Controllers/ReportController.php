@@ -3558,7 +3558,7 @@ class ReportController extends Controller
                 ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
         }
 
-        $pdf = new MdfClass();
+        $pdf = new Mpdf();
 
         $pdf->AliasNbPages();
         $pdf->AddPage();
