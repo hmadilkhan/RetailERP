@@ -185,8 +185,8 @@
                 @php $product_description = ''; @endphp
                 @if(!empty($data[0]->product_description))
                     @php
-                        $product_description = htmlentities($data[0]->product_description);
-                        $product_description = html_entity_decode($product_description);
+                        $product_description = html_entity_decode($data[0]->product_description);
+                        // $product_description = html_entity_decode($product_description);
                     @endphp
                 @endif
               <div class="form-group {{ $errors->has('description') ? 'has-danger' : '' }}">
@@ -307,8 +307,8 @@
                 @php $product_details = ''; @endphp
                 @if(!empty($data[0]->details))
                     @php
-                        $product_details = htmlentities($data[0]->details);
-                        $product_details = html_entity_decode($product_details);
+                        $product_details = html_entity_decode($data[0]->details);
+                        // $product_details = html_entity_decode($product_details);
                     @endphp
                 @endif
                 <div class="form-group ">
