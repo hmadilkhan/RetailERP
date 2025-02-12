@@ -911,6 +911,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/booking-delivery-report', [ReportController::class, 'bookingDeliveryReport']);
     Route::get('/customer-sales-report', [ReportController::class, 'customerSalesReport']);
     Route::get('/cash-in-out-report', [ReportController::class, 'cashInOutReport']);
+    Route::get('/test-fpdf', [ReportController::class, 'testFpdf']);
 
     Route::get('reports/item-sale-report', [ReportController::class, 'getIndex'])->name('itemSaleReport');
     Route::post('reports/search-item-sale-report', [ReportController::class, 'getItemSaleReport'])->name('SrchISReport');

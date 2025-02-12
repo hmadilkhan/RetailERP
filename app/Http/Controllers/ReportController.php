@@ -3560,9 +3560,7 @@ class ReportController extends Controller
 
         $pdf->AliasNbPages();
         $pdf->AddPage();
-
-         // Add Custom Urdu Font
-         $pdf->AddFont('JameelNooriNastaleeq', '', 'JameelNooriNastaleeq.php');
+        
 
         // first row
         $pdf->SetFont('Arial', '', 10);
@@ -3749,7 +3747,6 @@ class ReportController extends Controller
                                     $totalDeliveredOrders++;
                                     $totalDeliveredOrdersAmount += $value->amount;
                                 }
-                                $pdf->SetFont('JameelNooriNastaleeq', '', 14);
                                 $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
                                 $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
                                 $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
@@ -3966,7 +3963,6 @@ class ReportController extends Controller
                                 $totalDeliveredOrders++;
                                 $totalDeliveredOrdersAmount += $value->amount;
                             }
-                            $pdf->SetFont('JameelNooriNastaleeq', '', 14);
                             $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
                             $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
                             $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
@@ -7259,5 +7255,26 @@ class ReportController extends Controller
 
         //save file
         $pdf->Output('cash_in_and_out_report.pdf', 'I');
+    }
+
+    public function testFpdf()
+    {
+        $pdf = new FPDF();
+        $pdf->AddPage();
+
+        // Add Custom Urdu Font
+        $pdf->AddFont('JameelNooriNastaleeq', '', 'JameelNooriNastaleeq.php');
+
+        // Set Font to Urdu
+        $pdf->SetFont('JameelNooriNastaleeq', '', 14);
+
+        // Write Urdu Text
+        $urduText = iconv('UTF-8', 'windows-1256', 'یہ اردو کا جملہ ہے');
+
+        $pdf->Cell(0, 10, $urduText, 0, 1, 'C');
+
+        // Output PDF
+        $pdf->Output();
+        exit;
     }
 }
