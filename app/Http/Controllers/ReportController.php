@@ -3575,7 +3575,7 @@ class ReportController extends Controller
         $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
         $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
         $pdf->Cell(50, 0, "", 0, 1, 'R');
-        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -500);
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -50);
 
         //third row
         $pdf->SetFont('Arial', '', 10);
