@@ -3561,6 +3561,9 @@ class ReportController extends Controller
         $pdf->AliasNbPages();
         $pdf->AddPage();
 
+         // Add Custom Urdu Font
+         $pdf->AddFont('JameelNooriNastaleeq', '', 'JameelNooriNastaleeq.php');
+
         // first row
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(35, 0, '', 0, 0);
@@ -3746,6 +3749,7 @@ class ReportController extends Controller
                                     $totalDeliveredOrders++;
                                     $totalDeliveredOrdersAmount += $value->amount;
                                 }
+                                $pdf->SetFont('JameelNooriNastaleeq', '', 14);
                                 $pdf->Cell(20, 6, $value->code, 0, 0, 'L', 1);
                                 $pdf->Cell(50, 6, $value->product_name, 0, 0, 'L', 1);
                                 $pdf->Cell(20, 6, number_format($value->qty), 0, 0, 'C', 1);
