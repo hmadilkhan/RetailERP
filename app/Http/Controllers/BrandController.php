@@ -142,7 +142,7 @@ class BrandController extends Controller
                 return 404;
             }
 
-            if(!Storage::disk('public')->move($image,$path.'/'.$imageName)){
+            if(!Storage::disk('public')->put($path.'/'.$imageName,$image)){
                 return 500;
             }
         return $imageName;
