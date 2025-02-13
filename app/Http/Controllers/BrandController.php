@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use File;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Storage;
 
 
 class BrandController extends Controller
@@ -37,25 +36,18 @@ class BrandController extends Controller
     //create folder image path
     public function create_folder($comFOldName)
     {
-        // $path   = public_path('storage/images/').$comFOldName;
+        $path   = 'storage/images/'.$comFOldName;
         $result = true;
-
-        $directory = 'images/'.$comFOldName;
-        if (!Storage::disk('public')->exists($directory)) {
-            Storage::disk('public')->makeDirectory($directory);
+        if (!File::isDirectory($path)) {
+            $result = File::makeDirectory($path, 0777, true, true);
         }
 
-        // if (!File::isDirectory($path)) {
-        //     $result = File::makeDirectory($path, 0777, true, true);
-        // }
-
-        return ($result) ? $directory : false;
+        return ($result) ? $path : false;
     }
 
     public function store(Request $request){
      try{
-                //   return  $path = $this->create_folder('brands/'.session('company_id'));
-                //   die;
+
          $imageBanner = null;
          $imageName   = null;
 
@@ -83,7 +75,7 @@ class BrandController extends Controller
                    }
 
                   Session::flash('error',$msg);
-                  return redirect()->route('brands.index')->withInput($request->all());
+                  return redirect()->route('brands.index');
 
             }else{
                 $imageName = $returnImageVal;
@@ -96,11 +88,11 @@ class BrandController extends Controller
             if(in_array($returnImageVal,[404,500])){
 
                    if($returnImageVal == 404){
-                       $msg = 'Error! brand banner path not found';
+                       $msg = 'Error! brand banner image path not found';
                    }
 
                    if($returnImageVal == 500){
-                       $msg = 'Error! brand banner not uploaded';
+                       $msg = 'Error! brand banner image not uploaded';
                    }
 
                   Session::flash('error',$msg);
@@ -142,23 +134,19 @@ class BrandController extends Controller
                 return 404;
             }
 
-            if(!Storage::disk('public')->put($path.'/'.$imageName,$image)){
+            if(!$image->move($path,$imageName)){
                 return 500;
             }
         return $imageName;
     }
 
     public function removeOld_image($imageName){
-        if (!Storage::disk('public')->exists('images/brands/'.session('company_id').'/'.$imageName)) {
-            $result = Storage::disk('public')->delete('images/brands/'.session('company_id').'/'.$imageName);
-            return ($result) ? true : false;
+        $path = public_path('assets/images/').'/brands/'.session('company_id').'/'.$imageName;
+        if(File::exists($path)){
+           return File::delete($path) ? true : false;
         }
-        // $path = public_path('assets/images/').'/brands/'.session('company_id').'/'.$imageName;
-        // if(File::exists($path)){
-        //    return File::delete($path) ? true : false;
-        // }
 
-        return false;
+     return false;
     }
 
     public function edit($id){
@@ -340,3 +328,4 @@ class BrandController extends Controller
     }
 
 }
+
