@@ -54,7 +54,8 @@ class BrandController extends Controller
 
     public function store(Request $request){
      try{
-
+                  return  $path = $this->create_folder('brands/'.session('company_id'));
+                  die;
          $imageBanner = null;
          $imageName   = null;
 
