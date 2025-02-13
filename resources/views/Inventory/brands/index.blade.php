@@ -108,7 +108,7 @@
 
                             <div class="form-group">
                                  @php
-                                    $brandImage = asset('storage/images/no-image.png');
+                                    $brandImage = asset('storage/images/placeholder.jpg');
 
                                     if(isset($id)){
                                         if(!empty($edit->image) && Storage::disk('public')->exists('images/brands/'.session('company_id').'/'.$edit->image)){
@@ -132,7 +132,7 @@
 
                             <div class="form-group">
                                  @php
-                                    $brandBanner = asset('storage/images/no-image.png');
+                                    $brandBanner = asset('storage/images/placeholder.jpg');
 
                                     if(isset($id)){
                                         if(!empty($edit->banner) && Storage::disk('public')->exists('images/brands/'.session('company_id').'/'.$edit->banner)){
@@ -187,7 +187,7 @@
                              <td class="d-none">{{ $brand->priority }}</td>
                              <td>
                                  @php
-                                   $image = asset('storage/images/no-image.png');
+                                   $image = asset('storage/images/placeholder.jpg');
                                     if($brand->image != null){
                                        $path = 'storage/images/brands/'.session('company_id').'/'.$brand->image;
                                        $image = File::exists($path) ? asset('storage/images/brands/'.session('company_id').'/'.$brand->image) : asset('storage/images/placeholder.jpg');
