@@ -42,7 +42,7 @@ class BrandController extends Controller
 
         $directory = 'images/'.$comFOldName;
         if (!Storage::disk('public')->exists($directory)) {
-            Storage::makeDirectory($directory);
+            Storage::disk('public')->makeDirectory($directory);
         }
 
         // if (!File::isDirectory($path)) {
