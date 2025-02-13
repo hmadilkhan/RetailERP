@@ -83,7 +83,7 @@ class BrandController extends Controller
                    }
 
                   Session::flash('error',$msg);
-                  return redirect()->route('brands.index');
+                  return redirect()->route('brands.index')->withInput($request->all());
 
             }else{
                 $imageName = $returnImageVal;
