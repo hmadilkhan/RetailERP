@@ -132,7 +132,10 @@
                                     $brandBanner = asset('storage/images/placeholder.jpg');
 
                                     if(isset($id)){
-                                       $brandBanner = asset('storage/images/brands/'.session('company_id').'/'.$edit->banner);
+                                        if(Storage::disk('public')->exists('images/brands/'.session('company_id').'/'.$edit->banner)){
+                                            $brandBanner = asset('storage/images/brands/'.session('company_id').'/'.$edit->banner);
+                                        }
+
                                     }
                                  @endphp
                                <label class="form-control-label">Banner</label>
