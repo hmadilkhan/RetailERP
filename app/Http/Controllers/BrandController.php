@@ -54,8 +54,8 @@ class BrandController extends Controller
 
     public function store(Request $request){
      try{
-                  return  $path = $this->create_folder('brands/'.session('company_id'));
-                  die;
+                //   return  $path = $this->create_folder('brands/'.session('company_id'));
+                //   die;
          $imageBanner = null;
          $imageName   = null;
 
@@ -142,7 +142,7 @@ class BrandController extends Controller
                 return 404;
             }
 
-            if(!Storage::disk('public')->move($image,$path)){
+            if(!Storage::disk('public')->move($image,$path.'/'.$imageName)){
                 return 500;
             }
         return $imageName;
