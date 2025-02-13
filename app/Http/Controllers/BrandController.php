@@ -75,11 +75,11 @@ class BrandController extends Controller
             if(in_array($returnImageVal,[404,500])){
 
                    if($returnImageVal == 404){
-                       $msg = 'Error! brand logo image path not found';
+                       $msg = 'Error! brand logo path not found';
                    }
 
                    if($returnImageVal == 500){
-                       $msg = 'Error! brand logo image not uploaded';
+                       $msg = 'Error! brand logo not uploaded';
                    }
 
                   Session::flash('error',$msg);
@@ -96,11 +96,11 @@ class BrandController extends Controller
             if(in_array($returnImageVal,[404,500])){
 
                    if($returnImageVal == 404){
-                       $msg = 'Error! brand banner image path not found';
+                       $msg = 'Error! brand banner path not found';
                    }
 
                    if($returnImageVal == 500){
-                       $msg = 'Error! brand banner image not uploaded';
+                       $msg = 'Error! brand banner not uploaded';
                    }
 
                   Session::flash('error',$msg);
