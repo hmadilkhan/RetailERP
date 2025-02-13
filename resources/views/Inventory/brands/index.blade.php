@@ -184,7 +184,7 @@
                                    $image = asset('storage/images/placeholder.jpg');
                                     if($brand->image != null){
                                        $path = 'storage/images/brands/'.session('company_id').'/'.$brand->image;
-                                       $image = File::exists($path) ? asset('storage/images/brands/'.session('company_id').'/'.$brand->image) : asset('storage/images/placeholder.jpg');
+                                       $image = Storage::disk('public')->exists('images/brands/'.session('company_id').'/'.$brand->image) ? asset($path) : asset('storage/images/placeholder.jpg');
                                     }
                                  @endphp
                                  <img src="{{ $image }}" class="thumb-img img-fluid" alt="{{ $brand->image == '' ? 'placeholder.jpg' : $brand->image }}" width="100px" height="100px">
