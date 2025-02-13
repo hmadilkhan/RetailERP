@@ -111,7 +111,10 @@
                                     $brandImage = asset('storage/images/placeholder.jpg');
 
                                     if(isset($id)){
-                                       $brandImage = asset('storage/images/brands/'.session('company_id').'/'.$edit->image);
+                                        if(!empty($edit->image) && Storage::disk('public')->exists('images/brands/'.session('company_id').'/'.$edit->image)){
+                                            $brandImage = asset('storage/images/brands/'.session('company_id').'/'.$edit->image);
+                                        }
+
                                     }
                                  @endphp
                                <label class="form-control-label">Brand Logo</label>
@@ -132,7 +135,7 @@
                                     $brandBanner = asset('storage/images/placeholder.jpg');
 
                                     if(isset($id)){
-                                        if(Storage::disk('public')->exists('images/brands/'.session('company_id').'/'.$edit->banner)){
+                                        if(!empty($edit->banner) && Storage::disk('public')->exists('images/brands/'.session('company_id').'/'.$edit->banner)){
                                             $brandBanner = asset('storage/images/brands/'.session('company_id').'/'.$edit->banner);
                                         }
 
