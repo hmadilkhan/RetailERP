@@ -52,7 +52,7 @@ class BrandController extends Controller
          $imageName   = null;
 
         $rules = [
-                  'name'   => 'required',Rule::unique('brands')->where(function ($query) {
+                  'name'   => 'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)\.]+$/u',Rule::unique('brands')->where(function ($query) {
                                                 return $query->where('company_id', session('company_id'));
                                             }),
                   'image'  => 'dimensions:width=128,height=128|mimes:jpg,jpeg,png,webp|max:1024',
@@ -169,7 +169,7 @@ class BrandController extends Controller
          $imageBanner = null;
          $imageName   = null;
 
-         $rules = ['name'=>'required'];
+         $rules = ['name'=>'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)\.]+$/u'];
 
          $this->validate($request,$rules);
 
@@ -192,11 +192,11 @@ class BrandController extends Controller
       if(Brand::customQuery_allColumFetch($conditionApply_two,1,1) > 0){
 
         $rules = [
-                  'name'   => 'required',Rule::unique('brands')->where(function ($query) {
+                  'name'   => 'required|regex:/^[a-zA-Z0-9\s\x{0600}-\x{06FF}\x{0750}-\x{077F}\-\(\)\.]+$/u',Rule::unique('brands')->where(function ($query) {
                                                 return $query->where('company_id', session('company_id'));
                                             }),
-                  'image'  => 'dimensions:width=128,height=128|mimes:jpg,jpeg,png',
-                  'banner' => 'dimensions:width=1280,height=320|mimes:jpg,jpeg,png'
+                  'image'  => 'dimensions:width=128,height=128|mimes:jpg,jpeg,png,webp|max:1024',
+                  'banner' => 'dimensions:width=1280,height=320|mimes:jpg,jpeg,png,webp|max:1024'
                 ];
 
         $this->validate($request,$rules);
