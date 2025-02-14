@@ -210,7 +210,7 @@
                                </td>
                              <td>{{ $brand->name }}</td>
                              <td>{{ $brand->slug }}</td>
-                             <td><?php print_r($parentTable['name']); ?></td>
+                             <td><?php print_r($parentTable[0]['name']); ?></td>
                              <td>{{ $brand->priority }}</td>
                              <td>
                                 <a href="{{ route('brands.edit',$brand->id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit" ><i class="icofont icofont-ui-edit text-primary f-18"></i> </a>
