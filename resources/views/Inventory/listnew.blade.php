@@ -2348,7 +2348,7 @@
                                         swal("Success!","Product successfully duplicated!","success");
 
                                         // Optionally, you can reload the page or perform other actions
-                                        // location.reload(); // Reload the page (optional)
+                                        location.reload(); // Reload the page (optional)
                                     } else {
                                         // If status code is not 200, handle error
                                         swal("Error!","Error: " + resp.message || "Something went wrong!","error");
