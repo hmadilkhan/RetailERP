@@ -687,8 +687,8 @@ class InventoryController extends Controller
 
         // Clone product video
         $get_productVideo = DB::table('inventory_video')
-            ->where('inventory_id', $inventory_record->id)
-            ->get();
+                                ->where('inventory_id', $inventory_record->id)
+                                ->first();
 
         if ($get_productVideo != null) {
             $originalVideoName = $get_productVideo->file;
