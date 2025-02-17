@@ -514,8 +514,6 @@ class InventoryController extends Controller
                 // Return the unique generated ID
                 return $generatedId;
             }
-
-
             return null;
         }
         return null;
