@@ -491,7 +491,7 @@ public function updateProductName($id,$name)
 
 
     public function get_details($id){
-        $inventory = DB::select('SELECT a.*,b.*,c.product_name as mode_name,a.short_description,a.details AS mode FROM inventory_general a INNER JOIN inventory_qty_reminders b ON b.inventory_id = a.id INNER JOIN inventory_product_mode c ON c.product_mode_id = a.product_mode WHERE a.slug = ?',[$id]);
+        $inventory = DB::select('SELECT a.*,b.*,c.product_name as mode_name,a.short_description,a.details AS mode FROM inventory_general a INNER JOIN inventory_qty_reminders b ON b.inventory_id = a.id INNER JOIN inventory_product_mode c ON c.product_mode_id = a.product_mode WHERE a.status = 1 and  a.slug = ?',[$id]);
 
 //        $inventory = DB::table('inventory_general')
 //        ->join('inventory_qty_reminders', 'inventory_general.id', '=', 'inventory_qty_reminders.inventory_id')
