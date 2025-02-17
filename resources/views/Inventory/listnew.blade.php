@@ -8,7 +8,7 @@
 
 @section('content')
   @if(Session::has('error'))
-          <div class="alert alert-success">{{ Session::get('error') }}</div>
+          <div class="alert alert-danger">{{ Session::get('error') }}</div>
   @endif
 
     <section class="panels-wells p-t-30 sm-m-t-50">
