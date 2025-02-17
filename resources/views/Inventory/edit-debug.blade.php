@@ -810,8 +810,10 @@ $("#showProductWebsite").on('click',function(){
           let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
         //let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.\+\/]+$/;
 
-        let ckeditorContent = CKEDITOR.instances['summary-ckeditor'].getData();
-        document.getElementById('summary-ckeditor').value = ckeditorContent;
+        @if(count($selectedWebsites->toArray()) > 0 )
+          let ckeditorContent = CKEDITOR.instances['summary-ckeditor'].getData();
+          document.getElementById('summary-ckeditor').value = ckeditorContent;
+        @endif
 // console.log(document.getElementById('summary-ckeditor').value)
           if(!regex.test($("#name").val())){
             process = false;
