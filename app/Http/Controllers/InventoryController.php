@@ -1166,7 +1166,7 @@ class InventoryController extends Controller
             $references = "";
         }
 
-          if($data != ''){
+          if($data == ''){
              Session::flash('error','Record not found!');
              return redirect()->route('invent-list');
           }
