@@ -1142,7 +1142,7 @@ class InventoryController extends Controller
         $brandList  = $brand->getBrand();
         $tagsList  = Tag::getTags();
         $data = $inventory->get_details($request->id);
-
+            return $data ;
         if($data == ''){
             Session::flash('error','Record not found!');
             return redirect()->route('invent-list');
