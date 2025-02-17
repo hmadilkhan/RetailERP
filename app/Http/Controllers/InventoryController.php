@@ -1142,6 +1142,12 @@ class InventoryController extends Controller
         $brandList  = $brand->getBrand();
         $tagsList  = Tag::getTags();
         $data = $inventory->get_details($request->id);
+
+        if($data == ''){
+            Session::flash('error','Record not found!');
+            return redirect()->route('invent-list');
+         }
+
         $mode = $inventory->getProductMode();
         $images = $inventory->getImages($request->id);
         $references =  $inventory->getReferences($request->id);
@@ -1165,11 +1171,6 @@ class InventoryController extends Controller
         } else {
             $references = "";
         }
-
-          if($data == ''){
-             Session::flash('error','Record not found!');
-             return redirect()->route('invent-list');
-          }
 
         // if(Auth::user()->username == 'demoadmin'){
         return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo'));
