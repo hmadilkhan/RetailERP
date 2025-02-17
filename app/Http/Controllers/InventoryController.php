@@ -1166,6 +1166,11 @@ class InventoryController extends Controller
             $references = "";
         }
 
+          if($data != 0){
+             Session::flash('error','Record not found!');
+             return redirect()->route('invent-list');
+          }
+
         // if(Auth::user()->username == 'demoadmin'){
         return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo'));
 
