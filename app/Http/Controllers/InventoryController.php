@@ -579,7 +579,7 @@ class InventoryController extends Controller
             'weight_qty'          => $inventory_record->weight_qty,
             'slug'                => strtolower(str_replace(' ', '-', $inventory_record->product_name)) . "-" . strtolower(Str::random(4)),
             'is_deal'             => $inventory_record->is_deal,
-            'short_description'   => $inventory_record->sdescription,
+            'short_description'   => $inventory_record->short_description,
             'details'             => $inventory_record->details,
             'brand_id'            => $inventory_record->brand_id,
             'actual_image_size'   => $inventory_record->actual_image_size,
