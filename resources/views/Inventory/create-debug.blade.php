@@ -809,9 +809,10 @@
 
    $('#inventCreateForm').on('submit', function() {
       let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
-
+    if($('#website').val() != ''){
       let ckeditorContent = CKEDITOR.instances['summary-ckeditor'].getData();
       document.getElementById('summary-ckeditor').value = ckeditorContent;
+    }
 
       $('#btnSubmit').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
       let itemName = $("#name");
