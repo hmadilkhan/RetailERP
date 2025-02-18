@@ -333,7 +333,7 @@
 			<div class="col-md-3 col-lg-3">
                 <div class="form-group {{ $errors->has('cost_price') ? 'has-danger' : '' }}">
                     <label class="form-control-label">Cost Price:<span class="text-danger m-l-5">*</span></label>
-                    <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)"  min="0" name="cost_price" id="cost_price" value="{{ old('cost_price') ?? 0 }}" placeholder="0"/>
+                    <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)"  min="0" name="cost_price" id="cost_price" value="{{ old('cost_price') }}" placeholder="0"/>
                 </div>
             </div>
             <div class="col-md-3 col-lg-3">
@@ -491,18 +491,18 @@
             <div class="col-lg-4 col-md-4">
                 <div  id="stockcost" class="form-group {{ $errors->has('poscode') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Stock Cost</label>
-                    <input type="text" name="stock_cost" id="stock_cost" class="form-control"  />
-                    @if ($errors->has('poscode'))
+                    <input type="text" name="stock_cost" id="stock_cost" class="form-control" value="0" />
+                    @if ($errors->has('stock_cost'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @else
                     @endif
                 </div>
             </div>
             <div class="col-lg-4 col-md-4">
-                <div class="form-group {{ $errors->has('posname') ? 'has-danger' : '' }} ">
+                <div class="form-group {{ $errors->has('stock_qty') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Stock Qty</label>
                     <input type="text" name="stock_qty" id="stock_qty" class="form-control"   />
-                    @if ($errors->has('posname'))
+                    @if ($errors->has('stock_qty'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @else
                     @endif
@@ -789,6 +789,15 @@
 @section('scriptcode_three')
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <script type="text/javascript">
+
+   @if(old('chkactive'))
+      toggle();
+   @endif
+
+   @if(old('chkstock'))
+     togglestock();
+   @endif
+
 	const isDecimalKey = (event,element)=>{
        event.target.setCustomValidity('');
       const patt = /^\d+\.{0,1}\d{0,2}$/;

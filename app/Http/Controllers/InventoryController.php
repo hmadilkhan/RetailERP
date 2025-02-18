@@ -180,6 +180,21 @@ class InventoryController extends Controller
 
         ];
 
+        if(isset($request->chkactive)) {
+            $rules['poscode'] = 'required';
+            $rules['posname'] = 'required';
+            $rules['posuom'] = 'required';
+            $rules['posprice'] = 'required';
+        }
+
+
+        if(isset($request->chkstock)) {
+            $rules['stock_cost'] = 'required';
+            $rules['stock_qty'] = 'required';
+        }
+
+
+
         if(isset($request->showProductWebsite) && !empty($request->website) && $request->op == 0) {
             $rules['op'] = 'required';
         }
