@@ -402,7 +402,7 @@
                 <h5>POS Inventory</h5>
                 <div class="rkmd-checkbox checkbox-rotate">
                     <label class="input-checkbox checkbox-primary">
-                        <input type="checkbox" id="chkactive" name="chkactive" class="mainchk" onchange="toggle()">
+                        <input type="checkbox" id="chkactive" name="chkactive" class="mainchk" onchange="toggle()" {{ old('chkactive') ? 'checked' : ''}}>
                         <span class="checkbox"></span>
                     </label>
                     <div class="captions text-info f-16 m-b-5">If you want to sale this product in POS so please enter here name, item code and also selling price.</div>
@@ -479,7 +479,7 @@
                 <h5>Stock Opening</h5>
                 <div class="rkmd-checkbox checkbox-rotate">
                     <label class="input-checkbox checkbox-primary">
-                        <input type="checkbox" id="chkstock" name="chkstock" class="mainchk" onchange="togglestock()">
+                        <input type="checkbox" id="chkstock" name="chkstock" class="mainchk" onchange="togglestock()" {{ old('chkstock') ? 'checked' : ''}}>
                         <span class="checkbox"></span>
                     </label>
                     <div class="captions text-info f-16 m-b-5">If you want to perform stock opening, please enter cost and qty for the specific product.</div>
