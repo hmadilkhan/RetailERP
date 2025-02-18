@@ -333,7 +333,7 @@
 			<div class="col-md-3 col-lg-3">
                 <div class="form-group {{ $errors->has('cost_price') ? 'has-danger' : '' }}">
                     <label class="form-control-label">Cost Price:<span class="text-danger m-l-5">*</span></label>
-                    <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)"  min="0" name="cost_price" id="cost_price" value="{{ old('cost_price') }}" placeholder="0"/>
+                    <input class="form-control" type="text" onkeypress="return isDecimalKey(event,this)"  min="0" name="cost_price" id="cost_price" value="{{ old('cost_price') ?? 0 }}" placeholder="0"/>
                 </div>
             </div>
             <div class="col-md-3 col-lg-3">
