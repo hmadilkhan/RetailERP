@@ -26,12 +26,12 @@ use Illuminate\Support\Facades\Validator;
 use Config;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Image;
+// use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+// use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -44,7 +44,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class InventoryController extends Controller
 {
     use MediaTrait;
-    // $this->uploads($request->file,"images/company",);
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -157,9 +157,6 @@ class InventoryController extends Controller
 
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
-        // if(Auth::user()->username == 'demoadmin'){
-        //       return empty($request->file('productvideo')) ? 1 : 0;
-        // }
         //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size
 //regex:/^[a-zA-Z0-9\s]+$/ old regex
 
