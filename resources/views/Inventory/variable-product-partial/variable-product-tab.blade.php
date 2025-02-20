@@ -170,7 +170,7 @@
 
                                   @foreach($inventoryVariations as $variation)
                                      @if($variation->product_id == $value->pos_item_id)
-                                           <label class="badge badge-bg-success badge-lg pointer" id="lable-variation-{{ $variation->id }}" onclick="editVariationValue({{ $variation->id }},{{ $variation->variation_id }},{{ $variation->product_id }},'{{ $variation->item_name}}','{{ $variation->name}}','{{ $variation->type}}','{{ $variation->addon_limit}}')"> {{ $variation->name }} </label>
+                                           <label class="badge badge-bg-success badge-lg pointer" id="lable-variation-{{ $variation->id }}" onclick="editVariationValue({{ $variation->id }},{{ $variation->variation_id }},{{ $variation->product_id }},'{{ $variation->item_name}}','{{ $variation->name}}','{{ $variation->type}}','{{ $variation->addon_limit}}','{{ $variation->priority}}')"> {{ $variation->name }} </label>
                                          @foreach($variationProductCount as $count)
                                               @if($count->addon_category_id == $variation->variation_id)
                                                <span class="badge badge-black badge-header3">{{ $count->countProduct }}</span>
@@ -506,11 +506,18 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>Priority</label>
+                                        <input type="number" min="0" id="priority_variation_md" name="priority_variation_md" class="form-control" placeholder="Priority" value="0">
+                                    </div>
+                                </div>
+
+                                {{-- <div class="col-md-3">
+                                    <div class="form-group">
+                                        <label>Priority</label>
                                         <select id="priority_variation_md" name="priority_variation_md" class="select2" data-placeholder="Select">
                                           <option value="">Select</option>
                                         </select>
                                     </div>
-                                </div>
+                                </div> --}}
 
                             </div>
 

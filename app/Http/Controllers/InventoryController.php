@@ -2915,7 +2915,7 @@ class InventoryController extends Controller
             ->where('inventory_variations.status', 1)
             ->join('addon_categories', 'addon_categories.id', 'inventory_variations.variation_id')
             ->join('pos_products_gen_details', 'pos_products_gen_details.pos_item_id', 'inventory_variations.product_id')
-            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name', 'pos_products_gen_details.priority')
+            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.priority', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name', 'pos_products_gen_details.priority')
             ->orderBy('pos_products_gen_details.priority', 'desc')
             ->get();
 
@@ -3550,10 +3550,10 @@ class InventoryController extends Controller
                 return response()->json(["status" => 409, "control" => "variation_name", "msg" => "This " . $request->variation_name . " group name is already taken from product " . $request->item_name]);
             }
 
-            if(!empty($request->priority_variation_md)){
-                $priority = (int) $request->priority_variation_md;
-                $priority++;
-            }
+            // if(!empty($request->priority_variation_md)){
+            //     $priority = (int) $request->priority_variation_md;
+            //     $priority++;
+            // }
 
             // 			if($count == 0){
             $getAddonCategoryId = AddonCategory::create([
@@ -3563,7 +3563,7 @@ class InventoryController extends Controller
                 "company_id"         => session("company_id"),
                 "type"               => $request->variation_type,
                 "is_required"        => 1,
-                "priority"           => isset($priority) ? $priority : 0,
+                "priority"           => $request->priority_variation_md,
                 "mode"               => 'variations',
                 "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
             ]);
@@ -3623,10 +3623,10 @@ class InventoryController extends Controller
             InventoryVariation::where('product_id', $request->item_id)->where('variation_id', $request->variation_id)->update(['status' => 0]);
             //InventoryVariationProduct::where('inventory_variation_id', $getId_InventoryVariation)->update(['status' => 0]);
 
-            if(!empty($request->priority_variation_md)){
-                $priority = (int) $request->priority_variation_md;
-                $priority++;
-            }
+            // if(!empty($request->priority_variation_md)){
+            //     $priority = (int) $request->priority_variation_md;
+            //     $priority++;
+            // }
 
             $getAddonCategoryId = AddonCategory::create([
                 "name"               => $request->variation_name,
@@ -3634,7 +3634,7 @@ class InventoryController extends Controller
                 "user_id"            => auth()->user()->id,
                 "company_id"         => session("company_id"),
                 "type"               => $request->variation_type,
-                "priority"           => isset($priority) ? $priority : 0,
+                "priority"           => $request->priority_variation_md,
                 "is_required"        => 1,
                 "mode"               => 'variations',
                 "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,

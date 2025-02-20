@@ -816,7 +816,7 @@ input+.slider:before {
 	       $("#variation_name").val('');
 	       $("#variation_type").val('').trigger('change');
 
-           variationPriority(id,''); // get variation priority
+        //    variationPriority(id,''); // get variation priority
 
 	       $.each(table_row_mdId,function(i,v){
 	           $("#"+v).remove();
@@ -992,13 +992,15 @@ input+.slider:before {
           variationForm_clear();
         });
 
-	   function editVariationValue(unId,variationId,productId,productName,variationName,variationType,variationSelectionLimit){
+	   function editVariationValue(unId,variationId,productId,productName,variationName,variationType,variationSelectionLimit,variationPriority){
 	       variationForm_clear();
 	       $("#modal-title-variation").text('Edit Variation');
 
 	       $("#btn_submit_variation").text('Update');
 
-           variationPriority(productId,variationId);
+           $("#priority_variation_md").val(variationPriority);
+
+        //    variationPriority(productId,variationId);
 
 	       if($("#btn_submit_variation").hasClass('btn-primary')){
 	           $("#btn_submit_variation").removeClass('btn-primary');
