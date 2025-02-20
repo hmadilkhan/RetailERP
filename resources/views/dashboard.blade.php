@@ -49,7 +49,7 @@
             background: #4CAF50;
             color: #ffffff;
         }
-        /*#198754*/
+        /*#198754 #5cb85c*/
         #closedSales div:hover {
             background: #4CAF50;
             color: #ffffff;
