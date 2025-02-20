@@ -1078,7 +1078,7 @@ input+.slider:before {
                 if(resp.variationHead != null){
                     $("#cell-3-"+itemId).empty();
                     $.each(resp.variationHead,function(i,v){
-                        $("#cell-3-"+v.product_id).append("<label class='badge badge-bg-success badge-lg pointer' id='lable-variation-"+v.id+"' onclick='editVariationValue("+v.id+","+v.variation_id+","+ v.product_id+",\""+v.item_name+"\",\""+v.name+"\",\""+v.type+"\",\""+v.addon_limit+"\")'>"+v.name+"</label><span id='variationProdcutCount-"+v.variation_id+"' class=''></span><br/>");
+                        $("#cell-3-"+v.product_id).append("<label class='badge badge-bg-success badge-lg pointer' id='lable-variation-"+v.id+"' onclick='editVariationValue("+v.id+","+v.variation_id+","+ v.product_id+",\""+v.item_name+"\",\""+v.name+"\",\""+v.type+"\",\""+v.addon_limit+"\",\""+v.priority+"\")'>"+v.name+"</label><span id='variationProdcutCount-"+v.variation_id+"' class=''></span><br/>");
                     });
 
                     $.each(resp.variationProductCount,function(i,v){

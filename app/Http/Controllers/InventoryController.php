@@ -3375,7 +3375,7 @@ class InventoryController extends Controller
             ->where('inventory_variations.status', 1)
             ->join('addon_categories', 'addon_categories.id', 'inventory_variations.variation_id')
             ->join('pos_products_gen_details', 'pos_products_gen_details.pos_item_id', 'inventory_variations.product_id')
-            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name')
+            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.priority', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name')
             ->get();
 
         $variationProductCount = Addon::whereIn(
