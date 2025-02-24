@@ -7,6 +7,10 @@
 @section('navinventorys', 'active')
 
 @section('content')
+  @if(Session::has('error'))
+          <div class="alert alert-danger">{{ Session::get('error') }}</div>
+  @endif
+
     <section class="panels-wells p-t-30 sm-m-t-50">
         <a href="{{ route('create-invent') }}" data-toggle="tooltip" data-placement="bottom" title=""
         data-original-title="Create Inventory"
@@ -2348,7 +2352,7 @@
                                         swal("Success!","Product successfully duplicated!","success");
 
                                         // Optionally, you can reload the page or perform other actions
-                                        // location.reload(); // Reload the page (optional)
+                                        location.reload(); // Reload the page (optional)
                                     } else {
                                         // If status code is not 200, handle error
                                         swal("Error!","Error: " + resp.message || "Something went wrong!","error");

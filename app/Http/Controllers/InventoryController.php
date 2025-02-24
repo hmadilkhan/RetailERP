@@ -26,12 +26,12 @@ use Illuminate\Support\Facades\Validator;
 use Config;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Image;
+// use Illuminate\Support\Facades\Image;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Http;
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+// use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -44,7 +44,7 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 class InventoryController extends Controller
 {
     use MediaTrait;
-    // $this->uploads($request->file,"images/company",);
+
     public function __construct()
     {
         $this->middleware('auth');
@@ -157,9 +157,6 @@ class InventoryController extends Controller
 
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
-        // if(Auth::user()->username == 'demoadmin'){
-        //       return empty($request->file('productvideo')) ? 1 : 0;
-        // }
         //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size
 //regex:/^[a-zA-Z0-9\s]+$/ old regex
 
@@ -179,6 +176,18 @@ class InventoryController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
 
         ];
+
+        if(isset($request->chkactive)) {
+            $rules['poscode'] = 'required';
+            $rules['posname'] = 'required';
+            $rules['posuom'] = 'required';
+            $rules['posprice'] = 'required';
+        }
+
+        if(isset($request->chkstock)) {
+            $rules['stock_cost'] = 'required';
+            $rules['stock_qty'] = 'required';
+        }
 
         if(isset($request->showProductWebsite) && !empty($request->website) && $request->op == 0) {
             $rules['op'] = 'required';
@@ -514,8 +523,6 @@ class InventoryController extends Controller
                 // Return the unique generated ID
                 return $generatedId;
             }
-
-
             return null;
         }
         return null;
@@ -571,7 +578,7 @@ class InventoryController extends Controller
             'priority'            => $inventory_record->priority,
             'item_code'           => $item_code,
             'product_name'        => $inventory_record->product_name,
-            'product_description' => htmlentities($inventory_record->product_description),
+            'product_description' => $inventory_record->product_description,
             'image'               => $imageName,
             'status'              => 1,
             'created_at'          => now(),
@@ -579,7 +586,7 @@ class InventoryController extends Controller
             'weight_qty'          => $inventory_record->weight_qty,
             'slug'                => strtolower(str_replace(' ', '-', $inventory_record->product_name)) . "-" . strtolower(Str::random(4)),
             'is_deal'             => $inventory_record->is_deal,
-            'short_description'   => $inventory_record->sdescription,
+            'short_description'   => $inventory_record->short_description,
             'details'             => $inventory_record->details,
             'brand_id'            => $inventory_record->brand_id,
             'actual_image_size'   => $inventory_record->actual_image_size,
@@ -687,8 +694,8 @@ class InventoryController extends Controller
 
         // Clone product video
         $get_productVideo = DB::table('inventory_video')
-            ->where('inventory_id', $inventory_record->id)
-            ->get();
+                                ->where('inventory_id', $inventory_record->id)
+                                ->first();
 
         if ($get_productVideo != null) {
             $originalVideoName = $get_productVideo->file;
@@ -1144,6 +1151,12 @@ class InventoryController extends Controller
         $brandList  = $brand->getBrand();
         $tagsList  = Tag::getTags();
         $data = $inventory->get_details($request->id);
+
+        if(count($data) == 0) {
+            Session::flash('error','Record not found!');
+            return redirect()->route('invent-list');
+         }
+
         $mode = $inventory->getProductMode();
         $images = $inventory->getImages($request->id);
         $references =  $inventory->getReferences($request->id);
@@ -1207,7 +1220,7 @@ class InventoryController extends Controller
 
 
     public function modify(Request $request)
-    { // return $request->input('sdescription');
+    {
         $invent = new inventory();
         $websiteMode = null;
 
@@ -1221,12 +1234,12 @@ class InventoryController extends Controller
             'product_mode'         => $request->product_mode,
             'item_code'            => $request->code,
             'product_name'         => $request->name,
-            'product_description'  => htmlentities($request->description),
+            'product_description'  => $request->description,
             'status'               => 1,
             'created_at'           => date('Y-m-d H:s:i'),
             'updated_at'           => date('Y-m-d H:s:i'),
             'weight_qty'           => $request->weight,
-            'short_description'    => htmlentities($request->input('summary-ckeditor')),
+            'short_description'    => htmlentities($request->input('sdescription')),
             'details'              => htmlentities($request->details),
             'brand_id'             => $request->brand,
             'actual_image_size'    => isset($request->actual_image_size) ? 1 : 0,
@@ -2902,7 +2915,7 @@ class InventoryController extends Controller
             ->where('inventory_variations.status', 1)
             ->join('addon_categories', 'addon_categories.id', 'inventory_variations.variation_id')
             ->join('pos_products_gen_details', 'pos_products_gen_details.pos_item_id', 'inventory_variations.product_id')
-            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name', 'pos_products_gen_details.priority')
+            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.priority', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name')
             ->orderBy('pos_products_gen_details.priority', 'desc')
             ->get();
 
@@ -3362,7 +3375,7 @@ class InventoryController extends Controller
             ->where('inventory_variations.status', 1)
             ->join('addon_categories', 'addon_categories.id', 'inventory_variations.variation_id')
             ->join('pos_products_gen_details', 'pos_products_gen_details.pos_item_id', 'inventory_variations.product_id')
-            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name')
+            ->select('inventory_variations.*', 'addon_categories.name', 'addon_categories.type', 'addon_categories.priority', 'addon_categories.is_required', 'addon_categories.addon_limit', 'pos_products_gen_details.item_name')
             ->get();
 
         $variationProductCount = Addon::whereIn(
@@ -3537,10 +3550,10 @@ class InventoryController extends Controller
                 return response()->json(["status" => 409, "control" => "variation_name", "msg" => "This " . $request->variation_name . " group name is already taken from product " . $request->item_name]);
             }
 
-            if(!empty($request->priority_variation_md)){
-                $priority = (int) $request->priority_variation_md;
-                $priority++;
-            }
+            // if(!empty($request->priority_variation_md)){
+            //     $priority = (int) $request->priority_variation_md;
+            //     $priority++;
+            // }
 
             // 			if($count == 0){
             $getAddonCategoryId = AddonCategory::create([
@@ -3550,7 +3563,7 @@ class InventoryController extends Controller
                 "company_id"         => session("company_id"),
                 "type"               => $request->variation_type,
                 "is_required"        => 1,
-                "priority"           => isset($priority) ? $priority : 0,
+                "priority"           => $request->priority_variation_md,
                 "mode"               => 'variations',
                 "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,
             ]);
@@ -3610,10 +3623,10 @@ class InventoryController extends Controller
             InventoryVariation::where('product_id', $request->item_id)->where('variation_id', $request->variation_id)->update(['status' => 0]);
             //InventoryVariationProduct::where('inventory_variation_id', $getId_InventoryVariation)->update(['status' => 0]);
 
-            if(!empty($request->priority_variation_md)){
-                $priority = (int) $request->priority_variation_md;
-                $priority++;
-            }
+            // if(!empty($request->priority_variation_md)){
+            //     $priority = (int) $request->priority_variation_md;
+            //     $priority++;
+            // }
 
             $getAddonCategoryId = AddonCategory::create([
                 "name"               => $request->variation_name,
@@ -3621,7 +3634,7 @@ class InventoryController extends Controller
                 "user_id"            => auth()->user()->id,
                 "company_id"         => session("company_id"),
                 "type"               => $request->variation_type,
-                "priority"           => isset($priority) ? $priority : 0,
+                "priority"           => $request->priority_variation_md,
                 "is_required"        => 1,
                 "mode"               => 'variations',
                 "addon_limit"        => isset($request->selection_limited) ? $request->selection_limited : 0,

@@ -402,7 +402,7 @@
                 <h5>POS Inventory</h5>
                 <div class="rkmd-checkbox checkbox-rotate">
                     <label class="input-checkbox checkbox-primary">
-                        <input type="checkbox" id="chkactive" name="chkactive" class="mainchk" onchange="toggle()">
+                        <input type="checkbox" id="chkactive" name="chkactive" class="mainchk" onchange="toggle()" {{ old('chkactive') ? 'checked' : ''}}>
                         <span class="checkbox"></span>
                     </label>
                     <div class="captions text-info f-16 m-b-5">If you want to sale this product in POS so please enter here name, item code and also selling price.</div>
@@ -479,7 +479,7 @@
                 <h5>Stock Opening</h5>
                 <div class="rkmd-checkbox checkbox-rotate">
                     <label class="input-checkbox checkbox-primary">
-                        <input type="checkbox" id="chkstock" name="chkstock" class="mainchk" onchange="togglestock()">
+                        <input type="checkbox" id="chkstock" name="chkstock" class="mainchk" onchange="togglestock()" {{ old('chkstock') ? 'checked' : ''}}>
                         <span class="checkbox"></span>
                     </label>
                     <div class="captions text-info f-16 m-b-5">If you want to perform stock opening, please enter cost and qty for the specific product.</div>
@@ -491,18 +491,18 @@
             <div class="col-lg-4 col-md-4">
                 <div  id="stockcost" class="form-group {{ $errors->has('poscode') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Stock Cost</label>
-                    <input type="text" name="stock_cost" id="stock_cost" class="form-control"  />
-                    @if ($errors->has('poscode'))
+                    <input type="text" name="stock_cost" id="stock_cost" class="form-control" value="0" />
+                    @if ($errors->has('stock_cost'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @else
                     @endif
                 </div>
             </div>
             <div class="col-lg-4 col-md-4">
-                <div class="form-group {{ $errors->has('posname') ? 'has-danger' : '' }} ">
+                <div class="form-group {{ $errors->has('stock_qty') ? 'has-danger' : '' }} ">
                     <label class="form-control-label">Stock Qty</label>
                     <input type="text" name="stock_qty" id="stock_qty" class="form-control"   />
-                    @if ($errors->has('posname'))
+                    @if ($errors->has('stock_qty'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @else
                     @endif
@@ -789,6 +789,15 @@
 @section('scriptcode_three')
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <script type="text/javascript">
+
+   @if(old('chkactive'))
+      toggle();
+   @endif
+
+   @if(old('chkstock'))
+     togglestock();
+   @endif
+
 	const isDecimalKey = (event,element)=>{
        event.target.setCustomValidity('');
       const patt = /^\d+\.{0,1}\d{0,2}$/;
@@ -809,6 +818,11 @@
 
    $('#inventCreateForm').on('submit', function() {
       let regex = /^[a-zA-Z0-9\s\u0600-\u06FF\u0750-\u077F\-\(\)\.]+$/;
+    if($('#website').val() != ''){
+      let ckeditorContent = CKEDITOR.instances['summary-ckeditor'].getData();
+      document.getElementById('summary-ckeditor').value = ckeditorContent;
+    }
+
       $('#btnSubmit').prop('disabled', true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
       let itemName = $("#name");
         if (!regex.test(itemName.val())){

@@ -816,7 +816,7 @@ input+.slider:before {
 	       $("#variation_name").val('');
 	       $("#variation_type").val('').trigger('change');
 
-           variationPriority(id,''); // get variation priority
+        //    variationPriority(id,''); // get variation priority
 
 	       $.each(table_row_mdId,function(i,v){
 	           $("#"+v).remove();
@@ -992,13 +992,15 @@ input+.slider:before {
           variationForm_clear();
         });
 
-	   function editVariationValue(unId,variationId,productId,productName,variationName,variationType,variationSelectionLimit){
+	   function editVariationValue(unId,variationId,productId,productName,variationName,variationType,variationSelectionLimit,variationPriority){
 	       variationForm_clear();
 	       $("#modal-title-variation").text('Edit Variation');
 
 	       $("#btn_submit_variation").text('Update');
 
-           variationPriority(productId,variationId);
+           $("#priority_variation_md").val(variationPriority);
+
+        //    variationPriority(productId,variationId);
 
 	       if($("#btn_submit_variation").hasClass('btn-primary')){
 	           $("#btn_submit_variation").removeClass('btn-primary');
@@ -1076,7 +1078,7 @@ input+.slider:before {
                 if(resp.variationHead != null){
                     $("#cell-3-"+itemId).empty();
                     $.each(resp.variationHead,function(i,v){
-                        $("#cell-3-"+v.product_id).append("<label class='badge badge-bg-success badge-lg pointer' id='lable-variation-"+v.id+"' onclick='editVariationValue("+v.id+","+v.variation_id+","+ v.product_id+",\""+v.item_name+"\",\""+v.name+"\",\""+v.type+"\",\""+v.addon_limit+"\")'>"+v.name+"</label><span id='variationProdcutCount-"+v.variation_id+"' class=''></span><br/>");
+                        $("#cell-3-"+v.product_id).append("<label class='badge badge-bg-success badge-lg pointer' id='lable-variation-"+v.id+"' onclick='editVariationValue("+v.id+","+v.variation_id+","+ v.product_id+",\""+v.item_name+"\",\""+v.name+"\",\""+v.type+"\",\""+v.addon_limit+"\",\""+v.priority+"\")'>"+v.name+"</label><span id='variationProdcutCount-"+v.variation_id+"' class=''></span><br/>");
                     });
 
                     $.each(resp.variationProductCount,function(i,v){

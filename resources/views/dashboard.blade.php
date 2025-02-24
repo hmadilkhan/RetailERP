@@ -46,12 +46,12 @@
         }
 
         #projectedSales div:hover {
-            background: #198754;
+            background: #4CAF50;
             color: #ffffff;
         }
-
+        /*#198754 #5cb85c*/
         #closedSales div:hover {
-            background: #198754;
+            background: #4CAF50;
             color: #ffffff;
         }
     </style>

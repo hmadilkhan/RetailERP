@@ -1,6 +1,6 @@
 <header class="main-header-top hidden-print bg-success">
     <a href="{{ route('home') }}" class="logo"><img class="img-fluid able-logo"
-            src="{{ asset('storage/images/logo.png') }}" alt="Theme-logo"></a>
+            src="{{ asset('storage/images/sabify_white.fw.png') }}" alt="Theme-logo"></a>
     <nav class="navbar navbar-static-top bg-success">
         <!-- Sidebar toggle button-->
         <a href="#!" data-toggle="offcanvas" class="sidebar-toggle"></a>
