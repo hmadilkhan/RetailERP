@@ -4819,7 +4819,7 @@ class ReportController extends Controller
         $terminalId = 250;
         $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and a.terminal_id = ?", [$terminalId]);
         foreach ($terminals as $key => $terminal) {
-            $emails  = DB::table("branch_emails")->where("branch_id", $terminal->branch_id)->pluck("email");
+            $emails  = DB::table("branch_emails")->where("branch_id", $terminal->branch_id)->where("status", 1)->pluck("email");
             if (!empty($emails)) {
                 // $emails = implode(",", $emails->toArray());
 
@@ -4876,7 +4876,7 @@ class ReportController extends Controller
         $terminals = DB::select("SELECT d.company_id,d.name as company,d.logo,c.branch_id,c.branch_name as branch, b.terminal_name as terminal, a.permission_id,a.terminal_id FROM users_sales_permission a INNER JOIN terminal_details b on b.terminal_id = a.terminal_id INNER JOIN branch c on c.branch_id = b.branch_id INNER JOIN company d on d.company_id = c.company_id where a.Email_Reports = 1 and b.status_id = 1 and b.terminal_id = ?", [$opening->terminal_id]);
 
         foreach ($terminals as $key => $terminal) {
-            $emails  = DB::table("branch_emails")->where("branch_id", $terminal->branch_id)->pluck("email");
+            $emails  = DB::table("branch_emails")->where("branch_id", $terminal->branch_id)->where("status", 1)->pluck("email");
             if (!empty($emails)) {
                 // $emails = implode(",", $emails->toArray());
 
