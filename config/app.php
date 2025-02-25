@@ -182,7 +182,6 @@ return [
         // Elibyy\TCPDF\ServiceProvider::class,
         Barryvdh\DomPDF\ServiceProvider::class,
         CloudinaryLabs\CloudinaryLaravel\CloudinaryServiceProvider::class,
-        Intervention\Image\ImageServiceProvider::class,
 
     ],
 
@@ -242,8 +241,6 @@ return [
         // 'dPDF' => Barryvdh\DomPDF\Facade::class,
 		'domPDF' =>\Barryvdh\DomPDF\ServiceProvider::class,
         'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class,
-        'Image' => Intervention\Image\Facades\Image::class,
-
     ],
 
 ];
