@@ -5,7 +5,8 @@ namespace App\Traits;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 // use Image;
-use Intervention\Image\Laravel\Facades\Image;
+// use Intervention\Image\Laravel\Facades\Image;
+use Intervention\Image\Facades\Image;
 // use Carbon\gd;
 use Intervention\Image\ImageManager;
 trait MediaTrait
