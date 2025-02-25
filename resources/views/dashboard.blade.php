@@ -12,52 +12,6 @@
 
 @section('content')
 
-    <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
-        integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <style>
-        a {
-            text-decoration: none !important;
-        }
-
-        .outer {
-            width: 100%;
-            height: 150px;
-            white-space: nowrap;
-            position: relative;
-            overflow-x: scroll;
-            overflow-y: hidden;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .outer .inner {
-            width: 30%;
-            background-color: #eee;
-            float: none;
-            height: 90%;
-            margin: 0 0.25%;
-            display: inline-block;
-            zoom: 1;
-        }
-
-        .card-resize {
-            height: 469px;
-        }
-
-        #projectedSales div:hover {
-            background: #4CAF50;
-            color: #ffffff;
-        }
-        /*#198754 #5cb85c*/
-        #closedSales div:hover {
-            background: #4CAF50;
-            color: #ffffff;
-        }
-    </style>
-
     <br /><br />
 
     @if ($permission)
@@ -461,6 +415,54 @@
 @endsection
 
 @section('css_code')
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<style>
+a {
+    text-decoration: none !important;
+}
+
+.outer {
+    width: 100%;
+    height: 150px;
+    white-space: nowrap;
+    position: relative;
+    overflow-x: scroll;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+}
+
+.outer .inner {
+    width: 30%;
+    background-color: #eee;
+    float: none;
+    height: 90%;
+    margin: 0 0.25%;
+    display: inline-block;
+    zoom: 1;
+}
+
+.card-resize {
+    height: 469px;
+}
+
+#projectedSales div:hover {
+    background: #4CAF50;
+    color: #ffffff;
+}
+/*#198754 #5cb85c*/
+#closedSales div:hover {
+    background: #4CAF50;
+    color: #ffffff;
+}
+</style>
+
+
     <style>
         #cover-spin {
             position: fixed;
