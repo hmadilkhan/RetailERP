@@ -8,9 +8,53 @@
 
 @section('dashboardInlineCSS', 1)
 
-
-
 @section('content')
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+        integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <style>
+        a {
+            text-decoration: none !important;
+        }
+
+        .outer {
+            width: 100%;
+            height: 150px;
+            white-space: nowrap;
+            position: relative;
+            overflow-x: scroll;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .outer .inner {
+            width: 30%;
+            background-color: #eee;
+            float: none;
+            height: 90%;
+            margin: 0 0.25%;
+            display: inline-block;
+            zoom: 1;
+        }
+
+        .card-resize {
+            height: 469px;
+        }
+
+        #projectedSales div:hover {
+            background: #4CAF50;
+            color: #ffffff;
+        }
+        /*#198754 #5cb85c*/
+        #closedSales div:hover {
+            background: #4CAF50;
+            color: #ffffff;
+        }
+    </style>
 
     <br /><br />
 
@@ -413,173 +457,13 @@
         </div>
     @endif
 @endsection
-
-@section('css_code')
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
-integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
-<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<style>
-a {
-    text-decoration: none !important;
-}
-
-.outer {
-    width: 100%;
-    height: 150px;
-    white-space: nowrap;
-    position: relative;
-    overflow-x: scroll;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-}
-
-.outer .inner {
-    width: 30%;
-    background-color: #eee;
-    float: none;
-    height: 90%;
-    margin: 0 0.25%;
-    display: inline-block;
-    zoom: 1;
-}
-
-.card-resize {
-    height: 469px;
-}
-
-#projectedSales div:hover {
-    background: #4CAF50;
-    color: #ffffff;
-}
-/*#198754 #5cb85c*/
-#closedSales div:hover {
-    background: #4CAF50;
-    color: #ffffff;
-}
-</style>
-
-
-    <style>
-        #cover-spin {
-            position: fixed;
-            width: 100%;
-            left: 0;
-            right: 0;
-            top: 0;
-            bottom: 0;
-            background-color: rgba(255, 255, 255, 0.7);
-            z-index: 9999;
-            display: none;
-        }
-
-        @-webkit-keyframes spin {
-            from {
-                -webkit-transform: rotate(0deg);
-            }
-
-            to {
-                -webkit-transform: rotate(360deg);
-            }
-        }
-
-        @keyframes spin {
-            from {
-                transform: rotate(0deg);
-            }
-
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        #cover-spin::after {
-            content: '';
-            display: block;
-            position: absolute;
-            left: 48%;
-            top: 40%;
-            width: 40px;
-            height: 40px;
-            border-style: solid;
-            border-color: black;
-            border-top-color: transparent;
-            border-width: 4px;
-            border-radius: 50%;
-            -webkit-animation: spin .8s linear infinite;
-            animation: spin .8s linear infinite;
-        }
-
-        @media (max-width: 1000px) {
-            section {
-                margin-top: 30px;
-            }
-
-            body {
-                line-height: 0;
-            }
-
-        }
-
-        @media (max-width: 790px) {
-            section {
-                margin-top: 61px;
-            }
-
-            body {
-                line-height: 0;
-            }
-
-            .container-fluid {
-                margin-top: 65px;
-            }
-
-        }
-
-        @media (max-width: 600px) {
-            section {
-                margin-top: 61px;
-            }
-
-            body {
-                line-height: 0;
-            }
-
-            .container-fluid {
-                margin-top: 65px;
-            }
-
-            .new-orders i {
-                padding: 17px 15px;
-            }
-
-        }
-
-        .bg-success {
-            background-color: #4CAF50 !important;
-        }
-    </style>
-@endsection
-
-@section('scriptcode_one')
-<script>
-        function getdetails() {
-            window.location = "{{ url('sales-details') }}";
-        }
-        </script>
-@endsection
-
+<script type="text/javascript">
+    function getdetails() {
+        window.location = "{{ url('sales-details') }}";
+    }
+</script>
 @section('scriptcode_three')
     <script type="text/javascript">
-
-    //  function getdetails() {
-    //     window.location = "{{-- url('sales-details') --}}";
-    // }
-
-
         <?php if (session('login_msg')) { ?>
 
         $(document).ready(function() {
@@ -588,9 +472,11 @@ a {
             <?php $_SESSION['login_msg'] = ''; ?>
         });
 
-        <?php } ?>
+        <?php }?>
 
-
+        function getdetails() {
+            window.location = "{{ url('sales-details') }}";
+        }
 
         function showTime() {
             var date = new Date();
@@ -853,3 +739,100 @@ a {
     </script>
 @endsection
 
+@section('css_code')
+    <style>
+        #cover-spin {
+            position: fixed;
+            width: 100%;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.7);
+            z-index: 9999;
+            display: none;
+        }
+
+        @-webkit-keyframes spin {
+            from {
+                -webkit-transform: rotate(0deg);
+            }
+
+            to {
+                -webkit-transform: rotate(360deg);
+            }
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        #cover-spin::after {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 48%;
+            top: 40%;
+            width: 40px;
+            height: 40px;
+            border-style: solid;
+            border-color: black;
+            border-top-color: transparent;
+            border-width: 4px;
+            border-radius: 50%;
+            -webkit-animation: spin .8s linear infinite;
+            animation: spin .8s linear infinite;
+        }
+
+        @media (max-width: 1000px) {
+            section {
+                margin-top: 30px;
+            }
+
+            body {
+                line-height: 0;
+            }
+
+        }
+
+        @media (max-width: 790px) {
+            section {
+                margin-top: 61px;
+            }
+
+            body {
+                line-height: 0;
+            }
+
+            .container-fluid {
+                margin-top: 65px;
+            }
+
+        }
+
+        @media (max-width: 600px) {
+            section {
+                margin-top: 61px;
+            }
+
+            body {
+                line-height: 0;
+            }
+
+            .container-fluid {
+                margin-top: 65px;
+            }
+
+            .new-orders i {
+                padding: 17px 15px;
+            }
+
+        }
+    </style>
+@endsection
