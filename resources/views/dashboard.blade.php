@@ -564,6 +564,14 @@ a {
     </style>
 @endsection
 
+@section('scriptcode_one')
+<script>
+        function getdetails() {
+            window.location = "{{ url('sales-details') }}";
+        }
+        </script>
+@endsection
+
 @section('scriptcode_three')
     <script type="text/javascript">
 
@@ -582,9 +590,7 @@ a {
 
         <?php }?>
 
-        function getdetails() {
-            window.location = "{{ url('sales-details') }}";
-        }
+
 
         function showTime() {
             var date = new Date();
