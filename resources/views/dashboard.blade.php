@@ -460,6 +460,15 @@ a {
     background: #4CAF50;
     color: #ffffff;
 }
+
+nav .navbar .navbar-static-top{
+    position: relative;
+}
+
+nav .navbar .navbar-static-top .navbar-custom-menu{
+    position: absolute;
+    right: 0;
+}
 </style>
 
 
