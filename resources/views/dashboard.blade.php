@@ -588,7 +588,7 @@ a {
             <?php $_SESSION['login_msg'] = ''; ?>
         });
 
-        <?php }?>
+        <?php } ?>
 
 
 
