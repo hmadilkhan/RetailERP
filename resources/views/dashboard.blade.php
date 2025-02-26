@@ -461,11 +461,11 @@ a {
     color: #ffffff;
 }
 
-nav .navbar .navbar-static-top{
+nav .navbar{
     position: relative;
 }
 
-nav .navbar .navbar-static-top .navbar-custom-menu{
+.navbar-custom-menu{
     position: absolute;
     right: 0;
 }
