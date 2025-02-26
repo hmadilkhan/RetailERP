@@ -567,9 +567,9 @@ a {
 @section('scriptcode_three')
     <script type="text/javascript">
 
-     function getdetails() {
-        window.location = "{{ url('sales-details') }}";
-    }
+    //  function getdetails() {
+    //     window.location = "{{-- url('sales-details') --}}";
+    // }
 
 
         <?php if (session('login_msg')) { ?>
