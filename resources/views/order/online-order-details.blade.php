@@ -109,7 +109,7 @@
                                          @else --}}
                                          @php $image = asset('storage/images/no-image.png') @endphp
                                         @if(Storage::disk('public')->exists('images/products/'.$item->image))
-                                        @php $image = Storage::disk('public')->path('images/products/'.$item->image) @endphp
+                                        @php $image = Storage::disk('public')->get('images/products/'.$item->image) @endphp
                                         @endif
                                         <a href="{{ $image }}" data-fancybox data-caption="Single Image">
                                          <img src="{{ $image }}" alt="" class="avatar-lg rounded productImage{{ $key }} " style="cursor:pointer;" onclick="showImage('{{ $key }}')">
