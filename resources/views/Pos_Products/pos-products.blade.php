@@ -68,7 +68,7 @@
                                 @endif
                             </div>
                         </div>
-						
+
 						<div class="col-lg-4 col-md-4">
                             <div class="form-group {{ $errors->has('finishgood') ? 'has-danger' : '' }} ">
                                 <label class="form-control-label">Select Unit Of measure</label>
@@ -221,7 +221,7 @@
 {{--                        <th>Branch</th>--}}
 {{--                        <th>Department</th>--}}
                         <th>Item Code | Name</th>
-                        <th>Variations</th>
+                        {{-- <th>Variations</th> --}}
                         <th>UOM</th>
                         <th>Ref. Product</th>
                         <th>Retail Price</th>
@@ -239,21 +239,21 @@
 {{--                            <td >{{$value->department_name}}</td>--}}
 
                             <td>{{$value->item_code}} | {{$value->item_name}} </td>
-                            <td id="cell-5-{{ $value->pos_item_id }}">
-                                
+                            {{-- <td id="cell-5-{{ $value->pos_item_id }}">
+
                                   @foreach($inventoryVariations as $variation)
                                      @if($variation->product_id == $value->pos_item_id)
                                            <label class="badge badge-primary m-r-1 pointer" id="lable-variation-{{ $variation->id }}" onclick="variationValue({{ $variation->id }},{{ $variation->variation_id }},{{ $variation->product_id }})"> {{ $variation->name }} </label>
-                                     @endif           
+                                     @endif
                                   @endforeach
-                            </td>
+                            </td> --}}
                             <td >{{$value->uomname}}</td>
                             <td >{{$value->product_name}}</td>
                             <td >{{$value->retail_price}}</td>
                             <td >{{$value->status_name}}</td>
                             <td class="action-icon">
-                                
-                                <i class="icofont icofont-plus text-success pointer m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" onclick="createVariation({{ $value->pos_item_id }})"></i>                                
+
+                                <i class="icofont icofont-plus text-success pointer m-r-1 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Variation" onclick="createVariation({{ $value->pos_item_id }})"></i>
 
                                 <a  class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" onclick="edit('{{$value->pos_item_id}}','{{$value->item_code}}','{{$value->item_name}}','{{$value->actual_price}}','{{$value->tax_rate}}','{{$value->tax_amount}}','{{$value->retail_price}}','{{$value->wholesale_price}}','{{$value->online_price}}','{{$value->discount_price}}','{{$value->quantity}}','{{$value->uom_id}}','{{ asset('assets/images/products/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}','{{$value->image}}')" ></i> </a>
 
@@ -379,7 +379,7 @@
                             </div>
                         </div>
 						<br/><br/><br/>
-						
+
 						<div class="modal-header ">
 							<h4 class="modal-title">Prices</h4>
 						</div>
@@ -443,7 +443,7 @@
 						</div>
 					</div>
                     </div>
-					
+
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary waves-effect waves-light">
@@ -454,8 +454,8 @@
             </div>
         </div>
     </div>
-    
-    
+
+
 <div class="modal fade modal-flex" id="variation-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -469,9 +469,9 @@
 				  @csrf
 				  <input type="hidden" name="itemId" id="itemId_md">
                 <div class="modal-body">
-                    
+
                     <div id="createVariationModal_alert"></div>
-                    
+
 			      <div class="form-group">
                           <label class="form-control-label">Select Variations of the product (if any)</label>
                             <select class="form-control  select2" data-placeholder="Select Variations" id="variations" name="variations">
@@ -488,7 +488,7 @@
                         <label class="form-control-label">Select Products</label>
                         <select name="products[]" id="products" multiple="multiple" class="form-control select2" disabled style="width: 75%"></select>
                         <div class="text-danger" id="products_alert_md"></div>
-                    </div> 
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-primary waves-effect waves-light" id="btnaddVariation">
@@ -497,9 +497,9 @@
 				</form>
             </div>
         </div>
-    </div>    
-    
-    
+    </div>
+
+
 <div class="modal fade modal-flex" id="edit-variation-modal" tabindex="-1" role="dialog">
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
@@ -521,8 +521,8 @@
                         <label class="form-control-label">Select Products</label>
                         <select name="products[]" id="products_edit_md" multiple="multiple" class="form-control select2" disabled style="width: 75%"></select>
                         <div class="text-danger" id="products_alert_edit_md"></div>
-                    </div> 
-     			       
+                    </div>
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger waves-effect waves-light m-r-1" id="btnRemoveVariation" onclick="remove_variation_cmd()">
@@ -533,7 +533,7 @@
 				</form>
             </div>
         </div>
-    </div>     
+    </div>
 @endsection
 
 @section('scriptcode_three')
@@ -553,13 +553,13 @@
             }
 
         });
-        
-var obj = [];       
+
+var obj = [];
 
         function readURL(input,id) {
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
-			
+
                 reader.onload = function(e) {
                     $('#'+id).attr('src', e.target.result);
                 }
@@ -877,7 +877,7 @@ var obj = [];
             }
 
         });
-        
+
         function verifycode() {
             $.ajax({
                 url: "{{url('/verifycode')}}",
@@ -899,7 +899,7 @@ var obj = [];
             });
 
         }
-		
+
 		$("#ap").change(function(){
 			if($('#taxrate').val() != ""){
 			   let taxamount = $('#ap').val() * ($('#taxrate').val() / 100);
@@ -924,7 +924,7 @@ var obj = [];
 		   $('#taxrate').val(taxrate);
 		   $("#rp").val(Math.round(retailPrice));
 	   });
-	   
+
 	   $("#apmodal").change(function(){
 			if($('#taxrate').val() != ""){
 			   let taxamount = $('#apmodal').val() * ($('#modaltaxrate').val() / 100);
@@ -949,17 +949,17 @@ var obj = [];
 		   $('#modaltaxrate').val(taxrate);
 		   $("#rpmodal").val(Math.round(retailPrice));
 	   });
-	   
+
 	   function createVariation(id){
 	       $("#itemId_md").val(id);
 	       $("#variation-modal").modal('show');
 	   }
-	   
+
       $("#variation-modal").on('hide.bs.modal', function(){
            $("#variations,#products").empty();
            modalControl_clear();
-      });	   
-	   
+      });
+
 	   $("#variations").on('change',function(){
           callVariation($(this).val(),'products','');
 	   })
@@ -967,9 +967,9 @@ var obj = [];
 	   //$("#variations_edit_md").on('change',function(){
     //       callVariation($(this).val(),'products_edit_md','');
 	   //})
-	   
+
 	   function callVariation(vid,element,selectedValue){
-	       
+
                $.ajax({
                  url:'{{ route("getVariation_posproduct") }}',
                  type:'POST',
@@ -981,26 +981,26 @@ var obj = [];
                      if(resp != ''){
                          $("#"+element).empty();
                         //  $("#"+element).append('<option value="">Select</option>');
-                         
+
                          $.each(resp,function(i,v){
                              $("#"+element).append('<option selected value="'+v.id+'">'+v.name+'</option>');
                          })
-                         
+
                          if($("#"+element).attr('disabled')){
                              $("#"+element).attr('disabled',false);
                          }
                      }
                  }
-               });	       
-	       
+               });
+
 	   }
-	   
+
 	   $("#btnaddVariation").on('click',function(){
 	       modalControl_clear();
-	       
+
 	       if($("#variations").val() != '' && $("#products").val() != ''){
 	           //  $("#variationForm").submit();
-	           
+
               $.ajax({
                      url:'{{ route("storeVariation") }}',
                      type:'POST',
@@ -1012,34 +1012,34 @@ var obj = [];
                          if(resp.status == 200){
                               $("#createVariationModal_alert").text('Success!').addClass('alert alert-success');
                               reloadVariation($("#itemId_md").val());
-                            //   window.loctions = '{{-- route("posProducts") --}}'; 
+                            //   window.loctions = '{{-- route("posProducts") --}}';
                          }else{
                              if(resp.status == 409){
-                                $("#variations_alert_md").text(resp.msg); 
+                                $("#variations_alert_md").text(resp.msg);
                              }
-                             
+
                              if(resp.status == 500){
-                                $("#createVariationModal_alert").text(resp.msg).addClass('alert alert-danger');                              
-                             }                             
+                                $("#createVariationModal_alert").text(resp.msg).addClass('alert alert-danger');
+                             }
                          }
                      }
-                  }); 	           
-	           
+                  });
+
 	       }else{
 	           if($("#variations").val() == ''){
 	            $("#variations_alert_md").text('Select variation field is required!');
 	           }
-	           
+
 	           if($("#products").attr('disabled')  && $("#products").val() == ''){
 	            $("#products_alert_md").text('Select variation field is required!');
-	           }	           
+	           }
 	       }
 	   })
-	   
+
 
 	   $("#btnupdateVariation").on('click',function(){
 	       modalControl_clear();
-	       
+
 	       if( $("#products_edit_md").val() != ''){
               $.ajax({
                      url:'{{ route("updateVariation") }}',
@@ -1052,23 +1052,23 @@ var obj = [];
                          if(resp.status == 200){
                               $("#editVariationModal_alert").text('Success!').addClass('alert alert-success');
                               reloadVariation($("#itemId_edit_md").val());
-                                // window.loction = '{{-- route("posProducts") --}}'; 
+                                // window.loction = '{{-- route("posProducts") --}}';
                          }else{
                              if(resp.status == 500){
-                                $("#editVariationModal_alert").text(resp.msg).addClass('alert alert-danger');                              
-                             }                             
+                                $("#editVariationModal_alert").text(resp.msg).addClass('alert alert-danger');
+                             }
                          }
                      }
-                  }); 	           
-	           
+                  });
+
 	       }else{
 	           if($("#products_edit_md").val() == ''){
 	            $("#products_alert_edit_md").text('Select variation field is required!');
-	           }	           
+	           }
 	       }
-	   })	   
-	   
-	   
+	   })
+
+
 	   function variationValue(unid,variation,itemId){
 	       $("#edit-variation-modal").modal('show');
 	       $("#itemId_edit_md").val(itemId);
@@ -1076,7 +1076,7 @@ var obj = [];
 	       $("#edit_md_variationName").text($("#lable-variation-"+unid).text());
 	       //$("#variations_edit_md").val(variation).trigger('change');
 	       callVariation(variation,'products_edit_md','');
-	       
+
               $.ajax({
                      url:'{{ route("getVariationProduct_values") }}',
                      type:'POST',
@@ -1087,38 +1087,38 @@ var obj = [];
                         //  console.log(resp);
                          if(resp != ''){
                             $("#products_edit_md").val('').change();
-                            
+
                             //  $.each(resp,function(i,v){
                                 //  $("#products_edit_md").val(v.product_id).change();
                                  $("#products_edit_md").select2('val',[resp]);
-                            //  })                            
+                            //  })
                          }
                      }
                   });
 	   }
-	   
+
 	   function modalControl_clear(){
-         
+
           $("#variation_alert_md,#products_alert_md,#products_alert_edit_md").text('');
-          
+
           if($("#createVariationModal_alert,#editVariationModal_alert").hasClass('alert alert-danger')){
               $("#createVariationModal_alert,#editVariationModal_alert").removeClass('alert alert-danger').text('');
-          }	
-          
+          }
+
           if($("#createVariationModal_alert,#editVariationModal_alert").hasClass('alert alert-success')){
               $("#createVariationModal_alert,#editVariationModal_alert").removeClass('alert alert-success').text('');
-          }	
+          }
 
         //   if($("#editVariationModal_alert").hasClass('alert alert-danger')){
         //       $("#editVariationModal_alert").removeClass('alert alert-danger').text('');
-        //   }	
-          
+        //   }
+
         //   if($("#editVariationModal_alert").hasClass('alert alert-danger')){
         //       $("#editVariationModal_alert").removeClass('alert alert-danger').text('');
-        //   }	          
-          
+        //   }
+
 	   }
-	   
+
 	   function remove_variation_cmd(){
             swal({
                     title: "Are you sure?",
@@ -1151,16 +1151,16 @@ var obj = [];
                                         }
                                     });
                                 }
-                                
+
                                 if(resp.status == 500){
                                     // swal({
                                     //     title: "Remove Variation",
                                     //     text: "Alert! "+resp.msg,
                                     //     type: "alert"
                                     // });
-                                    
+
                                     swal("Error Remove Variation",resp.msg, "error");
-                                }                                
+                                }
                             }
 
                         });
@@ -1168,10 +1168,10 @@ var obj = [];
                     }else {
                         swal("Cancelled", "Operation Cancelled:)", "error");
                     }
-                });	       
-	       
+                });
+
 	   }
-	   
+
 	   function reloadVariation(prodId){
          $.ajax({
                  url:'{{ route("reloadVariation_posproduct") }}',
@@ -1183,15 +1183,15 @@ var obj = [];
                      //console.log(resp);
                      if(resp != ''){
                           $("cell-5-"+prodId).empty();
-                          
+
                           $.each(resp,function(i,v){
                                  $("cell-5-"+prodId).append('<lable class="badge badge-primary m-r-1 pointer" id="lable-variation-'+v.id+'" onclick="variationValue('+v.id+','+v.variation_id+','+v.product_id+')">'+v.name+'</lable>');
-                          })                          
+                          })
                      }
                  }
-          });	       
+          });
 	   }
-	   
+
     </script>
 @endsection
 
