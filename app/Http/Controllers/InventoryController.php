@@ -1245,6 +1245,8 @@ class InventoryController extends Controller
             'details'              => htmlentities($request->details),
             'brand_id'             => $request->brand,
             'actual_image_size'    => isset($request->actual_image_size) ? 1 : 0,
+            'meta_title'           => $request->meta_title,
+            'meta_description'     => $request->meta_description,
         ];
 
         if (!empty($request->get('galleryImage'))) {
