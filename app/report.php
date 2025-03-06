@@ -362,7 +362,7 @@ class report extends Model
         return $result;
     }
 
-    public function totalSales($terminal, $fromdate, $todate, $type, $category,$customer)
+    public function totalSales($terminal, $fromdate, $todate, $type, $category,$customer="")
     {
         $filter = "";
         if ($category != "all" && $category == 1) {
