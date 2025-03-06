@@ -3069,7 +3069,7 @@ class ReportController extends Controller
         $price = 0;
         $salesTax = 0;
 
-        if ($request->terminalid == 0) {
+        if ($request->terminalid == 0 or $request->terminalid == "") {
 
             $terminals = $report->getTerminals($request->branch);
             foreach ($terminals as  $values) {
