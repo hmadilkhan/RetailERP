@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 // use Image;
 use Intervention\Image\Laravel\Facades\Image;
+
 // use Carbon\gd;
 use Intervention\Image\ImageManager;
 trait MediaTrait
@@ -25,7 +26,7 @@ trait MediaTrait
 
                     // // resize to 300 x 200 pixel
                     // $image->resize($transformation["width"], $transformation["height"]);
-                $image = Image::make($file)->resize(400,400, function ($constraint) {
+                $image = Image::read($file)->resize($transformation["width"],$transformation["height"], function ($constraint) {
                     $constraint->aspectRatio();
                     $constraint->upsize();
                 })->encode();

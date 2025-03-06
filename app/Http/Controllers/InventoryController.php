@@ -238,8 +238,8 @@ class InventoryController extends Controller
             // } else {
             $transFormation = [];
             if (!isset($request->actual_image_size)) {
-                // $transFormation['width']  = 400;
-                // $transFormation['height'] = 400;
+                $transFormation['width']  = 400;
+                $transFormation['height'] = 400;
             }
             $returnImageValue = $this->uploads($request->file('image'), "images/products/", "", $transFormation);
             $imageName = $returnImageValue['fileName'];
@@ -270,6 +270,8 @@ class InventoryController extends Controller
             'details'             => htmlentities($request->details),
             'brand_id'            => $request->brand,
             'actual_image_size'   => isset($request->actual_image_size) ? 1 : 0,
+            'meta_title'          => $request->meta_title,
+            'meta_description'    => $request->meta_description,
         ];
         $productid = $inventory->insert($fields);
         $result = $inventory->ReminderInsert($productid, $request->reminder);
@@ -1243,6 +1245,8 @@ class InventoryController extends Controller
             'details'              => htmlentities($request->details),
             'brand_id'             => $request->brand,
             'actual_image_size'    => isset($request->actual_image_size) ? 1 : 0,
+            'meta_title'           => $request->meta_title,
+            'meta_description'     => $request->meta_description,
         ];
 
         if (!empty($request->get('galleryImage'))) {

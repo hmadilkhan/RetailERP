@@ -318,6 +318,24 @@
                 </div>
             </div>
           </div>
+
+          <div class="row">
+            <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                    <label class="form-control-label">Meta Title</label>
+                    <input class="form-control" type="text"
+                   name="meta_title" id="meta_title"  value="{{ old('meta_title') }}" placeholder="Enter Product Meta Title"/>
+                </div>
+            </div>
+
+            <div class="col-lg-6 col-md-6">
+                <div class="form-group">
+                    <label class="form-control-label">Meta Description</label>
+                    <textarea rows="5" class="form-control"
+                   name="meta_description" id="meta_description"  placeholder="Enter Product Meta Description"> {{ old('meta_description') }}</textarea>
+                </div>
+            </div>
+          </div>
          </div>
        @endif
 
