@@ -3142,9 +3142,9 @@ class ReportController extends Controller
                 $pdf->Cell(15, 6, '', 0, 0, 'L', 1);
                 $pdf->Cell(25, 6, number_format($totalactualamount, 2), 0, 0, 'C', 1);
                 $pdf->Cell(25, 6, number_format($totalreceiveamount, 2), 0, 0, 'C', 1);
-                $pdf->Cell(15, 6, '0', 0, 0, 'C', 1);
-                $pdf->Cell(15, 6, '0', 0, 0, 'C', 1);
-                $pdf->Cell(20, 6, '0', 0, 1, 'R', 1);
+                $pdf->Cell(15, 6, number_format($totalsalestax, 2), 0, 0, 'C', 1);
+                $pdf->Cell(15, 6, number_format($totaldiscountamount, 2), 0, 0, 'C', 1);
+                $pdf->Cell(20, 6, number_format($totalamount, 2), 0, 1, 'R', 1);
             }
         } else {
             $terminals = $report->get_terminals_byid($request->terminalid);
