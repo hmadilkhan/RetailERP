@@ -357,7 +357,9 @@ class WebsiteController extends Controller
         // $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
 
         // return $imageName;
+       $slider_type_exists = false;
        if(isset($request->slider_type) && \Hash::check('department', $request->slider_type)){
+           $slider_type_exists = true;
             $rules = [
                        'website_dept_slide'     => 'required',
                        'department_dpt_slide'   => 'required',
@@ -375,7 +377,7 @@ class WebsiteController extends Controller
        $validator = \Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return redirect('website/slider/lists?#departmentSliderNav')->withErrors($validator)->withInput();
+            return redirect('website/slider/lists'.($slider_type_exists === true ? '?#departmentSliderNav' : ''))->withErrors($validator)->withInput();
         }
 
         //$this->validate($request, $rules);
