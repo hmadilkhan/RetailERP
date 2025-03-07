@@ -3076,7 +3076,7 @@ class ReportController extends Controller
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(190, 10, "Terminal Name: " . $values->terminal_name, 0, 1, 'L');
-                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, "all");
+                $details = $report->totalSales($values->terminal_id, $request->fromdate, $request->todate, $request->type, "all", $request->customer);
                 $permission = $report->terminalPermission($values->terminal_id);
 
                 $pdf->SetFont('Arial', 'B', 10);
@@ -3142,9 +3142,9 @@ class ReportController extends Controller
                 $pdf->Cell(15, 6, '', 0, 0, 'L', 1);
                 $pdf->Cell(25, 6, number_format($totalactualamount, 2), 0, 0, 'C', 1);
                 $pdf->Cell(25, 6, number_format($totalreceiveamount, 2), 0, 0, 'C', 1);
-                $pdf->Cell(15, 6, '0', 0, 0, 'C', 1);
-                $pdf->Cell(15, 6, '0', 0, 0, 'C', 1);
-                $pdf->Cell(20, 6, '0', 0, 1, 'R', 1);
+                $pdf->Cell(15, 6, number_format($totalsalestax, 2), 0, 0, 'C', 1);
+                $pdf->Cell(15, 6, number_format($totaldiscountamount, 2), 0, 0, 'C', 1);
+                $pdf->Cell(20, 6, number_format($totalamount, 2), 0, 1, 'R', 1);
             }
         } else {
             $terminals = $report->get_terminals_byid($request->terminalid);
@@ -3220,9 +3220,9 @@ class ReportController extends Controller
             $pdf->Cell(15, 6, '', 0, 0, 'L', 1);
             $pdf->Cell(25, 6, number_format($totalactualamount, 2), 0, 0, 'C', 1);
             $pdf->Cell(25, 6, number_format($totalreceiveamount, 2), 0, 0, 'C', 1);
-            $pdf->Cell(15, 6, '0', 0, 0, 'C', 1);
-            $pdf->Cell(15, 6, '0', 0, 0, 'C', 1);
-            $pdf->Cell(20, 6, '0', 0, 1, 'R', 1);
+            $pdf->Cell(15, 6, number_format($totalsalestax, 2), 0, 0, 'C', 1);
+            $pdf->Cell(15, 6, number_format($totaldiscountamount, 2), 0, 0, 'C', 1);
+            $pdf->Cell(20, 6, number_format($totalamount, 2), 0, 1, 'R', 1);
         }
         //save file
         $pdf->Output('Invoice_Detail_Report.pdf', 'I');
@@ -3560,7 +3560,7 @@ class ReportController extends Controller
 
         $pdf->AliasNbPages();
         $pdf->AddPage();
-        
+
 
         // first row
         $pdf->SetFont('Arial', '', 10);
