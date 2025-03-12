@@ -93,6 +93,13 @@ Route::get('/', function () {
     }
 });
 
+Route::get('lang/{locale}', function ($locale) {
+    if (in_array($locale, ['en', 'ar'])) {
+        session(['locale' => $locale]);
+    }
+    return redirect()->back();
+});
+
 Route::group(['middleware' => ['auth', 'roleChecker']], function () {
     Route::get('/impersonate/{userId}', [ImpersonateController::class, 'impersonate'])->name('impersonate');
     Route::get('/impersonate/leave', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
@@ -172,8 +179,6 @@ Route::post('/get-discount-products', [DiscountController::class, 'getDiscountPr
 Route::post('/get-discount-customers', [DiscountController::class, 'getDiscountCustomers']);
 Route::post('/get-customer-buys', [DiscountController::class, 'getCustomerBuys']);
 Route::post('/get-customer-gets', [DiscountController::class, 'getCustomerGets']);
-
-
 
 
 //Sidebar operations
