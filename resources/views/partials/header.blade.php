@@ -26,7 +26,7 @@
                         <li><a href="{{ route('logout') }}"
                                 onclick="event.preventDefault();
                                  document.getElementById('logout-form').submit();"><i
-                                    class="icon-logout"></i> Logout</a></li>
+                                    class="icon-logout"></i> {{ __('content.logout') }}</a></li>
                     </ul>
                 </li>
             </ul>
