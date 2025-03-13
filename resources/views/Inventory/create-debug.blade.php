@@ -322,7 +322,7 @@
             <div class="col-md-12">
                 <div class="form-group ">
                     <label class="form-control-label">Details <i>(For Website Only)</i></label>
-                    <textarea class="form-control" name="product_description_resturant_website" id="product_description_resturant_website" rows="6">{{ $data[0]->product_description_resturant_website }}</textarea>
+                    <textarea class="form-control" name="product_description_resturant_website" id="product_description_resturant_website" rows="6"></textarea>
                 </div>
             </div>
           </div>
