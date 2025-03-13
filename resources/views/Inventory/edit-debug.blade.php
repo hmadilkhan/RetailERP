@@ -727,6 +727,8 @@ $(document).ready(function(){
     $("#showProductWebsite").trigger('click');
     $("#showProductWebsite").attr('checked',true);
     @endif
+
+    $("#website").trigger('change');
 });
 
 
