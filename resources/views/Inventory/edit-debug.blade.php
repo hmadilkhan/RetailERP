@@ -303,7 +303,7 @@
                     @endif --}}
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6">
+            <div class="col-lg-6 col-md-6" id="editorDiv">
                 @php $product_details = ''; @endphp
                 @if(!empty($data[0]->details))
                     @php
@@ -317,6 +317,12 @@
                     @if($errors->has('details'))
                         <div class="form-control-feedback">Required field can not be blank.</div>
                     @endif
+                </div>
+            </div>
+            <div class="col-md-12" id="nonEditorDiv">
+                <div class="form-group ">
+                    <label class="form-control-label">Details <i>(For Website Only)</i></label>
+                    <textarea class="form-control" name="product_description_resturant_website" id="product_description_resturant_website" rows="6">{{ $data[0]->product_description_resturant_website }}</textarea>
                 </div>
             </div>
           </div>
