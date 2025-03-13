@@ -303,6 +303,7 @@
                     @endif --}}
                 </div>
             </div>
+            {{ $websiteType }}
             <div class="col-lg-6 col-md-6 {{ $websiteType != 'restaurant' ? '' : 'hidden'}}" id="editorDiv">
                 @php $product_details = ''; @endphp
                 @if(!empty($data[0]->details))
