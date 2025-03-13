@@ -303,7 +303,7 @@
                     @endif --}}
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6 {{ $websiteType != 'restaurant' ? '' : 'd-none'}}" id="editorDiv">
+            <div class="col-lg-6 col-md-6 {{ $websiteType != 'restaurant' ? '' : 'hidden'}}" id="editorDiv">
                 @php $product_details = ''; @endphp
                 @if(!empty($data[0]->details))
                     @php
@@ -319,7 +319,7 @@
                     @endif
                 </div>
             </div>
-            <div class="col-md-12 {{ $websiteType == 'restaurant' ? 'd-none' : ''}}" id="nonEditorDiv">
+            <div class="col-md-12 {{ $websiteType == 'restaurant' ? 'hidden' : ''}}" id="nonEditorDiv">
                 <div class="form-group ">
                     <label class="form-control-label">Details <i>(For Website Only)</i></label>
                     <textarea class="form-control" name="product_description_resturant_website" id="product_description_resturant_website" rows="6">{{ $data[0]->product_description_resturant_website }}</textarea>
@@ -736,20 +736,20 @@ $(document).ready(function(){
                   success:function(resp,textStatus,ajxStatus){
                      if(ajxStatus == 200){
                           if(resp == 'restaurant'){
-                              if(!$("#editorDiv").hasClass('d-none')){
-                                $("#editorDiv").addClass('d-none');
+                              if(!$("#editorDiv").hasClass('hidden')){
+                                $("#editorDiv").addClass('hidden');
                               }
 
-                              if($("#nonEditorDiv").hasClass('d-none')){
-                                $("#nonEditorDiv").removeClass('d-none');
+                              if($("#nonEditorDiv").hasClass('hidden')){
+                                $("#nonEditorDiv").removeClass('hidden');
                               }
                           }else{
-                            if($("#editorDiv").hasClass('d-none')){
-                                $("#editorDiv").removeClass('d-none');
+                            if($("#editorDiv").hasClass('hidden')){
+                                $("#editorDiv").removeClass('hidden');
                               }
 
-                              if(!$("#nonEditorDiv").hasClass('d-none')){
-                                $("#nonEditorDiv").addClass('d-none');
+                              if(!$("#nonEditorDiv").hasClass('hidden')){
+                                $("#nonEditorDiv").addClass('hidden');
                               }
                           }
                      }
