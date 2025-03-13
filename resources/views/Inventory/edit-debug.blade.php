@@ -729,34 +729,6 @@ $(document).ready(function(){
     @endif
 });
 
-    function getWebsiteType(website){
-         $.ajax({
-                  url:'{{ route("getWebsiteType") }}',
-                  type:'POST',
-                  data:{_token:'{{ csrf_token() }}',code:website},
-                  success:function(resp,textStatus,ajxStatus){
-                     if(ajxStatus == 200){
-                          if(resp == 'restaurant'){
-                              if(!$("#editorDiv").hasClass('hidden')){
-                                $("#editorDiv").addClass('hidden');
-                              }
-
-                              if($("#nonEditorDiv").hasClass('hidden')){
-                                $("#nonEditorDiv").removeClass('hidden');
-                              }
-                          }else{
-                            if($("#editorDiv").hasClass('hidden')){
-                                $("#editorDiv").removeClass('hidden');
-                              }
-
-                              if(!$("#nonEditorDiv").hasClass('hidden')){
-                                $("#nonEditorDiv").addClass('hidden');
-                              }
-                          }
-                     }
-                  }
-                });
-    }
 
 function removeImage(id, img) {
     $("#gallery-" + id).remove();
@@ -1081,7 +1053,37 @@ $("#showProductWebsite").on('click',function(){
             $("#prodAdvans_Media").addClass('d-none')
         }
       }
+      getWebsiteType($(this).val());
     });
+
+    function getWebsiteType(website){
+         $.ajax({
+                  url:'{{ route("getWebsiteType") }}',
+                  type:'POST',
+                  data:{_token:'{{ csrf_token() }}',code:website},
+                  success:function(resp,textStatus,ajxStatus){
+                     if(ajxStatus == 200){
+                          if(resp == 'restaurant'){
+                              if(!$("#editorDiv").hasClass('hidden')){
+                                $("#editorDiv").addClass('hidden');
+                              }
+
+                              if($("#nonEditorDiv").hasClass('hidden')){
+                                $("#nonEditorDiv").removeClass('hidden');
+                              }
+                          }else{
+                            if($("#editorDiv").hasClass('hidden')){
+                                $("#editorDiv").removeClass('hidden');
+                              }
+
+                              if(!$("#nonEditorDiv").hasClass('hidden')){
+                                $("#nonEditorDiv").addClass('hidden');
+                              }
+                          }
+                     }
+                  }
+                });
+    }
 
     subDepart();
     function subDepart(){

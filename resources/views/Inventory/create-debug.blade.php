@@ -911,6 +911,8 @@
             $("#prodAdvans_Media").addClass('d-none')
         }
       }
+
+      getWebsiteType($(this).val());
     });
 
     function getWebsiteType(website){
