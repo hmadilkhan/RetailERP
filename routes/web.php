@@ -423,6 +423,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     // inventory module //
     Route::get('/create-inventory', [InventoryController::class, "create"])->name('create-invent');
+    Route::post('/get-website-type', [InventoryController::class, "getWebsiteType"])->name('getWebsiteType');
     Route::get('/inventory-list', [InventoryController::class, "index"])->name('invent-list');
     Route::post('/generate-duplicate-product',[InventoryController::class,"duplicateProductToGeneralInventory"])->name('duplicateProductToGeneralInventory');
     Route::post('/get-inventory-department_wise', [InventoryController::class, "getDeparmtent_wise_Inventory"])->name('invent-list-department');
