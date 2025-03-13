@@ -1062,7 +1062,7 @@ $("#showProductWebsite").on('click',function(){
                   type:'POST',
                   data:{_token:'{{ csrf_token() }}',code:website},
                   success:function(resp,textStatus,ajxStatus){
-                     if(ajxStatus == 200){
+                    if(ajxStatus.status == 200){
                           if(resp == 'restaurant'){
                               if(!$("#editorDiv").hasClass('hidden')){
                                 $("#editorDiv").addClass('hidden');
