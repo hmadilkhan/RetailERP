@@ -303,7 +303,6 @@
                     @endif --}}
                 </div>
             </div>
-            {{ $selectedWebsites[0] }}
             <div class="col-lg-6 col-md-6">
                 @php $product_details = ''; @endphp
                 @if(!empty($data[0]->details))

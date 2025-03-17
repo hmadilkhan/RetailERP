@@ -1194,10 +1194,10 @@ class InventoryController extends Controller
         }
 
         $websiteType = null;
-        // if($selectedWebsites != null && $websites != null){
-        //     $websiteType = $websites->whereIn('id',$selectedWebsites)->get();
-        //     $websiteType = $websiteType->type;
-        // }
+        if($selectedWebsites != null && $websites != null){
+            $websiteType = $websites->whereIn('id',$selectedWebsites[0])->get();
+            $websiteType = $websiteType->type;
+        }
 
         // if(Auth::user()->username == 'demoadmin'){
         return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites','websiteType', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo'));
