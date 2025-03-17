@@ -284,7 +284,7 @@
 
         </div>
 
-        <div class="row">
+        <div class="row {{ $websiteType != 'restaurant' ? '' : 'hidden'}}" id="editorDiv">
             <div class="col-lg-6 col-md-6">
                 <div class="form-group">
 
@@ -303,8 +303,7 @@
                     @endif --}}
                 </div>
             </div>
-            {{ $websiteType }}
-            <div class="col-lg-6 col-md-6 {{ $websiteType != 'restaurant' ? '' : 'hidden'}}" id="editorDiv">
+            <div class="col-lg-6 col-md-6">
                 @php $product_details = ''; @endphp
                 @if(!empty($data[0]->details))
                     @php
@@ -320,6 +319,8 @@
                     @endif
                 </div>
             </div>
+        </div>
+          <div class="row">
             <div class="col-md-12 {{ $websiteType == 'restaurant' ? 'hidden' : ''}}" id="nonEditorDiv">
                 <div class="form-group ">
                     <label class="form-control-label">Details <i>(For Website Only)</i></label>
@@ -720,6 +721,7 @@
 $(document).on('click', '[data-toggle="lightbox"]', function(event) {
  event.preventDefault();
  $(this).ekkoLightbox();
+
 });
 
 $(document).ready(function(){
