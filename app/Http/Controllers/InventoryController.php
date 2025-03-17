@@ -1196,7 +1196,9 @@ class InventoryController extends Controller
         $websiteType = null;
         if($selectedWebsites != null && $websites != null){
             $websiteType = $websites->where('id',$selectedWebsites[0])->first();
-            $websiteType = $websiteType->type;
+            if($websiteType != null){
+              $websiteType = $websiteType->type;
+            }
         }
 
         // if(Auth::user()->username == 'demoadmin'){
