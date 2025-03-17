@@ -1068,20 +1068,20 @@ $("#showProductWebsite").on('click',function(){
                   success:function(resp,textStatus,ajxStatus){
                     if(ajxStatus.status == 200){
                           if(resp == 'restaurant'){
-                              if(!$("#editorDiv").hasClass('hidden')){
-                                $("#editorDiv").addClass('hidden');
+                              if(!$("#editorDiv").hasClass('d-none')){
+                                $("#editorDiv").addClass('d-none');
                               }
 
-                              if($("#nonEditorDiv").hasClass('hidden')){
-                                $("#nonEditorDiv").removeClass('hidden');
+                              if($("#nonEditorDiv").hasClass('d-none')){
+                                $("#nonEditorDiv").removeClass('d-none');
                               }
                           }else{
-                            if($("#editorDiv").hasClass('hidden')){
-                                $("#editorDiv").removeClass('hidden');
+                            if($("#editorDiv").hasClass('d-none')){
+                                $("#editorDiv").removeClass('d-none');
                               }
 
-                              if(!$("#nonEditorDiv").hasClass('hidden')){
-                                $("#nonEditorDiv").addClass('hidden');
+                              if(!$("#nonEditorDiv").hasClass('d-none')){
+                                $("#nonEditorDiv").addClass('d-none');
                               }
                           }
                      }
