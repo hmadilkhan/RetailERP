@@ -1196,6 +1196,7 @@ class InventoryController extends Controller
         $websiteType = null;
         if($selectedWebsites != null && $websites != null){
             $websiteType = $websites->where('id',$selectedWebsites[0]);
+            return $websiteType;
             $websiteType = $websiteType->type;
         }
 
