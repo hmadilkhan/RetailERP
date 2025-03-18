@@ -1081,7 +1081,7 @@ $("#showProductWebsite").on('click',function(){
                               }
 
                               if(!$("#nonEditorDiv").hasClass('d-none')){
-                                $("#nonEditorDiv").add Class('d-none');
+                                $("#nonEditorDiv").addClass('d-none');
                               }
                           }
                      }
