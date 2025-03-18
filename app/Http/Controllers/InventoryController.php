@@ -1192,7 +1192,7 @@ class InventoryController extends Controller
         } else {
             $references = "";
         }
-              return $selectedWebsites != null ? 1 : 0;
+              return sizeof($selectedWebsites) != 0 ? 1 : 0;
         $websiteType = null;
         if($selectedWebsites != null && $websites != null){
             $websiteType = $websites->where('id',$selectedWebsites[0])->first();
