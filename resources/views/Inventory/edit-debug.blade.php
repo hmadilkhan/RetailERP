@@ -284,7 +284,7 @@
 
         </div>
 
-        <div class="row">
+        <div class="row {{ $websiteType != 'restaurant' ? '' : 'd-none'}}" id="editorDiv">
             <div class="col-lg-6 col-md-6">
                 <div class="form-group">
 
@@ -303,7 +303,7 @@
                     @endif --}}
                 </div>
             </div>
-            <div class="col-lg-6 col-md-6" id="editorDiv">
+            <div class="col-lg-6 col-md-6">
                 @php $product_details = ''; @endphp
                 @if(!empty($data[0]->details))
                     @php
@@ -319,7 +319,9 @@
                     @endif
                 </div>
             </div>
-            <div class="col-md-12" id="nonEditorDiv">
+        </div>
+          <div class="row">
+            <div class="col-md-12 {{ $websiteType == 'restaurant' ? 'd-none' : ''}}" id="nonEditorDiv">
                 <div class="form-group ">
                     <label class="form-control-label">Details <i>(For Website Only)</i></label>
                     <textarea class="form-control" name="product_description_resturant_website" id="product_description_resturant_website" rows="6">{{ $data[0]->product_description_resturant_website }}</textarea>
@@ -719,6 +721,7 @@
 $(document).on('click', '[data-toggle="lightbox"]', function(event) {
  event.preventDefault();
  $(this).ekkoLightbox();
+
 });
 
 $(document).ready(function(){
@@ -726,7 +729,10 @@ $(document).ready(function(){
     $("#showProductWebsite").trigger('click');
     $("#showProductWebsite").attr('checked',true);
     @endif
+
+    $("#website").trigger('change');
 });
+
 
 function removeImage(id, img) {
     $("#gallery-" + id).remove();
@@ -1051,7 +1057,37 @@ $("#showProductWebsite").on('click',function(){
             $("#prodAdvans_Media").addClass('d-none')
         }
       }
+      getWebsiteType($(this).val());
     });
+
+    function getWebsiteType(website){
+         $.ajax({
+                  url:'{{ route("getWebsiteType") }}',
+                  type:'POST',
+                  data:{_token:'{{ csrf_token() }}',code:website},
+                  success:function(resp,textStatus,ajxStatus){
+                    if(ajxStatus.status == 200){
+                          if(resp == 'restaurant'){
+                              if(!$("#editorDiv").hasClass('d-none')){
+                                $("#editorDiv").addClass('d-none');
+                              }
+
+                              if($("#nonEditorDiv").hasClass('d-none')){
+                                $("#nonEditorDiv").removeClass('d-none');
+                              }
+                          }else{
+                            if($("#editorDiv").hasClass('d-none')){
+                                $("#editorDiv").removeClass('d-none');
+                              }
+
+                              if(!$("#nonEditorDiv").hasClass('d-none')){
+                                $("#nonEditorDiv").addClass('d-none');
+                              }
+                          }
+                     }
+                  }
+                });
+    }
 
     subDepart();
     function subDepart(){

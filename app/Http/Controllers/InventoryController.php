@@ -155,6 +155,15 @@ class InventoryController extends Controller
         }
     }
 
+    public function getWebsiteType(Request $request){
+        $result = DB::table('website_details')->where('company_id',session('company_id'))->where('id',$request->code)->where('status',1)->first();
+
+         if($result != null){
+            $result = $result->type;
+         }
+      return response()->json($result,200);
+    }
+
     public function insert(Request $request, inventory $inventory, purchase $purchase, stock $stock)
     {
         //$websiteMode = 1; // website mode "retail" and "restaurent" use of purpose image size
@@ -272,6 +281,7 @@ class InventoryController extends Controller
             'actual_image_size'   => isset($request->actual_image_size) ? 1 : 0,
             'meta_title'          => $request->meta_title,
             'meta_description'    => $request->meta_description,
+            'product_description_resturant_website'  => $request->product_description_resturant_website,
         ];
         $productid = $inventory->insert($fields);
         $result = $inventory->ReminderInsert($productid, $request->reminder);
@@ -1183,8 +1193,16 @@ class InventoryController extends Controller
             $references = "";
         }
 
+        $websiteType = null;
+        if(sizeof($selectedWebsites) != 0 && $websites != null){
+            $websiteType = $websites->where('id',$selectedWebsites[0])->first();
+            if($websiteType != null){
+                 $websiteType = $websiteType->type;
+            }
+        }
+
         // if(Auth::user()->username == 'demoadmin'){
-        return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo'));
+        return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites','websiteType', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo'));
 
         // }else{
         //  return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
