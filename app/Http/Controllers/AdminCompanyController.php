@@ -55,8 +55,10 @@ class AdminCompanyController extends Controller
      */
     public function store(Request $request, adminCompany $adminCompany, branch $branch)
     {
-        $imageName = "";
-        $posbg = "";
+        // $imageName = "";
+        // $posbg = "";
+        // $orderCallingBg = "";
+
         $rules = [
             'companyname' => 'required',
             'country' => 'required',
@@ -78,7 +80,7 @@ class AdminCompanyController extends Controller
             // $img = Image::make($request->vdimg)->resize(200, 200);
             // $res = $img->save(public_path('assets/images/company/'.$imageName), 75);
             // $res = $img->save(public_path('assets/images/branch/'.$imageName), 75);
-            $this->uploads($request->vdimg, "images/company/");
+            $file = $this->uploads($request->vdimg, "images/company/");
             //              $imageName = time().'.'.$request->vdimg->getClientOriginalExtension();
             //              $imageName = trim($imageName," "); //Removes white spaces from the string
             //              $request->vdimg->move(public_path('assets/images/company/'), $imageName);
@@ -92,11 +94,19 @@ class AdminCompanyController extends Controller
             // $img = Image::make($request->posbgimg)->resize(800, 600);
             // $res = $img->save(public_path('assets/images/pos-background/'.$posbg), 100);
 
-            $this->uploads($request->posbgimg, "images/pos-background/");
+            $posbg = $this->uploads($request->posbgimg, "images/pos-background/");
 
             //            $posbg = time().'.'.$request->posbgimg->getClientOriginalExtension();
             //            $posbg = trim($posbg," "); //Removes white spaces from the string
             //            $request->posbgimg->move(public_path('assets/images/pos-background/'), $posbg);
+        }
+
+        if (!empty($request->ordercallingbgimg)) {
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+            ]);
+
+            $orderbg = $this->uploads($request->ordercallingbgimg, "images/order-calling/");
         }
 
 
@@ -111,8 +121,9 @@ class AdminCompanyController extends Controller
             'mobile_contact' => $request->company_mobile,
             'latitude' => null,
             'longitude' => null,
-            'logo' => $imageName,
-            'pos_background' => $posbg,
+            'logo' => $file["fileName"] ?? "",
+            'pos_background' => $posbg["fileName"] ?? "",
+            'order_calling_display_image' => $orderbg["fileName"] ?? "",
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
             'package_id' => $request->package,
@@ -144,7 +155,7 @@ class AdminCompanyController extends Controller
                 'branch_ptcl' => $request->company_ptcl,
                 'branch_mobile' => $request->company_mobile,
                 'branch_email' => $request->company_email,
-                'branch_logo' => $imageName,
+                'branch_logo' => $file["fileName"] ?? "",
                 'modify_by' => session('userid'),
                 'modify_date' => date('Y-m-d'),
                 'modify_time' => date('H:i:s'),
@@ -209,6 +220,13 @@ class AdminCompanyController extends Controller
             ]);
             $file = $this->uploads($request->vdimg, "images/company/", $request->prev_logo);
         }
+        
+        if (!empty($request->ordercallingbgimg)) {
+            $request->validate([
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+            $orderFile = $this->uploads($request->ordercallingbgimg, "images/order-calling/", $request->prev_order_calling_display);
+        }
 
         $items = [
             'status_id' => 1,
@@ -221,6 +239,7 @@ class AdminCompanyController extends Controller
             'mobile_contact' => $request->company_mobile,
             'logo' => (!empty($request->vdimg) ? $file["fileName"] : $request->prev_logo ),
             'pos_background' => (!empty($request->posbgimg) ? $bgFile["fileName"] : $request->pos_bg_logo),
+            'order_calling_display_image' => (!empty($request->ordercallingbgimg) ? $orderFile["fileName"] : $request->prev_order_calling_display),
             'updated_at' => date('Y-m-d H:i:s'),
             'package_id' => $request->package,
         ];

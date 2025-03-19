@@ -22,6 +22,8 @@
             <input type="hidden" name="company_id" id="company_id" value="{{$company[0]->company_id}}">
             <input type="hidden" name="prev_logo" id="prev_logo" value="{{$company[0]->logo}}">
             <input type="hidden" name="pos_bg_logo" id="pos_bg_logo" value="{{$company[0]->pos_background}}">
+            <input type="hidden" name="prev_order_calling_display" id="pos_bg_logo" value="{{$company[0]->order_calling_display_image}}">
+            
                <div class="form-group {{ $errors->has('companyname') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Company Name</label>
                   <input class="form-control" type="text" 
@@ -189,6 +191,23 @@
                                   </label>
                                   @if ($errors->has('posbgimg'))
                                       <div class="form-control-feedback">{{ $errors->first('posbgimg') }}</div>
+                                  @endif
+                              </div>
+                          </div>
+                          
+                          <div class="col-md-4" >
+                              <a href="#">
+                                  <img id="previewordercallingbgimg" src="{{ asset('storage/images/order-calling/'.$company[0]->order_calling_display_image) }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                              </a>
+                              <div class="form-group {{ $errors->has('ordercallingbgimg') ? 'has-danger' : '' }} ">
+                                  <label for="ordercallingbgimg" class="form-control-label">Order Calling Display</label>
+                                  <br/>
+                                  <label for="ordercallingbgimg" class="custom-file ">
+                                      <input type="file" name="ordercallingbgimg" id="ordercallingbgimg" class="custom-file-input">
+                                      <span class="custom-file-control"></span>
+                                  </label>
+                                  @if ($errors->has('ordercallingbgimg'))
+                                      <div class="form-control-feedback">{{ $errors->first('ordercallingbgimg') }}</div>
                                   @endif
                               </div>
                           </div>

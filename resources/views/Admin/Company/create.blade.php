@@ -187,6 +187,23 @@
                           </div>
                       </div>
 
+                      <div class="col-md-4" >
+                        <a href="#">
+                            <img id="previewordercallingbgimg" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                        </a>
+                        <div class="form-group {{ $errors->has('ordercallingbgimg') ? 'has-danger' : '' }} ">
+                            <label for="ordercallingbgimg" class="form-control-label">Order Calling Display</label>
+                        <br/>
+                            <label for="ordercallingbgimg" class="custom-file m-t-20">
+                                <input type="file" name="ordercallingbgimg" id="ordercallingbgimg" class="custom-file-input">
+                                <span class="custom-file-control"></span>
+                            </label>
+                            @if ($errors->has('ordercallingbgimg'))
+                                <div class="form-control-feedback">{{ $errors->first('ordercallingbgimg') }}</div>
+                            @endif
+                        </div>
+                    </div>
+
           </div> 
            
   		<button type="submit" id="btnsubmit" class="btn btn-md btn-primary waves-effect waves-light f-right" > Create Company </button>
@@ -232,6 +249,10 @@ $("#vdimg").change(function() {
 
 $("#posbgimg").change(function() {
     readURL(this,'posbimg');
+});
+
+$("#ordercallingbgimg").change(function() {
+    readURL(this,'previewordercallingbgimg');
 });
 
 
