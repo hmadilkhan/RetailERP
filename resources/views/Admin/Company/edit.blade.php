@@ -23,7 +23,7 @@
             <input type="hidden" name="prev_logo" id="prev_logo" value="{{$company[0]->logo}}">
             <input type="hidden" name="pos_bg_logo" id="pos_bg_logo" value="{{$company[0]->pos_background}}">
             <input type="hidden" name="prev_order_calling_display" id="pos_bg_logo" value="{{$company[0]->order_calling_display_image}}">
-            
+
                <div class="form-group {{ $errors->has('companyname') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Company Name</label>
                   <input class="form-control" type="text" 
@@ -255,6 +255,10 @@ $("#vdimg").change(function() {
 
 $("#posbgimg").change(function() {
     readURL(this,'posbimg');
+});
+
+$("#ordercallingbgimg").change(function() {
+    readURL(this,'previewordercallingbgimg');
 });
 
 
