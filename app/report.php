@@ -380,13 +380,13 @@ class report extends Model
             $filter .= " and a.customer_id = ".$customer;
         }
         $terminalFilter = " and a.terminal_id = " . ($terminal != "" && $terminal != 0  ? $terminal : "(SELECT terminal_id FROM `terminal_details` where branch_id IN (SELECT branch_id FROM `branch` WHERE `company_id` = " . session('company_id') . "))");
-        $result = DB::select("SELECT (SELECT COUNT(*) FROM `sales_receipt_details` where receipt_id = a.id) as countItems,(SELECT SUM(total_qty) FROM `sales_receipt_details` where receipt_id = a.id) as totalItems,a.id,a.receipt_no,a.terminal_id,a.actual_amount,a.total_amount,b.sales_tax_amount,b.srb,a.date,b.discount_amount,c.name as customer,d.order_mode,a.void_receipt,e.receive_amount FROM sales_receipts a LEFT JOIN sales_account_subdetails b on b.receipt_id = a.id LEFT JOIN customers c on c.id = a.customer_id INNER JOIN sales_order_mode d on d.order_mode_id = a.order_mode_id LEFT JOIN sales_account_general e on e.receipt_id = a.id where 1=1 " . $filter); //[$fromdate,$todate,$terminal]
+        $result = DB::select("SELECT (SELECT COUNT(*) FROM `sales_receipt_details` where receipt_id = a.id) as countItems,(SELECT SUM(total_qty) FROM `sales_receipt_details` where receipt_id = a.id) as totalItems,a.id,a.receipt_no,a.terminal_id,a.actual_amount,a.total_amount,b.sales_tax_amount,b.srb,a.date,b.discount_amount,c.name as customer,d.order_mode,a.void_receipt,e.receive_amount,fbrInvNumber FROM sales_receipts a LEFT JOIN sales_account_subdetails b on b.receipt_id = a.id LEFT JOIN customers c on c.id = a.customer_id INNER JOIN sales_order_mode d on d.order_mode_id = a.order_mode_id LEFT JOIN sales_account_general e on e.receipt_id = a.id where 1=1 " . $filter); //[$fromdate,$todate,$terminal]
         return $result;
     }
 
     public function receiptDetails($receipt)
     {
-        $result = DB::select("SELECT sales_receipt_details.item_code,sales_receipt_details.item_name,sales_receipt_details.item_price,sales_receipt_details.total_qty,sales_receipt_details.total_amount,b.weight_qty FROM `sales_receipt_details` INNER JOIN inventory_general b on b.id = sales_receipt_details.item_code WHERE `receipt_id` = ?", [$receipt]);
+        $result = DB::select("SELECT sales_receipt_details.item_code,sales_receipt_details.item_name,sales_receipt_details.item_price,sales_receipt_details.total_qty,sales_receipt_details.taxamount,sales_receipt_details.total_amount,b.weight_qty FROM `sales_receipt_details` INNER JOIN inventory_general b on b.id = sales_receipt_details.item_code WHERE `receipt_id` = ?", [$receipt]);
         return $result;
     }
 

@@ -3357,7 +3357,9 @@ class ReportController extends Controller
                         $totaldiscountamount = $totaldiscountamount + $value->discount_amount;
                     }
 
-
+                    if ($permission[0]->fbr_sync == 1) {
+                        $pdf->Cell(190, 6, "FBR Invoice Number : ".$value->fbrInvNumber, 0, 1, 'C', 1);
+                    }
 
                     $pdf->SetFont('Arial', '', 10);
                     if ($value->void_receipt == 1) {
@@ -3385,9 +3387,10 @@ class ReportController extends Controller
                         $pdf->SetTextColor(255, 255, 255);
                         $pdf->Cell(20, 7, 'No.', 'B', 0, 'C', 1);
                         $pdf->Cell(65, 7, 'Name', 'B', 0, 'L', 1);
-                        $pdf->Cell(35, 7, 'Price', 'B', 0, 'C', 1);
-                        $pdf->Cell(35, 7, 'Qty', 'B', 0, 'C', 1);
-                        $pdf->Cell(35, 7, 'Total Amount', 'B', 1, 'R', 1);
+                        $pdf->Cell(30, 7, 'Price', 'B', 0, 'C', 1);
+                        $pdf->Cell(30, 7, 'Qty', 'B', 0, 'C', 1);
+                        $pdf->Cell(15, 7, 'Tax', 'B', 0, 'C', 1);
+                        $pdf->Cell(30, 7, 'Total Amount', 'B', 1, 'R', 1);
 
                         foreach ($receiptDetails as $value) {
                             // THIS CODE IS ONLY FOR SNOWHITE FOR CALCULATING SHALWAR QAMEEZ TO DOUBLE;
@@ -3408,9 +3411,10 @@ class ReportController extends Controller
                             $pdf->SetTextColor(0, 0, 0);
                             $pdf->Cell(20, 7, $value->item_code, 'B', 0, 'C', 1);
                             $pdf->Cell(65, 7, $value->item_name, 'B', 0, 'L', 1);
-                            $pdf->Cell(35, 7, number_format($value->item_price, 2), 'B', 0, 'C', 1);
-                            $pdf->Cell(35, 7, number_format($value->total_qty, 2), 'B', 0, 'C', 1);
-                            $pdf->Cell(35, 7, number_format($value->total_amount, 2), 'B', 1, 'R', 1);
+                            $pdf->Cell(30, 7, number_format($value->item_price, 2), 'B', 0, 'C', 1);
+                            $pdf->Cell(30, 7, number_format($value->total_qty, 2), 'B', 0, 'C', 1);
+                            $pdf->Cell(15, 7, number_format($value->taxamount, 2), 'B', 0, 'C', 1);
+                            $pdf->Cell(30, 7, number_format($value->total_amount, 2), 'B', 1, 'R', 1);
                         }
                         $pdf->ln(4);
                     }
