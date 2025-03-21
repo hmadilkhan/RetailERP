@@ -3359,8 +3359,8 @@ class ReportController extends Controller
 
                     if ($permission[0]->fbr_sync == 1) {
                         $pdf->SetFont('Arial', 'B', 12);
-                        $pdf->setFillColor(0, 0, 0);
-                        $pdf->SetTextColor(255, 255, 255);
+                        $pdf->setFillColor(54, 69, 79);
+                        $pdf->SetTextColor(0, 0, 0);
                         $pdf->Cell(190, 6, "FBR Invoice Number : " . $value->fbrInvNumber, 0, 1, 'C', 1);
                         $pdf->SetFont('Arial', 'B', 10);
                         $pdf->setFillColor(160, 160, 160);
@@ -3473,8 +3473,8 @@ class ReportController extends Controller
 
                 if ($permission[0]->fbr_sync == 1) {
                     $pdf->SetFont('Arial', 'B', 12);
-                    $pdf->setFillColor(0, 0, 0);
-                    $pdf->SetTextColor(255, 255, 255);
+                    $pdf->setFillColor(54, 69, 79);
+                    $pdf->SetTextColor(0, 0, 0);
                     $pdf->Cell(190, 6, "FBR Invoice Number : " . $value->fbrInvNumber, 0, 1, 'C', 1);
                     $pdf->SetFont('Arial', 'B', 10);
                     $pdf->setFillColor(160, 160, 160);
