@@ -282,6 +282,7 @@ class InventoryController extends Controller
             'meta_title'          => $request->meta_title,
             'meta_description'    => $request->meta_description,
             'product_description_resturant_website'  => $request->product_description_resturant_website,
+            'pct_code'  => $request->pctcode,
         ];
         $productid = $inventory->insert($fields);
         $result = $inventory->ReminderInsert($productid, $request->reminder);
@@ -1266,6 +1267,7 @@ class InventoryController extends Controller
             'meta_title'           => $request->meta_title,
             'meta_description'     => $request->meta_description,
             'product_description_resturant_website'  => $request->product_description_resturant_website,
+            'pct_code'  => $request->pctcode,
         ];
 
         if (!empty($request->get('galleryImage'))) {
