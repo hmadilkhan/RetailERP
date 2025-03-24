@@ -68,7 +68,7 @@
                   </div>
 
                   <div class="row">
-                    <div class="col-lg-4 col-md-4">
+                    <div class="col-lg-6 col-md-6">
                         <div  id="itemcode" class="form-group {{ $errors->has('pctcode') ? 'has-danger' : '' }} ">
                             <label class="form-control-label"><i class="icofont icofont-barcode"></i>&nbsp;PCT Code <span class="text-danger">*</span></label>
                             <input class="form-control" type="text"
@@ -78,7 +78,7 @@
                               @endif
                         </div>
                     </div>
-                <div class="col-lg-4 col-md-4">
+                <div class="col-lg-6 col-md-6">
                   <div  id="itemcode" class="form-group {{ $errors->has('code') ? 'has-danger' : '' }} ">
                       <label class="form-control-label"><i class="icofont icofont-barcode"></i>&nbsp;Product Code <span class="text-danger">*</span></label>
                       <i id="btngen" class="f-right text-primary" data-toggle="tooltip" data-placement="top" title="Auto Generate"> Auto Generate</i>
@@ -89,7 +89,7 @@
                         @endif
                   </div>
               </div>
-             <div class="col-lg-4 col-md-4">
+             <div class="col-lg-12 col-md-4">
               <div class="form-group {{ $errors->has('name') ? 'has-danger' : '' }}">
                   <label class="form-control-label">Product Name <span class="text-danger">*</span></label>
                   <input class="form-control" type="text"
