@@ -70,7 +70,7 @@
                   <div class="row">
                     <div class="col-lg-6 col-md-6">
                         <div  id="itemcode" class="form-group {{ $errors->has('pctcode') ? 'has-danger' : '' }} ">
-                            <label class="form-control-label"><i class="icofont icofont-barcode"></i>&nbsp;PCT Code <span class="text-danger">*</span></label>
+                            <label class="form-control-label"><i class="icofont icofont-barcode"></i>&nbsp;PCT Code </label>
                             <input class="form-control" type="text"
                              name="pctcode" id="pctcode" value="{{ old('pctcode') }}" placeholder="Enter Product Code"/>
                               @if ($errors->has('pctcode'))
