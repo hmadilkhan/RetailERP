@@ -111,8 +111,8 @@ class OrderController extends Controller
         if ($order->wallet_id != "") {
             $wallet = $orderService->getServiceProvider($order->wallet_id);
         }
- 
-        return view('order.order-details', compact('order', 'received', 'statuses', 'ledgerDetails', 'provider','wallet'));
+
+        return view('order.order-details', compact('order', 'received', 'statuses', 'ledgerDetails', 'provider', 'wallet'));
 
 
 
@@ -176,12 +176,129 @@ class OrderController extends Controller
 
     public function statusUpdate_websiteOrder(Request $request, order $order)
     {
-        $order->updateStatusOrder($request->id, $request->status, 0);
+        // $order->updateStatusOrder($request->id, $request->status, 0);
+        $orderModel = OrderModel::with('website', 'customer','orderStatus')->findOrFail($request->id);
+        // return $orderModel;
+        $url = $orderModel->website->url . '/orders/' . $orderModel->url_orderid . '/' . $orderModel->customer->id;
+        $status = OrderStatus::where("order_status_id",$request->status)->first();
+        $sentData = [
+            "customer"=>$orderModel->customer->name,
+            "orderno"=>$orderModel->url_orderid,
+            "amount"=> $orderModel->total_amount,
+            "website"=> $orderModel->website->name,
+            "status"=> $status->order_status_name,
+          ];
+        $this->sentWhatsAppMessageOrderTrack($orderModel->customer->mobile, $orderModel->website->name, $sentData, $url);
         if ($request->ordercode == null) {
             return 1;
         }
 
         return redirect()->route("getWebsiteSaleReceiptDetails", $request->ordercode);
+    }
+
+    public function sentWhatsAppMessageOrderTrack($number, $header, $message, $url)
+    {
+        // public function sentWhatsAppMessageOrderTrack(Request $request){
+        $number  =  "923112108156";//$this->formatPhoneNumber($number); //$_GET['number'];
+        $version =  "v15.1"; //$_GET['version'];
+        $phoneId = "105420688989582"; //$_GET['phoneId'];
+        $template_name = "order_status"; //$_GET['template'];
+        $code = "en_US"; //$_GET['code'];
+        $bearer = "EAASlFdcyGIsBO5VIwpZCPV759TMB7HQDAoKPqZAX7cwdX2NcvpSb6e0urQJMRy9WzLGroBZC5KfgX2ZBsmoSmWZBzXZArEWk0o32zReVccSBswVWX5WjzWU8ZCTZBRmAiX0TX0ouZBbQNSmJxSFJzv2ZC5AJgN9DbGEEDOwP9lMsIZAmP0ZAdnzQaJUfAa6G1yJCTY3xj2N1fXUcajzNjOCf"; //$_GET['bearer'];
+
+        // $orderDetails = $GLOBALS['crud']->runQuery("SELECT a.id,a.receipt_no,a.total_amount,a.date,b.branch_name,c.name as company_name,d.name as customer_name FROM sales_receipts a INNER JOIN branch b on b.branch_id = a.branch INNER JOIN company c on c.company_id = b.company_id INNER Join customers d on d.id = a.customer_id where receipt_no = $receiptNo");
+
+        $myArray = [];
+        $insideArray = [];
+        array_push($insideArray, (object)[
+            'type' => 'text',
+            'text' => $header,
+        ]);
+        array_push($myArray, (object)[
+            'type' => 'header',
+            'parameters' => $insideArray,
+        ]);
+
+        $insideArray = [];
+
+        array_push($insideArray, (object)[
+            'type' => 'text',
+            'text' => $message["customer"],
+        ]);
+        array_push($insideArray, (object)[
+            'type' => 'text',
+            'text' => $message["orderno"],
+        ]);
+        array_push($insideArray, (object)[
+            'type' => 'text',
+            'text' => $message["amount"],
+        ]);
+        array_push($insideArray, (object)[
+            'type' => 'text',
+            'text' => $message["website"],
+        ]);
+        array_push($insideArray, (object)[
+            'type' => 'text',
+            'text' => $message["status"],
+        ]);
+        array_push($myArray, (object)[
+            'type' => 'body',
+            'parameters' => $insideArray,
+        ]);
+
+        $insideArray = [];
+        // array_push($insideArray, (object)[
+        //     'type' => 'payload',
+        //     'payload' => $url,
+        // ]);
+        // array_push($myArray, (object)[
+        //     'type' => 'button',
+        //     "sub_type" => "URL",
+        //     "index" => "0",
+        //     'parameters' => $insideArray,
+        // ]);
+
+        $template = [
+            "name" => $template_name,
+            "language" => [
+                "code" =>  $code,
+            ],
+            "components" => $myArray,
+        ];
+        $myObj   = array();
+        $myObj['messaging_product'] =   "whatsapp";
+        $myObj['to'] = $number; //"923452670301",
+        $myObj["type"] =  "template";
+        $myObj["template"] = $template;
+        $myobject    = json_encode($myObj);
+        // return $myobject;
+        $url = "https://graph.facebook.com/v17.0/103444702767558/messages";
+        $authorization = "Authorization: Bearer " . $bearer; //EAAIz8ObxruYBANXiBwoBzm56FIFHLnBZBnJHuHosRRM1fr8Iu7wZB9iUioYjl2yDQGyTCIhm3RsikAUpl19b82qOxtfBOtyOMLlMmZCCijn5Nc2cx1UuzkRsHnla9XZBiFwAHSrckepNlSY5ngYyiIZCp3VnZCEQ94kAkVsC8DtgyMKYEjsIhNRJjm6vQjQpzIWCgkjBwZCBQZDZD
+        $curl = curl_init($url);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array("content-type: application/json", $authorization));
+        curl_setopt($curl, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $myobject);
+        $result = curl_exec($curl);
+        $outPut = json_decode($result, true);
+        if (curl_errno($curl)) {
+            $error_msg = curl_error($curl);
+        }
+        if (isset($error_msg)) {
+            print_r($error_msg);
+        }
+
+        print_r($result);
+
+        $result = json_decode($result);
+    }
+
+    function formatPhoneNumber($phone)
+    {
+        return '92' . ltrim($phone, '0');
     }
 
     public function ordersviewnew(Request $request, order $order, Customer $customer, OrderService $orderService)
