@@ -199,7 +199,7 @@ class OrderController extends Controller
     public function sentWhatsAppMessageOrderTrack($number, $header, $message, $url)
     {
         // public function sentWhatsAppMessageOrderTrack(Request $request){
-        $number  =  "923112108156";//$this->formatPhoneNumber($number); //$_GET['number'];
+        $number  =  $this->formatPhoneNumber($number); //$_GET['number']923112108156;
         $version =  "v15.1"; //$_GET['version'];
         $phoneId = "105420688989582"; //$_GET['phoneId'];
         $template_name = "order_status"; //$_GET['template'];
