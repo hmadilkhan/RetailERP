@@ -60,7 +60,7 @@ class CustomersController extends Controller
      */
     public function store(Request $request, Customer $customer, custom_helper $helper)
     {
-        $file = "";
+        $file = [];
         $imageName = "";
         $rules = [
             'name' => 'required',
@@ -86,7 +86,7 @@ class CustomersController extends Controller
             'phone' => $request->phone,
             'nic' => $request->nic,
             'address' => $request->address,
-            'image' => $file["fileName"],
+            'image' => $file["fileName"] ?? '',
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
             'credit_limit' => $request->creditlimit,
