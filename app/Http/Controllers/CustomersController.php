@@ -119,7 +119,8 @@ class CustomersController extends Controller
         ];
         // Then, add the customer to QuickBooks
         $qbResponse = $this->quickBooksService->createCustomer($qbCustomer);
-
+        print_r($qbResponse);
+        exit();
         if (isset($qbResponse->Id)) {
             return response()->json(['success' => false, 'message' => $qbResponse['message']], 400);
         }
