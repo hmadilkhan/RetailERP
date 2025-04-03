@@ -117,9 +117,10 @@ class CustomersController extends Controller
                 'FreeFormNumber' => $request->phone
             ]
         ];
+        
         // Then, add the customer to QuickBooks
         $qbResponse = $this->quickBooksService->createCustomer($qbCustomer);
-        print_r($qbResponse);
+        echo $qbResponse->Id;
         exit();
         if (isset($qbResponse->Id)) {
             return response()->json(['success' => false, 'message' => $qbResponse['message']], 400);
