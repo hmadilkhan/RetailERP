@@ -17,6 +17,7 @@ use App\inventory;
 use App\Models\City;
 use App\Models\Country;
 use App\Models\Customer as ModelsCustomer;
+use App\Models\QuickBookSetting;
 use App\Services\QuickBooks\QuickBooksCustomerService;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Facades\Storage;
@@ -100,30 +101,33 @@ class CustomersController extends Controller
         ];
         $cust = $customer->insert_customer($items);
         // QUICKBOOK DATA
-        $country = Country::findOrFail($request->country);
-        $city = City::findOrFail($request->city);
-        $qbCustomer = [
-            'GivenName' =>  $request->name,
-            'DisplayName' =>  $request->name,
-            'PrimaryEmailAddr' => [
-                'Address' => $request->email
-            ],
-            'BillAddr' => [
-                'Line1' => $request->address,
-                'City' => $city->city_name,
-                'Country' => $country->country_name,
-            ],
-            'PrimaryPhone' => [
-                'FreeFormNumber' => $request->phone
-            ]
-        ];
-        
-        // Then, add the customer to QuickBooks
-        $qbResponse = $this->quickBooksService->createCustomer($qbCustomer);
-        echo $qbResponse->Id;
-        exit();
-        if (isset($qbResponse->Id)) {
-            return response()->json(['success' => false, 'message' => $qbResponse['message']], 400);
+        $check = QuickBookSetting::where('company_id', session('company_id'))->count();
+        if ($check > 0) {
+            $country = Country::findOrFail($request->country);
+            $city = City::findOrFail($request->city);
+            $qbCustomer = [
+                'GivenName' =>  $request->name,
+                'DisplayName' =>  $request->name,
+                'PrimaryEmailAddr' => [
+                    'Address' => $request->email
+                ],
+                'BillAddr' => [
+                    'Line1' => $request->address,
+                    'City' => $city->city_name,
+                    'Country' => $country->country_name,
+                ],
+                'PrimaryPhone' => [
+                    'FreeFormNumber' => $request->phone
+                ]
+            ];
+
+            // Then, add the customer to QuickBooks
+            $qbResponse = $this->quickBooksService->createCustomer($qbCustomer);
+
+            if (isset($qbResponse->Id)) {
+                Customer::where("id", $cust)->update(["qb_customer_id" => $qbResponse->Id]);
+                // return response()->json(['success' => false, 'message' => $qbResponse['message']], 400);
+            }
         }
         /* Service Provide bulk insertion */
         $arrData = array();
