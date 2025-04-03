@@ -1,5 +1,7 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 use App\Customer;
 use App\order;
@@ -12,21 +14,27 @@ use App\pdfClass;
 use Illuminate\Support\Str;
 use App\Helpers\custom_helper;
 use App\inventory;
+use App\Models\City;
+use App\Models\Country;
 use App\Models\Customer as ModelsCustomer;
+use App\Services\QuickBooks\QuickBooksCustomerService;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Facades\Storage;
 
 class CustomersController extends Controller
 {
     use MediaTrait;
+
+    protected $quickBooksService;
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function __construct()
+    public function __construct(QuickBooksCustomerService $quickBooksService)
     {
         $this->middleware('auth');
+        $this->quickBooksService = $quickBooksService;
     }
     public function index(Customer $customer)
     {
@@ -91,6 +99,30 @@ class CustomersController extends Controller
             'payment_type' => $request->get('payment_type'),
         ];
         $cust = $customer->insert_customer($items);
+        // QUICKBOOK DATA
+        $country = Country::findOrFail($request->country);
+        $city = City::findOrFail($request->city);
+        $qbCustomer = [
+            'GivenName' =>  $request->name,
+            'DisplayName' =>  $request->name,
+            'PrimaryEmailAddr' => [
+                'Address' => $request->email
+            ],
+            'BillAddr' => [
+                'Line1' => $request->address,
+                'City' => $city->city_name,
+                'Country' => $country->country_name,
+            ],
+            'PrimaryPhone' => [
+                'FreeFormNumber' => $request->phone
+            ]
+        ];
+        // Then, add the customer to QuickBooks
+        $qbResponse = $this->quickBooksService->createCustomer($qbCustomer);
+
+        if (isset($qbResponse['error'])) {
+            return response()->json(['success' => false, 'message' => $qbResponse['message']], 400);
+        }
         /* Service Provide bulk insertion */
         $arrData = array();
         $comment = $request->get('comment');
@@ -578,7 +610,7 @@ class CustomersController extends Controller
     }
     public function get_customer_names(Request $request, Customer $customer)
     {
-        $result = $customer->search_by_customer_name($request->q,$request->branch);
+        $result = $customer->search_by_customer_name($request->q, $request->branch);
         if ($result) {
             return response()->json(array('items' => $result));
         } else {
@@ -843,7 +875,7 @@ class CustomersController extends Controller
     public function customerPDF(Request $request, Vendor $vendor, Customer $customer)
     {
         $company = $vendor->company(session('company_id'));
-        $details = $customer->getcustomers("",$request->branch,$request->name,$request->contact,$request->membership);
+        $details = $customer->getcustomers("", $request->branch, $request->name, $request->contact, $request->membership);
         $branch = DB::table("branch")->where("branch_id", session("branch"))->get();
         $pdf = new pdfClass();
         $pdf->AliasNbPages();
@@ -912,7 +944,6 @@ class CustomersController extends Controller
             $pdf->Cell(25, 5, number_format($value->balance, 2), 0, 0, 'L', 0);
             $pdf->Cell(25, 5, $value->mobile, 0, 0, 'L', 0);
             $pdf->Cell(28, 5, $value->nic, 0, 1, 'L', 0);
-
         }
         //save file
         $pdf->Output('Customer Report' . '.pdf', 'I');

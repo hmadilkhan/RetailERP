@@ -36,6 +36,7 @@ use App\Http\Controllers\PreOrderBookingController;
 use App\Http\Controllers\PrintController;
 use App\Http\Controllers\PromoController;
 use App\Http\Controllers\purchaseController;
+use App\Http\Controllers\QuickBooksController;
 use App\Http\Controllers\ReceivedDemandController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SalesController;
@@ -103,6 +104,11 @@ Route::get('lang/{locale}', function ($locale) {
 Route::group(['middleware' => ['auth', 'roleChecker']], function () {
     Route::get('/impersonate/{userId}', [ImpersonateController::class, 'impersonate'])->name('impersonate');
     Route::get('/impersonate/leave', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
+
+    Route::post('/quickbooks/customer', [QuickBooksController::class, 'addCustomer']);
+    Route::put('/quickbooks/customer/{id}', [QuickBooksController::class, 'updateCustomer']);
+    Route::delete('/quickbooks/customer/{id}', [QuickBooksController::class, 'deleteCustomer']);
+    
 });
 
 Route::get('/view-inventory', ViewInventory::class);
@@ -110,10 +116,10 @@ Route::get('/view-adjustments', ListAdjustment::class);
 Route::get('/stock-report', StockReport::class);
 Route::get('/customers-list', CustomerList::class);
 // Route::get('/pre-order-booking', PreOrderBooking::class);
-Route::get('/pre-order-booking',[PreOrderBookingController::class, "index"]);
-Route::post('/place-order',[PreOrderBookingController::class, "placeOrder"]);
-Route::post('/get-terminals-and-salespersons',[PreOrderBookingController::class, "getTerminalsAndSalesPerson"])->name("get.terminals.and.salespersons");
-Route::post('/get-price-of-product',[PreOrderBookingController::class, "getProductPrice"])->name("get-price-of-product");
+Route::get('/pre-order-booking', [PreOrderBookingController::class, "index"]);
+Route::post('/place-order', [PreOrderBookingController::class, "placeOrder"]);
+Route::post('/get-terminals-and-salespersons', [PreOrderBookingController::class, "getTerminalsAndSalesPerson"])->name("get.terminals.and.salespersons");
+Route::post('/get-price-of-product', [PreOrderBookingController::class, "getProductPrice"])->name("get-price-of-product");
 
 Route::resource('addons', AddonController::class);
 Route::resource('addon-category', AddonCategoryController::class);
@@ -425,7 +431,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/create-inventory', [InventoryController::class, "create"])->name('create-invent');
     Route::post('/get-website-type', [InventoryController::class, "getWebsiteType"])->name('getWebsiteType');
     Route::get('/inventory-list', [InventoryController::class, "index"])->name('invent-list');
-    Route::post('/generate-duplicate-product',[InventoryController::class,"duplicateProductToGeneralInventory"])->name('duplicateProductToGeneralInventory');
+    Route::post('/generate-duplicate-product', [InventoryController::class, "duplicateProductToGeneralInventory"])->name('duplicateProductToGeneralInventory');
     Route::post('/get-inventory-department_wise', [InventoryController::class, "getDeparmtent_wise_Inventory"])->name('invent-list-department');
     Route::get('/edit-invent/{id}/', [InventoryController::class, 'getData'])->name('edit-invent');
     Route::post('/insert-inventory', [InventoryController::class, 'insert'])->name('insert');
@@ -504,7 +510,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::post('/inventory/variable-products/set-variation-all-variable-product', [InventoryController::class, 'set_variationAllVariableProduct'])->name('set_variationAllVariableProduct');
     Route::post('/inventory/variable-products/get-variation-values', [InventoryController::class, 'getInventoryVariationProduct_values'])->name('VariableProduct_VariationValues');
-    Route::post('get-variation-priority', [InventoryController::class,'get_variationPriority'])->name('get_variationPriority');
+    Route::post('get-variation-priority', [InventoryController::class, 'get_variationPriority'])->name('get_variationPriority');
     Route::post('/inventory/variable-products/store-variation', [InventoryController::class, 'addVariation'])->name('storeVariableProduct_variation');
     Route::post('/inventory/variable-products/update-variation', [InventoryController::class, 'updateVariation'])->name('updateVariableProduct_variation');
     Route::post('/inventory/variable-products/remove-variation', [InventoryController::class, 'removeVariation'])->name('removeVariation_variableProduct');
