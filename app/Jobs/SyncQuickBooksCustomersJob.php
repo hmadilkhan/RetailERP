@@ -56,7 +56,7 @@ class SyncQuickBooksCustomersJob implements ShouldQueue
                         $qbData = $this->formatQuickBooksData($customer);
                         $response = $quickBooksService->createCustomer($qbData);
                         if (isset($response->Id)) {
-                            $customer->update(['qb_customer_id' => $response->Id]);
+                            $customer->update(['qb_customer_id' => $response->Id,'needs_qb_insert' => false]);
                         }
                     }
                     Log::info("QB Sync Success for customer {$customer->id}: ");
