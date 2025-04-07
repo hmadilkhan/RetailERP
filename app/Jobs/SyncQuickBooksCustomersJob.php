@@ -36,7 +36,7 @@ class SyncQuickBooksCustomersJob implements ShouldQueue
 
             $customers = Customer::where('company_id', $setting->company_id)
                                  ->where(function ($q) {
-                                     $q->where('needs_qb_update',true)
+                                     $q->where('needs_qb_insert',true)
                                        ->orWhere('needs_qb_update', true)
                                        ->orWhere('needs_qb_deletion', true);
                                  })
@@ -52,7 +52,7 @@ class SyncQuickBooksCustomersJob implements ShouldQueue
                         $qbData = $this->formatQuickBooksData($customer);
                         $quickBooksService->updateCustomer($customer->qb_customer_id, $qbData);
                         $customer->update(['needs_qb_update' => false]);
-                    } elseif (is_null($customer->qb_customer_id)) {
+                    } elseif ($customer->needs_qb_insert) {
                         $qbData = $this->formatQuickBooksData($customer);
                         $response = $quickBooksService->createCustomer($qbData);
                         if (isset($response->Id)) {
