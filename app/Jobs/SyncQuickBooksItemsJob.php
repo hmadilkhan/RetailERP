@@ -88,8 +88,8 @@ class SyncQuickBooksItemsJob implements ShouldQueue
                 "name" => "Inventory Asset"
             ],
             "Type" => "Inventory",
-            "TrackQtyOnHand" => false,
-            // "QtyOnHand" => 10,
+            "TrackQtyOnHand" => true,
+            "QtyOnHand" => 10,
             "InvStartDate" => date("Y-m-d",strtotime($product->created_at))
         ];
     }
