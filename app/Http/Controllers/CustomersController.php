@@ -218,7 +218,37 @@ class CustomersController extends Controller
             'payment_type' => $request->get('payment_type'),
         ];
         // dd($items);
+        $displayName = $request->name;
         $cust = $customer->update_customer($request->custid, $items);
+        // QUICKBOOK DATA
+        $check = QuickBookSetting::where('company_id', session('company_id'))->count();
+        $country = Country::findOrFail($request->country);
+        $city = City::findOrFail($request->city);
+        $customer  = Customer::findOrFail($request->custid);
+        if ($check > 0) {
+            $qbCustomer = [
+                'GivenName' =>  $request->name,
+                'DisplayName' =>  $request->name,
+                'PrimaryEmailAddr' => [
+                    'Address' => $request->email
+                ],
+                'BillAddr' => [
+                    'Line1' => $request->address,
+                    'City' => $city->city_name,
+                    'Country' => $country->country_name,
+                ],
+                'PrimaryPhone' => [
+                    'FreeFormNumber' => $request->phone
+                ]
+            ];
+            // Then, add the customer to QuickBooks
+            $qbResponse = $this->quickBooksService->updateCustomer($customer->qb_customer_id,$qbCustomer);
+
+            if (isset($qbResponse->Id)) {
+               // Customer::where("id", $cust)->update(["qb_customer_id" => $qbResponse->Id]);
+                // return response()->json(['success' => false, 'message' => $qbResponse['message']], 400);
+            }
+        }
         /* Service Provide bulk insertion */
         $arrData = array();
         $comment = $request->get('comment');

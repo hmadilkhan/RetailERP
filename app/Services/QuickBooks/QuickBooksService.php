@@ -14,13 +14,14 @@ abstract class QuickBooksService
     {
         $this->authService = $authService;
         $config = config('quickbooks');
+        $setting = QuickBookSetting::where("company_id",session('company_id'))->first();
 
         $this->dataService = DataService::Configure([
             'auth_mode' => 'oauth2',
             'ClientID' =>  $config['client_id'],
             'ClientSecret' =>  $config['client_secret'],
-            'accessTokenKey' =>  $config['access_token'],
-            'refreshTokenKey' =>  $config['refresh_token'],
+            'accessTokenKey' =>  $setting->qb_access_token,
+            'refreshTokenKey' =>  $setting->qb_refresh_token,
             'QBORealmID' =>  $config['realm_id'],
             'baseUrl' =>  $config['base_url'],
         ]);
