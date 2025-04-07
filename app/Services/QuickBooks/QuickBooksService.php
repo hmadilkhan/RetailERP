@@ -14,12 +14,10 @@ abstract class QuickBooksService
     public function __construct(QuickBooksAuthService $authService, $companyId)
     {
         $this->authService = $authService;
-        // ✅ Add this to debug
-        Log::info('Company ID in QuickBooksService:', ['id' => $companyId]);
 
         $config = config('quickbooks');
         $setting = QuickBookSetting::where("company_id", $companyId)->first();
-        Log::info('QuickBooks Setting:', ['setting' => $setting]);
+
         $this->dataService = DataService::Configure([
             'auth_mode' => 'oauth2',
             'ClientID' =>  $config['client_id'],
