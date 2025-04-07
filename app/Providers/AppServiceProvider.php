@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Services\QuickBooks\QuickBooksAuthService;
+use App\Services\QuickBooks\QuickBooksCustomerService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -16,7 +18,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        
     }
 
     /**
@@ -26,15 +28,15 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-//        if (session("roleId") != null)
-//        {
-//        $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[session("roleId")]);
-////        View::share('pageid',DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[session("roleId")]));
-//        View::share('result',DB::table('pages_details')->where('id',$pageid)->get());
-//        }
-//        else{
-//            View::share('result',DB::table('pages_details')->get());
-//        }
-//        View::share('result',DB::table('pages_details')->get());
+        //        if (session("roleId") != null)
+        //        {
+        //        $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[session("roleId")]);
+        ////        View::share('pageid',DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[session("roleId")]));
+        //        View::share('result',DB::table('pages_details')->where('id',$pageid)->get());
+        //        }
+        //        else{
+        //            View::share('result',DB::table('pages_details')->get());
+        //        }
+        //        View::share('result',DB::table('pages_details')->get());
     }
 }

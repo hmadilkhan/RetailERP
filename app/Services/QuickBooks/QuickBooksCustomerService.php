@@ -8,6 +8,11 @@ use QuickBooksOnline\API\Facades\Customer;
 
 class QuickBooksCustomerService extends QuickBooksService
 {
+    public function __construct(QuickBooksAuthService $authService, $companyId)
+    {
+        parent::__construct($authService, $companyId); // ✅ Make sure this is called
+    }
+    
     public function createCustomer(array $customerData)
     {
         try {
