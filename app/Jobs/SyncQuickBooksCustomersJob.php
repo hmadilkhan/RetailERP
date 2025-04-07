@@ -6,6 +6,7 @@ use App\Models\City;
 use App\Models\Company;
 use App\Models\Country;
 use App\Models\Customer;
+use App\Models\QuickBookSetting;
 use App\Services\QuickBooks\QuickBooksAuthService;
 use App\Services\QuickBooks\QuickBooksCustomerService;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -26,14 +27,14 @@ class SyncQuickBooksCustomersJob implements ShouldQueue
 
     public function handle()
     {
-        $companies = Company::all(); // or only active ones
+        $settings = QuickBookSetting::all(); // or only active ones
 
-        foreach ($companies as $company) {
+        foreach ($settings as $setting) {
 
             $authService = app(QuickBooksAuthService::class);
-            $quickBooksService = new QuickBooksCustomerService($authService, $company->id);
+            $quickBooksService = new QuickBooksCustomerService($authService, $setting->company_id);
 
-            $customers = Customer::where('company_id', $company->id)
+            $customers = Customer::where('company_id', $setting->company_id)
                                  ->where(function ($q) {
                                      $q->where('needs_qb_update',true)
                                        ->orWhere('needs_qb_update', true)
