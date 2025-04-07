@@ -47,7 +47,7 @@ class SyncQuickBooksItemsJob implements ShouldQueue
             foreach ($products as $product) {
                 try {
                     if ($product->needs_qb_deletion && $product->qb_inventory_id) {
-                        // $quickBooksService->deleteCustomer($customer->qb_customer_id);
+                        // $quickBooksService->deleteCustomer($customer->qb_inventory_id);
                         // $customer->delete(); // or soft delete
                     } elseif ($product->qb_inventory_id && $product->needs_qb_update) {
                         $qbData = $this->formatQuickBooksData($product);
@@ -57,7 +57,7 @@ class SyncQuickBooksItemsJob implements ShouldQueue
                         $qbData = $this->formatQuickBooksData($product);
                         $response = $quickBooksService->createItem($qbData);
                         if (isset($response->Id)) {
-                            $product->update(['qb_customer_id' => $response->Id, 'needs_qb_insert' => false]);
+                            $product->update(['qb_inventory_id' => $response->Id, 'needs_qb_insert' => false]);
                         }
                     }
                     Log::info("QB Sync Success for customer {$product->id}: ");
