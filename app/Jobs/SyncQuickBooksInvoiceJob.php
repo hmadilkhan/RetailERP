@@ -89,8 +89,8 @@ class SyncQuickBooksInvoiceJob implements ShouldQueue
         }
         return [
             "Line" => $lineItems,
-            "Deposit" => $product->total_amount,
-            "Balance" => 0,
+            // "Deposit" => $product->total_amount,
+            // "Balance" => 0,
             "CustomerRef" => [
                 "value" => $product->customer->qb_customer_id
             ],
