@@ -15,6 +15,7 @@ class QuickBooksCustomerService extends QuickBooksService
     
     public function createCustomer(array $customerData)
     {
+        Log::info('QuickBooks Customer Data: ' . $customerData);
         try {
             $customer = Customer::create($customerData);
             $response = $this->dataService->Add($customer);
