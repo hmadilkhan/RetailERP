@@ -75,7 +75,8 @@ class SyncQuickBooksInvoiceJob implements ShouldQueue
 
         foreach ($product->orderdetails as $detail) {
             $lineItems[] = [
-                "Amount" => (float) $detail->amount,
+                "Amount" => (float) $detail->total_amount,
+                "Quantity" => (float) $detail->total_qty,
                 "DetailType" => "SalesItemLineDetail",
                 "SalesItemLineDetail" => [
                     "ItemRef" => [
