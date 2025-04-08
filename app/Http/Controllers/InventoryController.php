@@ -17,6 +17,7 @@ use App\InventoryDealGeneral;
 use App\InventoryDealDetail;
 use App\InventoryVariation;
 use App\InventoryVariationProduct;
+use App\Models\QuickBookSetting;
 use App\WebsiteDetail;
 use App\WebsiteProduct;
 use Illuminate\Support\Facades\Session;
@@ -210,6 +211,7 @@ class InventoryController extends Controller
         //         $websiteMode = 0;
         //     }
         // }
+        $check = QuickBookSetting::where('company_id', session('company_id'))->count();
         $imageName = NULL;
         $imageData = NULL;
         if (!empty($request->file('image'))) {
@@ -283,6 +285,7 @@ class InventoryController extends Controller
             'meta_description'    => $request->meta_description,
             'product_description_resturant_website'  => $request->product_description_resturant_website,
             'pct_code'  => $request->pctcode,
+            'needs_qb_insert'  => (($check > 0) ? 1 : 0) ,
         ];
         $productid = $inventory->insert($fields);
         $result = $inventory->ReminderInsert($productid, $request->reminder);
@@ -1244,6 +1247,7 @@ class InventoryController extends Controller
     {
         $invent = new inventory();
         $websiteMode = null;
+        $check = QuickBookSetting::where('company_id', session('company_id'))->count();
 
         $fields = [
             'company_id'           => session('company_id'),
@@ -1268,6 +1272,7 @@ class InventoryController extends Controller
             'meta_description'     => $request->meta_description,
             'product_description_resturant_website'  => $request->product_description_resturant_website,
             'pct_code'  => $request->pctcode,
+            'needs_qb_update'  => (($check > 0) ? 1 : 0),
         ];
 
         if (!empty($request->get('galleryImage'))) {

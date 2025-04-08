@@ -29,8 +29,8 @@ class Kernel extends ConsoleKernel
 		// $schedule->command('test:run')->everyMinute();
 		$schedule->command('app:date-wise-stock-command')->dailyAt("12:00");
         $schedule->job(new RefreshQuickBooksTokenJob())->everyThirtyMinutes();
-        $schedule->job(new \App\Jobs\SyncQuickBooksCustomersJob)->hourly();
-        // $schedule->job(new \App\Jobs\SyncQuickBooksItemsJob)->everyMinute();
+        $schedule->job(new \App\Jobs\SyncQuickBooksCustomersJob)->dailyAt("11:00");
+        $schedule->job(new \App\Jobs\SyncQuickBooksItemsJob)->everyMinute();
 
     }
 

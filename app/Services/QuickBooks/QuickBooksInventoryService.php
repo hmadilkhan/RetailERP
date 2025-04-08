@@ -37,7 +37,7 @@ class QuickBooksInventoryService extends QuickBooksService
     public function updateItem($id, array $productData)
     {
         try {
-            $item = $this->findById('Item', $id);
+            $item = $this->findById('item', $id);
             if (!$item) {
                 throw new Exception("Item not found in QuickBooks.");
             }
