@@ -59,4 +59,28 @@ class QuickBooksCustomerService extends QuickBooksService
             return ['error' => 'Customer update failed.', 'message' => $e->getMessage()];
         }
     }
+
+    public function deleteCustomer($id)
+    {
+        try {
+            $customer = $this->findById('Customer', $id);
+            if (!$customer) {
+                throw new Exception("Customer not found in QuickBooks.");
+            }
+
+            $response = $this->dataService->Delete($customer);
+
+            if (!$response) {
+                $error = $this->dataService->getLastError();
+                if ($error) {
+                    throw new Exception("QuickBooks Error: " . $error->getResponseBody());
+                }
+            }
+
+            return $response;
+        } catch (Exception $e) {
+            Log::error('QuickBooks Customer Delete Error: ' . $e->getMessage());
+            return ['error' => 'Customer Delete failed.', 'message' => $e->getMessage()];
+        }
+    }
 }

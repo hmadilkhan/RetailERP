@@ -4,19 +4,19 @@ namespace App\Services\QuickBooks;
 
 use Exception;
 use Illuminate\Support\Facades\Log;
-use QuickBooksOnline\API\Facades\Item;
+use QuickBooksOnline\API\Facades\Invoice;
 
-class QuickBooksInventoryService extends QuickBooksService
+class QuickBooksInvoiceService extends QuickBooksService
 {
     public function __construct(QuickBooksAuthService $authService, $companyId)
     {
         parent::__construct($authService, $companyId); // ✅ Make sure this is called
     }
-    
-    public function createItem(array $productData)
+
+    public function createInvoice(array $invoiceData)
     {
         try {
-            $item = Item::create($productData);
+            $item = Invoice::create($invoiceData);
             $response = $this->dataService->Add($item);
 
             // Check for API errors
@@ -34,16 +34,16 @@ class QuickBooksInventoryService extends QuickBooksService
         }
     }
 
-    public function updateItem($id, array $productData)
+    public function updateInvoice($id, array $invoiceData)
     {
         try {
-            $item = $this->findById('item', $id);
+            $item = $this->findById('invoice', $id);
             if (!$item) {
-                throw new Exception("Item not found in QuickBooks.");
+                throw new Exception("Invoice not found in QuickBooks.");
             }
 
-            $updatedItem = Item::update($item, $productData);
-            $response = $this->dataService->Update($updatedItem);
+            $updatedInvoice = Invoice::update($item, $invoiceData);
+            $response = $this->dataService->Update($updatedInvoice);
 
             if (!$response) {
                 $error = $this->dataService->getLastError();
@@ -59,15 +59,15 @@ class QuickBooksInventoryService extends QuickBooksService
         }
     }
 
-    public function deleteItem($id)
+    public function deleteInvoice($id)
     {
         try {
-            $item = $this->findById('item', $id);
-            if (!$item) {
-                throw new Exception("Item not found in QuickBooks.");
+            $invoice = $this->findById('invoice', $id);
+            if (!$invoice) {
+                throw new Exception("Invoice not found in QuickBooks.");
             }
 
-            $response = $this->dataService->Delete($item);
+            $response = $this->dataService->Delete($invoice);
 
             if (!$response) {
                 $error = $this->dataService->getLastError();
@@ -78,8 +78,8 @@ class QuickBooksInventoryService extends QuickBooksService
 
             return $response;
         } catch (Exception $e) {
-            Log::error('QuickBooks Item Delete Error: ' . $e->getMessage());
-            return ['error' => 'Item Delete failed.', 'message' => $e->getMessage()];
+            Log::error('QuickBooks Invoice Delete Error: ' . $e->getMessage());
+            return ['error' => 'Invoice delete failed.', 'message' => $e->getMessage()];
         }
     }
 }

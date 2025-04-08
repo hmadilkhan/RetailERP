@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\QuickBookSetting;
 use App\Services\QuickBooks\QuickBooksAuthService;
 use App\Services\QuickBooks\QuickBooksInventoryService;
+use App\Services\QuickBooks\QuickBooksInvoiceService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
@@ -33,7 +34,7 @@ class SyncQuickBooksInvoiceJob implements ShouldQueue
         foreach ($settings as $setting) {
 
             $authService = app(QuickBooksAuthService::class);
-            $quickBooksService = new QuickBooksInventoryService($authService, $setting->company_id);
+            $quickBooksService = new QuickBooksInvoiceService($authService, $setting->company_id);
 
             $invoices = Order::whereIn('branch', Branch::where("company_id", $setting->company_id)->pluck("branch_id"))
                 ->where(function ($q) {
@@ -51,11 +52,11 @@ class SyncQuickBooksInvoiceJob implements ShouldQueue
                         // $customer->delete(); // or soft delete
                     } elseif ($invoice->qb_invoice_id && $invoice->needs_qb_update) {
                         $qbData = $this->formatQuickBooksData($invoice);
-                        $quickBooksService->updateItem($invoice->qb_invoice_id, $qbData);
+                        $quickBooksService->updateInvoice($invoice->qb_invoice_id, $qbData);
                         $invoice->update(['needs_qb_update' => false]);
                     } elseif ($invoice->needs_qb_insert) {
                         $qbData = $this->formatQuickBooksData($invoice);
-                        $response = $quickBooksService->createItem($qbData);
+                        $response = $quickBooksService->createInvoice($qbData);
                         if (isset($response->Id)) {
                             $invoice->update(['qb_invoice_id' => $response->Id, 'needs_qb_insert' => false]);
                         }
