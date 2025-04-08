@@ -60,9 +60,9 @@ class SyncQuickBooksItemsJob implements ShouldQueue
                             $product->update(['qb_inventory_id' => $response->Id, 'needs_qb_insert' => false]);
                         }
                     }
-                    Log::info("QB Sync Success for customer {$product->id}: ");
+                    Log::info("QB Sync Success for Item {$product->id}: ");
                 } catch (\Exception $e) {
-                    Log::error("QB Sync Failed for customer {$product->id}: " . $e->getMessage());
+                    Log::error("QB Sync Failed for Item {$product->id}: " . $e->getMessage());
                 }
             }
         }
