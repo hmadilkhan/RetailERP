@@ -977,7 +977,6 @@ class order extends Model
 
 	public function getReceiptGeneral($receipt_id)
 	{
-
 		$result = DB::select('SELECT a.id as receiptID,a.receipt_no,a.delivery_date,b.order_mode,c.id as customerId,c.name as customerName,c.mobile,c.phone,c.membership_card_no,c.address,a.total_amount,a.actual_amount,d.order_status_name,g.branch_name as branch,g.branch_id as branchId,h.terminal_name,a.date,a.time,c.mobile,e.receive_amount, f.payment_mode,i.*,y.*,z.* from sales_receipts a
 							INNER JOIN sales_order_mode b on b.order_mode_id = a.order_mode_id
 							LEFt JOIN customers c on c.id = a.customer_id
@@ -989,8 +988,8 @@ class order extends Model
 							INNER JOIN sales_account_subdetails i on i.receipt_id = a.id
                             LEFT JOin delivery_charges y on y.id = i.delivery_charges
                             LEFT JOIN taxes z on z.id = i.credit_card_transaction
-                            where a.receipt_no =  ? and branch = ? ', [$receipt_id,session('branch')]);
-
+                            where a.receipt_no =  ?  ', [$receipt_id]); //and branch = ? ,session('branch')
+ 
 		return $result;
 	}
 
