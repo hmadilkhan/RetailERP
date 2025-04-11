@@ -116,6 +116,17 @@ class BankController extends Controller
                 'image' => (!empty($result) ? $result["fileName"] : ""),
             ];
             $acc = $bank->insert_bankdetails('bank_account_generaldetails', $items);
+
+            if($acc != 0 && isset($request->website)){
+                  DB::table('website_banks')
+                      ->insert(
+                         [
+                                   'website_id' => $request->website,
+                                   'bank_id'    => $acc,
+                                   'created_at' => date('Y-m-d H:i:s')
+                                 ]);
+            }
+
             return redirect("view-accounts");
         } else {
             return 0;

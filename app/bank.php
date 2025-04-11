@@ -39,7 +39,7 @@ class bank extends Model
 
 
 	public function insert_bankdetails($table,$items){
-		$result = DB::table($table)->insert($items);
+		$result = DB::table($table)->insertGetId($items);
        return $result;
 	}
 	public function get_banks(){
