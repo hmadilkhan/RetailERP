@@ -67,7 +67,7 @@
                    <span class="help-block"></span>
               </div>
   		</div>
-  		  <div class="col-lg-@if($website != null) 2 @else 4 @endif col-md-@if($website != null) 2 @else 4 @endif">
+  		  <div class="col-lg-@if($website != null) '2' @else '4' @endif col-md-@if($website != null) '2' @else '4' @endif">
                    <div class="form-group">
                   <label class="form-control-label">Account Type</label>
                   <input class="form-control" type="text"
