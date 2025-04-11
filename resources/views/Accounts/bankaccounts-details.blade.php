@@ -67,7 +67,7 @@
                    <span class="help-block"></span>
               </div>
   		</div>
-  		  <div class="@if($website != null) 'col-lg-2' @else 'col-lg-4' @endif col-md-@if($website != null) 'col-lg-2' @else 'col-lg-4' @endif">
+  		  <div class="@if($website != null) col-lg-2 @else col-lg-4 @endif @if($website != null) col-lg-2 @else 'col-lg-4' @endif">
                    <div class="form-group">
                   <label class="form-control-label">Account Type</label>
                   <input class="form-control" type="text"
@@ -88,7 +88,7 @@
              </div>
            </div>
           @endif
-                <div class="@if($website != null) 'col-lg-3' @else 'col-lg-4' @endif">
+                <div class="@if($website != null) col-lg-3 @else col-lg-4 @endif">
                     <label for="image" class="form-control-label">Image</label>
                     <a href="#">
                         <img id="simg" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
