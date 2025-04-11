@@ -8,14 +8,14 @@
 @section('navbankaccount','active')
 
 @section('content')
-<section class="panels-wells">
+<section class="panels-wells p-t-3">
     <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Bank Account List</h5>
          <a href="{{ url('bankaccounts-details') }}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Account
               </a>
 
-         </div>      
+         </div>
        <div class="card-block">
 
      <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
@@ -47,15 +47,15 @@
          	 	     <td class="action-icon">
                      <a href="{{url('/getaccountdetails')}}/{{ Crypt::encrypt($value->bank_account_id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" ></i> </a>
                      <a href="{{url('/create-deposit')}}/{{ Crypt::encrypt($value->bank_account_id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Credit/Debit"><i class="icofont icofont-ui-add text-primary f-10" ></i> </a>
-    
-                 </td>  
+
+                 </td>
          	 </tr>
 
          	 @endforeach
-        
+
          </tbody>
-        
-      
+
+
      </table>
   </div>
 </div>
@@ -67,13 +67,13 @@
         displayLength: 10,
         info: false,
         language: {
-          search:'', 
+          search:'',
           searchPlaceholder: 'Search Category',
           lengthMenu: '<span></span> _MENU_'
-   
+
         },
-        
- 
+
+
     });
 </script>
 @endsection
