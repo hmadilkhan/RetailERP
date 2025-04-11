@@ -52,7 +52,21 @@ class bank extends Model
 	}
 
 	public function get_accounts(){
-		$result = DB::select('SELECT a.*, b.bank_name, c.branch_name,e.id as website_id,e.name as website_name FROM bank_account_generaldetails a INNER JOIN banks b ON b.bank_id = a.bank_id INNER JOIN bank_branches c ON c.branch_id = a.branch_id LEFT JOIN website_banks as d ON d.bank_id = a.bank_account_id LEFT JOIN website_details as e ON e.id = d.website_id WHERE a.branch_id_company = ? and d.status = 1',[session('branch')]);
+		$result = DB::table('bank_account_generaldetails as a')
+                        ->select(
+                            'a.*',
+                            'b.bank_name',
+                            'c.branch_name',
+                            'e.id as website_id',
+                            'e.name as website_name'
+                        )
+                        ->join('banks as b', 'b.bank_id', '=', 'a.bank_id')
+                        ->join('bank_branches as c', 'c.branch_id', '=', 'a.branch_id')
+                        ->leftJoin('website_banks as d', 'd.bank_id', '=', 'a.bank_account_id')
+                        ->leftJoin('website_details as e', 'e.id', '=', 'd.website_id')
+                        ->where('a.branch_id_company', 17)
+                        ->where('d.status', 1)
+                        ->get();
         //$result = DB::select('SELECT a.*, b.bank_name, c.branch_name FROM bank_account_generaldetails a INNER JOIN banks b ON b.bank_id = a.bank_id INNER JOIN bank_branches c ON c.branch_id = a.branch_id WHERE a.branch_id_company = ?',[session('branch')]);
 		return $result;
 
