@@ -224,7 +224,7 @@
 
 
         </div>
-         {{ $orders->paymentMethod[0]->name }}
+
         <div class="col-xl-4">
             <div class="mt-5 mt-lg-0">
                 <div class="card border shadow-none">
@@ -279,6 +279,73 @@
                     </div>
                 </div>
             </div>
+           @if($orders->paymentMethod != null)
+            <div class="mt-5 mt-lg-0">
+                <div class="card border shadow-none">
+                    <div class="card-header bg-transparent border-bottom py-3 px-4">
+                        <h5 class="font-size-16 mb-0">Payment Method Detail</h5>
+                    </div>
+                    <div class="card-body p-4 pt-2">
+
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <tbody>
+									<tr class="bg-light">
+                                        <th>Service Name:</th>
+                                        <td class="text-end">
+                                            <span class="fw-bold">
+                                                {{ $orders->paymentMethod[0]->name }}
+                                            </span>
+                                        </td>
+                                    </tr>
+									<tr class="bg-light">
+                                        <th>Account Title :</th>
+                                        <td class="text-end">
+                                            <span class="fw-bold">
+                                                {{ $orders->paymentMethod[0]->account_title }}
+                                            </span>
+                                        </td>
+                                    </tr>
+									<tr class="bg-light">
+                                        <th>Account Number :</th>
+                                        <td class="text-end">
+                                            <span class="fw-bold">
+                                                {{ $orders->paymentMethod[0]->account_no }}
+                                            </span>
+                                        </td>
+                                    </tr>
+									<tr class="bg-light">
+                                        <th>Account Mode :</th>
+                                        <td class="text-end">
+                                            <span class="fw-bold">
+                                                {{ $orders->paymentMethod[0]->account_mode }}
+                                            </span>
+                                        </td>
+                                    </tr>
+									<tr class="bg-light">
+                                        <th>Discount Percentage :</th>
+                                        <td class="text-end">
+                                            <span class="fw-bold">
+                                                {{ $orders->paymentMethod[0]->discount_percentage.'%' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+									<tr class="bg-light">
+                                        <th>Discount Amount :</th>
+                                        <td class="text-end">
+                                            <span class="fw-bold">
+                                                {{ $orders->paymentMethod[0]->discount_value }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- end table-responsive -->
+                    </div>
+                </div>
+            </div>
+            @endif
             <div class="mt-5 mt-lg-0">
                 <div class="card border shadow-none">
                     <div class="card-header bg-transparent border-bottom py-3 px-4">
