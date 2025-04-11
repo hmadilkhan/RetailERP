@@ -40,7 +40,7 @@ class bank extends Model
 
 	public function insert_bankdetails($table,$items){
 		$result = DB::table($table)->insert($items);
-       return $result;   
+       return $result;
 	}
 	public function get_banks(){
 		$result = DB::table('banks')->get();
@@ -52,7 +52,7 @@ class bank extends Model
 	}
 
 	public function get_accounts(){
-		$result = DB::select('SELECT a.*, b.bank_name, c.branch_name FROM bank_account_generaldetails a INNER JOIN banks b ON b.bank_id = a.bank_id INNER JOIN bank_branches c ON c.branch_id = a.branch_id WHERE a.branch_id_company = ?',[session('branch')]);
+		$result = DB::select('SELECT a.*, b.bank_name, c.branch_name FROM bank_account_generaldetails a INNER JOIN banks b ON b.bank_id = a.bank_id INNER JOIN bank_branches c ON c.branch_id = a.branch_id LEFT JOIN website_banks as d ON d.bank_id = a.bank_account_id WHERE a.branch_id_company = ? and d.status = 1',[session('branch')]);
 		return $result;
 	}
 
