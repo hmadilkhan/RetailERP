@@ -38,7 +38,12 @@ class BankController extends Controller
     {
         $getbank = $bank->get_banks();
         $getbranches = $bank->get_branches();
-        return view('Accounts.bankaccounts-details', compact('getbank', 'getbranches'));
+
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Accounts.bankaccounts-details', compact('getbank', 'getbranches','website'));
     }
 
 
