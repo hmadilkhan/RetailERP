@@ -224,7 +224,7 @@
 
 
         </div>
-         {{ $orders->paymentMethod['name'] }}
+         {{ $orders->paymentMethod[0]->name }}
         <div class="col-xl-4">
             <div class="mt-5 mt-lg-0">
                 <div class="card border shadow-none">
