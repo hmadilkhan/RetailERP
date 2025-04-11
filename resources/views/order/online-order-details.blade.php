@@ -293,17 +293,13 @@
 									<tr class="bg-light">
                                         <th>Service Name:</th>
                                         <td class="text-end">
-                                            <span class="fw-bold">
                                                 {{ $orders->paymentMethod[0]->name }}
-                                            </span>
                                         </td>
                                     </tr>
 									<tr class="bg-light">
                                         <th>Account Title :</th>
                                         <td class="text-end">
-                                            <span class="fw-bold">
                                                 {{ $orders->paymentMethod[0]->account_title }}
-                                            </span>
                                         </td>
                                     </tr>
 									<tr class="bg-light">
@@ -317,25 +313,19 @@
 									<tr class="bg-light">
                                         <th>Account Mode :</th>
                                         <td class="text-end">
-                                            <span class="fw-bold">
                                                 {{ $orders->paymentMethod[0]->account_mode }}
-                                            </span>
                                         </td>
                                     </tr>
 									<tr class="bg-light">
                                         <th>Discount Percentage :</th>
                                         <td class="text-end">
-                                            <span class="fw-bold">
                                                 {{ $orders->paymentMethod[0]->discount_percentage.'%' }}
-                                            </span>
                                         </td>
                                     </tr>
 									<tr class="bg-light">
                                         <th>Discount Amount :</th>
                                         <td class="text-end">
-                                            <span class="fw-bold">
                                                 {{ $orders->paymentMethod[0]->discount_value }}
-                                            </span>
                                         </td>
                                     </tr>
                                 </tbody>
