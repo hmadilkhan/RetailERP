@@ -9,7 +9,7 @@
 
 @section('content')
 
-<section class="panels-wells p-t-2">
+<section class="panels-wells p-t-3">
 <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Create Bank Account</h5>
