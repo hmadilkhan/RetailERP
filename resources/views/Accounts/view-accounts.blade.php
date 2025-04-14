@@ -49,8 +49,8 @@
                      <a href="{{url('/create-deposit')}}/{{ Crypt::encrypt($value->bank_account_id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Credit/Debit"><i class="icofont icofont-ui-add text-primary f-10" ></i> </a>
                     @if($website != null)
                       <a href="javascript:voide(0)" class="m-r-10" data-toggle="tooltip"
-                         data-placement="top" title="" data-original-title="{{ isset($value->wesbite_id) ?  'Unlink to website' : 'Link to website' }}">
-                           <i class="fa {{ isset($value->wesbite_id) ?  'fa-link text-success' : 'fa-link-broken text-muted' }} f-10" ></i>
+                         data-placement="top" title="" data-original-title="{{ isset($value->website_id) ?  'Unlink to website' : 'Link to website' }}">
+                           <i class="icofont {{ isset($value->website_id) ?  'icofont-link text-success' : 'icofont-broken text-muted' }} f-10" ></i>
                          </a>
                     @endif
 
