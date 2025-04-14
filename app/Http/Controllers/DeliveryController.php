@@ -585,6 +585,30 @@ class DeliveryController extends Controller
 
         $provider = $delivery->update_provider($request->proid,$items);
 
+        $website = isset($request->website) ? $request->website  : '';
+
+        if($website != ''){
+           $website = Crypt::decrypt($request->website);
+
+           if(DB::table('website_wallets')
+                   ->where('wallet_id',$request->proid)
+                   ->where('website_id',$website)
+                   ->where('status',1)
+                   ->count() == 0){
+                DB::table('website_wallets')
+                  ->insert([
+                         'wallet_id' => $request->proid,
+                         'website_id' => $website,
+                         'created_at' => date('Y-m-d H:i:s')
+                 ]);
+
+           }
+        }else{
+           DB::table('website_wallets')
+           ->where('wallet_id',$request->id)
+           ->update(['status'=>0,'updated_at'=>date('Y-m-d H:i:s')]);
+        }
+
         $userId = $delivery->getUserIdFromServiceProvider($request->proid);
         if ($userId > 0) {
             $result = $delivery->update_service_provider_user($userId,$request->person,$request->branch);
