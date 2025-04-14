@@ -14,6 +14,7 @@ class WalletDiscount extends Model
                 ->join('service_provider_details','service_provider_details.id','wallet_discount.wallet_id')
                 ->where('service_provider_details.categor_id',6)
                 ->where('service_provider_details.branch_id',session('branch'))
+                ->where('wallet_discount.status',1)
                 ->select('wallet_discount.*','service_provider_details.provider_name','service_provider_details.image')
                 ->get();
     }
