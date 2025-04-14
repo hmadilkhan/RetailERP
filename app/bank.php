@@ -57,6 +57,7 @@ class bank extends Model
                             'a.*',
                             'b.bank_name',
                             'c.branch_name',
+                            'd.id as website_bank_id',
                             'e.id as website_id',
                             'e.name as website_name'
                         )

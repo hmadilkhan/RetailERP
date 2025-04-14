@@ -48,8 +48,13 @@
                      <a href="{{url('/getaccountdetails')}}/{{ Crypt::encrypt($value->bank_account_id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit text-primary f-18" ></i> </a>
                      <a href="{{url('/create-deposit')}}/{{ Crypt::encrypt($value->bank_account_id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Credit/Debit"><i class="icofont icofont-ui-add text-primary f-10" ></i> </a>
                     @if($website != null)
+                       <input type="hidden" id="bankAccountId" value="{{ Crypt::encrypt($value->bank_account_id) }}"/>
+                       <input type="hidden" id="websiteId" value="{{ Crypt::encrypt($value->website_id) }}"/>
+                       <input type="hidden" id="websiteBankUniqueId" value="{{ Crypt::encrypt($value->website_bank_id) }}"/>
+                       <input type="hidden" id="actionWebsiteUrl" value="{{ isset($value->website_id) ? route('bankUnlinkToWebsite') : route('bankLinkToWebsite') }}"/>
                       <a href="javascript:voide(0)" class="m-r-10" data-toggle="tooltip"
-                         data-placement="top" title="" data-original-title="{{ isset($value->website_id) ?  'Unlink to website' : 'Link to website' }}">
+                         data-placement="top" title="" data-original-title="{{ isset($value->website_id) ?  'Unlink to website' : 'Link to website' }}"
+                         onclick="bind_website({{ isset($value->website_id) ? 1 : 0 }})">
                            <i class="icofont {{ isset($value->website_id) ?  'icofont-link text-success' : 'icofont-broken text-muted' }} f-20" ></i>
                          </a>
                     @endif
@@ -81,6 +86,45 @@
 
 
     });
+
+    function website_setting(value,bank){
+        swal({
+                title: (value == 1 ? "UnLink to Website" : "Link to Website"),
+                text: "Do you want to "+(value == 1 ? "UnLink" : "Link")+" from website for this "+bank+" bank account?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            },function(isConfirm){
+                if(isConfirm){
+                        $.ajax({
+                            url:$("#actionWebsiteUrl").val(),
+                            type:'POST',
+                            data:{ _token:'{{ csrf_token() }}',
+                                  website:$("#websiteId").val(),
+                                  bank:$("#bankAccountId").val(),
+                                  uniqueId:$("#websiteBankUniqueId").val()},
+                            dataType:'json',
+                            async:true,
+                            success:function(resp,textStatus, jqXHR){
+                                if(jqXHR.status == 200){
+                                    swal("Success!","","success");
+                                }
+
+                                if(jqXHR.status == 500){
+                                    swal('Error!',resp,'error');
+                                }
+                            }
+                        })
+                }else{
+                    swal("Cancel!","","error");
+                }
+
+            });
+    }
 </script>
 @endsection
 

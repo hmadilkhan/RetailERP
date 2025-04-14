@@ -108,7 +108,7 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
     Route::post('/quickbooks/customer', [QuickBooksController::class, 'addCustomer']);
     Route::put('/quickbooks/customer/{id}', [QuickBooksController::class, 'updateCustomer']);
     Route::delete('/quickbooks/customer/{id}', [QuickBooksController::class, 'deleteCustomer']);
-    
+
 });
 
 Route::get('/view-inventory', ViewInventory::class);
@@ -841,6 +841,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/bankaccounts-details', [BankController::class, 'index']);
     Route::post('/submitbankdetails', [BankController::class, 'submit_details']);
     Route::post('/createaccount', [BankController::class, 'insert_account']);
+    Route::post('/bank-link-to-website', [BankController::class, 'link_website'])->name('bankLinkToWebsite');
+    Route::post('/bank-unlink-to-website', [BankController::class, 'unlink_website'])->name('bankUnLinkToWebsite');
     Route::get('/view-accounts', [BankController::class, 'show']);
     Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
     Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);

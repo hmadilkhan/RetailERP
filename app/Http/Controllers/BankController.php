@@ -54,7 +54,50 @@ class BankController extends Controller
         return view('Accounts.bankaccounts-details', compact('getbank', 'getbranches','website'));
     }
 
+    public function link_website(Request $request){
+      try{
+       if($request->bank == 0 && $request->website == 0){
+          Session::flash('error','Invalid parameter');
+          return redirect()->url('view-accounts');
+       }
+       $bankId    = Crypt::decrypt($request->bank);
+       $websiteId = Crypt::decrypt($request->website);
 
+
+       DB::table('website_banks')
+            ->insert([
+                       'bank_id'    => $bankId,
+                       'website_id' => $websiteId,
+                       'created_at' => date("Y-m-d H:i:s")
+            ]);
+
+            return response()->json('success',200);
+        }catch(\Exception $e){
+            return response()->json($e->getMessage(),500);
+        }
+    }
+
+    public function unlink_website(Request $request){
+       try{
+            if($request->bank == 0 && $request->website == 0){
+               Session::flash('error','Invalid parameter');
+               return redirect()->url('view-accounts');
+            }
+            $bankId    = Crypt::decrypt($request->bank);
+            $websiteId = Crypt::decrypt($request->website);
+            $uniqueId  = Crypt::decrypt($request->id);
+
+            DB::table('website_banks')
+                 ->update([
+                            'status'     =>0,
+                            'updated_at' =>date("Y-m-d H:i:s")
+                 ])->where('id',$uniqueId);
+
+                 return response()->json('success',200);
+          }catch(\Exception $e){
+             return response()->json($e->getMessage(),500);
+          }
+     }
 
     public function cash_ledger(bank $bank, Request $request)
     {
