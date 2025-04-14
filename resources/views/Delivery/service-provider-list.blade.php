@@ -292,7 +292,7 @@ function deleteconfirm(id){
                                             type: "success"
                                         }, function(isConfirm) {
                                             if (isConfirm) {
-                                                window.location = "{{ url('/view-accounts') }}";
+                                                window.location = "{{ url('/service-provider') }}";
                                             }
                                         });
                                 }
@@ -331,7 +331,7 @@ function deleteconfirm(id){
                                             type: "success"
                                         }, function(isConfirm) {
                                             if (isConfirm) {
-                                                window.location = "{{ url('/view-accounts') }}";
+                                                window.location = "{{ url('/service-provider') }}";
                                             }
                                         });
                             }
