@@ -406,7 +406,7 @@
  });
 
  $("#category").on('change',function(){
-    if($(this).val() == 4){
+    if($(this).val() == 6){
         if($('#websiteBox').hasClass('d-none')){
             $('#websiteBox').removeClass('d-none');
         }
