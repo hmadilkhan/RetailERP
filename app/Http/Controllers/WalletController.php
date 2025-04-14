@@ -37,16 +37,16 @@ class WalletController extends Controller
             'created_at'=> date('Y-m-d H:i:s')
         ];
 
-        // if($walletDiscount->check_wallet_discount(Crypt::decrypt($request->get('wallet')))){
-        //     return response()->json(array("state"=>1,"msg"=>'This wallet already exists.',"contrl"=>'wallet'));
-        // }else {
+        if($walletDiscount->check_wallet_discount(Crypt::decrypt($request->get('wallet')))){
+            return response()->json(array("state"=>1,"msg"=>'This wallet already exists.',"contrl"=>'wallet'));
+        }else {
             $result = $walletDiscount->insert_wallet_discount($data);
             if($result){
                 return response()->json(array("state"=>0,"msg"=>'',"contrl"=>''));
             }else{
                 return response()->json(array("state"=>1,"msg"=>'Not saved :(',"contrl"=>''));
             }
-        // }
+        }
     }
 
     public function update(Request $request,WalletDiscount $walletDiscount)
