@@ -29,4 +29,54 @@ class WalletController extends Controller
         return view('Delivery.wallet.index',compact('wallet_discount','wallets'));
     }
 
+    public function store(Request $request,WalletDiscount $walletDiscount)
+    {
+        $data = [
+            'bank_id'=> $request->get('wallet'),
+            'percentage'=> $request->get('discount_percentage'),
+            'date'=> date('Y-m-d H:i:s')
+        ];
+
+        if($walletDiscount->check_wallet_discount($request->get('wallet'))){
+            return response()->json(array("state"=>1,"msg"=>'This wallet already exists.',"contrl"=>'wallet'));
+        }else {
+            $result = $walletDiscount->insert_wallet_discount($data);
+            if($result){
+                return response()->json(array("state"=>0,"msg"=>'',"contrl"=>''));
+            }else{
+                return response()->json(array("state"=>1,"msg"=>'Not saved :(',"contrl"=>''));
+            }
+        }
+    }
+
+    public function update(Request $request,WalletDiscount $walletDiscount)
+    {
+            if($walletDiscount->modify("wallet_discount",['status'=>2],['id' => $request->get('id')])){
+                $data = [
+                    'wallet_id'=> $request->get('wallet'),
+                    'percentage'=> $request->get('discount_percentage'),
+                    'date'=> date('Y-m-d H:i:s')
+                ];
+                $result = $walletDiscount->insert_wallet_discount($data);
+                if($result){
+                    return response()->json(array('state'=>0,'msg'=>'Saved changes :) '));
+                }else{
+                    return response()->json(array("state"=>1,"msg"=>'Not saved :(',"contrl"=>''));
+                }
+
+            }else {
+                return response()->json(array('state'=>1,'msg'=>'Oops! not saved changes :('));
+            }
+
+    }
+
+    public function deleteDiscount(Request $request,WalletDiscount $walletDiscount)
+    {
+        if($walletDiscount->modify("wallet_discount",['status'=>2],['id' => $request->get('id')])){
+            return 1;
+        }else{
+            return 2;
+        }
+    }
+
 }

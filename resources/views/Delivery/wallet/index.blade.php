@@ -209,7 +209,7 @@
                 function(isConfirm){
                     if(isConfirm){
                         $.ajax({
-                            url: "{{url('/delete-bank-discount')}}",
+                            url: "{{url('/delete-wallet-discount')}}",
                             type: 'POST',
                             data:{_token:"{{ csrf_token() }}",
                                 id:id,
@@ -222,7 +222,7 @@
                                         type: "success"
                                     },function(isConfirm){
                                         if(isConfirm){
-                                            window.location="{{url('/view-bank-discount')}}";
+                                            window.location="{{url('/wallet-discount')}}";
                                         }
                                     });
                                 }

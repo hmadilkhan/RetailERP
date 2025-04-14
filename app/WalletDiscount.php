@@ -18,4 +18,9 @@ class WalletDiscount extends Model
                 ->get();
     }
 
+
+    public function modify($table,$data,$where){
+        return DB::table($table)->where($where)->update($data);
+    }
+
 }
