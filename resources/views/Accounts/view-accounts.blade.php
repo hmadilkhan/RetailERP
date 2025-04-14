@@ -103,6 +103,9 @@
 @endsection
 @section('scriptcode_three')
 <script type="text/javascript">
+
+   $(".select2").select2();
+
    $('.table').DataTable({
         displayLength: 10,
         info: false,
