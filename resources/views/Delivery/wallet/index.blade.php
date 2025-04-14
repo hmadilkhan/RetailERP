@@ -20,11 +20,11 @@
                         <div class="col-lg-3 col-md-3">
                             <div class="form-group">
                                 <label class="form-control-label">Wallet Name</label>
-                                <select class="form-control select2" data-placeholder="Select Bank" id="bank" name="bank">
+                                <select class="form-control select2" data-placeholder="Select Wallet" id="wallet" name="wallet">
                                     <option value="">Select Wallet</option>
-                                    @if($banks)
+                                    @if($wallets)
                                         @foreach($wallets as $value)
-                                            <option value="{{$bank->bank_id}}">{{ $bank->bank_name}}</option>
+                                            <option value="{{ Crypt::encrypt($value->id) }}">{{ $value->provider_name}}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -80,17 +80,17 @@
                         </tr>
                         </thead>
                         <tbody>
-                            @if($discounts)
-                                @foreach($discounts as $val)
+                            @if($wallet_discount)
+                                @foreach($wallet_discount as $val)
                                     <tr>
                                         <td class="text-center">
                                             <img width="50" height="50" src="{{ asset('storage/images/service-provider/'.(!empty($val->image) ? $val->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                                         </td>
-                                        <td>{{$val->bank_name}}</td>
+                                        <td>{{$val->provider_name}}</td>
                                         <td>{{$val->percentage}} %</td>
                                         <td>
-                                            <a onclick="edit('{{$val->bank_discount_id}}','{{$val->bank_id}}','{{$val->percentage}}')" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
-                                            <a onclick="deleteDiscount('{{$val->bank_discount_id}}')" class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-delete"></i></a>
+                                            <a onclick="edit('{{$val->id}}','{{$val->bank_id}}','{{$val->percentage}}')" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+                                            <a onclick="deleteDiscount('{{$val->id}}')" class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-delete"></i></a>
                                         </td>
 
                                     </tr>

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
-use App\bank;
+use App\WalletDiscount;
 use Image;
 
 
@@ -18,10 +18,15 @@ class WalletController extends Controller
         $this->middleware('auth');
     }
 
-    public function index()
+    public function index(WalletDiscount $walletDiscount)
     {
+           $wallet_discount = $walletDiscount->getWalletDiscount();
 
-        return '';
+           $wallets = DB::table('service_provider_details')
+                                ->where('service_provider_details',6)
+                                ->where('branch_id',session('branch'))
+                                ->get();
+        return view('Delivery.wallet.index',compact('wallet_discount','wallets'));
     }
 
 }
