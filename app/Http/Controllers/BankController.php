@@ -171,7 +171,7 @@ class BankController extends Controller
                   DB::table('website_banks')
                       ->insert(
                          [
-                                   'website_id' => $request->website,
+                                   'website_id' => Crypt::decrypt($request->website),
                                    'bank_id'    => $acc,
                                    'created_at' => date('Y-m-d H:i:s')
                                  ]);
@@ -287,6 +287,32 @@ class BankController extends Controller
         ];
 
         $acc = $bank->update_accounts($request->id, $items);
+
+         $website = isset($request->website) ? $request->website  : '';
+
+         if($website != ''){
+            $website = Crypt::decrypt($request->website);
+
+
+            if(DB::table('website_banks')
+                    ->where('bank_id',$request->id)
+                    ->where('website_id',$website)
+                    ->status('status',1)
+                    ->count() == 0){
+                 DB::table('website_banks')
+                   ->insert([
+                          'bank_id' => $request->id,
+                          'website_id' => $website,
+                          'created_at' => date('Y-m-d H:i:s')
+                  ]);
+
+            }
+         }else{
+            DB::table('website_banks')
+            ->where('bank_id',$request->id)
+            ->update(['status'=>0,'updated_at'=>date('Y-m-d H:i:s')]);
+         }
+
         return redirect("view-accounts");
     }
 

@@ -76,7 +76,7 @@ class bank extends Model
 	}
 
 	public function get_details($accountid){
-		$result = DB::select('SELECT a.bank_account_id, a.account_title, a.account_type, a.account_no, b.bank_name, c.branch_name,a.image  FROM bank_account_generaldetails a INNER JOIN banks b ON b.bank_id = a.bank_id INNER JOIN bank_branches c ON c.branch_id = a.branch_id
+		$result = DB::select('SELECT a.bank_account_id, a.account_title, a.account_type, a.account_no, b.bank_name, c.branch_name,a.image,d.website_id FROM bank_account_generaldetails a INNER JOIN banks b ON b.bank_id = a.bank_id INNER JOIN bank_branches c ON c.branch_id = a.branch_id
 			 LEFT JOIN website_banks d ON d.bank_id = a.bank_account_id AND d.status = 1 WHERE a.bank_account_id = ?',[$accountid]);
 		return $result;
 	}
