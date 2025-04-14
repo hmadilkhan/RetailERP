@@ -319,7 +319,7 @@ function deleteconfirm(id){
                      type:'POST',
                      data:{ _token:'{{ csrf_token() }}',
                             website:$("#website_md").val(),
-                            bank:$("#wallet_md").val()},
+                            wallet:$("#wallet_md").val()},
                      dataType:'json',
                      async:true,
                      success:function(resp,textStatus, jqXHR){
