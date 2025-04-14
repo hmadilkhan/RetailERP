@@ -19,12 +19,12 @@ class WalletDiscount extends Model
                 ->get();
     }
 
-    public function check_bank_discount($wallet){
+    public function check_wallet_discount($wallet){
         return count(DB::table("wallet_discount")->where(['id'=>$wallet,'status' => 1])->get()) > 0 ? true : false;
     }
 
     // save record department //
-    public function insert_bank_discount($data){
+    public function insert_wallet_discount($data){
         return DB::table("bank_discount")->insertGetId($data);
     }
     public function modify($table,$data,$where){
