@@ -129,7 +129,7 @@
             }else{
 
                 $.ajax({
-                    url:'{{ url("create-bank-discount") }}',
+                    url:'{{ url("create-wallet-discount") }}',
                     type:"POST",
                     data:$('#floorform').serialize(),
                     dataType:"json",
@@ -161,7 +161,7 @@
             }else{
 
                 $.ajax({
-                    url:'{{ url("update-bank-discount") }}',
+                    url:'{{ url("update-wallet-discount") }}',
                     type:"POST",
                     data:$('#floorform').serialize(),
                     dataType:"json",
