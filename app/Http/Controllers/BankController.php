@@ -85,7 +85,7 @@ class BankController extends Controller
             }
             $bankId    = Crypt::decrypt($request->bank);
             $websiteId = Crypt::decrypt($request->website);
-            $uniqueId  = Crypt::decrypt($request->uniqueId);
+            $uniqueId  = (int) Crypt::decrypt($request->uniqueId);
 
             DB::table('website_banks')
                  ->update([
