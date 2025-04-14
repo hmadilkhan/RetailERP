@@ -25,13 +25,21 @@ class BankController extends Controller
     public function show(bank $bank)
     {
         $getaccounts = $bank->get_accounts();
-        return view('Accounts.view-accounts', compact('getaccounts'));
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Accounts.view-accounts', compact('getaccounts','website'));
     }
 
     public function showBanks(bank $bank)
     {
         $banks = $bank->get_banks();
-        return view('Accounts.view-accounts', compact('getaccounts'));
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Accounts.view-accounts', compact('getaccounts','website'));
     }
 
     public function index(bank $bank)
