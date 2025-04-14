@@ -167,7 +167,7 @@
                  <div class="form-control-feedback"></div>
                   </div>
               </div>
-
+{{ $website }}
               @if($website != null && $details[0]->category == 6)
               <div id="websiteBox" class="row {{ $details[0]->category != 6 ? 'd-none' : '' }}">
                 <div class="col-lg-4 col-md-4">
