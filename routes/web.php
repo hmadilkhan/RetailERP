@@ -431,7 +431,9 @@ Route::middleware(['statusCheck'])->group(function () {
 
    //wallet discount
     Route::get('/wallet-discount', [WalletController::class, 'index']);
-
+    Route::get('/create-bank-discount', [WalletController::class, 'store']);
+    Route::get('/update-wallet-discount', [WalletController::class, 'update']);
+    Route::get('/delete-wallet-discount', [WalletController::class, 'deleteDiscount']);
 
     // inventory module //
     Route::get('/create-inventory', [InventoryController::class, "create"])->name('create-invent');

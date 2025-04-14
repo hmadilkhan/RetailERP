@@ -120,8 +120,8 @@
 
         $("#btn_save").on('click',function(){
 
-            if($("#bank").val() == "") {
-                $("#bank").focus();
+            if($("#wallet").val() == "") {
+                $("#wallet").focus();
                 $("#deptname_alert").html('Floor name is required.');
             }else if($("#discont_percentage").val() == ""){
                     $("#discont_percentage").focus();
@@ -185,9 +185,9 @@
             }
         });
 
-        function edit(id,bank,percentage){
+        function edit(id,wallet,percentage){
             $('#id').val(id);
-            $('#bank').val(bank).change();
+            $('#wallet').val(wallet).change();
             $('#discount_percentage').val(percentage);
             $('#btn_save').css('display','none');
             $('#btn_update').css('display','block');
