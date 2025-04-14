@@ -189,7 +189,7 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             $filter .= " and a.mobile = ".$contact;
         }
         if (!empty($membership)) {
-            $filter .= " and a.membership_card_no = ".$membership;
+            $filter .= " and a.membership_card_no = '".$membership."'";
         }
 
         $customers = DB::select('SELECT (SELECT SUM(credit)-SUM(debit) as balance FROM `customer_account` WHERE `cust_id` = a.id)
