@@ -30,13 +30,13 @@ class DeliveryController extends Controller
         $charges = $delivery->getcharges(1);
         return view('Delivery.delivery-charges', compact('getbranch','charges'));
     }
-	
+
 	public function mobilePromotion(){
-		$images = DB::table("mobile_promotion_images")->join("inventory_general","inventory_general.id","=","mobile_promotion_images.product_id")->where("mobile_promotion_images.company_id",session("company_id"))->select("mobile_promotion_images.*","inventory_general.product_name")->get(); 
+		$images = DB::table("mobile_promotion_images")->join("inventory_general","inventory_general.id","=","mobile_promotion_images.product_id")->where("mobile_promotion_images.company_id",session("company_id"))->select("mobile_promotion_images.*","inventory_general.product_name")->get();
 		$products = DB::table("inventory_general")->where("status",1)->where("company_id",session("company_id"))->select(["id","product_name"])->get();
         return view('Promotion.mobile-promotion-images',compact('images','products'));
     }
-	
+
 	public function insertMobilePromotion(Request $request){
 		$dbcount =  DB::table("mobile_promotion_images")->where("company_id",session("company_id"))->count();
 		$count=  count($request->image);
@@ -48,7 +48,7 @@ class DeliveryController extends Controller
 					$res = $img->save(public_path('assets/images/mobile/' . $imageName), 75);
 					$data[] = $imageName;
 				}
-				
+
 				//Inventory Images Here
 				foreach ($data  as $value) {
 					DB::table("mobile_promotion_images")->insert([
@@ -57,15 +57,15 @@ class DeliveryController extends Controller
 						"description" => $request->description,
 						"image" => $value
 					]);
-				} 
-				
+				}
+
 				return redirect('mobile-promotion')->With('status', 'Images Uploaded successfully');
 			}
 		}else{
 			return redirect('mobile-promotion')->With('status', 'You have already five images uploaded');
 		}
 	}
-	
+
 	public function mobilePromoImageDelete(Request $request)
 	{
 		if (DB::table("mobile_promotion_images")->where('id', $request->id)->delete()) {
@@ -113,7 +113,7 @@ class DeliveryController extends Controller
         $pdf = dPDF::loadView('Delivery.ledgerPdf',compact('company','data','from','to','provider_id'));
         // Closed to ledger
         if($request->closed == 'true'){
-            $data = $delivery->closedToServiceProviderLedger(Crypt::decrypt($request->provide_id),$request->from,$request->to);    
+            $data = $delivery->closedToServiceProviderLedger(Crypt::decrypt($request->provide_id),$request->from,$request->to);
         }
         return  $pdf->stream("ledger-report.pdf", array("Attachment" => 0));
          exit;
@@ -171,7 +171,7 @@ class DeliveryController extends Controller
         }
 
     }
-	
+
 	public function checkServiceProviderName(delivery $delivery, Request $request)
 	{
         $branch = "";
@@ -181,7 +181,7 @@ class DeliveryController extends Controller
             $branch = session('branch');
         }
 		$chk = $delivery->exsist_chk_provider($request->providername,$branch);
-		return $chk; 
+		return $chk;
 	}
 
     public function storeserviceprovider(delivery $delivery, Request $request,userDetails $users){
@@ -198,7 +198,7 @@ class DeliveryController extends Controller
 			'username' => 'required',
 			'password' => 'required',
         ];
-		
+
 		if($request->category == 2 ){
 			// $rules = array_merge($rules,[
 				// "cnic" => 'required',
@@ -207,7 +207,7 @@ class DeliveryController extends Controller
 
 
         $this->validate($request, $rules);
-			
+
         $imageName= "";
         $chk = $delivery->exsist_chk_provider($request->providername,$request->branch);
         if ($chk[0]->counts == 0) {
@@ -321,7 +321,7 @@ class DeliveryController extends Controller
             if ($validator->fails()) {
                 return response(['status' => "false", 'message' => 'Please enter to charge name or charge value']);
             }
-            
+
             $fields = [
                 'chargeName' => $request->chargeName,
                 'chargeValue' => $request->chargeValue,
@@ -356,13 +356,17 @@ class DeliveryController extends Controller
         $getcategory = $delivery->getcategory();
         $getpercen = $delivery->getpercentages();
 		$providersPaymentType = $delivery->getServiceProviderPaymentInfo();
-        return view('Delivery.service-provider', compact('getbranch','getcategory','getpercen','providersPaymentType'));
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Delivery.service-provider', compact('getbranch','getcategory','getpercen','providersPaymentType','website'));
     }
 
 
     public function show(delivery $delivery){
         $providers = $delivery->getserviceproviders(1);
-		
+
         return view('Delivery.service-provider-list', compact('providers'));
     }
 

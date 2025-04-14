@@ -15,7 +15,7 @@
    <div class="card-header">
      <h5 class="card-header-text">Create Service Provider</h5>
      <h6 class=""><a href="{{ url('/service-provider') }}"><i class="text-primary text-center icofont icofont-arrow-left p-r-20 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Back">Back to list</i></a></h6>
-   </div>      
+   </div>
    <div class="card-block">
     <!-- Additional charges Field -->
     <div style="display:none">
@@ -48,7 +48,7 @@
             <div class="form-group">
                 <label class="m-t-40"></label>
               <a class="blue-btn2 addset floatleft remove_row remove-button" href="javascript:void(0)" style="text-align: center;">
-              &nbsp;Remove 
+              &nbsp;Remove
             </a>
           </div>
           </div>
@@ -84,7 +84,7 @@
         <div class="form-group {{ $errors->has('providername') ? 'has-danger' : '' }}">
           <label class="form-control-label">Service Provider Name:</label>
           <input type="text" name="providername" id="providername" class="form-control" value="{{old('providername')}}"/>
-           @if ($errors->has('providername')) 
+           @if ($errors->has('providername'))
 			<div class="form-control-feedback">Required field can not be blank.</div>
        @endif
         </div>
@@ -186,7 +186,7 @@
       <div class="form-group">
         <label class="form-control-label">Enter Previous Balance</label>
         <input type="Number" name="prebal" id="prebal" class="form-control" value="0"/>
-		
+
         <div class="form-control-feedback text-info">If any previous balance please enter here, If amount is payable then enter in positive figure while reciveable then enter in negative figure</div>
       </div>
     </div>
@@ -200,6 +200,19 @@
       </div>
     </div>
 
+    @if($website != null)
+    <div id="websiteBox" class="col-lg-4 col-md-4 d-none">
+        <div class="form-group">
+           <label class="form-control-label">Show on website select website</label>
+              <select class="select2 form-control" data-placeholder="Select Bank" id="website" name="website">
+               <option value="">Select website</option>
+                 @foreach($website as $value)
+               <option {{$getdetails[0]->website_id == $value->id ? 'selected' : ''}} value="{{ Crypt::encrypt($value->id) }}">{{$value->name}}</option>
+               @endforeach
+             </select>
+         </div>
+       </div>
+ @endif
   </div>
 
 
@@ -245,9 +258,9 @@
  </div>
  <div class="row">
    <div class="col-md-12">
-    <h5>Add Additional Charges   
+    <h5>Add Additional Charges
       <i href="javascript:void(0)" onclick="return clone_field()" class=" pull-right icofont icofont-plus f-right text-success" title="Add Additional Charges" ></i>
-    </h5>    
+    </h5>
     <hr/>
     <div id="inputfieldClone">
     </div>
@@ -265,7 +278,7 @@
 </form>
 
 
-</div> 
+</div>
 </div>
 
 
@@ -287,19 +300,19 @@
   <div class="modal-body">
    <div class="row">
      <div class="col-md-12">
-      <div class="form-group"> 
+      <div class="form-group">
         <label class="form-control-label">Category Name:</label>
         <input type="text"  name="catmodal" id="catmodal" class="form-control" />
       </div>
     </div>
-  </div>   
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light" onClick="addcat()">Add Category</button>
 </div>
 </div>
 </div>
-</div> 
+</div>
 
 <div class="modal fade modal-flex" id="per-modal" tabindex="-1" role="dialog">
  <div class="modal-dialog modal-md" role="document">
@@ -313,19 +326,19 @@
   <div class="modal-body">
    <div class="row">
      <div class="col-md-12">
-      <div class="form-group"> 
+      <div class="form-group">
         <label class="form-control-label">Enter Percentage:</label>
         <input type="Number"  name="permodal" id="permodal" class="form-control" min="" />
       </div>
     </div>
-  </div>   
+  </div>
 </div>
 <div class="modal-footer">
   <button type="button" id="btn_per" class="btn btn-success waves-effect waves-light" onClick="addper()">Add Percentage</button>
 </div>
 </div>
 </div>
-</div> 
+</div>
 
 
 <div class="modal fade modal-flex" id="update-modal" tabindex="-1" role="dialog">
@@ -380,7 +393,7 @@
   </div>
 </div>
 </div>
-</div> 
+</div>
 @endsection
 
 @section('scriptcode_three')
@@ -391,6 +404,18 @@
   $("#mobnumb").tagsinput({
    maxTags: 10
  });
+
+ $("#category").on('change',function(){
+    if($(this).val() == 4){
+        if($('#websiteBox').hasClass('d-none')){
+            $('#websiteBox').removeClass('d-none');
+        }
+    }else{
+        if(!$('#websiteBox').hasClass('d-none')){
+            $('#websiteBox').addClass('d-none');
+        }
+    }
+ })
 
 
   $("#btn_category").on('click',function(){
@@ -464,7 +489,7 @@
       dataType:"json",
       percentage:$('#permodal').val(),
     },
-    success:function(resp){   
+    success:function(resp){
       if(resp != 0){
        swal({
         title: "Operation Performed",
@@ -490,7 +515,7 @@
 
   }
 
-}); 
+});
    }
  }
 
@@ -511,7 +536,7 @@
     dataType:"json",
     category:$('#catmodal').val(),
   },
-  success:function(resp){   
+  success:function(resp){
     if(resp != 0){
      swal({
       title: "Operation Performed",
@@ -537,7 +562,7 @@
 
 }
 
-}); 
+});
  }
 }
 
@@ -547,7 +572,7 @@ $('#tblservice').DataTable({
   displayLength: 10,
   info: false,
   language: {
-    search:'', 
+    search:'',
     searchPlaceholder: 'Search Service Provider',
     lengthMenu: '<span></span> _MENU_'
 
@@ -711,10 +736,10 @@ $('#chkactive').change(function(){
 
       $("#tblcharges tbody").append(
         "<tr>" +
-        "<td>"+result[count].branch_name+"</td>" +  
-        "<td>"+result[count].area_name+"</td>" +  
-        "<td>"+result[count].charges+"</td>" +  
-        "<td>"+result[count].status_name+"</td>" +  
+        "<td>"+result[count].branch_name+"</td>" +
+        "<td>"+result[count].area_name+"</td>" +
+        "<td>"+result[count].charges+"</td>" +
+        "<td>"+result[count].status_name+"</td>" +
         "<td class='action-icon'><a class='m-r-10' onclick='reactive("+result[count].id+")' data-toggle='tooltip' data-placement='top' data-original-title='View'><i class='icofont icofont-check-circled text-primary f-18' ></i></a></td>"+
         "</tr>"
         );
@@ -722,7 +747,7 @@ $('#chkactive').change(function(){
 
   }
 }
-}); 
+});
  }
  else{
    window.location="{{ url('/delivery-charges') }}";
@@ -777,10 +802,10 @@ function clone_field(){
   $(document).on("click",".remove_row",function(){
     $(this).closest('#inputClone').remove();
   });
-  
+
   $("#providername").blur(function(){
 	  console.log($(this).val())
-	  
+
 	   $.ajax({
 		  url: "{{url('/chk-serviceprovider-name')}}",
 		  type: 'POST',
@@ -802,13 +827,13 @@ function clone_field(){
 							$("#providername").focus();
 						}
 				});
-				
+
 			}
 		}
 
 		});
   });
-  
+
   $("#cnic").blur(function(){
 	  // let input = document.querySelector('#cnic')
 
@@ -826,7 +851,7 @@ function clone_field(){
 		console.log('Invalid!')
 	  }
   });
-  
+
   $("#paymenttype").change(function(){
 	  if($("#paymenttype").val() == 3){
 		$("#paymentValue").val(0);
