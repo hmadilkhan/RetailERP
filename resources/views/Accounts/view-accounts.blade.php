@@ -83,7 +83,7 @@
 				<div class="form-group">
 				   <select id="website_md" class="form-control select2">
 					   <option>Select</option>
-					   @foreach($websites as $val)
+					   @foreach($website as $val)
 						 <option value="{{ Crypt::encrypt($val->id) }}">{{ $val->name }}</option>
 					   @endforeach
 				   </select>
