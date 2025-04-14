@@ -25,7 +25,7 @@ class WalletDiscount extends Model
 
     // save record department //
     public function insert_wallet_discount($data){
-        return DB::table("bank_discount")->insertGetId($data);
+        return DB::table("wallet_discount")->insertGetId($data);
     }
     public function modify($table,$data,$where){
         return DB::table($table)->where($where)->update($data);
