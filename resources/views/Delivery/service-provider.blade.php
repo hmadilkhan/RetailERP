@@ -207,7 +207,7 @@
               <select class="select2 form-control" data-placeholder="Select Bank" id="website" name="website">
                <option value="">Select website</option>
                  @foreach($website as $value)
-               <option {{$getdetails[0]->website_id == $value->id ? 'selected' : ''}} value="{{ Crypt::encrypt($value->id) }}">{{$value->name}}</option>
+               <option value="{{ Crypt::encrypt($value->id) }}">{{$value->name}}</option>
                @endforeach
              </select>
          </div>
