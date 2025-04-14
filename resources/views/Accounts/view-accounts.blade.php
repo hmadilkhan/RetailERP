@@ -52,10 +52,11 @@
                        <input type="hidden" id="websiteId" value="{{ Crypt::encrypt($value->website_id) }}"/>
                        <input type="hidden" id="websiteBankUniqueId" value="{{ Crypt::encrypt($value->website_bank_id) }}"/>
                        <input type="hidden" id="actionWebsiteUrl" value="{{ isset($value->website_id) ? route('bankUnLinkToWebsite') : route('bankLinkToWebsite') }}"/>
-                       <i class="icofont {{ isset($value->website_id) ?  'icofont-link text-success' : 'icofont-broken text-muted' }} f-20 pointer"
-                            data-toggle="tooltip"
+                      <a href="javascript:voide(0)" class="m-r-10" data-toggle="tooltip"
                          data-placement="top" title="" data-original-title="{{ isset($value->website_id) ?  'Unlink to website' : 'Link to website' }}"
-                         onclick="bind_website({{ isset($value->website_id) ? 1 : 0 }})"></i>
+                         onclick="website_setting({{ isset($value->website_id) ? 1 : 0 }})">
+                           <i class="icofont {{ isset($value->website_id) ?  'icofont-link text-success' : 'icofont-broken text-muted' }} f-20" ></i>
+                         </a>
                     @endif
 
                  </td>
