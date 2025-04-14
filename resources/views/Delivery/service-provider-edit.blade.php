@@ -167,9 +167,9 @@
                  <div class="form-control-feedback"></div>
                   </div>
               </div>
-{{ $website }}
-              @if($website != null && $details[0]->category == 6)
-              <div id="websiteBox" class="row {{ $details[0]->category != 6 ? 'd-none' : '' }}">
+
+              @if($website != null && $details[0]->category == 'Wallets')
+              <div id="websiteBox" class="row {{ $details[0]->category != 'Wallets' ? 'd-none' : '' }}">
                 <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                      <label class="form-control-label">Show on website select website</label>
@@ -437,7 +437,7 @@
     });
 
 
-    @if($website != null)
+ @if($website != null)
     $("#category").on('change',function(){
         if($(this).val() == 6){
             if($('#websiteBox').hasClass('d-none')){
