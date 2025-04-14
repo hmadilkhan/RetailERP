@@ -55,6 +55,7 @@ use App\Http\Controllers\VariationController;
 use App\Http\Controllers\VariationProductController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\WalletController;
 use App\Livewire\Customers\CustomerList;
 use App\Livewire\Inventory\Inventory;
 use App\Livewire\Orders\PreOrderBooking;
@@ -425,6 +426,9 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/purchasereport/{id}', [purchaseController::class, 'purchasereport']);
 
 
+
+   //wallet discount
+    Route::get('service-provider/wallet', [WalletController::class, 'index']);
 
 
     // inventory module //
