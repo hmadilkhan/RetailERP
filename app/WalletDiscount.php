@@ -20,7 +20,7 @@ class WalletDiscount extends Model
     }
 
     public function check_wallet_discount($wallet){
-        return count(DB::table("wallet_discount")->where(['id'=>$wallet,'status' => 1])->get()) > 0 ? true : false;
+        return count(DB::table("wallet_discount")->where(['wallet_id'=>$wallet,'status' => 1])->get()) > 0 ? true : false;
     }
 
     // save record department //
