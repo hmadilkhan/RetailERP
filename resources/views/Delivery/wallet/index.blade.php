@@ -1,6 +1,6 @@
 @extends('layouts.master-layout')
 
-@section('title','Bank Discount')
+@section('title','Wallet Discount')
 
 @section('navdelivery','active')
 @section('content')
