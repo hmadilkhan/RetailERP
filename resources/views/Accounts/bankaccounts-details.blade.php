@@ -67,8 +67,8 @@
                    <span class="help-block"></span>
               </div>
   		</div>
-  		  <div class="@if($website != null) col-lg-2 @else col-lg-4 @endif @if($website != null) col-lg-2 @else 'col-lg-4' @endif">
-                   <div class="form-group">
+  		<div class="@if($website != null) col-lg-2 @else col-lg-4 @endif @if($website != null) col-lg-2 @else 'col-lg-4' @endif">
+              <div class="form-group">
                   <label class="form-control-label">Account Type</label>
                   <input class="form-control" type="text"
                    name="accounttype" id="accounttype" placeholder="Current | Saving" required />
