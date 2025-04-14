@@ -34,7 +34,7 @@ class WalletController extends Controller
         $data = [
             'wallet_id'=> Crypt::decrypt($request->get('wallet')),
             'percentage'=> $request->get('discount_percentage'),
-            'date'=> date('Y-m-d H:i:s')
+            'created_at'=> date('Y-m-d H:i:s')
         ];
 
         if($walletDiscount->check_wallet_discount(Crypt::decrypt($request->get('wallet')))){
@@ -51,7 +51,7 @@ class WalletController extends Controller
 
     public function update(Request $request,WalletDiscount $walletDiscount)
     {
-            if($walletDiscount->modify("wallet_discount",['status'=>2],['id' => $request->get('id')])){
+            if($walletDiscount->modify("wallet_discount",['status'=>0,'updated_at'=>date('Y-m-d H:i:s')],['id' => $request->get('id')])){
                 $data = [
                     'wallet_id'=> Crypt::decrypt($request->get('wallet')),
                     'percentage'=> $request->get('discount_percentage'),
@@ -72,7 +72,7 @@ class WalletController extends Controller
 
     public function deleteDiscount(Request $request,WalletDiscount $walletDiscount)
     {
-        if($walletDiscount->modify("wallet_discount",['status'=>2],['id' => $request->get('id')])){
+        if($walletDiscount->modify("wallet_discount",['status'=>0,'updated_at'=>date('Y-m-d H:i:s')],['id' => $request->get('id')])){
             return 1;
         }else{
             return 2;
