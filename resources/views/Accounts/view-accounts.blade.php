@@ -49,7 +49,7 @@
                      <a href="{{url('/create-deposit')}}/{{ Crypt::encrypt($value->bank_account_id) }}" class="m-r-10" data-toggle="tooltip" data-placement="top" title="" data-original-title="Credit/Debit"><i class="icofont icofont-ui-add text-primary f-10" ></i> </a>
                     @if($website != null)
                        <input type="hidden" id="bankAccountId" value="{{ Crypt::encrypt($value->bank_account_id) }}"/>
-                       <input type="hidden" id="websiteId" value="{{ Crypt::encrypt($value->website_id) }}"/>
+                       <input type="hidden" id="websiteId" value="{{ Crypt::encrypt($website->id) }}"/>
                        <input type="hidden" id="websiteBankUniqueId" value="{{ Crypt::encrypt($value->website_bank_id) }}"/>
                        <input type="hidden" id="actionWebsiteUrl" value="{{ isset($value->website_id) ? route('bankUnLinkToWebsite') : route('bankLinkToWebsite') }}"/>
                       <a href="javascript:voide(0)" class="m-r-10" data-toggle="tooltip"

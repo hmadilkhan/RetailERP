@@ -28,7 +28,7 @@ class BankController extends Controller
         $website = DB::table('website_details')
                       ->where('company_id',session('company_id'))
                       ->where('status',1)
-                      ->get();
+                      ->first();
         return view('Accounts.view-accounts', compact('getaccounts','website'));
     }
 
