@@ -430,7 +430,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
 
    //wallet discount
-    Route::get('service-provider/wallet', [WalletController::class, 'index']);
+    Route::get('/wallet-discount', [WalletController::class, 'index']);
 
 
     // inventory module //
