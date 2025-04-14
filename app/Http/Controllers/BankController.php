@@ -28,7 +28,7 @@ class BankController extends Controller
         $website = DB::table('website_details')
                       ->where('company_id',session('company_id'))
                       ->where('status',1)
-                      ->first();
+                      ->get();
         return view('Accounts.view-accounts', compact('getaccounts','website'));
     }
 
@@ -256,7 +256,11 @@ class BankController extends Controller
         $getbank = $bank->get_banks();
         $getbranches = $bank->get_branches();
         $getdetails = $bank->get_details(Crypt::decrypt($request->id));
-        return view('Accounts.edit-accounts', compact('getbank', 'getbranches', 'getdetails'));
+        $website = DB::table('website_details')
+                    ->where('company_id',session('company_id'))
+                    ->where('status',1)
+                    ->get();
+        return view('Accounts.edit-accounts', compact('getbank', 'getbranches', 'getdetails','website'));
     }
 
     public function updateaccountdetails(bank $bank, Request $request)
