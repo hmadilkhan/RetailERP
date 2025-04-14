@@ -80,6 +80,7 @@
 				<h4 class="modal-title">Website Change</h4>
 			</div>
 			<div class="modal-body">
+                <input type="hidden" id="bank_md"/>
 				<div class="form-group">
 				   <select id="website_md" class="form-control select2">
 					   <option>Select</option>
@@ -117,6 +118,7 @@
 
     function website_setting(value,bank,code){
         if(value == 0){
+            $("#bank_md").val($("#bankAccountId"+code).val());
            $("#website-detail-modal").modal('show');
         }else{
         swal({
@@ -173,7 +175,7 @@
                      type:'POST',
                      data:{ _token:'{{ csrf_token() }}',
                             website:$("#website_md").val(),
-                            bank:$("#bankAccountId"+code).val()},
+                            bank:$("#bank_md").val()},
                      dataType:'json',
                      async:true,
                      success:function(resp,textStatus, jqXHR){
