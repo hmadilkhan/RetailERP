@@ -79,7 +79,7 @@ class BankController extends Controller
 
     public function unlink_website(Request $request){
        try{
-            if($request->uniqueId == 0){
+            if($request->bank == 0 && $request->uniqueId == 0){
                Session::flash('error','Invalid parameter');
                return redirect()->url('view-accounts');
             }
@@ -88,11 +88,11 @@ class BankController extends Controller
             $uniqueId  = (int) Crypt::decrypt($request->uniqueId);
 
             DB::table('website_banks')
-                 ->update([
-                         'status' => 0,
-                         'updated_at' => date('Y-m-d H:i:s')
-                  ])
-                  ->where('id',$uniqueId);
+               ->where('id',$uniqueId)
+               ->update([
+                'status' => 0,
+                'updated_at' => date('Y-m-d H:i:s')
+              ]);
 
                  return response()->json('success',200);
           }catch(\Exception $e){
