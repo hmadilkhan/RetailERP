@@ -366,8 +366,11 @@ class DeliveryController extends Controller
 
     public function show(delivery $delivery){
         $providers = $delivery->getserviceproviders(1);
-
-        return view('Delivery.service-provider-list', compact('providers'));
+        $website = DB::table('website_details')
+                        ->where('company_id',session('company_id'))
+                        ->where('status',1)
+                        ->get();
+        return view('Delivery.service-provider-list', compact('providers','website'));
     }
 
     public function providerledger(delivery $delivery, request $request){
