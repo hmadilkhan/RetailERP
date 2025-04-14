@@ -84,6 +84,37 @@
      </table>
      </div>
           </div>
+
+          <div class="modal fade modal-flex" id="website-detail-modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-md" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                        <h4 class="modal-title">Link to Website</h4>
+                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" id="wallet_md"/>
+                        <div class="form-group">
+                           <select id="website_md" class="form-control select2">
+                               <option>Select</option>
+                               @foreach($website as $val)
+                                 <option value="{{ Crypt::encrypt($val->id) }}">{{ $val->name }}</option>
+                               @endforeach
+                           </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="btnSubmit" class="btn btn-success waves-effect waves-light f-right">
+                            Save
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
 </section>
 
 @endsection
