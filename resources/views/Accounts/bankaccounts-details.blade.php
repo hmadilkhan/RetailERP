@@ -9,12 +9,12 @@
 
 @section('content')
 
-<section class="panels-wells">
+<section class="panels-wells p-t-3">
 <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Create Bank Account</h5>
          <a href="{{ url('/view-accounts') }}" ><h6 class="m-b-0 f-w-400 text-primary"><i class="icofont icofont-arrow-left"></i>Back to list</h6></a>
-         </div>      
+         </div>
        <div class="card-block">
            <form method="post" action="{{url('createaccount')}}" enctype="multipart/form-data">
                @csrf
@@ -23,7 +23,7 @@
            <div class="col-lg-4 col-md-4">
                <div class="form-group">
                   <label class="form-control-label">Select Bank</label>
-                      
+
                             <i id="btn_addbank" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="Add Bank" ></i>
                      <select class="select2 form-control" data-placeholder="Select Bank" id="bank" name="bank">
                       <option value="">Select Bank</option>
@@ -37,7 +37,7 @@
            <div class="col-lg-4 col-md-4">
                <div class="form-group">
                   <label class="form-control-label">Select Branch</label>
-                      
+
                             <i id="btn_addbranch" class="icofont icofont-plus f-right text-success" data-toggle="tooltip" data-placement="top" title="Add Banch" ></i>
                      <select class="select2 form-control" data-placeholder="Select Branch" id="branch" name="branch">
                       <option value="">Select Branch</option>
@@ -67,7 +67,7 @@
                    <span class="help-block"></span>
               </div>
   		</div>
-  		  <div class="col-lg-4 col-md-4">
+  		  <div class="@if($website != null) col-lg-2 @else col-lg-4 @endif @if($website != null) col-lg-2 @else 'col-lg-4' @endif">
                    <div class="form-group">
                   <label class="form-control-label">Account Type</label>
                   <input class="form-control" type="text"
@@ -75,7 +75,20 @@
                    <span class="help-block"></span>
               </div>
   		</div>
-                <div class="col-md-4">
+          @if($website != null)
+        <div class="col-lg-2 col-md-2">
+            <div class="form-group">
+               <label class="form-control-label">Show on website select website</label>
+                  <select class="select2 form-control" data-placeholder="Select Bank" id="website" name="website">
+                   <option value="">Select website</option>
+                     @foreach($website as $value)
+                   <option value="{{$value->id}}">{{$value->name}}</option>
+                   @endforeach
+                 </select>
+             </div>
+           </div>
+          @endif
+                <div class="@if($website != null) col-lg-3 @else col-lg-4 @endif">
                     <label for="image" class="form-control-label">Image</label>
                     <a href="#">
                         <img id="simg" src="{{ asset('assets/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
@@ -110,19 +123,19 @@
                                  <div class="modal-body">
                                    <div class="row">
                                          <div class="col-md-12">
-                                          <div class="form-group"> 
+                                          <div class="form-group">
                                             <label class="form-control-label">Bank Name:</label>
                                              <input type="text"  name="bankname" id="bankname" class="form-control" />
                                             </div>
                                           </div>
-                                      </div>   
+                                      </div>
                                  </div>
                                  <div class="modal-footer">
                                     <button type="button" id="btn_bank" class="btn btn-success waves-effect waves-light" onClick="addbank()">Add Bank</button>
                                  </div>
                               </div>
                            </div>
-                        </div> 
+                        </div>
 
                         <div class="modal fade modal-flex" id="branch-modal" tabindex="-1" role="dialog">
                            <div class="modal-dialog modal-md" role="document">
@@ -136,7 +149,7 @@
                                  <div class="modal-body">
                                  	 <div class="row">
                                          <div class="col-md-12">
-                                          <div class="form-group"> 
+                                          <div class="form-group">
                                             <label class="form-control-label">Select Bank:</label>
                                               <select class="select2 form-control" data-placeholder="Select Bank" id="bankmodal" name="bankmodal">
 						                      <option value="">Select Bank</option>
@@ -146,31 +159,31 @@
 						                    </select>
                                             </div>
                                           </div>
-                                      </div>  
+                                      </div>
                                    <div class="row">
                                          <div class="col-md-12">
-                                          <div class="form-group"> 
+                                          <div class="form-group">
                                             <label class="form-control-label">Branch Name:</label>
                                              <input type="text"  name="branchname" id="branchname" class="form-control" />
                                             </div>
                                           </div>
-                                      </div>   
+                                      </div>
                                  </div>
                                  <div class="modal-footer">
                                     <button type="button" id="btn_branch" class="btn btn-success waves-effect waves-light" onclick="addbranch()">Add Branch</button>
                                  </div>
                               </div>
                            </div>
-                        </div> 
+                        </div>
 
-                         
-          
-              
 
-                
-              
-            
- 
+
+
+
+
+
+
+
 </section>
 @endsection
 
@@ -190,7 +203,7 @@
             reader.readAsDataURL(input.files[0]);
         }
     }
-function addbank(){	
+function addbank(){
 	$.ajax({
             url: "{{url('/submitbankdetails')}}",
             type: 'POST',
@@ -223,7 +236,7 @@ function addbank(){
                   }
              }
 
-          });   
+          });
 
 
 }
@@ -279,7 +292,7 @@ function addbranch(){
                   }
              }
 
-          });   
+          });
 
 
 }
@@ -297,7 +310,7 @@ function submit()
             acctype:$('#accounttype').val(),
         	},
             success:function(resp){
-           
+
                 if(resp == 1){
                      swal({
                             title: "Account Created",
@@ -318,7 +331,7 @@ function submit()
                   }
              }
 
-          });   
+          });
 }
 
 

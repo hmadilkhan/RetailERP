@@ -25,20 +25,33 @@ class BankController extends Controller
     public function show(bank $bank)
     {
         $getaccounts = $bank->get_accounts();
-        return view('Accounts.view-accounts', compact('getaccounts'));
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Accounts.view-accounts', compact('getaccounts','website'));
     }
 
     public function showBanks(bank $bank)
     {
         $banks = $bank->get_banks();
-        return view('Accounts.view-accounts', compact('getaccounts'));
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Accounts.view-accounts', compact('getaccounts','website'));
     }
 
     public function index(bank $bank)
     {
         $getbank = $bank->get_banks();
         $getbranches = $bank->get_branches();
-        return view('Accounts.bankaccounts-details', compact('getbank', 'getbranches'));
+
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Accounts.bankaccounts-details', compact('getbank', 'getbranches','website'));
     }
 
 
@@ -111,6 +124,17 @@ class BankController extends Controller
                 'image' => (!empty($result) ? $result["fileName"] : ""),
             ];
             $acc = $bank->insert_bankdetails('bank_account_generaldetails', $items);
+
+            if($acc != 0 && isset($request->website)){
+                  DB::table('website_banks')
+                      ->insert(
+                         [
+                                   'website_id' => $request->website,
+                                   'bank_id'    => $acc,
+                                   'created_at' => date('Y-m-d H:i:s')
+                                 ]);
+            }
+
             return redirect("view-accounts");
         } else {
             return 0;
