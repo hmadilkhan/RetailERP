@@ -199,9 +199,11 @@
        @endif
       </div>
     </div>
+  </div>
 
-    @if($website != null)
-    <div id="websiteBox" class="col-lg-4 col-md-4 d-none">
+  @if($website != null)
+    <div id="websiteBox" class="row d-none">
+      <div class="col-lg-4 col-md-4">
         <div class="form-group">
            <label class="form-control-label">Show on website select website</label>
               <select class="select2 form-control" data-placeholder="Select Bank" id="website" name="website">
@@ -212,9 +214,8 @@
              </select>
          </div>
        </div>
+    </div>
  @endif
-  </div>
-
 
   <div class="row">
    <div class="col-md-4">
@@ -405,17 +406,19 @@
    maxTags: 10
  });
 
- $("#category").on('change',function(){
-    if($(this).val() == 6){
-        if($('#websiteBox').hasClass('d-none')){
-            $('#websiteBox').removeClass('d-none');
+ @if($website != null)
+    $("#category").on('change',function(){
+        if($(this).val() == 6){
+            if($('#websiteBox').hasClass('d-none')){
+                $('#websiteBox').removeClass('d-none');
+            }
+        }else{
+            if(!$('#websiteBox').hasClass('d-none')){
+                $('#websiteBox').addClass('d-none');
+            }
         }
-    }else{
-        if(!$('#websiteBox').hasClass('d-none')){
-            $('#websiteBox').addClass('d-none');
-        }
-    }
- })
+    })
+ @endif
 
 
   $("#btn_category").on('click',function(){
