@@ -89,9 +89,10 @@ class BankController extends Controller
 
             DB::table('website_banks')
                  ->update([
-                            'status'     =>0,
-                            'updated_at' =>date("Y-m-d H:i:s")
-                 ])->where('id','=',$uniqueId);
+                         'status' => 0,
+                         'updated_at' => date('Y-m-d H:i:s')
+                  ])
+                  ->where('id',$uniqueId);
 
                  return response()->json('success',200);
           }catch(\Exception $e){
