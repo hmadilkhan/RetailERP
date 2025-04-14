@@ -544,7 +544,12 @@ class DeliveryController extends Controller
         $details = $delivery->getdetails($providerId);
         $getAdditionalCharges = $delivery->getAdditionalCharges($providerId);
         $id = $request->id;
-        return view('Delivery.service-provider-edit', compact('getbranch','getcategory','getpercen','details','id','getAdditionalCharges','providersPaymentType'));
+
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Delivery.service-provider-edit', compact('getbranch','getcategory','getpercen','details','id','getAdditionalCharges','providersPaymentType','website'));
     }
 
 
