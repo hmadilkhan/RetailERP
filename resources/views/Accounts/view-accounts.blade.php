@@ -111,7 +111,15 @@
                             async:true,
                             success:function(resp,textStatus, jqXHR){
                                 if(jqXHR.status == 200){
-                                    swal("Success!","","success");
+                                    swal({
+                                            title: "Success!",
+                                            text: "",
+                                            type: "success"
+                                        }, function(isConfirm) {
+                                            if (isConfirm) {
+                                                window.location = "{{ url('/view-accounts') }}";
+                                            }
+                                        });
                                 }
 
                                 if(jqXHR.status == 500){
