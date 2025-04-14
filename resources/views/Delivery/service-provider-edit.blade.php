@@ -169,7 +169,7 @@
               </div>
 
               @if($website != null && $details[0]->category == 6)
-              <div id="websiteBox" class="row d-none">
+              <div id="websiteBox" class="row {{ $details[0]->category != 6 ? 'd-none' : '' }}">
                 <div class="col-lg-4 col-md-4">
                   <div class="form-group">
                      <label class="form-control-label">Show on website select website</label>
@@ -435,6 +435,21 @@
      $("#mobnumb").tagsinput({
      maxTags: 10
     });
+
+
+    @if($website != null)
+    $("#category").on('change',function(){
+        if($(this).val() == 6){
+            if($('#websiteBox').hasClass('d-none')){
+                $('#websiteBox').removeClass('d-none');
+            }
+        }else{
+            if(!$('#websiteBox').hasClass('d-none')){
+                $('#websiteBox').addClass('d-none');
+            }
+        }
+    })
+ @endif
 
 
  $("#btn_category").on('click',function(){
