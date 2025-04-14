@@ -23,7 +23,7 @@ class WalletController extends Controller
            $wallet_discount = $walletDiscount->getWalletDiscount();
 
            $wallets = DB::table('service_provider_details')
-                                ->where('service_provider_details',6)
+                                ->where('categor_id',6)
                                 ->where('branch_id',session('branch'))
                                 ->get();
         return view('Delivery.wallet.index',compact('wallet_discount','wallets'));
