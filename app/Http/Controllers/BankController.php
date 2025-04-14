@@ -297,7 +297,7 @@ class BankController extends Controller
             if(DB::table('website_banks')
                     ->where('bank_id',$request->id)
                     ->where('website_id',$website)
-                    ->status('status',1)
+                    ->where('status',1)
                     ->count() == 0){
                  DB::table('website_banks')
                    ->insert([
