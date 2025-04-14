@@ -138,7 +138,7 @@
                             if(r.contrl != ""){
                                 $("#"+r.contrl).focus();
                                 $("#"+r.contrl+"_alert").html(r.msg);
-                                location.reload();
+                                window.location = "{{ url('wallet-discount') }}";
                             }
                             swal_alert('Alert!',r.msg,'error',false);
 
@@ -170,7 +170,7 @@
                             if(r.contrl != ""){
                                 $("#"+r.contrl).focus();
                                 $("#"+r.contrl+"_alert").html(r.msg);
-                                location.reload();
+                                window.location = "{{ url('wallet-discount') }}";
                             }
                             swal_alert('Alert!',r.msg,'error',false);
 
