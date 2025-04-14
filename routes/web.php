@@ -376,6 +376,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/service-provider', [DeliveryController::class, 'show']);
     Route::get('/service-provider-create', [DeliveryController::class, 'show_create']);
     Route::post('/insert-serviceprovider', [DeliveryController::class, 'storeserviceprovider']);
+    Route::post('/wallet-link-to-website', [DeliveryController::class, 'link_website'])->name('walletLinkToWebsite');
+    Route::post('/wallet-unlink-to-website', [DeliveryController::class, 'unlink_website'])->name('walletUnLinkToWebsite');
     Route::get('/service-provider-ledger/{id}', [DeliveryController::class, 'providerledger']);
     Route::post('/insert-ledger', [DeliveryController::class, 'store_ledger']);
     Route::PUT('/inactive-serviceprovider', [DeliveryController::class, 'inactiveprovider']);

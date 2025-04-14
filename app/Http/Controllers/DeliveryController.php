@@ -233,6 +233,17 @@ class DeliveryController extends Controller
                 'image' => $imageName,
             ];
             $provider = $delivery->insert('service_provider_details',$items);
+
+            if($provider != 0 && isset($request->website)){
+                DB::table('website_wallets')
+                    ->insert(
+                       [
+                                 'website_id' => Crypt::decrypt($request->website),
+                                 'wallet_id'    => $provider,
+                                 'created_at' => date('Y-m-d H:i:s')
+                               ]);
+          }
+
             /* Service Provide bulk insertion */
             $arrData =array();
             $chargeName = $request->get('chargeName');
@@ -310,6 +321,51 @@ class DeliveryController extends Controller
         }
 
     }
+
+    public function link_website(Request $request){
+        try{
+         if($request->wallet == 0 && $request->website == 0){
+            Session::flash('error','Invalid parameter');
+            return redirect()->url('service-provider');
+         }
+         $walletId    = Crypt::decrypt($request->wallet);
+         $websiteId = Crypt::decrypt($request->website);
+
+         DB::table('website_wallets')
+              ->insert([
+                         'wallet_id'    => $walletId,
+                         'website_id' => $websiteId,
+                         'created_at' => date("Y-m-d H:i:s")
+              ]);
+
+              return response()->json('success',200);
+          }catch(\Exception $e){
+              return response()->json($e->getMessage(),500);
+          }
+      }
+
+      public function unlink_website(Request $request){
+         try{
+              if($request->uniqueId == 0){
+                 Session::flash('error','Invalid parameter');
+                 return redirect()->url('service-provider');
+              }
+
+              $uniqueId  = (int) Crypt::decrypt($request->uniqueId);
+
+              DB::table('website_wallets')
+                 ->where('id',$uniqueId)
+                 ->update([
+                  'status' => 0,
+                  'updated_at' => date('Y-m-d H:i:s')
+                ]);
+
+                   return response()->json('success',200);
+            }catch(\Exception $e){
+               return response()->json($e->getMessage(),500);
+            }
+       }
+
 
     public function updateAdditionalCharge(Request $request,delivery $delivery){
          $rules = [

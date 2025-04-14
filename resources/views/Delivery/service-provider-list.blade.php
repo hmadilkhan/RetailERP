@@ -278,7 +278,7 @@ function deleteconfirm(id){
             },function(isConfirm){
                 if(isConfirm){
                         $.ajax({
-                            url: '{{ route("bankUnLinkToWebsite") }}',
+                            url: '{{ route("walletUnLinkToWebsite") }}',
                             type:'POST',
                             data:{ _token:'{{ csrf_token() }}',
                                   uniqueId:$("#websiteWalletUniqueId"+code).val()},
@@ -315,7 +315,7 @@ function deleteconfirm(id){
             swal("Error!","Select website","error");
         }else{
             $.ajax({
-                     url: '{{ route("bankLinkToWebsite") }}',
+                     url: '{{ route("walletLinkToWebsite") }}',
                      type:'POST',
                      data:{ _token:'{{ csrf_token() }}',
                             website:$("#website_md").val(),
