@@ -79,7 +79,7 @@ class BankController extends Controller
 
     public function unlink_website(Request $request){
        try{
-            if($request->bank == 0 && $request->website == 0){
+            if($request->uniqueId == 0){
                Session::flash('error','Invalid parameter');
                return redirect()->url('view-accounts');
             }
