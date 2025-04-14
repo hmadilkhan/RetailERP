@@ -431,7 +431,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
    //wallet discount
     Route::get('/wallet-discount', [WalletController::class, 'index']);
-    Route::post('/create-bank-discount', [WalletController::class, 'store']);
+    Route::post('/create-wallet-discount', [WalletController::class, 'store']);
     Route::post('/update-wallet-discount', [WalletController::class, 'update']);
     Route::post('/delete-wallet-discount', [WalletController::class, 'deleteDiscount']);
 
