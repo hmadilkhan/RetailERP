@@ -89,7 +89,7 @@
                                         <td>{{$val->provider_name}}</td>
                                         <td>{{$val->percentage}} %</td>
                                         <td>
-                                            <a onclick="edit({{$val->id}},{{$val->wallet_id}},{{$val->percentage}})" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+                                            <a onclick="edit({{$val->id}},'{{$val->provider_name}}',{{$val->percentage}})" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
                                             <a onclick="deleteDiscount('{{$val->id}}')" class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-delete"></i></a>
                                         </td>
 
@@ -187,11 +187,16 @@
 
         function edit(id,wallet,percentage){
             $('#id').val(id);
-            $('#wallet').val(wallet).change();
             $('#discount_percentage').val(percentage);
             $('#btn_save').css('display','none');
             $('#btn_update').css('display','block');
 
+            $('#wallet option').each(function() {
+              if ($(this).text() === wallet) {
+                $(this).prop('selected', true);
+                return false; // loop break
+              }
+            });
         }
 
         function deleteDiscount(id) {
