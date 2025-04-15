@@ -195,7 +195,7 @@
             $('#wallet option').each(function() {
                 console.log($(this).text()+' - '+wallet)
                 if ($(this).text() == wallet) {
-                    $(this).prop('selected', true);
+                    $(this).attr('selected', true);
                     return false; // loop break
                 }
             });
