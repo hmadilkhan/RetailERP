@@ -190,8 +190,6 @@
             $('#discount_percentage').val(percentage);
             $('#btn_save').css('display','none');
             $('#btn_update').css('display','block');
-            // $('#wallet').text(wallet).change();
-            // console.log(wallet)
 
             var option = $('#wallet option').filter(function() {
                              return $(this).text() == wallet;
