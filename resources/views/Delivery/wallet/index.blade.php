@@ -196,7 +196,7 @@
 
                 if ($(this).text() == wallet) {
                     console.log($(this).text()+' - '+wallet)
-                    $(this).attr('selected', true);
+                    $(this).text(wallet).attr('selected', true);
                     return false; // loop break
                 }
             });
