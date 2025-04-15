@@ -248,7 +248,28 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-lg-4 col-md-4">
+                                <div class="col-md-3">
+                                    <div class="form-group {{ $errors->has('inventory_type') ? 'has-danger' : '' }}">
+                                        <label class="form-control-label">Inventory Type </label>
+                                          <select class="form-control  select2" data-placeholder="Select Inventory Type" id="inventory_type" name="inventory_type">
+                                             <option value="">Select Inventory Type</option>
+                                              @if($mode)
+                                                    @foreach($types as $type)
+                                                      @if( $data[0]->inventory_type_id == $type->id)
+                                                        <option selected="selected" value="{{$type->id}}">{{$type->name}}</option>
+                                                      @else
+                                                        <option value="{{$type->id}}">{{$type->name}}</option>
+                                                      @endif
+                                                    @endforeach
+                                             @endif
+                                          </select>
+                                          @if ($errors->has('inventory_type'))
+                                            <div class="form-control-feedback">Required field can not be blank.</div>
+                                          @endif
+                      
+                                 </div>
+                               </div>
+                                <div class="col-lg-3 col-md-3">
                                     <div class="form-group">
                                         <label class="form-control-label">References</label>
                                         <div class="tags_add">
@@ -257,7 +278,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-lg-4 col-md-4">
+                                <div class="col-lg-3 col-md-3">
                                     <div class="form-group {{ $errors->has('brand') ? 'has-danger' : '' }}">
                                         <label class="form-control-label">Brand</label>
                                         <i data-toggle="modal" data-target="#createbrand-modal"
@@ -278,7 +299,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="form-group {{ $errors->has('tags') ? 'has-danger' : '' }}">
                                         <label class="form-control-label">Tags</label>
                                         <i data-toggle="modal" data-target="#createtag-modal"
