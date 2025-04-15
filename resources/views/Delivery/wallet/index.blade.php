@@ -191,6 +191,7 @@
             $('#btn_save').css('display','none');
             $('#btn_update').css('display','block');
             $('#wallet').text(wallet).change();
+            console.log(wallet)
             // $('#wallet option').each(function() {
             //     console.log($(this).text()+' - '+wallet)
             //     if ($(this).text().trim() === wallet) {
