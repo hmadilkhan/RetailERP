@@ -231,6 +231,11 @@
                         <div class="col-xl-4">
                             <div class="flex-shrink-0 items-center ms-2 py-2 ">
                                 <div class="text-sm-end mt-2 mt-sm-0 float-end">
+                                    @if(auth()->user()->id == 929 && $order->orderStatus->order_status_name == 'Delivered')
+                                        <a href="{{ url('change-order-status') }}/{{ $order->id }}/1"
+                                            class="btn btn-danger text-white  ml-2">
+                                            <i class="mdi mdi-cart-outline me-1"></i> Pending </a>
+                                    @endif
                                     @if (session('roleId') == 19 or session('roleId') == 2)
                                         @if ($order->orderStatus->order_status_name == 'Pending')
                                             <a href="{{ url('change-order-status') }}/{{ $order->id }}/2"

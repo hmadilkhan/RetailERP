@@ -17,6 +17,7 @@ use App\InventoryDealGeneral;
 use App\InventoryDealDetail;
 use App\InventoryVariation;
 use App\InventoryVariationProduct;
+use App\Models\InventoryType;
 use App\Models\QuickBookSetting;
 use App\WebsiteDetail;
 use App\WebsiteProduct;
@@ -269,6 +270,7 @@ class InventoryController extends Controller
             'item_code'           => $request->code,
             'product_name'        => $request->name,
             'product_description' => $request->description,
+            'inventory_type_id'   => $request->inventory_type,
             'image'               => $imageName,
             'url'                 => $imageData,
             'status'              => 1,
@@ -1129,10 +1131,11 @@ class InventoryController extends Controller
         $vendors = $vendor->getVendors();
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
         $totaladdons = AddonCategory::where("company_id", session("company_id"))->where("mode", "addons")->where('status', 1)->get();
+        $types = InventoryType::all();
         // 		$extras = DB::table("extra_products")->whereNull("parent")->get();
 
         // if (Auth::user()->username == 'demoadmin') {
-        return view('Inventory.create-debug', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList', 'attributes'));
+        return view('Inventory.create-debug', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList', 'attributes','types'));
         // } else {
         //     return view('Inventory.create', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList'));
         // }
@@ -1167,7 +1170,6 @@ class InventoryController extends Controller
         $brandList  = $brand->getBrand();
         $tagsList  = Tag::getTags();
         $data = $inventory->get_details($request->id);
-
         if(count($data) == 0) {
             Session::flash('error','Record not found!');
             return redirect()->route('invent-list');
@@ -1188,6 +1190,7 @@ class InventoryController extends Controller
 
         $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->where("status",1)->pluck("tag_id");
         $inventoryVideo = DB::table("inventory_video")->where("inventory_id", $data[0]->id)->first();
+        $types = InventoryType::all();
         foreach ($references as $refval) {
             $ref[] = $refval->refrerence;
         }
@@ -1206,7 +1209,7 @@ class InventoryController extends Controller
         }
 
         // if(Auth::user()->username == 'demoadmin'){
-        return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites','websiteType', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo'));
+        return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites','websiteType', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo','types'));
 
         // }else{
         //  return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
@@ -1260,6 +1263,7 @@ class InventoryController extends Controller
             'item_code'            => $request->code,
             'product_name'         => $request->name,
             'product_description'  => $request->description,
+            'inventory_type_id'  => $request->inventory_type,
             'status'               => 1,
             'created_at'           => date('Y-m-d H:s:i'),
             'updated_at'           => date('Y-m-d H:s:i'),
