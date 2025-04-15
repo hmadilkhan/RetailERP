@@ -246,7 +246,7 @@
             },function(isConfirm){
                 if(isConfirm){
                     if(mode==true){
-                        window.location="{{ url('view-bank-discount') }}";
+                        window.location="{{ url('wallet-discount') }}";
                     }
                 }
             });
