@@ -89,7 +89,7 @@
                                         <td>{{$val->provider_name}}</td>
                                         <td>{{$val->percentage}} %</td>
                                         <td>
-                                            <a onclick="edit('{{$val->id}}','{{$val->id}}','{{$val->percentage}}')" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+                                            <a onclick="edit('{{$val->id}}','{{$val->wallet_id}}','{{$val->percentage}}')" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
                                             <a onclick="deleteDiscount('{{$val->id}}')" class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-delete"></i></a>
                                         </td>
 
