@@ -4,7 +4,7 @@
 
 @section('navdelivery','active')
 @section('content')
-    <section class="panels-wells">
+    <section class="panels-wells p-t-3">
 
         <div class="card">
             <div class="card-header">
