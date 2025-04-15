@@ -30,13 +30,13 @@ class DeliveryController extends Controller
         $charges = $delivery->getcharges(1);
         return view('Delivery.delivery-charges', compact('getbranch','charges'));
     }
-	
+
 	public function mobilePromotion(){
-		$images = DB::table("mobile_promotion_images")->join("inventory_general","inventory_general.id","=","mobile_promotion_images.product_id")->where("mobile_promotion_images.company_id",session("company_id"))->select("mobile_promotion_images.*","inventory_general.product_name")->get(); 
+		$images = DB::table("mobile_promotion_images")->join("inventory_general","inventory_general.id","=","mobile_promotion_images.product_id")->where("mobile_promotion_images.company_id",session("company_id"))->select("mobile_promotion_images.*","inventory_general.product_name")->get();
 		$products = DB::table("inventory_general")->where("status",1)->where("company_id",session("company_id"))->select(["id","product_name"])->get();
         return view('Promotion.mobile-promotion-images',compact('images','products'));
     }
-	
+
 	public function insertMobilePromotion(Request $request){
 		$dbcount =  DB::table("mobile_promotion_images")->where("company_id",session("company_id"))->count();
 		$count=  count($request->image);
@@ -48,7 +48,7 @@ class DeliveryController extends Controller
 					$res = $img->save(public_path('assets/images/mobile/' . $imageName), 75);
 					$data[] = $imageName;
 				}
-				
+
 				//Inventory Images Here
 				foreach ($data  as $value) {
 					DB::table("mobile_promotion_images")->insert([
@@ -57,15 +57,15 @@ class DeliveryController extends Controller
 						"description" => $request->description,
 						"image" => $value
 					]);
-				} 
-				
+				}
+
 				return redirect('mobile-promotion')->With('status', 'Images Uploaded successfully');
 			}
 		}else{
 			return redirect('mobile-promotion')->With('status', 'You have already five images uploaded');
 		}
 	}
-	
+
 	public function mobilePromoImageDelete(Request $request)
 	{
 		if (DB::table("mobile_promotion_images")->where('id', $request->id)->delete()) {
@@ -113,7 +113,7 @@ class DeliveryController extends Controller
         $pdf = dPDF::loadView('Delivery.ledgerPdf',compact('company','data','from','to','provider_id'));
         // Closed to ledger
         if($request->closed == 'true'){
-            $data = $delivery->closedToServiceProviderLedger(Crypt::decrypt($request->provide_id),$request->from,$request->to);    
+            $data = $delivery->closedToServiceProviderLedger(Crypt::decrypt($request->provide_id),$request->from,$request->to);
         }
         return  $pdf->stream("ledger-report.pdf", array("Attachment" => 0));
          exit;
@@ -171,7 +171,7 @@ class DeliveryController extends Controller
         }
 
     }
-	
+
 	public function checkServiceProviderName(delivery $delivery, Request $request)
 	{
         $branch = "";
@@ -181,7 +181,7 @@ class DeliveryController extends Controller
             $branch = session('branch');
         }
 		$chk = $delivery->exsist_chk_provider($request->providername,$branch);
-		return $chk; 
+		return $chk;
 	}
 
     public function storeserviceprovider(delivery $delivery, Request $request,userDetails $users){
@@ -198,7 +198,7 @@ class DeliveryController extends Controller
 			'username' => 'required',
 			'password' => 'required',
         ];
-		
+
 		if($request->category == 2 ){
 			// $rules = array_merge($rules,[
 				// "cnic" => 'required',
@@ -207,7 +207,7 @@ class DeliveryController extends Controller
 
 
         $this->validate($request, $rules);
-			
+
         $imageName= "";
         $chk = $delivery->exsist_chk_provider($request->providername,$request->branch);
         if ($chk[0]->counts == 0) {
@@ -233,6 +233,17 @@ class DeliveryController extends Controller
                 'image' => $imageName,
             ];
             $provider = $delivery->insert('service_provider_details',$items);
+
+            if($provider != 0 && isset($request->website)){
+                DB::table('website_wallets')
+                    ->insert(
+                       [
+                                 'website_id' => Crypt::decrypt($request->website),
+                                 'wallet_id'    => $provider,
+                                 'created_at' => date('Y-m-d H:i:s')
+                               ]);
+          }
+
             /* Service Provide bulk insertion */
             $arrData =array();
             $chargeName = $request->get('chargeName');
@@ -311,6 +322,51 @@ class DeliveryController extends Controller
 
     }
 
+    public function link_website(Request $request){
+        try{
+         if($request->wallet == 0 && $request->website == 0){
+            Session::flash('error','Invalid parameter');
+            return redirect()->url('service-provider');
+         }
+         $walletId    = Crypt::decrypt($request->wallet);
+         $websiteId = Crypt::decrypt($request->website);
+
+         DB::table('website_wallets')
+              ->insert([
+                         'wallet_id'    => $walletId,
+                         'website_id' => $websiteId,
+                         'created_at' => date("Y-m-d H:i:s")
+              ]);
+
+              return response()->json('success',200);
+          }catch(\Exception $e){
+              return response()->json($e->getMessage(),500);
+          }
+      }
+
+      public function unlink_website(Request $request){
+         try{
+              if($request->uniqueId == 0){
+                 Session::flash('error','Invalid parameter');
+                 return redirect()->url('service-provider');
+              }
+
+              $uniqueId  = (int) Crypt::decrypt($request->uniqueId);
+
+              DB::table('website_wallets')
+                 ->where('id',$uniqueId)
+                 ->update([
+                  'status' => 0,
+                  'updated_at' => date('Y-m-d H:i:s')
+                ]);
+
+                   return response()->json('success',200);
+            }catch(\Exception $e){
+               return response()->json($e->getMessage(),500);
+            }
+       }
+
+
     public function updateAdditionalCharge(Request $request,delivery $delivery){
          $rules = [
             'chargeName' => 'required',
@@ -321,7 +377,7 @@ class DeliveryController extends Controller
             if ($validator->fails()) {
                 return response(['status' => "false", 'message' => 'Please enter to charge name or charge value']);
             }
-            
+
             $fields = [
                 'chargeName' => $request->chargeName,
                 'chargeValue' => $request->chargeValue,
@@ -356,14 +412,21 @@ class DeliveryController extends Controller
         $getcategory = $delivery->getcategory();
         $getpercen = $delivery->getpercentages();
 		$providersPaymentType = $delivery->getServiceProviderPaymentInfo();
-        return view('Delivery.service-provider', compact('getbranch','getcategory','getpercen','providersPaymentType'));
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Delivery.service-provider', compact('getbranch','getcategory','getpercen','providersPaymentType','website'));
     }
 
 
     public function show(delivery $delivery){
         $providers = $delivery->getserviceproviders(1);
-		
-        return view('Delivery.service-provider-list', compact('providers'));
+        $website = DB::table('website_details')
+                        ->where('company_id',session('company_id'))
+                        ->where('status',1)
+                        ->get();
+        return view('Delivery.service-provider-list', compact('providers','website'));
     }
 
     public function providerledger(delivery $delivery, request $request){
@@ -481,7 +544,12 @@ class DeliveryController extends Controller
         $details = $delivery->getdetails($providerId);
         $getAdditionalCharges = $delivery->getAdditionalCharges($providerId);
         $id = $request->id;
-        return view('Delivery.service-provider-edit', compact('getbranch','getcategory','getpercen','details','id','getAdditionalCharges','providersPaymentType'));
+
+        $website = DB::table('website_details')
+                      ->where('company_id',session('company_id'))
+                      ->where('status',1)
+                      ->get();
+        return view('Delivery.service-provider-edit', compact('getbranch','getcategory','getpercen','details','id','getAdditionalCharges','providersPaymentType','website'));
     }
 
 
@@ -516,6 +584,30 @@ class DeliveryController extends Controller
         ];
 
         $provider = $delivery->update_provider($request->proid,$items);
+
+        $website = isset($request->website) ? $request->website  : '';
+
+        if($website != ''){
+           $website = Crypt::decrypt($request->website);
+
+           if(DB::table('website_wallets')
+                   ->where('wallet_id',$request->proid)
+                   ->where('website_id',$website)
+                   ->where('status',1)
+                   ->count() == 0){
+                DB::table('website_wallets')
+                  ->insert([
+                         'wallet_id' => $request->proid,
+                         'website_id' => $website,
+                         'created_at' => date('Y-m-d H:i:s')
+                 ]);
+
+           }
+        }else{
+           DB::table('website_wallets')
+           ->where('wallet_id',$request->id)
+           ->update(['status'=>0,'updated_at'=>date('Y-m-d H:i:s')]);
+        }
 
         $userId = $delivery->getUserIdFromServiceProvider($request->proid);
         if ($userId > 0) {

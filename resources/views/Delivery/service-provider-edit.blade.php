@@ -15,7 +15,7 @@
      <div class="card-header">
          <h5 class="card-header-text">Edit Service Provider</h5>
                <h6 class=""><a href="{{ url('/service-provider') }}"><i class="text-primary text-center icofont icofont-arrow-left p-r-20 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Back">Back to list</i></a></h6>
-         </div>      
+         </div>
        <div class="card-block">
          <!-- Additional charges Field -->
          <div style="display:none">
@@ -48,7 +48,7 @@
                 <div class="form-group">
                   <label class="m-t-40"></label>
                   <a class="blue-btn2 addset floatleft remove_row remove-button" href="javascript:void(0)" style="text-align: center;">
-                    &nbsp;Remove 
+                    &nbsp;Remove
                   </a>
                 </div>
               </div>
@@ -67,12 +67,12 @@
              <div class="col-lg-4 col-md-4">
                 <div class="form-group">
                 <label class="form-control-label">Branch</label>
-                 
+
                 <select name="branch" id="branch" data-placeholder="Select Branch" class="form-control select2"  >
                     <option value="">Select Branch</option>
                     @if($getbranch)
                       @foreach($getbranch as $value)
-                <option {{$value->branch_name == $details[0]->branch_name ? 'selected="selected"' : '' }} 
+                <option {{$value->branch_name == $details[0]->branch_name ? 'selected="selected"' : '' }}
              value="{{ $value->branch_id }}">{{ $value->branch_name}}</option>
                       @endforeach
                     @endif
@@ -97,7 +97,7 @@
                     <option value="">Select Category</option>
                     @if($getcategory)
                       @foreach($getcategory as $value)
-                       <option {{$value->category == $details[0]->category ? 'selected="selected"' : '' }} 
+                       <option {{$value->category == $details[0]->category ? 'selected="selected"' : '' }}
              value="{{ $value->category_id }}">{{ $value->category}}</option>
 
                       @endforeach
@@ -107,7 +107,7 @@
                   </div>
               </div>
 
-       
+
             </div>
 
               <div class="row">
@@ -134,11 +134,11 @@
                  <div class="form-control-feedback"></div>
                   </div>
               </div>
-     
+
             </div>
             <div class="row">
-	
-			  
+
+
 			<div class="col-lg-4 col-md-4">
 				<div class="form-group {{ $errors->has('percentage') ? 'has-danger' : '' }}">
 					<label class="form-control-label">Payment Type</label>
@@ -168,6 +168,22 @@
                   </div>
               </div>
 
+              @if($website != null && $details[0]->category == 'Wallets')
+              <div id="websiteBox" class="row {{ $details[0]->category != 'Wallets' ? 'd-none' : '' }}">
+                <div class="col-lg-4 col-md-4">
+                  <div class="form-group">
+                     <label class="form-control-label">Show on website select website</label>
+                        <select class="select2 form-control" data-placeholder="Select Website" id="website" name="website">
+                         <option value="">Select website</option>
+                           @foreach($website as $value)
+                         <option {{ $details[0]->website_id == $value->id ? 'selected' : '' }} value="{{ Crypt::encrypt($value->id) }}">{{$value->name}}</option>
+                         @endforeach
+                       </select>
+                   </div>
+                 </div>
+              </div>
+           @endif
+
                 <div class="col-md-4">
                     <label for="image" class="form-control-label">Image</label>
                     <a href="#">
@@ -184,14 +200,14 @@
                     </div>
 
                 </div>
-     
+
             </div>
-  
+
             <div class="row">
              <div class="col-md-12">
-              <h5>Add Additional Charges   
+              <h5>Add Additional Charges
                 <i href="javascript:void(0)" onclick="return clone_field()" class=" pull-right icofont icofont-plus f-right text-success" title="Add Additional Charges" ></i>
-              </h5>    
+              </h5>
               <hr/>
               @foreach($getAdditionalCharges as $val)
               <div class="col-lg-12">
@@ -245,9 +261,9 @@
 
 
             </form>
-           </div> 
+           </div>
  </div>
- 
+
 
 
 
@@ -267,19 +283,19 @@
              <div class="modal-body">
                <div class="row">
                      <div class="col-md-12">
-                      <div class="form-group"> 
+                      <div class="form-group">
                         <label class="form-control-label">Category Name:</label>
                          <input type="text"  name="catmodal" id="catmodal" class="form-control" />
                         </div>
                       </div>
-                  </div>   
+                  </div>
              </div>
              <div class="modal-footer">
                 <button type="button" id="btn_depart" class="btn btn-success waves-effect waves-light" onClick="addcat()">Add Category</button>
              </div>
           </div>
            </div>
-        </div> 
+        </div>
 
          <div class="modal fade modal-flex" id="per-modal" tabindex="-1" role="dialog">
        <div class="modal-dialog modal-md" role="document">
@@ -293,19 +309,19 @@
              <div class="modal-body">
                <div class="row">
                      <div class="col-md-12">
-                      <div class="form-group"> 
+                      <div class="form-group">
                         <label class="form-control-label">Enter Percentage:</label>
                          <input type="Number"  name="permodal" id="permodal" class="form-control" min="" />
                         </div>
                       </div>
-                  </div>   
+                  </div>
              </div>
              <div class="modal-footer">
                 <button type="button" id="btn_per" class="btn btn-success waves-effect waves-light" onClick="addper()">Add Percentage</button>
              </div>
           </div>
            </div>
-        </div> 
+        </div>
 
 
  <div class="modal fade modal-flex" id="update-modal" tabindex="-1" role="dialog">
@@ -322,12 +338,12 @@
                       <div class="col-lg-12 col-md-12">
                 <div class="form-group">
                 <label class="form-control-label">Branch</label>
-                 
+
                 <select name="branchmodal" id="branchmodal" data-placeholder="Select Branch" class="form-control select2"  >
                     <option value="">Select Branch</option>
                     @if($getbranch)
                       @foreach($getbranch as $value)
-                        
+
                         <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                       @endforeach
                     @endif
@@ -339,7 +355,7 @@
  <div class="row">
                 <div class="col-lg-6 col-md-6">
                     <label class="form-control-label">Area Name:</label>
-                    
+
                    <input type="text" name="areanamemodal" id="areanamemodal" class="form-control"/>
 
                      <input type="hidden" name="chargesid" id="chargesid" class="form-control"/>
@@ -347,20 +363,20 @@
                 </div>
                  <div class="col-lg-6 col-md-6">
                     <label class="form-control-label">Delivery Charges:</label>
-                    
+
                    <input type="text" name="chargesmodal" id="chargesmodal" class="form-control"/>
-                   
+
                 </div>
 
                 </div>
-             
+
              </div>
              <div class="modal-footer">
                 <button type="button" class="btn btn-info waves-effect waves-light" onClick="update()"><i class="icofont icofont-ui-edit"></i>&nbsp; Update</button>
              </div>
           </div>
            </div>
-        </div> 
+        </div>
 {{-- Model --}}
 <div class="modal fade modal-flex" id="additional-charges-modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-md" role="document">
@@ -421,6 +437,21 @@
     });
 
 
+ @if($website != null)
+    $("#category").on('change',function(){
+        if($(this).val() == 6){
+            if($('#websiteBox').hasClass('d-none')){
+                $('#websiteBox').removeClass('d-none');
+            }
+        }else{
+            if(!$('#websiteBox').hasClass('d-none')){
+                $('#websiteBox').addClass('d-none');
+            }
+        }
+    })
+ @endif
+
+
  $("#btn_category").on('click',function(){
   $('#catmodal').val('');
   $("#category-modal").modal("show");
@@ -464,7 +495,7 @@
           dataType:"json",
           percentage:$('#permodal').val(),
         },
-            success:function(resp){   
+            success:function(resp){
                 if(resp != 0){
                      swal({
                       title: "Operation Performed",
@@ -487,10 +518,10 @@
                             type: "warning"
                        });
                   }
-                 
+
              }
 
-          }); 
+          });
   }
 }
 
@@ -511,7 +542,7 @@ function addcat(){
           dataType:"json",
           category:$('#catmodal').val(),
         },
-            success:function(resp){   
+            success:function(resp){
                 if(resp != 0){
                      swal({
                       title: "Operation Performed",
@@ -534,10 +565,10 @@ function addcat(){
                             type: "warning"
                        });
                   }
-                 
+
              }
 
-          }); 
+          });
   }
 }
 
@@ -547,10 +578,10 @@ function addcat(){
         displayLength: 10,
         info: false,
         language: {
-          search:'', 
+          search:'',
           searchPlaceholder: 'Search Service Provider',
           lengthMenu: '<span></span> _MENU_'
-   
+
         }
 
     });
@@ -638,7 +669,7 @@ $('#branchmodal').val(branchid).change();
 
 }
 
- 
+
 
 $('#chkactive').change(function(){
   if (this.checked) {
@@ -655,10 +686,10 @@ $('#chkactive').change(function(){
 
                         $("#tblcharges tbody").append(
                           "<tr>" +
-                            "<td>"+result[count].branch_name+"</td>" +  
-                            "<td>"+result[count].area_name+"</td>" +  
-                            "<td>"+result[count].charges+"</td>" +  
-                            "<td>"+result[count].status_name+"</td>" +  
+                            "<td>"+result[count].branch_name+"</td>" +
+                            "<td>"+result[count].area_name+"</td>" +
+                            "<td>"+result[count].charges+"</td>" +
+                            "<td>"+result[count].status_name+"</td>" +
                             "<td class='action-icon'><a class='m-r-10' onclick='reactive("+result[count].id+")' data-toggle='tooltip' data-placement='top' data-original-title='View'><i class='icofont icofont-check-circled text-primary f-18' ></i></a></td>"+
                           "</tr>"
                          );
@@ -666,7 +697,7 @@ $('#chkactive').change(function(){
 
                   }
              }
-          }); 
+          });
   }
   else{
  window.location="{{ url('/delivery-charges') }}";
@@ -708,7 +739,7 @@ swal({
                         }
 
                     });
-              
+
            }else {
               swal("Cancelled", "Operation Cancelled:)", "error");
            }

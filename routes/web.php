@@ -55,6 +55,7 @@ use App\Http\Controllers\VariationController;
 use App\Http\Controllers\VariationProductController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
+use App\Http\Controllers\WalletController;
 use App\Livewire\Customers\CustomerList;
 use App\Livewire\Inventory\Inventory;
 use App\Livewire\Orders\PreOrderBooking;
@@ -108,7 +109,7 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
     Route::post('/quickbooks/customer', [QuickBooksController::class, 'addCustomer']);
     Route::put('/quickbooks/customer/{id}', [QuickBooksController::class, 'updateCustomer']);
     Route::delete('/quickbooks/customer/{id}', [QuickBooksController::class, 'deleteCustomer']);
-    
+
 });
 
 Route::get('/view-inventory', ViewInventory::class);
@@ -375,6 +376,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/service-provider', [DeliveryController::class, 'show']);
     Route::get('/service-provider-create', [DeliveryController::class, 'show_create']);
     Route::post('/insert-serviceprovider', [DeliveryController::class, 'storeserviceprovider']);
+    Route::post('/wallet-link-to-website', [DeliveryController::class, 'link_website'])->name('walletLinkToWebsite');
+    Route::post('/wallet-unlink-to-website', [DeliveryController::class, 'unlink_website'])->name('walletUnLinkToWebsite');
     Route::get('/service-provider-ledger/{id}', [DeliveryController::class, 'providerledger']);
     Route::post('/insert-ledger', [DeliveryController::class, 'store_ledger']);
     Route::PUT('/inactive-serviceprovider', [DeliveryController::class, 'inactiveprovider']);
@@ -426,6 +429,11 @@ Route::middleware(['statusCheck'])->group(function () {
 
 
 
+   //wallet discount
+    Route::get('/wallet-discount', [WalletController::class, 'index']);
+    Route::post('/create-wallet-discount', [WalletController::class, 'store']);
+    Route::post('/update-wallet-discount', [WalletController::class, 'update']);
+    Route::post('/delete-wallet-discount', [WalletController::class, 'deleteDiscount']);
 
     // inventory module //
     Route::get('/create-inventory', [InventoryController::class, "create"])->name('create-invent');
@@ -841,6 +849,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/bankaccounts-details', [BankController::class, 'index']);
     Route::post('/submitbankdetails', [BankController::class, 'submit_details']);
     Route::post('/createaccount', [BankController::class, 'insert_account']);
+    Route::post('/bank-link-to-website', [BankController::class, 'link_website'])->name('bankLinkToWebsite');
+    Route::post('/bank-unlink-to-website', [BankController::class, 'unlink_website'])->name('bankUnLinkToWebsite');
     Route::get('/view-accounts', [BankController::class, 'show']);
     Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
     Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);

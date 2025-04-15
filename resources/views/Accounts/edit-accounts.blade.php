@@ -14,7 +14,7 @@
      <div class="card-header">
          <h5 class="card-header-text">Update Account Details</h5>
          <a href="{{ url('/view-accounts') }}" ><h6 class="m-b-0 f-w-400 text-primary"><i class="icofont icofont-arrow-left"></i>Back to list</h6></a>
-         </div>      
+         </div>
        <div class="card-block">
            <form method="post" action="{{url('updateaccount')}}" enctype="multipart/form-data">
                @csrf
@@ -25,8 +25,8 @@
            <div class="col-lg-4 col-md-4">
                <div class="form-group">
                   <label class="form-control-label">Select Bank</label>
-                      
-                            
+
+
                      <select class="select2 form-control" data-placeholder="Select Bank" id="bank" name="bank">
                       <option value="">Select Bank</option>
                         @foreach($getbank as $value)
@@ -39,8 +39,8 @@
            <div class="col-lg-4 col-md-4">
                <div class="form-group">
                   <label class="form-control-label">Select Branch</label>
-                      
-                           
+
+
                      <select class="select2 form-control" data-placeholder="Select Branch" id="branch" name="branch">
                       <option value="">Select Branch</option>
                        @foreach($getbranches as $value)
@@ -53,7 +53,7 @@
               <div class="col-lg-4 col-md-4">
                    <div class="form-group">
                   <label class="form-control-label">Account Title</label>
-                  <input class="form-control" type="text" value="{{$getdetails[0]->account_title}}" 
+                  <input class="form-control" type="text" value="{{$getdetails[0]->account_title}}"
                    name="accountitle" id="accountitle" required />
                    <span class="help-block"></span>
               </div>
@@ -69,7 +69,7 @@
                    <span class="help-block"></span>
               </div>
   		</div>
-  		  <div class="col-lg-4 col-md-4">
+  		<div class="@if($website != null) col-lg-2 @else col-lg-4 @endif @if($website != null) col-lg-2 @else 'col-lg-4' @endif">
                    <div class="form-group">
                   <label class="form-control-label">Account Type</label>
                   <input class="form-control" type="text" value="{{$getdetails[0]->account_type}}"
@@ -77,7 +77,22 @@
                    <span class="help-block"></span>
               </div>
   		</div>
-                <div class="col-md-4">
+
+     @if($website != null)
+        <div class="col-lg-2 col-md-2">
+            <div class="form-group">
+               <label class="form-control-label">Show on website select website</label>
+                  <select class="select2 form-control" data-placeholder="Select Bank" id="website" name="website">
+                   <option value="">Select website</option>
+                     @foreach($website as $value)
+                   <option {{$getdetails[0]->website_id == $value->id ? 'selected' : ''}} value="{{ Crypt::encrypt($value->id) }}">{{$value->name}}</option>
+                   @endforeach
+                 </select>
+             </div>
+           </div>
+     @endif
+
+       <div class="@if($website != null) col-lg-3 @else col-lg-4 @endif">
                     <label for="image" class="form-control-label">Image</label>
                     <a href="#">
                         <img id="simg" src="{{ asset('assets/images/bank-account/'.(!empty($getdetails[0]->image) ? $getdetails[0]->image : 'placeholder.jpg').'') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 100px;height: 100px;">
@@ -113,19 +128,19 @@
                                  <div class="modal-body">
                                    <div class="row">
                                          <div class="col-md-12">
-                                          <div class="form-group"> 
+                                          <div class="form-group">
                                             <label class="form-control-label">Bank Name:</label>
                                              <input type="text"  name="bankname" id="bankname" class="form-control" />
                                             </div>
                                           </div>
-                                      </div>   
+                                      </div>
                                  </div>
                                  <div class="modal-footer">
                                     <button type="button" id="btn_bank" class="btn btn-success waves-effect waves-light" onClick="addbank()">Add Bank</button>
                                  </div>
                               </div>
                            </div>
-                        </div> 
+                        </div>
 
  <div class="modal fade modal-flex" id="branch-modal" tabindex="-1" role="dialog">
                            <div class="modal-dialog modal-md" role="document">
@@ -139,7 +154,7 @@
                                  <div class="modal-body">
                                  	 <div class="row">
                                          <div class="col-md-12">
-                                          <div class="form-group"> 
+                                          <div class="form-group">
                                             <label class="form-control-label">Select Bank:</label>
                                               <select class="select2 form-control" data-placeholder="Select Bank" id="bankmodal" name="bankmodal">
 						                      <option value="">Select Bank</option>
@@ -149,31 +164,31 @@
 						                    </select>
                                             </div>
                                           </div>
-                                      </div>  
+                                      </div>
                                    <div class="row">
                                          <div class="col-md-12">
-                                          <div class="form-group"> 
+                                          <div class="form-group">
                                             <label class="form-control-label">Branch Name:</label>
                                              <input type="text"  name="branchname" id="branchname" class="form-control" />
                                             </div>
                                           </div>
-                                      </div>   
+                                      </div>
                                  </div>
                                  <div class="modal-footer">
                                     <button type="button" id="btn_branch" class="btn btn-success waves-effect waves-light" onclick="addbranch()">Add Branch</button>
                                  </div>
                               </div>
                            </div>
-                        </div> 
+                        </div>
 
-                         
-          
-              
 
-                
-              
-            
- 
+
+
+
+
+
+
+
 </section>
 @endsection
 @section('scriptcode_three')
@@ -204,8 +219,8 @@ $("#btn_addbranch").on('click',function(){
             reader.readAsDataURL(input.files[0]);
         }
     }
-    
-function addbank(){	
+
+function addbank(){
 	$.ajax({
             url: "{{url('/submitbankdetails')}}",
             type: 'POST',
@@ -231,7 +246,7 @@ function addbank(){
                   }
              }
 
-          });   
+          });
 
 
 }
@@ -264,7 +279,7 @@ function addbranch(){
                   }
              }
 
-          });   
+          });
 
 
 }
@@ -281,7 +296,7 @@ function update(id)
             branch_id:$('#branch').val(),
             acctype:$('#accounttype').val(),
             id:id,
-        	}, 
+        	},
             success:function(resp){
                if(resp == 1){
                      swal({
@@ -296,7 +311,7 @@ function update(id)
                   }
              }
 
-          });   
+          });
 }
 </script>
 @endsection

@@ -79,15 +79,15 @@ class delivery extends Model
 
     public function getserviceproviders($statusid){
 		if(session("roleId") == 2){
-			$result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id WHERE a.status_id = ? AND a.branch_id IN (Select branch_id from branch where company_id = ?)',[$statusid,session('company_id')]);
+			$result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value,f.id as website_wallet_id,f.website_id,g.name as website_name FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id LEFT JOIN website_wallets as f ON f.wallet_id = a.id AND f.status = 1 LEFT JOIN website_details as g ON g.id = f.website_id AND g.status = 1 WHERE a.status_id = ? AND a.branch_id IN (Select branch_id from branch where company_id = ?)',[$statusid,session('company_id')]);
 			return $result;
 		}else{
-			$result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id WHERE a.status_id = ? AND a.branch_id = ?',[$statusid,session('branch')]);
+			$result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value,f.id as website_wallet_id,f.website_id,g.name as website_name FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id LEFT JOIN website_wallets as f ON f.wallet_id = a.id AND f.status = 1 LEFT JOIN website_details as g ON g.id = f.website_id AND g.status = 1  WHERE a.status_id = ? AND a.branch_id = ?',[$statusid,session('branch')]);
 			return $result;
 		}
-        
+
     }
-	
+
 	public function getServiceProviderPaymentInfo()
 	{
 		return ServiceProviderPaymentType::all();
@@ -155,7 +155,7 @@ class delivery extends Model
 
 
     public function getdetails($providerid){
-        $result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id WHERE a.id = ?',[$providerid]);
+        $result = DB::select('SELECT a.*, b.category, c.status_name, d.branch_name, e.type,a.payment_value,f.id as website_wallet_id,f.website_id FROM service_provider_details a INNER JOIN service_provider_category b ON b.category_id = a.categor_id INNER JOIN accessibility_mode c ON c.status_id = a.status_id INNER JOIN branch d ON d.branch_id = a.branch_id INNER JOIN service_provider_payment_type e ON e.id = a.payment_type_id LEFT JOIN website_wallets as f ON f.wallet_id = a.id AND f.status = 1 WHERE a.id = ?',[$providerid]);
         return $result;
     }
 

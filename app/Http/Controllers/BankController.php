@@ -54,7 +54,49 @@ class BankController extends Controller
         return view('Accounts.bankaccounts-details', compact('getbank', 'getbranches','website'));
     }
 
+    public function link_website(Request $request){
+      try{
+       if($request->bank == 0 && $request->website == 0){
+          Session::flash('error','Invalid parameter');
+          return redirect()->url('view-accounts');
+       }
+       $bankId    = Crypt::decrypt($request->bank);
+       $websiteId = Crypt::decrypt($request->website);
 
+       DB::table('website_banks')
+            ->insert([
+                       'bank_id'    => $bankId,
+                       'website_id' => $websiteId,
+                       'created_at' => date("Y-m-d H:i:s")
+            ]);
+
+            return response()->json('success',200);
+        }catch(\Exception $e){
+            return response()->json($e->getMessage(),500);
+        }
+    }
+
+    public function unlink_website(Request $request){
+       try{
+            if($request->uniqueId == 0){
+               Session::flash('error','Invalid parameter');
+               return redirect()->url('view-accounts');
+            }
+
+            $uniqueId  = (int) Crypt::decrypt($request->uniqueId);
+
+            DB::table('website_banks')
+               ->where('id',$uniqueId)
+               ->update([
+                'status' => 0,
+                'updated_at' => date('Y-m-d H:i:s')
+              ]);
+
+                 return response()->json('success',200);
+          }catch(\Exception $e){
+             return response()->json($e->getMessage(),500);
+          }
+     }
 
     public function cash_ledger(bank $bank, Request $request)
     {
@@ -129,7 +171,7 @@ class BankController extends Controller
                   DB::table('website_banks')
                       ->insert(
                          [
-                                   'website_id' => $request->website,
+                                   'website_id' => Crypt::decrypt($request->website),
                                    'bank_id'    => $acc,
                                    'created_at' => date('Y-m-d H:i:s')
                                  ]);
@@ -211,7 +253,11 @@ class BankController extends Controller
         $getbank = $bank->get_banks();
         $getbranches = $bank->get_branches();
         $getdetails = $bank->get_details(Crypt::decrypt($request->id));
-        return view('Accounts.edit-accounts', compact('getbank', 'getbranches', 'getdetails'));
+        $website = DB::table('website_details')
+                    ->where('company_id',session('company_id'))
+                    ->where('status',1)
+                    ->get();
+        return view('Accounts.edit-accounts', compact('getbank', 'getbranches', 'getdetails','website'));
     }
 
     public function updateaccountdetails(bank $bank, Request $request)
@@ -241,6 +287,32 @@ class BankController extends Controller
         ];
 
         $acc = $bank->update_accounts($request->id, $items);
+
+         $website = isset($request->website) ? $request->website  : '';
+
+         if($website != ''){
+            $website = Crypt::decrypt($request->website);
+
+
+            if(DB::table('website_banks')
+                    ->where('bank_id',$request->id)
+                    ->where('website_id',$website)
+                    ->where('status',1)
+                    ->count() == 0){
+                 DB::table('website_banks')
+                   ->insert([
+                          'bank_id' => $request->id,
+                          'website_id' => $website,
+                          'created_at' => date('Y-m-d H:i:s')
+                  ]);
+
+            }
+         }else{
+            DB::table('website_banks')
+            ->where('bank_id',$request->id)
+            ->update(['status'=>0,'updated_at'=>date('Y-m-d H:i:s')]);
+         }
+
         return redirect("view-accounts");
     }
 
