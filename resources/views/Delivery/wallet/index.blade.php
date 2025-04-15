@@ -197,18 +197,10 @@
                              return $(this).text() == wallet;
                          });
 
-             if (option.length > 0) {
-                var valueToSelect = option.val();
-                $('#wallet').val(valueToSelect).trigger('change');
+            if (option.length > 0) {
+                  var valueToSelect = option.val();
+                  $('#wallet').val(valueToSelect).trigger('change');
             }
-            // $('#wallet option').each(function() {
-
-            //     if ($(this).text() == wallet) {
-            //         console.log($(this).text()+' - '+wallet)
-            //         $(this).text(wallet).attr('selected', true);
-            //         return false; // loop break
-            //     }
-            // });
         }
 
         function deleteDiscount(id) {
