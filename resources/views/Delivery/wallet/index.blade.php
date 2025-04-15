@@ -190,15 +190,15 @@
             $('#discount_percentage').val(percentage);
             $('#btn_save').css('display','none');
             $('#btn_update').css('display','block');
-            $('#wallet').text(wallet).change();
-            console.log(wallet)
-            // $('#wallet option').each(function() {
-            //     console.log($(this).text()+' - '+wallet)
-            //     if ($(this).text().trim() === wallet) {
-            //         $(this).prop('selected', true);
-            //         return false; // loop break
-            //     }
-            // });
+            // $('#wallet').text(wallet).change();
+            // console.log(wallet)
+            $('#wallet option').each(function() {
+                console.log($(this).text()+' - '+wallet)
+                if ($(this).text() == wallet) {
+                    $(this).prop('selected', true);
+                    return false; // loop break
+                }
+            });
         }
 
         function deleteDiscount(id) {
