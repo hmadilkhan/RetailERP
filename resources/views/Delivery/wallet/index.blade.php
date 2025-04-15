@@ -193,8 +193,9 @@
             // $('#wallet').text(wallet).change();
             // console.log(wallet)
             $('#wallet option').each(function() {
-                console.log($(this).text()+' - '+wallet)
+
                 if ($(this).text() == wallet) {
+                    console.log($(this).text()+' - '+wallet)
                     $(this).attr('selected', true);
                     return false; // loop break
                 }
