@@ -55,7 +55,7 @@ class WalletController extends Controller
                 $data = [
                     'wallet_id'=> Crypt::decrypt($request->get('wallet')),
                     'percentage'=> $request->get('discount_percentage'),
-                    'date'=> date('Y-m-d H:i:s')
+                    'created_at'=> date('Y-m-d H:i:s')
                 ];
                 $result = $walletDiscount->insert_wallet_discount($data);
                 if($result){
