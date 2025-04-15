@@ -191,11 +191,12 @@
             $('#btn_save').css('display','none');
             $('#btn_update').css('display','block');
 
-            $('#wallet').each(function() {
-              if ($(this).text() == wallet) {
-                $(this).prop('selected', true);
-                return false; // loop break
-              }
+            $('#wallet option').each(function() {
+                console.log($(this).text()+' - '+wallet)
+                if ($(this).text().trim() === wallet) {
+                    $(this).prop('selected', true);
+                    return false; // loop break
+                }
             });
         }
 
