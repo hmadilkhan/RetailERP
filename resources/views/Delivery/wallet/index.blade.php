@@ -192,7 +192,7 @@
             $('#btn_update').css('display','block');
 
             $('#wallet option').each(function() {
-              if ($(this).text() === wallet) {
+              if ($(this).text() == wallet) {
                 $(this).prop('selected', true);
                 return false; // loop break
               }
