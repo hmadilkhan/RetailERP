@@ -229,11 +229,11 @@
                       <select class="form-control  select2" data-placeholder="Select Inventory Type" id="inventory_type" name="inventory_type">
                          <option value="">Select Inventory Type</option>
                           @if($mode)
-                                @foreach($types as $type)
+                                @foreach($types as $key =>  $type)
                                   @if( old('inventory_type') == $type->id)
                                     <option selected="selected" value="{{$type->id}}">{{$type->name}}</option>
                                   @else
-                                    <option value="{{$type->id}}">{{$type->name}}</option>
+                                    <option @selected($key == 0) value="{{$type->id}}">{{$type->name}}</option>
                                   @endif
                                 @endforeach
                          @endif
