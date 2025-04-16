@@ -4,7 +4,7 @@
 
 @section('navdelivery','active')
 @section('content')
-    <section class="panels-wells">
+    <section class="panels-wells p-t-3">
 
         <div class="card">
             <div class="card-header">
@@ -89,7 +89,7 @@
                                         <td>{{$val->provider_name}}</td>
                                         <td>{{$val->percentage}} %</td>
                                         <td>
-                                            <a onclick="edit('{{$val->id}}','{{$val->id}}','{{$val->percentage}}')" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
+                                            <a onclick="edit({{$val->id}},'{{$val->provider_name}}',{{$val->percentage}})" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
                                             <a onclick="deleteDiscount('{{$val->id}}')" class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-delete"></i></a>
                                         </td>
 
@@ -187,11 +187,18 @@
 
         function edit(id,wallet,percentage){
             $('#id').val(id);
-            $('#wallet').val(wallet).change();
             $('#discount_percentage').val(percentage);
             $('#btn_save').css('display','none');
             $('#btn_update').css('display','block');
 
+            var option = $('#wallet option').filter(function() {
+                             return $(this).text() == wallet;
+                         });
+
+            if (option.length > 0) {
+                  var valueToSelect = option.val();
+                  $('#wallet').val(valueToSelect).trigger('change');
+            }
         }
 
         function deleteDiscount(id) {
@@ -246,7 +253,7 @@
             },function(isConfirm){
                 if(isConfirm){
                     if(mode==true){
-                        window.location="{{ url('view-bank-discount') }}";
+                        window.location="{{ url('wallet-discount') }}";
                     }
                 }
             });
