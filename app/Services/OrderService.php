@@ -107,6 +107,7 @@ class OrderService
             'address',
             'website',
             'salesperson',
+            'service.serviceType',
         ])->find($orderId);
     }
 

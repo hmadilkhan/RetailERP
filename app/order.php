@@ -163,6 +163,8 @@ class order extends Model
 			->leftJoin("user_salesprovider_relation as wallet_relation", "wallet_relation.user_id", "=", "sales_receipts.wallet_id")
 			->leftJoin("service_provider_details", "service_provider_details.id", "=", "sales_person.provider_id")
 			->leftJoin("service_provider_details as wallet", "wallet.id", "=", "wallet_relation.provider_id")
+			// ->leftJoin('sales_receipts_services', 'sales_receipts.id', '=', 'sales_receipts_services.sales_receipt_id')
+			// ->leftJoin('sales_receipt_service_types', 'sales_receipts_services.service_type_id', '=', 'sales_receipt_service_types.id')
 			// ->where("sales_receipts.web", "=", 0)
 
 			->when($request->first != "" && $request->second != "" && $request->type == "declaration", function ($query) use ($request, $openingIds) {

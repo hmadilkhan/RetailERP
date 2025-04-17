@@ -498,6 +498,10 @@
                                             <td class="text-end">{{ $order->receipt_no }}</td>
                                         </tr>
                                         <tr>
+                                            <td>Service Type :</td>
+                                            <td class="text-end fw-bold">{{ $order->service?->serviceType?->name ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
                                             <td>Customer : </td>
                                             <td class="text-end">{{ $order->customer->name }}</td>
                                         </tr>
