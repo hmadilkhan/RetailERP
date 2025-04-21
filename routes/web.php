@@ -61,6 +61,7 @@ use App\Livewire\Inventory\Inventory;
 use App\Livewire\Orders\PreOrderBooking;
 use App\Livewire\StockAdjustment\ListAdjustment;
 use App\Livewire\StockReport;
+use App\Livewire\VehicleManager;
 use App\Livewire\ViewInventory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -113,6 +114,7 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
 });
 
 Route::get('/view-inventory', ViewInventory::class);
+Route::get('/vehicle-manager', VehicleManager::class);
 Route::get('/view-adjustments', ListAdjustment::class);
 Route::get('/stock-report', StockReport::class);
 Route::get('/customers-list', CustomerList::class);
