@@ -2,7 +2,9 @@
 
 namespace App\Livewire;
 
+use App\Models\Inventory;
 use App\Models\VehicleBrand;
+use App\Models\VehicleInventory;
 use App\Models\VehicleModel;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -12,12 +14,13 @@ use Livewire\WithFileUploads;
 class VehicleManager extends Component
 {
     use WithFileUploads;
-    
+
     #[Title("Vehicle Manager")]
 
     public $brands;
     public $models = [];
     public $selectedBrand = null;
+    public $selectedModel = null;
     // Brand
     public $brandId = null;
     public $brandName = '';
@@ -31,8 +34,10 @@ class VehicleManager extends Component
     // Control modals
     public $showBrandModal = false;
     public $showModelModal = false;
+    public $showModelInventory = false;
 
-
+    // Control Accordion
+    public $selectedModelId = null;
 
     public function mount()
     {
@@ -43,8 +48,29 @@ class VehicleManager extends Component
     {
         $this->selectedBrand = VehicleBrand::find($brandId);
         $this->models = $this->selectedBrand->models;
+        $this->selectedModelId = null;
+        $this->showModelInventory = false;
     }
 
+    public function modelInventory($modelId)
+    {
+        $this->selectedModelId = $modelId;
+        $this->showModelInventory = true;
+        $this->selectedModel = VehicleModel::find($modelId);
+    }
+
+    // public function toggleModel($modelId)
+    // {
+    //     $this->selectedModelId = $this->selectedModelId === $modelId ? null : $modelId;
+    // }
+
+    public function getInventoriesProperty()
+    {
+        if (!$this->selectedModelId) return collect();
+
+        return VehicleInventory::with("inventory")->where('vehicle_model_id', $this->selectedModelId)->get();
+
+    }
 
     // BRAND
     public function addBrand()
@@ -68,8 +94,8 @@ class VehicleManager extends Component
             'brandLogo' => $this->brandId ? 'nullable|image|mimes:jpg,jpeg,png|max:1024' : 'required|image|mimes:jpg,jpeg,png|max:1024',
         ]);
 
-        $data = ['name' => $this->brandName,'company_id' => session('company_id')];
-   
+        $data = ['name' => $this->brandName, 'company_id' => session('company_id')];
+
         if ($this->brandLogo) {
             $data['image'] = $this->brandLogo->store('images/vehicle-brands', 'public');
         }

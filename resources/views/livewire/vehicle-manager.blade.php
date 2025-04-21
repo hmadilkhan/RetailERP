@@ -58,6 +58,88 @@
                                     </div>
                                     <div class="card-body">
                                         <button class="btn btn-primary mb-3" wire:click="addModel">+ Add Model</button>
+                                        {{-- <div class="accordion" id="modelsAccordion" x-data="{ selectedModelId: @entangle('selectedModelId') }">
+                                            @foreach ($models as $model)
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="heading{{ $model->id }}">
+                                                        <button
+                                                            class="accordion-button"
+                                                            :class="{ 'collapsed': selectedModelId !== {{ $model->id }} }"
+                                                            type="button"
+                                                            @click="selectedModelId === {{ $model->id }} ? selectedModelId = null : selectedModelId = {{ $model->id }}"
+                                                            aria-expanded="selectedModelId === {{ $model->id }}"
+                                                            aria-controls="collapse{{ $model->id }}">
+                                                            @if ($model->image)
+                                                                <img src="{{ asset('storage/' . $model->image) }}"
+                                                                    alt="{{ $model->name }}" height="30"
+                                                                    class="me-2">
+                                                            @endif
+                                                            {{ $model->name }}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapse{{ $model->id }}"
+                                                        class="accordion-collapse collapse"
+                                                        :class="{ 'show': selectedModelId === {{ $model->id }} }"
+                                                        aria-labelledby="heading{{ $model->id }}"
+                                                        data-bs-parent="#modelsAccordion">
+                                                        <div class="accordion-body">
+                                                            
+                                                            @if ($selectedModelId === $model->id)
+                                                                @forelse ($this->inventories as $inventory)
+                                                                    <div class="mb-2 p-2 border rounded">
+                                                                        <strong>{{ $inventory->name }}</strong><br>
+                                                                        {{ $inventory->description ?? 'No description' }}
+                                                                    </div>
+                                                                @empty
+                                                                    <p class="text-muted">No inventories found for this model.</p>
+                                                                @endforelse
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div> --}}
+
+                                        {{-- <div class="accordion" id="modelsAccordion">
+                                            @foreach ($models as $model)
+                                                <div class="accordion-item">
+                                                    <h2 class="accordion-header" id="heading{{ $model->id }}">
+                                                        <button
+                                                            class="accordion-button {{ $selectedModelId === $model->id ? '' : 'collapsed' }}"
+                                                            type="button"
+                                                            wire:click="toggleModel({{ $model->id }})"
+                                                            aria-expanded="{{ $selectedModelId === $model->id ? 'true' : 'false' }}"
+                                                            aria-controls="collapse{{ $model->id }}">
+                                                            @if ($model->image)
+                                                                <img src="{{ asset('storage/' . $model->image) }}"
+                                                                    alt="{{ $model->name }}" height="30"
+                                                                    class="me-2">
+                                                            @endif
+                                                            {{ $model->name }}
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapse{{ $model->id }}"
+                                                        class="accordion-collapse collapse {{ $selectedModelId === $model->id ? 'show' : '' }}"
+                                                        aria-labelledby="heading{{ $model->id }}"
+                                                        data-bs-parent="#modelsAccordion">
+                                                        <div class="accordion-body">
+                                                            @if ($selectedModelId === $model->id)
+                                                                @forelse ($this->inventories as $inventory)
+                                                                    <div class="mb-2 p-2 border rounded">
+                                                                        <strong>{{ $inventory->name }}</strong><br>
+                                                                        {{ $inventory->description ?? 'No description' }}
+                                                                    </div>
+                                                                @empty
+                                                                    <p class="text-muted">No inventories found for this
+                                                                        model.</p>
+                                                                @endforelse
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div> --}}
+
                                         <ul class="list-group">
                                             @foreach ($models as $model)
                                                 <li
@@ -71,6 +153,8 @@
                                                         {{ $model->name }}
                                                     </div>
                                                     <div>
+                                                        <button class="btn btn-sm btn-outline-success"
+                                                            wire:click="modelInventory({{ $model->id }})">👁</button>
                                                         <button class="btn btn-sm btn-outline-primary"
                                                             wire:click="editModel({{ $model->id }})">✎</button>
                                                         <button class="btn btn-sm btn-outline-danger"
@@ -160,6 +244,51 @@
             </div>
         @endif
     </section>
+    @if ($showModelInventory)
+        <section class="panels-wells">
+            <div class="card">
+                <div class="card-header d-flex align-items-center">
+                    <h5 class="card-header-text m-0">
+                        Vehicle Inventories
+                        <span class="ms-2">
+                            Model:
+                            @if ($selectedModel->image)
+                                <img src="{{ asset('storage/' . $selectedModel->image) }}"
+                                    alt="{{ $selectedModel->name }}" height="20">
+                            @endif
+                            {{ $selectedModel->name }}
+                        </span>
+                    </h5>
+                
+                    <button type="button" class="btn btn-primary btn-sm ms-auto" wire:click="addBrand()">+ Add Inventory</button>
+                </div>
+                
+                <div class="card-block">
+                    <table class="table table-striped datatable">
+                        <thead>
+                            <th>Name</th>
+                            <th>Descrition</th>
+                        </thead>
+                        <tbody>
+                            @forelse ($this->inventories as $inventory)
+                                <tr>
+                                    <td>{{ $inventory->inventory->product_name }}</td>
+                                    <td>{{ $inventory->inventory->description ?? 'No description' }}</td>
+                                </tr>
+
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center">
+                                        No inventories found for this model
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    @endif
     <!-- Brand Modal -->
     {{-- <x-modal wire:model="showBrandModal">
     <x-slot name="title">
