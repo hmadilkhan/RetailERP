@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\VehicleBrand;
 use App\Models\VehicleModel;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 // For file uploads
 use Livewire\WithFileUploads;
@@ -11,6 +12,8 @@ use Livewire\WithFileUploads;
 class VehicleManager extends Component
 {
     use WithFileUploads;
+    
+    #[Title("Vehicle Manager")]
 
     public $brands;
     public $models = [];
