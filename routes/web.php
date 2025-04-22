@@ -506,6 +506,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/change-order-status/{id}/{status}', [OrderController::class, 'orderStatusChange']);
     Route::get('/sent-to-workshop/{id}/{itemId}', [OrderController::class, 'sentToWorkshop']);
     Route::get('/change-item-status/{id}/{itemId}/{status}', [OrderController::class, 'changeItemStatus']);
+    Route::post('/get-inventory-by-department-subdepartment', [InventoryController::class, 'getInventoryBySubDepartment'])->name('getInventoryBySubDepartment');
 
     Route::get('/inventory/{id}/variable-products', [InventoryController::class, 'createVariableProduct'])->name('createVariableProduct');
     Route::post('/inventory/variable-products/get', [InventoryController::class, 'get_variableProduct'])->name('getVariableProduct');

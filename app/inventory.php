@@ -103,6 +103,20 @@ class inventory extends Model
 
     }
 
+    public function getInventoryBySubDepartment($department,$subdepartment)
+    {
+        $inventory = DB::table('inventory_general as invent')
+        ->join('inventory_uom as u','u.uom_id','=','invent.uom_id')
+        ->join('inventory_department as dept','dept.department_id','=','invent.department_id')
+        ->join('inventory_sub_department as sdept','sdept.sub_department_id','=','invent.sub_department_id')
+        ->where('invent.department_id',$department)
+        ->where('invent.sub_department_id',$subdepartment)
+        ->where('invent.company_id',session('company_id'))
+        ->where('invent.status',1)
+        ->get();
+        return $inventory;
+    }
+
     public function findProductByIdInPriceTable($productid){
       $result = DB::select("SELECT * FROM inventory_price WHERE product_id = $productid");
       if(count($result) > 0){

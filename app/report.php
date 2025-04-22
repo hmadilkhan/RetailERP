@@ -519,7 +519,7 @@ class report extends Model
         return $result;
     }
     //item sale database
-    public function  itemsale_details($fromdate, $todate, $terminalid, $type, $department, $subdepartment = "", $mode, $status)
+    public function  itemsale_details($fromdate, $todate, $terminalid, $type, $department, $subdepartment = "", $mode, $status, $inventory = "")
     {
         $filter = "";
         if ($type != "") {
@@ -535,6 +535,9 @@ class report extends Model
         }
         if ($subdepartment != "") {
             $filter .= " and c.sub_department_id = " . $subdepartment;
+        }
+        if ($inventory != "") {
+            $filter .= " and c.id = " . $inventory;
         }
         if ($mode != "all") {
             $filter .= " and order_mode_id = ".$mode; 

@@ -4398,4 +4398,10 @@ class InventoryController extends Controller
 
     //     return  $this->notFoundImage();
     }
+
+    public function getInventoryBySubDepartment(Request $request,inventory $inventory)
+    {
+        $inventory = $inventory->getInventoryBySubDepartment($request->department, $request->subdepartment);
+        return response()->json($inventory);
+    }
 }

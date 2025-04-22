@@ -422,6 +422,19 @@
                         </div>
                     </div>
 
+                    <div class="row" id="dvinventoryselect" style="display: none;">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="form-group">
+                                <label class="form-control-label">Select Inventory</label>
+                                <select name="inventory" id="inventory" data-placeholder="Select Inventory"
+                                    class="form-control select2">
+                                    <option value="">Select Inventory</option>
+                                </select>
+                                <div class="form-control-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="row" id="dvterminal" style="display: none;">
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group">
@@ -597,7 +610,7 @@
             const filters = [
                 '#dvbranch', '#dvdepartments', '#dvmultipledepartments', '#dvsubdepartments', '#dvterminal',
                 '#dvtype', '#dvitemcode', '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory',
-                '#dvordermode', '#dvcustomers'
+                '#dvordermode', '#dvcustomers','#dvinventoryselect'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -622,6 +635,7 @@
             if (fieldMappings.some(mapping => mapping.showTerminal)) showterminal();
             if (fieldMappings.some(mapping => mapping.showDepartments)) showdepartments();
             if (fieldMappings.some(mapping => mapping.showSubDepartments)) showsubdepartments();
+            if (fieldMappings.some(mapping => mapping.showInventory)) showInventory();
             if (fieldMappings.some(mapping => mapping.showType)) showType();
             if (fieldMappings.some(mapping => mapping.showCode)) showCode();
             if (fieldMappings.some(mapping => mapping.showPaymentMode)) showPaymentMode();
@@ -709,6 +723,7 @@
                 showType: true,
                 showDepartments: true,
                 showsubdepartments: true,
+                showInventory: true,
                 showBranch: true,
                 showTerminal: true,
                 showOrderMode: true,
@@ -886,6 +901,7 @@
             let department = $('#department').val();
             let multidepartments = $('#multipledepartment').val();
             let subdepartment = $('#subdepartment').val();
+            let inventory = $('#inventory').val();
             let paymentmethod = $('#paymentmethod').val();
             let salesperson = $('#salesperson').val();
             let mode = $('#mode').val();
@@ -924,7 +940,7 @@
                 window.location = "{{ url('itemsaledatabasepdf') }}?fromdate=" + date + "&todate=" + todate +
                     "&terminalid=" + terminalid + "&type=" + $("#type").val() + departmentQuery +
                     "&branch=" +
-                    branch + "&ordermode=" + ordermode + "&status=" + status;
+                    branch + "&ordermode=" + ordermode + "&status=" + status+ "&inventory=" + inventory;
             }
             if ($('#txtsalereturn').val() == 1) {
                 window.location = "{{ url('salesreturnpdf') }}?fromdate=" + date + "&todate=" + todate + "&terminalid=" +
@@ -1134,6 +1150,10 @@
             $('#dvsubdepartments').css("display", "block");
         }
 
+        function showInventory() {
+            $('#dvinventoryselect').css("display", "block");
+        }
+
         function getreport() {
             if ($('#depart').val() == "") {
                 swal({
@@ -1149,6 +1169,12 @@
         $("#department").change(function() {
             if ($(this).val() != "") {
                 load_sub_dept($(this).val());
+            }
+        });
+
+        $("#subdepartment").change(function() {
+            if ($(this).val() != "") {
+                loadInventory($(this).val());
             }
         });
 
@@ -1206,6 +1232,29 @@
                         $("#subdepartment").append(
                             "<option value=" + value.sub_department_id + ">" + value
                             .sub_depart_name + "</option>"
+                        );
+                    });
+                }
+            });
+        }
+
+        function loadInventory(subdepartment) {
+            let department = $('#multipledepartment').val()[0];
+            $.ajax({
+                url: "{{ route('getInventoryBySubDepartment') }}",
+                type: 'POST',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    department: department,
+                    subdepartment: subdepartment,
+                },
+                success: function(resp) {
+                    $('#inventory').empty();
+                    $("#inventory").append("<option value=''>Select Inventory</option>");
+                    $.each(resp, function(index, value) {
+                        $("#inventory").append(
+                            "<option value=" + value.id + ">" + value
+                            .product_name + "</option>"
                         );
                     });
                 }
