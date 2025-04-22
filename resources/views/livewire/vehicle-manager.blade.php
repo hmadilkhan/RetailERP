@@ -58,88 +58,6 @@
                                     </div>
                                     <div class="card-body">
                                         <button class="btn btn-primary mb-3" wire:click="addModel">+ Add Model</button>
-                                        {{-- <div class="accordion" id="modelsAccordion" x-data="{ selectedModelId: @entangle('selectedModelId') }">
-                                            @foreach ($models as $model)
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="heading{{ $model->id }}">
-                                                        <button
-                                                            class="accordion-button"
-                                                            :class="{ 'collapsed': selectedModelId !== {{ $model->id }} }"
-                                                            type="button"
-                                                            @click="selectedModelId === {{ $model->id }} ? selectedModelId = null : selectedModelId = {{ $model->id }}"
-                                                            aria-expanded="selectedModelId === {{ $model->id }}"
-                                                            aria-controls="collapse{{ $model->id }}">
-                                                            @if ($model->image)
-                                                                <img src="{{ asset('storage/' . $model->image) }}"
-                                                                    alt="{{ $model->name }}" height="30"
-                                                                    class="me-2">
-                                                            @endif
-                                                            {{ $model->name }}
-                                                        </button>
-                                                    </h2>
-                                                    <div id="collapse{{ $model->id }}"
-                                                        class="accordion-collapse collapse"
-                                                        :class="{ 'show': selectedModelId === {{ $model->id }} }"
-                                                        aria-labelledby="heading{{ $model->id }}"
-                                                        data-bs-parent="#modelsAccordion">
-                                                        <div class="accordion-body">
-                                                            
-                                                            @if ($selectedModelId === $model->id)
-                                                                @forelse ($this->inventories as $inventory)
-                                                                    <div class="mb-2 p-2 border rounded">
-                                                                        <strong>{{ $inventory->name }}</strong><br>
-                                                                        {{ $inventory->description ?? 'No description' }}
-                                                                    </div>
-                                                                @empty
-                                                                    <p class="text-muted">No inventories found for this model.</p>
-                                                                @endforelse
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div> --}}
-
-                                        {{-- <div class="accordion" id="modelsAccordion">
-                                            @foreach ($models as $model)
-                                                <div class="accordion-item">
-                                                    <h2 class="accordion-header" id="heading{{ $model->id }}">
-                                                        <button
-                                                            class="accordion-button {{ $selectedModelId === $model->id ? '' : 'collapsed' }}"
-                                                            type="button"
-                                                            wire:click="toggleModel({{ $model->id }})"
-                                                            aria-expanded="{{ $selectedModelId === $model->id ? 'true' : 'false' }}"
-                                                            aria-controls="collapse{{ $model->id }}">
-                                                            @if ($model->image)
-                                                                <img src="{{ asset('storage/' . $model->image) }}"
-                                                                    alt="{{ $model->name }}" height="30"
-                                                                    class="me-2">
-                                                            @endif
-                                                            {{ $model->name }}
-                                                        </button>
-                                                    </h2>
-                                                    <div id="collapse{{ $model->id }}"
-                                                        class="accordion-collapse collapse {{ $selectedModelId === $model->id ? 'show' : '' }}"
-                                                        aria-labelledby="heading{{ $model->id }}"
-                                                        data-bs-parent="#modelsAccordion">
-                                                        <div class="accordion-body">
-                                                            @if ($selectedModelId === $model->id)
-                                                                @forelse ($this->inventories as $inventory)
-                                                                    <div class="mb-2 p-2 border rounded">
-                                                                        <strong>{{ $inventory->name }}</strong><br>
-                                                                        {{ $inventory->description ?? 'No description' }}
-                                                                    </div>
-                                                                @empty
-                                                                    <p class="text-muted">No inventories found for this
-                                                                        model.</p>
-                                                                @endforelse
-                                                            @endif
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            @endforeach
-                                        </div> --}}
-
                                         <ul class="list-group">
                                             @foreach ($models as $model)
                                                 <li
@@ -259,110 +177,318 @@
                             {{ $selectedModel->name }}
                         </span>
                     </h5>
-                
-                    <button type="button" class="btn btn-primary btn-sm ms-auto" wire:click="addBrand()">+ Add Inventory</button>
-                </div>
-                
-                <div class="card-block">
-                    <table class="table table-striped datatable">
-                        <thead>
-                            <th>Name</th>
-                            <th>Descrition</th>
-                        </thead>
-                        <tbody>
-                            @forelse ($this->inventories as $inventory)
-                                <tr>
-                                    <td>{{ $inventory->inventory->product_name }}</td>
-                                    <td>{{ $inventory->inventory->description ?? 'No description' }}</td>
-                                </tr>
 
-                            @empty
-                                <tr>
-                                    <td colspan="2" class="text-center">
-                                        No inventories found for this model
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                    <button type="button" class="btn btn-primary btn-sm ms-auto" wire:click="addBrand()">+ Add
+                        Inventory</button>
+                </div>
+
+                <div class="card-block">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header bg- text-white">
+                                    <h5 class="mb-0">
+                                        <i class="icofont icofont-search"></i> Search and Add Inventory
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-control-label">
+                                                    <i class="icofont icofont-barcode"></i> Search Products
+                                                </label>
+                                                <select id="productId" wire:ignore.self class="form-control select2">
+                                                    <option value="">Type to search products...</option>
+                                                </select>
+                                                <small class="form-text text-muted">
+                                                    Start typing to search for products
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            {{-- <div class="form-group">
+                                                <label class="form-control-label">
+                                                    <i class="icofont icofont-info-circle"></i> Selected Product
+                                                </label>
+                                                <div id="selectedProduct" class="p-2 bg-light rounded">
+                                                    <p class="mb-0 text-muted">No product selected</p>
+                                                </div>
+                                            </div> --}}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-12">
+                            <div class="card">
+                                <div class="card-header bg-gradient-primary text-white">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-0">
+                                            <i class="icofont icofont-box"></i> Current Inventory
+                                        </h5>
+                                        <span class="badge bg-white text-primary">
+                                            {{ count($this->inventories) }} Items
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-body p-0">
+                                    @forelse ($this->inventories as $inventory)
+                                        <div class="inventory-item">
+                                            <div class="row g-0">
+                                                <div class="col-md-2 p-3">
+                                                    <div class="position-relative">
+                                                        @if($inventory->inventory->image)
+                                                            <img src="{{ asset('storage/images/products/' . $inventory->inventory->image) }}" 
+                                                                 alt="{{ $inventory->inventory->product_name }}"
+                                                                 class="img-fluid rounded shadow-sm"
+                                                                 style="height: 120px; width: 100%; object-fit: cover;">
+                                                        @else
+                                                            <div class="bg-light rounded shadow-sm d-flex align-items-center justify-content-center"
+                                                                 style="height: 120px;">
+                                                                <i class="icofont icofont-box text-muted" style="font-size: 2.5rem;"></i>
+                                                            </div>
+                                                        @endif
+                                                        <div class="position-absolute top-0 end-0 m-2">
+                                                            <span class="badge bg-success">
+                                                                <i class="icofont icofont-check-circled"></i> In Stock
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-7 p-3">
+                                                    <div class="d-flex flex-column h-100">
+                                                        <h5 class="mb-2 text-primary">{{ $inventory->inventory->product_name }}</h5>
+                                                        <div class="mb-2">
+                                                            <span class="badge bg-info">
+                                                                <i class="icofont icofont-barcode"></i> 
+                                                                {{ $inventory->inventory->item_code }}
+                                                            </span>
+                                                        </div>
+                                                        @if($inventory->inventory->description)
+                                                            <p class="text-muted flex-grow-1">
+                                                                <i class="icofont icofont-info-circle"></i>
+                                                                {{ $inventory->inventory->description }}
+                                                            </p>
+                                                        @endif
+                                                        <div class="mt-auto">
+                                                            <small class="text-muted">
+                                                                <i class="icofont icofont-calendar"></i>
+                                                                Added {{ $inventory->created_at->diffForHumans() }}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-3 p-3 bg-light">
+                                                    <div class="d-flex flex-column h-100 justify-content-center align-items-end">
+                                                        <button class="btn btn-danger btn-sm mb-2" 
+                                                                wire:click="confirmDelete({{ $inventory->id }})">
+                                                            <i class="icofont icofont-trash"></i> Remove Item
+                                                        </button>
+                                                        <button class="btn btn-outline-primary btn-sm" 
+                                                                wire:click="viewDetails({{ $inventory->id }})">
+                                                            <i class="icofont icofont-eye"></i> View Details
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @if(!$loop->last)
+                                            <hr class="my-0">
+                                        @endif
+                                    @empty
+                                        <div class="text-center py-5">
+                                            <div class="mb-3">
+                                                <i class="icofont icofont-box text-muted" style="font-size: 5rem;"></i>
+                                            </div>
+                                            <h4 class="text-muted mb-2">No Inventory Items</h4>
+                                            <p class="text-muted mb-4">Your inventory is currently empty. Start by searching and adding products.</p>
+                                            <button class="btn btn-primary">
+                                                <i class="icofont icofont-search"></i> Search Products
+                                            </button>
+                                        </div>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
     @endif
-    <!-- Brand Modal -->
-    {{-- <x-modal wire:model="showBrandModal">
-    <x-slot name="title">
-        {{ $brandId ? 'Edit Brand' : 'Add Brand' }}
-    </x-slot>
-
-    <div>
-        <div class="mb-3">
-            <label>Brand Name</label>
-            <input type="text" class="form-control" wire:model.defer="brandName">
-            @error('brandName')
-                <span class="text-danger">{{ $message }}</span>
-            @enderror
-        </div>
-
-        <div class="mb-3">
-            <label>Brand Logo</label>
-            <input type="file" class="form-control" wire:model="brandLogo">
-            @error('brandLogo')
-                <span class="text-danger">{{ $message }}</span>
-            @enderror
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade in" id="deleteInventoryModal" tabindex="-1" aria-labelledby="deleteInventoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteInventoryModalLabel">Confirm Delete</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to remove this inventory item? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" wire:click="removeInventory({{ $deleteId }})">Delete</button>
+                </div>
+            </div>
         </div>
     </div>
-
-    <x-slot name="footer">
-        <button class="btn btn-secondary" wire:click="$set('showBrandModal', false)">Cancel</button>
-        <button class="btn btn-primary" wire:click="saveBrand">Save</button>
-    </x-slot>
-</x-modal>
-
-<!-- Model Modal -->
-<x-modal wire:model="showModelModal">
-    <x-slot name="title">
-        {{ $modelId ? 'Edit Model' : 'Add Model' }}
-    </x-slot>
-
     <div>
-        <div class="mb-3">
-            <label>Model Name</label>
-            <input type="text" class="form-control" wire:model.defer="modelName">
-            @error('modelName')
-                <span class="text-danger">{{ $message }}</span>
-            @enderror
-        </div>
+        @script
+            <script>
+                // Define the initialization function in the global scope
+                window.initializeSelect2 = function() {
+                    // Check if Select2 is already initialized
+                    if ($('#productId').hasClass('select2-hidden-accessible')) {
+                        return; // Exit if already initialized
+                    }
 
-        <div class="mb-3">
-            <label>Model Logo</label>
-            <input type="file" class="form-control" wire:model="modelLogo">
-            @error('modelLogo')
-                <span class="text-danger">{{ $message }}</span>
-            @enderror
-        </div>
-    </div>
+                    // Initialize Select2
+                    $('#productId').select2({
+                        ajax: {
+                            url: "{{ route('search-inventory') }}",
+                            type: 'GET',
+                            dataType: 'json',
+                            delay: 250,
+                            data: function(params) {
+                                return {
+                                    q: params.term,
+                                    page: params.page || 1
+                                };
+                            },
+                            processResults: function(data, params) {
+                                if (data === 0) {
+                                    return {
+                                        results: []
+                                    };
+                                }
 
-    <x-slot name="footer">
-        <button class="btn btn-secondary" wire:click="$set('showModelModal', false)">Cancel</button>
-        <button class="btn btn-primary" wire:click="saveModel">Save</button>
-    </x-slot>
-</x-modal> --}}
-    <div>
-        {{-- @script
-    <script>
-        $(document).ready(function() {
-            $('#submit-button').on('click', function(e) {
-                alert();
-                e.preventDefault();
-                document.addEventListener('livewire:load', () => {
-                    Livewire.on('open-brand-modal', () => {
-                        const modal = new bootstrap.Modal(document.getElementById(
-                            'brandModal'));
-                        modal.show();
+                                if (data && data.items) {
+                                    return {
+                                        results: $.map(data.items, function(item) {
+                                            return {
+                                                id: item.id,
+                                                text: item.product_name + " | " + item.item_code,
+                                                description: item.description || 'No description available'
+                                            };
+                                        })
+                                    };
+                                }
+
+                                return {
+                                    results: []
+                                };
+                            },
+                            error: function(xhr, status, error) {
+                                // Handle error silently
+                            },
+                            cache: true
+                        },
+                        placeholder: 'Type to search products...',
+                        minimumInputLength: 1,
+                        width: '100%',
+                        templateResult: formatProduct,
+                        templateSelection: formatProductSelection
                     });
+
+                    // Format the product display in dropdown
+                    function formatProduct(product) {
+                        if (!product.id) return product.text;
+                        return $('<span><strong>' + product.text + '</strong><br><small class="text-muted">' +
+                            (product.description || 'No description available') + '</small></span>');
+                    }
+
+                    // Format the selected product
+                    function formatProductSelection(product) {
+                        if (!product.id) return product.text;
+                        return product.text;
+                    }
+
+                    // Handle selection
+                    $('#productId').on('select2:select', function(e) {
+                        let selectedData = e.params.data;
+
+                        // Update selected product display
+                        $('#selectedProduct').html(`
+                            <h6 class="mb-1">${selectedData.text}</h6>
+                            <p class="mb-0 text-muted">${selectedData.description || 'No description available'}</p>
+                        `);
+
+                        // Add to inventory
+                        @this.addInventory(selectedData.id);
+
+                        // Clear selection after a short delay
+                        setTimeout(() => {
+                            $(this).val('').trigger('change');
+                            $('#selectedProduct').html('<p class="mb-0 text-muted">No product selected</p>');
+                        }, 100);
+                    });
+                };
+
+                // Initialize when document is ready
+                $(document).ready(function() {
+                    window.initializeSelect2();
                 });
-            });
-        });
-    </script>
-@endscript --}}
+
+                // Handle Livewire updates
+                Livewire.hook('morph.updating', () => {
+                    if ($('#productId').hasClass('select2-hidden-accessible')) {
+                        $('#productId').select2('destroy');
+                    }
+                });
+
+                Livewire.hook('morph.updated', () => {
+                    // Only reinitialize if the element exists and is visible
+                    if ($('#productId').length && $('#productId').is(':visible')) {
+                        window.initializeSelect2();
+                    }
+                });
+
+                // Handle delete confirmation
+                window.addEventListener('showDeleteModal', event => {
+                    const modal = new bootstrap.Modal(document.getElementById('deleteInventoryModal'), {
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    modal.show();
+                });
+
+                // Handle modal closing
+                window.addEventListener('hideDeleteModal', event => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteInventoryModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                });
+
+                // Handle successful deletion
+                window.addEventListener('inventoryDeleted', event => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('deleteInventoryModal'));
+                    if (modal) {
+                        modal.hide();
+                    }
+                });
+            </script>
+        @endscript
+    </div>
+
+
+<style>
+    .inventory-item {
+        transition: all 0.3s ease;
+    }
+    .inventory-item:hover {
+        background-color: rgba(0,0,0,0.02);
+    }
+    .bg-gradient-primary {
+        background: linear-gradient(45deg, #2196F3, #1976D2);
+    }
+    .badge {
+        padding: 0.5em 0.8em;
+    }
+</style>
+</div>

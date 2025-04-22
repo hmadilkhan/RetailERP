@@ -38,6 +38,9 @@ class VehicleManager extends Component
 
     // Control Accordion
     public $selectedModelId = null;
+    public $selectedProduct = null;
+
+    public $deleteId;
 
     public function mount()
     {
@@ -69,7 +72,6 @@ class VehicleManager extends Component
         if (!$this->selectedModelId) return collect();
 
         return VehicleInventory::with("inventory")->where('vehicle_model_id', $this->selectedModelId)->get();
-
     }
 
     // BRAND
@@ -151,6 +153,40 @@ class VehicleManager extends Component
         $this->reset(['modelId', 'modelName', 'modelLogo']);
     }
 
+    public function addInventory($productId)
+    {
+        if (!$this->selectedModelId) {
+            return;
+        }
+
+        // Check if the inventory is already added
+        $exists = VehicleInventory::where('vehicle_model_id', $this->selectedModelId)
+            ->where('vehicle_id', $this->selectedBrand->id)
+            ->where('product_id', $productId)
+            ->exists();
+
+        if (!$exists) {
+            VehicleInventory::create([
+                'vehicle_id' => $this->selectedBrand->id,
+                'vehicle_model_id' => $this->selectedModelId,
+                'product_id' => $productId
+            ]);
+
+            $this->dispatch('inventoryAdded');
+        }
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->deleteId = $id;
+        $this->dispatch('showDeleteModal');
+    }
+
+    public function removeInventory($inventoryId)
+    {
+        VehicleInventory::where('id', $inventoryId)->delete();
+        $this->dispatch('hideDeleteModal');
+    }
 
     public function render()
     {
