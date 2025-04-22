@@ -238,7 +238,7 @@
                                 <div class="card-body p-0">
                                     <div class="row g-3 p-3">
                                         @forelse ($this->inventories as $inventory)
-                                            <div class="col-md-6 col-lg-4">
+                                            <div class="col-md-6 col-lg-3">
                                                 <div class="card h-100 border-0 shadow-sm hover-shadow">
                                                     <div class="position-relative">
                                                         @if($inventory->inventory->image)
@@ -264,29 +264,29 @@
                                                         </h5>
                                                         <div class="d-flex align-items-center mb-2">
                                                             <span class="badge bg-info bg-opacity-10 text-info">
-                                                                <i class="bi bi-upc me-1"></i>
+                                                                <i class="icofont icofont-barcode me-1"></i>
                                                                 {{ $inventory->inventory->item_code }}
                                                             </span>
                                                         </div>
                                                         @if($inventory->inventory->description)
                                                             <p class="card-text text-muted small mb-3">
-                                                                <i class="bi bi-info-circle me-1"></i>
+                                                                <i class="icofont icofont-info-circle me-1"></i>
                                                                 {{ Str::limit($inventory->inventory->description, 100) }}
                                                             </p>
                                                         @endif
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <small class="text-muted">
-                                                                <i class="bi bi-clock me-1"></i>
+                                                                <i class="icofont icofont-clock-time me-1"></i>
                                                                 Added {{ $inventory->created_at->diffForHumans() }}
                                                             </small>
                                                             <div class="btn-group">
                                                                 <button class="btn btn-sm btn-outline-primary" 
                                                                         wire:click="viewDetails({{ $inventory->id }})">
-                                                                    <i class="bi bi-eye"></i>
+                                                                    <i class="icofont icofont-eye"></i>
                                                                 </button>
                                                                 <button class="btn btn-sm btn-outline-danger" 
                                                                         wire:click="confirmDelete({{ $inventory->id }})">
-                                                                    <i class="bi bi-trash"></i>
+                                                                    <i class="icofont icofont-ui-delete"></i>
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -297,12 +297,12 @@
                                             <div class="col-12">
                                                 <div class="text-center py-5">
                                                     <div class="mb-4">
-                                                        <i class="bi bi-box-seam text-muted" style="font-size: 4rem;"></i>
+                                                        <i class="icofont icofont-box text-muted" style="font-size: 4rem;"></i>
                                                     </div>
                                                     <h4 class="text-muted mb-3">No Inventory Items</h4>
                                                     <p class="text-muted mb-4">Your inventory is currently empty. Start by searching and adding products.</p>
                                                     <button class="btn btn-primary">
-                                                        <i class="bi bi-search me-2"></i>Search Products
+                                                        <i class="icofont icofont-search me-2"></i>Search Products
                                                     </button>
                                                 </div>
                                             </div>
