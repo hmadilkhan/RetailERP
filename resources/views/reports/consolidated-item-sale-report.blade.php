@@ -218,7 +218,7 @@
                     $('#loader').removeClass('hidden')
                 },
                 success: function(result) {
-					// console.log("Fetching Results",result);
+					console.log("Fetching Results",result);
                     $('#loader').addClass('hidden')
                     $("#btn_search_report").attr("disabled",false);
                     if (result != 0) {
@@ -232,10 +232,54 @@
                     $('#loader').addClass('hidden')
                     $("#btn_search_report").attr("disabled",false);
                 },
-                error: function(error) {
-                    $('#loader').addClass('hidden')
-                    $("#btn_search_report").attr("disabled",false);
-                    console.log("Error", error);
+                error: function(xhr, status, error) {
+                    $('#loader').addClass('hidden');
+                    $("#btn_search_report").attr("disabled", false);
+                    
+                    // Get the complete error response
+                    let errorMessage = 'An error occurred while processing your request.';
+                    let errorDetails = '';
+                    
+                    try {
+                        // Try to parse the response text
+                        const response = JSON.parse(xhr.responseText);
+                        errorMessage = response.message || 'Server Error';
+                        
+                        // Add any additional error details
+                        if (response.error) {
+                            errorDetails = `
+                                File: ${response.error.file || 'Unknown'}
+                                Line: ${response.error.line || 'Unknown'}
+                                Message: ${response.error.message || 'No additional details'}
+                            `;
+                        }
+                    } catch (e) {
+                        // If parsing fails, use the raw response
+                        errorMessage = xhr.responseText || 'Unknown Error';
+                    }
+                    
+                    // Log the complete error to console
+                    console.error("Complete Error Details:", {
+                        Status: xhr.status,
+                        StatusText: xhr.statusText,
+                        Response: xhr.responseText,
+                        Error: error,
+                        Details: errorDetails
+                    });
+                    
+                    // Show error in a more visible way with details
+                    Swal.fire({
+                        title: 'Error!',
+                        html: `
+                            <div class="text-left">
+                                <p><strong>Error Message:</strong> ${errorMessage}</p>
+                                ${errorDetails ? `<pre class="mt-2 text-danger">${errorDetails}</pre>` : ''}
+                            </div>
+                        `,
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        width: '600px'
+                    });
                 },
 
             });
