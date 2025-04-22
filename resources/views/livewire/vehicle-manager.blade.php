@@ -186,7 +186,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <div class="card">
-                                <div class="card-header bg- text-white">
+                                <div class="card-header bg-light ">
                                     <h5 class="mb-0">
                                         <i class="icofont icofont-search"></i> Search and Add Inventory
                                     </h5>
@@ -201,9 +201,9 @@
                                                 <select id="productId" wire:ignore.self class="form-control select2">
                                                     <option value="">Type to search products...</option>
                                                 </select>
-                                                <small class="form-text text-muted">
+                                                {{-- <small wire:ignore.self class="form-text text-muted">
                                                     Start typing to search for products
-                                                </small>
+                                                </small> --}}
                                             </div>
                                         </div>
                                         <div class="col-md-6">
@@ -225,8 +225,8 @@
                     <div class="row mt-4">
                         <div class="col-md-12">
                             <div class="card border-0 shadow-sm">
-                                <div class="card-header bg-white border-0 py-3">
-                                    <div class="d-flex justify-content-between align-items-center">
+                                <div class="card-header border-0 py-3">
+                                    <div class=" d-flex justify-content-between align-items-center">
                                         <h5 class="mb-0 fw-bold">
                                             <i class="bi bi-box-seam me-2"></i>Current Inventory
                                         </h5>
@@ -409,11 +409,7 @@
                     $('#productId').on('select2:select', function(e) {
                         let selectedData = e.params.data;
 
-                        // Update selected product display
-                        $('#selectedProduct').html(`
-                            <h6 class="mb-1">${selectedData.text}</h6>
-                            <p class="mb-0 text-muted">${selectedData.description || 'No description available'}</p>
-                        `);
+                       
 
                         // Add to inventory
                         @this.addInventory(selectedData.id);
@@ -421,7 +417,6 @@
                         // Clear selection after a short delay
                         setTimeout(() => {
                             $(this).val('').trigger('change');
-                            $('#selectedProduct').html('<p class="mb-0 text-muted">No product selected</p>');
                         }, 100);
                     });
                 };
