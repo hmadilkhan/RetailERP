@@ -437,7 +437,7 @@ class ReportController extends Controller
             ->when($request->product != "", function ($q) use ($request) {
                 $q->where("item_code", $request->product);
             })
-            ->select("receipt_detail_id", "receipt_id", "item_code", "item_price", DB::raw('SUM(total_qty) as total_qty'), DB::raw('AVG(item_price) as avg_price'), DB::raw('SUM(item_price*total_qty) as total_amount'))
+            ->select("receipt_detail_id", "receipt_id", "item_code", "item_price", DB::raw('SUM(total_qty) as total_qty'), DB::raw('AVG(item_price) as avg_price'), DB::raw('SUM(item_price*total_qty) as total_amount'), DB::raw('SUM(total_amount) as total_amount'))
             ->groupBy("item_code") //,"item_price"
             ->orderBy("item_code", "asc")
             ->get();

@@ -43,15 +43,21 @@
 					$itemqty = $itemqty + $value->total_qty;
 				}
 				$actualQty = $actualQty + $value->total_qty;
-				$qty = $itemqty / (!empty($value->inventory) ? $value->inventory->weight_qty : 1 ) ;
-				$originalqty = $value->total_qty / (!empty($value->inventory) ? $value->inventory->weight_qty : 1 );
-				$totalamount = $originalqty  * $value->item_price;
+				
+				// Add check for weight_qty to prevent division by zero
+				$weight_qty = !empty($value->inventory) && !empty($value->inventory->weight_qty) ? $value->inventory->weight_qty : 1;
+				$qty = $itemqty / $weight_qty;
+				$originalqty = $value->total_qty / $weight_qty;
+				
+				$totalamount = $originalqty * $value->item_price;
 				// $totalamount = $itemqty  * $value->avg_price;
-				$calcTotalQty = $calcTotalQty + $qty ;
-				$totalQtySold = $totalQtySold + $itemqty   ;
-				$grandTotal = $grandTotal + $value->total_amount;//+ $totalamount ;
-				$totalQty  = $value->total_qty * (!empty($value->inventory) ? $value->inventory->weight_qty : 1 );
-				$gtotal += $totalQty ;
+				$calcTotalQty = $calcTotalQty + $qty;
+				$totalQtySold = $totalQtySold + $itemqty;
+				$grandTotal = $grandTotal + $value->total_amount;//+ $totalamount;
+				
+				// Add check for weight_qty here as well
+				$totalQty = $value->total_qty * $weight_qty;
+				$gtotal += $totalQty;
 
 			?>
 		   <tr>

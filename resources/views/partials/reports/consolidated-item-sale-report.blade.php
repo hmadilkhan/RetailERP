@@ -7,6 +7,7 @@
 			  <th>Code</th>
 			  <th>Name</th>
 			  <th>Qty</th>
+			  <th>ٓٓAmount</th>
 			  <th>Branch</th>
 			  <th>Terminal</th>
 			  <th>Date</th>
@@ -18,7 +19,8 @@
 			    <tr>
 				  <td>{{(!empty($value->inventory) ? $value->inventory->item_code : $value->order->id)}}</td>
 				  <td class="pro-name">{{(!empty($value->inventory) ? $value->inventory->product_name : 'NA')}}</td>
-				  <td>{{ $value->total_qty }}</td>
+				  <td>{{ $value->total_qty ?? 0.00 }}</td>
+				  <td>{{ number_format($value->total_amount ?? 0.00,2) }}</td>
 				  <td>{{ $value->order->branchrelation->branch_name }}</td>
 				  <td>{{ $value->order->terminal->terminal_name }}</td>
 				  <td>{{ date("d F Y",strtotime($value->order->date)) }}</td>
