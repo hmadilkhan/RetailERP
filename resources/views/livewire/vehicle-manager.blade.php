@@ -224,93 +224,90 @@
 
                     <div class="row mt-4">
                         <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header bg-gradient-primary text-white">
+                            <div class="card border-0 shadow-sm">
+                                <div class="card-header bg-white border-0 py-3">
                                     <div class="d-flex justify-content-between align-items-center">
-                                        <h5 class="mb-0">
-                                            <i class="icofont icofont-box"></i> Current Inventory
+                                        <h5 class="mb-0 fw-bold">
+                                            <i class="bi bi-box-seam me-2"></i>Current Inventory
                                         </h5>
-                                        <span class="badge bg-white text-primary">
-                                            {{ count($this->inventories) }} Items
+                                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">
+                                            <i class="bi bi-box me-1"></i>{{ count($this->inventories) }} Items
                                         </span>
                                     </div>
                                 </div>
                                 <div class="card-body p-0">
-                                    @forelse ($this->inventories as $inventory)
-                                        <div class="inventory-item">
-                                            <div class="row g-0">
-                                                <div class="col-md-2 p-3">
+                                    <div class="row g-3 p-3">
+                                        @forelse ($this->inventories as $inventory)
+                                            <div class="col-md-6 col-lg-4">
+                                                <div class="card h-100 border-0 shadow-sm hover-shadow">
                                                     <div class="position-relative">
                                                         @if($inventory->inventory->image)
                                                             <img src="{{ asset('storage/images/products/' . $inventory->inventory->image) }}" 
                                                                  alt="{{ $inventory->inventory->product_name }}"
-                                                                 class="img-fluid rounded shadow-sm"
-                                                                 style="height: 120px; width: 100%; object-fit: cover;">
+                                                                 class="card-img-top"
+                                                                 style="height: 200px; object-fit: cover;">
                                                         @else
-                                                            <div class="bg-light rounded shadow-sm d-flex align-items-center justify-content-center"
-                                                                 style="height: 120px;">
-                                                                <i class="icofont icofont-box text-muted" style="font-size: 2.5rem;"></i>
+                                                            <div class="bg-light d-flex align-items-center justify-content-center"
+                                                                 style="height: 200px;">
+                                                                <i class="bi bi-box text-muted" style="font-size: 3rem;"></i>
                                                             </div>
                                                         @endif
                                                         <div class="position-absolute top-0 end-0 m-2">
-                                                            <span class="badge bg-success">
-                                                                <i class="icofont icofont-check-circled"></i> In Stock
+                                                            <span class="badge bg-success bg-opacity-90">
+                                                                <i class="bi bi-check-circle me-1"></i>In Stock
                                                             </span>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div class="col-md-7 p-3">
-                                                    <div class="d-flex flex-column h-100">
-                                                        <h5 class="mb-2 text-primary">{{ $inventory->inventory->product_name }}</h5>
-                                                        <div class="mb-2">
-                                                            <span class="badge bg-info">
-                                                                <i class="icofont icofont-barcode"></i> 
+                                                    <div class="card-body">
+                                                        <h5 class="card-title text-primary fw-bold mb-2">
+                                                            {{ $inventory->inventory->product_name }}
+                                                        </h5>
+                                                        <div class="d-flex align-items-center mb-2">
+                                                            <span class="badge bg-info bg-opacity-10 text-info">
+                                                                <i class="bi bi-upc me-1"></i>
                                                                 {{ $inventory->inventory->item_code }}
                                                             </span>
                                                         </div>
                                                         @if($inventory->inventory->description)
-                                                            <p class="text-muted flex-grow-1">
-                                                                <i class="icofont icofont-info-circle"></i>
-                                                                {{ $inventory->inventory->description }}
+                                                            <p class="card-text text-muted small mb-3">
+                                                                <i class="bi bi-info-circle me-1"></i>
+                                                                {{ Str::limit($inventory->inventory->description, 100) }}
                                                             </p>
                                                         @endif
-                                                        <div class="mt-auto">
+                                                        <div class="d-flex justify-content-between align-items-center">
                                                             <small class="text-muted">
-                                                                <i class="icofont icofont-calendar"></i>
+                                                                <i class="bi bi-clock me-1"></i>
                                                                 Added {{ $inventory->created_at->diffForHumans() }}
                                                             </small>
+                                                            <div class="btn-group">
+                                                                <button class="btn btn-sm btn-outline-primary" 
+                                                                        wire:click="viewDetails({{ $inventory->id }})">
+                                                                    <i class="bi bi-eye"></i>
+                                                                </button>
+                                                                <button class="btn btn-sm btn-outline-danger" 
+                                                                        wire:click="confirmDelete({{ $inventory->id }})">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-3 p-3 bg-light">
-                                                    <div class="d-flex flex-column h-100 justify-content-center align-items-end">
-                                                        <button class="btn btn-danger btn-sm mb-2" 
-                                                                wire:click="confirmDelete({{ $inventory->id }})">
-                                                            <i class="icofont icofont-trash"></i> Remove Item
-                                                        </button>
-                                                        <button class="btn btn-outline-primary btn-sm" 
-                                                                wire:click="viewDetails({{ $inventory->id }})">
-                                                            <i class="icofont icofont-eye"></i> View Details
-                                                        </button>
+                                            </div>
+                                        @empty
+                                            <div class="col-12">
+                                                <div class="text-center py-5">
+                                                    <div class="mb-4">
+                                                        <i class="bi bi-box-seam text-muted" style="font-size: 4rem;"></i>
                                                     </div>
+                                                    <h4 class="text-muted mb-3">No Inventory Items</h4>
+                                                    <p class="text-muted mb-4">Your inventory is currently empty. Start by searching and adding products.</p>
+                                                    <button class="btn btn-primary">
+                                                        <i class="bi bi-search me-2"></i>Search Products
+                                                    </button>
                                                 </div>
                                             </div>
-                                        </div>
-                                        @if(!$loop->last)
-                                            <hr class="my-0">
-                                        @endif
-                                    @empty
-                                        <div class="text-center py-5">
-                                            <div class="mb-3">
-                                                <i class="icofont icofont-box text-muted" style="font-size: 5rem;"></i>
-                                            </div>
-                                            <h4 class="text-muted mb-2">No Inventory Items</h4>
-                                            <p class="text-muted mb-4">Your inventory is currently empty. Start by searching and adding products.</p>
-                                            <button class="btn btn-primary">
-                                                <i class="icofont icofont-search"></i> Search Products
-                                            </button>
-                                        </div>
-                                    @endforelse
+                                        @endforelse
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -478,17 +475,19 @@
 
 
 <style>
-    .inventory-item {
-        transition: all 0.3s ease;
+    .hover-shadow {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
     }
-    .inventory-item:hover {
-        background-color: rgba(0,0,0,0.02);
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     }
-    .bg-gradient-primary {
-        background: linear-gradient(45deg, #2196F3, #1976D2);
+    .card-img-top {
+        border-top-left-radius: 0.375rem;
+        border-top-right-radius: 0.375rem;
     }
-    .badge {
-        padding: 0.5em 0.8em;
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
     }
 </style>
 </div>
