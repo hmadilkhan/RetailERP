@@ -60,8 +60,8 @@
                                         <button class="btn btn-primary mb-3" wire:click="addModel">+ Add Model</button>
                                         <ul class="list-group">
                                             @foreach ($models as $model)
-                                                <li
-                                                    class="list-group-item d-flex justify-content-between align-items-center">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center {{ $selectedModel && $selectedModel->id === $model->id ? 'active' : '' }}"
+                                                    wire:click="modelInventory({{ $model->id }})" style="cursor: pointer;">
                                                     <div>
                                                         @if ($model->image)
                                                             <img src="{{ asset('storage/' . $model->image) }}"
@@ -72,11 +72,11 @@
                                                     </div>
                                                     <div>
                                                         <button class="btn btn-sm btn-outline-success"
-                                                            wire:click="modelInventory({{ $model->id }})">👁</button>
+                                                            wire:click.stop="modelInventory({{ $model->id }})">👁</button>
                                                         <button class="btn btn-sm btn-outline-primary"
-                                                            wire:click="editModel({{ $model->id }})">✎</button>
+                                                            wire:click.stop="editModel({{ $model->id }})">✎</button>
                                                         <button class="btn btn-sm btn-outline-danger"
-                                                            wire:click="deleteModel({{ $model->id }})">🗑️</button>
+                                                            wire:click.stop="deleteModel({{ $model->id }})">🗑️</button>
                                                     </div>
                                                 </li>
                                             @endforeach
@@ -201,20 +201,7 @@
                                                 <select id="productId" wire:ignore.self class="form-control select2">
                                                     <option value="">Type to search products...</option>
                                                 </select>
-                                                {{-- <small wire:ignore.self class="form-text text-muted">
-                                                    Start typing to search for products
-                                                </small> --}}
                                             </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            {{-- <div class="form-group">
-                                                <label class="form-control-label">
-                                                    <i class="icofont icofont-info-circle"></i> Selected Product
-                                                </label>
-                                                <div id="selectedProduct" class="p-2 bg-light rounded">
-                                                    <p class="mb-0 text-muted">No product selected</p>
-                                                </div>
-                                            </div> --}}
                                         </div>
                                     </div>
                                 </div>
@@ -483,6 +470,29 @@
     }
     .btn-group .btn {
         padding: 0.25rem 0.5rem;
+    }
+    .list-group-item {
+        transition: all 0.2s ease-in-out;
+    }
+    .list-group-item:hover {
+        background-color: rgba(0,0,0,0.05);
+    }
+    .list-group-item.active {
+        background-color: #ced4da;
+        border-color: #ced4da;
+        color: white;
+    }
+    .list-group-item.active .btn-outline-success,
+    .list-group-item.active .btn-outline-primary,
+    .list-group-item.active .btn-outline-danger {
+        color: white;
+        border-color: white;
+    }
+    .list-group-item.active .btn-outline-success:hover,
+    .list-group-item.active .btn-outline-primary:hover,
+    .list-group-item.active .btn-outline-danger:hover {
+        background-color: white;
+        color: #ced4da;
     }
 </style>
 </div>
