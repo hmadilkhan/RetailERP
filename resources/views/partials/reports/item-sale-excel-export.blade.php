@@ -1,10 +1,20 @@
+<html lang="ur">
+<head>
+    <style>
+        body {
+            font-family: 'jameel', sans-serif;
+            direction: rtl;
+        }
+    </style>
+</head>
+<body>
 @if(isset($record))  
  <table id="widget-product-list" class="table table-striped nowrap dt-responsive nowrap" width="100%" cellspacing="0">
 	<tr>
 		<td colspan="9" style="font-size:18px;font-weight:bold;">{{$branch[0]->company->name." - ".$branch[0]->branch_name." (".$branch[0]->code.")"}}</td>
 	</tr>
 	<tr>
-		<td colspan="9" style="font-size:18px;font-weight:bold;">From {{$dates["from"]}} To {{$dates["to"]}}</td>
+		<td colspan="9" style="font-size:18px;font-weight:bold;">From {{date("d M Y",strtotime($dates["from"]))}} To {{date("d M Y",strtotime($dates["to"]))}}</td>
 	</tr>
 	<tr colspan="8"></tr>
 	<thead>
@@ -76,7 +86,7 @@
 		   </tr>
 		  @endforeach
 		    @if($mode == "normal")
-			  <tr ><td style="font-size:14px;font-weight:bold;background-color:black;text-align: center;color:white" colspan="7">Total</td></tr>
+			  <tr ><td style="font-size:14px;font-weight:bold;background-color:black;text-align: center;color:white" colspan="8">Total</td></tr>
 			@else
 				<tr ><td style="font-size:14px;font-weight:bold;background-color:black;text-align: center;color:white" colspan="9">Total</td></tr>
 			@endif
@@ -96,3 +106,5 @@
 	</tbody>
  </table>
 @endif	
+</body>
+</html>
