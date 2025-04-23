@@ -11,12 +11,12 @@
 @if(isset($record))  
  <table id="widget-product-list" class="table table-striped nowrap dt-responsive nowrap" width="100%" cellspacing="0">
 	<tr>
-		<td colspan="8" style="font-size:18px;font-weight:bold;">{{$branch->company->name." - ".$branch->branch_name." (".$branch->code.")"}}</td>
+		<td colspan="9" style="font-size:18px;font-weight:bold;">{{$branch->company->name." - ".$branch->branch_name." (".$branch->code.")"}}</td>
 	</tr>
 	<tr>
-		<td colspan="8" style="font-size:18px;font-weight:bold;">From {{$dates["from"]}} To {{$dates["to"]}}</td>
+		<td colspan="9" style="font-size:18px;font-weight:bold;">From {{date("d M Y",strtotime($dates["from"]))}} To {{date("d M Y",strtotime($dates["to"]))}}</td>
 	</tr>
-	<tr colspan="8"></tr>
+	<tr colspan="9"></tr>
 	<thead>
 	   <tr>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Qty</th>
