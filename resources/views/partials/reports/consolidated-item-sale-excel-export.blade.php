@@ -1,3 +1,13 @@
+<html lang="ur">
+<head>
+    <style>
+        body {
+            font-family: 'jameel', sans-serif;
+            direction: rtl;
+        }
+    </style>
+</head>
+<body>
 @if(isset($record))  
  <table id="widget-product-list" class="table table-striped nowrap dt-responsive nowrap" width="100%" cellspacing="0">
 	<tr>
@@ -71,3 +81,5 @@
 	</tbody>
  </table>
 @endif	
+</body>
+</html>

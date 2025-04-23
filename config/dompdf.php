@@ -151,6 +151,15 @@ return array(
          */
         "default_font" => "serif",
 
+        'custom_font_dir' => storage_path('fonts/'),
+        'custom_font_data' => [
+            'jameel' => [
+                'R'  => 'Jameel-Noori-Nastaleeq.ttf',
+                'useOTL' => 0xFF,
+                'useKashida' => 75,
+            ],
+        ],
+
         /**
          * Image DPI setting
          *
