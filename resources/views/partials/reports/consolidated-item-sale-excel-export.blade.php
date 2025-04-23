@@ -66,7 +66,7 @@
 			  <td style="text-align: center;">{{$value->inventory->weight_qty}}</td>
 		   </tr>
 		  @endforeach
-		  <tr ><td style="font-size:14px;font-weight:bold;background-color:black;text-align: center;color:white" colspan="9">Total</td></tr>
+		  <tr colspan="9"><td style="font-size:14px;font-weight:bold;background-color:black;text-align: center;color:white" colspan="9">Total</td></tr>
 		  <tr>
 				<td style="font-size:12px;font-weight:bold;text-align: center;">{{number_format($calcTotalQty,2) }}</td>
 				<td style="font-size:12px;font-weight:bold;text-align: center;"></td>
