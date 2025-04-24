@@ -60,6 +60,9 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\OrderReportPDF;
 use App\Services\CustomerService;
+use Mpdf\Config\ConfigVariables;
+use Mpdf\Config\FontVariables;
+use Mpdf\Mpdf;
 
 class ReportController extends Controller
 {
@@ -378,12 +381,73 @@ class ReportController extends Controller
         }
 
         $record = $this->getItemSalesQuery($request);
-        // return $record;
-        $datearray = [
+
+        $dates = [
             "from" => $request->fromdate,
             "to" => $request->todate,
         ];
-        return Excel::download(new ItemSaleReportExport($record, $branch, $datearray, "normal"), 'Item Sale Report Export.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
+
+        // Configure mPDF with Urdu settings
+        $defaultConfig = (new ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'margin_top' => 8,
+            'margin_bottom' => 8,
+            'margin_left' => 10,
+            'margin_right' => 10,
+            'fontDir' => array_merge($fontDirs, [
+                resource_path('fonts'),
+            ]),
+            'fontdata' => $fontData + [
+                'jameel' => [
+                    'R' => 'JameelNooriNastaleeq.ttf',
+                ],
+            ],
+            'default_font' => 'jameel',
+            'directionality' => 'ltr',
+            'autoLangToFont' => true,
+            'autoScriptToLang' => true,
+        ]);
+
+        // Add footer with page numbers
+        $mpdf->SetHTMLFooter('
+             <div style="text-align: center; font-size: 8pt;font-style: italic;color: #666;margin-top: 20px;">
+                 Page {PAGENO} of {nbpg}
+             </div>
+         ');
+
+        // Get the view content
+        $html = view('reports.urdu-report', [
+            'record' => $record,
+            'branch' => $branch,
+            'dates' => $dates,
+            'mode' => 'normal'
+        ])->render();
+
+        // Generate PDF
+        $mpdf->WriteHTML($html);
+
+        // Output PDF
+        return $mpdf->Output('urdu_report.pdf', 'I');
+        // if ($request->branch == "all") {
+        //     $branch = Branch::with("company:company_id,name")->where("company_id", session("company_id"))->get();
+        // } else {
+        //     $branch = Branch::with("company:company_id,name")->where("branch_id", $request->branch)->get();
+        // }
+
+        // $record = $this->getItemSalesQuery($request);
+
+        // $datearray = [
+        //     "from" => $request->fromdate,
+        //     "to" => $request->todate,
+        // ];
+        // return Excel::download(new ItemSaleReportExport($record, $branch, $datearray, "normal"), 'Item Sale Report Export.pdf', \Maatwebsite\Excel\Excel::DOMPDF);
     }
 
     public function getItemSalesQuery(Request $request)
