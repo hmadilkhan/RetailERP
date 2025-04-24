@@ -434,7 +434,7 @@ class ReportController extends Controller
         $mpdf->WriteHTML($html);
 
         // Output PDF
-        return $mpdf->Output('urdu_report.pdf', 'I');
+        return $mpdf->Output('Item Sale Database.pdf', 'I');
         // if ($request->branch == "all") {
         //     $branch = Branch::with("company:company_id,name")->where("company_id", session("company_id"))->get();
         // } else {
