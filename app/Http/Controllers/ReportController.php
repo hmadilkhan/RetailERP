@@ -423,7 +423,7 @@ class ReportController extends Controller
          ');
 
         // Get the view content
-        $html = view('reports.item-sale-excel-export', [
+        $html = view('reports.item-sale-report-export', [
             'record' => $record,
             'branch' => $branch,
             'dates' => $dates,
