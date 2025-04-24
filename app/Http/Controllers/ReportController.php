@@ -375,9 +375,9 @@ class ReportController extends Controller
     public function getItemSaleReportPdfExport(Request $request)
     {
         if ($request->branch == "all") {
-            $branch = Branch::with("company:company_id,name")->where("company_id", session("company_id"))->get();
+            $branch = Branch::with("company:company_id,name")->where("company_id", session("company_id"))->first();
         } else {
-            $branch = Branch::with("company:company_id,name")->where("branch_id", $request->branch)->get();
+            $branch = Branch::with("company:company_id,name")->where("branch_id", $request->branch)->first();
         }
 
         $record = $this->getItemSalesQuery($request);
