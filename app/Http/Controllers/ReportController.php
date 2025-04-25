@@ -4341,22 +4341,22 @@ class ReportController extends Controller
                     <table style="width: auto;">
                         <tr>
                             <td>
-                                <img width="150" height="150" src="./logo.jpg" alt="">
+                                <img width="150" height="150" src="' . asset('storage/images/company/' . $company[0]->logo) . '" alt="">
                             </td>
                             <td style="padding-left: 16px;">
                                 <p>Company Name:</p>
-                                <h1 class="text-bold">M. Rizwan Traders</h1>
+                                <h1 class="text-bold">' . $company[0]->name . '</h1>
                                 <p>Contact Number</p>
-                                <p class="text-bold">0312-1234567</p>
+                                <p class="text-bold">0' . $company[0]->ptcl_contact . '</p>
                                 <p>Company Address</p>
-                                <p class="text-bold">Landhi No.2 - Karachi</p>
+                                <p class="text-bold">' . $company[0]->address . '</p>
                             </td>
                         </tr>
                     </table>
                 </td>
                 <td class="qr-section">
                     <div class="right-align">
-                        <img width="100" height="100" src="./qrcode.png" alt="">
+                        <img width="100" height="100" src="' . asset('storage/images/company/qrcode.png') . '" alt="">
                         <p class="text-bold">Generate Date: 2025-04-25</p>
                     </div>
                 </td>
