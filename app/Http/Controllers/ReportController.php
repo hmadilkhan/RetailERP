@@ -4154,6 +4154,217 @@ class ReportController extends Controller
         $pdf->Output('Item_Sale_Database.pdf', 'I');
     }
 
+    public function newitemsaledatabasepdf(Request $request, Vendor $vendor, Report $report)
+    {
+        $company = $vendor->company(session('company_id'));
+        $departments = [];
+        $branchname = "";
+
+        if ($request->branch != "all") {
+            $branchname = Branch::where("branch_id", $request->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " (تمام برانچز) ";
+        }
+
+        if (is_array($request->department)) {
+            $departments = InventoryDepartment::whereIn("department_id", $request->department)
+                ->select("department_id", "department_name")
+                ->get();
+        }
+
+        // if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+        //     $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+        //     \QrCode::size(200)
+        //         ->format('png')
+        //         ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        // }
+
+        // Initialize MPDF with RTL and Unicode support
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'jameel-noori-nastaleeq',
+            'default_font_size' => 12,
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 15,
+            'margin_bottom' => 15,
+            'margin_header' => 10,
+            'margin_footer' => 10,
+            'direction' => 'rtl'
+        ]);
+
+        // Add custom Urdu font
+        $mpdf->fontdata['jameel-noori-nastaleeq'] = [
+            'R' => 'Jameel-Noori-Nastaleeq.ttf',
+            'useOTL' => 0xFF,
+        ];
+
+        // Start building HTML content
+        $html = '
+    <html dir="rtl">
+    <head>
+        <style>
+            body { font-family: jameel-noori-nastaleeq; }
+            .header { text-align: center; margin-bottom: 20px; }
+            .company-info { margin-bottom: 20px; }
+            .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+            .table th, .table td { 
+                border: 1px solid #ddd; 
+                padding: 8px; 
+                text-align: right; 
+            }
+            .table th { 
+                background-color: #f2f2f2; 
+            }
+            .summary { 
+                margin-top: 20px;
+                background-color: #f9f9f9;
+                padding: 10px;
+            }
+            .void { background-color: #ffcccc; }
+            .return { background-color: #ffd9cc; }
+            .normal { background-color: #f2f2f2; }
+        </style>
+    </head>
+    <body>';
+        //<img src="' . asset('storage/images/company/' . $company[0]->logo) . '" style="height: 100px;">
+        // Add company header
+        $html .= '
+    <div class="header">
+        
+        <h2>' . $company[0]->name . '</h2>
+        <p>رابطہ نمبر: ' . $company[0]->ptcl_contact . '</p>
+        <p>پتہ: ' . $company[0]->address . '</p>
+    </div>';
+
+        // Add date range
+        $fromdate = date('Y-m-d', strtotime($request->fromdate));
+        $todate = date('Y-m-d', strtotime($request->todate));
+        $html .= '<h3 style="text-align: center;">تاریخ: ' . $fromdate . ' سے ' . $todate . ' تک</h3>';
+        $html .= '<h2 style="text-align: center;">آئٹم سیل ڈیٹا بیس ' . $branchname . '</h2>';
+
+        // Process terminals and create tables
+        if ($request->terminalid == 0) {
+            $terminals = $report->getTerminals($request->branch);
+        } else {
+            $terminals = $report->get_terminals_byid($request->terminalid);
+        }
+
+        foreach ($terminals as $terminal) {
+            $html .= '<h3>ٹرمینل: ' . $terminal->terminal_name . '</h3>';
+
+            $modes = $report->itemSalesOrderMode(
+                $request->fromdate,
+                $request->todate,
+                $terminal->terminal_id,
+                $request->ordermode,
+                $request->status
+            );
+
+            foreach ($modes as $mode) {
+                $html .= '<h4>' . $mode->ordermode . '</h4>';
+
+                $html .= '
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>کوڈ</th>
+                        <th>پروڈکٹ</th>
+                        <th>تعداد</th>
+                        <th>قیمت</th>
+                        <th>رقم</th>
+                        <th>لاگت</th>
+                        <th>مارجن</th>
+                        <th>سٹیٹس</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+                $details = $report->itemsale_details(
+                    $request->fromdate,
+                    $request->todate,
+                    $terminal->terminal_id,
+                    $mode->order_mode_id,
+                    $request->department,
+                    $request->subdepartment,
+                    $request->ordermode,
+                    $request->status,
+                    $request->inventory
+                );
+
+                $totalCount = 0;
+                $totalQty = 0;
+                $totalAmount = 0;
+                $totalCost = 0;
+                $totalMargin = 0;
+
+                foreach ($details as $item) {
+                    $rowClass = $item->void_receipt == 1 ? 'void' : ($item->is_sale_return == 1 ? 'return' : 'normal');
+
+                    $html .= sprintf(
+                        '
+                    <tr class="%s">
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                    </tr>',
+                        $rowClass,
+                        $item->code,
+                        $item->product_name,
+                        number_format($item->qty),
+                        number_format($item->price),
+                        number_format($item->amount),
+                        number_format($item->cost),
+                        number_format($item->amount - $item->cost),
+                        $item->order_status_name
+                    );
+
+                    $totalCount++;
+                    $totalQty += $item->qty;
+                    $totalAmount += $item->amount;
+                    $totalCost += $item->cost;
+                    $totalMargin += ($item->amount - $item->cost);
+                }
+
+                // Add totals row
+                $html .= sprintf(
+                    '
+                <tr style="font-weight: bold;">
+                    <td colspan="2">کل آئٹمز: %s</td>
+                    <td>%s</td>
+                    <td>-</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>%s</td>
+                    <td>-</td>
+                </tr>',
+                    $totalCount,
+                    number_format($totalQty),
+                    number_format($totalAmount),
+                    number_format($totalCost),
+                    number_format($totalMargin)
+                );
+
+                $html .= '</tbody></table>';
+            }
+        }
+
+        $html .= '</body></html>';
+
+        // Write HTML to PDF
+        $mpdf->WriteHTML($html);
+
+        // Output PDF
+        $mpdf->Output('Item_Sale_Database_Urdu.pdf', 'I');
+    }
+
     //Sale Return  report
     public function salesreturnpdf(Request $request, Vendor $vendor, Report $report)
     {

@@ -919,6 +919,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/expense_by_categorypdf', [ReportController::class, 'expense_by_categorypdf']);
     Route::get('/salesdeclerationreport', [ReportController::class, 'salesdeclerationreport']);
     Route::get('/itemsaledatabasepdf', [ReportController::class, 'itemsaledatabasepdf']);
+    Route::get('/newitemsaledatabasepdf', [ReportController::class, 'newitemsaledatabasepdf']);
     Route::get('/salesreturnpdf', [ReportController::class, 'salesreturnpdf']);
     Route::get('/inventoryReportPhysical', [ReportController::class, 'inventoryReportPhysical']);
     Route::get('/stockAdjustmentReport', [ReportController::class, 'stockAdjustmentReport']);
