@@ -4203,7 +4203,7 @@ class ReportController extends Controller
 
         // Start building HTML content
         $html = '
-    <html dir="rtl">
+    <html dir="ltr">
     <head>
         <style>
             body { font-family: jameel-noori-nastaleeq; }
@@ -4235,15 +4235,15 @@ class ReportController extends Controller
     <div class="header">
         <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" style="height: 100px;">
         <h2>' . $company[0]->name . '</h2>
-        <p>رابطہ نمبر: ' . $company[0]->ptcl_contact . '</p>
-        <p>پتہ: ' . $company[0]->address . '</p>
+        <p>Contact No: ' . $company[0]->ptcl_contact . '</p>
+        <p>Address : ' . $company[0]->address . '</p>
     </div>';
 
         // Add date range
         $fromdate = date('Y-m-d', strtotime($request->fromdate));
         $todate = date('Y-m-d', strtotime($request->todate));
-        $html .= '<h3 style="text-align: center;">تاریخ: ' . $fromdate . ' سے ' . $todate . ' تک</h3>';
-        $html .= '<h2 style="text-align: center;">آئٹم سیل ڈیٹا بیس ' . $branchname . '</h2>';
+        $html .= '<h3 style="text-align: center;">Date: ' . $fromdate . ' From ' . $todate . ' To </h3>';
+        $html .= '<h2 style="text-align: center;">Item Sale Database' . $branchname . '</h2>';
 
         // Process terminals and create tables
         if ($request->terminalid == 0) {
@@ -4253,7 +4253,7 @@ class ReportController extends Controller
         }
 
         foreach ($terminals as $terminal) {
-            $html .= '<h3>ٹرمینل: ' . $terminal->terminal_name . '</h3>';
+            $html .= '<h3>Terminal: ' . $terminal->terminal_name . '</h3>';
 
             $modes = $report->itemSalesOrderMode(
                 $request->fromdate,
@@ -4270,14 +4270,14 @@ class ReportController extends Controller
             <table class="table">
                 <thead>
                     <tr>
-                        <th>کوڈ</th>
-                        <th>پروڈکٹ</th>
-                        <th>تعداد</th>
-                        <th>قیمت</th>
-                        <th>رقم</th>
-                        <th>لاگت</th>
-                        <th>مارجن</th>
-                        <th>سٹیٹس</th>
+                        <th>Item code</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                        <th>COGS</th>
+                        <th>Margin</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -4337,7 +4337,7 @@ class ReportController extends Controller
                 $html .= sprintf(
                     '
                 <tr style="font-weight: bold;">
-                    <td colspan="2">کل آئٹمز: %s</td>
+                    <td colspan="2">Total Items: %s</td>
                     <td>%s</td>
                     <td>-</td>
                     <td>%s</td>
