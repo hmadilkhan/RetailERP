@@ -4243,43 +4243,14 @@ class ReportController extends Controller
                 .qr-section {
                     width: 50%;
                 }
-             .header {
-                display: flex;
-                align-items: center;
-                justify-content: flex-start;
-                margin-bottom: 20px;
-                width: 100%;
-                padding: 10px;
-            }
-            .company-logo {
-                width: 80px;
-                height: 80px;
-                object-fit: contain;
-                margin-left: 20px;
-            }
-            .company-info {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-            }
-            .company-info h2 {
-                margin: 0;
-                padding: 0;
-                font-size: 24px;
-                margin-bottom: 5px;
-            }
-            .company-info p {
-                margin: 2px 0;
-                font-size: 14px;
-            }
             
-            table {
+           /* table {
                 width: 100%;
                 border-collapse: collapse;
                 margin-bottom: 20px;
             }
 
-            /* Header Styling */
+    
             .header-row td {
                 font-size: 18px;
                 font-weight: bold;
@@ -4289,7 +4260,7 @@ class ReportController extends Controller
                 border-bottom: 2px solid #dee2e6;
             }
 
-            /* Table Header Styling */
+           
             thead th {
                 background-color: #1a4567;
                 color: white;
@@ -4316,7 +4287,7 @@ class ReportController extends Controller
                 margin-top: 20px;
                 background-color: #f9f9f9;
                 padding: 10px;
-            }
+            }*/
             .void { background-color: #ffcccc; }
             .return { background-color: #ffd9cc; }
             .normal { background-color: #f2f2f2; }
