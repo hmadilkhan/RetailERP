@@ -4358,7 +4358,7 @@ class ReportController extends Controller
             if (empty($modes)) {
                 // If no modes found for this terminal
                 $html .= '<div style="text-align: center; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; margin: 10px 0;">
-                    <p style="color: #666; font-size: 16px; margin: 0;">کوئی ڈیٹا دستیاب نہیں ہے</p>
+                    <p style="color: #666; font-size: 16px; margin: 0;">Modes are empty<p>
                     <p style="color: #999; font-size: 14px; margin: 5px 0 0 0;">No Data Found/p>
                 </div>';
                 continue; // Skip to next terminal
