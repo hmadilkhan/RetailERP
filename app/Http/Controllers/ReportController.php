@@ -4164,7 +4164,7 @@ class ReportController extends Controller
             $branchname = Branch::where("branch_id", $request->branch)->first();
             $branchname = " (" . $branchname->branch_name . ") ";
         } else {
-            $branchname = " All Branches ";
+            $branchname = " ( All Branches )";
         }
 
         if (is_array($request->department)) {
@@ -4313,7 +4313,7 @@ class ReportController extends Controller
         }
 
         foreach ($terminals as $terminal) {
-            $html .= '<h3 style="text-align: center;background-color: #f8f9fa;color: #000;">Terminal: ' . $terminal->terminal_name . '</h3>';
+            $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #000;">Terminal: ' . $terminal->terminal_name . '</h3>';
 
             $modes = $report->itemSalesOrderMode(
                 $request->fromdate,
@@ -4324,7 +4324,7 @@ class ReportController extends Controller
             );
 
             foreach ($modes as $mode) {
-                $html .= '<h5>' . $mode->ordermode . '</h5>';
+                $html .= '<h5 style="text-align: center;background-color: #ddd;color: #000;">' . $mode->ordermode . '</h5>';
 
                 $html .= '
             <table >
