@@ -4164,7 +4164,7 @@ class ReportController extends Controller
             $branchname = Branch::where("branch_id", $request->branch)->first();
             $branchname = " (" . $branchname->branch_name . ") ";
         } else {
-            $branchname = " (تمام برانچز) ";
+            $branchname = " All Branches ";
         }
 
         if (is_array($request->department)) {
@@ -4302,7 +4302,7 @@ class ReportController extends Controller
         // Add date range
         $fromdate = date('Y-m-d', strtotime($request->fromdate));
         $todate = date('Y-m-d', strtotime($request->todate));
-        $html .= '<h3 style="text-align: center;">Date: ' . $fromdate . ' From ' . $todate . ' To </h3>';
+        $html .= '<h4 style="text-align: center;">Date: ' . $fromdate . ' From ' . $todate . ' To </h4>';
         $html .= '<h2 style="text-align: center;">Item Sale Database' . $branchname . '</h2>';
 
         // Process terminals and create tables
@@ -4313,7 +4313,7 @@ class ReportController extends Controller
         }
 
         foreach ($terminals as $terminal) {
-            $html .= '<h3>Terminal: ' . $terminal->terminal_name . '</h3>';
+            $html .= '<h3 style="text-align: center;background-color: #f8f9fa;color: #000;">Terminal: ' . $terminal->terminal_name . '</h3>';
 
             $modes = $report->itemSalesOrderMode(
                 $request->fromdate,
@@ -4324,7 +4324,7 @@ class ReportController extends Controller
             );
 
             foreach ($modes as $mode) {
-                $html .= '<h4>' . $mode->ordermode . '</h4>';
+                $html .= '<h5>' . $mode->ordermode . '</h5>';
 
                 $html .= '
             <table >
