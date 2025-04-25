@@ -4299,38 +4299,41 @@ class ReportController extends Controller
                 $totalAmount = 0;
                 $totalCost = 0;
                 $totalMargin = 0;
+                if (!empty($details)) {
+                    foreach ($details as $item) {
+                        $rowClass = $item->void_receipt == 1 ? 'void' : ($item->is_sale_return == 1 ? 'return' : 'normal');
 
-                foreach ($details as $item) {
-                    $rowClass = $item->void_receipt == 1 ? 'void' : ($item->is_sale_return == 1 ? 'return' : 'normal');
+                        $html .= sprintf(
+                            '
+                        <tr class="%s">
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                        </tr>',
+                            $rowClass,
+                            $item->code,
+                            $item->product_name,
+                            number_format($item->qty),
+                            number_format($item->price),
+                            number_format($item->amount),
+                            number_format($item->cost),
+                            number_format($item->amount - $item->cost),
+                            $item->order_status_name
+                        );
 
-                    $html .= sprintf(
-                        '
-                    <tr class="%s">
-                        <td>%s</td>
-                        <td>%s</td>
-                        <td>%s</td>
-                        <td>%s</td>
-                        <td>%s</td>
-                        <td>%s</td>
-                        <td>%s</td>
-                        <td>%s</td>
-                    </tr>',
-                        $rowClass,
-                        $item->code,
-                        $item->product_name,
-                        number_format($item->qty),
-                        number_format($item->price),
-                        number_format($item->amount),
-                        number_format($item->cost),
-                        number_format($item->amount - $item->cost),
-                        $item->order_status_name
-                    );
-
-                    $totalCount++;
-                    $totalQty += $item->qty;
-                    $totalAmount += $item->amount;
-                    $totalCost += $item->cost;
-                    $totalMargin += ($item->amount - $item->cost);
+                        $totalCount++;
+                        $totalQty += $item->qty;
+                        $totalAmount += $item->amount;
+                        $totalCost += $item->cost;
+                        $totalMargin += ($item->amount - $item->cost);
+                    }
+                } else {
+                    $html .= '<tr><td colspan="8" style="text-align: center;">No data found</td></tr>';
                 }
 
                 // Add totals row
