@@ -4236,14 +4236,45 @@ class ReportController extends Controller
                 margin: 2px 0;
                 font-size: 14px;
             }
-            .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-            .table th, .table td { 
-                border: 1px solid #ddd; 
-                padding: 8px; 
-                text-align: right; 
+            
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-bottom: 20px;
             }
-            .table th { 
-                background-color: #f2f2f2; 
+
+            /* Header Styling */
+            .header-row td {
+                font-size: 18px;
+                font-weight: bold;
+                padding: 10px;
+                text-align: center;
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #dee2e6;
+            }
+
+            /* Table Header Styling */
+            thead th {
+                background-color: #1a4567;
+                color: white;
+                padding: 12px 8px;
+                text-align: center;
+                font-weight: bold;
+                border: 1px solid #0d2235;
+                font-size: 14px;
+            }
+
+            /* Table Body Styling */
+            tbody td {
+                padding: 8px;
+                text-align: center;
+                border: 1px solid #dee2e6;
+                font-size: 13px;
+            }
+
+            /* Alternating Row Colors */
+            tbody tr:nth-child(even) {
+                background-color: #f8f9fa;
             }
             .summary { 
                 margin-top: 20px;
@@ -4296,7 +4327,7 @@ class ReportController extends Controller
                 $html .= '<h4>' . $mode->ordermode . '</h4>';
 
                 $html .= '
-            <table class="table">
+            <table >
                 <thead>
                     <tr>
                         <th>Item code</th>
