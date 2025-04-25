@@ -4313,7 +4313,7 @@ class ReportController extends Controller
         }
 
         foreach ($terminals as $terminal) {
-            $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #000;">Terminal: ' . $terminal->terminal_name . '</h3>';
+            $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #FFFFFF;">Terminal: ' . $terminal->terminal_name . '</h3>';
 
             $modes = $report->itemSalesOrderMode(
                 $request->fromdate,
