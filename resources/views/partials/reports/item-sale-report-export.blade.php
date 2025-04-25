@@ -95,7 +95,58 @@
         .p-3 {
             padding: 16px !important;
         }
+/* Add these styles to your existing CSS */
+        .header-section {
+            width: 100%;
+            margin-bottom: 20px;
+        }
 
+        .logo-cell {
+            width: 15%;
+            vertical-align: middle;
+            padding: 10px;
+        }
+
+        .info-cell {
+            width: 70%;
+            vertical-align: middle;
+            padding: 10px;
+        }
+
+        .company-name {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #1a4567;
+        }
+
+        .branch-info {
+            font-size: 16px;
+            margin-bottom: 5px;
+        }
+
+        .date-range {
+            font-size: 14px;
+            color: #666;
+            margin-top: 10px;
+        }
+
+        .qr-cell {
+            width: 15%;
+            vertical-align: middle;
+            text-align: left;
+            padding: 10px;
+        }
+
+        .logo-img {
+            max-width: 100px;
+            height: auto;
+        }
+
+        .qr-img {
+            max-width: 80px;
+            height: auto;
+        }
     </style>
 </head>
 
