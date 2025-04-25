@@ -4265,7 +4265,7 @@ class ReportController extends Controller
         $html .= '
         <table>
             <tr>
-                <td class="company-info">
+               <td class="company-info">
                     <table style="width: auto;">
                         <tr>
                             <td>
@@ -4282,10 +4282,8 @@ class ReportController extends Controller
                         </tr>
                     </table>
                 </td>
-                <td class="qr-section">
-                    <div style="text-align:right;" class="right-align">
-                        <img style="float:right;" width="100" height="100" src="' . asset('storage/images/company/qrcode.png') . '" alt="">
-                    </div>
+                <td class="qr-section" style="width: 100px; text-align: right;">
+                    <img width="100" height="100" src="' . asset('storage/images/company/qrcode.png') . '" alt="" style="margin-left: auto; display: block;">
                 </td>
             </tr>
         </table>';
