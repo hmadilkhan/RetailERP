@@ -4214,12 +4214,12 @@ class ReportController extends Controller
                     font-weight: bold;
                 }
                 p{
-                    font-size: 18px;
+                    font-size: 14px;
                     line-height: 0.9;
                     margin: 5px 0;
                 }
                 h2{
-                    font-size: 20px;
+                    font-size: 14px;
                     line-height: 0.6;
                     color: green;
                 }
@@ -4285,7 +4285,6 @@ class ReportController extends Controller
                 <td class="qr-section">
                     <div class="right-align">
                         <img width="100" height="100" src="' . asset('storage/images/company/qrcode.png') . '" alt="">
-                        <p class="text-bold">Generate Date: 2025-04-25</p>
                     </div>
                 </td>
             </tr>
