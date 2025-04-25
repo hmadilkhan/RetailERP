@@ -4389,7 +4389,7 @@ class ReportController extends Controller
             );
 
             foreach ($modes as $mode) {
-                $html .= '<h5 style="text-align: center;background-color: #ddd;color: #000;margin-bottom: -10px;">' . $mode->ordermode . '</h5>';
+                $html .= '<h5 style="text-align: center;background-color: #ddd;color: #000;margin-bottom: -5px;">' . $mode->ordermode . '</h5>';
 
                 $html .= '
             <table >
