@@ -103,6 +103,10 @@
     @if (isset($record))
         <table>
             <!-- Header Section -->
+            <td class="logo-cell">
+                <img src="{{ asset('storage/images/company/' . $branch->company->logo) }}" class="logo-img"
+                    alt="Company Logo">
+            </td> 
             <tr>
                 <td colspan="{{ $mode == 'normal' ? '10' : '8' }}" class="header-row">
                     {{ ' (' . $branch->code . ')' . $branch->branch_name . ' - ' . $branch->company->name }}
