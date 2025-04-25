@@ -4207,48 +4207,42 @@ class ReportController extends Controller
     <head>
         <style>
             body { font-family: jameel-noori-nastaleeq; }
-             h1{
-                line-height: 0.6;
-            }
-            .flex{
-                display: flex;
-            }
-            .justify-between{
-                justify-content: space-between;
-            }
-            .justify-center{
-                justify-content: center;
-            }
-            .justify-end{
-                justify-content: flex-end;
-            }
-            .items-center{
-                align-items: center;
-            }
-            .w-full{
-                width: 100%;
-            }
-            .h-full{
-                height: 100%;
-            }   
-            .text-bold{
-                font-weight: bold;
-            }
-            p{
-                font-size: 18px;
-                line-height: 0.6;
-            }
-            .gap-x-4{
-                gap: 16px;
-            }
-            h2{
-                font-size: 20px;
-                line-height: 0.6;
-                color: green;
-            }
-            .text-center{
-                text-align: center;
-            }
+              h1{
+                    line-height: 0.6;
+                }
+                .text-bold{
+                    font-weight: bold;
+                }
+                p{
+                    font-size: 18px;
+                    line-height: 0.9;
+                    margin: 5px 0;
+                }
+                h2{
+                    font-size: 20px;
+                    line-height: 0.6;
+                    color: green;
+                }
+                .text-center{
+                    text-align: center;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                }
+                td {
+                    vertical-align: top;
+                    padding: 5px;
+                }
+                .right-align {
+                    text-align: right;
+                }
+                .company-info {
+                    width: 50%;
+                }
+                .qr-section {
+                    width: 50%;
+                }
              .header {
                 display: flex;
                 align-items: center;
@@ -4341,28 +4335,33 @@ class ReportController extends Controller
         //     </div>
         // </div>';
         $html .= '
-        <div class="flex justify-between">
-            <div class="flex gap-x-4">
-                <div>
-                    <img width="150" height="150" src="' . asset('storage/images/company/' . $company[0]->logo) . '" alt="">
-                </div>
-                <div>
-                    <p>Company Name:</p>
-                    <h1 class="text-bold">' . $company[0]->name . '</h1>
-                    <p>Contact Number</p>
-                    <p class="text-bold">' . $company[0]->ptcl_contact . '</p>
-                    <p>Company Address</p>
-                    <p class="text-bold">' . $company[0]->address . '</p>
-
-                </div>
-            </div>
-            <div>
-                <div class="flex justify-end">
-                    <img width="100" height="100" src="./qrcode.png" alt="">
-                </div>
-                <p class="text-bold">Generate Date: 2025-04-25</p>
-            </div>
-        </div>';
+        <table>
+            <tr>
+                <td class="company-info">
+                    <table style="width: auto;">
+                        <tr>
+                            <td>
+                                <img width="150" height="150" src="./logo.jpg" alt="">
+                            </td>
+                            <td style="padding-left: 16px;">
+                                <p>Company Name:</p>
+                                <h1 class="text-bold">M. Rizwan Traders</h1>
+                                <p>Contact Number</p>
+                                <p class="text-bold">0312-1234567</p>
+                                <p>Company Address</p>
+                                <p class="text-bold">Landhi No.2 - Karachi</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="qr-section">
+                    <div class="right-align">
+                        <img width="100" height="100" src="./qrcode.png" alt="">
+                        <p class="text-bold">Generate Date: 2025-04-25</p>
+                    </div>
+                </td>
+            </tr>
+        </table>';
 
         // Add date range
         $fromdate = date('Y-m-d', strtotime($request->fromdate));
@@ -4387,6 +4386,15 @@ class ReportController extends Controller
                 $request->ordermode,
                 $request->status
             );
+
+            if (empty($modes)) {
+                // If no modes found for this terminal
+                $html .= '<div style="text-align: center; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; margin: 10px 0;">
+                    <p style="color: #666; font-size: 16px; margin: 0;">کوئی ڈیٹا دستیاب نہیں ہے</p>
+                    <p style="color: #999; font-size: 14px; margin: 5px 0 0 0;">No Data Found/p>
+                </div>';
+                continue; // Skip to next terminal
+            }
 
             foreach ($modes as $mode) {
                 $html .= '<h5 style="text-align: center;background-color: #ddd;color: #000;margin-bottom: -2px;padding: 12px 8px;">' . $mode->ordermode . '</h5>';
@@ -4418,6 +4426,14 @@ class ReportController extends Controller
                     $request->status,
                     $request->inventory
                 );
+
+                if (empty($details)) {
+                    // If no details found for this mode
+                    $html .= '<div style="text-align: center; padding: 15px; background-color: #f5f5f5; border: 1px solid #eee; margin-bottom: 20px;">
+                        <p style="color: #666; font-size: 14px; margin: 0;">No Data Found</p>
+                    </div>';
+                    continue; // Skip to next mode
+                }
 
                 $totalCount = 0;
                 $totalQty = 0;
