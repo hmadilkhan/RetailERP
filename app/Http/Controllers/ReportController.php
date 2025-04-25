@@ -4229,11 +4229,11 @@ class ReportController extends Controller
         </style>
     </head>
     <body>';
-        //<img src="' . asset('storage/images/company/' . $company[0]->logo) . '" style="height: 100px;">
+
         // Add company header
         $html .= '
     <div class="header">
-        
+        <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" style="height: 100px;">
         <h2>' . $company[0]->name . '</h2>
         <p>رابطہ نمبر: ' . $company[0]->ptcl_contact . '</p>
         <p>پتہ: ' . $company[0]->address . '</p>
