@@ -4243,7 +4243,50 @@ class ReportController extends Controller
                 .qr-section {
                     width: 50%;
                 }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-bottom: 20px;
+                }
+
+        
+                .header-row td {
+                    font-size: 18px;
+                    font-weight: bold;
+                    padding: 10px;
+                    text-align: center;
+                    background-color: #f8f9fa;
+                    border-bottom: 2px solid #dee2e6;
+                }
+
             
+                thead th {
+                    background-color: #1a4567;
+                    color: white;
+                    padding: 12px 8px;
+                    text-align: center;
+                    font-weight: bold;
+                    border: 1px solid #0d2235;
+                    font-size: 14px;
+                }
+
+        
+                tbody td {
+                    padding: 8px;
+                    text-align: center;
+                    border: 1px solid #dee2e6;
+                    font-size: 13px;
+                }
+
+    
+                tbody tr:nth-child(even) {
+                    background-color: #f8f9fa;
+                }
+                .summary { 
+                    margin-top: 20px;
+                    background-color: #f9f9f9;
+                    padding: 10px;
+                }
           
             .void { background-color: #ffcccc; }
             .return { background-color: #ffd9cc; }
