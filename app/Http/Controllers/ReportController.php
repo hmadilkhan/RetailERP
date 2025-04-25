@@ -4207,8 +4207,35 @@ class ReportController extends Controller
     <head>
         <style>
             body { font-family: jameel-noori-nastaleeq; }
-            .header { text-align: center; margin-bottom: 20px; }
-            .company-info { margin-bottom: 20px; }
+             .header {
+                display: flex;
+                align-items: center;
+                justify-content: flex-start;
+                margin-bottom: 20px;
+                width: 100%;
+                padding: 10px;
+            }
+            .company-logo {
+                width: 80px;
+                height: 80px;
+                object-fit: contain;
+                margin-left: 20px;
+            }
+            .company-info {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .company-info h2 {
+                margin: 0;
+                padding: 0;
+                font-size: 24px;
+                margin-bottom: 5px;
+            }
+            .company-info p {
+                margin: 2px 0;
+                font-size: 14px;
+            }
             .table { width: 100%; border-collapse: collapse; margin-top: 20px; }
             .table th, .table td { 
                 border: 1px solid #ddd; 
@@ -4232,12 +4259,14 @@ class ReportController extends Controller
 
         // Add company header
         $html .= '
-    <div class="header">
-        <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" style="height: 100px;">
-        <h2>' . $company[0]->name . '</h2>
-        <p>Contact No: ' . $company[0]->ptcl_contact . '</p>
-        <p>Address : ' . $company[0]->address . '</p>
-    </div>';
+        <div class="header">
+            <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" class="company-logo">
+            <div class="company-info">
+                <h2>' . $company[0]->name . '</h2>
+                <p>رابطہ نمبر: ' . $company[0]->ptcl_contact . '</p>
+                <p>پتہ: ' . $company[0]->address . '</p>
+            </div>
+        </div>';
 
         // Add date range
         $fromdate = date('Y-m-d', strtotime($request->fromdate));
