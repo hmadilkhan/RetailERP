@@ -4207,6 +4207,48 @@ class ReportController extends Controller
     <head>
         <style>
             body { font-family: jameel-noori-nastaleeq; }
+             h1{
+                line-height: 0.6;
+            }
+            .flex{
+                display: flex;
+            }
+            .justify-between{
+                justify-content: space-between;
+            }
+            .justify-center{
+                justify-content: center;
+            }
+            .justify-end{
+                justify-content: flex-end;
+            }
+            .items-center{
+                align-items: center;
+            }
+            .w-full{
+                width: 100%;
+            }
+            .h-full{
+                height: 100%;
+            }   
+            .text-bold{
+                font-weight: bold;
+            }
+            p{
+                font-size: 18px;
+                line-height: 0.6;
+            }
+            .gap-x-4{
+                gap: 16px;
+            }
+            h2{
+                font-size: 20px;
+                line-height: 0.6;
+                color: green;
+            }
+            .text-center{
+                text-align: center;
+            }
              .header {
                 display: flex;
                 align-items: center;
@@ -4289,13 +4331,36 @@ class ReportController extends Controller
     <body>';
 
         // Add company header
+        // $html .= '
+        // <div class="header">
+        //     <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" class="company-logo">
+        //     <div class="company-info">
+        //         <h2>' . $company[0]->name . '</h2>
+        //         <p>Contact No: ' . $company[0]->ptcl_contact . '</p>
+        //         <p>Address : ' . $company[0]->address . '</p>
+        //     </div>
+        // </div>';
         $html .= '
-        <div class="header">
-            <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" class="company-logo">
-            <div class="company-info">
-                <h2>' . $company[0]->name . '</h2>
-                <p>Contact No: ' . $company[0]->ptcl_contact . '</p>
-                <p>Address : ' . $company[0]->address . '</p>
+        <div class="flex justify-between">
+            <div class="flex gap-x-4">
+                <div>
+                    <img width="150" height="150" src="' . asset('storage/images/company/' . $company[0]->logo) . '" alt="">
+                </div>
+                <div>
+                    <p>Company Name:</p>
+                    <h1 class="text-bold">' . $company[0]->name . '</h1>
+                    <p>Contact Number</p>
+                    <p class="text-bold">' . $company[0]->ptcl_contact . '</p>
+                    <p>Company Address</p>
+                    <p class="text-bold">' . $company[0]->address . '</p>
+
+                </div>
+            </div>
+            <div>
+                <div class="flex justify-end">
+                    <img width="100" height="100" src="./qrcode.png" alt="">
+                </div>
+                <p class="text-bold">Generate Date: 2025-04-25</p>
             </div>
         </div>';
 
