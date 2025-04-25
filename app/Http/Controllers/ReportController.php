@@ -4283,8 +4283,8 @@ class ReportController extends Controller
                     </table>
                 </td>
                 <td class="qr-section">
-                    <div class="right-align">
-                        <img width="100" height="100" src="' . asset('storage/images/company/qrcode.png') . '" alt="">
+                    <div style="text-align:right;" class="right-align">
+                        <img style="float:right;" width="100" height="100" src="' . asset('storage/images/company/qrcode.png') . '" alt="">
                     </div>
                 </td>
             </tr>
