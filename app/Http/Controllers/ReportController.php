@@ -4244,7 +4244,7 @@ class ReportController extends Controller
                     width: 50%;
                 }
             
-           
+          
             .void { background-color: #ffcccc; }
             .return { background-color: #ffd9cc; }
             .normal { background-color: #f2f2f2; }
@@ -4273,7 +4273,7 @@ class ReportController extends Controller
                             </td>
                             <td style="padding-left: 16px;">
                                 <p>Company Name:</p>
-                                <h1 class="text-bold">' . $company[0]->name . '</h1>
+                                <h5 class="text-bold">' . $company[0]->name . '</h5>
                                 <p>Contact Number</p>
                                 <p class="text-bold">0' . $company[0]->ptcl_contact . '</p>
                                 <p>Company Address</p>
