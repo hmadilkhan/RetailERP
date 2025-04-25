@@ -4399,7 +4399,7 @@ class ReportController extends Controller
                 // Add totals row
                 $html .= sprintf(
                     '
-                <tr style="font-weight: bold;">
+                <tr style="font-weight: bold;background-color: #00000;color: #FFFFFF;">
                     <td colspan="2">Total Items: %s</td>
                     <td>%s</td>
                     <td>-</td>
