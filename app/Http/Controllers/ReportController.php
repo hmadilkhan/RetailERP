@@ -4400,13 +4400,13 @@ class ReportController extends Controller
                 $html .= sprintf(
                     '
                 <tr style="font-weight: bold;background-color: #00000;color: #FFFFFF;">
-                    <td colspan="2">Total Items: %s</td>
-                    <td>%s</td>
-                    <td>-</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>%s</td>
-                    <td>-</td>
+                    <td colspan="2" style="color: #FFFFFF;font-weight: bold;">Total Items: %s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">%s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">-</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">%s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">%s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">%s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">-</td>
                 </tr>',
                     $totalCount,
                     number_format($totalQty),
