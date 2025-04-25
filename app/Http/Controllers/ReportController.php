@@ -4269,11 +4269,11 @@ class ReportController extends Controller
                     <table style="width: auto;">
                         <tr>
                             <td>
-                                <img width="150" height="150" src="' . asset('storage/images/company/' . $company[0]->logo) . '" alt="">
+                                <img width="100" height="100" src="' . asset('storage/images/company/' . $company[0]->logo) . '" alt="">
                             </td>
                             <td style="padding-left: 16px;">
                                 <p>Company Name:</p>
-                                <h5 class="text-bold">' . $company[0]->name . '</h5>
+                                <h4 class="text-bold">' . $company[0]->name . '</h4>
                                 <p>Contact Number</p>
                                 <p class="text-bold">0' . $company[0]->ptcl_contact . '</p>
                                 <p>Company Address</p>
