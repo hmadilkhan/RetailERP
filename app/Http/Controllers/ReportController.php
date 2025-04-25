@@ -4294,8 +4294,8 @@ class ReportController extends Controller
             <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" class="company-logo">
             <div class="company-info">
                 <h2>' . $company[0]->name . '</h2>
-                <p>رابطہ نمبر: ' . $company[0]->ptcl_contact . '</p>
-                <p>پتہ: ' . $company[0]->address . '</p>
+                <p>Contact No: ' . $company[0]->ptcl_contact . '</p>
+                <p>Address : ' . $company[0]->address . '</p>
             </div>
         </div>';
 
