@@ -972,9 +972,9 @@ class PrintController extends Controller
             body { font-family: Arial; font-size: 10px;margin: 10px; }
             .header { text-align: center; }
             .logo { text-align: center; margin-bottom: 5px; }
-            .company-name { font-weight: bold; font-size: 12px; text-align: center; }
-            .company-address { font-size: 7px; text-align: center; }
-            .company-contact { font-size: 7px; text-align: center; }
+            .company-name { font-weight: bold; font-size: 14px; text-align: center; }
+            .company-address { font-size: 8px; text-align: center; }
+            .company-contact { font-size: 8px; text-align: center; }
             .receipt-info { margin-top: 5px;padding: 2px;  }
             .receipt-row { margin-bottom: 2px;font-size: 12px;padding: 4px; }
             .label { font-weight: bold; }
@@ -986,7 +986,7 @@ class PrintController extends Controller
         </style>
         <div class="header">
             <div class="logo">
-                <img src="' . asset('storage/images/company/'.$company[0]->logo) . '" style="max-width: 50px;">
+                <img src="' . asset('storage/images/company/'.$company[0]->logo) . '" style="max-width: 60px;">
             </div>
             <div class="company-name">' . $company[0]->name . '</div>
             <div class="company-address">' . $branch[0]->branch_address . '</div>
