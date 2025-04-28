@@ -969,7 +969,7 @@ class PrintController extends Controller
         // Build HTML content
         $html = '
         <style>
-            body { font-family: Arial; font-size: 10px;margin: 10px; }
+            body { font-family: Arial; font-size: 10px;margin: 5px; }
             .header { text-align: center; }
             .logo { text-align: center; margin-bottom: 5px; }
             .company-name { font-weight: bold; font-size: 14px; text-align: center; }
@@ -1019,6 +1019,17 @@ class PrintController extends Controller
             <span class="label">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
             <span class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
         </div>
+
+        <table>
+            <tr>
+                <td style="text-align: left;">
+                     <span class="label">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
+                </td>
+                <td style="text-align: right;">
+                    <span class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
+                </td>
+            </tr>
+        </table>
 
         <table class="items-table">
             <thead>
