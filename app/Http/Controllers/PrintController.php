@@ -1056,7 +1056,7 @@ class PrintController extends Controller
         }
 
         $html .= '
-                <tr style="background-color: #e9e9e9;border-top: 1px solid #000;border-bottom: 1px solid #000;">
+                <tr style="background-color: #e9e9e9;border-top: 1px solid #000;border-bottom: 1px solid #000;margin-top: 5px;">
                     <td colspan="2" style="text-align: left;"><span class="label">Item Qty:</span> ' . $itemQty .  '</td>
                     <td>' . $tQty . '</td>
                     <td></td>
