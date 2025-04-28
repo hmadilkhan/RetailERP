@@ -975,7 +975,7 @@ class PrintController extends Controller
             .company-name { font-weight: bold; font-size: 12px; text-align: center; }
             .company-address { font-size: 7px; text-align: center; }
             .company-contact { font-size: 7px; text-align: center; }
-            .receipt-info { margin-top: 5px;padding: 4px;  }
+            .receipt-info { margin-top: 5px;padding: 2px;  }
             .receipt-row { margin-bottom: 2px;font-size: 12px;padding: 4px; }
             .label { font-weight: bold; }
             .items-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
