@@ -993,26 +993,26 @@ class PrintController extends Controller
             <div class="company-contact">' . $branch[0]->branch_ptcl . ' | ' . $branch[0]->branch_mobile . '</div>
         </div>
 
-        <table style="width:100%; border-collapse:collapse; margin-bottom:10px;">
+        <table style="width:100%; border-collapse:collapse; margin-bottom:10px;border-top: 1px solid #000;">
             <tbody>
                 <tr>
-                    <td style="padding:4px; font-weight:bold;">Receipt No:</td>
+                    <td style="padding:4px; font-weight:bold;">Receipt No</td>
                     <td style="padding:4px; text-align:right;">' . ($general[0]->receipt_no ?? "N/A") . '</td>
                 </tr>
                 <tr>
-                    <td style="padding:4px; font-weight:bold;">Customer:</td>
+                    <td style="padding:4px; font-weight:bold;">Customer</td>
                     <td style="padding:4px; text-align:right;">' . ($general[0]->customerName ?? "N/A") . '</td>
                 </tr>
                 <tr>
-                    <td style="padding:4px; font-weight:bold;">Contact:</td>
+                    <td style="padding:4px; font-weight:bold;">Contact</td>
                     <td style="padding:4px; text-align:right;">' . ($general[0]->mobile ?? "N/A") . '</td>
                 </tr>
                 <tr>
-                    <td style="padding:4px; font-weight:bold;">Membership:</td>
+                    <td style="padding:4px; font-weight:bold;">Membership</td>
                     <td style="padding:4px; text-align:right;">' . ($general[0]->membership_card_no ?? "N/A") . '</td>
                 </tr>
                 <tr>
-                    <td style="padding:4px; font-weight:bold;">Delivery Date:</td>
+                    <td style="padding:4px; font-weight:bold;">Delivery Date</td>
                     <td style="padding:4px; text-align:right;">' . (!empty($general[0]->delivery_date) ? date("d-m-Y", strtotime($general[0]->delivery_date)) : "N/A") . '</td>
                 </tr>
             </tbody>
