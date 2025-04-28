@@ -1015,9 +1015,9 @@ class PrintController extends Controller
             ' . strtoupper($general[0]->payment_mode . " payment") . '
         </div>
 
-        <div class="receipt-row">
+        <div class="receipt-row" style="display: flex; justify-content: space-between;">
             <span class="label">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
-            <span style="margin-left: 20px;" class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
+            <span class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
         </div>
 
         <table class="items-table">
