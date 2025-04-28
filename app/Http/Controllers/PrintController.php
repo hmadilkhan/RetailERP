@@ -979,8 +979,8 @@ class PrintController extends Controller
             .receipt-row { margin-bottom: 2px;font-size: 12px;padding: 4px; }
             .label { font-weight: bold; }
             .items-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-            .items-table th { background-color: #e9e9e9; padding: 2px; text-align: left; }
-            .items-table td { padding: 2px; }
+            .items-table th { background-color: #e9e9e9; padding: 2px; text-align: left;font-size:12px; }
+            .items-table td { padding: 2px;font-size:12px; }
             .total-row { font-weight: bold; }
             .footer { text-align: center; margin-top: 5px; font-size: 8px; }
         </style>
