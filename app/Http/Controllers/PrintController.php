@@ -1029,10 +1029,10 @@ class PrintController extends Controller
         <table class="items-table">
             <thead>
                 <tr>
-                    <th>Product</th>
-                    <th>Price</th>
-                    <th>Qty</th>
-                    <th>Total</th>
+                    <th style="text-align: left;">Product</th>
+                    <th style="text-align: center;">Price</th>
+                    <th style="text-align: center;">Qty</th>
+                    <th style="text-align: center;">Total</th>
                 </tr>
             </thead>
             <tbody>';
