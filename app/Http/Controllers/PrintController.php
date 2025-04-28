@@ -1011,7 +1011,7 @@ class PrintController extends Controller
             </div>
         </div>
 
-        <div style="text-align: center; color: red; font-weight: bold; margin: 5px 0;border-top: 1px solid #000;border-bottom: 1px solid #000;">
+        <div style="text-align: center; color: red;font-size: 10px; font-weight: bold; margin: 5px 0;border-top: 1px solid #000;border-bottom: 1px solid #000;padding: 2px;">
             ' . strtoupper($general[0]->payment_mode . " payment") . '
         </div>
 
