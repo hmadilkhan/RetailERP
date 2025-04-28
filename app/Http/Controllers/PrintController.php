@@ -986,7 +986,7 @@ class PrintController extends Controller
         </style>
         <div class="header">
             <div class="logo">
-                <img src="' . asset('storage/images/company/'.$company[0]->logo) . '" style="max-width: 60px;">
+                <img src="' . asset('storage/images/company/'.$company[0]->logo) . '" style="max-width: 80px;">
             </div>
             <div class="company-name">' . $company[0]->name . '</div>
             <div class="company-address">' . $branch[0]->branch_address . '</div>
