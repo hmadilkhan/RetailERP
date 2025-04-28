@@ -1043,7 +1043,7 @@ class PrintController extends Controller
             $html .= '
                 <tr>
                     <td style="text-align: left;">' . $val->product_name . '</td>
-                    <td>' . $val->item_price . '</td>
+                    <td>' . number_format($val->item_price, 0) . '</td>
                     <td>' . $val->total_qty . '</td>
                     <td>' . number_format($val->total_amount, 0) . '</td>
                 </tr>';
