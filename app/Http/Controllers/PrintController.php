@@ -1064,66 +1064,78 @@ class PrintController extends Controller
             </tbody>
         </table>
 
-        <div style="margin-top: 5px;">
-            <div class="receipt-row">
-                <span class="label">Total Amount:</span> ' . number_format($general[0]->actual_amount, 0) . '
-            </div>';
+        <table style="margin-top:5px; width:100%; border-collapse: collapse;">
+    <tbody>
+        <tr>
+            <td style="padding:4px; font-weight:bold;">Total Amount:</td>
+            <td style="padding:4px; text-align:right;">' . number_format($general[0]->actual_amount, 0) . '</td>
+        </tr>';
 
         if ($general[0]->discount_amount > 0) {
             $html .= '
-            <div class="receipt-row">
-                <span class="label">Discount Amount:</span> ' . number_format($general[0]->discount_amount, 0) . '
-            </div>';
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Discount Amount:</td>
+                    <td style="padding:4px; text-align:right;">' . number_format($general[0]->discount_amount, 0) . '</td>
+                </tr>';
         }
 
         if ($general[0]->credit_card_transaction > 0) {
             $html .= '
-            <div class="receipt-row">
-                <span class="label">Card Charges:</span> ' . number_format($general[0]->actual_amount / 100 * $general[0]->value, 0) . '
-            </div>';
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Card Charges:</td>
+                    <td style="padding:4px; text-align:right;">' . number_format($general[0]->actual_amount / 100 * $general[0]->value, 0) . '</td>
+                </tr>';
         }
 
         if ($general[0]->delivery_charges > 0) {
             $html .= '
-            <div class="receipt-row">
-                <span class="label">Delivery Charges:</span> ' . number_format($general[0]->charges, 0) . '
-            </div>';
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Delivery Charges:</td>
+                    <td style="padding:4px; text-align:right;">' . number_format($general[0]->charges, 0) . '</td>
+                </tr>';
         }
 
         if ($general[0]->delivery_charges > 0 || $general[0]->credit_card_transaction > 0 || $general[0]->discount_amount > 0) {
             $html .= '
-            <div class="receipt-row">
-                <span class="label">Gross Amount:</span> ' . number_format($general[0]->actual_amount - $general[0]->discount_amount + ($general[0]->total_amount / 100 * $general[0]->value) + $general[0]->charges, 0) . '
-            </div>';
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Gross Amount:</td>
+                    <td style="padding:4px; text-align:right;">' . number_format($general[0]->actual_amount - $general[0]->discount_amount + ($general[0]->total_amount / 100 * $general[0]->value) + $general[0]->charges, 0) . '</td>
+                </tr>';
         }
 
         if ($general[0]->sales_tax_amount > 0 || $general[0]->srb > 0) {
             $html .= '
-            <div class="receipt-row">
-                <span class="label">Sales Tax (' . ($general[0]->sales_tax_amount > 0 ? "FBR" : "SRB") . '):</span> ' . number_format(($general[0]->sales_tax_amount > 0 ? $general[0]->sales_tax_amount : $general[0]->srb), 0) . '
-            </div>';
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Sales Tax (' . ($general[0]->sales_tax_amount > 0 ? "FBR" : "SRB") . '):</td>
+                    <td style="padding:4px; text-align:right;">' . number_format(($general[0]->sales_tax_amount > 0 ? $general[0]->sales_tax_amount : $general[0]->srb), 0) . '</td>
+                </tr>';
         }
 
         $html .= '
-            <div class="receipt-row">
-                <span class="label">Net Amount:</span> ' . number_format((float)$general[0]->total_amount, 0) . '
-            </div>';
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Net Amount:</td>
+                    <td style="padding:4px; text-align:right;">' . number_format((float)$general[0]->total_amount, 0) . '</td>
+                </tr>';
 
         if ($general[0]->receive_amount < $general[0]->total_amount) {
             $html .= '
-            <div class="receipt-row">
-                <span class="label">Received Amount:</span> ' . number_format((float)$general[0]->receive_amount, 0) . '
-            </div>
-            <div class="receipt-row">
-                <span class="label">Receipt Balance:</span> ' . number_format($general[0]->total_amount, 0) . '
-            </div>
-            <div class="receipt-row">
-                <span class="label">Total Balance:</span> ' . number_format((!empty($balance) ? $balance[0]->balance : 0), 0) . '
-            </div>';
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Received Amount:</td>
+                    <td style="padding:4px; text-align:right;">' . number_format((float)$general[0]->receive_amount, 0) . '</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Receipt Balance:</td>
+                    <td style="padding:4px; text-align:right;">' . number_format($general[0]->total_amount, 0) . '</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Total Balance:</td>
+                    <td style="padding:4px; text-align:right;">' . number_format((!empty($balance) ? $balance[0]->balance : 0), 0) . '</td>
+                </tr>';
         }
 
         $html .= '
-        </div>
+            </tbody>
+        </table>
 
         <div class="footer">
             <div>Timing: 10:30 AM To 6:30 PM</div>
