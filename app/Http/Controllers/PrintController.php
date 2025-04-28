@@ -969,7 +969,7 @@ class PrintController extends Controller
         // Build HTML content
         $html = '
         <style>
-            body { font-family: Arial; font-size: 10px; }
+            body { font-family: Arial; font-size: 10px;margin: 10px; }
             .header { text-align: center; }
             .logo { text-align: center; margin-bottom: 5px; }
             .company-name { font-weight: bold; font-size: 12px; text-align: center; }
