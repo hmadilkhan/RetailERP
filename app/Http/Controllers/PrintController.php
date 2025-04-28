@@ -1067,8 +1067,8 @@ class PrintController extends Controller
         <table style="margin-top:5px; width:100%; border-collapse: collapse;">
     <tbody>
         <tr>
-            <td style="padding:4px; font-weight:bold;">Total Amount:</td>
-            <td style="padding:4px; text-align:right;">' . number_format($general[0]->actual_amount, 0) . '</td>
+            <td style="padding:4px; font-weight:bold;font-size:12px;">Total Amount:</td>
+            <td style="padding:4px; text-align:right;font-size:12px;">' . number_format($general[0]->actual_amount, 0) . '</td>
         </tr>';
 
         if ($general[0]->discount_amount > 0) {
