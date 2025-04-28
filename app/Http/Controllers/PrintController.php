@@ -1056,7 +1056,7 @@ class PrintController extends Controller
         }
 
         $html .= '
-                <tr>
+                <tr style="border-top: 1px solid #000;border-bottom: 1px solid #000;">
                     <td colspan="2" style="text-align: left;"><span class="label">Item Qty:</span> ' . $itemQty .  '</td>
                     <td>' . $tQty . '</td>
                     <td></td>
@@ -1065,9 +1065,6 @@ class PrintController extends Controller
         </table>
 
         <div style="margin-top: 5px;">
-            <div class="receipt-row">
-                <span class="label">Item Qty:</span> ' . $itemQty . ' | ' . $tQty . '
-            </div>
             <div class="receipt-row">
                 <span class="label">Total Amount:</span> ' . number_format($general[0]->actual_amount, 0) . '
             </div>';
