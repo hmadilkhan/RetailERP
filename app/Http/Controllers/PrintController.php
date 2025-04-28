@@ -995,23 +995,23 @@ class PrintController extends Controller
 
         <div class="receipt-info">
             <div class="receipt-row">
-                <span class="label">Receipt No:</span> ' . ($general[0]->receipt_no ?? "N/A") . '
+                <span class="label">Receipt No:</span>     ' . ($general[0]->receipt_no ?? "N/A") . '
             </div>
             <div class="receipt-row">
-                <span class="label">Customer:</span> ' . ($general[0]->customerName ?? "N/A") . '
+                <span class="label">Customer:</span>     ' . ($general[0]->customerName ?? "N/A") . '
             </div>
             <div class="receipt-row">
-                <span class="label">Contact:</span> ' . ($general[0]->mobile ?? "N/A") . '
+                <span class="label">Contact:</span>     ' . ($general[0]->mobile ?? "N/A") . '
             </div>
             <div class="receipt-row">
-                <span class="label">Membership:</span> ' . ($general[0]->membership_card_no ?? "N/A") . '
+                <span class="label">Membership:</span>     ' . ($general[0]->membership_card_no ?? "N/A") . '
             </div>
             <div class="receipt-row">
-                <span class="label">Delivery Date:</span> ' . date("d-m-Y",strtotime($general[0]->delivery_date)) . '
+                <span class="label">Delivery Date:</span>     ' . date("d-m-Y",strtotime($general[0]->delivery_date)) . '
             </div>
         </div>
 
-        <div style="text-align: center; color: red;font-size: 10px; font-weight: bold; margin: 5px 0;border-top: 1px solid #000;border-bottom: 1px solid #000;padding: 2px;">
+        <div style="text-align: center; color: red;font-size: 14px; font-weight: bold; margin: 5px 0;border-top: 1px solid #000;border-bottom: 1px solid #000;padding: 2px;">
             ' . strtoupper($general[0]->payment_mode . " payment") . '
         </div>
 
