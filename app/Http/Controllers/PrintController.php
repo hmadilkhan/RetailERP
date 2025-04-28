@@ -931,6 +931,205 @@ class PrintController extends Controller
     }
 	
 	
+    public function indexMpdf(Request $request, Vendor $vendor, order $order, Customer $customer)
+    {
+        $request->receipt = str_replace("{{1}}","",$request->receipt);
+        $itemQty = 0;
+        $tQty = 0;
+        $general = $order->getReceiptGeneral($request->receipt);
+        $company = $vendor->getCompanyByBranch($general[0]->branchId);
+        $branch = $vendor->getBranch($general[0]->branchId);
+        $details = $order->orderItemsForPrint($general[0]->receiptID);
+        $balance = $customer->getcustomersForReceipt($general[0]->customerId,$company[0]->company_id,$general[0]->branchId);
+
+        // Configure MPDF
+        $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => [80, 200],
+            'margin_top' => 0,
+            'margin_bottom' => 0,
+            'margin_left' => 1,
+            'margin_right' => 1,
+            'fontDir' => array_merge($fontDirs, [
+                resource_path('fonts'),
+            ]),
+            'fontdata' => $fontData,
+            'default_font' => 'Arial',
+            'directionality' => 'ltr',
+            'autoLangToFont' => true,
+            'autoScriptToLang' => true,
+        ]);
+
+        // Build HTML content
+        $html = '
+        <style>
+            body { font-family: Arial; font-size: 10px; }
+            .header { text-align: center; }
+            .logo { text-align: center; margin-bottom: 5px; }
+            .company-name { font-weight: bold; font-size: 12px; text-align: center; }
+            .company-address { font-size: 7px; text-align: center; }
+            .company-contact { font-size: 7px; text-align: center; }
+            .receipt-info { margin-top: 5px; }
+            .receipt-row { margin-bottom: 2px; }
+            .label { font-weight: bold; }
+            .items-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+            .items-table th { background-color: #e9e9e9; padding: 2px; text-align: left; }
+            .items-table td { padding: 2px; }
+            .total-row { font-weight: bold; }
+            .footer { text-align: center; margin-top: 5px; font-size: 8px; }
+        </style>
+        <div class="header">
+            <div class="logo">
+                <img src="' . asset('storage/images/company/'.$company[0]->logo) . '" style="max-width: 50px;">
+            </div>
+            <div class="company-name">' . $company[0]->name . '</div>
+            <div class="company-address">' . $branch[0]->branch_address . '</div>
+            <div class="company-contact">' . $branch[0]->branch_ptcl . ' | ' . $branch[0]->branch_mobile . '</div>
+        </div>
+
+        <div class="receipt-info">
+            <div class="receipt-row">
+                <span class="label">Receipt No:</span> ' . ($general[0]->receipt_no ?? "N/A") . '
+            </div>
+            <div class="receipt-row">
+                <span class="label">Customer:</span> ' . ($general[0]->customerName ?? "N/A") . '
+            </div>
+            <div class="receipt-row">
+                <span class="label">Contact:</span> ' . ($general[0]->mobile ?? "N/A") . '
+            </div>
+            <div class="receipt-row">
+                <span class="label">Membership:</span> ' . ($general[0]->membership_card_no ?? "N/A") . '
+            </div>
+            <div class="receipt-row">
+                <span class="label">Delivery Date:</span> ' . date("d-m-Y",strtotime($general[0]->delivery_date)) . '
+            </div>
+        </div>
+
+        <div style="text-align: center; color: red; font-weight: bold; margin: 5px 0;">
+            ' . strtoupper($general[0]->payment_mode . " payment") . '
+        </div>
+
+        <div class="receipt-row">
+            <span class="label">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
+            <span style="margin-left: 20px;" class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
+        </div>
+
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Qty</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>';
+
+        foreach ($details as $val) {
+            $itemQty++;
+            $tQty += $val->total_qty;
+            $html .= '
+                <tr>
+                    <td>' . $val->product_name . '</td>
+                    <td>' . $val->item_price . '</td>
+                    <td>' . $val->total_qty . '</td>
+                    <td>' . number_format($val->total_amount, 0) . '</td>
+                </tr>';
+            if ($val->note != "" && $val->note != "Note : None") {
+                $html .= '
+                <tr>
+                    <td colspan="4" style="font-style: italic; font-size: 8px;">Note: ' . $val->note . '</td>
+                </tr>';
+            }
+        }
+
+        $html .= '
+            </tbody>
+        </table>
+
+        <div style="margin-top: 5px;">
+            <div class="receipt-row">
+                <span class="label">Item Qty:</span> ' . $itemQty . ' | ' . $tQty . '
+            </div>
+            <div class="receipt-row">
+                <span class="label">Total Amount:</span> ' . number_format($general[0]->actual_amount, 0) . '
+            </div>';
+
+        if ($general[0]->discount_amount > 0) {
+            $html .= '
+            <div class="receipt-row">
+                <span class="label">Discount Amount:</span> ' . number_format($general[0]->discount_amount, 0) . '
+            </div>';
+        }
+
+        if ($general[0]->credit_card_transaction > 0) {
+            $html .= '
+            <div class="receipt-row">
+                <span class="label">Card Charges:</span> ' . number_format($general[0]->actual_amount / 100 * $general[0]->value, 0) . '
+            </div>';
+        }
+
+        if ($general[0]->delivery_charges > 0) {
+            $html .= '
+            <div class="receipt-row">
+                <span class="label">Delivery Charges:</span> ' . number_format($general[0]->charges, 0) . '
+            </div>';
+        }
+
+        if ($general[0]->delivery_charges > 0 || $general[0]->credit_card_transaction > 0 || $general[0]->discount_amount > 0) {
+            $html .= '
+            <div class="receipt-row">
+                <span class="label">Gross Amount:</span> ' . number_format($general[0]->actual_amount - $general[0]->discount_amount + ($general[0]->total_amount / 100 * $general[0]->value) + $general[0]->charges, 0) . '
+            </div>';
+        }
+
+        if ($general[0]->sales_tax_amount > 0 || $general[0]->srb > 0) {
+            $html .= '
+            <div class="receipt-row">
+                <span class="label">Sales Tax (' . ($general[0]->sales_tax_amount > 0 ? "FBR" : "SRB") . '):</span> ' . number_format(($general[0]->sales_tax_amount > 0 ? $general[0]->sales_tax_amount : $general[0]->srb), 0) . '
+            </div>';
+        }
+
+        $html .= '
+            <div class="receipt-row">
+                <span class="label">Net Amount:</span> ' . number_format((float)$general[0]->total_amount, 0) . '
+            </div>';
+
+        if ($general[0]->receive_amount < $general[0]->total_amount) {
+            $html .= '
+            <div class="receipt-row">
+                <span class="label">Received Amount:</span> ' . number_format((float)$general[0]->receive_amount, 0) . '
+            </div>
+            <div class="receipt-row">
+                <span class="label">Receipt Balance:</span> ' . number_format($general[0]->total_amount, 0) . '
+            </div>
+            <div class="receipt-row">
+                <span class="label">Total Balance:</span> ' . number_format((!empty($balance) ? $balance[0]->balance : 0), 0) . '
+            </div>';
+        }
+
+        $html .= '
+        </div>
+
+        <div class="footer">
+            <div>Timing: 10:30 AM To 6:30 PM</div>
+            <div>Solution By Sabsons|Sabsoft</div>
+            <div>www.sabsoft.com.pk | 9221-34389215-16-17</div>
+        </div>';
+
+        // Write HTML to PDF
+        $mpdf->WriteHTML($html);
+
+        // Output PDF
+        return response($mpdf->Output($general[0]->receipt_no . ".pdf", 'I'))
+            ->header('Content-Type', 'application/pdf');
+    }
 }
 
 //REFERENCE LINK FOR BARCODES : http://www.fpdf.org/en/script/script88.php

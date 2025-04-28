@@ -144,6 +144,7 @@ Route::post('/admin/logout', [AdminController::class, "logout"])->name('admin.lo
 /******************************* BARCODE PRINTING STARTS FROM HERE *******************************/
 Route::post('/printBarcode', [PrintController::class, 'printBarcode']);
 Route::get('/print/{receipt}', [PrintController::class, 'index']);
+Route::get('/print-m-pdf/{receipt}', [PrintController::class, 'indexMpdf']);
 Route::get('/voucher/{receipt}', [PrintController::class, 'printVoucher']);
 Route::get('/try/{receipt}', [PrintController::class, 'try']);
 /******************************* 60 x 40 *******************************/
