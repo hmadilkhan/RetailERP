@@ -1057,8 +1057,8 @@ class PrintController extends Controller
 
         $html .= '
                 <tr>
-                    <td colspan="2" style="text-align: left;"><span class="label">Item Qty:</span> ' . $itemQty . ' | ' . $tQty . '</td>
-                    <td>' . $val->total_qty . '</td>
+                    <td colspan="2" style="text-align: left;"><span class="label">Item Qty:</span> ' . $itemQty .  '</td>
+                    <td>' . $tQty . '</td>
                     <td></td>
                 </tr>
             </tbody>
