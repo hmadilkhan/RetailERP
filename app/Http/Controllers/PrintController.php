@@ -977,7 +977,7 @@ class PrintController extends Controller
             .company-contact { font-size: 8px; text-align: center; }
             .receipt-info { margin-top: 5px;padding: 2px;  }
             .receipt-row { margin-bottom: 2px;font-size: 12px;padding: 4px; }
-            .label { font-weight: bold;font-size: 8px;  }
+            .label { font-weight: bold; }
             .items-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
             .items-table th { background-color: #e9e9e9; padding: 2px; text-align: left; }
             .items-table td { padding: 2px; }
@@ -1015,18 +1015,13 @@ class PrintController extends Controller
             ' . strtoupper($general[0]->payment_mode . " payment") . '
         </div>
 
-        <div class="receipt-row" style="display: flex; justify-content: space-between;">
-            <span class="label">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
-            <span class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
-        </div>
-
         <table style="width: 100%; border-collapse: collapse; margin-top: 5px;">
             <tr>
                 <td style="text-align: left; width: 50%;">
-                     <span class="label">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
+                     <span class="label" style="font-size: 14px;">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
                 </td>
                 <td style="text-align: right; width: 50%;">
-                    <span class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
+                    <span class="label" style="font-size: 14px;">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
                 </td>
             </tr>
         </table>
