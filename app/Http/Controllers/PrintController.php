@@ -1017,11 +1017,11 @@ class PrintController extends Controller
 
         <table style="width: 100%; border-collapse: collapse; margin-top: 5px;">
             <tr>
-                <td style="text-align: left; width: 50%;">
-                     <span class="label" style="font-size: 14px;">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
+                <td style="text-align: left; width: 50%;" class="receipt-row">
+                     <span class="label" >Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
                 </td>
-                <td style="text-align: right; width: 50%;">
-                    <span class="label" style="font-size: 14px;">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
+                <td style="text-align: right; width: 50%;" class="receipt-row">
+                    <span class="label" >Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
                 </td>
             </tr>
         </table>
