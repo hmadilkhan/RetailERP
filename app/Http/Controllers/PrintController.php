@@ -993,7 +993,7 @@ class PrintController extends Controller
             <div class="company-contact">' . $branch[0]->branch_ptcl . ' | ' . $branch[0]->branch_mobile . '</div>
         </div>
 
-        <table style="width:100%; border-collapse:collapse; margin-bottom:10px;border-top: 1px solid #000;">
+        <table style="width:100%; border-collapse:collapse; margin-bottom:10px;border-top: 1px solid #000;margin-top: 5px;">
             <tbody>
                 <tr>
                     <td style="padding:4px; font-weight:bold;">Receipt No</td>
