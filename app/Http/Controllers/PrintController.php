@@ -1026,7 +1026,7 @@ class PrintController extends Controller
             </tr>
         </table>
 
-        <table class="items-table">
+        <table class="items-table" cellspacing="0" cellpadding="2">
             <thead>
                 <tr>
                     <th style="text-align: left;">Product</th>
