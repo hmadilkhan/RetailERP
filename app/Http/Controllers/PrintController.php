@@ -1016,7 +1016,7 @@ class PrintController extends Controller
         </div>
 
         <table style="width: 100%; border-collapse: collapse; margin-top: 5px;">
-            <tr>
+            <tr style="border-top: 1px solid #000; border-bottom: 1px solid #000;">
                 <td style="text-align: left; width: 50%;" class="receipt-row">
                      <span class="label" >Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
                 </td>
@@ -1056,7 +1056,7 @@ class PrintController extends Controller
         }
 
         $html .= '
-                <tr style="border-top: 1px solid #000;border-bottom: 1px solid #000;">
+                <tr style="background-color: #e9e9e9;border-top: 1px solid #000;border-bottom: 1px solid #000;">
                     <td colspan="2" style="text-align: left;"><span class="label">Item Qty:</span> ' . $itemQty .  '</td>
                     <td>' . $tQty . '</td>
                     <td></td>
