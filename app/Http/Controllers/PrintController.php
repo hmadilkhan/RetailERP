@@ -1020,7 +1020,7 @@ class PrintController extends Controller
             <span class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
         </div>
 
-        <table>
+        <table style="width: 100%; border-collapse: collapse; margin-top: 5px;">
             <tr>
                 <td style="text-align: left; width: 50%;">
                      <span class="label">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
