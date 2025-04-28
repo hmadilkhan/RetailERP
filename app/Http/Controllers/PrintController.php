@@ -1022,10 +1022,10 @@ class PrintController extends Controller
 
         <table>
             <tr>
-                <td style="text-align: left;">
+                <td style="text-align: left; width: 50%;">
                      <span class="label">Date:</span> ' . date("d-m-Y",strtotime($general[0]->date)) . '
                 </td>
-                <td style="text-align: right;">
+                <td style="text-align: right; width: 50%;">
                     <span class="label">Time:</span> ' . date("H:i a",strtotime($general[0]->time)) . '
                 </td>
             </tr>
