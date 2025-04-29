@@ -4434,12 +4434,13 @@ class ReportController extends Controller
                             number_format($item->amount - $item->cost),
                             $item->order_status_name
                         );
-
-                        $totalCount++;
-                        $totalQty += $item->qty;
-                        $totalAmount += $item->amount;
-                        $totalCost += $item->cost;
-                        $totalMargin += ($item->amount - $item->cost);
+                        if($item->void_receipt != 1){
+                            $totalCount++;
+                            $totalQty += $item->qty;
+                            $totalAmount += $item->amount;
+                            $totalCost += $item->cost;
+                            $totalMargin += ($item->amount - $item->cost);
+                        }
                     }
                 } else {
                     $html .= '<tr><td colspan="8" style="text-align: center;">No data found</td></tr>';
