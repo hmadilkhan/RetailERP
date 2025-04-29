@@ -59,6 +59,7 @@ use App\Http\Controllers\WalletController;
 use App\Livewire\Customers\CustomerList;
 use App\Livewire\Inventory\Inventory;
 use App\Livewire\Orders\PreOrderBooking;
+use App\Livewire\ReportBuilder;
 use App\Livewire\StockAdjustment\ListAdjustment;
 use App\Livewire\StockReport;
 use App\Livewire\VehicleManager;
@@ -118,6 +119,7 @@ Route::get('/vehicle-manager', VehicleManager::class);
 Route::get('/view-adjustments', ListAdjustment::class);
 Route::get('/stock-report', StockReport::class);
 Route::get('/customers-list', CustomerList::class);
+Route::get('/report-builder', ReportBuilder::class);
 // Route::get('/pre-order-booking', PreOrderBooking::class);
 Route::get('/pre-order-booking', [PreOrderBookingController::class, "index"]);
 Route::post('/place-order', [PreOrderBookingController::class, "placeOrder"]);
@@ -143,8 +145,8 @@ Route::post('/admin/logout', [AdminController::class, "logout"])->name('admin.lo
 
 /******************************* BARCODE PRINTING STARTS FROM HERE *******************************/
 Route::post('/printBarcode', [PrintController::class, 'printBarcode']);
-Route::get('/print/{receipt}', [PrintController::class, 'index']);
-Route::get('/print-m-pdf/{receipt}', [PrintController::class, 'indexMpdf']);
+// Route::get('/print/{receipt}', [PrintController::class, 'index']);
+Route::get('/print/{receipt}', [PrintController::class, 'indexMpdf']);
 Route::get('/voucher/{receipt}', [PrintController::class, 'printVoucher']);
 Route::get('/try/{receipt}', [PrintController::class, 'try']);
 /******************************* 60 x 40 *******************************/
