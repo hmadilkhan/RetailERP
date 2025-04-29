@@ -165,7 +165,7 @@ class report extends Model
     public  function total_sales($fromdate, $todate, $branch)
     {
         $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select("SELECT SUM(a.total_amount ) AS sales FROM sales_receipts a  INNER JOIN sales_account_subdetails c ON c.receipt_id = a.id   WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))", [$fromdate, $todate, $branch]);
+        $result = DB::select("SELECT SUM(a.total_amount ) AS sales FROM sales_receipts a  INNER JOIN sales_account_subdetails c ON c.receipt_id = a.id   WHERE a.status = 4 and a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))", [$fromdate, $todate, $branch]);
         return $result;
     }
 
