@@ -15,9 +15,9 @@
                             <div class="col-md-3">
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" wire:model="selectedFields"
-                                        value="{{ $table . '.' . $field }}" id="{{ $table . $field }}">
-                                    <label class="form-check-label" for="{{ $table . $field }}">
-                                        {{ $field }}
+                                        value="{{ $field['value'] }}" id="{{ $table . $field['value'] }}">
+                                    <label class="form-check-label" for="{{ $table . $field['value'] }}">
+                                        {{ $field['label'] }}
                                     </label>
                                 </div>
                             </div>
@@ -89,9 +89,18 @@
     <!-- Group By -->
     <div class="mb-4">
         <h5 class="mb-2 fw-semibold">Group By Fields</h5>
-        <select multiple class="form-select select2" wire:model="groupByFields" id="groupByFields">
-            @foreach ($availableFields as $field)
-                <option value="{{ $field }}">{{ $field }}</option>
+        <select  class="form-select " wire:model="groupByFields" id="groupByFields">
+            <option value="">
+                -- Select Field --
+            </option>
+            @foreach ($availableTables as $table => $fields)
+                <optgroup label="{{ ucfirst(str_replace('_', ' ', $table)) }}">
+                    @foreach ($fields as $field)
+                        <option value="{{ $field['value'] }}">
+                            {{ $field['label'] }}
+                        </option>
+                    @endforeach
+                </optgroup>
             @endforeach
         </select>
         <div class="form-text">Hold Ctrl/Cmd to select multiple fields</div>
