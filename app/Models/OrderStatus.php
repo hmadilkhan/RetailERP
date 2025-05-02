@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class OrderStatus extends Model
 {
 	protected $table = "sales_order_status";
+    protected $key = "order_status_id";
     protected $guarded = [];
     public $timestamps = false;
 	

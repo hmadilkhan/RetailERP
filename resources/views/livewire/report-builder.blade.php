@@ -28,6 +28,87 @@
         </div>
     </div>
 
+    <!-- NEW Filters -->
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Filters</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label small">From Date</label>
+                    <input type="date" class="form-control" wire:model="fromDate">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">To Date</label>
+                    <input type="date" class="form-control" wire:model="toDate">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Branch</label>
+                    <select class="form-select" wire:model="branch">
+                        <option value="">-- Select Branch --</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Terminal</label>
+                    <select class="form-select" wire:model="terminal">
+                        <option value="">-- Select Terminal --</option>
+                        @foreach ($terminals as $terminal)
+                            <option value="{{ $terminal->terminal_id }}">{{ $terminal->terminal_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Customer</label>
+                    <select class="form-select" wire:model="customer">
+                        <option value="">-- Select Customer --</option>
+                        @foreach ($customers as $customer)
+                            <option value="{{ $customer->id }}">{{ $customer->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">User</label>
+                    <select class="form-select" wire:model="user">
+                        <option value="">-- Select User --</option>
+                        @foreach ($users as $user)
+                            <option value="{{ $user->id }}">{{ $user->fullname }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Status</label>
+                    <select class="form-select" wire:model="status">
+                        <option value="">-- Select Status --</option>
+                        @foreach ($statuses as $status)
+                            <option value="{{ $status->order_status_id }}">{{ $status->order_status_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Order Type</label>
+                    <select class="form-select" wire:model="orderType">
+                        <option value="">-- Select Order Type --</option>
+                        @foreach ($orderTypes as $orderType)
+                            <option value="{{ $orderType->order_mode_id }}">{{ $orderType->order_mode }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small">Payment Method</label>
+                    <select class="form-select" wire:model="paymentMethod">
+                        <option value="">-- Select Payment Method --</option>
+                        @foreach ($paymentMethods as $paymentMethod)
+                            <option value="{{ $paymentMethod->payment_id }}">{{ $paymentMethod->payment_mode }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Filters -->
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
