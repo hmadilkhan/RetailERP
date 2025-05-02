@@ -208,7 +208,7 @@ class report extends Model
     public  function total_COGS($fromdate, $todate, $branch)
     {
         $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT IFNULL(SUM(b.total_cost),0) AS cost FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
+        $result = DB::select('SELECT IFNULL(SUM(b.total_cost),0) AS cost FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?)) and a.status = 4', [$fromdate, $todate, $branch]);
         // $result = DB::select('SELECT IFNULL(SUM(b.item_price * b.total_qty),0) AS cost FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))',[$fromdate,$todate,session("branch")]);
         return $result;
     }
