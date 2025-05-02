@@ -96,7 +96,7 @@ class report extends Model
     public  function sales_recipts($fromdate, $todate, $branch)
     {
         $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT a.id, a.date, (c.total_amount + f.discount_amount) AS total_amount, e.name, d.payment_mode  FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_account_general c ON c.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id INNER JOIN sales_account_subdetails f ON f.receipt_id = a.id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?)) group by a.id', [$fromdate, $todate, $branch]);
+        $result = DB::select('SELECT a.id, a.date, (c.total_amount + f.discount_amount) AS total_amount, e.name, d.payment_mode  FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_account_general c ON c.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id INNER JOIN sales_account_subdetails f ON f.receipt_id = a.id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?)) and a.status = 4 group by a.id', [$fromdate, $todate, $branch]);
         return $result;
     }
 
@@ -155,7 +155,7 @@ class report extends Model
     public  function COGS($fromdate, $todate)
     {
         // Total cost has been changes to item price
-        $result = DB::select('SELECT a.id, a.date, SUM(b.total_cost) as total_cost, e.name, d.payment_mode FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?)) group by a.id', [$fromdate, $todate, session("branch")]);
+        $result = DB::select('SELECT a.id, a.date, SUM(b.total_cost) as total_cost, e.name, d.payment_mode FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?)) and a.status = 4 group by a.id', [$fromdate, $todate, session("branch")]);
         return $result;
     }
 
