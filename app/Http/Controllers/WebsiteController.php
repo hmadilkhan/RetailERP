@@ -75,6 +75,8 @@ class WebsiteController extends Controller
                     'logo' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
                $imageLogo = $this->uploads($request->file('logo'),'images/website/');
+
+               $this->uploads($request->file('logo'),'images/products/');
             }
 
             if (!empty($request->favicon)) {
@@ -179,6 +181,7 @@ class WebsiteController extends Controller
                 ]);
 
                 $imageLogo =$this->uploads($request->file('logo'),'images/website/',$website_detail->logo);
+                $this->uploads($request->file('logo'),'images/products/',$website_detail->logo);
             }
 
 
