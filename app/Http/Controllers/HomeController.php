@@ -68,7 +68,7 @@ class HomeController extends Controller
         $permission = $dash->dashboardRole();
         $projected = $dash->getProjectedSales();
         // 'customers', 'masters', 'vendors' , 'monthsales', 'expenseAmount', 'vendorPayable', 'customerPayable'  //This is the Previous Graph that is hide
-        return view('dashboard', compact( 'products', 'months', 'year', 'totalstock', 'orders', 'branches', 'sales', 'totalSales',  'currentDate', 'permission', 'projected')); 
+        return view('dashboard', compact( 'products', 'months', 'year', 'totalstock', 'orders', 'branches', 'sales', 'totalSales',  'currentDate', 'permission', 'projected'));
     }
 
     public function getTerminalsByBranch(Request $request, dashboard $dash)
