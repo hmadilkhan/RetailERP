@@ -37,15 +37,15 @@
             <div class="row">
                 <div class="col-md-3">
                     <label class="form-label small">From Date</label>
-                    <input type="date" class="form-control" wire:model="fromDate">
+                    <input type="date" class="form-control" wire:model.live="fromDate">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">To Date</label>
-                    <input type="date" class="form-control" wire:model="toDate">
+                    <input type="date" class="form-control" wire:model.live="toDate">
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Branch</label>
-                    <select class="form-select" wire:model="branch">
+                    <select class="form-select" wire:model.live="branch">
                         <option value="">-- Select Branch --</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
@@ -54,7 +54,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Terminal</label>
-                    <select class="form-select" wire:model="terminal">
+                    <select class="form-select" wire:model.live="terminal">
                         <option value="">-- Select Terminal --</option>
                         @foreach ($terminals as $terminal)
                             <option value="{{ $terminal->terminal_id }}">{{ $terminal->terminal_name }}</option>
@@ -63,7 +63,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Customer</label>
-                    <select class="form-select" wire:model="customer">
+                    <select class="form-select" wire:model.live="customer">
                         <option value="">-- Select Customer --</option>
                         @foreach ($customers as $customer)
                             <option value="{{ $customer->id }}">{{ $customer->name }}</option>
@@ -72,7 +72,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">User</label>
-                    <select class="form-select" wire:model="user">
+                    <select class="form-select" wire:model.live="user">
                         <option value="">-- Select User --</option>
                         @foreach ($users as $user)
                             <option value="{{ $user->id }}">{{ $user->fullname }}</option>
@@ -81,7 +81,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Status</label>
-                    <select class="form-select" wire:model="status">
+                    <select class="form-select" wire:model.live="status">
                         <option value="">-- Select Status --</option>
                         @foreach ($statuses as $status)
                             <option value="{{ $status->order_status_id }}">{{ $status->order_status_name }}</option>
@@ -90,7 +90,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Order Type</label>
-                    <select class="form-select" wire:model="orderType">
+                    <select class="form-select" wire:model.live="orderType">
                         <option value="">-- Select Order Type --</option>
                         @foreach ($orderTypes as $orderType)
                             <option value="{{ $orderType->order_mode_id }}">{{ $orderType->order_mode }}</option>
@@ -99,10 +99,11 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Payment Method</label>
-                    <select class="form-select" wire:model="paymentMethod">
+                    <select class="form-select" wire:model.live="paymentMethod">
                         <option value="">-- Select Payment Method --</option>
                         @foreach ($paymentMethods as $paymentMethod)
-                            <option value="{{ $paymentMethod->payment_id }}">{{ $paymentMethod->payment_mode }}</option>
+                            <option value="{{ $paymentMethod->payment_id }}">{{ $paymentMethod->payment_mode }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -110,7 +111,7 @@
         </div>
     </div>
     <!-- Filters -->
-    <div class="card mb-4">
+    {{-- <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h6 class="mb-0">Filters</h6>
             <div class="ms-auto">
@@ -165,115 +166,209 @@
                 </div>
             @endforelse
         </div>
-    </div>
+    </div> --}}
 
     <!-- Group By -->
-    <div class="mb-4">
-        <h5 class="mb-2 fw-semibold">Group By Fields</h5>
-        <select  class="form-select " wire:model="groupByFields" id="groupByFields">
-            <option value="">
-                -- Select Field --
-            </option>
-            @foreach ($availableTables as $table => $fields)
-                <optgroup label="{{ ucfirst(str_replace('_', ' ', $table)) }}">
-                    @foreach ($fields as $field)
-                        <option value="{{ $field['value'] }}">
-                            {{ $field['label'] }}
-                        </option>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Group By Fields</h6>
+            <div class="ms-auto">
+
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="mb-4">
+                {{-- <h5 class="mb-2 fw-semibold">Group By Fields</h5> --}}
+                <select class="form-select " wire:model="groupByFields" id="groupByFields">
+                    <option value="">
+                        -- Select Field --
+                    </option>
+                    @foreach ($availableTables as $table => $fields)
+                        <optgroup label="{{ ucfirst(str_replace('_', ' ', $table)) }}">
+                            @foreach ($fields as $field)
+                                <option value="{{ $field['value'] }}">
+                                    {{ $field['label'] }}
+                                </option>
+                            @endforeach
+                        </optgroup>
                     @endforeach
-                </optgroup>
-            @endforeach
-        </select>
-        <div class="form-text">Hold Ctrl/Cmd to select multiple fields</div>
+                </select>
+                <div class="form-text">Hold Ctrl/Cmd to select multiple fields</div>
+            </div>
+        </div>
     </div>
 
     <!-- Calculated Fields -->
-    <div class="mb-4 mt-4">
-        <h5 class="fw-semibold">Custom Calculated Fields</h5>
-        <button type="button" class="btn btn-success btn-sm mb-2" wire:click="addCalculatedField">
-            + Add Calculation
-        </button>
-        @foreach ($calculatedFields as $index => $calc)
-            <div class="row g-2 mb-2">
-                <div class="col-md-6">
-                    <input type="text" class="form-control" placeholder="New Field Name"
-                        wire:model="calculatedFields.{{ $index }}.name">
-                </div>
-                <div class="col-md-6">
-                    <input type="text" class="form-control" placeholder="Formula (e.g., orders.amount * 1.18)"
-                        wire:model="calculatedFields.{{ $index }}.formula">
-                </div>
+    <div class="card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0">Custom Calculated Fields</h6>
+            <div class="ms-auto">
+                <button class="btn btn-sm btn-primary" type="button" wire:click="addCalculatedField">
+                    <i class="bi bi-plus-lg me-1"></i>+ Add Calculation
+                </button>
             </div>
-        @endforeach
+        </div>
+        <div class="card-body">
+            <div class="mb-4 mt-4">
+                {{-- <h5 class="fw-semibold">Custom Calculated Fields</h5> --}}
+                {{-- <button type="button" class="btn btn-success btn-sm mb-2" wire:click="addCalculatedField">
+                    + Add Calculation
+                </button> --}}
+                @foreach ($calculatedFields as $index => $calc)
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" placeholder="New Field Name"
+                                wire:model="calculatedFields.{{ $index }}.name">
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control"
+                                placeholder="Formula (e.g., orders.amount * 1.18)"
+                                wire:model="calculatedFields.{{ $index }}.formula">
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </div>
     </div>
 
     <!-- Generate Button -->
-    <div class="mb-4">
-        <button class="btn btn-primary px-4" type="button" wire:click="generateReport">
-            Generate Report
+    <div class="mb-4 card-footer">
+        <button class="btn btn-primary px-4 f-right" type="button" wire:click="generateReport"
+            @if ($isGenerating) disabled @endif>
+            @if ($isGenerating)
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Generating Report...
+            @else
+                Generate Report
+            @endif
         </button>
     </div>
+
+    <!-- Error Message -->
+    @if (session()->has('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            {{ session('error') }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
 
     <!-- Results -->
     @if (!empty($reportResults))
         <div class="table-responsive">
             <h5 class="fw-semibold mb-3">Report Results</h5>
-            <table class="table table-bordered table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        @foreach (array_keys((array) $reportResults[0]) as $header)
-                            <th>{{ $header }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($reportResults as $row)
+            @if ($isGenerating)
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading results...</p>
+                </div>
+            @else
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
                         <tr>
-                            @foreach ((array) $row as $cell)
-                                <td>{{ $cell }}</td>
+                            @foreach (array_keys((array) $reportResults[0]) as $header)
+                                @php
+                                    $label = $header;
+                                    foreach ($availableTables as $table => $fields) {
+                                        foreach ($fields as $field) {
+                                            if ($field['value'] === $header) {
+                                                $label = $field['label'];
+                                                break 2;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                <th>{{ $label }}</th>
                             @endforeach
                         </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @foreach ($reportResults as $row)
+                            <tr>
+                                @foreach ((array) $row as $cell)
+                                    <td>{{ $cell }}</td>
+                                @endforeach
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
+                <!-- Pagination Controls -->
+                <div class="d-flex justify-content-between align-items-center mt-3">
+                    <div class="d-flex align-items-center">
+                        <label class="me-2">Items per page:</label>
+                        <select class="form-select form-select-sm" style="width: 70px" wire:model.live="perPage">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <button class="btn btn-sm btn-outline-primary me-2" wire:click="previousPage"
+                            @if ($isGenerating || $currentPage === 1) disabled @endif>
+                            Previous
+                        </button>
+
+                        <span class="mx-2">
+                            Page {{ $currentPage }} of {{ $lastPage }}
+                            (Total: {{ $totalResults }} records)
+                        </span>
+
+                        <button class="btn btn-sm btn-outline-primary ms-2" wire:click="nextPage"
+                            @if ($isGenerating || $currentPage === $lastPage) disabled @endif>
+                            Next
+                        </button>
+                    </div>
+
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">Go to page:</span>
+                        <input type="number" class="form-control form-control-sm" style="width: 70px"
+                            wire:model.live="currentPage" min="1" max="{{ $lastPage }}"
+                            @if ($isGenerating) disabled @endif>
+                    </div>
+                </div>
+            @endif
         </div>
     @endif
 </div>
 @push('scripts')
-<script>
-    let select2Instance = null;
+    <script>
+        let select2Instance = null;
 
-    function initializeSelect2() {
-        if (select2Instance) {
-            select2Instance.off('change'); // Remove previous listeners
-            select2Instance.select2('destroy');
+        function initializeSelect2() {
+            if (select2Instance) {
+                select2Instance.off('change'); // Remove previous listeners
+                select2Instance.select2('destroy');
+            }
+
+            select2Instance = $('#groupByFields').select2({
+                placeholder: 'Select fields to group by',
+                allowClear: true,
+                width: '100%'
+            });
+
+            // Reapply selected values from Livewire
+            select2Instance.val(@this.get('groupByFields')).trigger('change');
+
+            // On change, update Livewire model
+            select2Instance.on('change', function(e) {
+                @this.set('groupByFields', $(this).val());
+            });
         }
 
-        select2Instance = $('#groupByFields').select2({
-            placeholder: 'Select fields to group by',
-            allowClear: true,
-            width: '100%'
+        // Initialize on load and Livewire update
+        document.addEventListener('livewire:load', initializeSelect2);
+        document.addEventListener('livewire:update', initializeSelect2);
+
+        // Destroy Select2 cleanly if component is removed
+        document.addEventListener('livewire:destroy', () => {
+            if (select2Instance) {
+                select2Instance.off('change');
+                select2Instance.select2('destroy');
+            }
         });
-
-        // Reapply selected values from Livewire
-        select2Instance.val(@this.get('groupByFields')).trigger('change');
-
-        // On change, update Livewire model
-        select2Instance.on('change', function (e) {
-            @this.set('groupByFields', $(this).val());
-        });
-    }
-
-    // Initialize on load and Livewire update
-    document.addEventListener('livewire:load', initializeSelect2);
-    document.addEventListener('livewire:update', initializeSelect2);
-
-    // Destroy Select2 cleanly if component is removed
-    document.addEventListener('livewire:destroy', () => {
-        if (select2Instance) {
-            select2Instance.off('change');
-            select2Instance.select2('destroy');
-        }
-    });
-</script>
+    </script>
 @endpush

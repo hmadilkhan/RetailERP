@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class OrderPayment extends Model
 {
 	protected $table = "sales_payment";
-	protected $key = "payment_id";
+	protected $primaryKey = "payment_id";
     protected $guarded = [];
     public $timestamps = false;
 	
