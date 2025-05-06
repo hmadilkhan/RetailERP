@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Branch;
+use App\Models\Order;
 use App\Models\OrderMode;
 use App\Models\OrderPayment;
 use App\Models\OrderStatus;
@@ -11,10 +12,12 @@ use App\Models\User;
 use App\Models\UserAuthorization;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
 use oasis\names\specification\ubl\schema\xsd\Order_2\OrderType;
 
 class ReportBuilder extends Component
 {
+    #[Title('Report Builder')]
     // Filters
     public $fromDate = '';
     public $toDate = '';
@@ -40,6 +43,7 @@ class ReportBuilder extends Component
     public $filters = [];
     public $groupByFields = [];
     public $calculatedFields = [];
+    public $showOrderDetails = false;
     
     // Report Results
     public $reportResults;
@@ -72,6 +76,13 @@ class ReportBuilder extends Component
             ['value' => 'sales_receipts.date', 'label' => 'Date'],
             ['value' => 'sales_order_status.order_status_name', 'label' => 'Status'],
             ['value' => 'sales_receipts.created_at', 'label' => 'Created At']
+        ],
+        'Order Details' => [
+            ['value' => 'inventory_general.item_code', 'label' => 'SKU'],
+            ['value' => 'inventory_general.product_name', 'label' => 'Product Name'],
+            ['value' => 'sales_receipt_details.total_qty', 'label' => 'Item Quantity'],
+            ['value' => 'sales_receipt_details.item_price', 'label' => 'Item Price'],
+            ['value' => 'sales_receipt_details.total_amount', 'label' => 'Item Total Amount'],
         ],
         'Accounts' => [
             // ['value' => 'sales_receipts.id', 'label' => 'Id'],
@@ -134,7 +145,8 @@ class ReportBuilder extends Component
         $this->isGenerating = true;
 
         try {
-            $query = DB::table('sales_receipts')
+            // First, get the main order data
+            $mainQuery = DB::table('sales_receipts')
                 ->join('sales_account_general', 'sales_account_general.receipt_id', '=', 'sales_receipts.id')
                 ->join('sales_account_subdetails', 'sales_account_subdetails.receipt_id', '=', 'sales_receipts.id')
                 ->join('customers', 'customers.id', '=', 'sales_receipts.customer_id')
@@ -147,83 +159,106 @@ class ReportBuilder extends Component
 
             // Apply date filters
             if ($this->fromDate) {
-                $query->whereDate('sales_receipts.date', '>=', $this->fromDate);
+                $mainQuery->whereDate('sales_receipts.date', '>=', $this->fromDate);
             }
             if ($this->toDate) {
-                $query->whereDate('sales_receipts.date', '<=', $this->toDate);
+                $mainQuery->whereDate('sales_receipts.date', '<=', $this->toDate);
             }
 
-            // Apply branch filter
+            // Apply other filters
             if ($this->branch) {
-                $query->where('sales_receipts.branch', $this->branch);
+                $mainQuery->where('sales_receipts.branch', $this->branch);
             }
-
-            // Apply terminal filter
             if ($this->terminal) {
-                $query->where('sales_receipts.terminal_id', $this->terminal);
+                $mainQuery->where('sales_receipts.terminal_id', $this->terminal);
             }
-
-            // Apply customer filter
             if ($this->customer) {
-                $query->where('sales_receipts.customer_id', $this->customer);
+                $mainQuery->where('sales_receipts.customer_id', $this->customer);
             }
-
-            // Apply user filter
             if ($this->user) {
-                $query->where('sales_receipts.userid', $this->user);
+                $mainQuery->where('sales_receipts.userid', $this->user);
             }
-
-            // Apply status filter
             if ($this->status) {
-                $query->where('sales_receipts.status', $this->status);
+                $mainQuery->where('sales_receipts.status', $this->status);
             }
-
-            // Apply order type filter
             if ($this->orderType) {
-                $query->where('sales_receipts.order_mode_id', $this->orderType);
+                $mainQuery->where('sales_receipts.order_mode_id', $this->orderType);
             }
-
-            // Apply payment method filter
             if ($this->paymentMethod) {
-                $query->where('sales_receipts.payment_id', $this->paymentMethod);
+                $mainQuery->where('sales_receipts.payment_id', $this->paymentMethod);
             }
 
             // Apply custom filters
             foreach ($this->filters as $filter) {
                 if ($filter['field'] && $filter['operator'] && $filter['value']) {
-                    $field = trim($filter['field']); // 🔥 fix space issue
-                    $query->where($field, $filter['operator'], $filter['value']);
+                    $field = trim($filter['field']);
+                    $mainQuery->where($field, $filter['operator'], $filter['value']);
+                }
+            }
+         
+            // Separate main fields and order detail fields
+            $mainFields = [];
+            $orderDetailFields = [];
+            foreach ($this->selectedFields as $field) {
+                if (strpos($field, 'sales_receipt_details.') === 0 || strpos($field, 'inventory_general.') === 0) {
+                    $orderDetailFields[] = $field;
+                    $this->showOrderDetails = true;
+                } else {
+                    $mainFields[] = $field;
                 }
             }
 
-            // Build select fields
-            $selects = $this->selectedFields;
-
-            // Add calculated fields
+            // Add calculated fields to main fields
             foreach ($this->calculatedFields as $calc) {
                 if ($calc['name'] && $calc['formula']) {
                     $formula = trim($calc['formula']);
-                    $selects[] = DB::raw("{$formula} AS {$calc['name']}");
+                    $mainFields[] = DB::raw("{$formula} AS {$calc['name']}");
                 }
             }
-
-            $query->select($selects);
-
-            // Group By
+            
+            array_push($mainFields, 'sales_receipts.id');
+           
+            // Get main order data
+            $mainQuery->select($mainFields);
+            
+            // Group By for main query
             if (!empty($this->groupByFields)) {
-                $query->groupBy($this->groupByFields);
+                $mainQuery->groupBy($this->groupByFields);
             }
-
+        
             // Get total count for pagination
-            $totalResults = $query->count();
+            $totalResults = $mainQuery->count();
             $this->totalResults = $totalResults;
             $this->lastPage = ceil($totalResults / $this->perPage);
+            // Get paginated main results
+            $mainResults = $mainQuery->skip(($this->currentPage - 1) * $this->perPage)
+                                   ->take($this->perPage)
+                                   ->get()
+                                   ->toArray();
 
-            // Apply pagination
-            $this->reportResults = $query->skip(($this->currentPage - 1) * $this->perPage)
-                                       ->take($this->perPage)
-                                       ->get()
-                                       ->toArray();
+            // If order details are selected, fetch them for each order
+            if ($this->showOrderDetails && !empty($orderDetailFields)) {
+                $orderIds = array_column($mainResults, 'id');
+                
+                $detailsQuery = DB::table('sales_receipt_details')
+                ->join('inventory_general', 'inventory_general.id', '=', 'sales_receipt_details.item_code')
+                ->whereIn('sales_receipt_details.receipt_id', $orderIds)
+                ->select(array_merge(['sales_receipt_details.receipt_id'], $orderDetailFields));
+                
+                $orderDetails = $detailsQuery->get()->groupBy('receipt_id');
+                
+                // Convert array to collection of objects
+                $mainResults = collect($mainResults)->map(function($order) {
+                    return (object) $order;
+                });
+                
+                // Attach order details to main results
+                foreach ($mainResults as $order) {
+                    $order->details = $orderDetails[$order->id] ?? collect();
+                }
+            }
+            $this->reportResults = $mainResults;
+
         } catch (\Exception $e) {
             session()->flash('error', 'Error generating report: ' . $e->getMessage());
         } finally {

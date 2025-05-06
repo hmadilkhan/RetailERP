@@ -1,4 +1,4 @@
-<div class=" py-4">
+<div class="py-4">
     <h2 class="mb-4 h4 fw-bold">Dynamic Report Builder</h2>
 
     <!-- Select Fields -->
@@ -264,32 +264,85 @@
                     <p class="mt-2">Loading results...</p>
                 </div>
             @else
-                <table class="table table-bordered table-hover align-middle">
-                    <thead class="table-light">
+                <table class="table table-bordered border-dark">
+                    <thead>
                         <tr>
-                            @foreach (array_keys((array) $reportResults[0]) as $header)
+                            @foreach($selectedFields as $field)
                                 @php
-                                    $label = $header;
+                                    $label = '';
                                     foreach ($availableTables as $table => $fields) {
-                                        foreach ($fields as $field) {
-                                            if ($field['value'] === $header) {
-                                                $label = $field['label'];
+                                        foreach ($fields as $fieldInfo) {
+                                            if ($fieldInfo['value'] === $field) {
+                                                $label = $fieldInfo['label'];
                                                 break 2;
                                             }
                                         }
                                     }
                                 @endphp
-                                <th>{{ $label }}</th>
+                                @if(!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
+                                <th class="{{$showOrderDetails ? 'bg-dark bg-gradient text-white border-dark' : ''}}">{{ $label }}</th>
+                                @endif
                             @endforeach
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($reportResults as $row)
-                            <tr>
-                                @foreach ((array) $row as $cell)
-                                    <td>{{ $cell }}</td>
+                        @foreach($reportResults as $order)
+                            <tr >
+                                @foreach($selectedFields as $field)
+                                    @php
+                                        $fieldName = explode('.', $field)[1] ?? $field;
+                                    @endphp
+                                    @if(!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
+                                        <td class="{{$showOrderDetails ? 'bg-info-subtle bg-gradient' : ''}}">{{ $order->$fieldName ?? '' }}</td>
+                                    @endif
                                 @endforeach
                             </tr>
+                            @if($showOrderDetails && !empty($order->details) &&  $order->details->isNotEmpty())
+                                <tr class="order-details-row">
+                                    <td colspan="{{ count(array_filter($selectedFields, function($field) { 
+                                        return !str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'); 
+                                    })) }}">
+                                        <div class="order-details-container">
+                                            <table class="table table-sm table-bordered mb-0">
+                                                <thead>
+                                                    <tr>
+                                                        @foreach($selectedFields as $field)
+                                                            @if(str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
+                                                                @php
+                                                                    $label = '';
+                                                                    foreach ($availableTables as $table => $fields) {
+                                                                        foreach ($fields as $fieldInfo) {
+                                                                            if ($fieldInfo['value'] === $field) {
+                                                                                $label = $fieldInfo['label'];
+                                                                                break 2;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                @endphp
+                                                                <th class="{{$showOrderDetails ? 'bg-success bg-gradient' : ''}}">{{ $label }}</th>
+                                                            @endif
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($order->details as $detail)
+                                                        <tr>
+                                                            @foreach($selectedFields as $field)
+                                                                @if(str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
+                                                                    @php
+                                                                        $fieldName = explode('.', $field)[1] ?? $field;
+                                                                    @endphp
+                                                                    <td>{{ $detail->$fieldName ?? '' }}</td>
+                                                                @endif
+                                                            @endforeach
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endif
                         @endforeach
                     </tbody>
                 </table>
@@ -333,42 +386,55 @@
             @endif
         </div>
     @endif
-</div>
-@push('scripts')
-    <script>
-        let select2Instance = null;
 
-        function initializeSelect2() {
-            if (select2Instance) {
-                select2Instance.off('change'); // Remove previous listeners
-                select2Instance.select2('destroy');
-            }
-
-            select2Instance = $('#groupByFields').select2({
-                placeholder: 'Select fields to group by',
-                allowClear: true,
-                width: '100%'
-            });
-
-            // Reapply selected values from Livewire
-            select2Instance.val(@this.get('groupByFields')).trigger('change');
-
-            // On change, update Livewire model
-            select2Instance.on('change', function(e) {
-                @this.set('groupByFields', $(this).val());
-            });
+    <style>
+        .order-details-row {
+            background-color: #f8f9fa;
         }
+        .order-details-container {
+            padding: 10px;
+        }
+        .order-details-container table {
+            margin-bottom: 0;
+        }
+    </style>
 
-        // Initialize on load and Livewire update
-        document.addEventListener('livewire:load', initializeSelect2);
-        document.addEventListener('livewire:update', initializeSelect2);
+    @push('scripts')
+        <script>
+            let select2Instance = null;
 
-        // Destroy Select2 cleanly if component is removed
-        document.addEventListener('livewire:destroy', () => {
-            if (select2Instance) {
-                select2Instance.off('change');
-                select2Instance.select2('destroy');
+            function initializeSelect2() {
+                if (select2Instance) {
+                    select2Instance.off('change'); // Remove previous listeners
+                    select2Instance.select2('destroy');
+                }
+
+                select2Instance = $('#groupByFields').select2({
+                    placeholder: 'Select fields to group by',
+                    allowClear: true,
+                    width: '100%'
+                });
+
+                // Reapply selected values from Livewire
+                select2Instance.val(@this.get('groupByFields')).trigger('change');
+
+                // On change, update Livewire model
+                select2Instance.on('change', function(e) {
+                    @this.set('groupByFields', $(this).val());
+                });
             }
-        });
-    </script>
-@endpush
+
+            // Initialize on load and Livewire update
+            document.addEventListener('livewire:load', initializeSelect2);
+            document.addEventListener('livewire:update', initializeSelect2);
+
+            // Destroy Select2 cleanly if component is removed
+            document.addEventListener('livewire:destroy', () => {
+                if (select2Instance) {
+                    select2Instance.off('change');
+                    select2Instance.select2('destroy');
+                }
+            });
+        </script>
+    @endpush
+</div>
