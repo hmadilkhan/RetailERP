@@ -76,7 +76,9 @@ class WebsiteController extends Controller
                 ]);
                $imageLogo = $this->uploads($request->file('logo'),'images/website/');
 
-               $this->uploads($request->file('logo'),'images/products/');
+              if(isset($imageLogo['fileName'])){
+                Storage::disk('public')->put('images/products/' . $imageLogo['fileName'],\File::get($request->file('logo')));
+              }
             }
 
             if (!empty($request->favicon)) {
@@ -181,7 +183,13 @@ class WebsiteController extends Controller
                 ]);
 
                 $imageLogo =$this->uploads($request->file('logo'),'images/website/',$website_detail->logo);
-                $this->uploads($request->file('logo'),'images/products/',$website_detail->logo);
+
+                if(isset($imageLogo['fileName'])){
+                    $this->removeImage('images/products/', $website_detail->logo);
+                    Storage::disk('public')->put('images/products/' . $imageLogo['fileName'],\File::get($request->file('logo')));
+                }
+
+                //$this->uploads($request->file('logo'),'images/products/',$website_detail->logo);
             }
 
 
