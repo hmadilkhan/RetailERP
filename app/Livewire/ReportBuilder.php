@@ -14,6 +14,8 @@ use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use oasis\names\specification\ubl\schema\xsd\Order_2\OrderType;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ReportExport;
 
 class ReportBuilder extends Component
 {
@@ -143,6 +145,7 @@ class ReportBuilder extends Component
     public function generateReport()
     {
         $this->isGenerating = true;
+        $this->reportResults = null; // Clear results while loading
 
         try {
             // First, get the main order data
@@ -257,6 +260,8 @@ class ReportBuilder extends Component
                     $order->details = $orderDetails[$order->id] ?? collect();
                 }
             }
+            $this->isGenerating = false;
+
             $this->reportResults = $mainResults;
 
         } catch (\Exception $e) {
@@ -304,6 +309,111 @@ class ReportBuilder extends Component
         if ($page >= 1 && $page <= $this->lastPage) {
             $this->currentPage = $page;
             $this->generateReport();
+        }
+    }
+
+    public function exportToExcel()
+    {
+        $this->isGenerating = true;
+        
+        try {
+            // Get all results without pagination
+            $mainQuery = DB::table('sales_receipts')
+                ->join('sales_account_general', 'sales_account_general.receipt_id', '=', 'sales_receipts.id')
+                ->join('sales_account_subdetails', 'sales_account_subdetails.receipt_id', '=', 'sales_receipts.id')
+                ->join('customers', 'customers.id', '=', 'sales_receipts.customer_id')
+                ->join('sales_order_mode', 'sales_order_mode.order_mode_id', '=', 'sales_receipts.order_mode_id')
+                ->join('sales_payment', 'sales_payment.payment_id', '=', 'sales_receipts.payment_id')
+                ->join('branch', 'branch.branch_id', '=', 'sales_receipts.branch')
+                ->join('user_details', 'user_details.id', '=', 'sales_receipts.userid')
+                ->join('sales_order_status', 'sales_order_status.order_status_id', '=', 'sales_receipts.status')
+                ->join('terminal_details', 'terminal_details.terminal_id', '=', 'sales_receipts.terminal_id');
+
+            // Apply all the same filters as in generateReport()
+            if ($this->fromDate) {
+                $mainQuery->whereDate('sales_receipts.date', '>=', $this->fromDate);
+            }
+            if ($this->toDate) {
+                $mainQuery->whereDate('sales_receipts.date', '<=', $this->toDate);
+            }
+            if ($this->branch) {
+                $mainQuery->where('sales_receipts.branch', $this->branch);
+            }
+            if ($this->terminal) {
+                $mainQuery->where('sales_receipts.terminal_id', $this->terminal);
+            }
+            if ($this->customer) {
+                $mainQuery->where('sales_receipts.customer_id', $this->customer);
+            }
+            if ($this->user) {
+                $mainQuery->where('sales_receipts.userid', $this->user);
+            }
+            if ($this->status) {
+                $mainQuery->where('sales_receipts.status', $this->status);
+            }
+            if ($this->orderType) {
+                $mainQuery->where('sales_receipts.order_mode_id', $this->orderType);
+            }
+            if ($this->paymentMethod) {
+                $mainQuery->where('sales_receipts.payment_id', $this->paymentMethod);
+            }
+
+            // Apply custom filters
+            foreach ($this->filters as $filter) {
+                if ($filter['field'] && $filter['operator'] && $filter['value']) {
+                    $field = trim($filter['field']);
+                    $mainQuery->where($field, $filter['operator'], $filter['value']);
+                }
+            }
+
+            // Get all fields
+            $mainFields = [];
+            $orderDetailFields = [];
+            foreach ($this->selectedFields as $field) {
+                if (strpos($field, 'sales_receipt_details.') === 0 || strpos($field, 'inventory_general.') === 0) {
+                    $orderDetailFields[] = $field;
+                } else {
+                    $mainFields[] = $field;
+                }
+            }
+
+            // Add calculated fields
+            foreach ($this->calculatedFields as $calc) {
+                if ($calc['name'] && $calc['formula']) {
+                    $formula = trim($calc['formula']);
+                    $mainFields[] = DB::raw("{$formula} AS {$calc['name']}");
+                }
+            }
+
+            array_push($mainFields, 'sales_receipts.id');
+            
+            // Get all results
+            $mainResults = $mainQuery->select($mainFields)->get();
+
+            // If order details are selected, fetch them
+            if (!empty($orderDetailFields)) {
+                $orderIds = $mainResults->pluck('id')->toArray();
+                
+                $detailsQuery = DB::table('sales_receipt_details')
+                    ->join('inventory_general', 'inventory_general.id', '=', 'sales_receipt_details.item_code')
+                    ->whereIn('sales_receipt_details.receipt_id', $orderIds)
+                    ->select(array_merge(['sales_receipt_details.receipt_id'], $orderDetailFields));
+                
+                $orderDetails = $detailsQuery->get()->groupBy('receipt_id');
+                
+                // Attach details to main results
+                foreach ($mainResults as $result) {
+                    $result->details = $orderDetails[$result->id] ?? collect();
+                }
+            }
+
+            // Generate Excel file
+            return Excel::download(new ReportExport($mainResults, $this->selectedFields, $this->availableTables), 'report-' . now()->format('Y-m-d') . '.xlsx');
+            
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error exporting to Excel: ' . $e->getMessage());
+        } finally {
+            $this->isGenerating = false;
         }
     }
 

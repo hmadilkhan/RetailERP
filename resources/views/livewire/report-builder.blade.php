@@ -251,139 +251,158 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-
-    <!-- Results -->
-    @if (!empty($reportResults))
+    
+    <div wire:loading wire:target="generateReport" >
+        <div class=" text-center position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255, 255, 255, 0.8); z-index: 9999;">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-3 text-muted">Generating report, please wait...</p>
+        </div>
+    </div>
+    <!-- Results --> 
+    {{-- @if ($isGenerating)
         <div class="table-responsive">
-            <h5 class="fw-semibold mb-3">Report Results</h5>
-            @if ($isGenerating)
-                <div class="text-center py-4">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="visually-hidden">Loading...</span>
-                    </div>
-                    <p class="mt-2">Loading results...</p>
+            <div class="d-flex align-items-center gap-2 justify-content-between">
+                <h3 class="fw-semibold mb-3">Report Results</h3>
+                <button class="btn btn-sm btn-success btn-gradient mb-3" disabled>
+                    <i class="bi bi-plus me-1"></i> Export to Excel
+                </button>
+            </div>
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                    <span class="visually-hidden">Loading...</span>
                 </div>
-            @else
-                <table class="table table-bordered border-dark">
-                    <thead>
+                <p class="mt-3 text-muted">Generating report, please wait...</p>
+            </div>
+        </div>
+    @else --}}
+    @if (!empty($reportResults))
+        <div wire:loading.remove wire:target="generateReport" class="table-responsive">
+            <div class="d-flex align-items-center gap-2 justify-content-between">
+                <h3 class="fw-semibold mb-3">Report Results</h3>
+                <button class="btn btn-sm btn-success btn-gradient mb-3" wire:click="exportToExcel">
+                    <i class="bi bi-plus me-1"></i> Export to Excel
+                </button>
+            </div>
+            <table class="table table-bordered border-dark">
+                <thead>
+                    <tr>
+                        @foreach($selectedFields as $field)
+                            @php
+                                $label = '';
+                                foreach ($availableTables as $table => $fields) {
+                                    foreach ($fields as $fieldInfo) {
+                                        if ($fieldInfo['value'] === $field) {
+                                            $label = $fieldInfo['label'];
+                                            break 2;
+                                        }
+                                    }
+                                }
+                            @endphp
+                            @if(!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
+                            <th class="{{$showOrderDetails ? 'bg-dark bg-gradient text-white border-dark' : ''}}">{{ $label }}</th>
+                            @endif
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($reportResults as $order)
                         <tr>
                             @foreach($selectedFields as $field)
                                 @php
-                                    $label = '';
-                                    foreach ($availableTables as $table => $fields) {
-                                        foreach ($fields as $fieldInfo) {
-                                            if ($fieldInfo['value'] === $field) {
-                                                $label = $fieldInfo['label'];
-                                                break 2;
-                                            }
-                                        }
-                                    }
+                                    $fieldName = explode('.', $field)[1] ?? $field;
                                 @endphp
                                 @if(!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
-                                <th class="{{$showOrderDetails ? 'bg-dark bg-gradient text-white border-dark' : ''}}">{{ $label }}</th>
+                                    <td class="{{$showOrderDetails ? 'bg-info-subtle bg-gradient' : ''}}">{{ $order->$fieldName ?? '' }}</td>
                                 @endif
                             @endforeach
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($reportResults as $order)
-                            <tr >
-                                @foreach($selectedFields as $field)
-                                    @php
-                                        $fieldName = explode('.', $field)[1] ?? $field;
-                                    @endphp
-                                    @if(!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
-                                        <td class="{{$showOrderDetails ? 'bg-info-subtle bg-gradient' : ''}}">{{ $order->$fieldName ?? '' }}</td>
-                                    @endif
-                                @endforeach
-                            </tr>
-                            @if($showOrderDetails && !empty($order->details) &&  $order->details->isNotEmpty())
-                                <tr class="order-details-row">
-                                    <td colspan="{{ count(array_filter($selectedFields, function($field) { 
-                                        return !str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'); 
-                                    })) }}">
-                                        <div class="order-details-container">
-                                            <table class="table table-sm table-bordered mb-0">
-                                                <thead>
+                        @if($showOrderDetails && !empty($order->details) &&  $order->details->isNotEmpty())
+                            <tr class="order-details-row">
+                                <td colspan="{{ count(array_filter($selectedFields, function($field) { 
+                                    return !str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'); 
+                                })) }}">
+                                    <div class="order-details-container">
+                                        <table class="table table-sm table-bordered mb-0">
+                                            <thead>
+                                                <tr>
+                                                    @foreach($selectedFields as $field)
+                                                        @if(str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
+                                                            @php
+                                                                $label = '';
+                                                                foreach ($availableTables as $table => $fields) {
+                                                                    foreach ($fields as $fieldInfo) {
+                                                                        if ($fieldInfo['value'] === $field) {
+                                                                            $label = $fieldInfo['label'];
+                                                                            break 2;
+                                                                        }
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            <th class="{{$showOrderDetails ? 'bg-success bg-gradient' : ''}}">{{ $label }}</th>
+                                                        @endif
+                                                    @endforeach
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($order->details as $detail)
                                                     <tr>
                                                         @foreach($selectedFields as $field)
                                                             @if(str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
                                                                 @php
-                                                                    $label = '';
-                                                                    foreach ($availableTables as $table => $fields) {
-                                                                        foreach ($fields as $fieldInfo) {
-                                                                            if ($fieldInfo['value'] === $field) {
-                                                                                $label = $fieldInfo['label'];
-                                                                                break 2;
-                                                                            }
-                                                                        }
-                                                                    }
+                                                                    $fieldName = explode('.', $field)[1] ?? $field;
                                                                 @endphp
-                                                                <th class="{{$showOrderDetails ? 'bg-success bg-gradient' : ''}}">{{ $label }}</th>
+                                                                <td>{{ $detail->$fieldName ?? '' }}</td>
                                                             @endif
                                                         @endforeach
                                                     </tr>
-                                                </thead>
-                                                <tbody>
-                                                    @foreach($order->details as $detail)
-                                                        <tr>
-                                                            @foreach($selectedFields as $field)
-                                                                @if(str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
-                                                                    @php
-                                                                        $fieldName = explode('.', $field)[1] ?? $field;
-                                                                    @endphp
-                                                                    <td>{{ $detail->$fieldName ?? '' }}</td>
-                                                                @endif
-                                                            @endforeach
-                                                        </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endif
-                        @endforeach
-                    </tbody>
-                </table>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+                    @endforeach
+                </tbody>
+            </table>
 
-                <!-- Pagination Controls -->
-                <div class="d-flex justify-content-between align-items-center mt-3">
-                    <div class="d-flex align-items-center">
-                        <label class="me-2">Items per page:</label>
-                        <select class="form-select form-select-sm" style="width: 70px" wire:model.live="perPage">
-                            <option value="10">10</option>
-                            <option value="25">25</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <button class="btn btn-sm btn-outline-primary me-2" wire:click="previousPage"
-                            @if ($isGenerating || $currentPage === 1) disabled @endif>
-                            Previous
-                        </button>
-
-                        <span class="mx-2">
-                            Page {{ $currentPage }} of {{ $lastPage }}
-                            (Total: {{ $totalResults }} records)
-                        </span>
-
-                        <button class="btn btn-sm btn-outline-primary ms-2" wire:click="nextPage"
-                            @if ($isGenerating || $currentPage === $lastPage) disabled @endif>
-                            Next
-                        </button>
-                    </div>
-
-                    <div class="d-flex align-items-center">
-                        <span class="me-2">Go to page:</span>
-                        <input type="number" class="form-control form-control-sm" style="width: 70px"
-                            wire:model.live="currentPage" min="1" max="{{ $lastPage }}"
-                            @if ($isGenerating) disabled @endif>
-                    </div>
+            <!-- Pagination Controls -->
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div class="d-flex align-items-center">
+                    <label class="me-2">Items per page:</label>
+                    <select class="form-select form-select-sm" style="width: 70px" wire:model.live="perPage">
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
                 </div>
-            @endif
+
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-outline-primary me-2" wire:click="previousPage"
+                        @if ($currentPage === 1) disabled @endif>
+                        Previous
+                    </button>
+
+                    <span class="mx-2">
+                        Page {{ $currentPage }} of {{ $lastPage }}
+                        (Total: {{ $totalResults }} records)
+                    </span>
+
+                    <button class="btn btn-sm btn-outline-primary ms-2" wire:click="nextPage"
+                        @if ($currentPage === $lastPage) disabled @endif>
+                        Next
+                    </button>
+                </div>
+
+                <div class="d-flex align-items-center">
+                    <span class="me-2">Go to page:</span>
+                    <input type="number" class="form-control form-control-sm" style="width: 70px"
+                        wire:model.live="currentPage" min="1" max="{{ $lastPage }}">
+                </div>
+            </div>
         </div>
     @endif
 
