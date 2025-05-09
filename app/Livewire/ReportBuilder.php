@@ -13,9 +13,10 @@ use App\Models\UserAuthorization;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
-use oasis\names\specification\ubl\schema\xsd\Order_2\OrderType;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ReportExport;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ReportBuilder extends Component
 {
@@ -46,6 +47,7 @@ class ReportBuilder extends Component
     public $groupByFields = [];
     public $calculatedFields = [];
     public $showOrderDetails = false;
+    public $selectGroup = [];
     
     // Report Results
     public $reportResults;
@@ -105,6 +107,19 @@ class ReportBuilder extends Component
         'customers.name',
         'customers.id as customer_id_alias',
     ];
+
+    public function updated($key, $value)
+    {
+        $explode = Str::of($key)->explode('.');
+        $table = ucwords(str_replace('_', ' ', $explode[1]));
+        $tableFields = collect($this->availableTables[$table])->pluck('value')->toArray();
+     
+        if($explode[0] === "selectGroup" && $value === true) {
+            $this->selectedFields = array_unique(array_merge($this->selectedFields, $tableFields));
+        }else if($explode[0] === "selectGroup" && $value === false) {
+            $this->selectedFields = array_diff($this->selectedFields, $tableFields);
+        }
+    }
 
     public function mount()
     {

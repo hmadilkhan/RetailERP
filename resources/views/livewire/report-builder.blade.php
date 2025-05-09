@@ -9,13 +9,26 @@
         <div class="card-body">
             @foreach ($availableTables as $table => $fields)
                 <div class="mb-2">
-                    <strong class="d-block mb-1 text-capitalize">{{ $table }}</strong>
+                    <div class="d-flex align-items-center mb-1 border-bottom pb-2">
+                        <div class="form-check me-2">
+                            @php
+                                $key = \Illuminate\Support\Str::slug($table, '_'); // e.g., "Sales Receipts" → "sales_receipts"
+                            @endphp
+                            <input class="form-check-input table-checkbox" type="checkbox" id="table-{{ $table }}"
+                                wire:model.live="selectGroup.{{ $key }}" value="{{ $table }}"
+                                data-table="{{ $table }}">
+                            <label class="form-check-label" for="table-{{ $table }}">
+                                <strong class="text-capitalize">{{ $table }}</strong>
+                            </label>
+                        </div>
+                    </div>
                     <div class="row">
                         @foreach ($fields as $field)
                             <div class="col-md-3">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" wire:model="selectedFields"
-                                        value="{{ $field['value'] }}" id="{{ $table . $field['value'] }}">
+                                    <input class="form-check-input field-checkbox" type="checkbox"
+                                        wire:model="selectedFields" value="{{ $field['value'] }}"
+                                        id="{{ $table . $field['value'] }}" data-table="{{ $table }}">
                                     <label class="form-check-label" for="{{ $table . $field['value'] }}">
                                         {{ $field['label'] }}
                                     </label>
@@ -28,7 +41,7 @@
         </div>
     </div>
 
-    <!-- NEW Filters -->
+    <!-- Filters -->
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h6 class="mb-0">Filters</h6>
@@ -63,7 +76,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Customer</label>
-                    <select class="form-select" wire:model.live="customer">
+                    <select id="customerId" class="form-select" wire:ignore.self>
                         <option value="">-- Select Customer --</option>
                         @foreach ($customers as $customer)
                             <option value="{{ $customer->id }}">{{ $customer->name }}</option>
@@ -110,63 +123,7 @@
             </div>
         </div>
     </div>
-    <!-- Filters -->
-    {{-- <div class="card mb-4">
-        <div class="card-header d-flex justify-content-between align-items-center">
-            <h6 class="mb-0">Filters</h6>
-            <div class="ms-auto">
-                <button class="btn btn-sm btn-primary" type="button" wire:click="addFilter">
-                    <i class="bi bi-plus-lg me-1"></i>Add Filter
-                </button>
-            </div>
-        </div>
-        <div class="card-body">
-            @forelse ($filters as $index => $filter)
-                <div class="border p-3 mb-3 rounded">
-                    <div class="d-flex justify-content-between mb-2">
-                        <span class="text-muted small">Filter #{{ $index + 1 }}</span>
-                        <button type="button" class="btn btn-sm btn-outline-danger"
-                            wire:click="removeFilter({{ $index }})">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </div>
-                    <div class="row g-2">
-                        <div class="col-md-4">
-                            <label class="form-label small">Field</label>
-                            <select class="form-select" wire:model="filters.{{ $index }}.field">
-                                <option value="">-- Select Field --</option>
-                                @foreach ($availableFields as $field)
-                                    <option value="{{ $field }}">{{ $field }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small">Operator</label>
-                            <select class="form-select" wire:model="filters.{{ $index }}.operator">
-                                <option value="=">=</option>
-                                <option value="!=">!=</option>
-                                <option value="<">&lt;</option>
-                                <option value=">">&gt;</option>
-                                <option value="<=">&lt;=</option>
-                                <option value=">=">&gt;=</option>
-                                <option value="like">like</option>
-                            </select>
-                        </div>
-                        <div class="col-md-4">
-                            <label class="form-label small">Value</label>
-                            <input type="text" class="form-control" placeholder="Enter value"
-                                wire:model="filters.{{ $index }}.value">
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="text-center text-muted py-3">
-                    <i class="bi bi-filter-circle display-6"></i>
-                    <p class="mb-0 small">No filters added yet. Click <strong>Add Filter</strong> to begin.</p>
-                </div>
-            @endforelse
-        </div>
-    </div> --}}
+
 
     <!-- Group By -->
     <div class="card mb-4">
@@ -210,10 +167,6 @@
         </div>
         <div class="card-body">
             <div class="mb-4 mt-4">
-                {{-- <h5 class="fw-semibold">Custom Calculated Fields</h5> --}}
-                {{-- <button type="button" class="btn btn-success btn-sm mb-2" wire:click="addCalculatedField">
-                    + Add Calculation
-                </button> --}}
                 @foreach ($calculatedFields as $index => $calc)
                     <div class="row g-2 mb-2">
                         <div class="col-md-6">
@@ -251,16 +204,17 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
-    
-    <div wire:loading wire:target="generateReport" >
-        <div class=" text-center position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center" style="background: rgba(255, 255, 255, 0.8); z-index: 9999;">
+
+    <div wire:loading wire:target="generateReport">
+        <div class=" text-center position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+            style="background: rgba(255, 255, 255, 0.8); z-index: 9999;">
             <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-3 text-muted">Generating report, please wait...</p>
+            <p class="mt-3 text-muted ml-1">Generating report, please wait...</p>
         </div>
     </div>
-    <!-- Results --> 
+    <!-- Results -->
     {{-- @if ($isGenerating)
         <div class="table-responsive">
             <div class="d-flex align-items-center gap-2 justify-content-between">
@@ -288,7 +242,7 @@
             <table class="table table-bordered border-dark">
                 <thead>
                     <tr>
-                        @foreach($selectedFields as $field)
+                        @foreach ($selectedFields as $field)
                             @php
                                 $label = '';
                                 foreach ($availableTables as $table => $fields) {
@@ -300,35 +254,41 @@
                                     }
                                 }
                             @endphp
-                            @if(!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
-                            <th class="{{$showOrderDetails ? 'bg-dark bg-gradient text-white border-dark' : ''}}">{{ $label }}</th>
+                            @if (!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
+                                <th
+                                    class="{{ $showOrderDetails ? 'bg-dark bg-gradient text-white border-dark' : '' }}">
+                                    {{ $label }}</th>
                             @endif
                         @endforeach
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($reportResults as $order)
+                    @foreach ($reportResults as $order)
                         <tr>
-                            @foreach($selectedFields as $field)
+                            @foreach ($selectedFields as $field)
                                 @php
                                     $fieldName = explode('.', $field)[1] ?? $field;
                                 @endphp
-                                @if(!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
-                                    <td class="{{$showOrderDetails ? 'bg-info-subtle bg-gradient' : ''}}">{{ $order->$fieldName ?? '' }}</td>
+                                @if (!str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'))
+                                    <td class="{{ $showOrderDetails ? 'bg-info-subtle bg-gradient' : '' }}">
+                                        {{ $order->$fieldName ?? '' }}</td>
                                 @endif
                             @endforeach
                         </tr>
-                        @if($showOrderDetails && !empty($order->details) &&  $order->details->isNotEmpty())
+                        @if ($showOrderDetails && !empty($order->details) && $order->details->isNotEmpty())
                             <tr class="order-details-row">
-                                <td colspan="{{ count(array_filter($selectedFields, function($field) { 
-                                    return !str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.'); 
-                                })) }}">
+                                <td
+                                    colspan="{{ count(
+                                        array_filter($selectedFields, function ($field) {
+                                            return !str_contains($field, 'sales_receipt_details.') && !str_contains($field, 'inventory_general.');
+                                        }),
+                                    ) }}">
                                     <div class="order-details-container">
                                         <table class="table table-sm table-bordered mb-0">
                                             <thead>
                                                 <tr>
-                                                    @foreach($selectedFields as $field)
-                                                        @if(str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
+                                                    @foreach ($selectedFields as $field)
+                                                        @if (str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
                                                             @php
                                                                 $label = '';
                                                                 foreach ($availableTables as $table => $fields) {
@@ -340,16 +300,18 @@
                                                                     }
                                                                 }
                                                             @endphp
-                                                            <th class="{{$showOrderDetails ? 'bg-success bg-gradient' : ''}}">{{ $label }}</th>
+                                                            <th
+                                                                class="{{ $showOrderDetails ? 'bg-success bg-gradient' : '' }}">
+                                                                {{ $label }}</th>
                                                         @endif
                                                     @endforeach
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($order->details as $detail)
+                                                @foreach ($order->details as $detail)
                                                     <tr>
-                                                        @foreach($selectedFields as $field)
-                                                            @if(str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
+                                                        @foreach ($selectedFields as $field)
+                                                            @if (str_contains($field, 'sales_receipt_details.') || str_contains($field, 'inventory_general.'))
                                                                 @php
                                                                     $fieldName = explode('.', $field)[1] ?? $field;
                                                                 @endphp
@@ -410,9 +372,11 @@
         .order-details-row {
             background-color: #f8f9fa;
         }
+
         .order-details-container {
             padding: 10px;
         }
+
         .order-details-container table {
             margin-bottom: 0;
         }
@@ -420,38 +384,107 @@
 
     @push('scripts')
         <script>
-            let select2Instance = null;
-
-            function initializeSelect2() {
-                if (select2Instance) {
-                    select2Instance.off('change'); // Remove previous listeners
-                    select2Instance.select2('destroy');
+            // Define the initialization function in the global scope
+            window.initializeSelect2 = function() {
+                // Check if Select2 is already initialized
+                if ($('#productId').hasClass('select2-hidden-accessible')) {
+                    return; // Exit if already initialized
                 }
 
-                select2Instance = $('#groupByFields').select2({
-                    placeholder: 'Select fields to group by',
-                    allowClear: true,
-                    width: '100%'
+                // Initialize Select2
+                $('#productId').select2({
+                    ajax: {
+                        url: "{{ route('search-inventory') }}",
+                        type: 'GET',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function(params) {
+                            return {
+                                q: params.term,
+                                page: params.page || 1
+                            };
+                        },
+                        processResults: function(data, params) {
+                            if (data === 0) {
+                                return {
+                                    results: []
+                                };
+                            }
+
+                            if (data && data.items) {
+                                return {
+                                    results: $.map(data.items, function(item) {
+                                        return {
+                                            id: item.id,
+                                            text: item.product_name + " | " + item.item_code,
+                                            description: item.description || 'No description available'
+                                        };
+                                    })
+                                };
+                            }
+
+                            return {
+                                results: []
+                            };
+                        },
+                        error: function(xhr, status, error) {
+                            // Handle error silently
+                        },
+                        cache: true
+                    },
+                    placeholder: 'Type to search customers...',
+                    minimumInputLength: 1,
+                    width: '100%',
+                    templateResult: formatProduct,
+                    templateSelection: formatProductSelection
                 });
 
-                // Reapply selected values from Livewire
-                select2Instance.val(@this.get('groupByFields')).trigger('change');
+                // Format the product display in dropdown
+                function formatProduct(product) {
+                    if (!product.id) return product.text;
+                    return $('<span><strong>' + product.text + '</strong><br><small class="text-muted">' +
+                        (product.description || 'No description available') + '</small></span>');
+                }
 
-                // On change, update Livewire model
-                select2Instance.on('change', function(e) {
-                    @this.set('groupByFields', $(this).val());
+                // Format the selected product
+                function formatProductSelection(product) {
+                    if (!product.id) return product.text;
+                    return product.text;
+                }
+
+                // Handle selection
+                $('#productId').on('select2:select', function(e) {
+                    let selectedData = e.params.data;
+
+
+
+                    // Add to inventory
+                    @this.addInventory(selectedData.id);
+
+                    // Clear selection after a short delay
+                    setTimeout(() => {
+                        $(this).val('').trigger('change');
+                    }, 100);
                 });
-            }
+            };
 
-            // Initialize on load and Livewire update
-            document.addEventListener('livewire:load', initializeSelect2);
-            document.addEventListener('livewire:update', initializeSelect2);
+            // Initialize when document is ready
+            $(document).ready(function() {
+                window.initializeSelect2();
+            });
 
-            // Destroy Select2 cleanly if component is removed
-            document.addEventListener('livewire:destroy', () => {
-                if (select2Instance) {
-                    select2Instance.off('change');
-                    select2Instance.select2('destroy');
+
+            // Handle Livewire updates
+            Livewire.hook('morph.updating', () => {
+                if ($('#productId').hasClass('select2-hidden-accessible')) {
+                    $('#productId').select2('destroy');
+                }
+            });
+
+            Livewire.hook('morph.updated', () => {
+                // Only reinitialize if the element exists and is visible
+                if ($('#productId').length && $('#productId').is(':visible')) {
+                    window.initializeSelect2();
                 }
             });
         </script>

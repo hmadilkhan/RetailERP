@@ -10,6 +10,7 @@ class UserAuthorization extends Model
     use HasFactory;
 
     protected $table = "user_authorization";
+    protected $primaryKey = "authorization_id";
     protected $guarded = [];
     public $timestamps = false;
 
