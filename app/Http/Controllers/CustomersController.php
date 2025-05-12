@@ -38,7 +38,7 @@ class CustomersController extends Controller
         $authService = app(QuickBooksAuthService::class);
         $companyId = session('company_id'); // 👈 or Auth::user()->company_id;
   
-        $this->quickBooksService = new QuickBooksCustomerService($authService, $companyId);
+        // $this->quickBooksService = new QuickBooksCustomerService($authService, $companyId);
     }
 
     public function index(Customer $customer)

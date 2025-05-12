@@ -58,7 +58,7 @@
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Branch</label>
-                    <select class="form-select" wire:model.live="branch">
+                    <select id="branch" class="form-select" wire:model.live="branch">
                         <option value="">-- Select Branch --</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
@@ -214,23 +214,8 @@
             <p class="mt-3 text-muted ml-1">Generating report, please wait...</p>
         </div>
     </div>
+    
     <!-- Results -->
-    {{-- @if ($isGenerating)
-        <div class="table-responsive">
-            <div class="d-flex align-items-center gap-2 justify-content-between">
-                <h3 class="fw-semibold mb-3">Report Results</h3>
-                <button class="btn btn-sm btn-success btn-gradient mb-3" disabled>
-                    <i class="bi bi-plus me-1"></i> Export to Excel
-                </button>
-            </div>
-            <div class="text-center py-5">
-                <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
-                    <span class="visually-hidden">Loading...</span>
-                </div>
-                <p class="mt-3 text-muted">Generating report, please wait...</p>
-            </div>
-        </div>
-    @else --}}
     @if (!empty($reportResults))
         <div wire:loading.remove wire:target="generateReport" class="table-responsive">
             <div class="d-flex align-items-center gap-2 justify-content-between">
@@ -387,20 +372,24 @@
             // Define the initialization function in the global scope
             window.initializeSelect2 = function() {
                 // Check if Select2 is already initialized
-                if ($('#productId').hasClass('select2-hidden-accessible')) {
+                if ($('#customerId').hasClass('select2-hidden-accessible')) {
                     return; // Exit if already initialized
                 }
-
+                let branch = $('#branch').val();
+                if (branch == '') {
+                    branch = 'all';
+                }
                 // Initialize Select2
-                $('#productId').select2({
+                $('#customerId').select2({
                     ajax: {
-                        url: "{{ route('search-inventory') }}",
+                        url: "{{ route('search-customer-by-names') }}",
                         type: 'GET',
                         dataType: 'json',
                         delay: 250,
                         data: function(params) {
                             return {
                                 q: params.term,
+                                branch: branch,
                                 page: params.page || 1
                             };
                         },
@@ -416,8 +405,8 @@
                                     results: $.map(data.items, function(item) {
                                         return {
                                             id: item.id,
-                                            text: item.product_name + " | " + item.item_code,
-                                            description: item.description || 'No description available'
+                                            text: item.name + " | " + item.branch_name,
+                                            description: item.mobile || 'No description available'
                                         };
                                     })
                                 };
@@ -453,7 +442,7 @@
                 }
 
                 // Handle selection
-                $('#productId').on('select2:select', function(e) {
+                $('#customerId').on('select2:select', function(e) {
                     let selectedData = e.params.data;
 
 
@@ -473,20 +462,20 @@
                 window.initializeSelect2();
             });
 
-
             // Handle Livewire updates
             Livewire.hook('morph.updating', () => {
-                if ($('#productId').hasClass('select2-hidden-accessible')) {
-                    $('#productId').select2('destroy');
+                if ($('#customerId').hasClass('select2-hidden-accessible')) {
+                    $('#customerId').select2('destroy');
                 }
             });
 
             Livewire.hook('morph.updated', () => {
                 // Only reinitialize if the element exists and is visible
-                if ($('#productId').length && $('#productId').is(':visible')) {
+                if ($('#customerId').length && $('#customerId').is(':visible')) {
                     window.initializeSelect2();
                 }
             });
+
         </script>
     @endpush
 </div>
