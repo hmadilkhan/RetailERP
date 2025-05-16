@@ -37,6 +37,11 @@ class Order extends Model
         return $this->belongsTo(Terminal::class, 'terminal_id', 'terminal_id');
     }
 
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch', 'branch_id');
+    }
+
     public function opening()
     {
         return $this->belongsTo(SalesOpening::class, 'opening_id', 'opening_id');

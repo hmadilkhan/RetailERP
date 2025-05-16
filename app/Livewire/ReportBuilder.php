@@ -159,6 +159,26 @@ class ReportBuilder extends Component
 
     public function generateReport()
     {
+        // Validate required date fields
+        if (empty($this->fromDate) || empty($this->toDate)) {
+            $this->dispatch('error', message: 'Both From Date and To Date are required.');
+            return;
+        }
+
+        // Validate date format and range
+        try {
+            $fromDate = \Carbon\Carbon::parse($this->fromDate);
+            $toDate = \Carbon\Carbon::parse($this->toDate);
+
+            if ($fromDate->gt($toDate)) {
+                $this->dispatch('error', message: 'From Date cannot be greater than To Date.');
+                return;
+            }
+        } catch (\Exception $e) {
+            $this->dispatch('error', message: 'Invalid date format. Please use YYYY-MM-DD format.');
+            return;
+        }
+        
         $this->isGenerating = true;
         $this->reportResults = null; // Clear results while loading
 

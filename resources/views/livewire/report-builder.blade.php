@@ -198,12 +198,21 @@
     </div>
 
     <!-- Error Message -->
-    @if (session()->has('error'))
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            {{ session('error') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <div x-data="{ showError: false, errorMessage: '' }"
+         x-show="showError"
+         x-on:error.window="showError = true; errorMessage = $event.detail.message"
+         x-transition
+         class="alert alert-danger alert-dismissible fade show mb-4" 
+         role="alert"
+         style="display: none;">
+        <div class="d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill me-2 fs-4"></i>
+            <div>
+                <strong>Error!</strong> <span x-text="errorMessage"></span>
+            </div>
         </div>
-    @endif
+        <button type="button" class="btn-close" @click="showError = false" aria-label="Close"></button>
+    </div>
 
     <div wire:loading wire:target="generateReport">
         <div class=" text-center position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
@@ -211,7 +220,7 @@
             <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
                 <span class="visually-hidden">Loading...</span>
             </div>
-            <p class="mt-3 text-muted ml-1">Generating report, please wait...</p>
+            <p class="mt-3 text-muted me-2 ml-1">Generating report, please wait...</p>
         </div>
     </div>
     
