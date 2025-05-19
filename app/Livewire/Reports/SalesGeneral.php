@@ -6,6 +6,8 @@ use App\Models\Branch;
 use App\Models\Order;
 use App\Models\Terminal;
 use Livewire\Component;
+use App\Exports\Reports\SalesGeneralExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SalesGeneral extends Component
 {
@@ -89,6 +91,23 @@ class SalesGeneral extends Component
         $this->results = $orders;
 
         $this->isGenerating = false;
+    }
+
+    public function exportToExcel()
+    {
+        $this->isGenerating = true;
+
+        $export = new SalesGeneralExport(
+            $this->dateFrom,
+            $this->dateTo,
+            $this->branch,
+            $this->terminal,
+            $this->customer
+        );
+
+        $this->isGenerating = false;
+        
+        return Excel::download($export, 'sales-general-report.xlsx');
     }
 
     public function render()

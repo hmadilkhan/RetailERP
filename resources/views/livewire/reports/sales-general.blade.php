@@ -49,15 +49,17 @@
             </div>
         </div>
         <div class=" card-footer">
-            <button class="btn btn-primary px-4 f-right" type="button" wire:click="generateReport"
-                @if ($isGenerating) disabled @endif>
-                @if ($isGenerating)
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Generating Report...
-                @else
-                    Generate Report
-                @endif
-            </button>
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-primary px-4" type="button" wire:click="generateReport"
+                    @if ($isGenerating) disabled @endif>
+                    @if ($isGenerating)
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Generating Report...
+                    @else
+                        Generate Report
+                    @endif
+                </button>
+            </div>
         </div>
     </div>
 
@@ -73,43 +75,59 @@
     </div>
 
     <!-- Table -->
-    <div class="table-responsive">
-        <table class="table table-bordered text-center">
-            <thead class="table-light">
-                <tr>
-                    <th>No</th>
-                    <th>Date</th>
-                    <th>Customer</th>
-                    <th>Type</th>
-                    <th>Items</th>
-                    <th>Qty</th>
-                    <th>Base</th>
-                    <th>Tax</th>
-                    <th>Discount</th>
-                    <th>Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($results as $row)
-                    <tr>
-                        <td>{{ $loop->iteration }}</td>
-                        <td>{{ date("d M Y", strtotime($row->date)) }}</td>
-                        <td>{{ $row->customer->name }}</td>
-                        <td>{{ $row->mode->order_mode }}</td>
-                        <td>{{ $row->orderdetails[0]->total_items ?? 0 }}</td>
-                        <td>{{ $row->orderdetails[0]->total_qty ?? 0 }}</td>
-                        <td>{{ number_format($row->actual_amount) }}</td>
-                        <td>{{ number_format($row->orderAccount->sales_tax_amount) ?? 0 }}</td>
-                        <td>{{ number_format($row->orderAccount->discount_amount)  ?? 0}}</td>
-                        <td>{{ number_format($row->total_amount,0) ?? 0 }}</td>
-                    </tr>
-                @empty
-                    <tr>
-                        <td colspan="10" class="text-center">No data.</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div class="card">
+        <div class="card-header d-flex justify-content-end">
+            
+            <button class="btn btn-success px-4" type="button" wire:click="exportToExcel" {{empty($results) ? 'disabled' : ''}}
+                @if ($isGenerating) disabled @endif>
+                @if ($isGenerating)
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Exporting...
+                @else
+                    Export to Excel
+                @endif
+            </button>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center">
+                    <thead class="table-light">
+                        <tr>
+                            <th>No</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Type</th>
+                            <th>Items</th>
+                            <th>Qty</th>
+                            <th>Base</th>
+                            <th>Tax</th>
+                            <th>Discount</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($results as $row)
+                            <tr>
+                                <td>{{ $loop->iteration }}</td>
+                                <td>{{ date('d M Y', strtotime($row->date)) }}</td>
+                                <td>{{ $row->customer->name }}</td>
+                                <td>{{ $row->mode->order_mode }}</td>
+                                <td>{{ $row->orderdetails[0]->total_items ?? 0 }}</td>
+                                <td>{{ $row->orderdetails[0]->total_qty ?? 0 }}</td>
+                                <td>{{ number_format($row->actual_amount) }}</td>
+                                <td>{{ number_format($row->orderAccount->sales_tax_amount) ?? 0 }}</td>
+                                <td>{{ number_format($row->orderAccount->discount_amount) ?? 0 }}</td>
+                                <td>{{ number_format($row->total_amount, 0) ?? 0 }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="10" class="text-center">No data.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 
     <script>
