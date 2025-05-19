@@ -344,12 +344,14 @@ class SalesGeneral extends Component
         // Write HTML to PDF
         $mpdf->WriteHTML($html);
 
+        $this->isGenerating = false;
+        
         // Output PDF
         return response()->streamDownload(function() use ($mpdf) {
             $mpdf->Output('Sales_General_Report.pdf', 'I');
         }, 'Sales_General_Report.pdf');
 
-        $this->isGenerating = false;
+        
     }
 
     public function render()
