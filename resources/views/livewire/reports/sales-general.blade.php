@@ -77,16 +77,26 @@
     <!-- Table -->
     <div class="card">
         <div class="card-header d-flex justify-content-end">
-            
-            <button class="btn btn-success px-4" type="button" wire:click="exportToExcel" {{empty($results) ? 'disabled' : ''}}
-                @if ($isGenerating) disabled @endif>
-                @if ($isGenerating)
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                    Exporting...
-                @else
-                    Export to Excel
-                @endif
-            </button>
+            <div class="d-flex gap-2">
+                <button class="btn btn-danger px-4" type="button" wire:click="exportToPdf" {{empty($results) ? 'disabled' : ''}}
+                    @if ($isGenerating) disabled @endif>
+                    @if ($isGenerating)
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Exporting...
+                    @else
+                        Export to PDF
+                    @endif
+                </button>
+                <button class="btn btn-success px-4" type="button" wire:click="exportToExcel" {{empty($results) ? 'disabled' : ''}}
+                    @if ($isGenerating) disabled @endif>
+                    @if ($isGenerating)
+                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                        Exporting...
+                    @else
+                        Export to Excel
+                    @endif
+                </button>
+            </div>
         </div>
         <div class="card-body">
             <div class="table-responsive">
