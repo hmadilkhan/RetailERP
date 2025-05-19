@@ -115,7 +115,7 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
             !empty($order->orderdetails->first()) ? $order->orderdetails->first()->total_qty : 0,
             $order->total_amount ?? 0,
             !empty($order->mode) ? $order->mode->order_mode : 'N/A',
-            !empty($order->payment) ? $order->payment->payment_method : 'N/A',
+            !empty($order->payment) ? $order->payment->payment_mode : 'N/A',
         ];
     }
 } 
