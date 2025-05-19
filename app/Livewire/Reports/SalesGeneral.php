@@ -96,7 +96,7 @@ class SalesGeneral extends Component
     public function exportToExcel()
     {
         $this->isGenerating = true;
-
+        
         $export = new SalesGeneralExport(
             $this->dateFrom,
             $this->dateTo,
@@ -107,7 +107,7 @@ class SalesGeneral extends Component
 
         $this->isGenerating = false;
         
-        return Excel::download($export, 'sales-general-report.xlsx');
+        return Excel::download($export, 'Sales Invoices.xlsx');
     }
 
     public function render()

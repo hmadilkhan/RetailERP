@@ -6,8 +6,11 @@ use App\Models\Order;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping
+class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, WithTitle, WithStyles
 {
     protected $dateFrom;
     protected $dateTo;
@@ -22,6 +25,24 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping
         $this->branch = $branch;
         $this->terminal = $terminal;
         $this->customer = $customer;
+    }
+
+    public function title(): string
+    {
+        return 'Sales Invoices';
+    }
+
+    public function styles(Worksheet $sheet)
+    {
+        return [
+            1 => ['font' => ['bold' => true]],
+            'A1:J1' => [
+                'fill' => [
+                    'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                    'startColor' => ['rgb' => 'CCCCCC']
+                ]
+            ]
+        ];
     }
 
     public function collection()
