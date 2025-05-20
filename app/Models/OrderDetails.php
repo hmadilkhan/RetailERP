@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class OrderDetails extends Model
 {
 	protected $table = "sales_receipt_details";
+    protected $primaryKey = 'receipt_detail_id';
     protected $guarded = [];
     public $timestamps = false;
 	

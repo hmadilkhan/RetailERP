@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 class InventoryDepartment extends Model
 {
     protected $table = "inventory_department";
+    protected $primaryKey = "department_id";
     protected $guarded = [];
     public $timestamps = false;
 
