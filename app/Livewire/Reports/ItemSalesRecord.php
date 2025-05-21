@@ -11,8 +11,10 @@ use App\Models\OrderDetails;
 use App\Models\OrderStatus;
 use App\Models\Terminal;
 use App\report;
+use App\Exports\Reports\ItemSalesRecordExport;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ItemSalesRecord extends Component
 {
@@ -129,6 +131,75 @@ class ItemSalesRecord extends Component
         
         // Reset Select2 dropdowns
         $this->dispatch('initializeSelect2');
+    }
+
+    public function exportToExcel()
+    {
+        $report = new report();
+        $data = [];
+        $branchname = "";
+
+        if ($this->branch != "all") {
+            $branchname = Branch::where("branch_id", $this->branch)->first();
+            $branchname = " (" . $branchname->branch_name . ") ";
+        } else {
+            $branchname = " ( All Branches )";
+        }
+
+        // Process terminals and create data
+        if ($this->terminal == 0) {
+            $terminals = $report->getTerminals($this->branch);
+        } else {
+            $terminals = $report->get_terminals_byid($this->terminal);
+        }
+
+        foreach ($terminals as $terminal) {
+            $modes = $report->itemSalesOrderMode(
+                $this->dateFrom,
+                $this->dateTo,
+                $terminal->terminal_id,
+                $this->mode,
+                $this->status
+            );
+
+            if (empty($modes)) {
+                continue;
+            }
+
+            foreach ($modes as $mode) {
+                $details = $report->itemsale_details(
+                    $this->dateFrom,
+                    $this->dateTo,
+                    $terminal->terminal_id,
+                    $mode->order_mode_id,
+                    $this->department,
+                    $this->subDepartment,
+                    $this->mode,
+                    $this->status,
+                    $this->product
+                );
+
+                if (!empty($details)) {
+                    foreach ($details as $item) {
+                        if ($item->void_receipt != 1) {
+                            $data[] = [
+                                'code' => $item->code,
+                                'product_name' => $item->product_name,
+                                'qty' => number_format($item->qty),
+                                'price' => number_format($item->price),
+                                'amount' => number_format($item->amount),
+                                'cost' => number_format($item->cost),
+                                'margin' => number_format($item->amount - $item->cost),
+                                'status' => $item->order_status_name
+                            ];
+                        }
+                    }
+                }
+            }
+        }
+
+        $title = 'Item Sale Database' . $branchname;
+        return Excel::download(new ItemSalesRecordExport($data, $title), 'Item_Sale_Database.xlsx');
     }
 
     public function exportToPdf(report $report)
