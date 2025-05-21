@@ -3,9 +3,10 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-
+use Livewire\Attributes\Title;
 class ReportPanel extends Component
 {
+    #[Title('Report Panel')]
     public array $reportHeads = [];
     public ?string $activeReport = null;
 
