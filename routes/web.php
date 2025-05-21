@@ -923,7 +923,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/test', [ReportController::class, 'pdfTest']);
     Route::get('/expense_by_categorypdf', [ReportController::class, 'expense_by_categorypdf']);
     Route::get('/salesdeclerationreport', [ReportController::class, 'salesdeclerationreport']);
-    Route::get('/itemsaledatabasepdf', [ReportController::class, 'newitemsaledatabasepdf']);
+    Route::get('/itemsaledatabasepdf', [ReportController::class, 'newitemsaledatabasepdf'])->name('itemsaledatabasepdf');
     // Route::get('/itemsaledatabasepdf', [ReportController::class, 'itemsaledatabasepdf']);
     // Route::get('/newitemsaledatabasepdf', [ReportController::class, 'newitemsaledatabasepdf']);
     Route::get('/salesreturnpdf', [ReportController::class, 'salesreturnpdf']);

@@ -42,7 +42,7 @@
 
                 <div class="col-md-3">
                     <label class="form-label small">Departments</label>
-                    <select class="form-select select2-department" wire:model.live="department" >
+                    <select class="form-select select2-department" wire:model.live="department">
                         <option value="all">-- All Departments --</option>
                         @foreach ($departments as $dept)
                             <option value="{{ $dept->department_id }}">{{ $dept->department_name }}</option>
@@ -83,6 +83,9 @@
         </div>
         <div class=" card-footer">
             <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-secondary px-4" type="button" wire:click="resetFilters">
+                    Reset
+                </button>
                 <button class="btn btn-primary px-4" type="button" wire:click="generateReport"
                     @if ($isGenerating) disabled @endif>
                     @if ($isGenerating)
@@ -95,13 +98,13 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Table -->
     <div class="card">
         <div class="card-header d-flex justify-content-end">
             <div class="d-flex gap-2">
-                <button class="btn btn-danger px-4" type="button" wire:click="exportToPdf" {{empty($results) ? 'disabled' : ''}}
-                    @if ($isGenerating) disabled @endif>
+                <button class="btn btn-danger px-4" type="button" wire:click="exportToPdf"
+                    {{ empty($results) ? 'disabled' : '' }} @if ($isGenerating) disabled @endif>
                     @if ($isGenerating)
                         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                         Exporting...
@@ -109,8 +112,8 @@
                         Export to PDF
                     @endif
                 </button>
-                <button class="btn btn-success px-4" type="button" wire:click="exportToExcel" {{empty($results) ? 'disabled' : ''}}
-                    @if ($isGenerating) disabled @endif>
+                <button class="btn btn-success px-4" type="button" wire:click="exportToExcel"
+                    {{ empty($results) ? 'disabled' : '' }} @if ($isGenerating) disabled @endif>
                     @if ($isGenerating)
                         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                         Exporting...
@@ -135,21 +138,47 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $totalCount = 0;
+                            $totalQty = 0;
+                            $totalAmount = 0;
+                            $totalCost = 0;
+                            $totalMargin = 0;
+                        @endphp
                         @forelse($results as $row)
+                            @php
+                                $cogs = $row->cost ?? 0;
+                                $margin = $row->total_amount - $cogs;
+
+                                $totalCount++;
+                                $totalQty += $row->qty;
+                                $totalAmount += $row->total_amount;
+                                $totalCost += $cogs;
+                                $totalMargin += $margin;
+                            @endphp
                             <tr>
                                 <td>{{ $row->code }}</td>
                                 <td>{{ $row->product_name }}</td>
                                 <td>{{ $row->qty }}</td>
-                                <td>{{ $row->price }}</td>
-                                <td>{{ $row->amount }}</td>
-                                <td>{{ $row->cogs }}</td>
-                                <td>{{ $row->margin }}</td>
+                                <td>{{ number_format($row->price) }}</td>
+                                <td>{{ number_format($row->total_amount) }}</td>
+                                <td>{{ number_format($cogs) }}</td>
+                                <td>{{ number_format($margin) }}</td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="10" class="text-center">No data.</td>
                             </tr>
                         @endforelse
+                        <tr>
+                            <td class="bg-dark text-white fw-bold" colspan="2">Total ({{ $totalCount }} items)
+                            </td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalQty) }}</td>
+                            <td class="bg-dark text-white fw-bold" class="text-center">-</td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalAmount) }}</td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalCost) }}</td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalMargin) }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -157,11 +186,11 @@
     </div>
     @push('scripts')
         <script>
-            document.addEventListener('livewire:initialized', function () {
+            document.addEventListener('livewire:initialized', function() {
                 initializeSelect2();
             });
 
-            document.addEventListener('initializeSelect2', function () {
+            document.addEventListener('initializeSelect2', function() {
                 initializeSelect2();
             });
 
@@ -171,7 +200,7 @@
                     allowClear: true,
                     width: '100%',
                     multiple: true
-                }).on('change', function () {
+                }).on('change', function() {
                     let values = $(this).val();
                     // If "all" is selected, clear other selections
                     if (values && values.includes('all')) {
@@ -185,7 +214,7 @@
                     placeholder: 'Select Sub Department',
                     allowClear: true,
                     width: '100%'
-                }).on('change', function () {
+                }).on('change', function() {
                     @this.set('subDepartment', $(this).val());
                 });
 
@@ -193,13 +222,21 @@
                     placeholder: 'Select Product',
                     allowClear: true,
                     width: '100%'
-                }).on('change', function () {
+                }).on('change', function() {
                     @this.set('product', $(this).val());
                 });
             }
 
+            Livewire.on('open-new-tab', url => {
+                window.open(url, '_blank');
+            });
+            document.addEventListener('livewire:on', function() {
+                console.log('livewire:on');
+            });
+           
+
             // Clean up Select2 when component is removed
-            document.addEventListener('livewire:unload', function () {
+            document.addEventListener('livewire:unload', function() {
                 $('.select2-department, .select2-subdepartment, .select2-product').select2('destroy');
             });
         </script>
