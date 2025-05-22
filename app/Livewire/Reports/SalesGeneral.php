@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Terminal;
 use Livewire\Component;
 use App\Exports\Reports\SalesGeneralExport;
+use App\Models\OrderMode;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
 
@@ -18,10 +19,12 @@ class SalesGeneral extends Component
     public $branch = '';
     public $terminal = '';
     public $customer = '';
+    public $mode = '';
     // ARRAYS 
     public $results = [];
     public $branches = [];
     public $terminals = [];
+    public $modes = [];
 
     // Loading state
     public $isGenerating = false;
@@ -34,6 +37,7 @@ class SalesGeneral extends Component
     public function mount()
     {
         $this->branches = Branch::where("company_id", session("company_id"))->get();
+        $this->modes = OrderMode::all();
     }
 
     public function updatedBranch($value)
@@ -85,6 +89,10 @@ class SalesGeneral extends Component
 
         if ($this->dateTo) {
             $order->where("date", "<=", $this->dateTo);
+        }
+
+        if ($this->mode) {
+            $order->where("order_mode_id", $this->mode);
         }
 
         $orders = $order->get();

@@ -22,23 +22,6 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label small">Terminal</label>
-                    <select class="form-select" wire:model.live="terminal">
-                        <option value="all">-- All Terminals --</option>
-                        @foreach ($terminals as $terminal)
-                            <option value="{{ $terminal->terminal_id }}">{{ $terminal->terminal_name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <label class="form-label small">Type</label>
-                    <select class="form-select" wire:model.live="type">
-                        <option value="">-- Select Type --</option>
-                        <option value="declaration">Declaration</option>
-                        <option value="datewise">Datewise</option>
-                    </select>
-                </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">Customer</label>
@@ -46,20 +29,13 @@
                         <option value="">-- Select Customer --</option>
                     </select>
                 </div>
-
-                <div class="col-md-3">
-                    <label class="form-label small">Modes</label>
-                    <select class="form-select" wire:model.live="terminal">
-                        <option value="all">-- All Modes --</option>
-                        @foreach ($modes as $modeVal)
-                            <option value="{{ $modeVal->order_mode_id }}">{{ $modeVal->order_mode }}</option>
-                        @endforeach
-                    </select>
-                </div>
             </div>
         </div>
         <div class=" card-footer">
             <div class="d-flex gap-2 justify-content-end">
+                <button class="btn btn-secondary px-4" type="button" wire:click="resetFilters">
+                    Reset
+                </button>
                 <button class="btn btn-primary px-4" type="button" wire:click="generateReport"
                     @if ($isGenerating) disabled @endif>
                     @if ($isGenerating)
@@ -72,18 +48,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Widgets -->
-    <div class="row mb-3">
-        <div class="col">
-            <div class="card text-white bg-success">
-                <div class="card-body">
-                    Total Sales: {{ collect($results)->sum('total') }}
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Table -->
     <div class="card">
         <div class="card-header d-flex justify-content-end">
@@ -114,30 +78,26 @@
                     <thead class="table-light">
                         <tr>
                             <th>No</th>
-                            <th>Date</th>
                             <th>Customer</th>
-                            <th>Type</th>
-                            <th>Items</th>
-                            <th>Qty</th>
-                            <th>Base</th>
-                            <th>Tax</th>
-                            <th>Discount</th>
-                            <th>Total</th>
+                            <th>Branch</th>
+                            <th>Contact</th>
+                            <th>Membership No #</th>
+                            <th>Total Orders</th>
+                            <th>Total Sales</th>
+                            <th>Last Order Date</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($results as $row)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ date('d M Y', strtotime($row->date)) }}</td>
-                                <td>{{ $row->customer->name }}</td>
-                                <td>{{ $row->mode->order_mode }}</td>
-                                <td>{{ $row->orderdetails[0]->total_items ?? 0 }}</td>
-                                <td>{{ $row->orderdetails[0]->total_qty ?? 0 }}</td>
-                                <td>{{ number_format($row->actual_amount) }}</td>
-                                <td>{{ number_format($row->orderAccount->sales_tax_amount) ?? 0 }}</td>
-                                <td>{{ number_format($row->orderAccount->discount_amount) ?? 0 }}</td>
-                                <td>{{ number_format($row->total_amount, 0) ?? 0 }}</td>
+                                <td>{{ $row->customer_name}}</td>
+                                <td>{{ $row->branch_name ?? 0 }}</td>
+                                <td>{{ $row->mobile }}</td>
+                                <td>{{ $row->membership_card_no ?? 'N/A' }}</td>
+                                <td>{{ number_format($row->total_orders) }}</td>
+                                <td>{{ number_format($row->total_sales) ?? 0 }}</td>
+                                <td>{{ date('d M Y', strtotime($row->last_order_date)) ?? 'N/A' }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -149,7 +109,6 @@
             </div>
         </div>
     </div>
-
     <script>
         document.addEventListener('livewire:initialized', () => {
             initializeSelect2();
