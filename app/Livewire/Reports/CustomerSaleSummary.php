@@ -222,6 +222,8 @@ class CustomerSaleSummary extends Component
 
         $totalOrders = 0;
         $totalSales = 0;
+        
+        $this->results = $this->customerSalesQuery();
 
         foreach ($this->results as $index => $row) {
             $html .= sprintf(
