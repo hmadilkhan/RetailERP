@@ -56,9 +56,34 @@ class CustomerSaleSummary extends Component
         ->groupBy('sales_receipts.customer_id', 'customers.name', 'branch.branch_name')
         ->get();
 
-        $this->results = $summary;
+        $this->results = $this->customerSalesQuery();
 
         $this->isGenerating = false;
+    }
+
+    public function customerSalesQuery()
+    {
+        $summary = Order::query()
+        ->join('customers', 'sales_receipts.customer_id', '=', 'customers.id')
+        ->leftJoin('branch', 'sales_receipts.branch', '=', 'branch.branch_id') // adjust as needed
+        ->when($this->branch, fn($q) => $q->where('sales_receipts.branch', $this->branch))
+        ->when($this->customer, fn($q) => $q->where('sales_receipts.customer_id', $this->customer))
+        ->when($this->dateFrom, fn($q) => $q->where('sales_receipts.date', '>=', $this->dateFrom))
+        ->when($this->dateTo, fn($q) => $q->where('sales_receipts.date', '<=', $this->dateTo))
+        ->select(
+            'sales_receipts.customer_id',
+            'customers.name as customer_name',
+            'customers.mobile',
+            'customers.membership_card_no',
+            'branch.branch_name',
+            DB::raw('COUNT(sales_receipts.id) as total_orders'),
+            DB::raw('SUM(sales_receipts.total_amount) as total_sales'), // optional
+            DB::raw('MAX(sales_receipts.date) as last_order_date')
+        )
+        ->groupBy('sales_receipts.customer_id', 'customers.name', 'branch.branch_name')
+        ->get();
+
+        return $summary;
     }
 
     public function exportToExcel()
