@@ -200,7 +200,7 @@ class CustomerSaleSummary extends Component
         </table>';
 
         // Add date range and title
-        $html .= '<h4 style="text-align: center;">Date: ' . $this->dateFrom . ' From ' . $this->dateTo . ' To </h4>';
+        $html .= '<h4 style="text-align: center;">From  Date: ' . $this->dateFrom . ' To Date: ' . $this->dateTo . ' </h4>';
         $html .= '<h2 style="text-align: center;">Customer Sales Summary Report' . $branchname . '</h2>';
 
         // Add table
@@ -222,7 +222,7 @@ class CustomerSaleSummary extends Component
 
         $totalOrders = 0;
         $totalSales = 0;
-        
+
         $this->results = $this->customerSalesQuery();
 
         foreach ($this->results as $index => $row) {
