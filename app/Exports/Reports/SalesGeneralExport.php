@@ -17,14 +17,16 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
     protected $branch;
     protected $terminal;
     protected $customer;
+    protected $salesPerson;
 
-    public function __construct($dateFrom, $dateTo, $branch, $terminal, $customer)
+    public function __construct($dateFrom, $dateTo, $branch, $terminal, $customer, $salesPerson)
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
         $this->branch = $branch;
         $this->terminal = $terminal;
         $this->customer = $customer;
+        $this->salesPerson = $salesPerson;
     }
 
     public function title(): string
@@ -61,7 +63,8 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
             "payment",
             "mode",
             "orderAccount",
-            "orderAccountSub"
+            "orderAccountSub",
+            "salesperson"
         ]);
 
         if ($this->branch) {
@@ -84,6 +87,10 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
             $order->where("date", "<=", $this->dateTo);
         }
 
+        if ($this->salesPerson) {
+            $order->where("sales_person_id", $this->salesPerson);
+        }
+
         return $order->get();
     }
 
@@ -100,6 +107,7 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
             'Total Amount',
             'Order Mode',
             'Payment Method',
+            'Sales Person'
         ];
     }
 
@@ -116,6 +124,7 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
             $order->total_amount ?? 0,
             !empty($order->mode) ? $order->mode->order_mode : 'N/A',
             !empty($order->payment) ? $order->payment->payment_mode : 'N/A',
+            !empty($order->salesperson) ? $order->salesperson->fullname : 'N/A'
         ];
     }
 } 

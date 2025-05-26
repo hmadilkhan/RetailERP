@@ -8,6 +8,7 @@ use App\Models\Terminal;
 use Livewire\Component;
 use App\Exports\Reports\SalesGeneralExport;
 use App\Models\OrderMode;
+use App\Services\OrderService;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
 
@@ -20,34 +21,40 @@ class SalesGeneral extends Component
     public $terminal = '';
     public $customer = '';
     public $mode = '';
+    public $salesPerson = '';
+
+    // MODELS
+    public $orderService;
+
     // ARRAYS 
     public $results = [];
     public $branches = [];
     public $terminals = [];
     public $modes = [];
+    public $serviceProviders = [];
 
     // Loading state
     public $isGenerating = false;
 
-    // public function updated($field)
-    // {
-    //     // $this->generateReport();
-    // }
-
     public function mount()
     {
+        // $this->orderService = $orderService;
         $this->branches = Branch::where("company_id", session("company_id"))->get();
         $this->modes = OrderMode::all();
     }
 
-    public function updatedBranch($value)
+    public function updatedBranch($value, OrderService $orderService)
     {
         if ($value) {
             $this->terminals = Terminal::where("branch_id", $value)->get();
+            $this->serviceProviders = $orderService->getServiceProviders($this->branch);
             $this->terminal = ''; // Reset terminal selection when branch changes
+            $this->salesPerson = ''; // Reset terminal selection when branch changes
         } else {
             $this->terminals = collect();
+            $this->serviceProviders = collect();
             $this->terminal = '';
+            $this->salesPerson = '';
         }
     }
 
@@ -69,7 +76,8 @@ class SalesGeneral extends Component
             "payment",
             "mode",
             "orderAccount",
-            "orderAccountSub"
+            "orderAccountSub",
+            "salesperson"
         ]);
         if ($this->branch) {
             $order->where("branch", $this->branch);
@@ -95,8 +103,12 @@ class SalesGeneral extends Component
             $order->where("order_mode_id", $this->mode);
         }
 
-        $orders = $order->get();
+        if ($this->salesPerson) {
+            $order->where("sales_person_id", $this->salesPerson);
+        }
 
+        $orders = $order->take(5)->get();
+        // dd($orders);
         $this->results = $orders;
 
         $this->isGenerating = false;
@@ -111,7 +123,8 @@ class SalesGeneral extends Component
             $this->dateTo,
             $this->branch,
             $this->terminal,
-            $this->customer
+            $this->customer,
+            $this->salesPerson
         );
 
         $this->isGenerating = false;
@@ -237,7 +250,8 @@ class SalesGeneral extends Component
                 "payment",
                 "mode",
                 "orderAccount",
-                "orderAccountSub"
+                "orderAccountSub",
+                "salesperson"
             ])
             ->where('terminal_id', $terminal->terminal_id);
 
@@ -251,6 +265,10 @@ class SalesGeneral extends Component
 
             if ($this->customer) {
                 $orders->where("customer_id", $this->customer);
+            }
+
+            if ($this->salesPerson) {
+                $orders->where("sales_person_id", $this->salesPerson);
             }
 
             $orders = $orders->get();
@@ -277,6 +295,7 @@ class SalesGeneral extends Component
                         <th>Total Amount</th>
                         <th>Order Mode</th>
                         <th>Payment Mode</th>
+                        <th>Sales Person</th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -302,6 +321,7 @@ class SalesGeneral extends Component
                         <td>%s</td>
                         <td>%s</td>
                         <td>%s</td>
+                        <td>%s</td>
                     </tr>',
                     $order->receipt_no,
                     date('d M Y', strtotime($order->date)),
@@ -313,7 +333,8 @@ class SalesGeneral extends Component
                     number_format($order->orderAccount ? $order->orderAccount->discount_amount : 0),
                     number_format($order->total_amount),
                     $order->mode ? $order->mode->order_mode : 'N/A',
-                    $order->payment ? $order->payment->payment_mode : 'N/A'
+                    $order->payment ? $order->payment->payment_mode : 'N/A',
+                    $order->salesperson ? $order->salesperson->fullname : 'N/A'
                 );
 
                 $totalItems += $order->orderdetails->first() ? $order->orderdetails->first()->total_items : 0;
@@ -334,13 +355,14 @@ class SalesGeneral extends Component
                     <td style="color: #FFFFFF;font-weight: bold;">%s</td>
                     <td style="color: #FFFFFF;font-weight: bold;">%s</td>
                     <td style="color: #FFFFFF;font-weight: bold;">%s</td>
-                    <td colspan="2" style="color: #FFFFFF;font-weight: bold;">-</td>
+                    <td colspan="2" style="color: #FFFFFF;font-weight: bold;">%s</td>   
                 </tr>',
                 number_format($totalItems),
                 number_format($totalQty),
                 number_format($totalBase),
                 number_format($totalTax),
                 number_format($totalDiscount),
+                number_format($totalAmount),
                 number_format($totalAmount)
             );
 

@@ -56,6 +56,16 @@
                         @endforeach
                     </select>
                 </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small">Service Provider</label>
+                    <select class="form-select" wire:model.live="salesPerson">
+                        <option value="all">-- All Service Providers --</option>
+                        @foreach ($serviceProviders as $serviceProvider)
+                            <option value="{{ $serviceProvider->serviceprovideruser->user_id }}">{{ $serviceProvider->provider_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
         </div>
         <div class=" card-footer">
@@ -121,6 +131,9 @@
                             <th>Qty</th>
                             <th>Base</th>
                             <th>Tax</th>
+                            @if($salesPerson != '')
+                            <th>Sales Person</th>
+                            @endif
                             <th>Discount</th>
                             <th>Total</th>
                         </tr>
@@ -136,6 +149,9 @@
                                 <td>{{ $row->orderdetails[0]->total_qty ?? 0 }}</td>
                                 <td>{{ number_format($row->actual_amount) }}</td>
                                 <td>{{ number_format($row->orderAccount->sales_tax_amount) ?? 0 }}</td>
+                                @if($salesPerson != '')
+                                <td>{{ $row->salesperson->fullname }}</td>
+                                @endif
                                 <td>{{ number_format($row->orderAccount->discount_amount) ?? 0 }}</td>
                                 <td>{{ number_format($row->total_amount, 0) ?? 0 }}</td>
                             </tr>
