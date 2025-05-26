@@ -355,7 +355,7 @@ class SalesGeneral extends Component
                     <td style="color: #FFFFFF;font-weight: bold;">%s</td>
                     <td style="color: #FFFFFF;font-weight: bold;">%s</td>
                     <td style="color: #FFFFFF;font-weight: bold;">%s</td>
-                    <td colspan="2" style="color: #FFFFFF;font-weight: bold;">%s</td>   
+                    <td colspan="3" style="color: #FFFFFF;font-weight: bold;">%s</td>   
                 </tr>',
                 number_format($totalItems),
                 number_format($totalQty),
