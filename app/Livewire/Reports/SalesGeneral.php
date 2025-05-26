@@ -363,7 +363,7 @@ class SalesGeneral extends Component
                 number_format($totalTax),
                 number_format($totalDiscount),
                 number_format($totalAmount),
-                number_format($totalAmount)
+                '-'
             );
 
             $html .= '</tbody></table>';
