@@ -58,6 +58,16 @@
                 </div>
 
                 <div class="col-md-3">
+                    <label class="form-label small">Status</label>
+                    <select class="form-select" wire:model.live="status">
+                        <option value="all">-- All Status --</option>
+                        @foreach ($statuses as $statusVal)
+                            <option value="{{ $statusVal->order_status_id }}">{{ $statusVal->order_status_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="col-md-3">
                     <label class="form-label small">Service Provider</label>
                     <select class="form-select" wire:model.live="salesPerson">
                         <option value="all">-- All Service Providers --</option>

@@ -8,6 +8,7 @@ use App\Models\Terminal;
 use Livewire\Component;
 use App\Exports\Reports\SalesGeneralExport;
 use App\Models\OrderMode;
+use App\Models\OrderStatus;
 use App\Services\OrderService;
 use Maatwebsite\Excel\Facades\Excel;
 use Mpdf\Mpdf;
@@ -22,6 +23,7 @@ class SalesGeneral extends Component
     public $customer = '';
     public $mode = '';
     public $salesPerson = '';
+    public $status = '';
 
     // MODELS
     public $orderService;
@@ -31,6 +33,7 @@ class SalesGeneral extends Component
     public $branches = [];
     public $terminals = [];
     public $modes = [];
+    public $statuses = [];
     public $serviceProviders = [];
 
     // Loading state
@@ -41,6 +44,7 @@ class SalesGeneral extends Component
         // $this->orderService = $orderService;
         $this->branches = Branch::where("company_id", session("company_id"))->get();
         $this->modes = OrderMode::all();
+        $this->statuses = OrderStatus::all();
     }
 
     public function updatedBranch($value, OrderService $orderService)
@@ -105,6 +109,10 @@ class SalesGeneral extends Component
 
         if ($this->salesPerson) {
             $order->where("sales_person_id", $this->salesPerson);
+        }
+
+        if ($this->status) {
+            $order->where("status", $this->status);
         }
 
         $orders = $order->take(5)->get();
@@ -269,6 +277,10 @@ class SalesGeneral extends Component
 
             if ($this->salesPerson) {
                 $orders->where("sales_person_id", $this->salesPerson);
+            }
+
+            if ($this->status) {
+                $orders->where("status", $this->status);
             }
 
             $orders = $orders->get();

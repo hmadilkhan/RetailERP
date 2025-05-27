@@ -19,6 +19,7 @@ class ReportPanel extends Component
                     ['name' => 'Sales Invoices', 'key' => 'sales-general'],
                     ['name' => 'Sales Invoice Details', 'key' => 'item-sales-record'],
                     ['name' => 'Customer Sales Summary', 'key' => 'customer-sale-summary'],
+                    ['name' => 'Order Timing Summary', 'key' => 'order-timing-summary'],
                 ],
             ],
             [
@@ -26,6 +27,13 @@ class ReportPanel extends Component
                 'reports' => [
                     ['name' => 'P&L Summary', 'key' => 'pl-summary'],
                     ['name' => 'P&L Detailed', 'key' => 'pl-detailed'],
+                ],
+            ],
+            [
+                'name' => 'Expense',
+                'reports' => [
+                    ['name' => 'Expense Category', 'key' => 'expense-category'],
+                    ['name' => 'Expense Detailed', 'key' => 'expense-detailed'],
                 ],
             ],
         ];

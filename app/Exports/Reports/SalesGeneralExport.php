@@ -91,6 +91,10 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
             $order->where("sales_person_id", $this->salesPerson);
         }
 
+        if ($this->status) {
+            $order->where("status", $this->status);
+        }
+
         return $order->get();
     }
 
