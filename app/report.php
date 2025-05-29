@@ -152,7 +152,7 @@ class report extends Model
         there will be no receipt no so thats why if we join it will not pick the data correctly
         */
         // $result = DB::select('SELECT a.receipt_id, a.timestamp, c.name, a.amount, d.payment_mode FROM sales_return a INNER JOIN sales_receipts b ON b.id = a.receipt_id and b.status = 4 INNER JOIN customers c ON c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
-        $result = DB::select('SELECT a.receipt_id, a.timestamp, c.name, a.amount, d.payment_mode FROM sales_return a  WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
+        $result = DB::select('SELECT a.receipt_id, a.timestamp, c.name, a.amount, d.payment_mode FROM sales_return a LEFT JOIN sales_receipts b ON b.id = a.receipt_id and b.status = 4 LEFT JOIN customers c ON c.id = b.customer_id LEFT JOIN sales_payment d ON d.payment_id = b.payment_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
         return $result;
     }
 
