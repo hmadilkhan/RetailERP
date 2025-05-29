@@ -201,7 +201,12 @@ class report extends Model
     public  function total_sales_return($fromdate, $todate, $branch)
     {
         $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT IFNULL(SUM(a.amount),0) AS salesreturn FROM sales_return a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN customers c ON c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
+        /* 
+        I have removed Joins here because in open Sales Return 
+        there will be no receipt no so thats why if we join it will not pick the data correctly
+        */
+        // $result = DB::select('SELECT IFNULL(SUM(a.amount),0) AS salesreturn FROM sales_return a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN customers c ON c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
+        $result = DB::select('SELECT IFNULL(SUM(a.amount),0) AS salesreturn FROM sales_return a  WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
         return $result;
     }
 
