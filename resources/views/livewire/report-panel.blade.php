@@ -10,14 +10,14 @@
                 <ul class="navbar-nav me-auto my-2 my-lg-0 navbar-nav-scroll" style="--bs-scroll-height: 100px;">
                     @foreach ($reportHeads as $head)
                         <li class="nav-item dropdown {{ $activeReport === $head['name'] ? 'active' : '' }}">
-                            <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarScrollingDropdown"
+                            <a class="nav-link dropdown-toggle text-dark"  id="navbarScrollingDropdown"
                                 role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ $head['name'] }}
                             </a>
                             <ul class="dropdown-menu p-2" aria-labelledby="navbarScrollingDropdown">
                                 @foreach ($head['reports'] as $report)
                                     <li wire:click="selectReport('{{ $report['key'] }}')"><a class="dropdown-item"
-                                            href="#">{{ $report['name'] }}</a></li>
+                                            >{{ $report['name'] }}</a></li>
                                 @endforeach
                             </ul>
                         </li>
