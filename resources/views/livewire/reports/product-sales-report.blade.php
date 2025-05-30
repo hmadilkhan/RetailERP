@@ -7,66 +7,90 @@
             <div class="row">
                 <div class="col-md-3">
                     <label class="form-label small">From Date</label>
-                    <input type="date" class="form-control" wire:model.lazy="dateFrom" placeholder="From Date">
+                    <input type="date" class="form-control @error('dateFrom') is-invalid @enderror" wire:model.lazy="dateFrom" placeholder="From Date">
+                    @error('dateFrom')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">To Date</label>
-                    <input type="date" class="form-control" wire:model.lazy="dateTo" placeholder="To Date">
+                    <input type="date" class="form-control @error('dateTo') is-invalid @enderror" wire:model.lazy="dateTo" placeholder="To Date">
+                    @error('dateTo')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Branch</label>
-                    <select id="branch" class="form-select" wire:model.live="branch">
+                    <select id="branch" class="form-select @error('branch') is-invalid @enderror" wire:model.live="branch">
                         <option value="">-- Select Branch --</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
                         @endforeach
                     </select>
+                    @error('branch')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Terminal</label>
-                    <select class="form-select" wire:model.live="terminal">
+                    <select class="form-select @error('terminal') is-invalid @enderror" wire:model.live="terminal">
                         <option value="all">-- All Terminals --</option>
                         @foreach ($terminals as $terminal)
                             <option value="{{ $terminal->terminal_id }}">{{ $terminal->terminal_name }}</option>
                         @endforeach
                     </select>
+                    @error('terminal')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
                 <div class="col-md-3">
                     <label class="form-label small">Type</label>
-                    <select class="form-select" wire:model.live="type">
+                    <select class="form-select @error('type') is-invalid @enderror" wire:model.live="type">
                         <option value="declaration" selected>Declaration</option>
                         <option value="datewise">Datewise</option>
                     </select>
+                    @error('type')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">Departments</label>
-                    <select class="form-select select2-department" wire:model.live="department">
+                    <select class="form-select select2-department @error('department') is-invalid @enderror" wire:model.live="department">
                         <option value="all">-- All Departments --</option>
                         @foreach ($departments as $dept)
                             <option value="{{ $dept->department_id }}">{{ $dept->department_name }}</option>
                         @endforeach
                     </select>
+                    @error('department')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">Sub-Departments</label>
-                    <select class="form-select select2-subdepartment" wire:model.live="subDepartment">
+                    <select class="form-select select2-subdepartment @error('subDepartment') is-invalid @enderror" wire:model.live="subDepartment">
                         <option value="">-- Select Sub Department --</option>
                         @foreach ($subDepartments as $subDept)
                             <option value="{{ $subDept->sub_department_id }}">{{ $subDept->sub_depart_name }}</option>
                         @endforeach
                     </select>
+                    @error('subDepartment')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="col-md-3">
                     <label class="form-label small">Products</label>
-                    <select class="form-select select2-product" wire:model.live="product">
+                    <select class="form-select select2-product @error('product') is-invalid @enderror" wire:model.live="product">
                         <option value="">-- Select Product --</option>
                         @foreach ($products as $prod)
                             <option value="{{ $prod->id }}">{{ $prod->product_name }}</option>
                         @endforeach
                     </select>
+                    @error('product')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
             </div>
         </div>

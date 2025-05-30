@@ -95,18 +95,45 @@ class ProductSalesReport extends Component
 
     public function generateReport()
     {
+       
+
+        // Validate required fields
+        $this->validate([
+            'dateFrom' => 'required|date',
+            'dateTo' => 'required|date|after_or_equal:dateFrom',
+            'branch' => 'required',
+            'terminal' => 'required|exists:terminal_details,terminal_id',
+            'type' => 'required|in:declaration,sales',
+            'department' => 'required',
+            'subDepartment' => 'required',
+            'product' => 'required'
+        ], [
+            'dateFrom.required' => 'Start date is required',
+            'dateTo.required' => 'End date is required',
+            'dateTo.after_or_equal' => 'End date must be greater than or equal to start date',
+            'branch.required' => 'Please select a branch',
+            'branch.exists' => 'Selected branch is invalid',
+            'terminal.required' => 'Please select a terminal',
+            'terminal.exists' => 'Selected terminal is invalid',
+            'type.required' => 'Report type is required',
+            'type.in' => 'Invalid report type selected',
+            'department.exists' => 'Selected department is invalid',
+            'subDepartment.exists' => 'Selected sub-department is invalid',
+            'product.exists' => 'Selected product is invalid'
+        ]);
+
         $this->isGenerating = true;
 
         $this->results = $this->getItemSalesDetails(
             $this->dateFrom,
             $this->dateTo,
             $this->terminal,
-            $this->type, // type
-            $this->department, // department
-            $this->subDepartment, // subdepartment
+            $this->type,
+            $this->department,
+            $this->subDepartment,
             $this->status,
             $this->status,
-            $this->product // inventory
+            $this->product
         );
 
         $this->isGenerating = false;
