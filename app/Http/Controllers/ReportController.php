@@ -1486,15 +1486,10 @@ class ReportController extends Controller
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(230, 230, 230);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(95, 8, 'Discounts', 0, 1, 'L', 0);
-        $pdf->Cell(95, 8, number_format($discounts[0]->discounts, 2), 0, 1, 'L', 1);
+        $pdf->Cell(95, 8, "Discounts", 0, 0, 'L', 1); //your cell
+        $pdf->Cell(95, 8, "Rs. " . number_format($discounts[0]->discounts, 2), 0, 1, 'R', 1); 
 
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->setFillColor(230, 230, 230);
-        $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(95, 8, 'Sales Return', 0, 1, 'L', 0);
-        $pdf->Cell(95, 8, number_format($salesreturn[0]->salesreturn, 2), 0, 1, 'L', 1);
-
+       
 
         $pdf->Cell(70, 6, 'Discounts', 0, 0, 'L');
         $pdf->Cell(40, 6, '', 0, 0, 'L');
