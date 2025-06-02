@@ -1499,7 +1499,7 @@ class ReportController extends Controller
         $pdf->setFillColor(230, 230, 230);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(95, 8, "Sales Return", 0, 0, 'L', 1); //your cell
-        $pdf->Cell(95, 8, "Rs. " . number_format($discounts[0]->salesreturn, 2), 0, 1, 'R', 1); 
+        $pdf->Cell(95, 8, "Rs. " . number_format($salesreturn[0]->salesreturn, 2), 0, 1, 'R', 1); 
        
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(230, 230, 230);
