@@ -1484,7 +1484,7 @@ class ReportController extends Controller
         }
 
         // $expesnsetotal = ($expesnsetotal  ); //$purchases[0]->purchase_amount
-
+        $pdf->Cell(190, 2, '', '', 1); //SPACE
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->Cell(95, 5, 'Total Expenses', 0, 0, 'L');
         $pdf->Cell(95, 5, number_format($expesnsetotal, 2), 0, 1, 'R');
