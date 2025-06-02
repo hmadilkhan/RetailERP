@@ -115,7 +115,7 @@ class SalesGeneral extends Component
             $order->where("status", $this->status);
         }
 
-        $orders = $order->take(5)->get();
+        $orders = $order->get();
         // dd($orders);
         $this->results = $orders;
 
@@ -132,7 +132,8 @@ class SalesGeneral extends Component
             $this->branch,
             $this->terminal,
             $this->customer,
-            $this->salesPerson
+            $this->salesPerson,
+            $this->status
         );
 
         $this->isGenerating = false;
@@ -308,6 +309,7 @@ class SalesGeneral extends Component
                         <th>Order Mode</th>
                         <th>Payment Mode</th>
                         <th>Sales Person</th>
+                        <th>FBR Invoice Number</th>
                     </tr>
                 </thead>
                 <tbody>';
@@ -334,6 +336,7 @@ class SalesGeneral extends Component
                         <td>%s</td>
                         <td>%s</td>
                         <td>%s</td>
+                        <td>%s</td>
                     </tr>',
                     $order->receipt_no,
                     date('d M Y', strtotime($order->date)),
@@ -346,7 +349,8 @@ class SalesGeneral extends Component
                     number_format($order->total_amount),
                     $order->mode ? $order->mode->order_mode : 'N/A',
                     $order->payment ? $order->payment->payment_mode : 'N/A',
-                    $order->salesperson ? $order->salesperson->fullname : 'N/A'
+                    $order->salesperson ? $order->salesperson->fullname : 'N/A',
+                    $order->fbrInvNumber ? $order->fbrInvNumber : 'N/A'
                 );
 
                 $totalItems += $order->orderdetails->first() ? $order->orderdetails->first()->total_items : 0;

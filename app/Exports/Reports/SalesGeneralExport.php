@@ -18,8 +18,9 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
     protected $terminal;
     protected $customer;
     protected $salesPerson;
+    protected $status;
 
-    public function __construct($dateFrom, $dateTo, $branch, $terminal, $customer, $salesPerson)
+    public function __construct($dateFrom, $dateTo, $branch, $terminal, $customer, $salesPerson, $status)
     {
         $this->dateFrom = $dateFrom;
         $this->dateTo = $dateTo;
@@ -27,6 +28,7 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
         $this->terminal = $terminal;
         $this->customer = $customer;
         $this->salesPerson = $salesPerson;
+        $this->status = $status;
     }
 
     public function title(): string
@@ -38,7 +40,7 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
     {
         return [
             1 => ['font' => ['bold' => true]],
-            'A1:J1' => [
+            'A1:L1' => [
                 'fill' => [
                     'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
                     'startColor' => ['rgb' => 'CCCCCC']
@@ -111,7 +113,8 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
             'Total Amount',
             'Order Mode',
             'Payment Method',
-            'Sales Person'
+            'Sales Person',
+            'FBR Invoice Number'
         ];
     }
 
@@ -128,7 +131,8 @@ class SalesGeneralExport implements FromCollection, WithHeadings, WithMapping, W
             $order->total_amount ?? 0,
             !empty($order->mode) ? $order->mode->order_mode : 'N/A',
             !empty($order->payment) ? $order->payment->payment_mode : 'N/A',
-            !empty($order->salesperson) ? $order->salesperson->fullname : 'N/A'
+            !empty($order->salesperson) ? $order->salesperson->fullname : 'N/A',
+            $order->fbrInvNumber ?? 'N/A'
         ];
     }
 } 

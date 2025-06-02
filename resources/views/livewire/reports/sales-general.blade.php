@@ -62,7 +62,8 @@
                     <select class="form-select" wire:model.live="status">
                         <option value="all">-- All Status --</option>
                         @foreach ($statuses as $statusVal)
-                            <option value="{{ $statusVal->order_status_id }}">{{ $statusVal->order_status_name }}</option>
+                            <option value="{{ $statusVal->order_status_id }}">{{ $statusVal->order_status_name }}
+                            </option>
                         @endforeach
                     </select>
                 </div>
@@ -72,7 +73,8 @@
                     <select class="form-select" wire:model.live="salesPerson">
                         <option value="all">-- All Service Providers --</option>
                         @foreach ($serviceProviders as $serviceProvider)
-                            <option value="{{ $serviceProvider->serviceprovideruser->user_id }}">{{ $serviceProvider->provider_name }}</option>
+                            <option value="{{ $serviceProvider->serviceprovideruser->user_id }}">
+                                {{ $serviceProvider->provider_name }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -108,8 +110,8 @@
     <div class="card">
         <div class="card-header d-flex justify-content-end">
             <div class="d-flex gap-2">
-                <button class="btn btn-danger px-4" type="button" wire:click="exportToPdf" {{empty($results) ? 'disabled' : ''}}
-                    @if ($isGenerating) disabled @endif>
+                <button class="btn btn-danger px-4" type="button" wire:click="exportToPdf"
+                    {{ empty($results) ? 'disabled' : '' }} @if ($isGenerating) disabled @endif>
                     @if ($isGenerating)
                         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                         Exporting...
@@ -117,8 +119,8 @@
                         Export to PDF
                     @endif
                 </button>
-                <button class="btn btn-success px-4" type="button" wire:click="exportToExcel" {{empty($results) ? 'disabled' : ''}}
-                    @if ($isGenerating) disabled @endif>
+                <button class="btn btn-success px-4" type="button" wire:click="exportToExcel"
+                    {{ empty($results) ? 'disabled' : '' }} @if ($isGenerating) disabled @endif>
                     @if ($isGenerating)
                         <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
                         Exporting...
@@ -141,15 +143,34 @@
                             <th>Qty</th>
                             <th>Base</th>
                             <th>Tax</th>
-                            @if($salesPerson != '')
-                            <th>Sales Person</th>
+                            <th>FBR Invoice Number</th>
+                            @if ($salesPerson != '')
+                                <th>Sales Person</th>
                             @endif
                             <th>Discount</th>
                             <th>Total</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            $totalCount = 0;
+                            $totalItems = 0;
+                            $totalQty = 0;
+                            $totalBase = 0;
+                            $totalTax = 0;
+                            $totalDiscount = 0;
+                            $totalAmount = 0;
+                        @endphp
                         @forelse($results as $row)
+                            @php
+                                $totalCount++;  
+                                $totalItems += $row->orderdetails[0]->total_items ?? 0;
+                                $totalQty += $row->orderdetails[0]->total_qty ?? 0;
+                                $totalBase += $row->actual_amount ?? 0;
+                                $totalTax += $row->orderAccountSub->sales_tax_amount ?? 0;
+                                $totalAmount += $row->total_amount;
+                                $totalDiscount += $row->orderAccountSub->discount_amount ?? 0;
+                            @endphp
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ date('d M Y', strtotime($row->date)) }}</td>
@@ -158,11 +179,12 @@
                                 <td>{{ $row->orderdetails[0]->total_items ?? 0 }}</td>
                                 <td>{{ $row->orderdetails[0]->total_qty ?? 0 }}</td>
                                 <td>{{ number_format($row->actual_amount) }}</td>
-                                <td>{{ number_format($row->orderAccount->sales_tax_amount) ?? 0 }}</td>
-                                @if($salesPerson != '')
-                                <td>{{ $row->salesperson->fullname }}</td>
+                                <td>{{ number_format($row->orderAccountSub->sales_tax_amount) ?? 0 }}</td>
+                                <td>{{ $row->fbrInvNumber ?? 'N/A' }}</td>
+                                @if ($salesPerson != '')
+                                    <td>{{ $row->salesperson->fullname }}</td>
                                 @endif
-                                <td>{{ number_format($row->orderAccount->discount_amount) ?? 0 }}</td>
+                                <td>{{ number_format($row->orderAccountSub->discount_amount) ?? 0 }}</td>
                                 <td>{{ number_format($row->total_amount, 0) ?? 0 }}</td>
                             </tr>
                         @empty
@@ -170,6 +192,16 @@
                                 <td colspan="10" class="text-center">No data.</td>
                             </tr>
                         @endforelse
+                        <tr>
+                            <td class="bg-dark text-white fw-bold" colspan="4">Total ({{ $totalCount }})</td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalItems) }}</td>
+                            <td class="bg-dark text-white fw-bold" class="text-center">{{ number_format($totalQty) }}</td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalBase) }}</td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalTax) }}</td>
+                            <td class="bg-dark text-white fw-bold">-</td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalDiscount) }}</td>
+                            <td class="bg-dark text-white fw-bold">{{ number_format($totalAmount) }}</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>

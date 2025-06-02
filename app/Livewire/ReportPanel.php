@@ -18,6 +18,7 @@ class ReportPanel extends Component
                 'reports' => [
                     ['name' => 'Sales Invoices', 'key' => 'sales-general'],
                     ['name' => 'Sales Invoice Details', 'key' => 'item-sales-record'],
+                    ['name' => 'Sales Return', 'key' => 'sales-return-report'],
                     ['name' => 'Product Sales Report', 'key' => 'product-sales-report'],
                     ['name' => 'Customer Sales Summary', 'key' => 'customer-sale-summary'],
                     ['name' => 'Order Timing Summary', 'key' => 'order-timing-summary'],
