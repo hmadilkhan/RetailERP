@@ -1489,18 +1489,21 @@ class ReportController extends Controller
         $pdf->Cell(95, 5, 'Total Expenses', 0, 0, 'L');
         $pdf->Cell(95, 5, number_format($expesnsetotal, 2), 0, 1, 'R');
 
+        $pdf->Cell(190, 2, '', '', 1); // EXtra Space
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(230, 230, 230);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(95, 8, "Discounts", 0, 0, 'L', 1); //your cell
         $pdf->Cell(95, 8, "Rs. " . number_format($discounts[0]->discounts, 2), 0, 1, 'R', 1); 
-        
+       
+        $pdf->Cell(190, 2, '', '', 1); // EXtra Space
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(230, 230, 230);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(95, 8, "Sales Return", 0, 0, 'L', 1); //your cell
         $pdf->Cell(95, 8, "Rs. " . number_format($salesreturn[0]->salesreturn, 2), 0, 1, 'R', 1); 
        
+        $pdf->Cell(190, 2, '', '', 1); // EXtra Space
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(230, 230, 230);
         $pdf->SetTextColor(0, 0, 0);
@@ -1526,7 +1529,7 @@ class ReportController extends Controller
         // $pdf->Cell(40, 6, '', 0, 0, 'L');
         // $pdf->Cell(40, 6, number_format($salaries[0]->salaries, 2), 0, 1, 'R');
 
-        // $expesnsetotal = ($expesnsetotal  +  $discounts[0]->discounts + $salesreturn[0]->salesreturn + $salaries[0]->salaries); //$purchases[0]->purchase_amount
+        $expesnsetotal = ($expesnsetotal  +  $discounts[0]->discounts + $salesreturn[0]->salesreturn + $salaries[0]->salaries); //$purchases[0]->purchase_amount
 
         // $pdf->SetFont('Arial', 'B', 12);
         // $pdf->Cell(95, 5, 'Total Expenses', 0, 0, 'L');
