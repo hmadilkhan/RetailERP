@@ -302,7 +302,7 @@
                         <td>{{date('d M Y',strtotime($value->date))}}</td>
                         <td>{{$value->grn_id}}</td>
                         <td>{{$value->narration}}</td>
-                        <td>{{(preg_match('/Sales/', $value->narration) ? $value->qty/$value->weight_qty : $value->qty)}}</td>
+                        <td>{{(preg_match('/Sales/', $value->narration) ? $value->qty ?? 1 / $value->weight_qty ?? 1 : $value->qty ?? 1)}}</td>
                         <td> {{$stock}}</td>
                         <td> {{$value->fullname}}</td>
                         <td>
