@@ -285,7 +285,7 @@
                      if($value->narration == 'Stock Opening' ){
                         $stock = (float)$value->stock;
                      }elseif($value->narration == 'Sales'){
-                        $stock = $stock - (preg_match('/Sales/', $value->narration) ? (float)$value->qty/$value->weight_qty : (float)$value->qty);
+                        $stock = $stock - (preg_match('/Sales/', $value->narration) ? (float)$value->qty ?? 1 / $value->weight_qty ?? 1 : (float)$value->qty ?? 1) ;
                      }elseif($value->narration == 'Sales Return'){
                         $stock = (float)$stock + (float)$value->qty;
                      }elseif($value->narration == 'Stock Purchase through Purchase Order'){
