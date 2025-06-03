@@ -600,7 +600,8 @@
                 '#txtphysical', '#txtstockreport', '#txtinventorygeneralreport',
                 '#txtfbrreport', '#txtinvoicereport', '#txtsalesinvoicesreport', '#txtbookingorderreport',
                 '#txtsalereturn', '#txtwebsiteitemssummary', '#txtsalespersonreport', '#txtordertimingsummary',
-                '#txtorderamountreceivable', '#txtbookingdeliveryreport', '#txtcustomersalesreport','#txtcashinoutreport'
+                '#txtorderamountreceivable', '#txtbookingdeliveryreport', '#txtcustomersalesreport',
+                '#txtcashinoutreport'
             ];
 
             fields.forEach(field => {
@@ -610,7 +611,7 @@
             const filters = [
                 '#dvbranch', '#dvdepartments', '#dvmultipledepartments', '#dvsubdepartments', '#dvterminal',
                 '#dvtype', '#dvitemcode', '#dvpaymentmodes', '#dvsalesperson', '#dvmode', '#dvstatus', '#dvcategory',
-                '#dvordermode', '#dvcustomers','#dvinventoryselect'
+                '#dvordermode', '#dvcustomers', '#dvinventoryselect'
             ];
             filters.forEach(field => {
                 $(field).css('display', 'none');
@@ -619,7 +620,7 @@
             // Set specific fields based on mapping
             // console.log(fieldMappings);
             fieldMappings.forEach(mapping => {
-                $(mapping.field).val(mapping.value);
+                $(mapping.field).val(mapping.value);    
             });
 
             // Set filter text
@@ -743,6 +744,7 @@
             }]);
         });
         $('#dvphysical').on('click', function() {
+
             handleButtonClick('#dvphysical', 'Physical Inventory Sheet', [{
                 field: '#txtphysical',
                 value: 1,
@@ -940,7 +942,7 @@
                 window.location = "{{ url('itemsaledatabasepdf') }}?fromdate=" + date + "&todate=" + todate +
                     "&terminalid=" + terminalid + "&type=" + $("#type").val() + departmentQuery +
                     "&branch=" +
-                    branch + "&ordermode=" + ordermode + "&status=" + status+ "&inventory=" + inventory;
+                    branch + "&ordermode=" + ordermode + "&status=" + status + "&inventory=" + inventory;
             }
             if ($('#txtsalereturn').val() == 1) {
                 window.location = "{{ url('salesreturnpdf') }}?fromdate=" + date + "&todate=" + todate + "&terminalid=" +
@@ -1010,6 +1012,10 @@
                     "&branch=" + branch + "&terminalid=" +
                     terminalid;
             }
+
+            if ($('#txtphysical').val() == 1) {
+                window.location = "{{ url('inventoryReportPhysical') }}?departid=" + $('#depart').val();
+            }
         }
 
         function getExcelData() {
@@ -1054,8 +1060,12 @@
             }
 
             if ($('#txtsalereturn').val() == 1) {
-                window.location = "{{ url('reports/sales-return-export') }}?fromdate=" + from + "&todate=" + to + "&terminalid=" +
-                terminal + "&code=" + code + "&branch=" + branch;
+                window.location = "{{ url('reports/sales-return-export') }}?fromdate=" + from + "&todate=" + to +
+                    "&terminalid=" +
+                    terminal + "&code=" + code + "&branch=" + branch;
+            }
+            if ($('#txtphysical').val() == 1) {
+                window.location = "{{ url('inventoryReportPhysical') }}?departid=" + $('#depart').val();
             }
 
             // if ($('#txtitemsale').val() == 1) {
@@ -1198,7 +1208,7 @@
                     return {
                         results: $.map(data.items, function(item) {
                             return {
-                                text: item.name + " | " + item.branch_name + " | " +item.mobile,
+                                text: item.name + " | " + item.branch_name + " | " + item.mobile,
                                 id: item.id
                             };
                         })
@@ -1226,7 +1236,7 @@
                 success: function(resp) {
                     $('#subdepartment').empty();
                     $("#subdepartment").append("<option value=''>Select Sub Department</option>");
-                    console.log(resp);
+                    // console.log(resp);
 
                     $.each(resp, function(index, value) {
                         $("#subdepartment").append(
