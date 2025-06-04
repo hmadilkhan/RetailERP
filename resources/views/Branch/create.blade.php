@@ -119,7 +119,7 @@
                         <div class="col-lg-3 col-md-3">
                           <div class="form-group">
                               <label class="form-control-label">Record Daily Stock ?</label>
-                              <select multiple name="record_daily_stock" id="record_daily_stock" data-placeholder="Record Daily Stock"
+                              <select name="record_daily_stock" id="record_daily_stock" data-placeholder="Record Daily Stock"
                                   class="form-control select2">
                                   <option value="1">Yes</option>
                                   <option selected value="0">No</option>
