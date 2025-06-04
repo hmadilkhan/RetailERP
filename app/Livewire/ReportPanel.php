@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use Livewire\Attributes\Title;
+
 class ReportPanel extends Component
 {
     #[Title('Report Panel')]
@@ -36,6 +37,12 @@ class ReportPanel extends Component
                 'reports' => [
                     ['name' => 'Expense Category', 'key' => 'expense-category'],
                     ['name' => 'Expense Detailed', 'key' => 'expense-detailed'],
+                ],
+            ],
+            [
+                'name' => 'Stock',
+                'reports' => [
+                    ['name' => 'Stock Report', 'key' => 'stock-report'],
                 ],
             ],
         ];
