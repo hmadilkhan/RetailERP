@@ -122,8 +122,8 @@
                                 <label class="form-control-label">Record Daily Stock ?</label>
                                 <select name="record_daily_stock" id="record_daily_stock"
                                     data-placeholder="Record Daily Stock" class="form-control select2">
-                                    <option value="1">Yes</option>
-                                    <option selected value="0">No</option>
+                                    <option {{ $details[0]->record_daily_stock == 1 ? 'selected' : '' }} value="1">Yes</option>
+                                    <option {{ $details[0]->record_daily_stock == 0 ? 'selected' : '' }} value="0">No</option>
                                 </select>
                                 <span class="form-control-feedback text-danger" id="record_daily_stock_message"></span>
                             </div>
