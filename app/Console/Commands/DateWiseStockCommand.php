@@ -33,13 +33,13 @@ class DateWiseStockCommand extends Command
         $date = date("Y-m-d");
         $yesterday = date('Y-m-d',strtotime("-1 days"));
         // This change will add to 04-10-2024 and starts run on 05-10-2024
-        $branches = Branch::where("company_id",102)->get();
+        $branches = Branch::where("record_daily_stock",1)->get();
         
         foreach ($branches as $key => $branch) {
             $stocks = InventoryStock::where("branch_id", $branch->branch_id)->groupBy("product_id")->select("product_id", DB::raw('SUM(inventory_stock.balance) As stock'))->get();
             foreach ($stocks as $key => $stock) {
                 DailyStock::insert([
-                    "company_id" => 102,
+                    "company_id" => $branch->company_id,
                     "branch_id" => $branch->branch_id,
                     "product_id" =>  $stock->product_id,
                     "opening_stock" => $stock->stock,
