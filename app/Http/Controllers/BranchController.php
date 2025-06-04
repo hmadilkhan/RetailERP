@@ -21,7 +21,7 @@ class BranchController extends Controller
 	{
 		$this->middleware('auth');
 	}
-
+ 
 	public function show(branch $branch,BranchService $branchService)
 	{
 		// $details = $branch->get_branches(session('company_id'));
@@ -78,6 +78,7 @@ class BranchController extends Controller
 				'branch_mobile' => $request->br_mobile,
 				'branch_email' => $request->br_email,
 				'code' => $request->br_code,
+				'record_daily_stock' => $request->record_daily_stock,
 				'branch_logo' => $file["fileName"],
 				'modify_by' => session('userid'),
 				'modify_date' => date('Y-m-d'),
@@ -162,6 +163,7 @@ class BranchController extends Controller
 			'modify_date' => date('Y-m-d'),
 			'modify_time' => date('H:i:s'),
 			'code' => $request->br_code,
+			'record_daily_stock' => $request->record_daily_stock,
 		];
 		$branch = $branch->branch_update($request->br_id, $items);
 

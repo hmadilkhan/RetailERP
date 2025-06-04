@@ -394,9 +394,10 @@
                 dataType: 'json',
                 success: function(result) {
                     $("#headername").html(branchname);
-                    var imageUrl = "{{ asset('storage/images/placeholder.jpg') }}";
+                    var imageUrl = "{{ asset('storage/images/no-image.png') }}";
 
                     for (var count = 0; count < result.data.length; count++) {
+                        
                         if ($.inArray({{ session('company_id') }}, [95, 102, 104]) != -1 || $.inArray(
                                 GlobalUsername, [
                                     'demoadmin', 'fnkhan'
@@ -406,15 +407,16 @@
                                 imageUrl = result.data[count].url;
                             }
                         } else {
-                            if (result.data[count].image != '') {
+                            if (result.data[count].image != null) {
                                 imageUrl = "storage/images/products/" + result.data[count].image;
                             }
                         }
+     
                        
                         $("#tblstock tbody").append(
                             "<tr>" +
                             "<td class='pro-name' > <img src='" + imageUrl +
-                            "' class='img-fluid d-inline-block'></td>" +
+                            "' class='img-fluid d-inline-block img-circle'></td>" +
                             "<td>" + result.data[count].item_code + "</td>" +
                             "<td><h6>" + result.data[count].product_name +
                             "</h6><span class='text-success f-16'>" + result.data[count].branch_name +
