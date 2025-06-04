@@ -80,7 +80,7 @@ class branch extends Model
     }
 
     public function branch_details($companyid, $branchid){
-        $result = DB::select('SELECT a.branch_id,a.code,a.company_id, a.branch_name,c.country_name,d.city_name,a.branch_mobile,a.branch_email,a.branch_address, a.branch_ptcl, a.branch_logo, a.date, a.time,a.report_send_date  FROM branch a
+        $result = DB::select('SELECT a.branch_id,a.code,a.company_id, a.branch_name,c.country_name,d.city_name,a.branch_mobile,a.branch_email,a.branch_address, a.branch_ptcl, a.branch_logo, a.date, a.time,a.report_send_date, a.record_daily_stock FROM branch a
         INNER JOIN company b ON b.company_id = a.company_id
         INNER JOIN country c ON c.country_id = a.country_id
         INNER JOIN city d on d.city_id = a.city_id
