@@ -43,6 +43,14 @@
                     </select>
                 </div>
 
+                <div class="col-md-3">
+                    <label class="form-label small">Report Type</label>
+                    <select class="form-select select2-product" wire:model.live="type">
+                        <option selected value="productwise">Product Wise</option>
+                        <option value="consolidated">Consolidated</option>
+                    </select>
+                </div>
+
 
             </div>
         </div>
@@ -88,10 +96,25 @@
             </div>
         </div>
         <div class="card-body">
-            <table class="table table-bordered">
+            @if ($isGenerating)
+                <div class="text-center mt-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            @else
+                @if ($type == 'consolidated')
+                    @include('livewire.reports.stock-report-consolidated')
+                @else
+                    @include('livewire.reports.stock-report-productwise')
+                @endif
+            @endif
+            {{-- <table class="table table-bordered">
                 <thead>
                     <tr>
                         <th>Date</th>
+                        <th>Product Id</th>
+                        <th>Product</th>
                         <th>Reference No</th>
                         <th>Transaction Type</th>
                         <th>Quantity</th>
@@ -128,6 +151,8 @@
                         @endphp
                         <tr>
                             <td>{{ date('d M Y', strtotime($value->date)) }}</td>
+                            <td>{{ $value->product_name }}</td>
+                            <td>{{ $value->product_name }}</td>
                             <td>{{ $value->grn_id }}</td>
                             <td>{{ $value->narration }}</td>
                             <td>{{ preg_match('/Sales/', $value->narration) ? $value->qty ?? (1 / $value->weight_qty ?? 1) : $value->qty ?? 1 }}
@@ -157,7 +182,7 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
+            </table> --}}
         </div>
     </div>
 </div>
