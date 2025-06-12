@@ -4,16 +4,16 @@
 @section('navcompany','active')
 @section('content')
 
-<section class="panels-wells">
+<section class="panels-wells p-t-3">
 <div class="card">
 	<div class="card-header">
 		<h5 class="card-header-text">Add New Website</h5>
-	</div>      
+	</div>
     <div class="card-block">
 
 
     <form role="form" method="POST" action="{{ route('website.store') }}" enctype="multipart/form-data">
-		@csrf 
+		@csrf
 
 			<div class="form-group">
 				<label class="form-control-label">Company</label>
@@ -48,7 +48,7 @@
                     <input name="name" type="text" class="form-control" placeholder="Website Name" value="{{ old('name') }}" />
                     @error('name')
                      <div class="form-control-feedback text-danger">{{ $message }}</div>
-                    @enderror 
+                    @enderror
                 </div>
                 <div class="form-group">
                     <label class="control-label">Domain Name</label>
@@ -66,12 +66,12 @@
                 <div class="form-group">
                     <label class="control-label">WhatsApp</label>
                     <input type="text" class="form-control" name="whatsapp" placeholder="WhatsApp Number" value="{{ old('whatsapp') }}"/>
-                </div>                
+                </div>
 
 				<div class="form-group @error('logo') 'has-danger' @enderror ">
 				<a href="#">
 					<img id="preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
-				</a>					
+				</a>
 					<label for="logo" class="form-control-label">Logo</label></br>
 
 					<label for="logo" class="custom-file">
@@ -81,12 +81,12 @@
 					@error('logo')
 						<div class="form-control-feedback text-danger">{{ $message }}</div>
 					@enderror
-				</div> 
+				</div>
 
 				<div class="form-group @error('favicon') 'has-danger' @enderror ">
 				<a href="#">
 					<img id="fpreview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
-				</a>					
+				</a>
 					<label for="favicon" class="form-control-label">Favicon</label></br>
 
 					<label for="favicon" class="custom-file">
@@ -96,15 +96,15 @@
 					@error('favicon')
 						<div class="form-control-feedback text-danger">{{ $message }}</div>
 					@enderror
-				</div> 	
-				<a class="btn btn-danger m-r-2" href="{{ route('website.index') }}">Cancel</a>			               
+				</div>
+				<a class="btn btn-danger m-r-2" href="{{ route('website.index') }}">Cancel</a>
                 <button class="btn btn-primary position-right" type="submit">Submit</button>
-              </form> 
+              </form>
 
 
     </div>
-  </div>  
-	
+  </div>
+
 </section>
 @endsection
 
@@ -119,11 +119,11 @@
 	function readURL(input,id) {
 	  if (input.files && input.files[0]) {
 		var reader = new FileReader();
-		
+
 		reader.onload = function(e) {
 		  $('#'+id).attr('src', e.target.result);
 		}
-		
+
 		reader.readAsDataURL(input.files[0]);
 	  }
 	}
@@ -131,11 +131,11 @@
 	$("#logo").change(function() {
 	  readURL(this,'preview');
 	});
-	
+
 
 	$("#favicon").change(function() {
 	  readURL(this,'fpreview');
-	});	
+	});
 
 	// function clone_field(){
 	// 	console.log(count)
@@ -146,7 +146,7 @@
 	// 		alert("You can only select three at a time. "+count);
 	// 	}
 	// }
-	
+
 	// function social_clone_field(){
 	// 	console.log(count)
 	// 	if(count <3){
@@ -168,7 +168,7 @@
 
 
 	$("#btn_contact_create").on('click',function(){
-		
+
 		var type   = $("#contactype").val();
 		var number = $("#number").val();
 
@@ -176,7 +176,7 @@
            	   $("#alert_contact").text("both field is required");
            }else{
                //formData({id:webid,ctype:type,phone:number});
-          }       
+          }
 	})
 
 
@@ -199,11 +199,11 @@
 	}
 </script>
 
- 
+
 @endsection
 
 
 @section('css_code')
    <link rel="stylesheet" type="text/css" href="{{ asset('storage/css/wizardform.css') }}">
-   
+
 @endsection

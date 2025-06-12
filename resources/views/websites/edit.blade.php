@@ -3,15 +3,15 @@
 @section('breadcrumtitle','Edit Website')
 @section('navwebsite','active')
 @section('content')
-<section class="panels-wells">
+<section class="panels-wells p-t-3">
 <div class="card">
 	<div class="card-header">
 		<h5 class="card-header-text">Edit Website</h5>
-	</div>      
+	</div>
     <div class="card-block">
     <form method="POST" action="{{route('website.update',$website->id)}}" enctype="multipart/form-data">
-		@csrf  
-		@method("PUT")	
+		@csrf
+		@method("PUT")
 
             <div class="form-group">
 				<label class="form-control-label">Company</label>
@@ -31,7 +31,7 @@
 					@enderror
 				</div>
 
-			
+
 
                 <div class="form-group">
                     <label class="control-label">Website Name</label>
@@ -56,13 +56,13 @@
                 <div class="form-group">
                     <label class="control-label">WhatsApp</label>
                     <input type="text" class="form-control" name="whatsapp" placeholder="WhatsApp Number" value="{{ old('whatsapp') ? old('whatsapp') : $website->whatsapp }}"/>
-                </div>                
+                </div>
 
 				<div class="form-group @error('logo') 'has-danger' @enderror ">
 				<a href="javascript:void(0)">
 					@php $logo = $website->logo != "" ? 'website/'.$website->logo : 'placeholder.jpg' @endphp
 					<img id="preview" src="{{ asset('storage/images/'.$logo) }}" class="thumb-img img-fluid width-100" alt="{{ $website->logo == '' ? $website->logo : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
-				</a>					
+				</a>
 					<label for="logo" class="form-control-label">Logo</label></br>
 
 					<label for="logo" class="custom-file">
@@ -72,13 +72,13 @@
 					@error('logo')
 						<div class="form-control-feedback text-danger">{{ $message }}</div>
 					@enderror
-				</div> 
+				</div>
 
 				<div class="form-group @error('favicon') 'has-danger' @enderror ">
 				<a href="javascript:void(0)">
 					@php $favicon = $website->favicon != "" ? 'website/'.$website->favicon : 'placeholder.jpg' @endphp
 					<img id="fpreview" src="{{ asset('storage/images/'.$favicon) }}" class="thumb-img img-fluid width-100" alt="{{ $website->favicon == '' ? $website->favicon : 'placeholder.jpg' }}" style="width: 128px;height: 128px;">
-				</a>					
+				</a>
 					<label for="favicon" class="form-control-label">Favicon</label></br>
 
 					<label for="favicon" class="custom-file">
@@ -88,28 +88,28 @@
 					@error('favicon')
 						<div class="form-control-feedback text-danger">{{ $message }}</div>
 					@enderror
-				</div> 	
-				<a class="btn btn-danger m-r-2" href="{{ route('website.index') }}">Cancel</a>	
+				</div>
+				<a class="btn btn-danger m-r-2" href="{{ route('website.index') }}">Cancel</a>
 
-		       <button type="submit" class="btn btn-md btn-primary waves-effect waves-light f-right" > Update Website </button>       
+		       <button type="submit" class="btn btn-md btn-primary waves-effect waves-light f-right" > Update Website </button>
 	</form>
     </div>
-	
+
 </section>
 @endsection
 
 @section('scriptcode_three')
 <script type="text/javascript">
 	$(".select2").select2();
-	
+
 	function readURL(input,id) {
 	  if (input.files && input.files[0]) {
 		var reader = new FileReader();
-		
+
 		reader.onload = function(e) {
 		  $('#'+id).attr('src', e.target.result);
 		}
-		
+
 		reader.readAsDataURL(input.files[0]);
 	  }
 	}
