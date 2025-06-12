@@ -250,6 +250,25 @@ class WebsiteController extends Controller
         return redirect()->route("website.index");
     }
 
+     public function websiteToggleStatus(Request $request, $id)
+    {
+        $getRecord = WebsiteDetail::find($id);
+
+        if ($getRecord == null) {
+            Session::flash('error', 'Error! record not found! Server Issue!');
+            return redirect()->route("website.index");
+        }
+
+        $getRecord->status = $request->mode == 1 ? 1 : 0;
+
+        if ($getRecord->save()) {
+            Session::flash('success', 'Success!');
+        } else {
+            Session::flash('error', 'Error! this ' . $getRecord->name . ' website is not '.$request->mode == 1 ? 'active' : 'in-active'.'!');
+        }
+        return redirect()->route("website.index");
+    }
+
     // ======================================================================================
     //                  Website Slider Modules
     //=======================================================================================

@@ -84,6 +84,8 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::resource('website', WebsiteController::class)->except(['show']);
     Route::get('website/{mode?}', [WebsiteController::class, 'index'])->name('inactiveWebsitelists');
+    Route::post('website-toggle-status', [WebsiteController::class, 'websiteToggleStatus'])->name('websiteToggleStatus');
+
     // Route::get('website/{id}', function () {
     //    return redirect()->route('inactiveWebsitelists'); // ya koi bhi custom route
     // });

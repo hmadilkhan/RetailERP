@@ -48,8 +48,13 @@
 				  <td class="action-icon">
                     <div class="form-group m-r-2">
                       <label>
-                        <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }},'{{ addslashes($value->name) }}')" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
+                        <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }},'{{ addslashes($value->name) }}',{{ $value->status }})" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
                       </label>
+					<form action="{{ route('websiteToggleStatus') }}" method="post" id="websiteTogglestatusForm{{ $value->id }}">
+					    @csrf
+                        <input type="hidden" name="id" value="{{ $value->id }}">
+                        <input type="hidden" name="mode" id="websiteToggleStatusField{{ $value->id }}" value="{{ $value->status }}">
+					</form>
                     </div>
 					<a href="{{ route('website.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
 					{{-- <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ addslashes($value->company->name) }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
@@ -57,6 +62,8 @@
 					    @csrf
 					    @method('DELETE')
 					</form> --}}
+
+
 				  </td>
 				</tr>
              @endforeach
@@ -112,7 +119,7 @@
   function websiteMode(webId,webName,mode){
             swal({
                 title: 'Remove Website',
-                text:  'Are you sure '+mode == 1 ? 'Active' : 'In-Active'+' this '+webName+' website?',
+                text:  'Are you sure '+mode == 0 ? 'Active' : 'In-Active'+' this '+webName+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
@@ -122,7 +129,8 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                    //  $("#removeForm"+webId).submit();
+                     $("#websiteToggleStatusField"+webId).val(mode == 0 ? 1 : 0);
+                     $("#websiteTogglestatusForm"+webId).submit();
                 }else{
                     swal.close();
                 }
