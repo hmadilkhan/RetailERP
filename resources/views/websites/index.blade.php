@@ -117,10 +117,10 @@
     // }
 
   function websiteMode(webId,webName,mode){
-      let status = (mode == 0 ? 1 : 0);
+      let statusVal = (mode == 0 ? 1 : 0);
             swal({
                 title: 'Remove Website',
-                text:  'Are you sure '+status == 1 ? 'In-Active' : 'Active'+' this '+addslashes(webName)+' website?',
+                text:  'Are you sure '+statusVal == 1 ? 'In-Active' : 'Active'+' this '+addslashes(webName)+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
@@ -130,7 +130,7 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                     $("#websiteToggleStatusField"+webId).val(mode == 0 ? 1 : 0);
+                     $("#websiteToggleStatusField"+webId).val(statusVal);
                      $("#websiteTogglestatusForm"+webId).submit();
                 }else{
                     swal.close();
