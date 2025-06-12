@@ -119,7 +119,7 @@
   function websiteMode(webId,webName,mode){
             swal({
                 title: 'Remove Website',
-                text:  'Are you sure '+mode == 0 ? 'Active' : 'In-Active'+' this '+addslashes(webName)+' website?',
+                text:  'Are you sure '+mode == 1 ? 'In-Active' : 'Active'+' this '+addslashes(webName)+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
