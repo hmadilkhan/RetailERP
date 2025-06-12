@@ -42,7 +42,7 @@
 				  <td>{{$value->company->name}}</td>
 				  <td>{{$value->name}}</td>
 				  <td><a href="{{$value->url}}" target="_blank" class="btn btn-link"><i class="icofont icofont-link"></i> Go to Website</a></td>
-				  <td><label class="badge badge-{{ $value->status == 1 ? 'success' : 'muted'}}p-5">{{ $value->status == 1 ? 'Active' : 'In-Active' }}</label></td>
+				  <td><label class="badge badge-{{ $value->status == 1 ? 'success' : 'muted'}} text-dark p-5">{{ $value->status == 1 ? 'Active' : 'In-Active' }}</label></td>
 				  <td class="action-icon">
                     <div class="form-group">
                       <label>
