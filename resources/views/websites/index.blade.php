@@ -19,12 +19,12 @@
 
     <div class="card">
      <div class="card-header">
-         <h5 class="card-header-text">Websites</h5>
+         <h5 class="card-header-text">Websites {{($mode == 0 ? 'in-active lists' : 'active lists')}}</h5>
          <a href="{{route('website.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Website</a>
      </div>
        <div class="card-block">
            		<div class="col-md-12 m-t-3 m-b-2">
-		           <a href="{{($mode == 0  ? route('inactiveWebsitelists','in-active') :  route('inactiveWebsitelists'))}}"> <div class="captions">{{($mode == 0 ? 'In-Active Lists' : 'Active Lists')}}</div> </a>
+		           <a href="{{($mode == 0  ? route('inactiveWebsitelists','in-active') :  route('inactiveWebsitelists'))}}"> <div class="captions">{{($mode == 0 ? 'Show In-Active Lists' : 'Show Active Lists')}}</div> </a>
                 </div>
      <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
          <thead>
