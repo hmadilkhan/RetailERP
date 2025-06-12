@@ -24,7 +24,7 @@
      </div>
        <div class="card-block">
            		<div class="row">
-		           <a href="{{($mode == 0  ? route('inactiveWebsitelists','in-active') :  route('inactiveWebsitelists'))}}"> <div class="captions">{{($mode == 1 ? 'Active Lists' : 'In-Active Lists')}}</div> </a>
+		           <a href="{{($mode == 0  ? route('inactiveWebsitelists','in-active') :  route('inactiveWebsitelists'))}}"> <div class="captions">{{($mode == 0 ? 'In-Active Lists' : 'Active Lists')}}</div> </a>
                 </div>
      <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
          <thead>
