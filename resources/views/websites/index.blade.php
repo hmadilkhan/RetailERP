@@ -21,9 +21,11 @@
      <div class="card-header">
          <h5 class="card-header-text">Websites</h5>
          <a href="{{route('website.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Website</a>
-         </div>
+     </div>
        <div class="card-block">
-
+           		<div class="row">
+		           <a href="{{($mode == 0  ? route('inactiveWebsitelists','in-active') :  route('inactiveWebsitelists'))}}"> <div class="captions">{{($mode == 1 ? 'Active Lists' : 'In-Active Lists')}}</div> </a>
+                </div>
      <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%"  cellspacing="0">
          <thead>
             <tr>
@@ -46,15 +48,15 @@
 				  <td class="action-icon">
                     <div class="form-group m-r-2">
                       <label>
-                        <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }})" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
+                        <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }},'{{ addslashes($value->name) }}')" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
                       </label>
                     </div>
 					<a href="{{ route('website.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
-					<i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ addslashes($value->company->name) }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
+					{{-- <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm" onclick="remove({{ $value->id }},'{{ addslashes($value->company->name) }}')" data-id="{{ $value->id }}" data-toggle="tooltip" data-placement="top" title="" data-original-title="Delete"></i>
 					<form action="{{ route('website.destroy',$value->id) }}" method="post" id="removeForm{{ $value->id }}">
 					    @csrf
 					    @method('DELETE')
-					</form>
+					</form> --}}
 				  </td>
 				</tr>
              @endforeach
@@ -87,10 +89,30 @@
 
     });
 
-    function remove(webId,webName){
+    // function remove(webId,webName){
+    //         swal({
+    //             title: 'Remove Website',
+    //             text:  'Are you sure remove this '+webName+' website?',
+    //             type: "warning",
+    //             showCancelButton: true,
+    //             confirmButtonClass: 'btn btn-danger',
+    //             confirmButtonText: "YES",
+    //             cancelButtonText: "NO",
+    //             closeOnConfirm: false,
+    //             closeOnCancel: false
+    //         },function(isConfirm){
+    //             if(isConfirm){
+    //                  $("#removeForm"+webId).submit();
+    //             }else{
+    //                 swal.close();
+    //             }
+    //         });
+    // }
+
+  function websiteMode(webId,webName,mode){
             swal({
                 title: 'Remove Website',
-                text:  'Are you sure remove slider from '+webName+' website?',
+                text:  'Are you sure '+mode == 1 ? 'Active' : 'In-Active'+' this '+webName+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
@@ -100,11 +122,11 @@
                 closeOnCancel: false
             },function(isConfirm){
                 if(isConfirm){
-                     $("#removeForm"+webId).submit();
+                    //  $("#removeForm"+webId).submit();
                 }else{
                     swal.close();
                 }
             });
-    }
+  }
 </script>
 @endsection

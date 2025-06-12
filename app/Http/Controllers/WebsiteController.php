@@ -34,6 +34,7 @@ class WebsiteController extends Controller
 
         return view("websites.index", [
             "websites" => $getRecord,
+            "mode"     => isset($request->mode) ? 0 : 1
         ]);
     }
 
