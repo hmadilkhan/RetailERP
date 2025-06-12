@@ -14,7 +14,7 @@
                 <div class="form-group">
                     <div class="card">
                         <div class="card-header">
-                            <h5 class="card-header-text">Sub Department List</h5>
+                            <h5 class="card-header-text">Department Lists</h5>
                             <a href="{{ route('departmentCreate') }}" data-toggle="tooltip" data-placement="bottom"
                                 title="" data-original-title="Create Department"
                                 class="btn btn-success waves-effect waves-light f-right d-inline-block m-r-10">
