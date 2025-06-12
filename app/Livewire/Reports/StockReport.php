@@ -8,6 +8,12 @@ use App\Models\InventoryStockReport;
 use App\Models\InventorySubDepartment;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\StockReportProductwiseExport;
+use App\Exports\StockReportConsolidatedExport;
 
 class StockReport extends Component
 {
@@ -50,34 +56,6 @@ class StockReport extends Component
     {
         $this->isGenerating = true;
 
-        // Select a.stock_report_id,a.date,a.product_id,a.foreign_id,a.branch_id,SUM(a.qty),SUM(a.stock),b.weight_qty,c.grn_id,e.fullname,a.narration from inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id LEFT JOIN inventory_stock c on c.stock_id = a.foreign_id and a.adjustment_mode != "NULL" LEFT JOIN purchase_rec_gen d on d.rec_id = c.grn_id LEFT JOIN user_details e on e.id = d.user_id where DATE(a.date) between "2025-05-01" and "2025-05-31" group by a.narration,a.product_id;
-
-
-        // $query = DB::table('inventory_stock_report_table as a')
-        //     ->select([
-        //         'a.stock_report_id',
-        //         'a.date',
-        //         'a.product_id',
-        //         'a.foreign_id',
-        //         'a.branch_id',
-        //         DB::raw('SUM(a.qty) as qty'),
-        //         DB::raw('SUM(a.stock) as stock'),
-        //         'b.weight_qty',
-        //         'c.grn_id',
-        //         'e.fullname',
-        //         'a.narration'
-        //     ])
-        //     ->join('inventory_general as b', 'b.id', '=', 'a.product_id')
-        //     ->leftJoin('inventory_stock as c', function ($join) {
-        //         $join->on('c.stock_id', '=', 'a.foreign_id')
-        //             ->where('a.adjustment_mode', '!=', 'NULL');
-        //     })
-        //     ->leftJoin('purchase_rec_gen as d', 'd.rec_id', '=', 'c.grn_id')
-        //     ->leftJoin('user_details as e', 'e.id', '=', 'd.user_id')
-        //     ->whereBetween(DB::raw('DATE(a.date)'), ['2025-05-01', '2025-05-31'])
-        //     ->groupBy('a.narration', 'a.product_id')
-        //     ->get();
-
         $query = InventoryStockReport::query();
 
         if ($this->type == 'productwise') {
@@ -90,13 +68,7 @@ class StockReport extends Component
                 'inventory_stock_report_table.foreign_id',
                 'inventory_stock_report_table.branch_id',
                 'inventory_stock_report_table.narration',
-                // DB::raw('SUM(inventory_stock_report_table.qty) as qty'),
-                // DB::raw('SUM(inventory_stock_report_table.stock) as stock'),
-                DB::raw('SUM(CASE WHEN inventory_stock_report_table.narration = "Stock Opening" THEN inventory_stock_report_table.qty ELSE 0 END) as opening_stock'),
-                DB::raw('SUM(CASE WHEN inventory_stock_report_table.narration = "Sales" THEN inventory_stock_report_table.qty ELSE 0 END) as sales'),
-                DB::raw('SUM(CASE WHEN inventory_stock_report_table.narration = "Stock Return" THEN inventory_stock_report_table.qty ELSE 0 END) as stock_return'),
-                DB::raw('SUM(CASE WHEN inventory_stock_report_table.narration = "Stock Purchase" THEN inventory_stock_report_table.qty ELSE 0 END) as stock_purchase'),
-                DB::raw('SUM(inventory_stock_report_table.stock) as closing_stock'),
+                DB::raw('SUM(inventory_stock_report_table.qty) as qty'),
                 'inventory_general.weight_qty',
                 'inventory_general.product_name',
                 'inventory_stock.grn_id',
@@ -111,6 +83,7 @@ class StockReport extends Component
             })
             ->leftJoin('purchase_rec_gen', 'purchase_rec_gen.rec_id', '=', 'inventory_stock.grn_id')
             ->leftJoin('user_details', 'user_details.id', '=', 'purchase_rec_gen.user_id');
+
         if ($this->type == 'productwise') {
             $query->where('inventory_stock_report_table.product_id', $this->product);
         }
@@ -120,13 +93,157 @@ class StockReport extends Component
         if ($this->type == 'consolidated') {
             $query->groupBy('inventory_stock_report_table.narration', 'inventory_stock_report_table.product_id','inventory_general.product_name');
         }
-
+ 
         $this->results = $query->get();
-        // dd($query->getBindings());
-        // dd($this->results);
+
         $this->isGenerating = false;
     }
 
+    public function exportToExcel()
+    {
+        $this->isGenerating = true;
+
+        try {
+            $fileName = $this->type == 'productwise' ? 'Stock_Report_Productwise' : 'Stock_Report_Consolidated';
+            $fileName .= '_' . date('Y-m-d') . '.xlsx';
+
+            $exportClass = $this->type == 'productwise' 
+                ? new StockReportProductwiseExport($this->results)
+                : new StockReportConsolidatedExport($this->products,$this->results);
+
+            return Excel::download($exportClass, $fileName);
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error exporting to Excel: ' . $e->getMessage());
+        } finally {
+            $this->isGenerating = false;
+        }
+    }
+
+    public function exportToPdf()
+    {
+        $this->isGenerating = true;
+
+        try {
+            $company = \App\Models\Company::where('company_id', session('company_id'))->first();
+            $branchname = "";
+
+            if ($this->branch) {
+                $branch = \App\Models\Branch::where("branch_id", $this->branch)->first();
+                $branchname = " (" . $branch->branch_name . ") ";
+            } else {
+                $branchname = " (All Branches)";
+            }
+
+            // Initialize MPDF with RTL and Unicode support
+            $mpdf = new \Mpdf\Mpdf([
+                'mode' => 'utf-8',
+                'format' => 'A4',
+                'default_font' => 'jameel-noori-nastaleeq',
+                'default_font_size' => 12,
+                'margin_left' => 15,
+                'margin_right' => 15,
+                'margin_top' => 15,
+                'margin_bottom' => 15,
+                'margin_header' => 10,
+                'margin_footer' => 10,
+                'direction' => 'rtl'
+            ]);
+
+            // Add custom Urdu font
+            $mpdf->fontdata['jameel-noori-nastaleeq'] = [
+                'R' => 'Jameel-Noori-Nastaleeq.ttf',
+                'useOTL' => 0xFF,
+            ];
+
+            // Start building HTML content
+            $html = '
+            <html dir="rtl">
+            <head>
+                <style>
+                    body { font-family: jameel-noori-nastaleeq, Arial, sans-serif; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                    th { background-color: #000000; color: #FFFFFF; padding: 8px; text-align: right; }
+                    td { padding: 8px; border-bottom: 1px solid #ddd; text-align: right; }
+                    .header { text-align: center; margin-bottom: 20px; }
+                    .total-row { background-color: #000000; color: #FFFFFF; font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <div class="header">
+                    <h2>' . $company->name . ' - Stock Report' . $branchname . '</h2>
+                    <p>From: ' . date('d M Y', strtotime($this->dateFrom)) . ' To: ' . date('d M Y', strtotime($this->dateTo)) . '</p>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Product Name</th>
+                            <th>Reference No</th>
+                            <th>Transaction Type</th>
+                            <th>Quantity</th>
+                            <th>Stock Balance</th>
+                            <th>User</th>
+                        </tr>
+                    </thead>
+                    <tbody>';
+
+            $stock = 0;
+            foreach ($this->results as $row) {
+                // Calculate stock balance
+                if ($row->narration == 'Stock Opening') {
+                    $stock = (float) $row->stock;
+                } elseif ($row->narration == 'Sales') {
+                    $stock = $stock - (preg_match('/Sales/', $row->narration) ? (float) $row->qty ?? (1 / $row->weight_qty ?? 1) : (float) $row->qty ?? 1);
+                } elseif ($row->narration == 'Sales Return') {
+                    $stock = (float) $stock + (float) $row->qty;
+                } elseif ($row->narration == 'Stock Purchase through Purchase Order') {
+                    $stock = (float) $stock + (float) $row->qty;
+                } elseif ($row->narration == 'Stock Opening from csv file') {
+                    $stock = (float) $stock + (float) $row->qty;
+                } elseif ($row->narration == 'Stock Return') {
+                    $stock = (float) $stock - (float) $row->qty;
+                } elseif (preg_match('/Stock Adjustment/', $row->narration)) {
+                    $stock = (float) $stock + (float) $row->qty;
+                }
+
+                $html .= sprintf(
+                    '<tr>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                        <td>%s</td>
+                    </tr>',
+                    date('d M Y', strtotime($row->date)),
+                    $row->product_name,
+                    $row->grn_id ?? 'N/A',
+                    $row->narration,
+                    preg_match('/Sales/', $row->narration) ? $row->qty ?? (1 / $row->weight_qty ?? 1) : $row->qty ?? 1,
+                    number_format($stock, 2),
+                    $row->fullname ?? 'N/A'
+                );
+            }
+
+            $html .= '</tbody></table></body></html>';
+
+            // Write HTML to PDF
+            $mpdf->WriteHTML($html);
+
+            $this->isGenerating = false;
+
+            // Output PDF
+            return response()->streamDownload(function() use ($mpdf) {
+                $mpdf->Output('Stock_Report.pdf', 'I');
+            }, 'Stock_Report.pdf');
+
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error exporting to PDF: ' . $e->getMessage());
+            $this->isGenerating = false;
+        }
+    }
+    
 
     public function render()
     {

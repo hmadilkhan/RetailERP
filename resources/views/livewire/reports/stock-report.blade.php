@@ -71,118 +71,19 @@
             </div>
         </div>
     </div>
-    <!-- Table -->
-    <div class="card">
-        <div class="card-header d-flex justify-content-end">
-            <div class="d-flex gap-2">
-                <button class="btn btn-danger px-4" type="button" wire:click="exportToPdf"
-                    {{ empty($results) ? 'disabled' : '' }} @if ($isGenerating) disabled @endif>
-                    @if ($isGenerating)
-                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Exporting...
-                    @else
-                        Export to PDF
-                    @endif
-                </button>
-                <button class="btn btn-success px-4" type="button" wire:click="exportToExcel"
-                    {{ empty($results) ? 'disabled' : '' }} @if ($isGenerating) disabled @endif>
-                    @if ($isGenerating)
-                        <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                        Exporting...
-                    @else
-                        Export to Excel
-                    @endif
-                </button>
+
+    @if ($isGenerating)
+        <div class="text-center mt-3">
+            <div class="spinner-border text-primary" role="status">
+                <span class="sr-only">Loading...</span>
             </div>
         </div>
-        <div class="card-body">
-            @if ($isGenerating)
-                <div class="text-center mt-3">
-                    <div class="spinner-border text-primary" role="status">
-                        <span class="sr-only">Loading...</span>
-                    </div>
-                </div>
-            @else
-                @if ($type == 'consolidated')
-                    @include('livewire.reports.stock-report-consolidated')
-                @else
-                    @include('livewire.reports.stock-report-productwise')
-                @endif
-            @endif
-            {{-- <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Product Id</th>
-                        <th>Product</th>
-                        <th>Reference No</th>
-                        <th>Transaction Type</th>
-                        <th>Quantity</th>
-                        <th>Stock Balance</th>
-                        <th>User</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        $stock = 0;
-                    @endphp
-                    @foreach ($results as $value)
-                        @php
-                            if ($value->narration == 'Stock Opening') {
-                                $stock = (float) $value->stock;
-                            } elseif ($value->narration == 'Sales') {
-                                $stock =
-                                    $stock -
-                                    (preg_match('/Sales/', $value->narration)
-                                        ? (float) $value->qty ?? (1 / $value->weight_qty ?? 1)
-                                        : (float) $value->qty ?? 1);
-                            } elseif ($value->narration == 'Sales Return') {
-                                $stock = (float) $stock + (float) $value->qty;
-                            } elseif ($value->narration == 'Stock Purchase through Purchase Order') {
-                                $stock = (float) $stock + (float) $value->qty;
-                            } elseif ($value->narration == 'Stock Opening from csv file') {
-                                $stock = (float) $stock + (float) $value->qty;
-                            } elseif ($value->narration == 'Stock Return') {
-                                $stock = (float) $stock - (float) $value->qty;
-                            } elseif (preg_match('/Stock Adjustment/', $value->narration)) {
-                                $stock = (float) $stock + (float) $value->qty;
-                            }
-                        @endphp
-                        <tr>
-                            <td>{{ date('d M Y', strtotime($value->date)) }}</td>
-                            <td>{{ $value->product_name }}</td>
-                            <td>{{ $value->product_name }}</td>
-                            <td>{{ $value->grn_id }}</td>
-                            <td>{{ $value->narration }}</td>
-                            <td>{{ preg_match('/Sales/', $value->narration) ? $value->qty ?? (1 / $value->weight_qty ?? 1) : $value->qty ?? 1 }}
-                            </td>
-                            <td>{{ number_format($stock, 2) }}</td>
-                            <td>{{ $value->fullname }}</td>
-                            <td>
-                                @if (preg_match('/Purchase/', $value->narration) && $value->adjustment_mode == '')
-                                    <a href="{{ route('view', $value->foreign_id) }}" class="p-r-10 f-18 text-info"
-                                        data-toggle="tooltip" data-placement="top" title="View">
-                                        <i class="icofont icofont-printer text-success"></i>
-                                    </a>
-                                @elseif(preg_match('/Sales Return/', $value->narration))
-                                    <a href="{{ url('sales-return', $value->foreign_id) }}"
-                                        class="p-r-10 f-18 text-info" data-toggle="tooltip" data-placement="top"
-                                        title="View">
-                                        <i class="icofont icofont-printer text-success"></i>
-                                    </a>
-                                @elseif(preg_match('/Sales/', $value->narration))
-                                    <a href="{{ url('print', Custom_Helper::getReceiptID($value->foreign_id)) }}"
-                                        class="p-r-10 f-18 text-info" data-toggle="tooltip" data-placement="top"
-                                        title="View">
-                                        <i class="icofont icofont-printer text-success"></i>
-                                    </a>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table> --}}
-        </div>
-    </div>
+    @else
+        @if ($type == 'consolidated')
+            @include('livewire.reports.stock-report-consolidated')
+        @else
+            @include('livewire.reports.stock-report-productwise')
+        @endif
+    @endif
+</div>
 </div>
