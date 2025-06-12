@@ -42,7 +42,7 @@
 				  <td>{{$value->company->name}}</td>
 				  <td>{{$value->name}}</td>
 				  <td><a href="{{$value->url}}" target="_blank" class="btn btn-link"><i class="icofont icofont-link"></i> Go to Website</a></td>
-				  <td><label class="badge badge-{{ $value->status == 1 ? 'success' : 'muted'}} text-dark p-5">{{ $value->status == 1 ? 'Active' : 'In-Active' }}</label></td>
+				  <td><label class="label label-{{ $value->status == 1 ? 'success' : 'default'}} text-dark p-5">{{ $value->status == 1 ? 'Active' : 'In-Active' }}</label></td>
 				  <td class="action-icon">
                     <div class="form-group">
                       <label>
@@ -65,7 +65,13 @@
 </section>
 @endsection
 
+@section('scriptcode_one')
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+@endsection
+
 @section('scriptcode_three')
+ <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
 <script type="text/javascript">
 	$('.table').DataTable({
 
