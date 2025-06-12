@@ -7,7 +7,7 @@
 @section('navwebsite','active')
 
 @section('content')
-<section class="panels-wells m-t-30">
+<section class="panels-wells p-t-3">
 
     @if(Session::has('error'))
          <div class="alert alert-danger">{{ Session::get('error') }}</div>
