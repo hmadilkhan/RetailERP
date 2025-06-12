@@ -184,7 +184,7 @@
                     <label class="form-control-label">Is Open Branch</label>
                     <br/>
                     <label>
-                      <input id="is_open_md" name="is_open_md" type="checkbox" data-toggle="toggle" data-size="min">
+                      <input id="is_open_md" name="is_open_md" type="checkbox" data-toggle="toggle" data-size="mini" data-width="20" data-height="20">
                     </label>
                 </div>
              </div>
