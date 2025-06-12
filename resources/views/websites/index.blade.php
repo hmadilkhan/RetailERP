@@ -44,7 +44,7 @@
 				  <td><a href="{{$value->url}}" target="_blank" class="btn btn-link"><i class="icofont icofont-link"></i> Go to Website</a></td>
 				  <td><label class="label label-{{ $value->status == 1 ? 'success' : 'default'}} text-dark p-5">{{ $value->status == 1 ? 'Active' : 'In-Active' }}</label></td>
 				  <td class="action-icon">
-                    <div class="form-group">
+                    <div class="form-group m-r-2">
                       <label>
                         <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }})" data-toggle="toggle" data-size="mini" {{ $value->status == 1 ? 'checked' : '' }}>
                       </label>
