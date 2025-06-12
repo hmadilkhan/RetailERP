@@ -53,7 +53,7 @@
 					<form action="{{ route('websiteToggleStatus') }}" method="post" id="websiteTogglestatusForm{{ $value->id }}">
 					    @csrf
                         <input type="hidden" name="id" value="{{ $value->id }}">
-                        <input type="hidden" name="mode" id="websiteToggleStatusField{{ $value->id }}" value="{{ $value->status }}">
+                        <input type="hidden" name="mode" id="websiteToggleStatusField{{ $value->id }}">
 					</form>
                     </div>
 					<a href="{{ route('website.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
