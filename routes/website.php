@@ -82,7 +82,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::delete('customer-review/{id}/delete', [WebsiteController::class, 'destroyCustomer_review'])->name('destroyCustomer_review');
    });
 
-    Route::resource('website', WebsiteController::class);
+    Route::resource('website', WebsiteController::class)->except(['show']);
     Route::get('website/{mode?}', [WebsiteController::class, 'index'])->name('inactiveWebsitelists');
     Route::get('website/{id}', function () {
        return redirect()->route('inactiveWebsitelists'); // ya koi bhi custom route
