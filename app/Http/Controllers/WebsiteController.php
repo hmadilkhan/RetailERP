@@ -32,6 +32,8 @@ class WebsiteController extends Controller
            // Apply filter only if mode is set in the request
            if(isset($request->mode)){
                  $getRecord = $getRecord->where('status','=',0);
+           }else{
+                 $getRecord = $getRecord->where('status','=',1);
            }
 
            // Execute the query
