@@ -250,9 +250,9 @@ class WebsiteController extends Controller
         return redirect()->route("website.index");
     }
 
-     public function websiteToggleStatus(Request $request, $id)
+     public function websiteToggleStatus(Request $request)
     {
-        $getRecord = WebsiteDetail::find($id);
+        $getRecord = WebsiteDetail::find($request->id);
 
         if ($getRecord == null) {
             Session::flash('error', 'Error! record not found! Server Issue!');
