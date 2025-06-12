@@ -26,8 +26,14 @@ class WebsiteController extends Controller
 
     public function index(Request $request)
     {
+           $getRecord = WebsiteDetail::with("company")->get();
+
+           if(isset($request->mode)){
+                 $getRecord = $getRecord->where('website_details.status','=',0);
+           }
+
         return view("websites.index", [
-            "websites" => WebsiteDetail::with("company")->get(),
+            "websites" => $getRecord,
         ]);
     }
 

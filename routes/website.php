@@ -83,5 +83,6 @@ Route::middleware(['statusCheck'])->group(function () {
    });
 
     Route::resource('website', WebsiteController::class);
+    Route::get('website/{mode?}', [WebsiteController::class, 'index'])->name('inactiveWebsitelists');
     /******************************* website panel route closing **********************************/
 });
