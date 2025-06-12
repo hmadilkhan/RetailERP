@@ -119,7 +119,7 @@
   function websiteMode(webId,webName,mode){
             swal({
                 title: 'Remove Website',
-                text:  'Are you sure '+mode == 0 ? 'Active' : 'In-Active'+' this '+webName+' website?',
+                text:  'Are you sure '+mode == 0 ? 'Active' : 'In-Active'+' this '+addslashes(webName)+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
@@ -136,5 +136,12 @@
                 }
             });
   }
+
+function addslashes(str) {
+    return str.replace(/\\/g, '\\\\')  // Escape backslashes
+              .replace(/'/g, '\\\'')    // Escape single quotes
+              .replace(/"/g, '\\"')     // Escape double quotes
+              .replace(/\0/g, '\\0');   // Escape null byte
+}
 </script>
 @endsection
