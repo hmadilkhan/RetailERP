@@ -19,7 +19,7 @@
 
     <div class="card">
      <div class="card-header">
-         <h5 class="card-header-text">Websites {{($mode == 0 ? 'in-active lists' : 'active lists')}}</h5>
+         <h5 class="card-header-text">Websites {{($mode == 1 ? 'in-active lists' : 'active lists')}}</h5>
          <a href="{{route('website.create')}}" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i class="icofont icofont-plus f-18 m-r-5"></i>Create Website</a>
      </div>
        <div class="card-block">
