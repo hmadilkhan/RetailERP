@@ -26,11 +26,16 @@ class WebsiteController extends Controller
 
     public function index(Request $request)
     {
-           $getRecord = WebsiteDetail::with("company")->get();
+           // Start building the query
+           $getRecord = WebsiteDetail::with("company");
 
+           // Apply filter only if mode is set in the request
            if(isset($request->mode)){
                  $getRecord = $getRecord->where('status','=',0);
            }
+
+           // Execute the query
+           $getRecord = $getRecord->get();
 
         return view("websites.index", [
             "websites" => $getRecord,
