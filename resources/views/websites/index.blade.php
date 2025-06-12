@@ -117,9 +117,10 @@
     // }
 
   function websiteMode(webId,webName,mode){
+      let status = (mode == 0 ? 1 : 0);
             swal({
                 title: 'Remove Website',
-                text:  'Are you sure '+mode == 1 ? 'In-Active' : 'Active'+' this '+addslashes(webName)+' website?',
+                text:  'Are you sure '+status == 1 ? 'In-Active' : 'Active'+' this '+addslashes(webName)+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
