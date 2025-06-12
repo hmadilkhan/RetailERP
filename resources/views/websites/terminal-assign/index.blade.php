@@ -65,14 +65,14 @@
                         </div>
                     </div>
                     <div class="col-md-3">
-                        <div class="form-group"> 
+                        <div class="form-group">
                            <label>Is Open Branch</label>
                            <br/>
                          <label>
                             <input id="is_open" name="is_open" type="checkbox" data-toggle="toggle" data-size="mini" {{ old('is_open') ? 'checked' : '' }}>
-                          </label> 
+                          </label>
                         </div>
-                    </div>    
+                    </div>
                 </div>
                 <button class="btn btn-primary m-l-1 m-t-1 f-right" type="submit">Create</button>
             </form>
@@ -114,17 +114,17 @@
                         <td id="cell_branch{{ $assign->id }}" data-value="{{ $assign->branch_id }}">{{$assign->branch_name}}</td>
                         <td id="cell_terminal{{ $assign->id }}" data-value="{{ $assign->terminal_id }}">{{ '('.$assign->terminal_id.')  '.$assign->terminal_name }}</td>
                         <td id="cell_isOpen{{ $assign->id }}" data-value="{{ $assign->is_open }}">
-                          <div class="form-group">    
+                          <div class="form-group">
                               <label>
                                 <input type="checkbox" id="branchStatus-{{ $assign->id }}" onchange="branchIsOpen({{ $assign->id }})" data-toggle="toggle" data-size="mini" {{ $assign->is_open == 1 ? 'checked' : '' }}>
-                              </label> 
-                         </div> 
+                              </label>
+                         </div>
                         </td>
                         <td>
                             <!--<a href="javascript:void(0)" onclick="edit({{-- $assign->id --}})" class="m-r-1"><i class="icofont icofont-ui-edit text-warning f-18" data-toggle="tooltip" data-placement="top" data-original-title="Edit"></i></a>-->
 
                             <a href="javascript:void(0)" onclick="edit({{ $assign->id }},'{{$assign->name}}')" class="m-r-1"><i class="icofont icofont-ui-edit text-warning f-18" data-toggle="tooltip" data-placement="top" data-original-title="Edit"></i></a>
-                            
+
                             <i class="icofont icofont-ui-delete text-danger f-18 alert-confirm pointer p-l-4" data-toggle="tooltip" data-placement="top" data-original-title="Delete" onclick="swalModal('{{ $assign->id }}')"></i>
                         </td>
                     </tr>
@@ -146,13 +146,13 @@
                         </button>
                 <h4 class="modal-title">Edit Assign Terminal</h4>
              </div>
-            <form id="editFormTerminalBind" method="post"> 
+            <form id="editFormTerminalBind" method="post">
              @csrf
              <div class="modal-body">
                  <input type="hidden" id="id_md" name="id">
                  <!--<input type="hidden" id="oldTerminal" name="oldTerminal">-->
                  <input type="hidden" name="mode" value="0">
-                 
+
                 <div class="form-group">
                     <label class="form-control-label">Website</label>
                     <select name="website_md" id="website_md" data-placeholder="Select" class="form-control select2">
@@ -164,8 +164,8 @@
                         @endif
                     </select>
                     <div class="form-control-feedback text-danger" id="website_md_alert"></div>
-                </div>                 
-                 
+                </div>
+
                 <div class="form-group">
                     <label class="form-control-label">Branch</label>
                     <select name="branch_md" id="branch_md" data-placeholder="Select" class="form-control select2">
@@ -184,7 +184,7 @@
                     <label class="form-control-label">Is Open Branch</label>
                     <br/>
                     <label>
-                      <input id="is_open_md" name="is_open_md" type="checkbox" data-toggle="toggle" data-size="large">
+                      <input id="is_open_md" name="is_open_md" type="checkbox" data-toggle="toggle" data-size="min">
                     </label>
                 </div>
              </div>
@@ -192,10 +192,10 @@
                  <button type="button" class="btn btn-default waves-effect waves-light m-r-2" data-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-success waves-effect waves-light" id="btn_update">Save Changes</button>
              </div>
-            </form> 
+            </form>
            </div>
           </div>
-        </div> 
+        </div>
 
 @endsection
 
@@ -204,7 +204,7 @@
 @endsection
 
 @section('scriptcode_three')
- <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
+ <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 <script type="text/javascript">
     $(".select2").select2();
 
@@ -220,81 +220,81 @@
     });
 
 	loadBranchesDropdown();
-	
+
 	@if(old('branch'))
 	   $("#branch").val('{{ old('branch') }}').trigger('change');
 	@endif
-	
+
 	@if(old('terminal'))
 	   $("#terminal").val('{{ old('terminal') }}').trigger('change');
-	@endif	
-	
+	@endif
+
 
     $("#branch").on('change', function() {
         loadTerminalsDropdown($(this).val(),'terminal','');
     });
-    
+
     $("#branch_md").on('change', function() {
         loadTerminalsDropdown($(this).val(),'terminal_md','');
-    }); 
+    });
 
     // $("#terminal_md").on('change', function() {
     //     $("#oldTerminal").val($(this).val());
-    // });     
-     
-    
+    // });
+
+
     function edit(id,webName){
        $("#editModal").modal('show');
-       
+
        $("#id_md").val(id);
-       
+
     //   $("#website_name_md").text(webName);
-       
+
        if($("#branchStatus-"+id).is(':checked')){
-       
+
           $("#is_open_md").trigger('click');
         //  $("#is_open_md").attr('checked',true);
-       }       
-       
+       }
+
        $("#website_md").val($("#cell_website"+id).attr('data-value')).trigger('change');
        $("#branch_md").val($("#cell_branch"+id).attr('data-value')).trigger('change');
 
-    setTimeout(function() { 
+    setTimeout(function() {
        loadTerminalsDropdown($("#cell_branch"+id).attr('data-value'),'terminal_md',$("#cell_terminal"+id).attr('data-value'));
-    },550);       
-       
+    },550);
+
     //   $("#terminal_md").val().trigger('change');
     }
-    
+
     $("#btn_update").on('click',function(){
         var process = true;
-        
+
         if($("#website_md").val() == ''){
             $("#website_md").focus();
-            process = false;  
+            process = false;
         }
-        
+
         if($("#branch_md").val() == ''){
             $("#branch_md").focus();
-            process = false;  
-        }  
-        
+            process = false;
+        }
+
         if($("#terminal_md").val() == ''){
             $("#terminal_md").focus();
-            process = false;  
-        }   
-        
+            process = false;
+        }
+
         if(process){
-            updateTerminalBind();  
-        }        
+            updateTerminalBind();
+        }
     });
-    
+
     function branchIsOpen(rId){
-      var value = 0;    
-      if($("#branchStatus-"+rId).is(":checked")){  
+      var value = 0;
+      if($("#branchStatus-"+rId).is(":checked")){
          value = 1;
       }
-      
+
         $.ajax({
             url: '{{ route("terminalAssignUpdate") }}',
             type: 'POST',
@@ -308,11 +308,11 @@
                     swal('Error!',resp, 'error');
                 }
             }
-        });       
+        });
     }
-    
+
     function updateTerminalBind(){
-        
+
         $.ajax({
             url: '{{ route("terminalAssignUpdate") }}',
             type: 'POST',
@@ -326,7 +326,7 @@
                     swal('Error!',resp.msg,'error');
                 }
             }
-        });        
+        });
     }
 
     function loadBranchesDropdown() {
@@ -367,13 +367,13 @@
                     $("#"+element).append("<option value=''>Select<option>")
                     $.each(resp, function(i, v) {
                         // if(selectedValue != ''){
-                            
-                        //   $("#"+element).append("<option "+(v.terminal_id == selectedValue ? 'selected' : '')+" value='" + v.terminal_id + "'>" + v.terminal_name + "<option>"); 
+
+                        //   $("#"+element).append("<option "+(v.terminal_id == selectedValue ? 'selected' : '')+" value='" + v.terminal_id + "'>" + v.terminal_name + "<option>");
                         // }else{
                            $("#"+element).append("<option value='" + v.terminal_id + "'>" + v.terminal_name + "<option>");
                         // }
                     })
-                    
+
                     $("#"+element).val(selectedValue).trigger('change');
                 }
             }
