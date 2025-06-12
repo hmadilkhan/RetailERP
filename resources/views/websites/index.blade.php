@@ -46,7 +46,7 @@
 				  <td class="action-icon">
                     <div class="form-group m-r-2" style="height:20px;width:20px;">
                       <label>
-                        <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }})" data-toggle="toggle" data-size="mini" {{ $value->status == 1 ? 'checked' : '' }}>
+                        <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }})" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
                       </label>
                     </div>
 					<a href="{{ route('website.edit',$value->id) }}" class="p-r-10 f-18 text-warning" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
