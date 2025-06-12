@@ -84,5 +84,8 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::resource('website', WebsiteController::class);
     Route::get('website/{mode?}', [WebsiteController::class, 'index'])->name('inactiveWebsitelists');
+    Route::get('website/{id}', function () {
+       return redirect()->route('inactiveWebsitelists'); // ya koi bhi custom route
+    });
     /******************************* website panel route closing **********************************/
 });
