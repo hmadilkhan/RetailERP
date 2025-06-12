@@ -29,7 +29,7 @@ class WebsiteController extends Controller
            $getRecord = WebsiteDetail::with("company")->get();
 
            if(isset($request->mode)){
-                 $getRecord = $getRecord->where('website_details.status','=',0);
+                 $getRecord = $getRecord->where('status','=',0);
            }
 
         return view("websites.index", [
