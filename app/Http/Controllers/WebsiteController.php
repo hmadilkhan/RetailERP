@@ -27,7 +27,7 @@ class WebsiteController extends Controller
     public function index(Request $request)
     {
         return view("websites.index", [
-            "websites" => WebsiteDetail::with("company")->where('status', 1)->get(),
+            "websites" => WebsiteDetail::with("company")->get(),
         ]);
     }
 
