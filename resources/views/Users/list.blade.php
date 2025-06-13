@@ -114,7 +114,7 @@
                         });
 
         table.on('draw', function() {
-            $('.toggle-switch').bootstrapToggle();
+            $('.status-toggle').bootstrapToggle();
         });
 
         function changeCheckbox(id, userId) {
