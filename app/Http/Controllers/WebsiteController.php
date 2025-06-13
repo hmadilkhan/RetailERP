@@ -26,8 +26,22 @@ class WebsiteController extends Controller
 
     public function index(Request $request)
     {
+           // Start building the query
+           $getRecord = WebsiteDetail::with("company");
+
+           // Apply filter only if mode is set in the request
+           if(isset($request->mode)){
+                 $getRecord = $getRecord->where('status','=',0);
+           }else{
+                 $getRecord = $getRecord->where('status','=',1);
+           }
+
+           // Execute the query
+           $getRecord = $getRecord->get();
+
         return view("websites.index", [
-            "websites" => WebsiteDetail::with("company")->get(),
+            "websites" => $getRecord,
+            "mode"     => isset($request->mode) ? 1 : 0
         ]);
     }
 
@@ -239,6 +253,25 @@ class WebsiteController extends Controller
             Session::flash('success', 'Success!');
         } else {
             Session::flash('error', 'Error! this ' . $getRecord->name . ' website is not removed!');
+        }
+        return redirect()->route("website.index");
+    }
+
+     public function websiteToggleStatus(Request $request)
+    {
+        $getRecord = WebsiteDetail::find($request->id);
+
+        if ($getRecord == null) {
+            Session::flash('error', 'Error! record not found! Server Issue!');
+            return redirect()->route("website.index");
+        }
+
+        $getRecord->status = $request->mode == 1 ? 1 : 0;
+
+        if ($getRecord->save()) {
+            Session::flash('success', 'Success!');
+        } else {
+            Session::flash('error', 'Error! this ' . $getRecord->name . ' website is not '.$request->mode == 1 ? 'active' : 'in-active'.'!');
         }
         return redirect()->route("website.index");
     }
