@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Image;
-
+use Spatie\Activitylog\Models\Activity;
 
 class BranchController extends Controller
 {
@@ -22,8 +22,8 @@ class BranchController extends Controller
 	{
 		$this->middleware('auth');
 	}
- 
-	public function show(branch $branch,BranchService $branchService)
+
+	public function show(branch $branch, BranchService $branchService)
 	{
 		// $details = $branch->get_branches(session('company_id'));
 		$details = $branchService->getBranchesPaginated();
@@ -48,78 +48,85 @@ class BranchController extends Controller
 
 		$check = $branch->exist($request->branchname, $company);
 
-		if ($check[0]->counter == 0) {
+		try {
 
-			if (!empty($request->vdimg)) {
-				$request->validate([
-					'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
-				]);
-				$file = $this->uploads($request->vdimg, 'images/branch/');
-			}
+			if ($check[0]->counter == 0) {
 
-			$rules = [
-				'branchname' => 'required',
-				'br_address' => 'required',
-				'br_ptcl' => 'required',
-				'br_mobile' => 'required',
-				'br_email' => 'required',
-			];
-			$this->validate($request, $rules);
-
-			$items = [
-				'company_id' => $company,
-				'country_id' => $request->country,
-				'city_id' => $request->city,
-				'status_id' => 1,
-				'branch_name' => $request->branchname,
-				'branch_address' => $request->br_address,
-				'branch_latitude' => null,
-				'branch_longitude' => null,
-				'branch_ptcl' => $request->br_ptcl,
-				'branch_mobile' => $request->br_mobile,
-				'branch_email' => $request->br_email,
-				'code' => $request->br_code,
-				'record_daily_stock' => $request->record_daily_stock,
-				'branch_logo' => $file["fileName"],
-				'modify_by' => session('userid'),
-				'modify_date' => date('Y-m-d'),
-				'modify_time' => date('H:i:s'),
-				'date' => date('Y-m-d'),
-				'time' => date('H:i:s'),
-			];
-			$branch = ModelsBranch::create($items);
-			// $branch = $branch->insert_branch($items);
-
-			if ($request->report != "" && count($request->report) > 0) {
-				foreach ($request->report as $report) {
-					DB::table("branch_reports")->insert([
-						"branch_id" => $branch->branch_id,
-						"report_id" => $report,
+				if (!empty($request->vdimg)) {
+					$request->validate([
+						'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
 					]);
+					$file = $this->uploads($request->vdimg, 'images/branch/');
 				}
+
+				DB::beginTransaction();
+
+				$rules = [
+					'branchname' => 'required',
+					'br_address' => 'required',
+					'br_ptcl' => 'required',
+					'br_mobile' => 'required',
+					'br_email' => 'required',
+				];
+				$this->validate($request, $rules);
+
+				$items = [
+					'company_id' => $company,
+					'country_id' => $request->country,
+					'city_id' => $request->city,
+					'status_id' => 1,
+					'branch_name' => $request->branchname,
+					'branch_address' => $request->br_address,
+					'branch_latitude' => null,
+					'branch_longitude' => null,
+					'branch_ptcl' => $request->br_ptcl,
+					'branch_mobile' => $request->br_mobile,
+					'branch_email' => $request->br_email,
+					'code' => $request->br_code,
+					'record_daily_stock' => $request->record_daily_stock,
+					'branch_logo' => $file["fileName"],
+					'modify_by' => session('userid'),
+					'modify_date' => date('Y-m-d'),
+					'modify_time' => date('H:i:s'),
+					'date' => date('Y-m-d'),
+					'time' => date('H:i:s'),
+				];
+				$branch = ModelsBranch::create($items);
+				// $branch = $branch->insert_branch($items);
+
+				if ($request->report != "" && count($request->report) > 0) {
+					foreach ($request->report as $report) {
+						DB::table("branch_reports")->insert([
+							"branch_id" => $branch->branch_id,
+							"report_id" => $report,
+						]);
+					}
+				}
+
+				activity('branch')
+					->performedOn($branch)
+					->causedBy(auth()->user()->id) // Log who did the action
+					->withProperties([
+						'branch_name' => $request->branchname,
+						'branch_address' => $request->br_address,
+						'branch_ptcl' => $request->br_ptcl,
+						'branch_mobile' => $request->br_mobile,
+						'branch_email' => $request->br_email,
+						'code' => $request->br_code,
+						'record_daily_stock' => $request->record_daily_stock,
+						'branch_logo' => $file["fileName"],
+					])
+					->setEvent("Create")
+					->log("{auth()->user()->fullName} created the new branch with name {$request->branchname}.");
+				DB::commit();
+				return 1;
+			} else {
+				return 0;
 			}
-
-			activity('branch')
-			->performedOn($branch)
-			->causedBy(auth()->user()) // Log who did the action
-			->withProperties([
-				'branch_name' => $request->branchname,
-				'branch_address' => $request->br_address,
-				'branch_ptcl' => $request->br_ptcl,
-				'branch_mobile' => $request->br_mobile,
-				'branch_email' => $request->br_email,
-				'code' => $request->br_code,
-				'record_daily_stock' => $request->record_daily_stock,
-				'branch_logo' => $file["fileName"],
-			])
-			->setEvent("move")
-			->withCustomProperty('company_id', session('company_id'))
-			->withCustomProperty('branch_id', session('branch'))
-			->log("{auth()->user()->fullName} created the new branch with name {$request->branchname}.");
-
-			return 1;
-		} else {
-			return 0;
+		} catch (Exception $e) {
+			DB::rollBack();
+			return $e->getMessage();
+			// return 0;
 		}
 	}
 
@@ -185,7 +192,7 @@ class BranchController extends Controller
 			'code' => $request->br_code,
 			'record_daily_stock' => $request->record_daily_stock,
 		];
-		$branch = ModelsBranch::where('id', $request->br_id)->update($items);
+		$branch = ModelsBranch::where('branch_id', $request->br_id)->update($items);
 		// $branch = $branch->branch_update($request->br_id, $items);
 
 		if (!empty($request->reportlist) && count($request->reportlist) > 0) {
@@ -197,10 +204,10 @@ class BranchController extends Controller
 				]);
 			}
 		}
-
+		$branchModel = ModelsBranch::where('branch_id', $request->br_id)->first();
 		activity('branch')
-			->performedOn($branch)
-			->causedBy(auth()->user()) // Log who did the action
+			->performedOn($branchModel)
+			->causedBy(auth()->user()->id) // Log who did the action
 			->withProperties([
 				'branch_name' => $request->branchname,
 				'branch_address' => $request->br_address,
@@ -209,11 +216,9 @@ class BranchController extends Controller
 				'branch_email' => $request->br_email,
 				'code' => $request->br_code,
 				'record_daily_stock' => $request->record_daily_stock,
-				'branch_logo' => $file["fileName"],
+				'branch_logo' => $imageName,
 			])
-			->setEvent("move")
-			->withCustomProperty('company_id', session('company_id'))
-			->withCustomProperty('branch_id', session('branch'))
+			->setEvent("Update")
 			->log("{auth()->user()->fullName} updated the branch.");
 
 		return 1;
