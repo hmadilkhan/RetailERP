@@ -82,18 +82,21 @@
  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
 <script type="text/javascript">
-	$('.table').DataTable({
+ 	var table = $('.table').DataTable({
+                        bLengthChange: true,
+                        displayLength: 10,
+                        info: false,
+                        language: {
+                        search:'',
+                        searchPlaceholder: 'Search Website',
+                        lengthMenu: '<span></span> _MENU_'
 
-        bLengthChange: true,
-        displayLength: 10,
-        info: false,
-        language: {
-          search:'',
-          searchPlaceholder: 'Search Website',
-          lengthMenu: '<span></span> _MENU_'
+                        }
 
-        }
+                    });
 
+    table.on('draw', function() {
+        $('.toggle-switch').bootstrapToggle();
     });
 
     // function remove(webId,webName){
