@@ -48,7 +48,7 @@
 				  <td class="action-icon">
                     <div class="form-group m-r-2">
                       <label>
-                        <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }},'{{ addslashes($value->name) }}',{{ $value->status }})" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
+                        <input type="checkbox" class="status-toggle" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }},'{{ addslashes($value->name) }}',{{ $value->status }})" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
                       </label>
 					<form action="{{ route('websiteToggleStatus') }}" method="post" id="websiteTogglestatusForm{{ $value->id }}">
 					    @csrf
@@ -96,7 +96,7 @@
                     });
 
     table.on('draw', function() {
-        $('.toggle-switch').bootstrapToggle();
+        $('.status-toggle').bootstrapToggle();
     });
 
     // function remove(webId,webName){
