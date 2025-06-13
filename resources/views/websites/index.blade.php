@@ -120,7 +120,7 @@
       let statusVal = (mode == 1 ? 0 : 1);
             swal({
                 title: 'Remove Website',
-                text:  'Are you sure '+(statusVal == 1 ? 'In-Active' : 'Active')+' this '+addslashes(webName)+' website?',
+                text:  'Are you sure '+(mode == 1 ? 'In-Active' : 'Active')+' this '+addslashes(webName)+' website?',
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: 'btn btn-danger',
