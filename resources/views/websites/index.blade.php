@@ -117,7 +117,7 @@
     // }
 
   function websiteMode(webId,webName,mode){
-      let statusVal = (mode == 0 ? 1 : 0);
+      let statusVal = (mode == 1 ? 0 : 1);
             swal({
                 title: 'Remove Website',
                 text:  'Are you sure '+(statusVal == 1 ? 'In-Active' : 'Active')+' this '+addslashes(webName)+' website?',
