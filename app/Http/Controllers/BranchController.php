@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\branch;
+use App\Models\Branch as ModelsBranch;
 use App\Services\BranchService;
 use App\Traits\MediaTrait;
 use Exception;
@@ -86,16 +87,35 @@ class BranchController extends Controller
 				'date' => date('Y-m-d'),
 				'time' => date('H:i:s'),
 			];
-			$branch = $branch->insert_branch($items);
+			$branch = ModelsBranch::create($items);
+			// $branch = $branch->insert_branch($items);
 
-			if (count($request->report) > 0) {
+			if ($request->report != "" && count($request->report) > 0) {
 				foreach ($request->report as $report) {
 					DB::table("branch_reports")->insert([
-						"branch_id" => $branch,
+						"branch_id" => $branch->branch_id,
 						"report_id" => $report,
 					]);
 				}
 			}
+
+			activity('branch')
+			->performedOn($branch)
+			->causedBy(auth()->user()) // Log who did the action
+			->withProperties([
+				'branch_name' => $request->branchname,
+				'branch_address' => $request->br_address,
+				'branch_ptcl' => $request->br_ptcl,
+				'branch_mobile' => $request->br_mobile,
+				'branch_email' => $request->br_email,
+				'code' => $request->br_code,
+				'record_daily_stock' => $request->record_daily_stock,
+				'branch_logo' => $file["fileName"],
+			])
+			->setEvent("move")
+			->withCustomProperty('company_id', session('company_id'))
+			->withCustomProperty('branch_id', session('branch'))
+			->log("{auth()->user()->fullName} created the new branch with name {$request->branchname}.");
 
 			return 1;
 		} else {
@@ -165,7 +185,8 @@ class BranchController extends Controller
 			'code' => $request->br_code,
 			'record_daily_stock' => $request->record_daily_stock,
 		];
-		$branch = $branch->branch_update($request->br_id, $items);
+		$branch = ModelsBranch::where('id', $request->br_id)->update($items);
+		// $branch = $branch->branch_update($request->br_id, $items);
 
 		if (!empty($request->reportlist) && count($request->reportlist) > 0) {
 			DB::table("branch_reports")->where("branch_id", $request->br_id)->delete();
@@ -176,6 +197,24 @@ class BranchController extends Controller
 				]);
 			}
 		}
+
+		activity('branch')
+			->performedOn($branch)
+			->causedBy(auth()->user()) // Log who did the action
+			->withProperties([
+				'branch_name' => $request->branchname,
+				'branch_address' => $request->br_address,
+				'branch_ptcl' => $request->br_ptcl,
+				'branch_mobile' => $request->br_mobile,
+				'branch_email' => $request->br_email,
+				'code' => $request->br_code,
+				'record_daily_stock' => $request->record_daily_stock,
+				'branch_logo' => $file["fileName"],
+			])
+			->setEvent("move")
+			->withCustomProperty('company_id', session('company_id'))
+			->withCustomProperty('branch_id', session('branch'))
+			->log("{auth()->user()->fullName} updated the branch.");
 
 		return 1;
 	}
