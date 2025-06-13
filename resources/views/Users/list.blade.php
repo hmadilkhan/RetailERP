@@ -65,7 +65,7 @@
                                             <label>
                                                 <input id="changeCheckbox{{ $value->id }}"
                                                     onchange="changeCheckbox('changeCheckbox{{ $value->id }}','{{ $value->authorization_id }}')"
-                                                    type="checkbox" {{ $value->isLoggedIn == 1 ? 'checked' : '' }}
+                                                    type="checkbox" class="status-toggle" {{ $value->isLoggedIn == 1 ? 'checked' : '' }}
                                                     data-toggle="toggle" data-size="mini" data-width="20" data-height="20">
                                             </label>
                                         </div>
@@ -100,20 +100,22 @@
     <script type="text/javascript">
         var rem_id = [];
 
-        $('.table').DataTable({
+     var table =  $('.table').DataTable({
+                            bLengthChange: true,
+                            displayLength: 50,
+                            info: false,
+                            language: {
+                                search: '',
+                                searchPlaceholder: 'Search Users',
+                                lengthMenu: '<span></span> _MENU_'
 
-            bLengthChange: true,
-            displayLength: 50,
-            info: false,
-            language: {
-                search: '',
-                searchPlaceholder: 'Search Users',
-                lengthMenu: '<span></span> _MENU_'
+                            }
 
-            }
+                        });
 
+        table.on('draw', function() {
+            $('.toggle-switch').bootstrapToggle();
         });
-
 
         function changeCheckbox(id, userId) {
 
