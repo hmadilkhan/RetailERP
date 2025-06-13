@@ -48,7 +48,7 @@
 				  <td class="action-icon">
                     <div class="form-group m-r-2">
                       <label>
-                        <input type="checkbox" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }},'{{ addslashes($value->name) }}',{{ $value->status }})" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
+                        <input type="checkbox" class="status-toggle" id="websiteStatus-{{ $value->id }}" onchange="websiteMode({{ $value->id }},'{{ addslashes($value->name) }}',{{ $value->status }})" data-toggle="toggle" data-size="mini" data-width="20" data-height="20" {{ $value->status == 1 ? 'checked' : '' }}>
                       </label>
 					<form action="{{ route('websiteToggleStatus') }}" method="post" id="websiteTogglestatusForm{{ $value->id }}">
 					    @csrf
@@ -82,18 +82,21 @@
  <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
 <script type="text/javascript">
-	$('.table').DataTable({
+ 	var table = $('.table').DataTable({
+                        bLengthChange: true,
+                        displayLength: 10,
+                        info: false,
+                        language: {
+                        search:'',
+                        searchPlaceholder: 'Search Website',
+                        lengthMenu: '<span></span> _MENU_'
 
-        bLengthChange: true,
-        displayLength: 10,
-        info: false,
-        language: {
-          search:'',
-          searchPlaceholder: 'Search Website',
-          lengthMenu: '<span></span> _MENU_'
+                        }
 
-        }
+                    });
 
+    table.on('draw', function() {
+        $('.status-toggle').bootstrapToggle();
     });
 
     // function remove(webId,webName){

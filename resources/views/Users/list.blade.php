@@ -65,7 +65,7 @@
                                             <label>
                                                 <input id="changeCheckbox{{ $value->id }}"
                                                     onchange="changeCheckbox('changeCheckbox{{ $value->id }}','{{ $value->authorization_id }}')"
-                                                    type="checkbox" {{ $value->isLoggedIn == 1 ? 'checked' : '' }}
+                                                    type="checkbox" class="status-toggle" {{ $value->isLoggedIn == 1 ? 'checked' : '' }}
                                                     data-toggle="toggle" data-size="mini" data-width="20" data-height="20">
                                             </label>
                                         </div>
@@ -95,25 +95,32 @@
     </section>
 @endsection
 
-@section('scriptcode_three')
 
+@section('scriptcode_one')
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+@endsection
+
+@section('scriptcode_three')
+ <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script type="text/javascript">
         var rem_id = [];
 
-        $('.table').DataTable({
+     var table =  $('.table').DataTable({
+                            bLengthChange: true,
+                            displayLength: 50,
+                            info: false,
+                            language: {
+                                search: '',
+                                searchPlaceholder: 'Search Users',
+                                lengthMenu: '<span></span> _MENU_'
 
-            bLengthChange: true,
-            displayLength: 50,
-            info: false,
-            language: {
-                search: '',
-                searchPlaceholder: 'Search Users',
-                lengthMenu: '<span></span> _MENU_'
+                            }
 
-            }
+                        });
 
+        table.on('draw', function() {
+            $('.status-toggle').bootstrapToggle();
         });
-
 
         function changeCheckbox(id, userId) {
 
