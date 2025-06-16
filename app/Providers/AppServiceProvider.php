@@ -8,6 +8,7 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
 use MongoDB\Driver\Session;
+use Spatie\Activitylog\ActivityLogger;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,15 +29,20 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //        if (session("roleId") != null)
-        //        {
-        //        $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[session("roleId")]);
-        ////        View::share('pageid',DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id',[session("roleId")]));
-        //        View::share('result',DB::table('pages_details')->where('id',$pageid)->get());
-        //        }
-        //        else{
-        //            View::share('result',DB::table('pages_details')->get());
-        //        }
-        //        View::share('result',DB::table('pages_details')->get());
+        ActivityLogger::macro('withCompany', function ($companyId) {
+            $this->tap(function ($activity) use ($companyId) {
+                $activity->company_id = $companyId;
+            });
+
+            return $this;
+        });
+
+        ActivityLogger::macro('withBranch', function ($branchId) {
+            $this->tap(function ($activity) use ($branchId) {
+                $activity->branch_id = $branchId;
+            });
+
+            return $this;
+        });
     }
 }

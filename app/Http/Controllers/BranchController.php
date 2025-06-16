@@ -106,6 +106,8 @@ class BranchController extends Controller
 				activity('branch')
 					->performedOn($branch)
 					->causedBy(auth()->user()->id) // Log who did the action
+					->withCompany(session('company_id'))
+					->withBranch(session('branch'))
 					->withProperties([
 						'branch_name' => $request->branchname,
 						'branch_address' => $request->br_address,
@@ -117,7 +119,7 @@ class BranchController extends Controller
 						'branch_logo' => $file["fileName"],
 					])
 					->setEvent("Create")
-					->log("{auth()->user()->fullName} created the new branch with name {$request->branchname}.");
+					->log("{auth()->user()->fullname} created the new branch with name {$request->branchname}.");
 				DB::commit();
 				return 1;
 			} else {
@@ -133,6 +135,7 @@ class BranchController extends Controller
 	public function remove(branch $branch, Request $request)
 	{
 
+		$branchModel = ModelsBranch::findOrFail($request->id);
 		$result = $branch->branch_remove($request->id);
 		$details = $branch->branch_details(session('company_id'), $request->id);
 		DB::table("branch_emails")->where("branch_id", $request->id)->update([
@@ -145,6 +148,14 @@ class BranchController extends Controller
 			"updated_at" => date("Y-m-d H:i:s"),
 		]);
 		$this->removeImage("images/branch/", $details[0]->branch_logo);
+		activity('branch')
+			->performedOn($branchModel)
+			->causedBy(auth()->user()) // Log who did the action
+			->withCompany(session('company_id'))
+			->withBranch(session('branch'))
+			// ->withProperties()
+			->setEvent("Delete")
+			->log("{{auth()->user()->fullname}} deleted the branch.");
 
 		return 1;
 	}
@@ -207,7 +218,9 @@ class BranchController extends Controller
 		$branchModel = ModelsBranch::where('branch_id', $request->br_id)->first();
 		activity('branch')
 			->performedOn($branchModel)
-			->causedBy(auth()->user()->id) // Log who did the action
+			->causedBy(auth()->user()) // Log who did the action
+			->withCompany(session('company_id'))
+			->withBranch(session('branch'))
 			->withProperties([
 				'branch_name' => $request->branchname,
 				'branch_address' => $request->br_address,
@@ -219,7 +232,7 @@ class BranchController extends Controller
 				'branch_logo' => $imageName,
 			])
 			->setEvent("Update")
-			->log("{auth()->user()->fullName} updated the branch.");
+			->log("{{auth()->user()->fullname}} updated the branch.");
 
 		return 1;
 	}
