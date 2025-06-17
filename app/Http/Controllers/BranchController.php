@@ -119,7 +119,7 @@ class BranchController extends Controller
 						'branch_logo' => $file["fileName"],
 					])
 					->setEvent("Create")
-					->log("{auth()->user()->fullname} created the new branch with name {$request->branchname}.");
+					->log(auth()->user()->fullname . " created the new branch with name {$request->branchname}.");
 				DB::commit();
 				return 1;
 			} else {
@@ -155,7 +155,7 @@ class BranchController extends Controller
 			->withBranch(session('branch'))
 			// ->withProperties()
 			->setEvent("Delete")
-			->log("{{auth()->user()->fullname}} deleted the branch.");
+			->log(auth()->user()->fullname . " deleted the branch.");
 
 		return 1;
 	}
@@ -232,7 +232,7 @@ class BranchController extends Controller
 				'branch_logo' => $imageName,
 			])
 			->setEvent("Update")
-			->log("{{auth()->user()->fullname}} updated the branch.");
+			->log(auth()->user()->fullname . " updated the branch.");
 
 		return 1;
 	}
@@ -258,6 +258,19 @@ class BranchController extends Controller
 					'name' => $request->name,
 					'email' => $request->email,
 				]);
+				$branchModel = ModelsBranch::where('branch_id', $request->branch_id)->first();
+				activity('branch')
+					->performedOn($branchModel)
+					->causedBy(auth()->user()) // Log who did the action
+					->withCompany(session('company_id'))
+					->withBranch(session('branch'))
+					->withProperties([
+						'branch_id' => $request->branch_id,
+						'name' => $request->name,
+						'email' => $request->email,
+					])
+					->setEvent("Update")
+					->log(auth()->user()->fullname . " save email inside the {$branchModel->branch_name} branch.");
 				return redirect("branch-emails/" . Crypt::encrypt($request->branch_id));
 			} else {
 				return redirect("branch-emails/" . Crypt::encrypt($request->branch_id))->withErrors(['Name' => 'Details aleady exists.']);
@@ -273,6 +286,20 @@ class BranchController extends Controller
 					'email' => $request->email,
 					'updated_at' => date("Y-m-d H:i:s"),
 				]);
+				$branchModel = ModelsBranch::where('branch_id', $request->branch_id)->first();
+				activity('branch')
+					->performedOn($branchModel)
+					->causedBy(auth()->user()) // Log who did the action
+					->withCompany(session('company_id'))
+					->withBranch(session('branch'))
+					->withProperties([
+						'branch_id' => $request->branch_id,
+						'name' => $request->name,
+						'email' => $request->email,
+						'updated_at' => date("Y-m-d H:i:s"),
+					])
+					->setEvent("Update")
+					->log(auth()->user()->fullname . " update email inside the {$branchModel->branch_name} branch.");
 				return redirect("branch-emails/" . Crypt::encrypt($request->branch_id));
 			} else {
 				return redirect("branch-emails/" . Crypt::encrypt($request->branch_id))->withErrors(['Name' => 'Details aleady exists.']);
@@ -289,6 +316,20 @@ class BranchController extends Controller
 					'status' => 0,
 					'updated_at' => date("Y-m-d H:i:s"),
 				]);
+			// $branchModel = ModelsBranch::where('branch_id', $request->branch_id)->first();
+			// activity('branch')
+			// 	->performedOn($branchModel)
+			// 	->causedBy(auth()->user()) // Log who did the action
+			// 	->withCompany(session('company_id'))
+			// 	->withBranch(session('branch'))
+			// 	->withProperties([
+			// 		'branch_id' => $request->branch_id,
+			// 		'name' => $request->name,
+			// 		'email' => $request->email,
+			// 		'updated_at' => date("Y-m-d H:i:s"),
+			// 	])
+			// 	->setEvent("Update")
+			// 	->log(auth()->user()->fullname . " delete email inside the {$branchModel->branch_name} branch.");
 			return 1;
 		} catch (Exception $e) {
 			return 0;
