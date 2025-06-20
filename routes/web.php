@@ -68,6 +68,8 @@ use App\Livewire\VehicleManager;
 use App\Livewire\ViewInventory;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -89,6 +91,18 @@ Auth::routes();
 Route::get('/horizontal', function () {
     $pages = DB::table("pages_details")->get();
     return view("Test.index", compact('pages'));
+});
+
+Route::get('run-curl',function(){
+    $response = Http::withOptions(['verify' => false])->withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/chat/completions', [
+        'model' => 'gpt-4o-mini',
+        'messages' => [
+            ['role' => 'user', 'content' => 'write a haiku about AI']
+        ],
+        'stream' => false, // or true if you want streaming
+    ]);
+
+    return $response->json()['choices'][0]['message']['content'] ?? 'No response';
 });
 // Route::get('/','HomeController@loginPage');
 Route::get('/', function () {

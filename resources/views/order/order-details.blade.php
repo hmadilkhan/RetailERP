@@ -231,7 +231,7 @@
                         <div class="col-xl-4">
                             <div class="flex-shrink-0 items-center ms-2 py-2 ">
                                 <div class="text-sm-end mt-2 mt-sm-0 float-end">
-                                    @if(auth()->user()->id == 929 && $order->orderStatus->order_status_name == 'Delivered')
+                                    @if (auth()->user()->id == 929 && $order->orderStatus->order_status_name == 'Delivered')
                                         <a href="{{ url('change-order-status') }}/{{ $order->id }}/1"
                                             class="btn btn-danger text-white  ml-2">
                                             <i class="mdi mdi-cart-outline me-1"></i> Pending </a>
@@ -278,12 +278,6 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-start border-bottom pb-3">
                                     <div class="me-4">
-                                        {{-- <img id="myImg{{ $key }}"
-                                            src="{{ asset('storage/images/products/' . ($item->inventory->image != '' ? $item->inventory->image : 'placeholder.jpg')) }}"
-                                            alt="{{ $item->note }}"
-                                            class="avatar-lg rounded productImage{{ $key }} "
-                                            style="cursor:pointer;" onclick="showImage('{{ $key }}')"> --}}
-
                                         <img id="myImg{{ $key }}"
                                             src="{{ Custom_Helper::getProductImage(optional($item->inventory)->url, optional($item->inventory)->image) }}"
                                             alt="{{ $item->note }}"
@@ -306,7 +300,6 @@
                                     </div>
                                     <div class="flex-shrink-0 ms-2">
                                         <div>
-
                                             @if ($order->orderStatus->order_status_id == 1 && $item->mode == '' && session('company_id') == 104)
                                                 <label
                                                     class="label {{ Custom_Helper::getColorName($item->itemstatus->order_status_name) }} font-size-18 border border-white rounded my-5 mt-3">{{ $item->itemstatus->order_status_name }}</label>
@@ -372,7 +365,7 @@
                             </div>
                         </div>
                     @else
-                        @if(!empty($item->inventory))
+                        @if (!empty($item->inventory))
                             <div class="card border shadow-none">
                                 <div class="card-body">
                                     <div class="d-flex align-items-start border-bottom pb-3">
@@ -389,7 +382,8 @@
                                                 <h5 class="text-truncate font-size-18"><a href="#"
                                                         class="code{{ $key }} text-dark fw-bold">({{ $item->inventory->item_code }})
                                                     </a> <a href="#"
-                                                        class="name{{ $key }} text-dark">{{ $item->item_name }} </a>
+                                                        class="name{{ $key }} text-dark">{{ $item->item_name }}
+                                                    </a>
                                                 </h5>
                                                 <p class="mb-0 mt-1  fs-5"><span class="fw-bold">Comments : </span><span
                                                         class="comments{{ $key }} fs-5">{{ $item->note }}</span>
@@ -399,8 +393,15 @@
                                         </div>
                                         <div class="flex-shrink-0 ms-2">
                                             <div>
-
-                                                @if ($order->orderStatus->order_status_id == 1 && $item->mode == '' && session('company_id') == 104)
+                                                @if ($item->is_sale_return == 1)
+                                                    <button
+                                                        class="btn btn-sm btn-danger text-white  ml-2">
+                                                        <i class="mdi mdi-cart-outline me-1"></i> Sales Return </button>
+                                                @endif
+                                                @if (
+                                                    $order->orderStatus->order_status_id == 1 &&
+                                                        $item->mode == '' &&
+                                                        (session('company_id') == 104 or session('company_id') == 7))
                                                     <label
                                                         class="label {{ Custom_Helper::getColorName($item->itemstatus->order_status_name) }} font-size-18 border border-white rounded my-5 mt-3">{{ $item->itemstatus->order_status_name }}</label>
                                                     <a href="{{ url('sent-to-workshop') }}/{{ $order->id }}/{{ $item->receipt_detail_id }}"
@@ -450,7 +451,8 @@
                                                         <ol class="list-group list-group-numbered">
                                                             @foreach ($item->statusLogs as $log)
                                                                 <li class="list-group-item">Order
-                                                                    <strong>{{ $log->status->order_status_name }}</strong> at
+                                                                    <strong>{{ $log->status->order_status_name }}</strong>
+                                                                    at
                                                                     {{ date('d M Y', strtotime($log->date)) . ' ' . date('H:i a', strtotime($log->time)) }}
                                                                 </li>
                                                             @endforeach
@@ -499,7 +501,8 @@
                                         </tr>
                                         <tr>
                                             <td>Service Type :</td>
-                                            <td class="text-end fw-bold">{{ $order->service?->serviceType?->name ?? 'N/A' }}</td>
+                                            <td class="text-end fw-bold">
+                                                {{ $order->service?->serviceType?->name ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
                                             <td>Customer : </td>
@@ -523,21 +526,23 @@
                                                 {{ !empty($provider) ? $provider->serviceprovider->provider_name : '-' }}
                                             </td>
                                         </tr>
-                                        @if(!empty($wallet))
-                                        <tr>
-                                            <td>Wallet :</td>
-                                            <td class="text-end">
-                                                {{ !empty($wallet) ? $wallet->serviceprovider->provider_name : '-' }}
-                                            </td>
-                                        </tr>
+                                        @if (!empty($wallet))
+                                            <tr>
+                                                <td>Wallet :</td>
+                                                <td class="text-end">
+                                                    {{ !empty($wallet) ? $wallet->serviceprovider->provider_name : '-' }}
+                                                </td>
+                                            </tr>
                                         @endif
                                         <tr>
                                             <td>Land Mark :</td>
-                                            <td class="text-end">{{ (!empty($order->address) ? $order->address->landmark : '-' )}}</td>
+                                            <td class="text-end">
+                                                {{ !empty($order->address) ? $order->address->landmark : '-' }}</td>
                                         </tr>
                                         <tr>
                                             <td>Address :</td>
-                                            <td class="text-end">{{(!empty($order->address) ? $order->address->address : '-' ) }}</td>
+                                            <td class="text-end">
+                                                {{ !empty($order->address) ? $order->address->address : '-' }}</td>
                                         </tr>
 
                                     </tbody>
@@ -553,18 +558,22 @@
                             <h5 class="font-size-16 mb-0">Delivery Detail</h5>
                         </div>
                         <div class="card-body p-4 pt-2">
-    
+
                             <div class="table-responsive">
                                 <table class="table mb-0">
                                     <tbody>
-    
+
                                         <tr>
                                             <td>Area Name :</td>
-                                            <td class="text-end">{{($order->delivery_area_name != "" ? $order->delivery_area_name : '-' )}}</td>
+                                            <td class="text-end">
+                                                {{ $order->delivery_area_name != '' ? $order->delivery_area_name : '-' }}
+                                            </td>
                                         </tr>
                                         <tr>
                                             <td>Instructions :</td>
-                                            <td class="text-end">{{($order->delivery_instructions != "" ? $order->delivery_instructions : '-')}}</td>
+                                            <td class="text-end">
+                                                {{ $order->delivery_instructions != '' ? $order->delivery_instructions : '-' }}
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -572,16 +581,16 @@
                             <!-- end table-responsive -->
                         </div>
                     </div>
-                </div>  
+                </div>
                 @php
-                    $taxName = "";
+                    $taxName = '';
                     $taxAmount = 0;
                     if (!empty($order->orderAccountSub)) {
                         if ($order->orderAccountSub->sales_tax_amount > 0) {
-                            $taxName = "FBR";
+                            $taxName = 'FBR';
                             $taxAmount = $order->orderAccountSub->sales_tax_amount;
-                        }else if ($order->orderAccountSub->srb > 0) {
-                            $taxName = "SRB";
+                        } elseif ($order->orderAccountSub->srb > 0) {
+                            $taxName = 'SRB';
                             $taxAmount = $order->orderAccountSub->srb;
                         }
                     }
@@ -622,10 +631,10 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>Tax Charge: {{"(".$taxName.")"}}</td>
+                                            <td>Tax Charge: {{ '(' . $taxName . ')' }}</td>
                                             <td class="text-end">
                                                 {{-- (!empty($order->orderAccountSub) ? $order->orderAccountSub->sales_tax_amount : '') --}}
-                                                {{ session('currency') . ' ' .$taxAmount  }} 
+                                                {{ session('currency') . ' ' . $taxAmount }}
                                             </td>
                                         </tr>
                                         <tr class="bg-light">

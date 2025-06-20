@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\branch;
 use App\Models\Branch as ModelsBranch;
 use App\Services\BranchService;
+use App\Traits\ActivityLoggerTrait;
 use App\Traits\MediaTrait;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -12,11 +13,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Image;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Models\Activity;
+
 
 class BranchController extends Controller
 {
-	use MediaTrait;
+	use MediaTrait,ActivityLoggerTrait;
 
 	public function __construct()
 	{
