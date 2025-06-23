@@ -249,9 +249,10 @@
                                     <div class="form-group {{ $errors->has('description') ? 'has-danger' : '' }}">
                                         <label class="form-control-label">
                                             Description
-                                            <i id="btn_generate_description" class="icofont icofont-plus f-right text-success"
-                                                data-toggle="tooltip" data-placement="top" title="Generate Ai Description"></i>
                                         </label>
+                                        <i id="btn_generate_description" class="icofont icofont-plus f-right text-success"
+                                            data-toggle="tooltip" data-placement="top"
+                                            title="Generate Ai Description"></i>
 
                                         <textarea class="form-control" name="description" id="description" rows="5">{{ old('description') }}</textarea>
                                         @if ($errors->has('description'))
@@ -1724,6 +1725,59 @@
             }
 
         }
+
+        document.getElementById("btn_generate_description").addEventListener("click", function() {
+            const name = document.getElementById("name").value;
+            if (name !== "") {
+                document.getElementById("description").innerText = "";
+
+                fetch(`/generate-story-stream?name=${encodeURIComponent(name)}`, {
+                        method: "GET"
+                    })
+                    .then(response => {
+                        const reader = response.body.getReader();
+                        const decoder = new TextDecoder("utf-8");
+                        let accumulated = "";
+
+                        function read() {
+                            reader.read().then(({
+                                done,
+                                value
+                            }) => {
+                                if (done) return;
+
+                                const chunk = decoder.decode(value, {
+                                    stream: true
+                                });
+
+                                // Extract JSON from "data: {...}\n\n" if SSE-like
+                                chunk.split("\n").forEach(line => {
+                                    if (line.startsWith("data: ")) {
+                                        try {
+                                            const parsed = JSON.parse(line.replace("data: ",
+                                                ""));
+                                            const content = parsed.choices?.[0]?.delta?.content;
+                                            if (content) {
+                                                accumulated += content;
+                                                document.getElementById("description")
+                                                    .innerText = accumulated;
+                                            }
+                                        } catch (e) {
+                                            console.error("Parse error:", e);
+                                        }
+                                    }
+                                });
+
+                                read(); // Read next chunk
+                            });
+                        }
+
+                        read();
+                    });
+            }
+        });
+
+
 
         function toggle() {
             if ($('#chkactive').is(":checked")) {

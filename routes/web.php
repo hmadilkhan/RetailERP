@@ -1127,7 +1127,8 @@ Route::middleware(['statusCheck'])->group(function () {
     /******************************* OPENING CLOSING ENDS HERE **********************************/
 
     /******************************* OPEN AI LINKS START **********************************/
-    Route::get('/generate-story', [App\Http\Controllers\OpenAIController::class, 'generateStory']);
+    Route::get('/generate-story-stream', [App\Http\Controllers\OpenAIController::class, 'generateStory']);
+    Route::get('/generate-image-stream', [App\Http\Controllers\OpenAIController::class, 'generateProductImage']);
     /******************************* OPEN AI LINKS END **********************************/
 });
 
