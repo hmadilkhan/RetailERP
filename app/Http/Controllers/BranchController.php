@@ -219,23 +219,35 @@ class BranchController extends Controller
 			}
 		}
 		$branchModel = ModelsBranch::where('branch_id', $request->br_id)->first();
-		activity('branch')
-			->performedOn($branchModel)
-			->causedBy(auth()->user()) // Log who did the action
-			->withCompany(session('company_id'))
-			->withBranch(session('branch'))
-			->withProperties([
-				'branch_name' => $request->branchname,
-				'branch_address' => $request->br_address,
-				'branch_ptcl' => $request->br_ptcl,
-				'branch_mobile' => $request->br_mobile,
-				'branch_email' => $request->br_email,
-				'code' => $request->br_code,
-				'record_daily_stock' => $request->record_daily_stock,
-				'branch_logo' => $imageName,
-			])
-			->setEvent("Update")
-			->log(auth()->user()->fullname . " updated the branch.");
+		$properties = [
+			'branch_name' => $request->branchname,
+			'branch_address' => $request->br_address,
+			'branch_ptcl' => $request->br_ptcl,
+			'branch_mobile' => $request->br_mobile,
+			'branch_email' => $request->br_email,
+			'code' => $request->br_code,
+			'record_daily_stock' => $request->record_daily_stock,
+			'branch_logo' => $imageName,
+		];
+		$description = auth()->user()->fullname . " updated the branch.";
+		$this->logActivity('branch',$branchModel,"Update",$properties,$description);
+		// activity('branch')
+		// 	->performedOn($branchModel)
+		// 	->causedBy(auth()->user()) // Log who did the action
+		// 	->withCompany(session('company_id'))
+		// 	->withBranch(session('branch'))
+		// 	->withProperties([
+		// 		'branch_name' => $request->branchname,
+		// 		'branch_address' => $request->br_address,
+		// 		'branch_ptcl' => $request->br_ptcl,
+		// 		'branch_mobile' => $request->br_mobile,
+		// 		'branch_email' => $request->br_email,
+		// 		'code' => $request->br_code,
+		// 		'record_daily_stock' => $request->record_daily_stock,
+		// 		'branch_logo' => $imageName,
+		// 	])
+		// 	->setEvent("Update")
+		// 	->log(auth()->user()->fullname . " updated the branch.");
 
 		return 1;
 	}

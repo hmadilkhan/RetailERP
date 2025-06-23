@@ -16,13 +16,14 @@ trait ActivityLoggerTrait
      * @param string|null $description
      * @return void
      */
-    public function logActivity(string $logName, string $eventType, $subject = null, ?array $properties = null, ?string $description = null)
+    public function logActivity(string $logName, \Illuminate\Database\Eloquent\Model $model, string $eventType,?array $properties = null, ?string $description = null)
     {
         $activity = activity($logName)
+            ->performedOn($model)
             ->causedBy(Auth::user());
 
-        if ($subject) {
-            $activity->performedOn($subject);
+        if ($model) {
+            $activity->performedOn($model);
         }
 
         if (!empty($properties)) {

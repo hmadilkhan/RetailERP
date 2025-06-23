@@ -128,6 +128,8 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
     Route::put('/quickbooks/customer/{id}', [QuickBooksController::class, 'updateCustomer']);
     Route::delete('/quickbooks/customer/{id}', [QuickBooksController::class, 'deleteCustomer']);
 
+    
+
 });
 
 Route::get('/view-inventory', ViewInventory::class);
@@ -1123,6 +1125,10 @@ Route::middleware(['statusCheck'])->group(function () {
     /******************************* OPENING CLOSING STARTS HERE **********************************/
     Route::get('/opening-closing', 'OpeningClosingController@index')->name("opening.closing");
     /******************************* OPENING CLOSING ENDS HERE **********************************/
+
+    /******************************* OPEN AI LINKS START **********************************/
+    Route::get('/generate-story', [App\Http\Controllers\OpenAIController::class, 'generateStory']);
+    /******************************* OPEN AI LINKS END **********************************/
 });
 
 
