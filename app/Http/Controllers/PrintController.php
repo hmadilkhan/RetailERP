@@ -693,16 +693,15 @@ class PrintController extends Controller
         //A set
         $code='ABCDEFG123456';
         $pdf->Code128(7,13,$request->code,45,12);
-        $pdf->SetXY(5,5);
+        
 //        $pdf->cell(60,10,number_format($request->price,0));
-        $pdf->text(15,32,"PRICE : ".number_format($request->price)." RS");
+        $labelWidth = 60; // width of the label in mm
+        $textWidth = $pdf->GetStringWidth($request->code);
+        $x = ($labelWidth - $textWidth) / 2;
+        $pdf->text($x, 30, $request->code);
+        $pdf->SetXY(5,5);
+        $pdf->text(15,36,"PRICE : ".number_format($request->price)." RS");
 
-
-        //A,C,B sets
-//        $code='ABCDEFG1234567890AbCdEf';
-//        $pdf->Code128(7,15,$code,45,12);
-//        $pdf->SetXY(10,5);
-//        $pdf->text(7,32,"HEAD & SHOULDER");
 
 
           //save file
@@ -738,8 +737,13 @@ class PrintController extends Controller
         //A set
         $code='ABCDEFG123456';
         $pdf->Code128(1,7,$request->code,27,5);
+        $labelWidth = 28; // width of the label in mm
+        $textWidth = $pdf->GetStringWidth($request->code);
+        $x = ($labelWidth - $textWidth) / 2;
+        $pdf->text($x, 14, $request->code); // Adjust Y as needed
+
         $pdf->SetXY(5,5);
-        $pdf->text(7,15,"PRICE : ".number_format($request->price)." Rs");
+        $pdf->text(7,17,"PRICE : ".number_format($request->price)." Rs");
 
 
         //save file
@@ -774,9 +778,19 @@ class PrintController extends Controller
 
         //A set
         $code='ABCDEFG123456';
-        $pdf->Code128(1,7,$request->code,27,5);$pdf->Code128(32.5,7,$request->code,27,5);
+        // $pdf->Code128(1,7,$request->code,27,5);$pdf->Code128(32.5,7,$request->code,27,5);
+        // Show Code Here
+        $pdf->Code128(1,7,$request->code,27,5);
+        $pdf->Code128(32.5,7,$request->code,27,5);
+        // Show Code Here
+        $textWidth = $pdf->GetStringWidth($request->code);
+        $x1 = 1 + (27 - $textWidth) / 2;
+        $x2 = 32.5 + (27 - $textWidth) / 2;
+        $y = 14; // Adjust Y as needed
+        $pdf->text($x1, $y, $request->code);
+        $pdf->text($x2, $y, $request->code);
         $pdf->SetXY(5,5);
-        $pdf->text(7,15,"PRICE : ".number_format($request->price)." Rs");$pdf->text(38,15,"PRICE : ".number_format($request->price)." Rs");
+        $pdf->text(7,16,"PRICE : ".number_format($request->price)." Rs");$pdf->text(38,16,"PRICE : ".number_format($request->price)." Rs");
 
 
         //save file
@@ -802,15 +816,33 @@ class PrintController extends Controller
 //        $pdf->SetMargins(0,0,0,0);
 
         $pdf->SetFont('Arial','B',6);//8,55,8
-//        $pdf->cell(8,-15,strtoupper($company[0]->name),0,0,"C");$pdf->cell(55,-15,strtoupper($company[0]->name),0,0,"C");$pdf->cell(8,-15,strtoupper($company[0]->name),0,1,"C");
-//        $pdf->cell(8,-10,strtoupper($request->name),0,1,"C");
-        $pdf->text($name_margin1,3,strtoupper($request->name)); $pdf->text($name_margin2,3,strtoupper($request->name));$pdf->text($name_margin3,3,strtoupper($request->name));//2,33.5,63
+
+        if($request->printheader == "branch"){
+			$branch = DB::table("branch")->where("branch_id",session("branch"))->get("branch_name");
+			$pdf->cell(3,-15,strtoupper($branch[0]->branch_name),0,0,"C");$pdf->cell(33.5,-15,strtoupper($branch[0]->branch_name),0,0,"C");$pdf->cell(63.5,-15,strtoupper($branch[0]->branch_name),0,1,"C"); 
+		 }else{
+            $pdf->cell(3,-15,strtoupper($company[0]->name),0,0,"C");$pdf->cell(33.5,-15,strtoupper($company[0]->name),0,0,"C");$pdf->cell(63.5,-15,strtoupper($company[0]->name),0,1,"C"); 
+		 }
+
+        $pdf->text($name_margin1,5,strtoupper($request->name)); $pdf->text($name_margin2,5,strtoupper($request->name));$pdf->text($name_margin3,5,strtoupper($request->name));//2,33.5,63
 
         //A set
         $code='ABCDEFG123456';
-        $pdf->Code128(3,4,$request->code,24,10);$pdf->Code128(33.5,4,$request->code,24,10);$pdf->Code128(63.5,4,$request->code,24,10);
+        $pdf->Code128(3,6,$request->code,24,7);
+        $pdf->Code128(33.5,6,$request->code,24,7);
+        $pdf->Code128(63.5,6,$request->code,24,7);
+        // HERE
+        $textWidth = $pdf->GetStringWidth($request->code);
+        $x1 = 3 + (24 - $textWidth) / 2;
+        $x2 = 33.5 + (24 - $textWidth) / 2;
+        $x3 = 63.5 + (24 - $textWidth) / 2;
+        $y = 16; // Adjust Y as needed
+        $pdf->text($x1, $y, $request->code);
+        $pdf->text($x2, $y, $request->code);
+        $pdf->text($x3, $y, $request->code);
+        // HERE
         $pdf->SetXY(5,5);
-        $pdf->text(7,17,"PRICE : ".number_format($request->price)." ");$pdf->text(38.5,17,"PRICE : ".number_format($request->price)." ");$pdf->text(69.5,17,"PRICE : ".number_format($request->price)." ");
+        $pdf->text(7,18,"PRICE : ".number_format($request->price)." ");$pdf->text(38.5,18,"PRICE : ".number_format($request->price)." ");$pdf->text(69.5,18,"PRICE : ".number_format($request->price)." ");
 
 
         //save file
@@ -844,8 +876,12 @@ class PrintController extends Controller
         //A set
         $code='ABCDEFG123456';
         $pdf->Code128(1,10,$code,35,8);
+        $labelWidth = 38; // width of the label in mm
+        $textWidth = $pdf->GetStringWidth($request->code);
+        $x = ($labelWidth - $textWidth) / 2;
+        $pdf->text($x, 21, $request->code); 
         $pdf->SetXY(5,5);
-        $pdf->text(7,22,"PRICE : ".number_format($request->price)." Rs");
+        $pdf->text(4,26,"PRICE : ".number_format($request->price)." Rs");
 
 
         //save file
@@ -875,14 +911,18 @@ class PrintController extends Controller
 			$pdf->cell(20,-13,strtoupper($company[0]->name),0,1,"C");
 		}
         
-        $pdf->cell(16,-10,strtoupper("Classic Flavor"),0,1,"C");
-        $pdf->text($name_margin,8,strtoupper($request->name));
+        // $pdf->cell(16,-10,strtoupper("Classic Flavor"),0,1,"C");
+        $pdf->text($name_margin,7,strtoupper($request->name));
 
         //A set
         $code='ABCDEFG123456';
-        $pdf->Code128(1,9,$code,38,5);
-        $pdf->SetXY(5,5);
-        $pdf->text(8,18,"PRICE : ".number_format($request->price)." Rs");
+        $pdf->Code128(1,8,$code,38,5);
+        $labelWidth = 40; // width of the label in mm
+        $textWidth = $pdf->GetStringWidth($request->code);
+        $x = ($labelWidth - $textWidth) / 2;
+        $pdf->text($x, 16, $request->code); 
+        // $pdf->SetXY(5,5);
+        $pdf->text(8,19,"PRICE : ".number_format($request->price)." Rs");
 
 
         //save file
@@ -897,7 +937,7 @@ class PrintController extends Controller
     public function labelPrintingdouble4020(Request $request,Vendor $vendor,order $order)
     {
         $name_margin1 = ($request->name_margin1 == 0 ? 1 : $request->name_margin1);
-        $name_margin2 = ($request->name_margin2 == 0 ? 46 : $request->name_margin2);
+        $name_margin2 = ($request->name_margin2 == 0 ? 47 : $request->name_margin2);
         $company = $vendor->company(session('company_id'));
 
         $pdf = new labelPrinter();
@@ -910,16 +950,23 @@ class PrintController extends Controller
 			$branch = DB::table("branch")->where("branch_id",session("branch"))->get("branch_name");
 			$pdf->cell(20,-13,strtoupper($branch[0]->branch_name),0,0,"C");$pdf->cell(71,-13,strtoupper($branch[0]->branch_name),0,1,"C");
 		}else{
-			$pdf->cell(20,-13,strtoupper($company[0]->name),0,0,"C");$pdf->cell(71,-13,strtoupper($company[0]->name),0,1,"C");
+			$pdf->cell(20,-15,strtoupper($company[0]->name),0,0,"C");$pdf->cell(71,-15,strtoupper($company[0]->name),0,1,"C");
 		}
-        $pdf->cell(16,-10,strtoupper("Classic Flavor"),0,0,"C");$pdf->cell(16,-10,strtoupper("Classic Flavor"),0,1,"C");
-        $pdf->text($name_margin1,8,strtoupper($request->name));$pdf->text($name_margin2,8,strtoupper($request->name));
+        // $pdf->cell(16,-10,strtoupper("Classic Flavor"),0,0,"C");$pdf->cell(16,-10,strtoupper("Classic Flavor"),0,1,"C");
+        $pdf->text($name_margin1,6,strtoupper($request->name));$pdf->text($name_margin2,6,strtoupper($request->name));
 
         //A set
         $code='ABCDEFG123456';
-        $pdf->Code128(1,9,$request->code,38,8);$pdf->Code128(47,9,$request->code,38,8);
+        $pdf->Code128(1,7,$request->code,38,8);$pdf->Code128(47,7,$request->code,38,8);
+        $textWidth = $pdf->GetStringWidth($request->code);
+        $x1 = 1 + (38 - $textWidth) / 2;
+        $x2 = 47 + (38 - $textWidth) / 2;
+        $y = 18; // Adjust Y as needed to be just below the barcode
+
+        $pdf->text($x1, $y, $request->code);
+        $pdf->text($x2, $y, $request->code);
         $pdf->SetXY(5,5);
-        $pdf->text(7,21,"PRICE : ".number_format($request->price)." Rs");$pdf->text(55,21,"PRICE : ".number_format($request->price)." Rs");
+        $pdf->text(7,22,"PRICE : ".number_format($request->price)." Rs");$pdf->text(55,22,"PRICE : ".number_format($request->price)." Rs");
 
 
         //save file
