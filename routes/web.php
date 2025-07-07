@@ -235,9 +235,9 @@ Route::middleware(['roleChecker'])->group(function () {
     // admin company//
     Route::resource('company', AdminCompanyController::class);
     Route::post('/insert-company', [AdminCompanyController::class, 'store']);
-    Route::post('/delete-company', [AdminCompanyController::class, 'destroy']);
+    Route::post('/delete-company/{id}', [AdminCompanyController::class, 'destroy']);
     Route::get('/company-edit/{id}', [AdminCompanyController::class, 'edit']);
-    Route::post('/update-company', [AdminCompanyController::class, 'update']);
+    Route::put('/update-company/{id}', [AdminCompanyController::class, 'update'])->name('company.update');
 
     // admin branch//
     Route::get('/view-branch', [AdminBranchController::class, 'index']);
@@ -1135,3 +1135,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
 // optimize image link
 // Route::get('image-optimize/{image}', [InventoryController::class, 'imageOptimize'])->name("imageOptimize");
+
+Route::group(['middleware' => ['auth']], function () {
+    Route::get('/chat', \App\Livewire\Chat::class)->name('chat');
+});

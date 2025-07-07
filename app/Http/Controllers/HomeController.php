@@ -143,14 +143,6 @@ class HomeController extends Controller
             $heads = $dash->lastDayDetails($request->terminal);
             return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));
         }
-        // } else {
-        //     if (!empty($heads)) {
-        //         return view('Users.partial', compact('heads', 'terminal_name', 'result'));
-        //     } else {
-        //         $heads = $dash->lastDayDetails($request->terminal);
-        //         return view('Users.partial', compact('heads', 'terminal_name', 'result'));
-        //     }
-        // }
     }
 
     public function lastDayHeads(Request $request, dashboard $dash, userDetails $users)
@@ -159,8 +151,6 @@ class HomeController extends Controller
         $result = $users->getPermission($request->terminal);
         $terminal_name = $users->getTerminalName($request->terminal);
         $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->openingId);
-        // return response()->json(["heads" => $heads]);
-        // return view('Users.partial', compact('heads', 'terminal_name', 'result'));
         return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));
     }
 

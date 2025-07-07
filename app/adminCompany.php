@@ -31,13 +31,13 @@ class adminCompany extends Model
     	return $city;
     }
 
-    public function insert($items)
+    public static function insert($items)
     {
         $result = DB::table('company')->insertGetId($items);
         return $result;   
     } 
 
-    public function updateCompany($items,$id)
+    public static function updateCompany($items,$id)
     {
         if((DB::table('company')->where('company_id',$id)->update($items)))
         {
@@ -49,7 +49,7 @@ class adminCompany extends Model
         }
     }
 
-    public function getCompanyById($id){
+    public static function getCompanyById($id){
         $result = DB::select('SELECT a.* FROM company a
         INNER JOIN city b ON b.city_id = a.city_id
         INNER JOIN accessibility_mode c ON c.status_id = a.status_id

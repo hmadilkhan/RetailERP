@@ -677,7 +677,8 @@ class PrintController extends Controller
 		
         $pdf = new labelPrinter();//'L','mm',array(38,28)
         $pdf->AliasNbPages();
-        $pdf->AddPage('L',array(60,40));
+        $pdf->AddPage('L',array(50,25));
+        // $pdf->AddPage('L',array(60,40));
 //        $pdf->SetMargins(0,0,0,0);
 
          $pdf->SetFont('Arial','B',11);

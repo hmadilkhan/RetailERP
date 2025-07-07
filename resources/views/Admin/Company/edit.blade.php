@@ -15,8 +15,9 @@
          </div>      
 
        <div class="card-block">
-       <form method="post" action="{{ url('update-company') }}" class="form-horizontal" enctype="multipart/form-data">	        
+       <form method="post" action="{{ route('company.update',$company[0]->company_id) }}" class="form-horizontal" enctype="multipart/form-data">	        
         @csrf
+        @method('PUT')
        	 <div class="row">
            <div class="col-lg-4 col-md-4">
             <input type="hidden" name="company_id" id="company_id" value="{{$company[0]->company_id}}">

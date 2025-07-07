@@ -19,7 +19,7 @@ use Spatie\Activitylog\Models\Activity;
 
 class BranchController extends Controller
 {
-	use MediaTrait,ActivityLoggerTrait;
+	use MediaTrait, ActivityLoggerTrait;
 
 	public function __construct()
 	{
@@ -105,24 +105,35 @@ class BranchController extends Controller
 						]);
 					}
 				}
-
-				activity('branch')
-					->performedOn($branch)
-					->causedBy(auth()->user()->id) // Log who did the action
-					->withCompany(session('company_id'))
-					->withBranch(session('branch'))
-					->withProperties([
-						'branch_name' => $request->branchname,
-						'branch_address' => $request->br_address,
-						'branch_ptcl' => $request->br_ptcl,
-						'branch_mobile' => $request->br_mobile,
-						'branch_email' => $request->br_email,
-						'code' => $request->br_code,
-						'record_daily_stock' => $request->record_daily_stock,
-						'branch_logo' => $file["fileName"],
-					])
-					->setEvent("Create")
-					->log(auth()->user()->fullname . " created the new branch with name {$request->branchname}.");
+				$properties = [
+					'branch_name' => $request->branchname,
+					'branch_address' => $request->br_address,
+					'branch_ptcl' => $request->br_ptcl,
+					'branch_mobile' => $request->br_mobile,
+					'branch_email' => $request->br_email,
+					'code' => $request->br_code,
+					'record_daily_stock' => $request->record_daily_stock,
+					'branch_logo' => $file["fileName"],
+				];
+				$description = auth()->user()->fullname . " created the new branch with name {$request->branchname}.";
+				$this->logActivity('branch', $branch, "Create", $properties, $description);
+				// activity('branch')
+				// 	->performedOn($branch)
+				// 	->causedBy(auth()->user()->id) // Log who did the action
+				// 	->withCompany(session('company_id'))
+				// 	->withBranch(session('branch'))
+				// 	->withProperties([
+				// 		'branch_name' => $request->branchname,
+				// 		'branch_address' => $request->br_address,
+				// 		'branch_ptcl' => $request->br_ptcl,
+				// 		'branch_mobile' => $request->br_mobile,
+				// 		'branch_email' => $request->br_email,
+				// 		'code' => $request->br_code,
+				// 		'record_daily_stock' => $request->record_daily_stock,
+				// 		'branch_logo' => $file["fileName"],
+				// 	])
+				// 	->setEvent("Create")
+				// 	->log(auth()->user()->fullname . " created the new branch with name {$request->branchname}.");
 				DB::commit();
 				return 1;
 			} else {
@@ -151,14 +162,17 @@ class BranchController extends Controller
 			"updated_at" => date("Y-m-d H:i:s"),
 		]);
 		$this->removeImage("images/branch/", $details[0]->branch_logo);
-		activity('branch')
-			->performedOn($branchModel)
-			->causedBy(auth()->user()) // Log who did the action
-			->withCompany(session('company_id'))
-			->withBranch(session('branch'))
-			// ->withProperties()
-			->setEvent("Delete")
-			->log(auth()->user()->fullname . " deleted the branch.");
+		$properties = [];
+		$description = auth()->user()->fullname . " deleted the branch.";
+		$this->logActivity('branch', $branchModel, "Delete", $properties, $description);
+		// activity('branch')
+		// 	->performedOn($branchModel)
+		// 	->causedBy(auth()->user()) // Log who did the action
+		// 	->withCompany(session('company_id'))
+		// 	->withBranch(session('branch'))
+		// 	// ->withProperties()
+		// 	->setEvent("Delete")
+		// 	->log(auth()->user()->fullname . " deleted the branch.");
 
 		return 1;
 	}
@@ -230,7 +244,7 @@ class BranchController extends Controller
 			'branch_logo' => $imageName,
 		];
 		$description = auth()->user()->fullname . " updated the branch.";
-		$this->logActivity('branch',$branchModel,"Update",$properties,$description);
+		$this->logActivity('branch', $branchModel, "Update", $properties, $description);
 		// activity('branch')
 		// 	->performedOn($branchModel)
 		// 	->causedBy(auth()->user()) // Log who did the action
