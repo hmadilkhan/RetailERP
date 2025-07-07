@@ -171,6 +171,8 @@ Route::get('/voucher/{receipt}', [PrintController::class, 'printVoucher']);
 Route::get('/try/{receipt}', [PrintController::class, 'try']);
 /******************************* 60 x 40 *******************************/
 Route::get('/6040single', [PrintController::class, 'labelPrintingsixtyforty']);
+/******************************* 25 x 50 *******************************/
+Route::get('/2550single', [PrintController::class, 'labelPrintingtwentyfivefivty']);
 /******************************* 19 x 28 *******************************/
 Route::get('/1928single', [PrintController::class, 'labelPrinting1928']);
 Route::get('/1928double', [PrintController::class, 'labeldoublePrinting1928']);

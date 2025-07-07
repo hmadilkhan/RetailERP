@@ -120,6 +120,7 @@
 						<label class="form-control-label "><i class="icofont icofont-barcode"></i>Select Size</label>
 						<select class="select2" id="labelsize" data-placeholder="Select Size">
 							<option value="">Select Size</option>
+							<option value="2550">25 x 50</option>
 							<option value="6040">60 x 40</option>
 							<option value="1928">19 x 28</option>
 							<option value="3828">38 x 28</option>
