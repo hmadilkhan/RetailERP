@@ -695,7 +695,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     //Inventory Stock
     Route::get('/stock-list', [StockController::class, 'index']);
-    Route::get('/stock-details/{id}', [StockController::class, 'getStock']);
+    Route::get('/stock-details/{id}/{branch}', [StockController::class, 'getStock']);
     Route::get('/branchwise-stock', [StockController::class, 'brnchwisestock']);
     Route::get('/stockReportPDF', [StockController::class, 'stockReportPDF']);
     Route::post('/stockFilter', [StockController::class, 'stockFilter']);

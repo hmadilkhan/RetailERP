@@ -32,7 +32,9 @@ class StockController extends Controller
         $stocks = $stock->getStockByBranch($request->id);
         $details = $stock->getStockDateWiseDetails($request->id);
         $product = $stock->getProductName($request->id);
-        $report = $stock->getProductReport($request->id, session('branch'));
+        
+        $report = $stock->getProductReport($request->id, $request->branch);
+        
         $pricelogs = $stock->getCostPriceLogs($request->id);
         $product_id = $request->id;
         $conversion_unit = DB::table("inventory_general")->where("id", $request->id)->get("weight_qty");

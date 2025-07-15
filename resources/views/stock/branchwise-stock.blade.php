@@ -445,9 +445,7 @@
 
 
 
-                            "<td class='action-icon'><a class='m-r-10' onclick='show(" + result.data[count]
-                            .id +
-                            ")' data-toggle='tooltip' data-placement='top' data-original-title='View'><i class='icofont icofont-eye-alt text-primary f-18' ></i></a></td>" +
+                            "<td class='action-icon'><a class='m-r-10' onclick='show(" + result.data[count].id +"," + branchid +")' data-toggle='tooltip' data-placement='top' data-original-title='View'><i class='icofont icofont-eye-alt text-primary f-18' ></i></a></td>" +
 
 
                             "</tr>"
@@ -457,9 +455,9 @@
             });
         }
 
-        function show(id) {
+        function show(id,branch) {
 
-            window.location = "{{ url('/stock-details') }}" + "/" + id;
+            window.location = "{{ url('/stock-details') }}" + "/" + id + "/" + branch;
 
         }
     </script>
