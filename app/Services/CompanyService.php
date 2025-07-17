@@ -98,9 +98,10 @@ class CompanyService
             $myObj = new \stdClass();
             $myObj->currency = $data['currency'];
             $myJSON = json_encode($myObj);
-            DB::table('settings')->where('company_id', $id)->update([
-                'data' => $myJSON,
-            ]);
+            DB::table('settings')->updateOrInsert(
+                ['company_id' => $id], // Search conditions
+                ['data' => $myJSON]    // Fields to update or insert
+            );
         }
         return $result;
     }
