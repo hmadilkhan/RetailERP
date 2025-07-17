@@ -82,7 +82,8 @@ class AdminCompanyController extends Controller
             } else {
                 $data['ordercallingbgimg'] = '';
             }
-
+            $data["currency"] =  $request->currency;
+            $data["package"] =  $request->package;
             $companyId = $this->companyService->create($data);
             $this->branchService->createHeadOffice($companyId, $data);
             return redirect()->route('company.index')->with('success', 'Company created successfully.');
@@ -122,7 +123,7 @@ class AdminCompanyController extends Controller
     {
         try {
             $data = $request->validated();
-
+       
             // Handle file uploads
             if ($request->hasFile('vdimg')) {
                 $file = $this->uploads($request->file('vdimg'), 'images/company/', $request->input('prev_logo'));
@@ -144,7 +145,9 @@ class AdminCompanyController extends Controller
             } else {
                 $data['ordercallingbgimg'] = $request->input('prev_order_calling_display');
             }
-
+            $data["currency"] =  $request->currency;
+            $data["package"] =  $request->package;
+        
             $this->companyService->update($id, $data);
             return redirect()->route('company.index')->with('success', 'Company updated successfully.');
         } catch (\Exception $e) {
