@@ -1082,7 +1082,7 @@ nav .navbar{
                     success: function(resp) {
                         if (resp.status == 200) {
                             swal({
-                                title: "Deleted",
+                                title: "Void",
                                 text: resp.message,
                                 type: "success"
                             }, function(isConfirm) {

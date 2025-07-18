@@ -4,6 +4,11 @@ namespace App\Services;
 
 use App\department;
 use App\Models\Branch;
+use App\Models\Grn;
+use App\Models\Inventory;
+use App\Models\InventoryStock;
+use App\Models\InventoryStockReport;
+use App\Models\PurchaseRecStockAdjustment;
 use App\Models\StockReport;
 use Illuminate\Support\Facades\DB;
 
@@ -197,7 +202,7 @@ class StockAdjustmentService
         // ");
     }
 
-    public function getStockReport($from, $to, $branch, $department,$subdepartment)
+    public function getStockReport($from, $to, $branch, $department, $subdepartment)
     {
         if ($branch == "") {
             $branch = 283;
@@ -258,7 +263,7 @@ class StockAdjustmentService
             ->when($department != "" && $department != "all", function ($query) use ($department) {
                 $query->where("inv.department_id", $department);
             })
-            ->when($subdepartment != "", function ($query) use ($department,$subdepartment) {
+            ->when($subdepartment != "", function ($query) use ($department, $subdepartment) {
                 $query->where("inv.sub_department_id", $subdepartment);
             })
             ->groupBy('ds1.product_id', 'opening_stock_cte.opening_date') //'closing_stock_cte.closing_date'
@@ -268,5 +273,82 @@ class StockAdjustmentService
 
             // Paginate the result
             ->paginate(50); // Adjust the number of results per page as needed
+    }
+
+    public function AddStockInDatabase(int $productId, float $qty, float $costprice, int $branchId)
+    {
+
+        try {
+            // DB::transaction(function () use ($productId, $qty, $costprice, $branchId) {
+
+            // Get next GRN number
+            $latestGrn = Grn::latest()->first();
+            $grnNumber = $latestGrn ? (intval(str_replace('GRN-', '', $latestGrn->grn_number)) + 1) : 1;
+
+            $grn = Grn::create([
+                'GRN' => 'GRN-' . $grnNumber,
+                'user_id' => session('userid'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            // Insert GRN stock adjustment
+            PurchaseRecStockAdjustment::create([
+                'GRN' => $grn->rec_id,
+                'item_id' => $productId,
+                'qty_rec' => $qty,
+            ]);
+
+            // Get UOM for product
+            $product = Inventory::findOrFail($productId);
+
+            // Insert into inventory_stock
+            $stock = InventoryStock::create([
+                'grn_id' => $grn->rec_id,
+                'product_id' => $product->id,
+                'uom' => $product->uom_id,
+                'cost_price' => $costprice,
+                'retail_price' => "0.00",
+                'wholesale_price' => "0.00",
+                'discount_price' => "0.00",
+                'qty' => $qty,
+                'balance' => $qty,
+                'status_id' => 1,
+                'branch_id' => $branchId,
+            ]);
+
+            // Get last stock from stock report
+            $lastStock = InventoryStockReport::where('product_id', $product->id)
+                ->latest('date')
+                ->first();
+
+            $currentStock = $lastStock ? $lastStock->stock + $qty : $qty;
+
+            // Insert into stock report
+            InventoryStockReport::create([
+                'date' => now(),
+                'product_id' => $productId,
+                'foreign_id' => $stock->stock_id,
+                'branch_id' => $branchId,
+                'qty' => $qty,
+                'stock' => $currentStock,
+                'cost' => $costprice,
+                'retail' => "0.00",
+                'narration' => "Stock Return",
+                'adjustment_mode' => 1, // 1 for positive
+            ]);
+
+            return response()->json(['status' => 'success', 'grn' => $grn->rec_id]);
+            // });
+        } catch (\Throwable $e) {
+            // ❌ Handle exception
+            \Log::error('GRN Transaction Failed: ' . $e->getMessage(), [
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return response()->json(['status' => 'error', 'message' => 'Something went wrong while creating GRN.'], 500);
+        }
     }
 }

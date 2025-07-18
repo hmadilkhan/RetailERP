@@ -177,17 +177,17 @@ class OrderController extends Controller
     public function statusUpdate_websiteOrder(Request $request, order $order)
     {
         // $order->updateStatusOrder($request->id, $request->status, 0);
-        $orderModel = OrderModel::with('website', 'customer','orderStatus')->findOrFail($request->id);
+        $orderModel = OrderModel::with('website', 'customer', 'orderStatus')->findOrFail($request->id);
         // return $orderModel;
         $url = $orderModel->website->url . '/orders/' . $orderModel->url_orderid . '/' . $orderModel->customer->id;
-        $status = OrderStatus::where("order_status_id",$request->status)->first();
+        $status = OrderStatus::where("order_status_id", $request->status)->first();
         $sentData = [
-            "customer"=>$orderModel->customer->name,
-            "orderno"=>$orderModel->url_orderid,
-            "amount"=> $orderModel->total_amount,
-            "website"=> $orderModel->website->name,
-            "status"=> $status->order_status_name,
-          ];
+            "customer" => $orderModel->customer->name,
+            "orderno" => $orderModel->url_orderid,
+            "amount" => $orderModel->total_amount,
+            "website" => $orderModel->website->name,
+            "status" => $status->order_status_name,
+        ];
         $this->sentWhatsAppMessageOrderTrack($orderModel->customer->mobile, $orderModel->website->name, $sentData, $url);
         if ($request->ordercode == null) {
             return 1;
@@ -836,18 +836,37 @@ class OrderController extends Controller
     }
 
 
-    public function makeReceiptVoid(Request $request)
+    public function makeReceiptVoid(Request $request, OrderService $orderService)
     {
         try {
-            if ($request->id != "") {
-                OrderModel::where("id", $request->id)->update(["void_receipt" => 1, "void_date" => date("Y-m-d H:i:s"), "status" => 12, "void_reason" => $request->reason]);
-                $order = OrderModel::findOrFail($request->id);
-                $this->sendPushNotification($order->id, $order->receipt_no, $order->terminal_id);
-                return response()->json(["status" => 200, "message" => "Receipt has been voided"]);
-            } else {
+            if (empty($request->id)) {
                 return response()->json(["status" => 403, "message" => "Order Id is null"]);
             }
-        } catch (\Exception $e) {
+            DB::transaction(function () use ($request, $orderService) {
+                $orderService->getVoidItemsOfReceipt($request->id);
+
+                OrderModel::where("id", $request->id)->update([
+                    "void_receipt" => 1,
+                    "void_date" => now(),
+                    "status" => 12,
+                    "void_reason" => $request->reason
+                ]);
+
+                $order = OrderModel::findOrFail($request->id);
+
+                $this->sendPushNotification($order->id, $order->receipt_no, $order->terminal_id);
+            });
+
+            return response()->json(["status" => 200, "message" => "Receipt has been voided"]);
+
+        } catch (\Throwable $e) {
+            \Log::error('Void Receipt Failed: ' . $e->getMessage(), [
+                'line' => $e->getLine(),
+                'file' => $e->getFile(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json(["status" => 500, "message" => "An error occurred while voiding the receipt"]);
         }
     }
 

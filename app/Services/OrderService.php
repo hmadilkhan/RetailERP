@@ -7,6 +7,7 @@ use App\Http\Resources\onlineSalesResource\ProductResource;
 use App\Models\Branch;
 use App\Models\CustomerAccount;
 use App\Models\Order;
+use App\Models\OrderDetails;
 use App\Models\OrderMode;
 use App\Models\OrderPayment;
 use App\Models\OrderStatus;
@@ -192,5 +193,24 @@ class OrderService
     {
         // return ServiceProviderOrders::with('serviceprovider')->where('receipt_id', $orderId)->first();
         return ServiceProviderRelation::with('serviceprovider')->where('user_id', $walletId)->first();
+    }
+
+    public function getVoidItemsOfReceipt(int $orderId)
+    {
+        try {
+            $stockService = app(\App\Services\StockAdjustmentService::class);
+
+            $details = OrderDetails::with("order")->where("receipt_id", $orderId)->get();
+
+            if (!empty($details)) {
+                foreach ($details as $key => $item) {
+                    $stockService->AddStockInDatabase($item->item_code, $item->total_qty, $item->item_price, $item->order->branch);
+                }
+            }
+            // return 1;
+        } catch (\Throwable $th) {
+            //throw $th;
+            // return 0;
+        }
     }
 }
