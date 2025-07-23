@@ -1,8 +1,48 @@
+<style>
+    /* Ensures checkboxes are centered and not overflowing */
+    #order_table th,
+    #order_table td {
+        vertical-align: middle;
+    }
+
+    #order_table th:first-child,
+    #order_table td:first-child {
+        min-width: 48px;
+        width: 48px;
+        max-width: 60px;
+        text-align: center;
+        padding-left: 0.25rem;
+        padding-right: 0.25rem;
+    }
+
+    #order_table {
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    @media (max-width: 576px) {
+
+        #order_table th,
+        #order_table td {
+            font-size: 0.85rem;
+            padding: 0.3rem;
+        }
+    }
+</style>
+<div class="col-md-12 mb-3 d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Orders</h5>
+    <div class="btn-group" role="group" aria-label="Bulk actions">
+        <button id="void-selected-btn" class="btn btn-danger" disabled>Mark as Void</button>
+        <button id="deliver-selected-btn" class="btn btn-success" disabled>Mark As Delivered</button>
+    </div>
+</div>
 <div class="col-md-12 table-responsive">
-    <table id="order_table" class="table table-striped table-bordered  nowrap flex-nowrap col-md-12 col-sm-12"
-        width="100%">
+    <table id="order_table" class="table table-striped  dt-responsive dataTable no-footer dtr-inline" width="100%">
         <thead>
             <tr>
+                <th style="width:40px; text-align:center;">
+                    <input type="checkbox" id="select-all-orders" class="form-check-input">
+                </th>
                 <th>Machine/Website</th>
                 <th>Order#</th>
                 <th>Date</th>
@@ -12,11 +52,11 @@
                 <th>Terminal</th>
                 <th>Receipt#</th>
                 <th>Customer</th>
-                <th>OrderType</th>
+                <th>Order Type</th>
                 <th>Payment</th>
                 <th>Status</th>
                 <th>Amount</th>
-                <th>Items/Total</th>
+                <th>Items / Total</th>
                 <th>Sales Person</th>
                 <th>Wallet</th>
                 <th>Action</th>
@@ -25,14 +65,18 @@
         <tbody>
             @if ($orders->isNotEmpty())
                 @foreach ($orders as $key => $order)
-                    <tr id="parent{{ $order->id }}" class="{{ $order->is_sale_return == 1 ? 'table-danger' : '' }} main-row pointer">
+                    <tr id="parent{{ $order->id }}"
+                        class="{{ $order->is_sale_return == 1 ? 'table-danger' : '' }} main-row pointer">
+                        <td style="text-align:center;">
+                            <input type="checkbox" class="form-check-input order-checkbox" value="{{ $order->id }}">
+                        </td>
                         <td>{{ $order->web == 1 ? strtoupper($order->url_orderid) : $order->machine_terminal_count }}
                         </td>
                         <td>{{ $order->id }}</td>
-                        <td>
-                            <div class="btn-group dropend border border-black">
-                                <button type="button" class="btn btn-default dropdown-toggle" data-bs-toggle="dropdown"
-                                    aria-expanded="false">
+                        <td style="width:100px;">
+                            <div style="width:80px;" class="btn-group dropend border border-black">
+                                <button type="button" class="btn btn-sm btn-default dropdown-toggle"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     {{ date('d M Y ', strtotime($order->date)) }}
                                 </button>
                                 <ul class="dropdown-menu px-4">
@@ -128,112 +172,208 @@
                                                     onclick='assignToBranchModal("{{ $order->id }}")'
                                                     class='icofont icofont icofont-business-man mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
-                                                    data-original-title='Assign to Branch'></i>Assign to Branch</a></li>
+                                                    data-original-title='Assign to Branch'></i>Assign to Branch</a>
+                                        </li>
                                     @endif
-                                    @if (in_array(session('roleId'), [1,2,4]))
-                                    <li onclick='discountReceipt("{{ $order->id }}")'><a class="dropdown-item"><i
-                                        onclick='discountReceipt("{{ $order->id }}")'
-                                        class='alert-confirm text-info icofont icofont icofont-sale-discount mx-2'
-                                        data-toggle='tooltip' data-placement='top' title=''
-                                        data-original-title='Mark as Void'></i>Add Discount</a></li>
+                                    @if (in_array(session('roleId'), [1, 2, 4]))
+                                        <li onclick='discountReceipt("{{ $order->id }}")'><a
+                                                class="dropdown-item"><i
+                                                    onclick='discountReceipt("{{ $order->id }}")'
+                                                    class='alert-confirm text-info icofont icofont icofont-sale-discount mx-2'
+                                                    data-toggle='tooltip' data-placement='top' title=''
+                                                    data-original-title='Mark as Void'></i>Add Discount</a></li>
                                     @endif
                                 </ul>
                             </div>
                         </td>
                     </tr>
-                    {{-- <tr class="details-row">
-                        <td colspan="16">
-                         <h3 class="text-center">Receipt Details</h3>
-                         <h4 class="text-center" id="child-receiptNo{{ $order->id }}"></h4>
-                            <div class="container">
-                            <table id="child{{ $order->id }}" class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Item Code</th>
-                                        <th>Item Name</th>
-                                        <th>Item Price</th>
-                                        <th>Item Quantity</th>
-                                        <th>Total Price</th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                            </div>
-                        </td>
-                    </tr> --}}
                 @endforeach
             @else
                 <tr>
-                    <td colspan="15" class="text-center">No Record Found</td>
+                    <td colspan="18" class="text-center">No Record Found</td>
                 </tr>
             @endif
         </tbody>
     </table>
     <div class="col-md-12">
-    {{ $orders->links('pagination::bootstrap-4') }}
+        {{ $orders->links('pagination::bootstrap-4') }}
     </div>
 </div>
+<!-- Delivery Date Modal -->
+<div class="modal fade in" id="deliveryDateModal" tabindex="-1" aria-labelledby="deliveryDateModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deliveryDateModalLabel">Enter Delivery Date</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="delivery-date-input" class="form-label">Delivery Date</label>
+                    <input type="date" class="form-control" id="delivery-date-input">
+                    <div class="invalid-feedback" id="delivery-date-error">Please select a delivery date.</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirm-delivery-date-btn">Mark As
+                    Delivered</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Void Reason Modal -->
+<div class="modal fade in" id="void-modal" tabindex="-1" role="dialog" aria-labelledby="voidModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="voidModalLabel">Void Order(s)</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="voidId" value="">
+        <div class="form-group">
+          <label for="reason">Reason for voiding:</label>
+          <textarea id="reason" class="form-control"></textarea>
+          <span id="reason_message" class="text-danger"></span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-void-btn">Void</button>
+      </div>
+    </div>
+  </div>
+</div>
 <script type="text/javascript">
-/*
-$(document).ready(function() {
- // Click event for opening and closing details
- $('#order_table').on('click', 'tr.main-row', function() {
-        let row = $(this);
-        let detailsRow = row.next('.details-row');
-
-        // Toggle the details row visibility
-        if (detailsRow.is(':visible')) {
-            detailsRow.hide();
-        } else {
-            detailsRow.show();
-            let id = row.attr('id');
-            $("#child-receiptNo"+id.replace('parent','')).text(id.replace('parent',''));
-            //swal('Loading','Please wait','info');
-            inLineOrderDetails(id.replace('parent',''));
-        }
-    });
-});
-
-function inLineOrderDetails(id){
-    $.ajax({
-            url: location.origin+"/sales/inline-order-details/"+id,
-            type: "GET",
-            data: {
-                receipt: id,
-            },
-            dataType: 'json',
-            async:false,
-            success: function(result,txtStatus,jaxStatus) {
-                console.log(result);
-                if (jaxStatus.status == 200) {
-                    $.each(result,function(i,v){
-                       $('#child'+id+" tbody").append(
-                            '<tr>'+
-                                '<td>'+v.item_code+'</td>'+
-                                '<td>'+v.item_name+'</td>'+
-                                '<td>'+v.item_price+'</td>'+
-                                '<td>'+v.total_qty+'</td>'+
-                                '<td>'+v.total_amount+'</td>'+
-                            '<tr>'
-                            );
-
-                    });
-                }
-            }
+    $(document).ready(function() {
+        $('#select-all-orders').on('change', function() {
+            $('.order-checkbox').prop('checked', this.checked);
+            toggleBulkActionBtns();
         });
-}
-*/
-    $(function() {
-        $('.collapse-item').click(function(e) {
-            e.preventDefault();
-
-            const target = $(this).data('target');
-
-            if (!$(target).hasClass('show')) {
-                $('.collapse-content').removeClass('show');
+        $(document).on('change', '.order-checkbox', function() {
+            if (!this.checked) {
+                $('#select-all-orders').prop('checked', false);
+            } else if ($('.order-checkbox:checked').length === $('.order-checkbox').length) {
+                $('#select-all-orders').prop('checked', true);
             }
+            toggleBulkActionBtns();
+        });
 
-            $(target).toggleClass('show');
+        function toggleBulkActionBtns() {
+            if ($('.order-checkbox:checked').length > 0) {
+                $('#void-selected-btn').prop('disabled', false);
+                $('#deliver-selected-btn').prop('disabled', false);
+            } else {
+                $('#void-selected-btn').prop('disabled', true);
+                $('#deliver-selected-btn').prop('disabled', true);
+            }
+        }
+        // Example bulk action handlers
+        let selectedOrderIdsForDelivery = [];
+        $('#deliver-selected-btn').off('click').on('click', function() {
+            let selectedOrderIds = $('.order-checkbox:checked').map(function() {
+                return $(this).val();
+            }).get();
+            if (selectedOrderIds.length === 0) {
+                alert('Please select at least one order.');
+                return;
+            }
+            selectedOrderIdsForDelivery = selectedOrderIds;
+            $('#delivery-date-input').val('');
+            $('#delivery-date-input').removeClass('is-invalid');
+            var deliveryModal = new bootstrap.Modal(document.getElementById('deliveryDateModal'));
+            deliveryModal.show();
+        });
+        $('#confirm-delivery-date-btn').on('click', function() {
+            let deliveryDate = $('#delivery-date-input').val();
+            if (!deliveryDate) {
+                $('#delivery-date-input').addClass('is-invalid');
+                return;
+            } else {
+                $('#delivery-date-input').removeClass('is-invalid');
+            }
+            let csrfToken = '{{ csrf_token() }}';
+            let completed = 0;
+            let total = selectedOrderIdsForDelivery.length;
+            let deliveryModalEl = document.getElementById('deliveryDateModal');
+            let deliveryModal = bootstrap.Modal.getInstance(deliveryModalEl);
+            selectedOrderIdsForDelivery.forEach(function(orderId) {
+                $.ajax({
+                    url: "{{ url('make-receipt-delivered') }}",
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        id: orderId,
+                        reason: deliveryDate
+                    },
+                    dataType: "json",
+                    complete: function() {
+                        completed++;
+                        if (completed === total) {
+                            deliveryModal.hide();
+                            alert(
+                                'Mark as Delivered requests sent for selected orders.');
+                            // Optionally, refresh the table here
+                            fetch_data(1);
+                        }
+                    }
+                });
+            });
+        });
+
+        let selectedOrderIdsForVoid = [];
+        $('#void-selected-btn').off('click').on('click', function() {
+            let selectedOrderIds = $('.order-checkbox:checked').map(function() {
+                return $(this).val();
+            }).get();
+            if (selectedOrderIds.length === 0) {
+                alert('Please select at least one order.');
+                return;
+            }
+            selectedOrderIdsForVoid = selectedOrderIds;
+            $('#voidId').val(selectedOrderIdsForVoid.join(','));
+            $('#reason').val('');
+            $('#reason_message').html('');
+            var voidModal = new bootstrap.Modal(document.getElementById('void-modal'));
+            voidModal.show();
+        });
+
+        $('#confirm-void-btn').off('click').on('click', function() {
+            $('#reason_message').html('');
+            let reason = $('#reason').val();
+            if (!reason) {
+                $('#reason_message').html('Please select reason');
+                return;
+            }
+            let csrfToken = '{{ csrf_token() }}';
+            let completed = 0;
+            let total = selectedOrderIdsForVoid.length;
+            let voidModalEl = document.getElementById('void-modal');
+            let voidModal = bootstrap.Modal.getInstance(voidModalEl);
+            selectedOrderIdsForVoid.forEach(function(orderId) {
+                $.ajax({
+                    url: "{{ url('make-receipt-void') }}",
+                    type: 'POST',
+                    data: {
+                        _token: csrfToken,
+                        id: orderId,
+                        reason: reason
+                    },
+                    dataType: "json",
+                    complete: function() {
+                        completed++;
+                        if (completed === total) {
+                            voidModal.hide();
+                            alert('Void requests sent for selected orders.');
+                            fetch_data(1);
+                        }
+                    }
+                });
+            });
         });
     });
 

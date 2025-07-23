@@ -1015,6 +1015,45 @@ nav .navbar{
             $("#void-modal").modal("show");
         }
 
+        function saveVoid() {
+            $("#reason_mesasge").html("");
+            if ($("#reason").val() == "") {
+                $("#reason_message").html("Please select reason");
+            } else {
+                $.ajax({
+                    url: "{{ url('make-receipt-void') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        id: $("#voidId").val(),
+                        reason: $("#reason").val()
+                    },
+                    dataType: "json",
+                    success: function(resp) {
+                        if (resp.status == 200) {
+                            swal({
+                                title: "Void",
+                                text: resp.message,
+                                type: "success"
+                            }, function(isConfirm) {
+                                if (isConfirm) {
+                                    fetch_data(1)
+                                    // window.location="{{ route('vendors.index') }}";
+                                    $("#reason_mesasge").html("");
+                                    $("#void-modal").modal("hide");
+                                    $("#voidId").val("");
+                                    $("#reason").val("")
+                                }
+                            });
+                            $("#voidId").val("");
+                            $("#reason").val("")
+                        }
+                    }
+
+                });
+            }
+        }
+
         function discountReceipt(id) {
             $("#orderDiscountId").val(id);
             $("#discount-modal").modal("show");
@@ -1065,44 +1104,7 @@ nav .navbar{
             }
         }
 
-        function saveVoid() {
-            $("#reason_mesasge").html("");
-            if ($("#reason").val() == "") {
-                $("#reason_message").html("Please select reason");
-            } else {
-                $.ajax({
-                    url: "{{ url('make-receipt-void') }}",
-                    type: 'POST',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: $("#voidId").val(),
-                        reason: $("#reason").val()
-                    },
-                    dataType: "json",
-                    success: function(resp) {
-                        if (resp.status == 200) {
-                            swal({
-                                title: "Void",
-                                text: resp.message,
-                                type: "success"
-                            }, function(isConfirm) {
-                                if (isConfirm) {
-                                    fetch_data(1)
-                                    // window.location="{{ route('vendors.index') }}";
-                                    $("#reason_mesasge").html("");
-                                    $("#void-modal").modal("hide");
-                                    $("#voidId").val("");
-                                    $("#reason").val("")
-                                }
-                            });
-                            $("#voidId").val("");
-                            $("#reason").val("")
-                        }
-                    }
-
-                });
-            }
-        }
+       
 
 
 
@@ -1195,5 +1197,9 @@ nav .navbar{
         var colors = ['#007bff', '#28a745', '#333333', '#c3e6cb', '#dc3545', '#6c757d'];
         var xaxis;
         var data;
+
+        // MULTIPLE CHECKBOXED LOGIC
+         // Checkbox selection logic
+        
     </script>
 @endsection
