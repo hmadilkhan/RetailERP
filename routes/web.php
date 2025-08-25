@@ -10,6 +10,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BusinessPoliciesController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\DeliveryController;
@@ -1140,4 +1141,5 @@ Route::middleware(['statusCheck'])->group(function () {
 
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/chat', \App\Livewire\Chat::class)->name('chat');
+    Route::get('/chats', [ChatController::class, 'index'])->name('chat.index');
 });
