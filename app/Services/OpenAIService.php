@@ -3,12 +3,24 @@
 namespace App\Services;
 
 use GuzzleHttp\Client;
+use Illuminate\Support\Facades\Log;
 
 class OpenAIService
 {
 	public function generateSql(string $prompt): string
 	{
 		$apiKey = config('services.openai.key');
+		
+		// Debug: Log the API key (remove this in production)
+		if (empty($apiKey)) {
+			$apiKey = env('OPENAI_API_KEY');
+			Log::warning('OpenAI API key not found in config, using env() directly');
+		}
+		
+		if (empty($apiKey)) {
+			throw new \Exception('OpenAI API key not configured. Please check your .env file.');
+		}
+		
 		$model = config('services.openai.model', 'gpt-4o-mini');
 		$client = new Client([
 			'base_uri' => 'https://api.openai.com/v1/',
