@@ -293,14 +293,22 @@ PROMPT;
 
 	private function resolveEntityId(array $rule, string $name): ?int
 	{
-		$connection = config('database.default');
-		$database = config("database.connections.$connection.database");
+		// Try exact match first
 		$params = [$name];
 		$where = [];
 		foreach ($rule['name_columns'] as $col) {
 			$where[] = "$col = ?";
 		}
 		$sql = "SELECT " . $rule['id_column'] . " AS id FROM " . $rule['table'] . " WHERE (" . implode(' OR ', $where) . ") LIMIT 1";
+		$row = DB::selectOne($sql, $params);
+		if (!empty($row?->id)) return (int)$row->id;
+		// Fallback to LIKE partial match
+		$params = array_fill(0, count($rule['name_columns']), "%$name%");
+		$where = [];
+		foreach ($rule['name_columns'] as $col) {
+			$where[] = "$col LIKE ?";
+		}
+		$sql = "SELECT " . $rule['id_column'] . " AS id FROM " . $rule['table'] . " WHERE (" . implode(' OR ', $where) . ") ORDER BY LENGTH(" . $rule['name_columns'][0] . ") ASC LIMIT 1";
 		$row = DB::selectOne($sql, $params);
 		return $row->id ?? null;
 	}
