@@ -199,6 +199,9 @@ PROMPT;
 		if (empty($aliasesConfig)) return $sql;
 		// Determine tables referenced
 		$tables = $this->extractTableCandidates($sql);
+		$main = $this->extractMainTableAliasAndName($sql);
+		$mainAlias = $main['alias'] ? trim($main['alias'], '`') : null;
+		$mainTable = $main['table'] ? trim($main['table'], '`') : null;
 		$map = $aliasesConfig['*'] ?? [];
 		foreach ($tables as $t) {
 			if (isset($aliasesConfig[$t])) {
@@ -210,14 +213,25 @@ PROMPT;
 		foreach ($map as $alias => $actual) {
 			$bare = preg_quote($alias, '/');
 			$pattern = '/\b((?:[`\w]+)\.)?' . $bare . '\b/i';
-			$sql = preg_replace_callback($pattern, function ($m) use ($actual) {
-				$qual = $m[1] ?? '';
-				$column = $actual === 'date' ? '`date`' : $actual;
-				return ($qual ?: '') . $column;
+			$sql = preg_replace_callback($pattern, function ($m) use ($actual, $mainAlias, $mainTable) {
+				$qualWithDot = $m[1] ?? '';
+				$qual = $qualWithDot ? rtrim($qualWithDot, '.') : '';
+				// If qualified with a different table alias than the main, skip replacement
+				if ($qual) {
+					$qualName = trim($qual, '`');
+					if ($mainAlias && strcasecmp($qualName, $mainAlias) !== 0) {
+						return $m[0];
+					}
+					if ($mainTable && strcasecmp($qualName, $mainTable) !== 0 && (!$mainAlias)) {
+						return $m[0];
+					}
+				}
+				$column = strcasecmp($actual, 'date') === 0 ? '`date`' : $actual;
+				return ($qualWithDot ?: '') . $column;
 			}, $sql);
 		}
 		if ($before !== $sql) {
-			Log::info('Applied table-aware alias corrections', ['before' => $before, 'after' => $sql]);
+			Log::info('Applied table-aware alias corrections (scoped to main table)', ['before' => $before, 'after' => $sql]);
 		}
 		return $sql;
 	}
