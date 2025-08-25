@@ -35,7 +35,7 @@ class OpenAIService
 			'json' => [
 				'model' => $model,
 				'messages' => [
-					['role' => 'system', 'content' => 'You are a SQL generator. Output only a single SQL statement without backticks or markdown. Only read-only queries allowed.'],
+					['role' => 'system', 'content' => 'You are a SQL generator. Output only a single SQL statement without backticks or markdown. Only read-only queries are allowed (SELECT/SHOW/DESCRIBE/EXPLAIN). Never use CREATE (including TEMPORARY TABLE or VIEW), DROP, INSERT, UPDATE, DELETE, REPLACE, TRUNCATE, ALTER, GRANT, REVOKE, SET, or any file I/O like INFILE/OUTFILE/LOAD_FILE. If needed, use joins/subqueries/CTEs within a single SELECT.'],
 					['role' => 'user', 'content' => $prompt],
 				],
 				'temperature' => 0,

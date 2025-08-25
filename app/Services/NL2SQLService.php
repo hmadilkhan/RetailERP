@@ -43,6 +43,8 @@ Constraints:
 - If you need sales data, use 'sales_receipts' table, not 'sales'.
 - If you need inventory data, use 'inventory_general' table, not 'inventory'.
 - Always verify table names exist in the schema before using them.
+- Do NOT use CREATE (including CREATE TEMPORARY TABLE or CREATE VIEW), DROP, INSERT, UPDATE, DELETE, REPLACE, TRUNCATE, ALTER, GRANT, REVOKE, SET, or file I/O (INFILE/OUTFILE/LOAD_FILE).
+- If you need intermediate results, use subqueries, joins, or a CTE (WITH ...) within a single SELECT.
 
 Database schema (compact):
 {$schema}
