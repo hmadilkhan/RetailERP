@@ -22,6 +22,18 @@ class SchemaSnapshot
 		);
 
 		$lines = [];
+		
+		// Add business context header
+		$lines[] = "BUSINESS CONTEXT: This is a retail/ERP system with sales, inventory, customers, and financial data.";
+		$lines[] = "IMPORTANT: Use exact table names as shown below. Common patterns:";
+		$lines[] = "- Sales data: sales_receipts, sales_receipt_details";
+		$lines[] = "- Inventory: inventory_general, inventory_branches";
+		$lines[] = "- Customers: customers, customer_details";
+		$lines[] = "- Financial: sales_account_general, sales_account_subdetails";
+		$lines[] = "- Users: user_details, users";
+		$lines[] = "- Branches: branch, terminal_details";
+		$lines[] = "";
+		
 		foreach ($tables as $t) {
 			$table = $t->TABLE_NAME;
 			$cols = DB::select(
