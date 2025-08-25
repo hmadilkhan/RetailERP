@@ -70,6 +70,7 @@ PROMPT;
 			Log::info('Sanitized SQL:', ['sql' => $sql]);
 
 			// Validate schema usage before execution
+			$sql = $this->applyAliasCorrections($sql);
 			$sql = $this->validateSchema($sql);
 
 			$result = $this->executeWithTimeout($sql, 15);
@@ -135,14 +136,20 @@ PROMPT;
 					'branch_id' => 'branch',
 					'created_at' => 'date',
 				];
-				if ($unknownColumn && isset($aliasMap[$unknownColumn]) && $attempts < $maxAttempts) {
-					$replacement = $aliasMap[$unknownColumn];
-					$pattern = '/\b' . preg_quote($unknownColumn, '/') . '\b/i';
-					$oldSql = $sql;
-					$sql = preg_replace($pattern, $replacement, $sql);
-					Log::info('Auto-corrected unknown column using alias map', ['from' => $unknownColumn, 'to' => $replacement, 'before' => $oldSql, 'after' => $sql]);
-					$attempts++;
-					continue; // retry EXPLAIN with corrected SQL
+				if ($unknownColumn && $attempts < $maxAttempts) {
+					// Strip table alias if present, e.g., sr.created_at -> created_at
+					$bare = preg_replace('/^.*\./', '', $unknownColumn);
+					$aliasKey = isset($aliasMap[$unknownColumn]) ? $unknownColumn : (isset($aliasMap[$bare]) ? $bare : null);
+					if ($aliasKey !== null) {
+						$replacement = $aliasMap[$aliasKey];
+						$oldSql = $sql;
+						// Replace both qualified and unqualified occurrences
+						$colPattern = '/\b(?:[`\w]+\.)?' . preg_quote($bare, '/') . '\b/i';
+						$sql = preg_replace($colPattern, $replacement, $sql);
+						Log::info('Auto-corrected unknown column using alias map', ['from' => $unknownColumn, 'to' => $replacement, 'before' => $oldSql, 'after' => $sql]);
+						$attempts++;
+						continue; // retry EXPLAIN with corrected SQL
+					}
 				}
 
 				// Provide suggestions if we cannot auto-correct
@@ -155,6 +162,31 @@ PROMPT;
 				throw $e;
 			}
 		} while ($attempts <= $maxAttempts);
+		return $sql;
+	}
+
+	private function applyAliasCorrections(string $sql): string
+	{
+		$aliasesConfig = config('nl2sql.column_aliases', []);
+		if (empty($aliasesConfig)) return $sql;
+		// Determine tables referenced
+		$tables = $this->extractTableCandidates($sql);
+		$map = $aliasesConfig['*'] ?? [];
+		foreach ($tables as $t) {
+			if (isset($aliasesConfig[$t])) {
+				$map = array_merge($map, $aliasesConfig[$t]);
+			}
+		}
+		if (empty($map)) return $sql;
+		$before = $sql;
+		foreach ($map as $alias => $actual) {
+			$bare = preg_quote($alias, '/');
+			$pattern = '/\b(?:[`\w]+\.)?' . $bare . '\b/i';
+			$sql = preg_replace($pattern, $actual, $sql);
+		}
+		if ($before !== $sql) {
+			Log::info('Applied table-aware alias corrections', ['before' => $before, 'after' => $sql]);
+		}
 		return $sql;
 	}
 
