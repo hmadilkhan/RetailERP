@@ -26,10 +26,14 @@ class NL2SQLService
 		Log::info('Schema being sent to OpenAI:', ['schema_length' => strlen($schema), 'schema_preview' => substr($schema, 0, 500)]);
 		
 		$history = $chat->messages()->latest()->take(10)->get()->reverse();
+		$entityHints = $this->resolveEntitiesFromHistory($history);
 		$historyText = '';
 		foreach ($history as $m) {
 			$role = strtoupper($m->role);
 			$historyText .= "{$role}: {$m->content}\n";
+		}
+		if (!empty($entityHints['prompt'])) {
+			$historyText .= "\nSYSTEM HINTS:\n" . implode("\n", $entityHints['prompt']) . "\n";
 		}
 
 		$prompt = <<<PROMPT
@@ -68,6 +72,17 @@ PROMPT;
 			
 			// Debug: Log the sanitized SQL
 			Log::info('Sanitized SQL:', ['sql' => $sql]);
+			// Apply entity-driven alias corrections first
+			if (!empty($entityHints['replacements'])) {
+				$old = $sql;
+				foreach ($entityHints['replacements'] as $from => $to) {
+					$pattern = '/\b' . preg_quote($from, '/') . '\b/i';
+					$sql = preg_replace($pattern, (string)$to, $sql);
+				}
+				if ($old !== $sql) {
+					Log::info('Applied entity replacements', ['before' => $old, 'after' => $sql]);
+				}
+			}
 
 			// Validate schema usage before execution
 			$sql = $this->applyAliasCorrections($sql);
@@ -245,5 +260,48 @@ PROMPT;
 		}
 		asort($scored);
 		return array_keys(array_slice($scored, 0, 5, true));
+	}
+
+	private function resolveEntitiesFromHistory($history): array
+	{
+		$config = config('nl2sql.entities', []);
+		if (empty($config)) return ['prompt' => [], 'replacements' => []];
+		$text = '';
+		foreach ($history as $m) {
+			if ($m->role === 'user') $text .= ' ' . $m->content;
+		}
+		$promptHints = [];
+		$replacements = [];
+		foreach ($config as $rule) {
+			if (empty($rule['detect_regex'])) continue;
+			if (!preg_match($rule['detect_regex'], $text, $mm)) continue;
+			$name = trim($mm[1]);
+			// resolve id
+			$id = $this->resolveEntityId($rule, $name);
+			if ($id === null) continue;
+			// prompt hint for the model
+			$promptHints[] = strtoupper($rule['entity']) . ": name='" . $name . "' resolved_id=" . $id . ". Use " . ($rule['join_hint'] ?? '') . " or filter column " . implode(',', $rule['target_tables']) . ".";
+			// add replacement into known target columns for downstream corrections
+			if (!empty($rule['target_tables'])) {
+				foreach ($rule['target_tables'] as $table => $column) {
+					$replacements[$column] = $id;
+				}
+			}
+		}
+		return ['prompt' => $promptHints, 'replacements' => $replacements];
+	}
+
+	private function resolveEntityId(array $rule, string $name): ?int
+	{
+		$connection = config('database.default');
+		$database = config("database.connections.$connection.database");
+		$params = [$name];
+		$where = [];
+		foreach ($rule['name_columns'] as $col) {
+			$where[] = "$col = ?";
+		}
+		$sql = "SELECT " . $rule['id_column'] . " AS id FROM " . $rule['table'] . " WHERE (" . implode(' OR ', $where) . ") LIMIT 1";
+		$row = DB::selectOne($sql, $params);
+		return $row->id ?? null;
 	}
 }
