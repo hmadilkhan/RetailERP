@@ -36,7 +36,7 @@ return [
 			'target_tables' => [
 				'sales_receipts' => 'branch',
 			],
-			'join_hint' => 'JOIN branch ON branch.branch_id = sales_receipts.branch AND branch.branch_name = :resolved_name',
+			'join_hint' => 'JOIN branch ON branch.branch_id = sales_receipts.branch AND branch.branch_name LIKE CONCAT("%", :resolved_name, "%")',
 		],
 		[
 			'entity' => 'customer',
@@ -47,7 +47,7 @@ return [
 			'target_tables' => [
 				'sales_receipts' => 'customer_id',
 			],
-			'join_hint' => 'JOIN customers ON customers.id = sales_receipts.customer_id AND customers.name = :resolved_name',
+			'join_hint' => 'JOIN customers ON customers.id = sales_receipts.customer_id AND customers.name LIKE CONCAT("%", :resolved_name, "%")',
 		],
 	],
 ]; 
