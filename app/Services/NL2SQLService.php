@@ -70,7 +70,7 @@ PROMPT;
 			Log::info('Sanitized SQL:', ['sql' => $sql]);
 
 			// Validate schema usage before execution
-			$this->validateSchema($sql);
+			$sql = $this->validateSchema($sql);
 
 			$result = $this->executeWithTimeout($sql, 15);
 
@@ -112,32 +112,50 @@ PROMPT;
 		return array_slice($rows, 0, $maxRows);
 	}
 
-	private function validateSchema(string $sql): void
+	private function validateSchema(string $sql): string
 	{
-		try {
-			// Use EXPLAIN to validate tables/columns without executing the query
-			DB::select('EXPLAIN ' . $sql);
-			return;
-		} catch (\Throwable $e) {
-			$message = $e->getMessage();
-			// Attempt to detect unknown table/column patterns
-			$unknownTable = null;
-			$unknownColumn = null;
-			if (preg_match('/Table\s+\'([^\']+)\'\s+doesn\'t\s+exist/i', $message, $m)) {
-				$unknownTable = $m[1];
-			} elseif (preg_match('/Unknown\s+column\s+\'([^\']+)\'/i', $message, $m)) {
-				$unknownColumn = $m[1];
-			}
+		$attempts = 0;
+		$maxAttempts = 2;
+		do {
+			try {
+				DB::select('EXPLAIN ' . $sql);
+				return $sql; // valid
+			} catch (\Throwable $e) {
+				$message = $e->getMessage();
+				$unknownTable = null;
+				$unknownColumn = null;
+				if (preg_match('/Table\s+\'([^\']+)\'\s+doesn\'t\s+exist/i', $message, $m)) {
+					$unknownTable = $m[1];
+				} elseif (preg_match('/Unknown\s+column\s+\'([^\']+)\'/i', $message, $m)) {
+					$unknownColumn = $m[1];
+				}
 
-			if ($unknownTable) {
-				$this->throwWithTableSuggestions($unknownTable, $message);
+				// Attempt small alias-based correction for common mistakes
+				$aliasMap = [
+					'branch_id' => 'branch',
+					'created_at' => 'date',
+				];
+				if ($unknownColumn && isset($aliasMap[$unknownColumn]) && $attempts < $maxAttempts) {
+					$replacement = $aliasMap[$unknownColumn];
+					$pattern = '/\b' . preg_quote($unknownColumn, '/') . '\b/i';
+					$oldSql = $sql;
+					$sql = preg_replace($pattern, $replacement, $sql);
+					Log::info('Auto-corrected unknown column using alias map', ['from' => $unknownColumn, 'to' => $replacement, 'before' => $oldSql, 'after' => $sql]);
+					$attempts++;
+					continue; // retry EXPLAIN with corrected SQL
+				}
+
+				// Provide suggestions if we cannot auto-correct
+				if ($unknownTable) {
+					$this->throwWithTableSuggestions($unknownTable, $message);
+				}
+				if ($unknownColumn) {
+					$this->throwWithColumnSuggestions($unknownColumn, $sql, $message);
+				}
+				throw $e;
 			}
-			if ($unknownColumn) {
-				$this->throwWithColumnSuggestions($unknownColumn, $sql, $message);
-			}
-			// Re-throw if we couldn't parse for suggestions
-			throw $e;
-		}
+		} while ($attempts <= $maxAttempts);
+		return $sql;
 	}
 
 	private function throwWithTableSuggestions(string $unknownTable, string $originalMessage): void
