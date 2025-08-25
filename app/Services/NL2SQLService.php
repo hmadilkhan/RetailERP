@@ -209,8 +209,12 @@ PROMPT;
 		$before = $sql;
 		foreach ($map as $alias => $actual) {
 			$bare = preg_quote($alias, '/');
-			$pattern = '/\b(?:[`\w]+\.)?' . $bare . '\b/i';
-			$sql = preg_replace($pattern, $actual, $sql);
+			$pattern = '/\b((?:[`\w]+)\.)?' . $bare . '\b/i';
+			$sql = preg_replace_callback($pattern, function ($m) use ($actual) {
+				$qual = $m[1] ?? '';
+				$column = $actual === 'date' ? '`date`' : $actual;
+				return ($qual ?: '') . $column;
+			}, $sql);
 		}
 		if ($before !== $sql) {
 			Log::info('Applied table-aware alias corrections', ['before' => $before, 'after' => $sql]);
