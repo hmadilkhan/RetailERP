@@ -75,12 +75,25 @@ PROMPT;
 			// Apply entity-driven alias corrections first
 			if (!empty($entityHints['replacements'])) {
 				$old = $sql;
-				foreach ($entityHints['replacements'] as $from => $to) {
-					$pattern = '/\b' . preg_quote($from, '/') . '\b/i';
-					$sql = preg_replace($pattern, (string)$to, $sql);
+				$main = $this->extractMainTableAliasAndName($sql);
+				$alias = $main['alias'] ?? null;
+				// Only replace inside WHERE clause to avoid breaking JOIN ON
+				if (preg_match('/\bWHERE\b(.*)/is', $sql, $wm)) {
+					$where = $wm[1];
+					foreach ($entityHints['replacements'] as $column => $to) {
+						$colBare = preg_quote($column, '/');
+						$qual = $alias ? preg_quote($alias, '/') . '\\.' : '(?:[\\w`]+\\.)?';
+						$pattern = '/\b' . $qual . $colBare . '\b/i';
+						$where = preg_replace($pattern, (string)$to, $where);
+					}
+					$sql = preg_replace('/\bWHERE\b(.*)/is', 'WHERE' . $where, $sql);
+				}
+				// Qualify unaliased date BETWEEN with main alias to avoid ambiguity
+				if (!empty($alias)) {
+					$sql = $this->qualifyDateBetween($sql, $alias);
 				}
 				if ($old !== $sql) {
-					Log::info('Applied entity replacements', ['before' => $old, 'after' => $sql]);
+					Log::info('Applied entity replacements (scoped to WHERE and qualified date)', ['before' => $old, 'after' => $sql]);
 				}
 			}
 
@@ -311,5 +324,33 @@ PROMPT;
 		$sql = "SELECT " . $rule['id_column'] . " AS id FROM " . $rule['table'] . " WHERE (" . implode(' OR ', $where) . ") ORDER BY LENGTH(" . $rule['name_columns'][0] . ") ASC LIMIT 1";
 		$row = DB::selectOne($sql, $params);
 		return $row->id ?? null;
+	}
+
+	private function extractMainTableAliasAndName(string $sql): array
+	{
+		$matches = [];
+		if (preg_match_all('/\bFROM\s+([`\w\.]+)\s+AS\s+([`\w]+)/i', $sql, $matches)) {
+			return ['alias' => $matches[2][0], 'table' => $matches[1][0]];
+		}
+		if (preg_match_all('/\bFROM\s+([`\w\.]+)/i', $sql, $matches)) {
+			return ['alias' => null, 'table' => $matches[1][0]];
+		}
+		return ['alias' => null, 'table' => null];
+	}
+
+	private function qualifyDateBetween(string $sql, string $alias): string
+	{
+		return preg_replace_callback(
+			'/\bBETWEEN\s+([`\w\.]+)\s+AND\s+([`\w\.]+)/i',
+			function ($matches) use ($alias) {
+				$left = $matches[1];
+				$right = $matches[2];
+				if (preg_match('/^[`\w\.]+$/', $left) && preg_match('/^[`\w\.]+$/', $right)) {
+					return "BETWEEN " . ($alias ? $alias . '.' : '') . $left . " AND " . ($alias ? $alias . '.' : '') . $right;
+				}
+				return "BETWEEN " . $left . " AND " . $right;
+			},
+			$sql
+		);
 	}
 }
