@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Chat;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class NL2SQLService
 {
@@ -70,9 +71,18 @@ PROMPT;
 	{
 		$seconds = max(1, min(60, $seconds));
 		$driver = config('database.default');
+		
+		// Only set timeout for MySQL/MariaDB if the variable is supported
 		if (in_array(config("database.connections.$driver.driver"), ['mysql','mariadb'], true)) {
-			DB::statement('SET SESSION MAX_EXECUTION_TIME = ?', [$seconds * 1000]);
+			try {
+				// Check if MAX_EXECUTION_TIME is supported
+				DB::statement('SET SESSION MAX_EXECUTION_TIME = ?', [$seconds * 1000]);
+			} catch (\Exception $e) {
+				// If MAX_EXECUTION_TIME is not supported, just log it and continue
+				Log::info('MAX_EXECUTION_TIME not supported, continuing without timeout setting');
+			}
 		}
+		
 		return DB::select($sql);
 	}
 
