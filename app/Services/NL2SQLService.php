@@ -69,6 +69,9 @@ PROMPT;
 			// Debug: Log the sanitized SQL
 			Log::info('Sanitized SQL:', ['sql' => $sql]);
 
+			// Validate schema usage before execution
+			$this->validateSchema($sql);
+
 			$result = $this->executeWithTimeout($sql, 15);
 
 			$message->sql = $sql;
@@ -107,5 +110,90 @@ PROMPT;
 	{
 		if (count($rows) <= $maxRows) return $rows;
 		return array_slice($rows, 0, $maxRows);
+	}
+
+	private function validateSchema(string $sql): void
+	{
+		try {
+			// Use EXPLAIN to validate tables/columns without executing the query
+			DB::select('EXPLAIN ' . $sql);
+			return;
+		} catch (\Throwable $e) {
+			$message = $e->getMessage();
+			// Attempt to detect unknown table/column patterns
+			$unknownTable = null;
+			$unknownColumn = null;
+			if (preg_match('/Table\s+\'([^\']+)\'\s+doesn\'t\s+exist/i', $message, $m)) {
+				$unknownTable = $m[1];
+			} elseif (preg_match('/Unknown\s+column\s+\'([^\']+)\'/i', $message, $m)) {
+				$unknownColumn = $m[1];
+			}
+
+			if ($unknownTable) {
+				$this->throwWithTableSuggestions($unknownTable, $message);
+			}
+			if ($unknownColumn) {
+				$this->throwWithColumnSuggestions($unknownColumn, $sql, $message);
+			}
+			// Re-throw if we couldn't parse for suggestions
+			throw $e;
+		}
+	}
+
+	private function throwWithTableSuggestions(string $unknownTable, string $originalMessage): void
+	{
+		$connection = config('database.default');
+		$database = config("database.connections.$connection.database");
+		$rows = DB::select(
+			"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = ? ORDER BY TABLE_NAME",
+			[$database]
+		);
+		$tables = array_map(fn($r) => $r->TABLE_NAME, $rows);
+		$suggestions = $this->closestMatches($unknownTable, $tables);
+		$hint = empty($suggestions) ? '' : (' Suggestions: ' . implode(', ', array_slice($suggestions, 0, 5)) . '.');
+		throw new \InvalidArgumentException("Unknown table '$unknownTable'." . $hint);
+	}
+
+	private function throwWithColumnSuggestions(string $unknownColumn, string $sql, string $originalMessage): void
+	{
+		$connection = config('database.default');
+		$database = config("database.connections.$connection.database");
+		// Try to infer table names referenced in the SQL
+		$tables = $this->extractTableCandidates($sql);
+		$columnMap = [];
+		foreach ($tables as $t) {
+			$cols = DB::select(
+				"SELECT COLUMN_NAME FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?",
+				[$database, $t]
+			);
+			$columnMap[$t] = array_map(fn($r) => $r->COLUMN_NAME, $cols);
+		}
+		$allColumns = array_values(array_unique(array_merge(...array_values($columnMap) ?: [[]])));
+		$suggestions = $this->closestMatches($unknownColumn, $allColumns);
+		$hint = empty($suggestions) ? '' : (' Did you mean: ' . implode(', ', array_slice($suggestions, 0, 5)) . '?');
+		throw new \InvalidArgumentException("Unknown column '$unknownColumn'." . $hint);
+	}
+
+	private function extractTableCandidates(string $sql): array
+	{
+		$matches = [];
+		$tables = [];
+		if (preg_match_all('/\bFROM\s+([`\w\.]+)/i', $sql, $matches)) {
+			$tables = array_merge($tables, array_map(fn($s) => trim($s, '`'), $matches[1]));
+		}
+		if (preg_match_all('/\bJOIN\s+([`\w\.]+)/i', $sql, $matches)) {
+			$tables = array_merge($tables, array_map(fn($s) => trim($s, '`'), $matches[1]));
+		}
+		return array_values(array_unique($tables));
+	}
+
+	private function closestMatches(string $needle, array $haystack): array
+	{
+		$scored = [];
+		foreach ($haystack as $item) {
+			$scored[$item] = levenshtein(strtolower($needle), strtolower($item));
+		}
+		asort($scored);
+		return array_keys(array_slice($scored, 0, 5, true));
 	}
 }
