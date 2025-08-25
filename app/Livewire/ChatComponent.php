@@ -90,8 +90,10 @@ class ChatComponent extends Component
 
         // Clear input and reload chat
         $this->messageContent = '';
-        $this->currentChat->refresh();
         $this->isProcessing = false;
+        
+        // Reload chat with messages to reflect updated result/sql
+        $this->selectChat($this->currentChatId);
         
         $this->dispatch('scrollToBottom');
     }
