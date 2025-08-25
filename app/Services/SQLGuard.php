@@ -52,16 +52,34 @@ class SQLGuard
 
 	private function denyDangerous(string $sql): void
 	{
-		$danger = [
-			'INTO\s+OUTFILE',
-			'INTO\s+DUMPFILE',
-			'LOAD_FILE\s*\(',
-			'INFILE',
-			'UPDATE', 'DELETE', 'INSERT', 'REPLACE', 'ALTER', 'DROP', 'CREATE', 'TRUNCATE', 'GRANT', 'REVOKE', 'SET\\s+GLOBAL', 'CALL', 'USE\\s+\\w+',
+		$dangerPatterns = [
+			'INTO\s+OUTFILE' => 'INTO OUTFILE',
+			'INTO\s+DUMPFILE' => 'INTO DUMPFILE',
+			'LOAD_FILE\s*\(' => 'LOAD_FILE()',
+			'INFILE' => 'INFILE',
+			'UNION\s+SELECT' => 'UNION SELECT',
+			'CREATE\s+(TEMPORARY\s+)?TABLE' => 'CREATE TABLE',
+			'DROP\s+(TEMPORARY\s+)?TABLE' => 'DROP TABLE',
+			'USE\s+[`\w]+' => 'USE <database>',
+			'SET\s+GLOBAL' => 'SET GLOBAL',
+			'SET\s+SESSION' => 'SET SESSION',
+			'INTO\s+TEMPORARY\s+TABLE' => 'INTO TEMPORARY TABLE',
+			'UPDATE' => 'UPDATE',
+			'DELETE' => 'DELETE',
+			'INSERT' => 'INSERT',
+			'REPLACE' => 'REPLACE',
+			'ALTER' => 'ALTER',
+			'DROP' => 'DROP',
+			'CREATE' => 'CREATE',
+			'TRUNCATE' => 'TRUNCATE',
+			'GRANT' => 'GRANT',
+			'REVOKE' => 'REVOKE',
+			'CALL' => 'CALL',
 		];
-		$pattern = '/' . implode('|', $danger) . '/i';
-		if (preg_match($pattern, $sql)) {
-			throw new \InvalidArgumentException('Dangerous SQL construct detected.');
+		foreach ($dangerPatterns as $pattern => $label) {
+			if (preg_match('/' . $pattern . '/i', $sql)) {
+				throw new \InvalidArgumentException('Dangerous SQL construct detected: ' . $label . '.');
+			}
 		}
 	}
 
