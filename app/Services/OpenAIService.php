@@ -2,6 +2,34 @@
 
 namespace App\Services;
 
+use OpenAI;
+
+class OpenAIService
+{
+    protected $client;
+    protected string $model;
+
+    public function __construct()
+    {
+        $this->client = OpenAI::client(config('services.openai.key'));
+        $this->model = config('services.openai.model', 'gpt-4o-mini');
+    }
+
+    public function ask(array $messages): string
+    {
+        $response = $this->client->chat()->create([
+            'model' => $this->model,
+            'messages' => $messages,
+            'temperature' => 0.2,
+        ]);
+
+        return trim($response->choices[0]->message->content ?? '');
+    }
+}
+
+/*
+namespace App\Services;
+
 use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 
@@ -51,3 +79,5 @@ class OpenAIService
 		return trim($text);
 	}
 }
+*/
+

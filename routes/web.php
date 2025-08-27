@@ -1142,4 +1142,5 @@ Route::middleware(['statusCheck'])->group(function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/chat', \App\Livewire\Chat::class)->name('chat');
     Route::get('/chats', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/forecast-chat', \App\Livewire\ForecastChat::class) ->name('forecast.chat');
 });
