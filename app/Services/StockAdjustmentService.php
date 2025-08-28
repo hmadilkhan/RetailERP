@@ -38,7 +38,7 @@ class StockAdjustmentService
                     $q->where('product_name', 'like', '%' . $name . '%');
                 });
             })
-            ->when(session('roleId') == 2, function ($q) use ($branch) {
+            ->when(session('roleId') == 2 || session('roleId') == 17, function ($q) use ($branch) {
                 $q->when(!empty($branch), function ($q) use ($branch) {
                     $q->where('branch_id', $branch);
                 }, function ($q) {
