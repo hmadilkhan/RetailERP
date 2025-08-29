@@ -18,6 +18,7 @@ class ForecastChat extends Component
     public string $dateRange = '30d'; // 7d | 30d | 90d
     public int $topN = 50; // limit products for token safety
     public Collection $branches;
+    public bool $isProcessing = false;
 
     public function mount(): void
     {
@@ -44,9 +45,16 @@ class ForecastChat extends Component
 
     public function send(OpenAIService $ai)
     {
+        // Set processing to true immediately when send is called
+        $this->isProcessing = true;
+        
         $userText = trim($this->input);
-        if ($userText === '') return;
+        if ($userText === '') {
+            $this->isProcessing = false;
+            return;
+        }
 
+        // Add user message to chat
         $this->messages[] = ['role' => 'user', 'content' => $userText];
         $this->input = '';
 
@@ -90,6 +98,7 @@ class ForecastChat extends Component
         }
 
         $this->messages[] = ['role' => 'assistant', 'content' => $answer];
+        $this->isProcessing = false;
     }
 
     protected function summaries(): array
