@@ -255,6 +255,60 @@ class ForecastChat extends Component
         return ['start' => null, 'end' => null, 'type' => 'range'];
     }
 
+    private function debugDatabaseInfo(): array
+    {
+        $debug = [];
+        
+        // Check recent sales data
+        $recentSales = DB::table('sales_receipts as sr')
+            ->select('sr.date', 'sr.branch')
+            ->orderBy('sr.date', 'desc')
+            ->limit(5)
+            ->get();
+        
+        $debug['recent_sales'] = $recentSales->toArray();
+        
+        // Check total sales count
+        $totalSales = DB::table('sales_receipts')->count();
+        $debug['total_sales_count'] = $totalSales;
+        
+        // Check if there are any sales for yesterday
+        $yesterday = now()->subDay()->format('Y-m-d');
+        $yesterdaySales = DB::table('sales_receipts')
+            ->whereDate('date', $yesterday)
+            ->count();
+        $debug['yesterday_sales_count'] = $yesterdaySales;
+        
+        // Check what dates are actually available
+        $availableDates = DB::table('sales_receipts')
+            ->selectRaw('DATE(date) as date_only, COUNT(*) as count')
+            ->groupBy(DB::raw('DATE(date)'))
+            ->orderBy('date_only', 'desc')
+            ->limit(10)
+            ->get();
+        $debug['available_dates'] = $availableDates->toArray();
+        
+        // Check the date column type and sample values
+        try {
+            $sampleDates = DB::table('sales_receipts')
+                ->select('date')
+                ->limit(5)
+                ->get();
+            $debug['sample_dates'] = $sampleDates->toArray();
+        } catch (\Exception $e) {
+            $debug['sample_dates_error'] = $e->getMessage();
+        }
+        
+        // Check available branches
+        $branches = DB::table('branches')->pluck('branch_id')->toArray();
+        $debug['available_branches'] = $branches;
+        
+        // Check current session company_id
+        $debug['session_company_id'] = session('company_id');
+        
+        return $debug;
+    }
+
     public function send(OpenAIService $ai)
     {
         // Set processing to true immediately when send is called
@@ -275,6 +329,12 @@ class ForecastChat extends Component
         
         // Get sales and stock data
         [$salesSummary, $stockMap, $productMap, $dateContext] = $this->summaries($dateInfo);
+        
+        // Add debug info if no sales found
+        $debugInfo = [];
+        if (empty($salesSummary)) {
+            $debugInfo = $this->debugDatabaseInfo();
+        }
 
         $context = [
             'filters' => [
@@ -284,6 +344,7 @@ class ForecastChat extends Component
             'sales_summary' => $salesSummary,
             'stock_levels' => $stockMap,
             'product_names' => $productMap,
+            'debug_info' => $debugInfo,
         ];
 
         $messages = [
@@ -302,6 +363,8 @@ class ForecastChat extends Component
                     '- If analyzing a specific date or short period, provide insights about that specific time frame.',
                     '- If the user asks for an invalid date (like "31 September"), politely explain the issue and provide the analysis for the fallback period.',
                     '- Always be helpful and provide actionable insights even when date queries need adjustment.',
+                    '- If no sales data is found for the requested period, explain this clearly and suggest alternative approaches.',
+                    '- When no sales data exists, focus on providing general inventory management advice and reorder suggestions based on available stock levels.',
                 ]),
             ],
             ['role' => 'system', 'content' => 'Context JSON: ' . json_encode($context)],
@@ -344,12 +407,43 @@ class ForecastChat extends Component
                 $endDate = $dateInfo['end'];
                 $dateContext = "Analyzing sales from " . $startDate->format('M d, Y') . " to " . $endDate->format('M d, Y');
                 
+                // First, try to get data for the specific date range
                 $salesQuery = DB::table('sales_receipt_details as s')
                     ->join('sales_receipts as sr', 's.receipt_id', '=', 'sr.id')
                     ->selectRaw('s.item_code, SUM(s.total_qty) as total_qty')
                     ->whereBetween('sr.date', [$startDate, $endDate])
                     ->groupBy('s.item_code')
                     ->orderByDesc(DB::raw('SUM(s.total_qty)'));
+                
+                if (!empty($this->branchId) && $this->branchId != 'all') {
+                    $salesQuery->where('sr.branch', $this->branchId);
+                } else {
+                    $salesQuery->whereIn('sr.branch', $this->branches->pluck('branch_id')->toArray());
+                }
+                
+                $salesRows = $salesQuery->limit($this->topN)->get();
+                
+                // If no sales found for specific date, fall back to recent data
+                if ($salesRows->isEmpty()) {
+                    $fallbackDays = 7; // Look at last 7 days instead
+                    $fallbackSince = now()->subDays($fallbackDays)->startOfDay();
+                    $dateContext = "No sales found for " . $startDate->format('M d, Y') . " - Showing last {$fallbackDays} days instead";
+                    
+                    $salesQuery = DB::table('sales_receipt_details as s')
+                        ->join('sales_receipts as sr', 's.receipt_id', '=', 'sr.id')
+                        ->selectRaw('s.item_code, SUM(s.total_qty) as total_qty')
+                        ->where('sr.date', '>=', $fallbackSince)
+                        ->groupBy('s.item_code')
+                        ->orderByDesc(DB::raw('SUM(s.total_qty)'));
+                    
+                    if (!empty($this->branchId) && $this->branchId != 'all') {
+                        $salesQuery->where('sr.branch', $this->branchId);
+                    } else {
+                        $salesQuery->whereIn('sr.branch', $this->branches->pluck('branch_id')->toArray());
+                    }
+                    
+                    $salesRows = $salesQuery->limit($this->topN)->get();
+                }
             }
         } else {
             // Use predefined date range
@@ -363,16 +457,47 @@ class ForecastChat extends Component
                 ->where('sr.date', '>=', $since)
                 ->groupBy('s.item_code')
                 ->orderByDesc(DB::raw('SUM(s.total_qty)'));
+                
+            if (!empty($this->branchId) && $this->branchId != 'all') {
+                $salesQuery->where('sr.branch', $this->branchId);
+            } else {
+                $salesQuery->whereIn('sr.branch', $this->branches->pluck('branch_id')->toArray());
+            }
+            
+            $salesRows = $salesQuery->limit($this->topN)->get();
         }
 
-        if (!empty($this->branchId) && $this->branchId != 'all') {
-            $salesQuery->where('sr.branch', $this->branchId);
-        } else {
-            $salesQuery->whereIn('sr.branch', $this->branches->pluck('branch_id')->toArray());
+        // If still no sales found, try to get any recent sales data
+        if (!isset($salesRows) || $salesRows->isEmpty()) {
+            $emergencyDays = 30;
+            $emergencySince = now()->subDays($emergencyDays)->startOfDay();
+            $dateContext = "No recent sales found - Showing last {$emergencyDays} days (if any data exists)";
+            
+            $salesQuery = DB::table('sales_receipt_details as s')
+                ->join('sales_receipts as sr', 's.receipt_id', '=', 'sr.id')
+                ->selectRaw('s.item_code, SUM(s.total_qty) as total_qty')
+                ->where('sr.date', '>=', $emergencySince)
+                ->groupBy('s.item_code')
+                ->orderByDesc(DB::raw('SUM(s.total_qty)'));
+            
+            if (!empty($this->branchId) && $this->branchId != 'all') {
+                $salesQuery->where('sr.branch', $this->branchId);
+            } else {
+                $salesQuery->whereIn('sr.branch', $this->branches->pluck('branch_id')->toArray());
+            }
+            
+            $salesRows = $salesQuery->limit($this->topN)->get();
         }
 
-        $salesRows = $salesQuery->limit($this->topN)->get();
         $productIds = $salesRows->pluck('item_code')->unique()->values();
+        
+        // If no products found, try to get some basic product info for context
+        if ($productIds->isEmpty()) {
+            $productIds = DB::table('inventory_general as p')
+                ->select('p.id')
+                ->limit(10)
+                ->pluck('id');
+        }
         
         $stockQuery = DB::table('inventory_stock as i')
             ->selectRaw('i.product_id, SUM(i.balance) as stock_level')
