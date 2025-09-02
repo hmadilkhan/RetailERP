@@ -9,16 +9,19 @@ use League\CommonMark\GithubFlavoredMarkdownConverter;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Illuminate\Support\Collection;
+use Carbon\Carbon;
 
 class ForecastChat extends Component
 {
     public string $input = '';
     public array $messages = [];
     public int|string|null $branchId = 'all';
-    public string $dateRange = '30d'; // 7d | 30d | 90d
+    public string $dateRange = '30d'; // 7d | 30d | 90d | custom
     public int $topN = 50; // limit products for token safety
     public Collection $branches;
     public bool $isProcessing = false;
+    public ?string $customStartDate = null;
+    public ?string $customEndDate = null;
 
     public function mount(): void
     {
@@ -26,7 +29,7 @@ class ForecastChat extends Component
         // dd($this->branches);
         $this->messages[] = [
             'role' => 'assistant',
-            'content' => 'Hello! Ask me about sales forecasts and reorder suggestions.'
+            'content' => 'Hello! Ask me about sales forecasts and reorder suggestions. You can ask about specific dates like "yesterday", "last week", or specific date ranges.'
         ];
     }
 
@@ -41,6 +44,49 @@ class ForecastChat extends Component
         ]);
 
         return $converter->convert($text)->getContent();
+    }
+
+    private function parseDateFromUserInput(string $userInput): array
+    {
+        $userInput = strtolower(trim($userInput));
+        
+        // Check for specific date patterns
+        if (preg_match('/(yesterday|today)/', $userInput)) {
+            if (strpos($userInput, 'yesterday') !== false) {
+                $startDate = now()->subDay()->startOfDay();
+                $endDate = now()->subDay()->endOfDay();
+                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+            } elseif (strpos($userInput, 'today') !== false) {
+                $startDate = now()->startOfDay();
+                $endDate = now()->endOfDay();
+                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+            }
+        }
+        
+        // Check for "last week" pattern
+        if (preg_match('/last\s+week/', $userInput)) {
+            $startDate = now()->subWeek()->startOfWeek();
+            $endDate = now()->subWeek()->endOfWeek();
+            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+        }
+        
+        // Check for "last month" pattern
+        if (preg_match('/last\s+month/', $userInput)) {
+            $startDate = now()->subMonth()->startOfMonth();
+            $endDate = now()->subMonth()->endOfMonth();
+            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+        }
+        
+        // Check for specific date patterns (e.g., "2024-01-15" or "January 15")
+        if (preg_match('/(\d{4}-\d{2}-\d{2})/', $userInput, $matches)) {
+            $date = Carbon::parse($matches[1]);
+            $startDate = $date->startOfDay();
+            $endDate = $date->endOfDay();
+            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+        }
+        
+        // Default to the selected date range
+        return ['start' => null, 'end' => null, 'type' => 'range'];
     }
 
     public function send(OpenAIService $ai)
@@ -58,13 +104,17 @@ class ForecastChat extends Component
         $this->messages[] = ['role' => 'user', 'content' => $userText];
         $this->input = '';
 
+        // Parse date from user input
+        $dateInfo = $this->parseDateFromUserInput($userText);
+        
         // Get sales and stock data
-        [$salesSummary, $stockMap, $productMap] = $this->summaries();
+        [$salesSummary, $stockMap, $productMap, $dateContext] = $this->summaries($dateInfo);
 
         $context = [
             'filters' => [
                 'branch_id' => $this->branchId,
                 'date_range' => $this->dateRange,
+                'date_context' => $dateContext,
             ],
             'sales_summary' => $salesSummary,
             'stock_levels' => $stockMap,
@@ -84,6 +134,7 @@ class ForecastChat extends Component
                     '- Do not duplicate products; aggregate by product id.',
                     '- Clamp obviously unrealistic values (e.g., stock > 1e6) to a readable shortened format and call them out.',
                     '- Add bullet-point insights for top movers and low stock risks.',
+                    '- If analyzing a specific date or short period, provide insights about that specific time frame.',
                 ]),
             ],
             ['role' => 'system', 'content' => 'Context JSON: ' . json_encode($context)],
@@ -101,23 +152,40 @@ class ForecastChat extends Component
         $this->isProcessing = false;
     }
 
-    protected function summaries(): array
+    protected function summaries(array $dateInfo = null): array
     {
-        $days = match ($this->dateRange) {
-            '7d' => 7,
-            '90d' => 90,
-            default => 30,
-        };
+        $dateContext = '';
+        
+        if ($dateInfo && $dateInfo['type'] === 'specific') {
+            // Use specific date range
+            $startDate = $dateInfo['start'];
+            $endDate = $dateInfo['end'];
+            $dateContext = "Analyzing sales from " . $startDate->format('M d, Y') . " to " . $endDate->format('M d, Y');
+            
+            $salesQuery = DB::table('sales_receipt_details as s')
+                ->join('sales_receipts as sr', 's.receipt_id', '=', 'sr.id')
+                ->selectRaw('s.item_code, SUM(s.total_qty) as total_qty')
+                ->whereBetween('sr.date', [$startDate, $endDate])
+                ->groupBy('s.item_code')
+                ->orderByDesc(DB::raw('SUM(s.total_qty)'));
+        } else {
+            // Use predefined date range
+            $days = match ($this->dateRange) {
+                '7d' => 7,
+                '90d' => 90,
+                default => 30,
+            };
 
-        $since = now()->subDays($days)->startOfDay();
-
-        $salesQuery = DB::table('sales_receipt_details as s')
-            ->join('sales_receipts as sr', 's.receipt_id', '=', 'sr.id')
-            ->selectRaw('s.item_code, SUM(s.total_qty) as total_qty')
-            ->where('sr.date', '>=', $since)
-            // ->where('s.mode', 'inventory-general')
-            ->groupBy('s.item_code')
-            ->orderByDesc(DB::raw('SUM(s.total_qty)'));
+            $since = now()->subDays($days)->startOfDay();
+            $dateContext = "Analyzing sales from last {$days} days";
+            
+            $salesQuery = DB::table('sales_receipt_details as s')
+                ->join('sales_receipts as sr', 's.receipt_id', '=', 'sr.id')
+                ->selectRaw('s.item_code, SUM(s.total_qty) as total_qty')
+                ->where('sr.date', '>=', $since)
+                ->groupBy('s.item_code')
+                ->orderByDesc(DB::raw('SUM(s.total_qty)'));
+        }
 
         if (!empty($this->branchId) && $this->branchId != 'all') {
             $salesQuery->where('sr.branch', $this->branchId);
@@ -162,7 +230,7 @@ class ForecastChat extends Component
             $productMap[(int)$r->id] = $r->product_name;
         }
 
-        return [$salesSummary, $stockMap, $productMap];
+        return [$salesSummary, $stockMap, $productMap, $dateContext];
     }
 
     #[Layout('components.layouts.app')]
