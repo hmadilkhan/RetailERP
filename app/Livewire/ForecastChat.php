@@ -16,12 +16,9 @@ class ForecastChat extends Component
     public string $input = '';
     public array $messages = [];
     public int|string|null $branchId = 'all';
-    public string $dateRange = '30d'; // 7d | 30d | 90d | custom
     public int $topN = 50; // limit products for token safety
     public Collection $branches;
     public bool $isProcessing = false;
-    public ?string $customStartDate = null;
-    public ?string $customEndDate = null;
 
     public function mount(): void
     {
@@ -29,7 +26,7 @@ class ForecastChat extends Component
         // dd($this->branches);
         $this->messages[] = [
             'role' => 'assistant',
-            'content' => 'Hello! Ask me about sales forecasts and reorder suggestions. You can ask about specific dates like "yesterday", "last week", or specific date ranges.'
+            'content' => 'Hello! Ask me about sales forecasts and reorder suggestions. You can ask about specific dates like "yesterday", "last week", "september", or custom periods like "last 15 days", "past month", "recent trends". Just tell me what time period you want to analyze!'
         ];
     }
 
@@ -67,7 +64,14 @@ class ForecastChat extends Component
         if (preg_match('/last\s+week/', $userInput)) {
             $startDate = now()->subWeek()->startOfWeek();
             $endDate = now()->subWeek()->endOfWeek();
-            return ['start' => $startDate, 'endDate' => $endDate, 'type' => 'specific'];
+            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+        }
+        
+        // Check for "this week" pattern
+        if (preg_match('/this\s+week/', $userInput)) {
+            $startDate = now()->startOfWeek();
+            $endDate = now()->endOfWeek();
+            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
         }
         
         // Check for "last month" pattern
@@ -75,6 +79,33 @@ class ForecastChat extends Component
             $startDate = now()->subMonth()->startOfMonth();
             $endDate = now()->subMonth()->endOfMonth();
             return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+        }
+        
+        // Check for "this month" pattern
+        if (preg_match('/this\s+month/', $userInput)) {
+            $startDate = now()->startOfMonth();
+            $endDate = now()->endOfMonth();
+            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+        }
+        
+        // Check for "last X days" pattern (e.g., "last 15 days", "past 10 days")
+        if (preg_match('/(last|past|recent)\s+(\d+)\s+days?/i', $userInput, $matches)) {
+            $days = (int)$matches[2];
+            if ($days > 0 && $days <= 365) { // Reasonable limit
+                $startDate = now()->subDays($days)->startOfDay();
+                $endDate = now()->subDay()->endOfDay(); // Exclude today
+                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+            }
+        }
+        
+        // Check for "X days ago" pattern (e.g., "5 days ago")
+        if (preg_match('/(\d+)\s+days?\s+ago/i', $userInput, $matches)) {
+            $days = (int)$matches[1];
+            if ($days > 0 && $days <= 365) { // Reasonable limit
+                $startDate = now()->subDays($days)->startOfDay();
+                $endDate = now()->subDays($days)->endOfDay();
+                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+            }
         }
         
         // Check for specific date patterns (e.g., "2024-01-15" or "January 15")
@@ -213,7 +244,14 @@ class ForecastChat extends Component
             }
         }
         
-        // Default to the selected date range
+        // Check for "recent" or "latest" patterns (default to last 7 days)
+        if (preg_match('/(recent|latest|recently)/i', $userInput)) {
+            $startDate = now()->subDays(7)->startOfDay();
+            $endDate = now()->subDay()->endOfDay();
+            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+        }
+        
+        // Default to the last 30 days if no specific pattern is found
         return ['start' => null, 'end' => null, 'type' => 'range'];
     }
 
@@ -241,7 +279,6 @@ class ForecastChat extends Component
         $context = [
             'filters' => [
                 'branch_id' => $this->branchId,
-                'date_range' => $this->dateRange,
                 'date_context' => $dateContext,
             ],
             'sales_summary' => $salesSummary,
@@ -316,12 +353,7 @@ class ForecastChat extends Component
             }
         } else {
             // Use predefined date range
-            $days = match ($this->dateRange) {
-                '7d' => 7,
-                '90d' => 90,
-                default => 30,
-            };
-
+            $days = 30; // Default to 30 days
             $since = now()->subDays($days)->startOfDay();
             $dateContext = "Analyzing sales from last {$days} days";
             
