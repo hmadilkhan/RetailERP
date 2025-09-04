@@ -128,6 +128,7 @@
             bLengthChange: true,
             displayLength: 10,
             info: false,
+            ordering: false, // 🚀 disables ascending/descending sorting
             language: {
                 search:'',
                 searchPlaceholder: 'Search Job Order',
