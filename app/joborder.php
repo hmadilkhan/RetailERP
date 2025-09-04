@@ -395,7 +395,7 @@ class joborder extends Model
 
     public function recipyCalculation($product_id)
     { 
-        $result = DB::select("SELECT MIN((Select SUM(balance) from inventory_stock where product_id = a.item_id)/ a.usage_qty) * c.weight_qty as totalQty,d.name as uomname FROM recipy_details a INNER JOIN recipy_general b on b.recipy_id = a.recipy_id INNER JOIN inventory_general c on c.id = a.item_id INNER JOIN inventory_uom d on d.uom_id = c.cuom where b.product_id = ? and b.status_id = 1",[$product_id]);
+        $result = DB::select("SELECT MIN((Select SUM(balance) from inventory_stock where product_id = a.item_id)/ a.usage_qty) * c.weight_qty as totalQty,d.name as uomname FROM recipy_details a INNER JOIN recipy_general b on b.recipy_id = a.recipy_id INNER JOIN inventory_general c on c.id = a.item_id INNER JOIN inventory_uom d on d.uom_id = c.uom_id where b.product_id = ? and b.status_id = 1",[$product_id]);
         return $result;
     }
 
