@@ -448,18 +448,6 @@
             <div class="col-md-4">
                 <div class="filter-card">
                     <label class="filter-label">
-                        <i class="mdi mdi-calendar-range me-2"></i>Date Range
-                    </label>
-                    <select wire:model.live="dateRange" class="form-select filter-input">
-                        <option value="7d">Last 7 days</option>
-                        <option value="30d">Last 30 days</option>
-                        <option value="90d">Last 90 days</option>
-                    </select>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="filter-card">
-                    <label class="filter-label">
                         <i class="mdi mdi-chart-line me-2"></i>Top Products
                     </label>
                     <input type="number" min="10" max="200" wire:model.live="topN" 

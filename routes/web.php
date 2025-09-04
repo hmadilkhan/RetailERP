@@ -15,6 +15,7 @@ use App\Http\Controllers\CompanyController;
 use App\Http\Controllers\CustomersController;
 use App\Http\Controllers\DeliveryController;
 use App\Http\Controllers\DemandController;
+use App\Http\Controllers\DeployController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\EmployeeSecurityDepositController;
@@ -132,6 +133,8 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
     
 
 });
+
+Route::get('/rebuild-site', [DeployController::class, 'rebuild'])->name('rebuild');
 
 Route::get('/view-inventory', ViewInventory::class);
 Route::get('/vehicle-manager', VehicleManager::class);

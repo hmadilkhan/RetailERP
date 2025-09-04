@@ -63,7 +63,7 @@ class JobController extends Controller
                 'mode_id' => $request->productmode,
                 'usage_qty' => $request->usage,
                 'cost' => $request->amount,
-				'used_in_dinein' => $request->dinein, //by default active
+				'used_in_dinein' => $request->dineIn, //by default active
             ];
             $Itemdetails = $joborder->insert_sub_details($details);
         }
