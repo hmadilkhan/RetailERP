@@ -325,7 +325,7 @@ class joborder extends Model
 
     public function getDetails()
     {
-        $result = DB::select("SELECT a.job_order_id, a.joborder_name, a.created_at, b.cost, b.retail_cost, c.job_status_name FROM job_order_general a INNER JOIN job_order_account b ON b.job_id = a.job_order_id INNER JOIN job_status c ON c.job_status_id = a.job_status_id WHERE a.branch_id = ?",[session("branchid")]);
+        $result = DB::select("SELECT a.job_order_id, a.joborder_name, a.created_at, b.cost, b.retail_cost, c.job_status_name FROM job_order_general a INNER JOIN job_order_account b ON b.job_id = a.job_order_id INNER JOIN job_status c ON c.job_status_id = a.job_status_id WHERE a.branch_id = ?",[session("branch")]);
         return $result;
     }
 
