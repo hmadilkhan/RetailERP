@@ -71,13 +71,12 @@
             bLengthChange: true,
             displayLength: 10,
             info: false,
+            ordering: false, // 👈 disables ordering
             language: {
                 search:'',
                 searchPlaceholder: 'Search Work Order',
                 lengthMenu: '<span></span> _MENU_'
-
             }
-
         });
 
         //Alert confirm
