@@ -517,9 +517,9 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
         $filter = "";
 
         if (session("roleId") == 2 && $branch == "all") {
-            $filter .= " a.name LIKE '" . $name . "%' AND  a.user_id IN(SELECT user_id FROM user_authorization where company_id = " . session("company_id") . ")";
+            $filter .= " (a.name LIKE '" . $name . "%' or a.mobile LIKE '" . $name . "%') AND  a.user_id IN(SELECT user_id FROM user_authorization where company_id = " . session("company_id") . ")";
         } else {
-            $filter .= " a.name LIKE '" . $name . "%' AND a.user_id IN(SELECT user_id FROM user_authorization where branch_id = " . ( $branch != "all" ? $branch : session("branch") ). ")";
+            $filter .= " (a.name LIKE '" . $name . "%' or a.mobile LIKE '" . $name . "%') AND a.user_id IN(SELECT user_id FROM user_authorization where branch_id = " . ( $branch != "all" ? $branch : session("branch") ). ")";
         }
 
         $customers = DB::select('SELECT a.name,a.id,d.branch_name,a.mobile FROM customers a
