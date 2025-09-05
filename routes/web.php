@@ -1147,3 +1147,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/chats', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/forecast-chat', \App\Livewire\ForecastChat::class) ->name('forecast.chat');
 });
+
+Route::middleware(['web','auth'])->group(function () {
+    Route::impersonate(); // creates 'impersonate' & 'impersonate.leave'
+});

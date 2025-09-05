@@ -485,8 +485,8 @@ class ReportController extends Controller
                 $q->when($request->terminal != "", function ($q) use ($request) {
                     $q->where("terminal_id", $request->terminal);
                 });
-                $q->when($request->customer != "", function ($q) use ($request) {
-                    $q->where("customer_id", $request->customer);
+                $q->when($request->customerNo != "", function ($q) use ($request) {
+                    $q->where("customer_id", $request->customerNo);
                 });
                 $q->when($request->paymentmode != "", function ($q) use ($request) {
                     $q->where("payment_id", $request->paymentmode);
@@ -760,8 +760,8 @@ class ReportController extends Controller
             ->when($request->terminal != "", function ($q) use ($request) {
                 $q->where("terminal_id", $request->terminal);
             })
-            ->when($request->customer != "", function ($q) use ($request) {
-                $q->where("customer_id", $request->customer);
+            ->when($request->customerNo != "", function ($q) use ($request) {
+                $q->where("customer_id", $request->customerNo);
             })
             ->when($request->paymentmode != "", function ($q) use ($request) {
                 $q->where("payment_id", $request->paymentmode);
@@ -804,8 +804,8 @@ class ReportController extends Controller
                 $q->when($request->terminal != "", function ($q) use ($request) {
                     $q->where("terminal_id", $request->terminal);
                 });
-                $q->when($request->customer != "", function ($q) use ($request) {
-                    $q->where("customer_id", $request->customer);
+                $q->when($request->customerNo != "", function ($q) use ($request) {
+                    $q->where("customer_id", $request->customerNo);
                 });
                 $q->when($request->paymentmode != "", function ($q) use ($request) {
                     $q->where("payment_id", $request->paymentmode);
