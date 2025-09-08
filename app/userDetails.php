@@ -109,6 +109,34 @@ class userDetails extends Model
 		return $result;
     }
 
+    public function get_users_eloquent()
+    {
+        $query = User::from('user_details as a')
+            ->join('user_authorization as b', 'b.user_id', '=', 'a.id')
+            ->join('user_roles as c', 'c.role_id', '=', 'b.role_id')
+            ->join('branch as d', 'd.branch_id', '=', 'b.branch_id')
+            ->join('accessibility_mode as e', 'e.status_id', '=', 'b.status_id')
+            ->select(
+                'a.*',
+                'c.role as role_name',
+                'd.branch_name',
+                'e.status_name',
+                'b.authorization_id',
+                'b.isLoggedIn'
+            )
+            ->where('b.status_id', 1);
+
+        if (session('roleId') == 2) {
+            $query->where('b.company_id', session('company_id'));
+        } else if (session('roleId') == 1) {
+            // no additional filter for super admin
+        } else {
+            $query->where('b.branch_id', session('branch'));
+        }
+
+        return $query->get();
+    }
+
     public function user_details($userid)
     {
     	$details = DB::select('SELECT a.id, a.fullname, a.email, a.contact, f.country_name, g.city_name, a.address, a.username, a.show_password, c.role, d.branch_name, e.status_name, a.created_at, b.authorization_id,b.company_id,b.branch_id,a.image FROM user_details a

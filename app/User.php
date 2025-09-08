@@ -64,10 +64,10 @@ class User extends Authenticatable
 
     public function canImpersonate(): bool
     {
-        return $this->hasRole('Super Admin');
+        return session("roleId") == 1;
     }
     public function canBeImpersonated(): bool
     {
-        return !$this->hasRole('Super Admin');
+        return session("roleId") !== 1;
     }
 }
