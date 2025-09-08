@@ -29,7 +29,6 @@ class CheckLogin
             Auth::logout();
             return redirect('/login');
         }
-
         return $next($request);
         // $result = DB::table("user_authorization")->where("user_id",Auth::user()->id)->first();
         //       if ($result->status_id == 1) {
