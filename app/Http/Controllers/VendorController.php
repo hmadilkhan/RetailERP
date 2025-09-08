@@ -30,7 +30,7 @@ class VendorController extends Controller
      */
     public function index()
     {
-        $vendor = DB::select('SELECT *,(SELECT balance FROM vendor_ledger where vendor_account_id = (Select MAX(vendor_account_id) from vendor_ledger where vendor_id = a.id)) as balance FROM vendors a INNER JOIN vendor_company_details b on b.vendor_id = a.id INNER JOIN country c on c.country_id = a.country_id INNER JOIN city d on d.city_id = a.city_id where a.user_id = ? and a.status_id = 1', [session('company_id')]);
+        $vendor = DB::select('SELECT *,(SELECT balance FROM vendor_ledger where vendor_account_id = (Select MAX(vendor_account_id) from vendor_ledger where vendor_id = a.id)) as balance FROM vendors a INNER JOIN vendor_company_details b on b.vendor_id = a.id INNER JOIN country c on c.country_id = a.country_id INNER JOIN city d on d.city_id = a.city_id where a.user_id = ? and a.status_id = 1 order by a.id desc', [session('company_id')]);
         return view('Vendor.list', compact('vendor'));
     }
     public function generatePDF()

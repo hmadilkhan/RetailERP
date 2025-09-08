@@ -50,7 +50,7 @@
                                 <tr>
 
                                    <td class="text-center">
-                                       <img src="{{ asset('public/assets/images/vendors/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
+                                       <img src="{{ asset('storage/images/vendors/'.(!empty($value->image) ? $value->image : 'placeholder.jpg').'') }}" class="d-inline-block img-circle " alt="{{ !empty($value->image) ? $value->image : 'placeholder.jpg' }}">
                                    </td>
                                    <td class="pro-name">
                                        {{$value->vendor_name."   | ".number_format($value->balance,2)}}
@@ -158,6 +158,7 @@ var rem_id = [];
         bLengthChange: true,
         displayLength: 10,
         info: true,
+        ordering: false,
         language: {
           search:'', 
           searchPlaceholder: 'Search Vendor',
