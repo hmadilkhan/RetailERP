@@ -22,7 +22,6 @@
                         class="icofont icofont-ui-delete f-18 "></i>&nbsp;Remove</button>
             </div>
             <div class="card-block">
-
                 <div class="project-table">
                     <table class="table table-striped nowrap dt-responsive" width="100%">
                         <thead>
@@ -119,7 +118,7 @@
 
      /* Card/header polish */
      .card { border: 1px solid #e9ecef; border-radius: 10px; overflow: hidden; }
-     .card-header { background: linear-gradient(90deg, #198754, #4CAF50 ); color: #fff; }
+     .card-header { background: #EFEFEF; color: #fff; }
      .card-header .btn-primary { background-color: rgba(255,255,255,0.15); border-color: transparent; }
      .card-header .btn-primary:hover { background-color: rgba(255,255,255,0.25); }
 
