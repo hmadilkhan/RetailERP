@@ -15,7 +15,8 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\TestCommand::class,
-        Commands\DateWiseStockCommand::class
+        Commands\DateWiseStockCommand::class,
+        Commands\WebsiteScheduleCommand::class
     ];
 
     /**
@@ -32,7 +33,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new \App\Jobs\SyncQuickBooksCustomersJob)->dailyAt("11:00");
         $schedule->job(new \App\Jobs\SyncQuickBooksItemsJob)->dailyAt("12:00");
         $schedule->job(new \App\Jobs\SyncQuickBooksInvoiceJob)->dailyAt("13:00");
-
+        $schedule->command('app:website-schedule-command')->everyMinute();
     }
 
     /**
