@@ -559,8 +559,8 @@ class ForecastChat extends Component
                     'sql' => $salesQuery->toSql(),
                     'bindings' => $salesQuery->getBindings(),
                     'date_range' => $dateInfo['type'] === 'specific'
-                        ? ("On: " . (is_string($startDate) ? $startDate : $startDate->toDateString()))
-                        : ("From: " . (is_string($startDate) ? $startDate : $startDate->toDateString()) . " To: " . (is_string($endDate) ? $endDate : $endDate->toDateString())),
+                        ? ("On: " .  $startDate)
+                        : ("From: " .  $startDate  . " To: " . $endDate),
                     'branch_filter' => $this->branchId
                 ];
 
