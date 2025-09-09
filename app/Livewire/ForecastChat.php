@@ -196,7 +196,7 @@ class ForecastChat extends Component
         $normalized = preg_replace('/\s+/', ' ', $normalized);
 
         // normalize multiple spaces
-        // $text = preg_replace('/\s+/', ' ', $text);
+        $normalized = preg_replace('/\s+/', ' ', $normalized);
 
         // word numbers -> digits (limited & safe)
         $wordToNumber = [
