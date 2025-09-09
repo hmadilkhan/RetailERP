@@ -44,15 +44,45 @@ class ForecastChat extends Component
         return $converter->convert($text)->getContent();
     }
 
+    private function normalizeDigitsToAscii(string $s): string
+    {
+        // Convert Urdu/Arabic-Indic numerals to ASCII 0-9
+        $map = [
+            '۰' => '0',
+            '۱' => '1',
+            '۲' => '2',
+            '۳' => '3',
+            '۴' => '4',
+            '۵' => '5',
+            '۶' => '6',
+            '۷' => '7',
+            '۸' => '8',
+            '۹' => '9',
+            '٠' => '0',
+            '١' => '1',
+            '٢' => '2',
+            '٣' => '3',
+            '٤' => '4',
+            '٥' => '5',
+            '٦' => '6',
+            '٧' => '7',
+            '٨' => '8',
+            '٩' => '9',
+        ];
+        return strtr($s, $map);
+    }
+
     private function parseDateFromUserInput(string $userInput): array
     {
-        $userInput = strtolower(trim($userInput));
-        
-        // Urdu helpers (normalize common Urdu transliterations without diacritics)
-        $normalized = $userInput;
-        
-        // Normalize common English number words to digits for day ranges (e.g., "last two days")
-        // This is a lightweight pass intended to improve parsing for small counts (<=30)
+        $tz = 'Asia/Karachi'; // your default
+        $now = Carbon::now($tz);
+        $text = mb_strtolower(trim($userInput));
+        $text = $this->normalizeDigitsToAscii($text);
+
+        // normalize multiple spaces
+        $text = preg_replace('/\s+/', ' ', $text);
+
+        // word numbers -> digits (limited & safe)
         $wordToNumber = [
             'zero' => '0',
             'one' => '1',
@@ -79,229 +109,216 @@ class ForecastChat extends Component
             'couple' => '2',
             'few' => '3',
         ];
-        $pattern = '/\\b(' . implode('|', array_map('preg_quote', array_keys($wordToNumber))) . ')\\b/';
-        $normalized = preg_replace_callback($pattern, function ($m) use ($wordToNumber) {
-            return $wordToNumber[$m[1]] ?? $m[0];
-        }, $normalized);
-        
-        // Today / Aaj
-        if (preg_match('/\\b(today|aaj)\\b/u', $normalized)) {
-            $startDate = now()->startOfDay();
-            $endDate = now()->endOfDay();
-            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-        }
-        
-        // Yesterday / Kal (assume yesterday)
-        if (preg_match('/\\b(yesterday|kal)\\b/u', $normalized)) {
-            $startDate = now()->subDay()->startOfDay();
-            $endDate = now()->subDay()->endOfDay();
-            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-        }
-        
-        // Last week / Pichlay hafte
-        if (preg_match('/\\b(last\\s+week|pichlay\\s+haft(e|ay))\\b/u', $normalized)) {
-            $startDate = now()->subWeek()->startOfWeek();
-            $endDate = now()->subWeek()->endOfWeek();
-            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-        }
-        
-        // This week / Is hafte
-        if (preg_match('/\\b(this\\s+week|is\\s+haft(e|ay))\\b/u', $normalized)) {
-            $startDate = now()->startOfWeek();
-            $endDate = now()->endOfWeek();
-            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-        }
-        
-        // Last month / Pichlay mahine
-        if (preg_match('/\\b(last\\s+month|pichlay\\s+mahin(e|ay))\\b/u', $normalized)) {
-            $startDate = now()->subMonth()->startOfMonth();
-            $endDate = now()->subMonth()->endOfMonth();
-            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-        }
-        
-        // This month / Is mahine
-        if (preg_match('/\\b(this\\s+month|is\\s+mahin(e|ay))\\b/u', $normalized)) {
-            $startDate = now()->startOfMonth();
-            $endDate = now()->endOfMonth();
-            return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-        }
-        
-        // Last X days / Past X days / Recent X days / Aakhri X din
-        if (preg_match('/\b(last|past|recent|previous|aakhri)\s+(?:the\s+)?(\d+)\s+(?:of\s+)?din(s)?\b/u', $normalized, $m)) {
-            $days = (int)$m[2];
-            if ($days > 0 && $days <= 365) {
-                $startDate = now()->subDays($days)->startOfDay();
-                $endDate = now()->subDay()->endOfDay();
-                return ['start' => $startDate, 'end' => $endDate, 'type' => 'range'];
-            }
-        }
-        if (preg_match('/\b(last|past|recent|previous)\s+(?:the\s+)?(\d+)\s+(?:of\s+)?days?\b/i', $normalized, $matches)) {
-            $days = (int)$matches[2];
-            if ($days > 0 && $days <= 365) {
-                $startDate = now()->subDays($days)->startOfDay();
-                $endDate = now()->subDay()->endOfDay();
-                return ['start' => $startDate, 'end' => $endDate, 'type' => 'range'];
-            }
-        }
-        
-        // X days ago / X din pehlay
-        if (preg_match('/\\b(\\d+)\\s+din\\s+pehl(e|ay)\\b/u', $normalized, $m)) {
-            $days = (int)$m[1];
-            if ($days > 0 && $days <= 365) {
-                $startDate = now()->subDays($days)->startOfDay();
-                $endDate = now()->subDays($days)->endOfDay();
-                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-            }
-        }
-        if (preg_match('/\\b(\\d+)\\s+days?\\s+ago\\b/i', $normalized, $matches)) {
-            $days = (int)$matches[1];
-            if ($days > 0 && $days <= 365) {
-                $startDate = now()->subDays($days)->startOfDay();
-                $endDate = now()->subDays($days)->endOfDay();
-                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-            }
-        }
-        
-        // Existing English formats below ...
-        // Check for specific date patterns (e.g., "2024-01-15")
-        if (preg_match('/(\\d{4}-\\d{2}-\\d{2})/', $normalized, $matches)) {
+        $text = preg_replace_callback('/\b(' . implode('|', array_map('preg_quote', array_keys($wordToNumber))) . ')\b/u', function ($m) use ($wordToNumber) {
+            return $wordToNumber[$m[1]];
+        }, $text);
+
+        // --- absolute explicit range: 2025-08-01 to 2025-08-15 / between ... and ...
+        if (preg_match('/\b(\d{4}-\d{2}-\d{2})\b\s*(?:to|-|–|—|through|till|until|upto|up to|and)\s*\b(\d{4}-\d{2}-\d{2})\b/u', $text, $m)) {
             try {
-                $date = Carbon::parse($matches[1]);
-                $startDate = $date->startOfDay();
-                $endDate = $date->endOfDay();
-                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-            } catch (\Exception $e) {
-                return ['start' => null, 'end' => null, 'type' => 'range'];
+                $start = Carbon::parse($m[1], $tz)->startOfDay();
+                $end   = Carbon::parse($m[2], $tz)->endOfDay();
+                if ($start->gt($end)) [$start, $end] = [$end, $start];
+                return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
+            } catch (\Throwable $e) { /* fall through */
             }
         }
-        
-        // Natural formats like "31 sept" remain unchanged...
-        if (preg_match('/(\\d{1,2})\\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|may|june|july|august|september|october|november|december)/i', $normalized, $matches)) {
-            $day = (int)$matches[1];
-            $month = strtolower($matches[2]);
-            $monthMap = [
-                'jan' => 1, 'january' => 1,
-                'feb' => 2, 'february' => 2,
-                'mar' => 3, 'march' => 3,
-                'apr' => 4, 'april' => 4,
+
+        // today / aaj
+        if (preg_match('/\b(today|aaj)\b/u', $text)) {
+            $start = $now->copy()->startOfDay();
+            $end = $now->copy()->endOfDay();
+            return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'specific'];
+        }
+
+        // yesterday / kal (treat kal as yesterday)
+        if (preg_match('/\b(yesterday|kal)\b/u', $text)) {
+            $d = $now->copy()->subDay();
+            return ['start' => $d->startOfDay()->toDateString(), 'end' => $d->endOfDay()->toDateString(), 'type' => 'specific'];
+        }
+
+        // this week / is haftay
+        if (preg_match('/\b(this week|is haft(e|ay))\b/u', $text)) {
+            $start = $now->copy()->startOfWeek();
+            $end = $now->copy()->endOfWeek();
+            return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
+        }
+
+        // last week / pichlay haftay
+        if (preg_match('/\b(last week|previous week|pichlay haft(e|ay))\b/u', $text)) {
+            $start = $now->copy()->subWeek()->startOfWeek();
+            $end = $now->copy()->subWeek()->endOfWeek();
+            return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
+        }
+
+        // this month / is mahinay
+        if (preg_match('/\b(this month|is mahin(e|ay))\b/u', $text)) {
+            $start = $now->copy()->startOfMonth();
+            $end = $now->copy()->endOfMonth();
+            return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
+        }
+
+        // last month / pichlay mahinay
+        if (preg_match('/\b(last month|previous month|pichlay mahin(e|ay))\b/u', $text)) {
+            $d = $now->copy()->subMonth();
+            return ['start' => $d->startOfMonth()->toDateString(), 'end' => $d->endOfMonth()->toDateString(), 'type' => 'range'];
+        }
+
+        // last|past|previous N days|weeks|months / aakhri N din
+        if (preg_match('/\b(last|past|previous|recent|aakhri)\s+(\d{1,3})\s*(days?|weeks?|months?|din)\b/u', $text, $m)) {
+            $n = (int)$m[2];
+            $unit = $m[3];
+            if ($n > 0 && $n <= 365) {
+                if (preg_match('/week/', $unit)) {
+                    $start = $now->copy()->subWeeks($n)->startOfDay();
+                    $end   = $now->copy()->subDay()->endOfDay();
+                } elseif (preg_match('/month/', $unit)) {
+                    $start = $now->copy()->subMonths($n)->startOfDay();
+                    $end   = $now->copy()->endOfDay();
+                } else { // days or din
+                    $start = $now->copy()->subDays($n)->startOfDay();
+                    $end   = $now->copy()->subDay()->endOfDay();
+                }
+                return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
+            }
+        }
+
+        // N days ago / N din pehlay -> that specific day
+        if (preg_match('/\b(\d{1,3})\s*(days?|din)\s+(ago|pehl(e|ay))\b/u', $text, $m)) {
+            $n = (int)$m[1];
+            if ($n > 0 && $n <= 365) {
+                $d = $now->copy()->subDays($n);
+                return ['start' => $d->startOfDay()->toDateString(), 'end' => $d->endOfDay()->toDateString(), 'type' => 'specific'];
+            }
+        }
+
+        // single ISO date
+        if (preg_match('/\b(\d{4}-\d{2}-\d{2})\b/', $text, $m)) {
+            try {
+                $d = Carbon::parse($m[1], $tz);
+                return ['start' => $d->startOfDay()->toDateString(), 'end' => $d->endOfDay()->toDateString(), 'type' => 'specific'];
+            } catch (\Throwable $e) { /* ignore */
+            }
+        }
+
+        // day + month name (no year): "31 sept"
+        if (preg_match('/\b(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)\b/u', $text, $m)) {
+            $day = (int)$m[1];
+            $mon = strtolower($m[2]);
+            $map = [
+                'jan' => 1,
+                'january' => 1,
+                'feb' => 2,
+                'february' => 2,
+                'mar' => 3,
+                'march' => 3,
+                'apr' => 4,
+                'april' => 4,
                 'may' => 5,
-                'jun' => 6, 'june' => 6,
-                'jul' => 7, 'july' => 7,
-                'aug' => 8, 'august' => 8,
-                'sep' => 9, 'september' => 9,
-                'oct' => 10, 'october' => 10,
-                'nov' => 11, 'november' => 11,
-                'dec' => 12, 'december' => 12,
+                'jun' => 6,
+                'june' => 6,
+                'jul' => 7,
+                'july' => 7,
+                'aug' => 8,
+                'august' => 8,
+                'sep' => 9,
+                'sept' => 9,
+                'september' => 9,
+                'oct' => 10,
+                'october' => 10,
+                'nov' => 11,
+                'november' => 11,
+                'dec' => 12,
+                'december' => 12
             ];
-            if (isset($monthMap[$month])) {
-                $monthNum = $monthMap[$month];
-                $currentYear = now()->year;
+            if (isset($map[$mon])) {
+                $year = $now->year;
                 try {
-                    $date = Carbon::create($currentYear, $monthNum, $day);
-                    if ($date->month === $monthNum && $date->day === $day) {
-                        $startDate = $date->startOfDay();
-                        $endDate = $date->endOfDay();
-                        return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-                    } else {
-                        return ['start' => null, 'end' => null, 'type' => 'range', 'error' => "Invalid date: {$day} {$month}"];
+                    $d = Carbon::create($year, $map[$mon], $day, 0, 0, 0, $tz);
+                    // validate (e.g., 31 Sept invalid)
+                    if ((int)$d->day === $day && (int)$d->month === $map[$mon]) {
+                        return ['start' => $d->startOfDay()->toDateString(), 'end' => $d->endOfDay()->toDateString(), 'type' => 'specific'];
                     }
-                } catch (\Exception $e) {
-                    return ['start' => null, 'end' => null, 'type' => 'range', 'error' => "Invalid date: {$day} {$month}"];
+                    return ['start' => null, 'end' => null, 'type' => 'range', 'error' => "Invalid date: {$day} {$mon}"];
+                } catch (\Throwable $e) {
+                    return ['start' => null, 'end' => null, 'type' => 'range', 'error' => "Invalid date: {$day} {$mon}"];
                 }
             }
         }
-        
-        // Month-only patterns (English) remain unchanged...
-        if (preg_match('/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|may|june|july|august|september|october|november|december)/i', $normalized, $matches)) {
-            $month = strtolower($matches[1]);
-            $monthMap = [
-                'jan' => 1, 'january' => 1,
-                'feb' => 2, 'february' => 2,
-                'mar' => 3, 'march' => 3,
-                'apr' => 4, 'april' => 4,
+
+        // month name only → that month (current year if month <= current month, else previous year)
+        if (preg_match('/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)\b/u', $text, $m)) {
+            $mon = strtolower($m[1]);
+            $map = [
+                'jan' => 1,
+                'january' => 1,
+                'feb' => 2,
+                'february' => 2,
+                'mar' => 3,
+                'march' => 3,
+                'apr' => 4,
+                'april' => 4,
                 'may' => 5,
-                'jun' => 6, 'june' => 6,
-                'jul' => 7, 'july' => 7,
-                'aug' => 8, 'august' => 8,
-                'sep' => 9, 'september' => 9,
-                'oct' => 10, 'october' => 10,
-                'nov' => 11, 'november' => 11,
-                'dec' => 12, 'december' => 12,
+                'jun' => 6,
+                'june' => 6,
+                'jul' => 7,
+                'july' => 7,
+                'aug' => 8,
+                'august' => 8,
+                'sep' => 9,
+                'sept' => 9,
+                'september' => 9,
+                'oct' => 10,
+                'october' => 10,
+                'nov' => 11,
+                'november' => 11,
+                'dec' => 12,
+                'december' => 12
             ];
-            if (isset($monthMap[$month])) {
-                $monthNum = $monthMap[$month];
-                $currentYear = now()->year;
-                $currentMonth = now()->month;
-                $year = $monthNum <= $currentMonth ? $currentYear : $currentYear - 1;
-                $startDate = Carbon::create($year, $monthNum, 1)->startOfMonth();
-                $endDate = Carbon::create($year, $monthNum, 1)->endOfMonth();
-                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
+            if (isset($map[$mon])) {
+                $mNum = $map[$mon];
+                $year = ($mNum <= (int)$now->format('n')) ? (int)$now->format('Y') : ((int)$now->format('Y') - 1);
+                $start = Carbon::create($year, $mNum, 1, 0, 0, 0, $tz)->startOfMonth();
+                $end   = $start->copy()->endOfMonth();
+                return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
             }
         }
-        
-        // Month + context patterns (English) remain unchanged...
-        if (preg_match('/(jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec|january|february|march|april|may|june|july|august|september|october|november|december)\\s+(sales|most\\s+selling|items|trends)/i', $normalized, $matches)) {
-            $month = strtolower($matches[1]);
-            $monthMap = [
-                'jan' => 1, 'january' => 1,
-                'feb' => 2, 'february' => 2,
-                'mar' => 3, 'march' => 3,
-                'apr' => 4, 'april' => 4,
-                'may' => 5,
-                'jun' => 6, 'june' => 6,
-                'jul' => 7, 'july' => 7,
-                'aug' => 8, 'august' => 8,
-                'sep' => 9, 'september' => 9,
-                'oct' => 10, 'october' => 10,
-                'nov' => 11, 'november' => 11,
-                'dec' => 12, 'december' => 12,
-            ];
-            if (isset($monthMap[$month])) {
-                $monthNum = $monthMap[$month];
-                $currentYear = now()->year;
-                $currentMonth = now()->month;
-                $year = $monthNum <= $currentMonth ? $currentYear : $currentYear - 1;
-                $startDate = Carbon::create($year, $monthNum, 1)->startOfMonth();
-                $endDate = Carbon::create($year, $monthNum, 1)->endOfMonth();
-                return ['start' => $startDate, 'end' => $endDate, 'type' => 'specific'];
-            }
+
+        // "recent"/"latest" fallback → last 7 days (excluding today)
+        if (preg_match('/\b(recent|latest|recently)\b/u', $text)) {
+            $start = $now->copy()->subDays(7)->startOfDay();
+            $end   = $now->copy()->subDay()->endOfDay();
+            return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
         }
-        
-        // Recent keywords default (English)
-        if (preg_match('/(recent|latest|recently)/i', $normalized)) {
-            $startDate = now()->subDays(7)->startOfDay();
-            $endDate = now()->subDay()->endOfDay();
-            return ['start' => $startDate, 'end' => $endDate, 'type' => 'range'];
-        }
-        
-        // Default to the last 30 days if no specific pattern is found
+
+        // default: no clear date provided
         return ['start' => null, 'end' => null, 'type' => 'range'];
     }
 
     private function debugDatabaseInfo(): array
     {
         $debug = [];
-        
+
         // Check recent sales data
         $recentSales = DB::table('sales_receipts as sr')
             ->select('sr.date', 'sr.branch')
             ->orderBy('sr.date', 'desc')
             ->limit(5)
             ->get();
-        
+
         $debug['recent_sales'] = $recentSales->toArray();
-        
+
         // Check total sales count
         $totalSales = DB::table('sales_receipts')->count();
         $debug['total_sales_count'] = $totalSales;
-        
+
         // Check if there are any sales for yesterday
         $yesterday = now()->subDay()->format('Y-m-d');
         $yesterdaySales = DB::table('sales_receipts')
             ->whereDate('date', $yesterday)
             ->count();
         $debug['yesterday_sales_count'] = $yesterdaySales;
-        
+
         // Check what dates are actually available
         $availableDates = DB::table('sales_receipts')
             ->selectRaw('DATE(date) as date_only, COUNT(*) as count')
@@ -310,7 +327,7 @@ class ForecastChat extends Component
             ->limit(10)
             ->get();
         $debug['available_dates'] = $availableDates->toArray();
-        
+
         // Check the date column type and sample values
         try {
             $sampleDates = DB::table('sales_receipts')
@@ -321,21 +338,21 @@ class ForecastChat extends Component
         } catch (\Exception $e) {
             $debug['sample_dates_error'] = $e->getMessage();
         }
-        
+
         // Check available branches
         $branches = DB::table('branch')->pluck('branch_id')->toArray();
         $debug['available_branches'] = $branches;
-        
+
         // Check current session company_id
         $debug['session_company_id'] = session('company_id');
-        
+
         return $debug;
     }
 
     private function formatDebugOutput(array $debugQueries, array $debugData): string
     {
         $output = "🔍 **DEBUG INFORMATION**\n\n";
-        
+
         $output .= "**SQL Queries Executed:**\n";
         foreach ($debugQueries as $query) {
             $output .= "• **{$query['step']}**:\n";
@@ -349,7 +366,7 @@ class ForecastChat extends Component
             }
             $output .= "\n";
         }
-        
+
         $output .= "**Data Flow:**\n";
         foreach ($debugData as $data) {
             $output .= "• **{$data['step']}**:\n";
@@ -364,7 +381,7 @@ class ForecastChat extends Component
             }
             $output .= "\n";
         }
-        
+
         return $output;
     }
 
@@ -396,7 +413,7 @@ class ForecastChat extends Component
     {
         // Set processing to true immediately when send is called
         $this->isProcessing = true;
-        
+
         $userText = trim($this->input);
         if ($userText === '') {
             $this->isProcessing = false;
@@ -409,16 +426,16 @@ class ForecastChat extends Component
 
         // Parse date from user input
         $dateInfo = $this->parseDateFromUserInput($userText);
-        Log::info("dateInfo: ".json_encode($dateInfo));
+        Log::info("dateInfo: " . json_encode($dateInfo));
         // Get sales and stock data
         [$salesSummary, $stockMap, $productMap, $dateContext, $debugQueries, $debugData] = $this->summaries($dateInfo);
-        Log::info("salesSummary: ".json_encode($salesSummary));
-        Log::info("stockMap: ".json_encode($stockMap));
-        Log::info("productMap: ".json_encode($productMap));
-        Log::info("dateContext: ".json_encode($dateContext));
-        Log::info("debugQueries: ".json_encode($debugQueries));
-        Log::info("debugData: ".json_encode($debugData));
-        
+        Log::info("salesSummary: " . json_encode($salesSummary));
+        Log::info("stockMap: " . json_encode($stockMap));
+        Log::info("productMap: " . json_encode($productMap));
+        Log::info("dateContext: " . json_encode($dateContext));
+        Log::info("debugQueries: " . json_encode($debugQueries));
+        Log::info("debugData: " . json_encode($debugData));
+
         // If this is a specific one-day request (today/yesterday or exact date) and we have data, respond deterministically without AI
         if (($dateInfo['type'] ?? null) === 'specific' && !empty($salesSummary)) {
             // Try to extract yyyy-mm-dd label from dateContext
@@ -497,7 +514,7 @@ class ForecastChat extends Component
         $debugQueries = [];
         $debugData = [];
         $noDateProvided = false;
-        
+
         if ($dateInfo && in_array($dateInfo['type'], ['specific', 'range'], true)) {
             // Check if there's an error in date parsing
             if (isset($dateInfo['error'])) {
@@ -509,33 +526,33 @@ class ForecastChat extends Component
                 $startDate = $dateInfo['start'];
                 $endDate = $dateInfo['end'];
                 if ($dateInfo['type'] === 'specific') {
-                    $dateContext = "Analyzing sales for " . (is_string($startDate) ? $startDate : $startDate->toDateString());
+                    $dateContext = "Analyzing sales for {$dateInfo['start']}";
                 } else {
-                    $dateContext = "Analyzing sales from " . (is_string($startDate) ? $startDate : $startDate->toDateString()) . " to " . (is_string($endDate) ? $endDate : $endDate->toDateString());
+                    $dateContext = "Analyzing sales from {$dateInfo['start']} to {$dateInfo['end']}";
                 }
-                
+
                 // Build query for either single date or a date range
                 $salesQuery = DB::table('sales_receipt_details as s')
                     ->join('sales_receipts as sr', 's.receipt_id', '=', 'sr.id')
                     ->selectRaw('s.item_code, SUM(s.total_qty) as total_qty')
                     ->groupBy('s.item_code')
                     ->orderByDesc(DB::raw('SUM(s.total_qty)'));
-                
+
                 if ($dateInfo['type'] === 'specific') {
-                    $salesQuery->whereDate('sr.date', is_string($startDate) ? $startDate : $startDate->toDateString());
+                    $salesQuery->whereDate('sr.date', $dateInfo['start']); // YYYY-MM-DD
                 } else {
                     $salesQuery->whereBetween('sr.date', [
-                        is_string($startDate) ? $startDate : $startDate->toDateTimeString(),
-                        is_string($endDate) ? $endDate : $endDate->toDateTimeString(),
+                        $dateInfo['start'] . ' 00:00:00',
+                        $dateInfo['end']   . ' 23:59:59',
                     ]);
                 }
-                
+
                 if (!empty($this->branchId) && $this->branchId != 'all') {
                     $salesQuery->where('sr.branch', $this->branchId);
                 } else {
                     $salesQuery->whereIn('sr.branch', $this->branches->pluck('branch_id')->toArray());
                 }
-                
+
                 // Debug: Log the specific date query
                 $debugQueries[] = [
                     'step' => $dateInfo['type'] === 'specific' ? 'specific_date_query' : 'range_query',
@@ -546,9 +563,9 @@ class ForecastChat extends Component
                         : ("From: " . (is_string($startDate) ? $startDate : $startDate->toDateString()) . " To: " . (is_string($endDate) ? $endDate : $endDate->toDateString())),
                     'branch_filter' => $this->branchId
                 ];
-                
+
                 $salesRows = $salesQuery->limit($this->topN)->get();
-                
+
                 // Debug: Log the results
                 $debugData[] = [
                     'step' => $dateInfo['type'] === 'specific' ? 'specific_date_results' : 'range_results',
@@ -568,20 +585,20 @@ class ForecastChat extends Component
             $emergencyDays = 30;
             $emergencySince = now()->subDays($emergencyDays)->startOfDay();
             $dateContext = "No results for selected date - Showing last {$emergencyDays} days (if any data exists)";
-            
+
             $salesQuery = DB::table('sales_receipt_details as s')
                 ->join('sales_receipts as sr', 's.receipt_id', '=', 'sr.id')
                 ->selectRaw('s.item_code, SUM(s.total_qty) as total_qty')
                 ->where('sr.date', '>=', $emergencySince)
                 ->groupBy('s.item_code')
                 ->orderByDesc(DB::raw('SUM(s.total_qty)'));
-            
+
             if (!empty($this->branchId) && $this->branchId != 'all') {
                 $salesQuery->where('sr.branch', $this->branchId);
             } else {
                 $salesQuery->whereIn('sr.branch', $this->branches->pluck('branch_id')->toArray());
             }
-            
+
             // Debug: Log the emergency query
             $debugQueries[] = [
                 'step' => 'emergency_query',
@@ -590,9 +607,9 @@ class ForecastChat extends Component
                 'date_range' => "Since: " . $emergencySince,
                 'branch_filter' => $this->branchId
             ];
-            
+
             $salesRows = $salesQuery->limit($this->topN)->get();
-            
+
             // Debug: Log the emergency results
             $debugData[] = [
                 'step' => 'emergency_results',
@@ -602,14 +619,14 @@ class ForecastChat extends Component
         }
 
         $productIds = $salesRows->pluck('item_code')->unique()->values();
-        
+
         // Debug: Log product IDs found
         $debugData[] = [
             'step' => 'product_ids_extracted',
             'product_ids_count' => $productIds->count(),
             'product_ids_sample' => $productIds->take(5)->toArray()
         ];
-        
+
         // If no products found: do NOT fetch fallback products when no date provided
         if ($productIds->isEmpty()) {
             if ($noDateProvided) {
@@ -625,10 +642,10 @@ class ForecastChat extends Component
                 ];
             }
         }
-        
+
         $stockMap = [];
         $productMap = [];
-        
+
         if (!$productIds->isEmpty()) {
             $stockQuery = DB::table('inventory_stock as i')
                 ->selectRaw('i.product_id, SUM(i.balance) as stock_level')
@@ -641,7 +658,7 @@ class ForecastChat extends Component
             } else {
                 $stockQuery->whereIn('i.branch_id', $this->branches->pluck('branch_id')->toArray());
             }
-            
+
             // Debug: Log the stock query
             $debugQueries[] = [
                 'step' => 'stock_query',
@@ -650,9 +667,9 @@ class ForecastChat extends Component
                 'product_ids' => $productIds->toArray(),
                 'branch_filter' => $this->branchId
             ];
-            
+
             $stockRows = $stockQuery->groupBy('i.product_id')->get();
-            
+
             // Debug: Log stock results
             $debugData[] = [
                 'step' => 'stock_results',
@@ -664,7 +681,7 @@ class ForecastChat extends Component
                 ->select('p.id', 'p.product_name')
                 ->whereIn('p.id', $productIds)
                 ->get();
-                
+
             // Debug: Log product results
             $debugData[] = [
                 'step' => 'product_results',
@@ -684,7 +701,7 @@ class ForecastChat extends Component
         foreach ($salesRows as $r) {
             $salesSummary[(int)$r->item_code] = (int)$r->total_qty;
         }
-        
+
         // Debug: Log final summary
         $debugData[] = [
             'step' => 'final_summary',
