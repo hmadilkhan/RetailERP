@@ -326,7 +326,7 @@ class ForecastChat extends Component
         }
 
         // day + month name (no year): "31 sept"
-        if (preg_match('/\b(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)\b/u', $text, $m)) {
+        if (preg_match('/\b(\d{1,2})\s+(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)\b/u', $normalized, $m)) {
             $day = (int)$m[1];
             $mon = strtolower($m[2]);
             $map = [
@@ -371,7 +371,7 @@ class ForecastChat extends Component
         }
 
         // month name only → that month (current year if month <= current month, else previous year)
-        if (preg_match('/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)\b/u', $text, $m)) {
+        if (preg_match('/\b(jan|feb|mar|apr|may|jun|jul|aug|sep|sept|oct|nov|dec|january|february|march|april|june|july|august|september|october|november|december)\b/u', $normalized, $m)) {
             $mon = strtolower($m[1]);
             $map = [
                 'jan' => 1,
