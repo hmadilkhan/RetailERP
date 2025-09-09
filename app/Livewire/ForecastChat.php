@@ -20,6 +20,7 @@ class ForecastChat extends Component
     public int $topN = 50; // limit products for token safety
     public Collection $branches;
     public bool $isProcessing = false;
+    public bool $preferRomanUrdu = false;
 
     public function mount(): void
     {
@@ -44,9 +45,46 @@ class ForecastChat extends Component
         return $converter->convert($text)->getContent();
     }
 
+    // --- Detect if user typed Roman Urdu (very light-weight)
+    private function isRomanUrdu(string $s): bool
+    {
+        $t = mb_strtolower($s);
+        // common Roman Urdu cues
+        $cues = [
+            'mjhe',
+            'mujhe',
+            'btao',
+            'batao',
+            'pichlay',
+            'pichley',
+            'pichle',
+            'pichla',
+            'din',
+            'hafta',
+            'haftay',
+            'mahina',
+            'maheena',
+            'mahinay',
+            'aaj',
+            'kal',
+            'akhri',
+            'aakhri',
+            'guzray',
+            'andaza',
+            'ta',
+            'tk',
+            'tak'
+        ];
+        foreach ($cues as $c) {
+            if (str_contains($t, $c)) return true;
+        }
+        // mostly a-z + spaces and digits, few vowels pattern like Roman Urdu
+        return (bool)preg_match('/^[a-z0-9\s\-:.,]+$/', $t) && str_contains($t, ' ');
+    }
+
+    // Urdu/Arabic-Indic numerals → ASCII
     private function normalizeDigitsToAscii(string $s): string
     {
-        // Convert Urdu/Arabic-Indic numerals to ASCII 0-9
         $map = [
             '۰' => '0',
             '۱' => '1',
@@ -72,12 +110,140 @@ class ForecastChat extends Component
         return strtr($s, $map);
     }
 
+    // Roman Urdu word-numbers → digits
+    private function romanUrduNumberToDigit(string $s): string
+    {
+        $map = [
+            'ek' => '1',
+            'do' => '2',
+            'teen' => '3',
+            'char' => '4',
+            'chaar' => '4',
+            'panch' => '5',
+            'paanch' => '5',
+            'chay' => '6',
+            'cheh' => '6',
+            'saat' => '7',
+            'aath' => '8',
+            'ath' => '8',
+            'nau' => '9',
+            'dus' => '10',
+            'gyarah' => '11',
+            'barah' => '12',
+            'terah' => '13',
+            'chaudah' => '14',
+            'pandrah' => '15',
+            'solah' => '16',
+            'satrah' => '17',
+            'atharah' => '18',
+            'unnis' => '19',
+            'bees' => '20',
+            'tees' => '30',
+            'paitis' => '35',
+            'chalis' => '40',
+            'pachas' => '50',
+            'saath' => '60',
+            'sattar' => '70',
+            'assi' => '80',
+            'nabbe' => '90',
+            'sau' => '100'
+        ];
+        // replace whole words
+        return preg_replace_callback('/\b([a-z]+)\b/iu', function ($m) use ($map) {
+            $w = mb_strtolower($m[1]);
+            return $map[$w] ?? $m[0];
+        }, $s);
+    }
+
+    // Roman Urdu → English tokens for the date parser
+    private function normalizeRomanUrduPhrases(string $s): string
+    {
+        $t = ' ' . mb_strtolower($s) . ' ';
+        $t = preg_replace('/\s+/', ' ', $t);
+
+        // polite fillers remove
+        $t = str_replace([' mjhe ', ' mujhe ', ' krke ', ' karke ', ' zra ', ' zara ', ' plz ', ' please '], ' ', $t);
+
+        // core time words
+        $replacements = [
+            ' aaj ' => ' today ',
+            // NOTE: treating 'kal' as yesterday
+            ' kal ' => ' yesterday ',
+            ' akhri ' => ' last ',
+            ' aakhri ' => ' last ',
+            ' guzray ' => ' past ',
+            ' guzre ' => ' past ',
+            ' guzra ' => ' past ',
+
+            // units
+            ' din ' => ' days ',
+            ' dino ' => ' days ',
+            ' hafta ' => ' week ',
+            ' haftay ' => ' week ',
+            ' maheena ' => ' month ',
+            ' mahina ' => ' month ',
+            ' mahinay ' => ' month ',
+
+            // phrases
+            ' pichlay ' => ' last ',
+            ' pichley ' => ' last ',
+            ' pichle ' => ' last ',
+            ' pichla ' => ' last ',
+            ' iss hafta ' => ' this week ',
+            ' is hafta ' => ' this week ',
+            ' iss maheena ' => ' this month ',
+            ' is maheena ' => ' this month ',
+            ' is mahina ' => ' this month ',
+            ' iss mahina ' => ' this month ',
+            ' pichlay hafta ' => ' last week ',
+            ' pichlay haftay ' => ' last week ',
+            ' pichla hafta ' => ' last week ',
+            ' pichla haftay ' => ' last week ',
+            ' pichlay maheena ' => ' last month ',
+            ' pichla maheena ' => ' last month ',
+            ' pichlay mahina ' => ' last month ',
+            ' pichla mahina ' => ' last month ',
+
+            // “N din pehle”
+            ' pehle ' => ' ago ',
+            ' pehlay ' => ' ago ',
+
+            // noise like "data btao/batao"
+            ' data btao ' => ' ',
+            ' data batao ' => ' ',
+            ' btao ' => ' ',
+            ' batao ' => ' ',
+            ' dikhao ' => ' ',
+            ' show ' => ' ',
+            ' mujhe ' => ' ',
+            ' mjhe ' => ' ',
+            ' ka ' => ' ',
+            ' ke ' => ' ',
+            ' ki ' => ' ',
+        ];
+        $t = strtr($t, $replacements);
+
+        // compress spaces
+        $t = preg_replace('/\s+/', ' ', trim($t));
+
+        // numbers (words → digits)
+        $t = $this->romanUrduNumberToDigit($t);
+
+        return $t;
+    }
+
     private function parseDateFromUserInput(string $userInput): array
     {
         $tz = 'Asia/Karachi'; // your default
         $now = Carbon::now($tz);
         $text = mb_strtolower(trim($userInput));
-        $text = $this->normalizeDigitsToAscii($text);
+
+        $normalized = $this->normalizeDigitsToAscii($text);
+
+        $preferRoman = $this->isRomanUrdu($normalized);
+        if ($preferRoman) {
+            $normalized = $this->normalizeRomanUrduPhrases($normalized);
+        }
 
         // normalize multiple spaces
         $text = preg_replace('/\s+/', ' ', $text);
@@ -109,9 +275,15 @@ class ForecastChat extends Component
             'couple' => '2',
             'few' => '3',
         ];
-        $text = preg_replace_callback('/\b(' . implode('|', array_map('preg_quote', array_keys($wordToNumber))) . ')\b/u', function ($m) use ($wordToNumber) {
-            return $wordToNumber[$m[1]];
-        }, $text);
+        $pattern = '/\b(' . implode('|', array_map('preg_quote', array_keys($wordToNumber))) . ')\b/i';
+        $normalized = preg_replace_callback($pattern, function ($m) use ($wordToNumber) {
+            $k = strtolower($m[1]);
+            return $wordToNumber[$k] ?? $m[0];
+        }, mb_strtolower(trim($normalized)));
+
+        // $text = preg_replace_callback('/\b(' . implode('|', array_map('preg_quote', array_keys($wordToNumber))) . ')\b/u', function ($m) use ($wordToNumber) {
+        //     return $wordToNumber[$m[1]];
+        // }, $text);
 
         // --- absolute explicit range: 2025-08-01 to 2025-08-15 / between ... and ...
         if (preg_match('/\b(\d{4}-\d{2}-\d{2})\b\s*(?:to|-|–|—|through|till|until|upto|up to|and)\s*\b(\d{4}-\d{2}-\d{2})\b/u', $text, $m)) {
@@ -415,6 +587,7 @@ class ForecastChat extends Component
         $this->isProcessing = true;
 
         $userText = trim($this->input);
+        $this->preferRomanUrdu = $this->isRomanUrdu($userText);
         if ($userText === '') {
             $this->isProcessing = false;
             return;
@@ -469,36 +642,43 @@ class ForecastChat extends Component
             'debug_data' => $debugData,
         ];
 
-        $messages = [
-            [
-                'role' => 'system',
-                'content' => implode("\n", [
-                    'You are an ERP assistant that provides inventory reorder recommendations.',
-                    'Authoritative Data Policy:',
-                    '- STRICTLY use the provided Context JSON as the sole source of truth.',
-                    '- NEVER reference training data, external knowledge, or claim data cutoffs.',
-                    '- NEVER say a date is invalid if Context JSON contains results for it.',
-                    'Response Rules:',
-                    '- If sales_summary has entries, generate the table and insights from Context JSON without disclaimers.',
-                    '- Only state that no data is available if sales_summary is empty. If empty, use debug info to suggest nearest available period (e.g., fallback_days) and ask a follow-up.',
-                    '- Calculate next 7-day and 30-day needs.',
-                    '- Formula: avg_daily = total_qty / days; need_7d = max(0, ceil(avg_daily*7 - stock)); need_30d = max(0, ceil(avg_daily*30 - stock)).',
-                    '- Only include products where need_7d > 0 or need_30d > 0.',
-                    '- Present in a neat Markdown table with header row and separators: | Product | Avg/Day | Stock | Need 7d | Need 30d |',
-                    '- Do not duplicate products; aggregate by product id.',
-                    '- Clamp obviously unrealistic values (e.g., stock > 1e6) to a readable shortened format and call them out.',
-                    '- Add bullet-point insights for top movers and low stock risks.',
-                    '- If analyzing a specific date or short period, tailor insights to that time frame.',
-                    '- For invalid user-entered dates (e.g., "31 September"), politely explain and use the chosen fallback, but only when sales_summary is empty.',
-                    '- IMPORTANT: If the user asks for "debug" or "show me the queries", display concise debug details from debug_queries and debug_data.',
-                ]),
-            ],
-            ['role' => 'system', 'content' => 'Context JSON: ' . json_encode($context)],
-            ...$this->messages
+        // --- Build system rules (adds Roman Urdu instruction when needed)
+        $systemRules = [
+            'You are an ERP assistant that provides inventory reorder recommendations.',
+            'Authoritative Data Policy:',
+            '- STRICTLY use the provided Context JSON as the sole source of truth.',
+            '- NEVER reference training data, external knowledge, or claim data cutoffs.',
+            '- NEVER say a date is invalid if Context JSON contains results for it.',
+            'Response Rules:',
+            '- If sales_summary has entries, generate the table and insights from Context JSON without disclaimers.',
+            '- Only state that no data is available if sales_summary is empty. If empty, use debug info to suggest nearest available period (e.g., fallback_days) and ask a follow-up.',
+            '- Calculate next 7-day and 30-day needs.',
+            '- Formula: avg_daily = total_qty / days; need_7d = max(0, ceil(avg_daily*7 - stock)); need_30d = max(0, ceil(avg_daily*30 - stock)).',
+            '- Only include products where need_7d > 0 or need_30d > 0.',
+            '- Present in a neat Markdown table with header row and separators: | Product | Avg/Day | Stock | Need 7d | Need 30d |',
+            '- Do not duplicate products; aggregate by product id.',
+            '- Clamp obviously unrealistic values (e.g., stock > 1e6) to a readable shortened format and call them out.',
+            '- Add bullet-point insights for top movers and low stock risks.',
+            '- If analyzing a specific date or short period, tailor insights to that time frame.',
+            '- For invalid user-entered dates (e.g., "31 September"), politely explain and use the chosen fallback, but only when sales_summary is empty.',
+            '- IMPORTANT: If the user asks for "debug" or "show me the queries", display concise debug details from debug_queries and debug_data.',
+        ];
+
+        // Roman Urdu instruction (only when detected)
+        if ($this->preferRomanUrdu) {
+            $systemRules[] = 'IMPORTANT: User is using Roman Urdu. Reply strictly in clear Roman Urdu (Urdu written with English letters). Avoid Urdu script; keep numbers as digits.';
+        }
+
+        // Build final prompt messages
+        $promptMessages = [
+            ['role' => 'system', 'content' => implode("\n", $systemRules)],
+            // keep Unicode unescaped so Roman/Urdu tokens remain clean
+            ['role' => 'system', 'content' => 'Context JSON: ' . json_encode($context, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)],
+            ...$this->messages,
         ];
 
         try {
-            $answer = $ai->ask($messages);
+            $answer = $ai->ask($promptMessages);
             $answer = $this->parseMarkdown($answer);
         } catch (\Throwable $e) {
             $answer = "Error contacting AI service: " . e($e->getMessage());
