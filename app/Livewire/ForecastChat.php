@@ -49,40 +49,12 @@ class ForecastChat extends Component
     private function isRomanUrdu(string $s): bool
     {
         $t = mb_strtolower($s);
-        // common Roman Urdu cues
-        $cues = [
-            'mjhe',
-            'mujhe',
-            'btao',
-            'batao',
-            'pichlay',
-            'pichley',
-            'pichle',
-            'pichla',
-            'din',
-            'hafta',
-            'haftay',
-            'mahina',
-            'maheena',
-            'mahinay',
-            'aaj',
-            'kal',
-            'akhri',
-            'aakhri',
-            'guzray',
-            'andaza',
-            'ta',
-            'tk',
-            'tak'
-        ];
-        foreach ($cues as $c) {
+        foreach (['mjhe', 'mujhe', 'btao', 'batao', 'pichlay', 'pichley', 'pichle', 'pichla', 'din', 'hafta', 'maheena', 'mahinay', 'aaj', 'kal', 'aakhri', 'guzray'] as $c) {
             if (str_contains($t, $c)) return true;
         }
-        // mostly a-z + spaces and digits, few vowels pattern like Roman Urdu
-        return (bool)preg_match('/^[a-z0-9\s\-:.,]+$/', $t) && str_contains($t, ' ');
+        return false;
     }
 
-    // Urdu/Arabic-Indic numerals → ASCII
     private function normalizeDigitsToAscii(string $s): string
     {
         $map = [
@@ -105,12 +77,11 @@ class ForecastChat extends Component
             '٦' => '6',
             '٧' => '7',
             '٨' => '8',
-            '٩' => '9',
+            '٩' => '9'
         ];
         return strtr($s, $map);
     }
 
-    // Roman Urdu word-numbers → digits
     private function romanUrduNumberToDigit(string $s): string
     {
         $map = [
@@ -139,114 +110,93 @@ class ForecastChat extends Component
             'unnis' => '19',
             'bees' => '20',
             'tees' => '30',
-            'paitis' => '35',
-            'chalis' => '40',
-            'pachas' => '50',
-            'saath' => '60',
-            'sattar' => '70',
-            'assi' => '80',
-            'nabbe' => '90',
             'sau' => '100'
         ];
-        // replace whole words
-        return preg_replace_callback('/\b([a-z]+)\b/iu', function ($m) use ($map) {
-            $w = mb_strtolower($m[1]);
-            return $map[$w] ?? $m[0];
-        }, $s);
+        return preg_replace_callback('/\b([a-z]+)\b/iu', fn($m) => $map[mb_strtolower($m[1])] ?? $m[0], $s);
     }
 
-    // Roman Urdu → English tokens for the date parser
     private function normalizeRomanUrduPhrases(string $s): string
     {
         $t = ' ' . mb_strtolower($s) . ' ';
         $t = preg_replace('/\s+/', ' ', $t);
 
-        // polite fillers remove
-        $t = str_replace([' mjhe ', ' mujhe ', ' krke ', ' karke ', ' zra ', ' zara ', ' plz ', ' please '], ' ', $t);
+        // politeness/noise
+        $t = strtr($t, [
+            ' mjhe ' => ' ',
+            ' mujhe ' => ' ',
+            ' krke ' => ' ',
+            ' karke ' => ' ',
+            ' zra ' => ' ',
+            ' zara ' => ' ',
+            ' plz ' => ' ',
+            ' please ' => ' ',
+            ' data ' => ' ',
+            ' btao ' => ' ',
+            ' batao ' => ' ',
+            ' dikhao ' => ' ',
+            ' ka ' => ' ',
+            ' ki ' => ' ',
+            ' ke ' => ' ',
+        ]);
 
-        // core time words
-        $replacements = [
+        // core time words & units
+        $t = strtr($t, [
             ' aaj ' => ' today ',
-            // NOTE: treating 'kal' as yesterday
             ' kal ' => ' yesterday ',
-            ' akhri ' => ' last ',
+            ' pichlay ' => ' last ',
+            ' pichley ' => ' last ',
+            ' pichle ' => ' last ',
+            ' pichla ' => ' last ',
             ' aakhri ' => ' last ',
+            ' akhri ' => ' last ',
             ' guzray ' => ' past ',
             ' guzre ' => ' past ',
             ' guzra ' => ' past ',
-
-            // units
-            ' din ' => ' days ',
             ' dino ' => ' days ',
+            ' din ' => ' days ',
             ' hafta ' => ' week ',
             ' haftay ' => ' week ',
             ' maheena ' => ' month ',
             ' mahina ' => ' month ',
             ' mahinay ' => ' month ',
-
-            // phrases
-            ' pichlay ' => ' last ',
-            ' pichley ' => ' last ',
-            ' pichle ' => ' last ',
-            ' pichla ' => ' last ',
-            ' iss hafta ' => ' this week ',
             ' is hafta ' => ' this week ',
-            ' iss maheena ' => ' this month ',
+            ' iss hafta ' => ' this week ',
             ' is maheena ' => ' this month ',
+            ' iss maheena ' => ' this month ',
             ' is mahina ' => ' this month ',
             ' iss mahina ' => ' this month ',
-            ' pichlay hafta ' => ' last week ',
             ' pichlay haftay ' => ' last week ',
             ' pichla hafta ' => ' last week ',
-            ' pichla haftay ' => ' last week ',
             ' pichlay maheena ' => ' last month ',
             ' pichla maheena ' => ' last month ',
-            ' pichlay mahina ' => ' last month ',
-            ' pichla mahina ' => ' last month ',
-
-            // “N din pehle”
             ' pehle ' => ' ago ',
             ' pehlay ' => ' ago ',
+        ]);
 
-            // noise like "data btao/batao"
-            ' data btao ' => ' ',
-            ' data batao ' => ' ',
-            ' btao ' => ' ',
-            ' batao ' => ' ',
-            ' dikhao ' => ' ',
-            ' show ' => ' ',
-            ' mujhe ' => ' ',
-            ' mjhe ' => ' ',
-            ' ka ' => ' ',
-            ' ke ' => ' ',
-            ' ki ' => ' ',
-        ];
-        $t = strtr($t, $replacements);
-
-        // compress spaces
         $t = preg_replace('/\s+/', ' ', trim($t));
-
-        // numbers (words → digits)
         $t = $this->romanUrduNumberToDigit($t);
-
         return $t;
     }
 
     private function parseDateFromUserInput(string $userInput): array
     {
-        $tz = 'Asia/Karachi'; // your default
+        $tz  = 'Asia/Karachi';
         $now = Carbon::now($tz);
-        $text = mb_strtolower(trim($userInput));
 
-        $normalized = $this->normalizeDigitsToAscii($text);
+        // 1) normalize digits
+        $normalized = $this->normalizeDigitsToAscii($userInput);
 
-        $preferRoman = $this->isRomanUrdu($normalized);
-        if ($preferRoman) {
+        // 2) Roman Urdu → English-like tokens if detected
+        if ($this->isRomanUrdu($normalized)) {
             $normalized = $this->normalizeRomanUrduPhrases($normalized);
         }
 
+        // 3) lowercase + trim
+        $normalized = mb_strtolower(trim($normalized));
+        $normalized = preg_replace('/\s+/', ' ', $normalized);
+
         // normalize multiple spaces
-        $text = preg_replace('/\s+/', ' ', $text);
+        // $text = preg_replace('/\s+/', ' ', $text);
 
         // word numbers -> digits (limited & safe)
         $wordToNumber = [
@@ -286,13 +236,15 @@ class ForecastChat extends Component
         // }, $text);
 
         // --- absolute explicit range: 2025-08-01 to 2025-08-15 / between ... and ...
-        if (preg_match('/\b(\d{4}-\d{2}-\d{2})\b\s*(?:to|-|–|—|through|till|until|upto|up to|and)\s*\b(\d{4}-\d{2}-\d{2})\b/u', $text, $m)) {
-            try {
-                $start = Carbon::parse($m[1], $tz)->startOfDay();
-                $end   = Carbon::parse($m[2], $tz)->endOfDay();
-                if ($start->gt($end)) [$start, $end] = [$end, $start];
+        // last|past|previous|recent|aakhri N (ki)? days|din
+        if (preg_match('/\b(last|past|recent|previous|aakhri)\s+(?:the\s+)?(\d{1,3})\s+(?:ki|ke|ka|of\s+)?(days?|din)\b/u', $normalized, $m)) {
+            $n = (int)$m[2];
+            if ($n > 0 && $n <= 365) {
+                $unit = mb_strtolower($m[3]);
+                // treat both 'days' and 'din' the same
+                $start = $now->copy()->subDays($n)->startOfDay();
+                $end   = $now->copy()->subDay()->endOfDay();
                 return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
-            } catch (\Throwable $e) { /* fall through */
             }
         }
 
