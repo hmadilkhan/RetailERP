@@ -354,7 +354,7 @@ class UserDetailsController extends Controller
 
         // return DB::select("Update user_authorization set isLoggedIn = ? where authorization_id  = ?",[$request->value,$request->id]); 
         if (DB::table("user_authorization")->where("authorization_id", $request->id)->update(["isLoggedIn" => $request->value])) {
-            $result = DB::table("user_authorization")->where("authorization_id", $request->id)->get();
+            $result = DB::table("user_authorization")->where("user_id", $request->id)->get();
             if ($request->value == 0) {
                 $this->sendPushNotificationToUserDevice($result[0]->user_id);
             }
