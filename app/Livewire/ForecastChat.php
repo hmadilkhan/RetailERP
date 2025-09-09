@@ -249,47 +249,47 @@ class ForecastChat extends Component
         }
 
         // today / aaj
-        if (preg_match('/\b(today|aaj)\b/u', $text)) {
+        if (preg_match('/\b(today|aaj)\b/u', $normalized)) {
             $start = $now->copy()->startOfDay();
             $end = $now->copy()->endOfDay();
             return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'specific'];
         }
 
         // yesterday / kal (treat kal as yesterday)
-        if (preg_match('/\b(yesterday|kal)\b/u', $text)) {
+        if (preg_match('/\b(yesterday|kal)\b/u', $normalized)) {
             $d = $now->copy()->subDay();
             return ['start' => $d->startOfDay()->toDateString(), 'end' => $d->endOfDay()->toDateString(), 'type' => 'specific'];
         }
 
         // this week / is haftay
-        if (preg_match('/\b(this week|is haft(e|ay))\b/u', $text)) {
+        if (preg_match('/\b(this week|is haft(e|ay))\b/u', $normalized)) {
             $start = $now->copy()->startOfWeek();
             $end = $now->copy()->endOfWeek();
             return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
         }
 
         // last week / pichlay haftay
-        if (preg_match('/\b(last week|previous week|pichlay haft(e|ay))\b/u', $text)) {
+        if (preg_match('/\b(last week|previous week|pichlay haft(e|ay))\b/u', $normalized)) {
             $start = $now->copy()->subWeek()->startOfWeek();
             $end = $now->copy()->subWeek()->endOfWeek();
             return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
         }
 
         // this month / is mahinay
-        if (preg_match('/\b(this month|is mahin(e|ay))\b/u', $text)) {
+        if (preg_match('/\b(this month|is mahin(e|ay))\b/u', $normalized)) {
             $start = $now->copy()->startOfMonth();
             $end = $now->copy()->endOfMonth();
             return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
         }
 
         // last month / pichlay mahinay
-        if (preg_match('/\b(last month|previous month|pichlay mahin(e|ay))\b/u', $text)) {
+        if (preg_match('/\b(last month|previous month|pichlay mahin(e|ay))\b/u', $normalized)) {
             $d = $now->copy()->subMonth();
             return ['start' => $d->startOfMonth()->toDateString(), 'end' => $d->endOfMonth()->toDateString(), 'type' => 'range'];
         }
 
         // last|past|previous N days|weeks|months / aakhri N din
-        if (preg_match('/\b(last|past|previous|recent|aakhri)\s+(\d{1,3})\s*(days?|weeks?|months?|din)\b/u', $text, $m)) {
+        if (preg_match('/\b(last|past|previous|recent|aakhri)\s+(\d{1,3})\s*(days?|weeks?|months?|din)\b/u', $normalized, $m)) {
             $n = (int)$m[2];
             $unit = $m[3];
             if ($n > 0 && $n <= 365) {
@@ -308,7 +308,7 @@ class ForecastChat extends Component
         }
 
         // N days ago / N din pehlay -> that specific day
-        if (preg_match('/\b(\d{1,3})\s*(days?|din)\s+(ago|pehl(e|ay))\b/u', $text, $m)) {
+        if (preg_match('/\b(\d{1,3})\s*(days?|din)\s+(ago|pehl(e|ay))\b/u', $normalized, $m)) {
             $n = (int)$m[1];
             if ($n > 0 && $n <= 365) {
                 $d = $now->copy()->subDays($n);
@@ -317,7 +317,7 @@ class ForecastChat extends Component
         }
 
         // single ISO date
-        if (preg_match('/\b(\d{4}-\d{2}-\d{2})\b/', $text, $m)) {
+        if (preg_match('/\b(\d{4}-\d{2}-\d{2})\b/', $normalized, $m)) {
             try {
                 $d = Carbon::parse($m[1], $tz);
                 return ['start' => $d->startOfDay()->toDateString(), 'end' => $d->endOfDay()->toDateString(), 'type' => 'specific'];
@@ -409,7 +409,7 @@ class ForecastChat extends Component
         }
 
         // "recent"/"latest" fallback → last 7 days (excluding today)
-        if (preg_match('/\b(recent|latest|recently)\b/u', $text)) {
+        if (preg_match('/\b(recent|latest|recently)\b/u', $normalized)) {
             $start = $now->copy()->subDays(7)->startOfDay();
             $end   = $now->copy()->subDay()->endOfDay();
             return ['start' => $start->toDateString(), 'end' => $end->toDateString(), 'type' => 'range'];
