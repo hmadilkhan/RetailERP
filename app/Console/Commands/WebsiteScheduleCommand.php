@@ -12,7 +12,7 @@ class WebsiteScheduleCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'website:schedule';
+    protected $signature = 'app:website-schedule-command';
 
     /**
      * The console command description.
