@@ -8,7 +8,7 @@
 @section('navuser', 'active')
 
 @section('content')
-    
+
     <section class="panels-wells">
         <div class="card mt-3">
             <div class="card-header">
@@ -59,7 +59,8 @@
                                     <td>{{ $value->branch_name }}</td>
                                     <td>
                                         <?php $statusLower = strtolower($value->status_name); ?>
-                                        <span class="status-badge {{ in_array($statusLower, ['active','enabled','online']) ? 'status-active' : 'status-inactive' }}">
+                                        <span
+                                            class="status-badge {{ in_array($statusLower, ['active', 'enabled', 'online']) ? 'status-active' : 'status-inactive' }}">
                                             {{ $value->status_name }}
                                         </span>
                                     </td>
@@ -67,8 +68,8 @@
                                         <div class="checkbox m-r-5">
                                             <label>
                                                 <input id="changeCheckbox{{ $value->id }}"
-                                                    data-user-id="{{ $value->authorization_id }}"
-                                                    type="checkbox" class="status-toggle" {{ $value->isLoggedIn == 1 ? 'checked' : '' }}
+                                                    data-user-id="{{ $value->authorization_id }}" type="checkbox"
+                                                    class="status-toggle" {{ $value->isLoggedIn == 1 ? 'checked' : '' }}
                                                     data-toggle="toggle" data-size="mini" data-width="20" data-height="20">
                                             </label>
                                         </div>
@@ -83,11 +84,12 @@
                                             class="icofont icofont-ui-delete text-danger f-18 alert-confirm"
                                             data-id="{{ $value->authorization_id }}" data-toggle="tooltip"
                                             data-placement="top" title="" data-original-title="Delete"></i>
-                                        
-                                        @if(auth()->user()->canImpersonate() && $value->canBeImpersonated())
-                                        <a href="{{ route('impersonate', $value->id) }}" class="btn btn-sm btn-primary">
-                                            Login as {{ $value->fullname }}
-                                        </a>
+
+                                        @if (auth()->user()->canImpersonate() && $value->canBeImpersonated())
+                                            <a href="{{ route('impersonate', $value->id) }}"
+                                                class="btn btn-sm btn-primary">
+                                                Login as {{ $value->fullname }}
+                                            </a>
                                         @endif
 
                                     </td>
@@ -106,71 +108,157 @@
 
 
 @section('scriptcode_one')
- <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
- <style>
-     /* Ensure toggle renders correctly in narrow mobile cells */
-     td.login-status .toggle {
-         min-width: 40px;
-         margin-left: auto;
-         margin-right: auto;
-     }
-     td.login-status { text-align: center; vertical-align: middle; }
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <style>
+        /* Ensure toggle renders correctly in narrow mobile cells */
+        td.login-status .toggle {
+            min-width: 40px;
+            margin-left: auto;
+            margin-right: auto;
+        }
 
-     /* Card/header polish */
-     .card { border: 1px solid #e9ecef; border-radius: 10px; overflow: hidden; }
-     .card-header { background: #EFEFEF; color: #fff; }
-     .card-header .btn-primary { background-color: rgba(255,255,255,0.15); border-color: transparent; }
-     .card-header .btn-primary:hover { background-color: rgba(255,255,255,0.25); }
+        td.login-status {
+            text-align: center;
+            vertical-align: middle;
+        }
 
-     /* Table enhancements */
-     .project-table .table { border-collapse: separate; border-spacing: 0 6px; }
-     .project-table .table thead th { background: #f8fafc; position: sticky; top: 0; z-index: 2; }
-     .project-table .table tbody tr { background: #fff; box-shadow: 0 1px 2px rgba(16,24,40,0.04); }
-     .project-table .table tbody tr:hover { box-shadow: 0 4px 10px rgba(16,24,40,0.08); transform: translateY(-1px); }
-     .project-table .table td, .project-table .table th { border-top: none !important; }
-     .project-table .table td { vertical-align: middle; }
+        /* Card/header polish */
+        .card {
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+        }
 
-     /* DataTables search/input polish */
-     .dataTables_filter input[type="search"] { border: 1px solid #e5e7eb; border-radius: 8px; padding: 8px 12px; outline: none; box-shadow: 0 1px 2px rgba(0,0,0,0.03) inset; }
-     .dataTables_filter input[type="search"]:focus { border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
-     .dataTables_length select { border-radius: 6px; }
+        .card-header {
+            background: #EFEFEF;
+            color: #fff;
+        }
 
-     /* Action icons and buttons */
-     .action-icon a, .action-icon i { transition: transform .15s ease, color .15s ease; }
-     .action-icon a:hover, .action-icon i:hover { transform: translateY(-1px); }
+        .card-header .btn-primary {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-color: transparent;
+        }
 
-     /* Status badge styling */
-     .status-badge { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 12px; font-weight: 600; }
-     .status-active { background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0; }
-     .status-inactive { background: #fef2f2; color: #7f1d1d; border: 1px solid #fecaca; }
+        .card-header .btn-primary:hover {
+            background-color: rgba(255, 255, 255, 0.25);
+        }
 
-     /* Avatar rounding */
-     .img-circle { box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
- </style>
+        /* Table enhancements */
+        .project-table .table {
+            border-collapse: separate;
+            border-spacing: 0 6px;
+        }
+
+        .project-table .table thead th {
+            background: #f8fafc;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .project-table .table tbody tr {
+            background: #fff;
+            box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
+        }
+
+        .project-table .table tbody tr:hover {
+            box-shadow: 0 4px 10px rgba(16, 24, 40, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .project-table .table td,
+        .project-table .table th {
+            border-top: none !important;
+        }
+
+        .project-table .table td {
+            vertical-align: middle;
+        }
+
+        /* DataTables search/input polish */
+        .dataTables_filter input[type="search"] {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 8px 12px;
+            outline: none;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03) inset;
+        }
+
+        .dataTables_filter input[type="search"]:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+
+        .dataTables_length select {
+            border-radius: 6px;
+        }
+
+        /* Action icons and buttons */
+        .action-icon a,
+        .action-icon i {
+            transition: transform .15s ease, color .15s ease;
+        }
+
+        .action-icon a:hover,
+        .action-icon i:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Status badge styling */
+        .status-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-active {
+            background: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-inactive {
+            background: #fef2f2;
+            color: #7f1d1d;
+            border: 1px solid #fecaca;
+        }
+
+        /* Avatar rounding */
+        .img-circle {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+    </style>
 @endsection
 
 @section('scriptcode_three')
- <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+    <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
     <script type="text/javascript">
         var rem_id = [];
 
-     var table =  $('.table').DataTable({
-                            bLengthChange: true,
-                            displayLength: 50,
-                            info: false,
-                            responsive: true,
-                           columnDefs: [
-                               { targets: 'login-status', responsivePriority: 1 },
-                               { targets: -1, responsivePriority: 2 } // action column
-                           ],
-                            language: {
-                                search: '',
-                                searchPlaceholder: 'Search Users',
-                                lengthMenu: '<span></span> _MENU_'
+        var table = $('.table').DataTable({
+            bLengthChange: true,
+            displayLength: 50,
+            info: false,
+            responsive: true,
+            columnDefs: [{
+                    targets: 'login-status',
+                    responsivePriority: 1
+                },
+                {
+                    targets: -1,
+                    responsivePriority: 2
+                } // action column
+            ],
+            language: {
+                search: '',
+                searchPlaceholder: 'Search Users',
+                lengthMenu: '<span></span> _MENU_'
 
-                            }
+            }
 
-                        });
+        });
 
         table.on('draw', function() {
             $('.status-toggle').bootstrapToggle();
@@ -178,7 +266,7 @@
 
         // Re-init toggles when rows are shown/hidden in responsive mode
         table.on('responsive-display responsive-resize', function() {
-            $('.status-toggle:visible').each(function(){
+            $('.status-toggle:visible').each(function() {
                 if (!$(this).parent().hasClass('toggle')) {
                     $(this).bootstrapToggle();
                 }
@@ -187,8 +275,8 @@
 
         // Also re-init on pagination and search changes to cover all redraw paths
         table.on('page.dt search.dt', function() {
-            setTimeout(function(){
-                $('.status-toggle:visible').each(function(){
+            setTimeout(function() {
+                $('.status-toggle:visible').each(function() {
                     if (!$(this).parent().hasClass('toggle')) {
                         $(this).bootstrapToggle();
                     }
@@ -202,7 +290,7 @@
             var userId = $checkbox.data('user-id');
             var value = $checkbox.is(":checked") ? 1 : 0;
             console.log(value);
-            
+
             if ($checkbox.data('busy')) {
                 return;
             }
