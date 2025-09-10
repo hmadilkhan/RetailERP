@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Branch;
+use App\Services\OpenAIDateService;
 use App\Services\OpenAIService;
 use Illuminate\Support\Facades\DB;
 use League\CommonMark\GithubFlavoredMarkdownConverter;
@@ -533,41 +534,88 @@ class ForecastChat extends Component
         return implode("\n", $lines);
     }
 
-    public function send(OpenAIService $ai)
+    private function validateAndNormalizeDateInfo(array $ai): array
     {
-        // Set processing to true immediately when send is called
+        $iso = '/^\d{4}-\d{2}-\d{2}$/';
+
+        $type = $ai['type'] ?? 'none';
+        $start = $ai['start'] ?? null;
+        $end = $ai['end'] ?? null;
+
+        if ($type === 'specific') {
+            if (!is_string($start) || !preg_match($iso, $start)) {
+                return ['ok' => false, 'msg' => 'Invalid specific date from parser.'];
+            }
+            $end = $start; // enforce
+        } elseif ($type === 'range') {
+            if (!is_string($start) || !is_string($end) || !preg_match($iso, $start) || !preg_match($iso, $end)) {
+                return ['ok' => false, 'msg' => 'Invalid range from parser.'];
+            }
+            // Enforce start <= end
+            if (strcmp($start, $end) > 0) {
+                [$start, $end] = [$end, $start];
+            }
+            // (Optional) Cap range length to avoid heavy queries (e.g., 366 days)
+            $days = \Carbon\Carbon::parse($start)->diffInDays(\Carbon\Carbon::parse($end)) + 1;
+            if ($days > 366) {
+                return ['ok' => false, 'msg' => 'Range too large. Please narrow to <= 366 days.'];
+            }
+        } else {
+            return ['ok' => true, 'type' => 'none', 'start' => null, 'end' => null];
+        }
+
+        return ['ok' => true, 'type' => $type, 'start' => $start, 'end' => $end];
+    }
+
+    public function send(OpenAIDateService $ai)
+    {
         $this->isProcessing = true;
 
         $userText = trim($this->input);
-        $this->preferRomanUrdu = $this->isRomanUrdu($userText);
+        $this->preferRomanUrdu = $this->isRomanUrdu($userText); // keep if you still want RU replies
         if ($userText === '') {
             $this->isProcessing = false;
             return;
         }
 
-        // Add user message to chat
         $this->messages[] = ['role' => 'user', 'content' => $userText];
         $this->input = '';
 
-        // Parse date from user input
-        $dateInfo = $this->parseDateFromUserInput($userText);
-        Log::info("dateInfo: " . json_encode($dateInfo));
-        // Get sales and stock data
-        [$salesSummary, $stockMap, $productMap, $dateContext, $debugQueries, $debugData] = $this->summaries($dateInfo);
-        Log::info("salesSummary: " . json_encode($salesSummary));
-        Log::info("stockMap: " . json_encode($stockMap));
-        Log::info("productMap: " . json_encode($productMap));
-        Log::info("dateContext: " . json_encode($dateContext));
-        Log::info("debugQueries: " . json_encode($debugQueries));
-        Log::info("debugData: " . json_encode($debugData));
+        // --- NEW: have the model parse the dates
+        $nowTz = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Karachi'));
+        $dateAI = $ai->parseDateWindow($userText, $nowTz, 'Asia/Karachi');
 
-        // If this is a specific one-day request (today/yesterday or exact date) and we have data, respond deterministically without AI
+        if (($dateAI['needs_clarification'] ?? false) === true) {
+            $msg = $dateAI['reason'] ?? 'Please specify a clear period (e.g., "yesterday", "last 15 days", "this week").';
+            $this->messages[] = ['role' => 'assistant', 'content' => $msg];
+            $this->isProcessing = false;
+            return;
+        }
+
+        // Validate & normalize
+        $checked = $this->validateAndNormalizeDateInfo($dateAI);
+        if (!$checked['ok']) {
+            $this->messages[] = ['role' => 'assistant', 'content' => $checked['msg']];
+            $this->isProcessing = false;
+            return;
+        }
+
+        // Convert to your internal shape
+        if ($checked['type'] === 'specific') {
+            $dateInfo = ['type' => 'specific', 'start' => $checked['start'], 'end' => $checked['end']];
+        } elseif ($checked['type'] === 'range') {
+            $dateInfo = ['type' => 'range', 'start' => $checked['start'], 'end' => $checked['end']];
+        } else {
+            // none → your existing "ask user to pick a period" branch
+            $dateInfo = ['type' => 'range', 'start' => null, 'end' => null];
+        }
+
+        // --- Your existing summaries() + AI answer flow remains the same:
+        [$salesSummary, $stockMap, $productMap, $dateContext, $debugQueries, $debugData] = $this->summaries($dateInfo);
+
         if (($dateInfo['type'] ?? null) === 'specific' && !empty($salesSummary)) {
-            // Try to extract yyyy-mm-dd label from dateContext
             $label = $dateContext;
-            if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dateContext, $m)) {
-                $label = $m[1];
-            }
+            if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dateContext, $m)) $label = $m[1];
             $answer = $this->formatSingleDayReport($salesSummary, $stockMap, $productMap, $label);
             $answer = $this->parseMarkdown($answer);
             $this->messages[] = ['role' => 'assistant', 'content' => $answer];
@@ -575,7 +623,6 @@ class ForecastChat extends Component
             return;
         }
 
-        // Add debug info if no sales found
         $debugInfo = [];
         if (empty($salesSummary)) {
             $debugInfo = $this->debugDatabaseInfo();
@@ -594,7 +641,6 @@ class ForecastChat extends Component
             'debug_data' => $debugData,
         ];
 
-        // --- Build system rules (adds Roman Urdu instruction when needed)
         $systemRules = [
             'You are an ERP assistant that provides inventory reorder recommendations.',
             'Authoritative Data Policy:',
@@ -612,19 +658,16 @@ class ForecastChat extends Component
             '- Clamp obviously unrealistic values (e.g., stock > 1e6) to a readable shortened format and call them out.',
             '- Add bullet-point insights for top movers and low stock risks.',
             '- If analyzing a specific date or short period, tailor insights to that time frame.',
-            '- For invalid user-entered dates (e.g., "31 September"), politely explain and use the chosen fallback, but only when sales_summary is empty.',
-            '- IMPORTANT: If the user asks for "debug" or "show me the queries", display concise debug details from debug_queries and debug_data.',
+            '- For invalid user-entered dates, politely explain and use the chosen fallback, but only when sales_summary is empty.',
+            '- If the user asks for "debug", display concise debug details from debug_queries and debug_data.',
         ];
 
-        // Roman Urdu instruction (only when detected)
         if ($this->preferRomanUrdu) {
-            $systemRules[] = 'IMPORTANT: User is using Roman Urdu. Reply strictly in clear Roman Urdu (Urdu written with English letters). Avoid Urdu script; keep numbers as digits.';
+            $systemRules[] = 'IMPORTANT: User is using Roman Urdu. Reply strictly in clear Roman Urdu (English letters only). Keep numbers as digits.';
         }
 
-        // Build final prompt messages
         $promptMessages = [
             ['role' => 'system', 'content' => implode("\n", $systemRules)],
-            // keep Unicode unescaped so Roman/Urdu tokens remain clean
             ['role' => 'system', 'content' => 'Context JSON: ' . json_encode($context, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)],
             ...$this->messages,
         ];
@@ -639,6 +682,113 @@ class ForecastChat extends Component
         $this->messages[] = ['role' => 'assistant', 'content' => $answer];
         $this->isProcessing = false;
     }
+
+    // public function send(OpenAIService $ai)
+    // {
+    //     // Set processing to true immediately when send is called
+    //     $this->isProcessing = true;
+
+    //     $userText = trim($this->input);
+    //     $this->preferRomanUrdu = $this->isRomanUrdu($userText);
+    //     if ($userText === '') {
+    //         $this->isProcessing = false;
+    //         return;
+    //     }
+
+    //     // Add user message to chat
+    //     $this->messages[] = ['role' => 'user', 'content' => $userText];
+    //     $this->input = '';
+
+    //     // Parse date from user input
+    //     $dateInfo = $this->parseDateFromUserInput($userText);
+    //     Log::info("dateInfo: " . json_encode($dateInfo));
+    //     // Get sales and stock data
+    //     [$salesSummary, $stockMap, $productMap, $dateContext, $debugQueries, $debugData] = $this->summaries($dateInfo);
+    //     Log::info("salesSummary: " . json_encode($salesSummary));
+    //     Log::info("stockMap: " . json_encode($stockMap));
+    //     Log::info("productMap: " . json_encode($productMap));
+    //     Log::info("dateContext: " . json_encode($dateContext));
+    //     Log::info("debugQueries: " . json_encode($debugQueries));
+    //     Log::info("debugData: " . json_encode($debugData));
+
+    //     // If this is a specific one-day request (today/yesterday or exact date) and we have data, respond deterministically without AI
+    //     if (($dateInfo['type'] ?? null) === 'specific' && !empty($salesSummary)) {
+    //         // Try to extract yyyy-mm-dd label from dateContext
+    //         $label = $dateContext;
+    //         if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dateContext, $m)) {
+    //             $label = $m[1];
+    //         }
+    //         $answer = $this->formatSingleDayReport($salesSummary, $stockMap, $productMap, $label);
+    //         $answer = $this->parseMarkdown($answer);
+    //         $this->messages[] = ['role' => 'assistant', 'content' => $answer];
+    //         $this->isProcessing = false;
+    //         return;
+    //     }
+
+    //     // Add debug info if no sales found
+    //     $debugInfo = [];
+    //     if (empty($salesSummary)) {
+    //         $debugInfo = $this->debugDatabaseInfo();
+    //     }
+
+    //     $context = [
+    //         'filters' => [
+    //             'branch_id' => $this->branchId,
+    //             'date_context' => $dateContext,
+    //         ],
+    //         'sales_summary' => $salesSummary,
+    //         'stock_levels' => $stockMap,
+    //         'product_names' => $productMap,
+    //         'debug_info' => $debugInfo,
+    //         'debug_queries' => $debugQueries,
+    //         'debug_data' => $debugData,
+    //     ];
+
+    //     // --- Build system rules (adds Roman Urdu instruction when needed)
+    //     $systemRules = [
+    //         'You are an ERP assistant that provides inventory reorder recommendations.',
+    //         'Authoritative Data Policy:',
+    //         '- STRICTLY use the provided Context JSON as the sole source of truth.',
+    //         '- NEVER reference training data, external knowledge, or claim data cutoffs.',
+    //         '- NEVER say a date is invalid if Context JSON contains results for it.',
+    //         'Response Rules:',
+    //         '- If sales_summary has entries, generate the table and insights from Context JSON without disclaimers.',
+    //         '- Only state that no data is available if sales_summary is empty. If empty, use debug info to suggest nearest available period (e.g., fallback_days) and ask a follow-up.',
+    //         '- Calculate next 7-day and 30-day needs.',
+    //         '- Formula: avg_daily = total_qty / days; need_7d = max(0, ceil(avg_daily*7 - stock)); need_30d = max(0, ceil(avg_daily*30 - stock)).',
+    //         '- Only include products where need_7d > 0 or need_30d > 0.',
+    //         '- Present in a neat Markdown table with header row and separators: | Product | Avg/Day | Stock | Need 7d | Need 30d |',
+    //         '- Do not duplicate products; aggregate by product id.',
+    //         '- Clamp obviously unrealistic values (e.g., stock > 1e6) to a readable shortened format and call them out.',
+    //         '- Add bullet-point insights for top movers and low stock risks.',
+    //         '- If analyzing a specific date or short period, tailor insights to that time frame.',
+    //         '- For invalid user-entered dates (e.g., "31 September"), politely explain and use the chosen fallback, but only when sales_summary is empty.',
+    //         '- IMPORTANT: If the user asks for "debug" or "show me the queries", display concise debug details from debug_queries and debug_data.',
+    //     ];
+
+    //     // Roman Urdu instruction (only when detected)
+    //     if ($this->preferRomanUrdu) {
+    //         $systemRules[] = 'IMPORTANT: User is using Roman Urdu. Reply strictly in clear Roman Urdu (Urdu written with English letters). Avoid Urdu script; keep numbers as digits.';
+    //     }
+
+    //     // Build final prompt messages
+    //     $promptMessages = [
+    //         ['role' => 'system', 'content' => implode("\n", $systemRules)],
+    //         // keep Unicode unescaped so Roman/Urdu tokens remain clean
+    //         ['role' => 'system', 'content' => 'Context JSON: ' . json_encode($context, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)],
+    //         ...$this->messages,
+    //     ];
+
+    //     try {
+    //         $answer = $ai->ask($promptMessages);
+    //         $answer = $this->parseMarkdown($answer);
+    //     } catch (\Throwable $e) {
+    //         $answer = "Error contacting AI service: " . e($e->getMessage());
+    //     }
+
+    //     $this->messages[] = ['role' => 'assistant', 'content' => $answer];
+    //     $this->isProcessing = false;
+    // }
 
     protected function summaries(array $dateInfo = null): array
     {
