@@ -483,25 +483,27 @@
                     <input type="hidden" name="voidId" id="voidId" class="form-control" />
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            {{-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
-                            </button>
-                            <h4 class="modal-title">Void Receipt</h4>
+                            </button> --}}
+                            <h4 class="modal-title">Void Order(s)</h4>
                         </div>
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="form-control-label">Reason :</label>
-                                        <input type="text" name="reason" id="reason" class="form-control" />
+                                        <textarea id="reason" class="form-control"></textarea>
+                                        {{-- <input type="text" name="reason" id="reason" class="form-control" /> --}}
                                         <span id="reason_message" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success waves-effect waves-light"
-                                onClick="saveVoid()">Submit</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            <button type="button" id="btnMarkVoid" class="btn btn-danger waves-effect waves-light"
+                                onClick="saveVoid()">Void</button>
                         </div>
                     </div>
                 </div>
@@ -595,29 +597,7 @@ nav .navbar{
     right: 0;
 }
 </style>
- {{-- <style>
-        .details-row {
-            background-color: #f9f9f9;
-            display: none;
-        }
-        .details-row td {
-            padding: 10px;
-        }
-        .child-table {
-            width: 80%;
-            margin: 0 auto;
-            border: 1px solid #ddd;
-            margin-top: 10px;
-        }
-        .child-table th, .child-table td {
-            padding: 8px;
-            text-align: center;
-        }
-        /* .child-container {
-            display: flex;
-            justify-content: center; /* Center the child table */
-       /* } */
- </style> --}}
+ 
 @endsection
 
 @section('scriptcode_three')
@@ -630,20 +610,23 @@ nav .navbar{
         $("#date").val('{{ date('Y-m-d') }}')
         $("#rpdate").val('{{ date('Y-m-d') }}')
 
-        $('#date,#rpdate,#del_from,#del_to').bootstrapMaterialDatePicker({
-            format: 'YYYY-MM-DD',
-            time: false,
-            clearButton: true,
-
-            icons: {
-                date: "icofont icofont-ui-calendar",
-                up: "icofont icofont-rounded-up",
-                down: "icofont icofont-rounded-down",
-                next: "icofont icofont-rounded-right",
-                previous: "icofont icofont-rounded-left"
-            }
-        });
-
+        // Safeguard datepicker initialization in case plugin is not loaded
+        if ($.fn && $.fn.bootstrapMaterialDatePicker) {
+            $('#date,#rpdate,#del_from,#del_to').bootstrapMaterialDatePicker({
+                format: 'YYYY-MM-DD',
+                time: false,
+                clearButton: true,
+                icons: {
+                    date: "icofont icofont-ui-calendar",
+                    up: "icofont icofont-rounded-up",
+                    down: "icofont icofont-rounded-down",
+                    next: "icofont icofont-rounded-right",
+                    previous: "icofont icofont-rounded-left"
+                }
+            });
+        } else {
+            console.warn('bootstrapMaterialDatePicker plugin not found; skipping datepicker init');
+        }
 
 
         $('#checkbox').change(function() {
@@ -1014,8 +997,13 @@ nav .navbar{
             $("#voidId").val(id);
             $("#void-modal").modal("show");
         }
-
+        $("#btnMarkVoid").click(function(){
+            console.log("Btn calling");
+            
+        })
         function saveVoid() {
+            console.log("jdhfjsdhfj");
+            
             $("#reason_mesasge").html("");
             if ($("#reason").val() == "") {
                 $("#reason_message").html("Please select reason");

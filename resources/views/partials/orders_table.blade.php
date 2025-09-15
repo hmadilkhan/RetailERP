@@ -181,7 +181,7 @@
                                                     onclick='discountReceipt("{{ $order->id }}")'
                                                     class='alert-confirm text-info icofont icofont icofont-sale-discount mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
-                                                    data-original-title='Mark as Void'></i>Add Discount</a></li>
+                                                    data-original-title='Add Discount'></i>Add Discount</a></li>
                                     @endif
                                 </ul>
                             </div>
@@ -224,32 +224,36 @@
     </div>
 </div>
 <!-- Void Reason Modal -->
-<div class="modal fade in" id="void-modal" tabindex="-1" role="dialog" aria-labelledby="voidModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="voidModalLabel">Void Order(s)</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <input type="hidden" id="voidId" value="">
-        <div class="form-group">
-          <label for="reason">Reason for voiding:</label>
-          <textarea id="reason" class="form-control"></textarea>
-          <span id="reason_message" class="text-danger"></span>
+{{-- <div class="modal fade in" id="void-modal" tabindex="-1" role="dialog" aria-labelledby="voidModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="voidModalLabel">Void Order(s)</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="voidId" value="">
+                <div class="form-group">
+                    <label for="reason">Reason for voiding:</label>
+                    <textarea id="reason" class="form-control"></textarea>
+                    <span id="reason_message" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" onclick="saveVoid()" class="btn btn-danger"
+                    id="confirm-void-btn">Void</button>
+            </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-danger" id="confirm-void-btn">Void</button>
-      </div>
     </div>
-  </div>
-</div>
+</div> --}}
 <script type="text/javascript">
     $(document).ready(function() {
+        var voidModal = new bootstrap.Modal(document.getElementById('void-modal'));
+        voidModal.hide();
         $('#select-all-orders').on('change', function() {
             $('.order-checkbox').prop('checked', this.checked);
             toggleBulkActionBtns();
@@ -316,7 +320,8 @@
                         if (completed === total) {
                             deliveryModal.hide();
                             alert(
-                                'Mark as Delivered requests sent for selected orders.');
+                                'Mark as Delivered requests sent for selected orders.'
+                            );
                             // Optionally, refresh the table here
                             fetch_data(1);
                         }
@@ -495,6 +500,7 @@
                     }
                 });
             }
+
         })
     @endif
 </script>

@@ -54,7 +54,7 @@
                         <div class="row m-t-150 ">
                         @if($general[0]->status_id != 4)
                        <div class="radial">
-                           
+                          
                           @if($general[0]->status_id == 3 || $general[0]->status_id == 5)
                            <button class="icofont icofont-reply fa-3x"
                             id="fa-5" data-toggle="tooltip" data-placement="top" title="" data-original-title="Return" onclick="location='{{ URL('return/'.$general[0]->purchase_id )}}'"></button>
@@ -85,7 +85,7 @@
                          @if($general[0]->status_id == 1)
                          <span class="tag tag-warning">  Draft</span>
                          @elseif($general[0]->status_id== 2)
-                         <span class="tag tag-success">  Placed</span>
+                         <span class="tag tag-success">  Placed </span>
                          @elseif($general[0]->status_id == 3)
                          <span class="tag tag-info">  Received</span>
                          @elseif($general[0]->status_id == 4)

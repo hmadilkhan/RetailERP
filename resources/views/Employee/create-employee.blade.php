@@ -82,7 +82,7 @@
                     <option value="">Select Gender</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
-                    <option value="Transgender">Transgender</option>
+                    <option value="Other">Other</option>
                 </select>
                  <div class="form-control-feedback"></div>
                   </div>
