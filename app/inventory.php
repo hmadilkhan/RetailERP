@@ -947,7 +947,7 @@ public function updateProductName($id,$name)
           inventory_price.`discount_price` AS discount_price
           FROM `inventory_general`
           INNER JOIN `inventory_price` ON `inventory_price`.`product_id` = inventory_general.id
-          WHERE company_id = $companyID AND inventory_price.`status_id` = 1 GROUP BY inventory_price.`product_id` ORDER BY inventory_price.`date`,inventory_general.id DESC ");
+          WHERE company_id = $companyID AND status = 1 AND inventory_price.`status_id` = 1 GROUP BY inventory_price.`product_id` ORDER BY inventory_price.`date`,inventory_general.id DESC ");
         return $result;
     }
 
