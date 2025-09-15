@@ -2147,14 +2147,14 @@ class ReportController extends Controller
             // $totalCost = $totalCost + $value->cost_price;
             $totalCost = $totalCost + $value->cost;
 
-            $asset = $asset + ($value->qty * $value->cost);
+            $asset = $asset + ($value->qty * number_format($value->cost,2));
             $pdf->Cell(28, 5, $value->item_code, 0, 0, 'L', 1);
             $pdf->Cell(50, 5, $value->product_name, 0, 0, 'L', 1);
             // $pdf->Cell(23,5,number_format($value->qty,2),0,0,'L',1);
             $pdf->Cell(10, 5, $value->um, 0, 0, 'L', 1);
             // $pdf->Cell(28,5, number_format($value->cost,2),0,0,'R',1);
             // $pdf->Cell(33,5,number_format($value->qty*$value->cost,2),0,0,'R',1);
-            $pdf->Cell(23, 5, $value->cost, 0, 0, 'R', 1);
+            $pdf->Cell(23, 5, number_format($value->cost,2), 0, 0, 'R', 1);
             $pdf->Cell(23, 5, number_format($value->retail_price, 2), 0, 0, 'R', 1);
             $pdf->Cell(28, 5, number_format($value->totalqty, 2), 0, 0, 'R', 1);
             $pdf->Cell(28, 5, number_format($value->qty, 2), 0, 1, 'R', 1);
