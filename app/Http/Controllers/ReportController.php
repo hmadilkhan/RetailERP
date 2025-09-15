@@ -2128,7 +2128,6 @@ class ReportController extends Controller
 
 
         $inventory = $report->get_inventory_details($request->branch, $request->department, $request->subdepartment);
-        dd($inventory);
 
 
 
