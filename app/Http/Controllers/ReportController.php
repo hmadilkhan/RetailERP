@@ -2043,6 +2043,8 @@ class ReportController extends Controller
 
         $branchname = "";
 
+        
+
         if ($request->branch != "all") {
             $branchname = Branch::where("branch_id", $request->branch)->first();
             $branchname = " (" . $branchname->branch_name . ") ";
@@ -2126,7 +2128,7 @@ class ReportController extends Controller
 
 
         $inventory = $report->get_inventory_details($request->branch, $request->department, $request->subdepartment);
-
+        dd($inventory);
 
 
 
@@ -2143,7 +2145,8 @@ class ReportController extends Controller
             $qty = $qty + $value->qty;
             $totalQty = $totalQty + $value->totalqty;
             $totalRetail = $totalRetail + $value->retail_price;
-            $totalCost = $totalCost + $value->cost_price;
+            // $totalCost = $totalCost + $value->cost_price;
+            $totalCost = $totalCost + $value->cost;
 
             $asset = $asset + ($value->qty * $value->cost);
             $pdf->Cell(28, 5, $value->item_code, 0, 0, 'L', 1);
@@ -2152,7 +2155,7 @@ class ReportController extends Controller
             $pdf->Cell(10, 5, $value->um, 0, 0, 'L', 1);
             // $pdf->Cell(28,5, number_format($value->cost,2),0,0,'R',1);
             // $pdf->Cell(33,5,number_format($value->qty*$value->cost,2),0,0,'R',1);
-            $pdf->Cell(23, 5, $value->cost_price, 0, 0, 'R', 1);
+            $pdf->Cell(23, 5, $value->cost, 0, 0, 'R', 1);
             $pdf->Cell(23, 5, number_format($value->retail_price, 2), 0, 0, 'R', 1);
             $pdf->Cell(28, 5, number_format($value->totalqty, 2), 0, 0, 'R', 1);
             $pdf->Cell(28, 5, number_format($value->qty, 2), 0, 1, 'R', 1);
