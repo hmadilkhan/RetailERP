@@ -353,7 +353,7 @@
                                  itemid:$('#product').val(),
                                  usage:$('#itemqty').val(),
                                  amount:$('#cost').val(),
-								 dineIn:$('#dinein').val(),
+								 dineIn:$('#dinein').val() ?? 0,
                                  productmode:$('#productmode').val()
                                 },
                                 success:function(result){
