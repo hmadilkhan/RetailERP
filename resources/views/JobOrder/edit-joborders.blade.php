@@ -200,7 +200,7 @@
 
 
                 </div>
-                <button type="button" id="btnFinalSubmit" class="btn btn-md btn-info f-right"> <i class="icofont icofont-edit-alt f-18"> </i>Edit Job Order</button>
+                <button type="button" id="btnFinalSubmit" class="btn btn-md btn-info f-right"> <i class="icofont icofont-edit-alt f-18"> </i>Update Job Order</button>
 
             </div>
         </div>
@@ -305,7 +305,8 @@
                                     itemid:$('#product').val(),
                                     usage:$('#itemqty').val(),
                                     amount:$('#cost').val(),
-                                    productmode:$('#productmode').val()
+                                    productmode:$('#productmode').val(),
+                                    dineIn:$('#dinein').val(),
                                 },
                                 success:function(result){
                                     $('#raw').val('').change();

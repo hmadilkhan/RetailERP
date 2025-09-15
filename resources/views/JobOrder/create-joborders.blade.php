@@ -96,7 +96,7 @@
                             <select class="select2 form-control" data-placeholder="Select DineIn" id="dinein"  name="dinein">
                                 <option value="">Select DineIn</option>
 								<option value="1">YES</option>
-								<option value="0">NO</option>
+								<option selected value="0">NO</option>
                             </select>
                             <span class="help-block"></span>
                         </div>
@@ -325,7 +325,7 @@
             else{
                 if (mode == "insert")
                 {
-
+                    alert($("#dinein").val());
                     $.ajax({
                         url:'{{ url("/add-job") }}',
                         type:"POST",
@@ -353,7 +353,7 @@
                                  itemid:$('#product').val(),
                                  usage:$('#itemqty').val(),
                                  amount:$('#cost').val(),
-								 dineIn:$('#dinein').val() ?? 0,
+								 dineIn:$('#dinein').val(),
                                  productmode:$('#productmode').val()
                                 },
                                 success:function(result){
