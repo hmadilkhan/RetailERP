@@ -35,9 +35,10 @@
    <!-- custom js -->
    <script type="text/javascript" src="{{ asset('assets/js/main.min.js') }}"></script>
    <script type="text/javascript" src="{{ asset('assets/js/menu-horizontal.min.js') }}"></script>
-  <!--  <script type="text/javascript" src="{{-- asset('assets/pages/dashboard.js') --}}"></script> -->
+   {{-- <script type="text/javascript" src="asset('assets/pages/dashboard.js')"></script> --}}
    <script type="text/javascript" src="{{ asset('assets/pages/accordion.js') }}"></script>
    <script type="text/javascript" src="{{ asset('assets/pages/elements.js') }}"></script>
+   <script type="text/javascript" src="{{ asset('assets/pages/button-fab.js') }}"></script>
    <script src="{{ asset('assets/js/menu.min.js') }}"></script>
 
    	<!-- Date picker.js-->
