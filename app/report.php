@@ -236,7 +236,7 @@ class report extends Model
         if ($branch != "all") {
             $filter .= " and c.branch_id = " . $branch;
         }
-        $result = DB::select('SELECT a.id, a.product_name, a.item_code, SUM(c.qty) AS totalqty, SUM(c.balance) AS qty, b.name AS um, (SELECT AVG(e.cost_price) from inventory_stock e WHERE e.product_id = a.id AND e.status_id = 1) AS cost_price, d.retail_price, c.cost_price,a.image  FROM inventory_general a INNER JOIN inventory_uom b ON b.uom_id = a.uom_id INNER JOIN inventory_stock c ON c.product_id = a.id AND c.status_id = 1 INNER JOIN inventory_price d ON d.product_id = a.id AND d.status_id = 1 WHERE a.status = 1 AND a.company_id = ?  ' . $filter . ' GROUP BY a.id', [session("company_id")]);
+        $result = DB::select('SELECT a.id, a.product_name, a.item_code, SUM(c.qty) AS totalqty, SUM(c.balance) AS qty, b.name AS um, (SELECT AVG(e.cost_price) from inventory_stock e WHERE e.product_id = a.id AND e.status_id = 1) AS cost, d.retail_price, c.cost_price,a.image  FROM inventory_general a INNER JOIN inventory_uom b ON b.uom_id = a.uom_id INNER JOIN inventory_stock c ON c.product_id = a.id AND c.status_id = 1 INNER JOIN inventory_price d ON d.product_id = a.id AND d.status_id = 1 WHERE a.status = 1 AND a.company_id = ?  ' . $filter . ' GROUP BY a.id', [session("company_id")]);
         return $result;
     }
 
