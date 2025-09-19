@@ -5,6 +5,7 @@ namespace App\Livewire;
 use App\Models\Branch;
 use App\Services\OpenAIDateService;
 use App\Services\OpenAIService;
+use App\Services\SalesForecastService;
 use Illuminate\Support\Facades\DB;
 use League\CommonMark\GithubFlavoredMarkdownConverter;
 use Livewire\Attributes\Layout;
@@ -26,10 +27,9 @@ class ForecastChat extends Component
     public function mount(): void
     {
         $this->branches = Branch::where('company_id', session('company_id'))->get();
-        // dd($this->branches);
         $this->messages[] = [
             'role' => 'assistant',
-            'content' => 'Hello! Ask me about sales forecasts and reorder suggestions. You can ask about specific dates like "yesterday", "last week", "september", or custom periods like "last 15 days", "past month", "recent trends". Just tell me what time period you want to analyze!'
+            'content' => 'Hello! I\'m your advanced sales forecasting assistant. I can help you with:\n\n📊 **Sales Forecasting** - Predict future sales trends\n📈 **Sales Reports** - Analyze current and past performance\n🎯 **Deal Creation** - Suggest profitable packages and combos\n📅 **Daily Predictions** - Forecast sales for specific days\n🌐 **Multilingual** - I understand English and Roman Urdu\n\nTry asking: "Yesterday ka sales kitna tha?" or "Predict tomorrow\'s sales" or "Create a deal for slow items"'
         ];
     }
 
@@ -567,12 +567,12 @@ class ForecastChat extends Component
         return ['ok' => true, 'type' => $type, 'start' => $start, 'end' => $end];
     }
 
-    public function send(OpenAIDateService $ai)
+    public function send(SalesForecastService $forecastService)
     {
         $this->isProcessing = true;
 
         $userText = trim($this->input);
-        $this->preferRomanUrdu = $this->isRomanUrdu($userText); // keep if you still want RU replies
+        $this->preferRomanUrdu = $this->isRomanUrdu($userText);
         if ($userText === '') {
             $this->isProcessing = false;
             return;
@@ -581,102 +581,50 @@ class ForecastChat extends Component
         $this->messages[] = ['role' => 'user', 'content' => $userText];
         $this->input = '';
 
-        // --- NEW: have the model parse the dates
-        $nowTz = new \DateTimeImmutable('now', new \DateTimeZone('Asia/Karachi'));
-        $dateAI = $ai->parseDateWindow($userText, $nowTz, 'Asia/Karachi');
-
-        if (($dateAI['needs_clarification'] ?? false) === true) {
-            $msg = $dateAI['reason'] ?? 'Please specify a clear period (e.g., "yesterday", "last 15 days", "this week").';
-            $this->messages[] = ['role' => 'assistant', 'content' => $msg];
-            $this->isProcessing = false;
-            return;
-        }
-
-        // Validate & normalize
-        $checked = $this->validateAndNormalizeDateInfo($dateAI);
-        if (!$checked['ok']) {
-            $this->messages[] = ['role' => 'assistant', 'content' => $checked['msg']];
-            $this->isProcessing = false;
-            return;
-        }
-
-        // Convert to your internal shape
-        if ($checked['type'] === 'specific') {
-            $dateInfo = ['type' => 'specific', 'start' => $checked['start'], 'end' => $checked['end']];
-        } elseif ($checked['type'] === 'range') {
-            $dateInfo = ['type' => 'range', 'start' => $checked['start'], 'end' => $checked['end']];
-        } else {
-            // none → your existing "ask user to pick a period" branch
-            $dateInfo = ['type' => 'range', 'start' => null, 'end' => null];
-        }
-
-        // --- Your existing summaries() + AI answer flow remains the same:
-        [$salesSummary, $stockMap, $productMap, $dateContext, $debugQueries, $debugData] = $this->summaries($dateInfo);
-
-        if (($dateInfo['type'] ?? null) === 'specific' && !empty($salesSummary)) {
-            $label = $dateContext;
-            if (preg_match('/(\d{4}-\d{2}-\d{2})/', $dateContext, $m)) $label = $m[1];
-            $answer = $this->formatSingleDayReport($salesSummary, $stockMap, $productMap, $label);
-            $answer = $this->parseMarkdown($answer);
-            $this->messages[] = ['role' => 'assistant', 'content' => $answer];
-            $this->isProcessing = false;
-            return;
-        }
-
-        $debugInfo = [];
-        if (empty($salesSummary)) {
-            $debugInfo = $this->debugDatabaseInfo();
-        }
-
-        $context = [
-            'filters' => [
-                'branch_id' => $this->branchId,
-                'date_context' => $dateContext,
-            ],
-            'sales_summary' => $salesSummary,
-            'stock_levels' => $stockMap,
-            'product_names' => $productMap,
-            'debug_info' => $debugInfo,
-            'debug_queries' => $debugQueries,
-            'debug_data' => $debugData,
-        ];
-
-        $systemRules = [
-            'You are an ERP assistant that provides inventory reorder recommendations.',
-            'Authoritative Data Policy:',
-            '- STRICTLY use the provided Context JSON as the sole source of truth.',
-            '- NEVER reference training data, external knowledge, or claim data cutoffs.',
-            '- NEVER say a date is invalid if Context JSON contains results for it.',
-            'Response Rules:',
-            '- If sales_summary has entries, generate the table and insights from Context JSON without disclaimers.',
-            '- Only state that no data is available if sales_summary is empty. If empty, use debug info to suggest nearest available period (e.g., fallback_days) and ask a follow-up.',
-            '- Calculate next 7-day and 30-day needs.',
-            '- Formula: avg_daily = total_qty / days; need_7d = max(0, ceil(avg_daily*7 - stock)); need_30d = max(0, ceil(avg_daily*30 - stock)).',
-            '- Only include products where need_7d > 0 or need_30d > 0.',
-            '- Present in a neat Markdown table with header row and separators: | Product | Avg/Day | Stock | Need 7d | Need 30d |',
-            '- Do not duplicate products; aggregate by product id.',
-            '- Clamp obviously unrealistic values (e.g., stock > 1e6) to a readable shortened format and call them out.',
-            '- Add bullet-point insights for top movers and low stock risks.',
-            '- If analyzing a specific date or short period, tailor insights to that time frame.',
-            '- For invalid user-entered dates, politely explain and use the chosen fallback, but only when sales_summary is empty.',
-            '- If the user asks for "debug", display concise debug details from debug_queries and debug_data.',
-        ];
-
-        if ($this->preferRomanUrdu) {
-            $systemRules[] = 'IMPORTANT: User is using Roman Urdu. Reply strictly in clear Roman Urdu (English letters only). Keep numbers as digits.';
-        }
-
-        $promptMessages = [
-            ['role' => 'system', 'content' => implode("\n", $systemRules)],
-            ['role' => 'system', 'content' => 'Context JSON: ' . json_encode($context, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)],
-            ...$this->messages,
-        ];
-
         try {
-            $answer = $ai->ask($promptMessages);
+            // Build context for the forecast service
+            $context = [
+                'branch_id' => $this->branchId,
+                'company_id' => session('company_id'),
+                'branches' => $this->branches->pluck('branch_id')->toArray(),
+                'user_language' => $this->preferRomanUrdu ? 'roman_urdu' : 'english'
+            ];
+
+            // Process the query using the new forecast service
+            $result = $forecastService->processQuery($userText, $context);
+            
+            // Generate AI response based on the result
+            $answer = $forecastService->generateAIResponse($result, $userText, $this->preferRomanUrdu);
+            Log::info('Forecast service result: ' . json_encode($result));
+            // Handle special cases for quick responses
+            if ($result['type'] === 'forecast') {
+                $answer = $this->formatForecastResponse($result, $userText);
+            } elseif ($result['type'] === 'deals') {
+                $answer = $this->formatDealsResponse($result, $userText);
+            } elseif ($result['type'] === 'prediction') {
+                $answer = $this->formatPredictionResponse($result, $userText);
+            } elseif ($result['type'] === 'report') {
+                $answer = $this->formatSalesReportResponse($result, $userText);
+            }
+            
             $answer = $this->parseMarkdown($answer);
+            
         } catch (\Throwable $e) {
-            $answer = "Error contacting AI service: " . e($e->getMessage());
+            Log::error('Forecast service error: ' . $e->getMessage());
+            
+            // Fallback to original logic for basic queries
+            $dateInfo = $this->parseDateFromUserInput($userText);
+            [$salesSummary, $stockMap, $productMap, $dateContext] = $this->summaries($dateInfo);
+            
+            if (!empty($salesSummary)) {
+                $answer = $this->formatBasicSalesReport($salesSummary, $stockMap, $productMap, $dateContext);
+            } else {
+                $answer = $this->preferRomanUrdu 
+                    ? "Maaf kijiye, is waqt data available nahi hai. Kripya koi aur date ya period specify kariye."
+                    : "Sorry, no data available for this period. Please try a different date or time range.";
+            }
+            
+            $answer = $this->parseMarkdown($answer);
         }
 
         $this->messages[] = ['role' => 'assistant', 'content' => $answer];
@@ -807,6 +755,7 @@ class ForecastChat extends Component
                 // Use specific date range
                 $startDate = $dateInfo['start'];
                 $endDate = $dateInfo['end'];
+                
                 if ($dateInfo['type'] === 'specific') {
                     $dateContext = "Analyzing sales for {$dateInfo['start']}";
                 } else {
@@ -824,8 +773,8 @@ class ForecastChat extends Component
                     $salesQuery->whereDate('sr.date', $dateInfo['start']); // YYYY-MM-DD
                 } else {
                     $salesQuery->whereBetween('sr.date', [
-                        $dateInfo['start'] . ' 00:00:00',
-                        $dateInfo['end']   . ' 23:59:59',
+                        $dateInfo['start'] ,
+                        $dateInfo['end'] ,
                     ]);
                 }
 
@@ -845,6 +794,8 @@ class ForecastChat extends Component
                         : ("From: " .  $startDate  . " To: " . $endDate),
                     'branch_filter' => $this->branchId
                 ];
+
+                Log::info($debugQueries);
 
                 $salesRows = $salesQuery->limit($this->topN)->get();
 
@@ -994,6 +945,189 @@ class ForecastChat extends Component
         ];
 
         return [$salesSummary, $stockMap, $productMap, $dateContext, $debugQueries, $debugData];
+    }
+
+    private function formatForecastResponse(array $result, string $userText): string
+    {
+        $forecast = $result['data'];
+        $trends = $result['trends'];
+        $recommendations = $result['recommendations'];
+        
+        if ($this->preferRomanUrdu) {
+            $response = "📊 **Sales Forecast - {$forecast['date_range']}**\n\n";
+            $response .= "🎯 **Predicted Sales:** Rs. " . number_format($forecast['forecasted_amount'], 0) . "\n";
+            $response .= "📈 **Growth Rate:** {$forecast['growth_rate']}%\n";
+            $response .= "🔮 **Confidence:** {$forecast['confidence_level']}\n\n";
+            
+            if (!empty($recommendations)) {
+                $response .= "💡 **Recommendations:**\n";
+                foreach ($recommendations as $rec) {
+                    $response .= "• $rec\n";
+                }
+            }
+        } else {
+            $response = "📊 **Sales Forecast - {$forecast['date_range']}**\n\n";
+            $response .= "🎯 **Predicted Sales:** Rs. " . number_format($forecast['forecasted_amount'], 0) . "\n";
+            $response .= "📈 **Growth Rate:** {$forecast['growth_rate']}%\n";
+            $response .= "🔮 **Confidence Level:** {$forecast['confidence_level']}\n\n";
+            
+            if (!empty($trends)) {
+                $response .= "📊 **Trend Analysis:**\n";
+                foreach ($trends as $trend) {
+                    $response .= "• {$trend['period']}: Rs. " . number_format($trend['total_sales'], 0) . " ({$trend['growth_rate']}%)\n";
+                }
+                $response .= "\n";
+            }
+            
+            if (!empty($recommendations)) {
+                $response .= "💡 **Recommendations:**\n";
+                foreach ($recommendations as $rec) {
+                    $response .= "• $rec\n";
+                }
+            }
+        }
+        
+        return $response;
+    }
+    
+    private function formatDealsResponse(array $result, string $userText): string
+    {
+        $deals = $result['suggestions'];
+        $reasoning = $result['reasoning'];
+        
+        if ($this->preferRomanUrdu) {
+            $response = "🎁 **Deal Suggestions**\n\n";
+            $response .= "Yeh deals aapke slow-moving items ko fast-moving banane ke liye suggest kiye gaye hain:\n\n";
+            
+            foreach ($deals as $index => $deal) {
+                $response .= "**Deal " . ($index + 1) . ":**\n";
+                $response .= "• Items: " . implode(', ', array_column($deal['items'], 'product_name')) . "\n";
+                $response .= "• Discount: {$deal['discount']}%\n";
+                $response .= "• Expected Impact: {$deal['expected_impact']['expected_sales_increase']} sales increase\n\n";
+            }
+            
+            $response .= "💡 **Logic:** $reasoning";
+        } else {
+            $response = "🎁 **Recommended Deals & Packages**\n\n";
+            
+            foreach ($deals as $index => $deal) {
+                $response .= "**Deal " . ($index + 1) . ":**\n";
+                $response .= "• **Items:** " . implode(', ', array_column($deal['items'], 'product_name')) . "\n";
+                $response .= "• **Suggested Discount:** {$deal['discount']}%\n";
+                $response .= "• **Expected Sales Increase:** {$deal['expected_impact']['expected_sales_increase']}\n";
+                $response .= "• **Inventory Improvement:** {$deal['expected_impact']['inventory_turnover_improvement']}\n\n";
+            }
+            
+            $response .= "💡 **Strategy:** $reasoning";
+        }
+        
+        return $response;
+    }
+    
+    private function formatPredictionResponse(array $result, string $userText): string
+    {
+        $prediction = $result['predicted_sales'];
+        $confidence = $result['confidence'];
+        $factors = $result['factors'];
+        
+        if ($this->preferRomanUrdu) {
+            $response = "🔮 **Sales Prediction**\n\n";
+            $response .= "💰 **Predicted Amount:** Rs. " . number_format($prediction['amount'], 0) . "\n";
+            $response .= "📦 **Predicted Quantity:** {$prediction['quantity']} items\n";
+            $response .= "🛒 **Expected Transactions:** {$prediction['transactions']}\n";
+            $response .= "✅ **Confidence:** " . round($confidence * 100, 1) . "%\n\n";
+            
+            $response .= "📊 **Factors:**\n";
+            $response .= "• Seasonal Factor: " . round($factors['seasonal']['month_factor'], 2) . "\n";
+            $response .= "• Day Factor: " . round($factors['seasonal']['day_of_week_factor'], 2) . "\n";
+        } else {
+            $response = "🔮 **Sales Prediction**\n\n";
+            $response .= "💰 **Predicted Sales Amount:** Rs. " . number_format($prediction['amount'], 0) . "\n";
+            $response .= "📦 **Predicted Quantity:** {$prediction['quantity']} items\n";
+            $response .= "🛒 **Expected Transactions:** {$prediction['transactions']}\n";
+            $response .= "✅ **Confidence Level:** " . round($confidence * 100, 1) . "%\n\n";
+            
+            $response .= "📊 **Influencing Factors:**\n";
+            $response .= "• **Seasonal Factor:** " . round($factors['seasonal']['month_factor'], 2) . "\n";
+            $response .= "• **Day of Week Factor:** " . round($factors['seasonal']['day_of_week_factor'], 2) . "\n";
+            $response .= "• **Overall Trend:** {$factors['trend']['overall_trend']}\n";
+        }
+        
+        return $response;
+    }
+    
+    private function formatSalesReportResponse(array $result, string $userText): string
+    {
+        $salesData = $result['data'];
+        $analysis = $result['analysis'];
+        $dateInfo = $result['date_info'] ?? [];
+        
+        if ($this->preferRomanUrdu) {
+            $response = "📊 **Sales Report - {$dateInfo['label']}**\n\n";
+            $response .= "💰 **Total Sales:** Rs. " . number_format($analysis['total_sales'], 0) . "\n";
+            $response .= "📦 **Total Quantity:** {$analysis['total_quantity']} items\n";
+            $response .= "🛒 **Average Transaction:** Rs. " . number_format($analysis['avg_transaction_value'], 0) . "\n";
+            $response .= "🏪 **Products Sold:** {$analysis['product_count']}\n\n";
+            
+            if (!empty($salesData)) {
+                $response .= "**Top Products:**\n";
+                $response .= "| Product | Quantity | Amount |\n";
+                $response .= "|---|---:|---:|\n";
+                foreach (array_slice($salesData, 0, 5) as $item) {
+                    $response .= "| {$item->product_name} | {$item->total_quantity} | Rs. " . number_format($item->total_amount, 0) . " |\n";
+                }
+            }
+        } else {
+            $response = "📊 **Sales Report - {$dateInfo['label']}**\n\n";
+            $response .= "💰 **Total Sales Amount:** Rs. " . number_format($analysis['total_sales'], 0) . "\n";
+            $response .= "📦 **Total Quantity Sold:** {$analysis['total_quantity']} items\n";
+            $response .= "🛒 **Average Transaction Value:** Rs. " . number_format($analysis['avg_transaction_value'], 0) . "\n";
+            $response .= "🏪 **Number of Products:** {$analysis['product_count']}\n\n";
+            
+            if (!empty($salesData)) {
+                $response .= "**Top Selling Products:**\n";
+                $response .= "| Product | Quantity | Sales Amount |\n";
+                $response .= "|---|---:|---:|\n";
+                foreach (array_slice($salesData, 0, 5) as $item) {
+                    $response .= "| {$item->product_name} | {$item->total_quantity} | Rs. " . number_format($item->total_amount, 0) . " |\n";
+                }
+            }
+        }
+        
+        return $response;
+    }
+    
+    private function formatBasicSalesReport(array $salesSummary, array $stockMap, array $productMap, string $dateContext): string
+    {
+        if ($this->preferRomanUrdu) {
+            $response = "📊 **Sales Report - $dateContext**\n\n";
+            $response .= "| Product | Sales | Stock | 7 Din Need | 30 Din Need |\n";
+            $response .= "|---|---:|---:|---:|---:|\n";
+        } else {
+            $response = "📊 **Sales Report - $dateContext**\n\n";
+            $response .= "| Product | Sales | Stock | 7d Need | 30d Need |\n";
+            $response .= "|---|---:|---:|---:|---:|\n";
+        }
+        
+        foreach (array_slice($salesSummary, 0, 10, true) as $productId => $totalQty) {
+            $stock = $stockMap[$productId] ?? 0;
+            $need7 = max(0, (int)ceil($totalQty * 7 - $stock));
+            $need30 = max(0, (int)ceil($totalQty * 30 - $stock));
+            $name = $productMap[$productId] ?? "Product $productId";
+            $response .= "| $name | $totalQty | $stock | $need7 | $need30 |\n";
+        }
+        
+        if ($this->preferRomanUrdu) {
+            $response .= "\n💡 **Insights:**\n";
+            $response .= "• Top selling items stock check kariye\n";
+            $response .= "• Jo items ki 7d/30d need positive hai unka reorder kariye\n";
+        } else {
+            $response .= "\n💡 **Key Insights:**\n";
+            $response .= "• Monitor stock levels for top-selling items\n";
+            $response .= "• Reorder items with positive 7d/30d needs\n";
+        }
+        
+        return $response;
     }
 
     #[Layout('components.layouts.app')]

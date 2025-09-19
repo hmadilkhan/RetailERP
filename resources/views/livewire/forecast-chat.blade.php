@@ -420,8 +420,8 @@
     <div class="gradient-header">
         <div class="header-content d-flex align-items-center justify-content-between">
             <div>
-                <div class="header-title">🤖 AI Forecast Assistant</div>
-                <div class="header-subtitle">Get intelligent reorder suggestions and demand insights</div>
+                <div class="header-title">🤖 AI Sales Forecast Assistant</div>
+                <div class="header-subtitle">Advanced Sales Forecasting • Deal Creation • Multilingual Support (English/Roman Urdu)</div>
             </div>
             <div class="ai-badge">
                 <i class="mdi mdi-robot me-2"></i>AI Powered
@@ -464,7 +464,27 @@
                 <i class="mdi mdi-chat-outline" style="font-size: 3rem; color: #cbd5e1;"></i>
                 <div class="mt-3">
                     <h5>Start a conversation</h5>
-                    <p>Ask me about inventory forecasts, reorder suggestions, or demand insights!</p>
+                    <p>Ask me about sales forecasts, deal creation, predictions, or insights in English or Roman Urdu!</p>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">📊 Try these examples:</h6>
+                            <ul class="list-unstyled small text-muted">
+                                <li>• "Yesterday ka sales kitna tha?"</li>
+                                <li>• "Predict tomorrow's sales"</li>
+                                <li>• "Show me last week trends"</li>
+                                <li>• "Create deals for slow items"</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-success">🎯 I can help with:</h6>
+                            <ul class="list-unstyled small text-muted">
+                                <li>• Sales forecasting & predictions</li>
+                                <li>• Deal & package suggestions</li>
+                                <li>• Daily/weekly sales analysis</li>
+                                <li>• Roman Urdu conversations</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         @else
@@ -498,7 +518,7 @@
         <form wire:submit.prevent="send">
             <div class="input-container">
                 <input type="text" wire:model="input" autocomplete="off"
-                    placeholder="Ask about forecast… (e.g., Which items should I reorder for next week?)"
+                    placeholder="Ask me: 'Yesterday ka sales kitna tha?' or 'Predict tomorrow's sales' or 'Create deals for slow items'"
                     class="chat-input"
                     {{ $isProcessing ? 'disabled' : '' }}>
                 <button class="send-button" type="submit" 

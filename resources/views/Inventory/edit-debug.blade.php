@@ -89,11 +89,13 @@
 
                             <div class="row">
                                 <div class="col-lg-6 col-md-6">
-                                    <div id="itemcode" class="form-group {{ $errors->has('pctcode') ? 'has-danger' : '' }} ">
+                                    <div id="itemcode"
+                                        class="form-group {{ $errors->has('pctcode') ? 'has-danger' : '' }} ">
                                         <label class="form-control-label"><i class="icofont icofont-barcode"></i>&nbsp;PCT
                                             Code </label>
                                         <input class="form-control" type="text" name="pctcode" id="pctcode"
-                                        value="{{ old('pctcode') ? old('pctcode') : $data[0]->pct_code }}" placeholder="Enter PCT Code" />
+                                            value="{{ old('pctcode') ? old('pctcode') : $data[0]->pct_code }}"
+                                            placeholder="Enter PCT Code" />
                                         @if ($errors->has('pctcode'))
                                             <div class="form-control-feedback">Required field can not be blank.</div>
                                         @endif
@@ -126,6 +128,20 @@
                                                 blank.</div>
                                         @endif
                                         <span class="text-danger" id="product_name_alert"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="form-group {{ $errors->has('slug') ? 'has-danger' : '' }}">
+                                        <label class="form-control-label">Product Slug <span
+                                                class="text-danger">*</span></label>
+                                        <input class="form-control" type="text" name="slug" id="slug"
+                                            value="{{ old('slug') ? old('slug') : $data[0]->slug }}"
+                                            placeholder="Enter Product Slug" />
+                                        @if ($errors->has('slug'))
+                                            <div class="form-control-feedback" id="slugerror">{{ $errors->message }}
+                                            </div>
+                                        @endif
+                                        <span class="text-danger" id="product_slug_alert"></span>
                                     </div>
                                 </div>
                             </div>
@@ -251,24 +267,26 @@
                                 <div class="col-md-3">
                                     <div class="form-group {{ $errors->has('inventory_type') ? 'has-danger' : '' }}">
                                         <label class="form-control-label">Inventory Type </label>
-                                          <select class="form-control  select2" data-placeholder="Select Inventory Type" id="inventory_type" name="inventory_type">
-                                             <option value="">Select Inventory Type</option>
-                                              @if($mode)
-                                                    @foreach($types as $type)
-                                                      @if( $data[0]->inventory_type_id == $type->id)
-                                                        <option selected="selected" value="{{$type->id}}">{{$type->name}}</option>
-                                                      @else
-                                                        <option value="{{$type->id}}">{{$type->name}}</option>
-                                                      @endif
-                                                    @endforeach
-                                             @endif
-                                          </select>
-                                          @if ($errors->has('inventory_type'))
+                                        <select class="form-control  select2" data-placeholder="Select Inventory Type"
+                                            id="inventory_type" name="inventory_type">
+                                            <option value="">Select Inventory Type</option>
+                                            @if ($mode)
+                                                @foreach ($types as $type)
+                                                    @if ($data[0]->inventory_type_id == $type->id)
+                                                        <option selected="selected" value="{{ $type->id }}">
+                                                            {{ $type->name }}</option>
+                                                    @else
+                                                        <option value="{{ $type->id }}">{{ $type->name }}</option>
+                                                    @endif
+                                                @endforeach
+                                            @endif
+                                        </select>
+                                        @if ($errors->has('inventory_type'))
                                             <div class="form-control-feedback">Required field can not be blank.</div>
-                                          @endif
-                      
-                                 </div>
-                               </div>
+                                        @endif
+
+                                    </div>
+                                </div>
                                 <div class="col-lg-3 col-md-3">
                                     <div class="form-group">
                                         <label class="form-control-label">References</label>
@@ -962,7 +980,7 @@
                     'error');
                 $("#product_name_alert").text(
                     'This field is required. Please note, special characters (such as @, #, $, %, &, ) are not allowed.!'
-                    );
+                );
                 if (!$(this).hasClass('input-danger')) {
                     $(this).addClass('input-danger')
                 }
@@ -1019,7 +1037,17 @@
                         if (getStatus.status == 200) {
                             location.reload();
                         }
+                    },
+                    error: function(xhr) {
+                        if (xhr.status === 422) {
+                            var response = JSON.parse(xhr.responseText);
+                            // Show error below the slug textbox
+                            $("#slug").focus();
+                             swal_alert('Error!', response.error, 'error', false);
+                            $("#btn_submit_save_changes").attr('disabled', false).html('Save Changes');
+                        }
                     }
+                   
                 });
 
             }

@@ -1146,6 +1146,10 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('/chat', \App\Livewire\Chat::class)->name('chat');
     Route::get('/chats', [ChatController::class, 'index'])->name('chat.index');
     Route::get('/forecast-chat', \App\Livewire\ForecastChat::class) ->name('forecast.chat');
+    
+    // Test routes for forecast service
+    Route::get('/test-forecast', [App\Http\Controllers\ForecastTestController::class, 'test'])->name('test.forecast');
+    Route::get('/test-date-parsing', [App\Http\Controllers\ForecastTestController::class, 'testDateParsing'])->name('test.date.parsing');
 });
 
 Route::middleware(['web','auth'])->group(function () {

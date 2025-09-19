@@ -1252,6 +1252,19 @@ class InventoryController extends Controller
         $websiteMode = null;
         $check = QuickBookSetting::where('company_id', session('company_id'))->count();
 
+        // Check if slug already exists
+        if (!empty($request->slug)) {
+            $existingSlug = DB::table('inventory_general')
+                ->where('slug', $request->slug)
+                ->where('company_id', session('company_id'))
+                ->where('id', '!=', $request->id)
+                ->exists();
+            
+            if ($existingSlug) {
+                return response()->json(['error' => 'Slug already exists with another product.'], 422);
+            }
+        }
+        
         $fields = [
             'company_id'           => session('company_id'),
             'department_id'        => $request->depart,
@@ -1278,6 +1291,11 @@ class InventoryController extends Controller
             'pct_code'  => $request->pctcode,
             'needs_qb_update'  => (($check > 0) ? 1 : 0),
         ];
+
+        // Add slug if provided
+        if (!empty($request->slug)) {
+            $fields['slug'] = $request->slug;
+        }
 
         if (!empty($request->get('galleryImage'))) {
             $gallery = explode(',', $request->get('galleryImage'));
