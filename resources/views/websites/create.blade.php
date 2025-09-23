@@ -4,108 +4,159 @@
 @section('navcompany','active')
 @section('content')
 
-<section class="panels-wells p-t-3">
-<div class="card">
-	<div class="card-header">
-		<h5 class="card-header-text">Add New Website</h5>
-	</div>
-    <div class="card-block">
-
-
-    <form role="form" method="POST" action="{{ route('website.store') }}" enctype="multipart/form-data">
-		@csrf
-
-			<div class="form-group">
-				<label class="form-control-label">Company</label>
-				<select name="company_id" id="company_id" data-placeholder="Select Company" class="form-control select2" >
-					<option value="">Select Company</option>
-					@if($companies)
-					   @php $oldCompany = old('company_id');
-						@foreach($companies as $company)
-							<option {{ old('company_id') == $company->company_id ? 'selected' : '' }} value="{{ $company->company_id }}">{{ $company->name }}</option>
-						@endforeach
-					@endif
-				</select>
-				@error('company_id')
-					<div class="form-control-feedback text-danger">Field is required please select it</div>
-				@enderror
-			 </div>
-				<div class="form-group">
-					<label class="form-control-label">Website Type</label>
-					<select class="form-control" name="type" id="type">
-						<option>Select</option>
-						<option {{ old('type') == 'restaurant' ? 'selected' : '' }} value="restaurant">Restaurant</option>
-						<option {{ old('type') == 'grocery' ? 'selected' : '' }} value="grocery">Grocery</option>
-						<option {{ old('type') == 'boutique' ? 'selected' : '' }} value="boutique">Boutique</option>
-					</select>
-					@error('type')
-						<div class="form-control-feedback text-danger">Field is required please select it</div>
-					@enderror
-				</div>
-
-                <div class="form-group">
-                    <label class="control-label">Website Name</label>
-                    <input name="name" type="text" class="form-control" placeholder="Website Name" value="{{ old('name') }}" />
-                    @error('name')
-                     <div class="form-control-feedback text-danger">{{ $message }}</div>
-                    @enderror
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-lg-12 m-t-2">
+            <div class="card shadow-sm">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0"><i class="fas fa-globe mr-2"></i>Create New Website</h4>
                 </div>
-                <div class="form-group">
-                    <label class="control-label">Domain Name</label>
-                    <input name="url" type="text" class="form-control" placeholder="Domain Name" value="{{ old('url') }}"/>
+                <div class="card-body " style="padding:10px;">
+                    <form method="POST" action="{{ route('website.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Company *</label>
+                                    <select name="company_id" class="form-control select2">
+                                        <option value="">Select Company</option>
+                                        @if($companies)
+                                            @foreach($companies as $company)
+                                                <option {{ old('company_id') == $company->company_id ? 'selected' : '' }} value="{{ $company->company_id }}">{{ $company->name }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    @error('company_id')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Website Type *</label>
+                                    <select class="form-control" name="type">
+                                        <option value="">Select Type</option>
+                                        <option {{ old('type') == 'restaurant' ? 'selected' : '' }} value="restaurant">Restaurant</option>
+                                        <option {{ old('type') == 'grocery' ? 'selected' : '' }} value="grocery">Grocery</option>
+                                        <option {{ old('type') == 'boutique' ? 'selected' : '' }} value="boutique">Boutique</option>
+                                    </select>
+                                    @error('type')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Website Name *</label>
+                                    <input name="name" type="text" class="form-control" placeholder="Enter website name" value="{{ old('name') }}">
+                                    @error('name')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Domain Name</label>
+                                    <input name="url" type="url" class="form-control" placeholder="https://example.com" value="{{ old('url') }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">UAN Number</label>
+                                    <input name="uan_number" type="text" class="form-control" placeholder="Enter UAN number" value="{{ old('uan_number') }}">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">WhatsApp Number</label>
+                                    <input name="whatsapp" type="text" class="form-control" placeholder="Enter WhatsApp number" value="{{ old('whatsapp') }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+						<div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Github Token</label>
+                                    <input name="github_token" type="text" class="form-control" placeholder="Enter Github Token" value="{{ old('github_token') }}">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">github Owner</label>
+                                    <input name="github_owner" type="text" class="form-control" placeholder="Enter Github Owner" value="{{ old('github_owner') }}">
+                                </div>
+                            </div>
+                        </div>
+						<div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Github Repo</label>
+                                    <input name="github_repo" type="text" class="form-control" placeholder="Enter Github Repo" value="{{ old('github_repo') }}">
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Github Branch</label>
+                                    <input name="github_branch" type="text" class="form-control" placeholder="Enter Github Owner" value="{{ old('github_branch') }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Logo</label>
+                                    <div class="text-center m-b-1">
+                                        <img id="preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                                    </div>
+                                    <input type="file" name="logo" id="logo" class="form-control" accept="image/*">
+                                    @error('logo')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-bold">Favicon</label>
+                                    <div class="text-center m-b-1 ">
+                                        <img id="fpreview" src="{{ asset('storage/images/placeholder.jpg') }}" class="img-thumbnail" style="width: 120px; height: 120px; object-fit: cover;">
+                                    </div>
+                                    <input type="file" name="favicon" id="favicon" class="form-control" accept="image/*">
+                                    @error('favicon')
+                                        <small class="text-danger">{{ $message }}</small>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end gap-2 m-t-4">
+                            <a href="{{ route('website.index') }}" class="btn btn-secondary m-r-1">
+                                <i class="fas fa-times "></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary float-right">
+                                <i class="fa fa-save m-l-1"></i>Create Website
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <!--<div class="form-group">-->
-                <!--    <label class="control-label">TopBar</label>-->
-                <!--    <input type="text" class="form-control" name="topbar" placeholder="TopBar Message" value="{{-- old('topbar') --}}" />-->
-                <!--</div>-->
-
-                <div class="form-group">
-                    <label class="control-label">UAN Number</label>
-                    <input name="uan_number" type="text" class="form-control" placeholder="UAN Number" value="{{ old('uan_number') }}" />
-                </div>
-                <div class="form-group">
-                    <label class="control-label">WhatsApp</label>
-                    <input type="text" class="form-control" name="whatsapp" placeholder="WhatsApp Number" value="{{ old('whatsapp') }}"/>
-                </div>
-
-				<div class="form-group @error('logo') 'has-danger' @enderror ">
-				<a href="#">
-					<img id="preview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
-				</a>
-					<label for="logo" class="form-control-label">Logo</label></br>
-
-					<label for="logo" class="custom-file">
-					<input type="file" name="logo" id="logo" class="custom-file-input">
-					<span class="custom-file-control"></span>
-					</label>
-					@error('logo')
-						<div class="form-control-feedback text-danger">{{ $message }}</div>
-					@enderror
-				</div>
-
-				<div class="form-group @error('favicon') 'has-danger' @enderror ">
-				<a href="#">
-					<img id="fpreview" src="{{ asset('storage/images/placeholder.jpg') }}" class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
-				</a>
-					<label for="favicon" class="form-control-label">Favicon</label></br>
-
-					<label for="favicon" class="custom-file">
-					<input type="file" name="favicon" id="favicon" class="custom-file-input">
-					<span class="custom-file-control"></span>
-					</label>
-					@error('favicon')
-						<div class="form-control-feedback text-danger">{{ $message }}</div>
-					@enderror
-				</div>
-				<a class="btn btn-danger m-r-2" href="{{ route('website.index') }}">Cancel</a>
-                <button class="btn btn-primary position-right" type="submit">Submit</button>
-              </form>
-
-
+            </div>
+        </div>
     </div>
-  </div>
-
-</section>
+</div>
 @endsection
 
 @section('scriptcode_three')
@@ -204,6 +255,12 @@
 
 
 @section('css_code')
-   <link rel="stylesheet" type="text/css" href="{{ asset('storage/css/wizardform.css') }}">
-
+<style>
+.card { border: none; border-radius: 10px; }
+.form-label { color: #495057; font-size: 14px; }
+.form-control { border-radius: 6px; border: 1px solid #dee2e6; }
+.form-control:focus { border-color: #007bff; box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25); }
+.btn { border-radius: 6px; padding: 8px 20px; }
+.img-thumbnail { border-radius: 8px; }
+</style>
 @endsection

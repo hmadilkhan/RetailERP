@@ -26,18 +26,18 @@ class WebsiteController extends Controller
 
     public function index(Request $request)
     {
-           // Start building the query
-           $getRecord = WebsiteDetail::with("company");
+        // Start building the query
+        $getRecord = WebsiteDetail::with("company");
 
-           // Apply filter only if mode is set in the request
-           if(isset($request->mode)){
-                 $getRecord = $getRecord->where('status','=',0);
-           }else{
-                 $getRecord = $getRecord->where('status','=',1);
-           }
+        // Apply filter only if mode is set in the request
+        if (isset($request->mode)) {
+            $getRecord = $getRecord->where('status', '=', 0);
+        } else {
+            $getRecord = $getRecord->where('status', '=', 1);
+        }
 
-           // Execute the query
-           $getRecord = $getRecord->get();
+        // Execute the query
+        $getRecord = $getRecord->get();
 
         return view("websites.index", [
             "websites" => $getRecord,
@@ -88,18 +88,18 @@ class WebsiteController extends Controller
                 $request->validate([
                     'logo' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
-               $imageLogo = $this->uploads($request->file('logo'),'images/website/');
+                $imageLogo = $this->uploads($request->file('logo'), 'images/website/');
 
-              if(isset($imageLogo['fileName'])){
-                Storage::disk('public')->put('images/products/' . $imageLogo['fileName'],\File::get($request->file('logo')));
-              }
+                if (isset($imageLogo['fileName'])) {
+                    Storage::disk('public')->put('images/products/' . $imageLogo['fileName'], \File::get($request->file('logo')));
+                }
             }
 
             if (!empty($request->favicon)) {
                 $request->validate([
                     'favicon' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
-                $imageFavicon = $this->uploads($request->file('favicon'),'images/website/');
+                $imageFavicon = $this->uploads($request->file('favicon'), 'images/website/');
             }
 
 
@@ -111,11 +111,11 @@ class WebsiteController extends Controller
 
             if (!isset($website->id)) {
                 if (!empty($imageFavicon)) {
-                    $this->removeImage("images/website/",$imageFavicon['fileName']);
+                    $this->removeImage("images/website/", $imageFavicon['fileName']);
                 }
 
                 if (!empty($imageLogo)) {
-                    $this->removeImage("images/website/",$imageLogo['fileName']);
+                    $this->removeImage("images/website/", $imageLogo['fileName']);
                 }
 
                 Session::flash('error', 'Server issue');
@@ -187,7 +187,7 @@ class WebsiteController extends Controller
                     'favicon' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-                $imageFavicon = $this->uploads($request->file('favicon'),'images/website/',$website_detail->favicon);
+                $imageFavicon = $this->uploads($request->file('favicon'), 'images/website/', $website_detail->favicon);
             }
 
             if (!empty($request->logo)) {
@@ -196,11 +196,11 @@ class WebsiteController extends Controller
                     'logo' => 'mimes:jpeg,png,jpg,webp|max:1024',
                 ]);
 
-                $imageLogo =$this->uploads($request->file('logo'),'images/website/',$website_detail->logo);
+                $imageLogo = $this->uploads($request->file('logo'), 'images/website/', $website_detail->logo);
 
-                if(isset($imageLogo['fileName'])){
+                if (isset($imageLogo['fileName'])) {
                     $this->removeImage('images/products/', $website_detail->logo);
-                    Storage::disk('public')->put('images/products/' . $imageLogo['fileName'],\File::get($request->file('logo')));
+                    Storage::disk('public')->put('images/products/' . $imageLogo['fileName'], \File::get($request->file('logo')));
                 }
 
                 //$this->uploads($request->file('logo'),'images/products/',$website_detail->logo);
@@ -220,6 +220,10 @@ class WebsiteController extends Controller
             $website_detail->url         = $request->url;
             $website_detail->whatsapp    = $request->whatsapp;
             $website_detail->uan_number  = $request->uan_number;
+            $website_detail->github_token  = $request->github_token;
+            $website_detail->github_owner  = $request->github_owner;
+            $website_detail->github_repo  = $request->github_repo;
+            $website_detail->github_branch  = $request->github_branch;
 
             if (!empty($imageLogo)) {
                 $website_detail->logo   = $imageLogo['fileName'];
@@ -257,7 +261,7 @@ class WebsiteController extends Controller
         return redirect()->route("website.index");
     }
 
-     public function websiteToggleStatus(Request $request)
+    public function websiteToggleStatus(Request $request)
     {
         $getRecord = WebsiteDetail::find($request->id);
 
@@ -271,7 +275,7 @@ class WebsiteController extends Controller
         if ($getRecord->save()) {
             Session::flash('success', 'Success!');
         } else {
-            Session::flash('error', 'Error! this ' . $getRecord->name . ' website is not '.$request->mode == 1 ? 'active' : 'in-active'.'!');
+            Session::flash('error', 'Error! this ' . $getRecord->name . ' website is not ' . $request->mode == 1 ? 'active' : 'in-active' . '!');
         }
         return redirect()->route("website.index");
     }
@@ -299,7 +303,7 @@ class WebsiteController extends Controller
             "websiteDeaprtmentSlider"  => DB::table('website_sliders')
                 ->join('inventory_department', 'inventory_department.department_id', 'website_sliders.department_slider')
                 ->join('website_details', 'website_details.id', 'website_sliders.website_id')
-                ->select('website_details.*','inventory_department.department_name as department_slider_name','website_sliders.department_slider')
+                ->select('website_details.*', 'inventory_department.department_name as department_slider_name', 'website_sliders.department_slider')
                 ->where('website_details.company_id', $companyId)
                 ->where('website_sliders.status', 1)
                 ->where('website_sliders.type', 'department')
@@ -309,22 +313,30 @@ class WebsiteController extends Controller
                 ->join('website_details', 'website_details.id', 'website_sliders.website_id')
                 ->leftJoin('inventory_general', 'inventory_general.id', 'website_sliders.prod_id')
                 ->leftJoin('inventory_department', 'inventory_department.department_id', 'website_sliders.department_slider')
-                ->select('website_sliders.id', 'website_sliders.website_id',
-                 'website_sliders.slide',  'website_sliders.mobile_slide',
-                 'website_sliders.invent_department_id','website_sliders.type as slider_type',
-                 'website_sliders.invent_department_name', 'website_sliders.prod_id',
-                 'inventory_general.department_id as prod_dept_id',
-                  'inventory_general.sub_department_id as prod_subdept_id','website_sliders.department_slider','inventory_department.department_name as department_slider_name')
+                ->select(
+                    'website_sliders.id',
+                    'website_sliders.website_id',
+                    'website_sliders.slide',
+                    'website_sliders.mobile_slide',
+                    'website_sliders.invent_department_id',
+                    'website_sliders.type as slider_type',
+                    'website_sliders.invent_department_name',
+                    'website_sliders.prod_id',
+                    'inventory_general.department_id as prod_dept_id',
+                    'inventory_general.sub_department_id as prod_subdept_id',
+                    'website_sliders.department_slider',
+                    'inventory_department.department_name as department_slider_name'
+                )
                 ->where('website_details.company_id', $companyId)
                 // ->where('website_sliders.type', 'default')
                 ->where('website_sliders.status', 1)
                 ->get(),
-                'slider_bin_products'=> DB::table('website_slider_product_binds')
-                                          ->join('website_sliders','website_sliders.id','website_slider_product_binds.slider_id')
-                                          ->join('website_details','website_details.id','website_sliders.website_id')
-                                          ->where('website_details.company_id', $companyId)
-                                          ->select('website_slider_product_binds.*')
-                                          ->get(),
+            'slider_bin_products' => DB::table('website_slider_product_binds')
+                ->join('website_sliders', 'website_sliders.id', 'website_slider_product_binds.slider_id')
+                ->join('website_details', 'website_details.id', 'website_sliders.website_id')
+                ->where('website_details.company_id', $companyId)
+                ->select('website_slider_product_binds.*')
+                ->get(),
         ]);
     }
 
@@ -373,17 +385,17 @@ class WebsiteController extends Controller
         }
 
         return DB::table('website_products')
-        ->join('inventory_general', 'inventory_general.id', 'website_products.inventory_id')
-        ->where('website_products.website_id', $request->id)
-        ->where('website_products.status', 1)
-        ->when($request->department, function($query) use ($request) {
-            return $query->where('inventory_general.department_id', $request->department);
-        })
-        ->when($request->subDepart, function($query) use ($request) {
-            return $query->where('inventory_general.sub_department_id', $request->subDepart);
-        })
-        ->select('inventory_general.id', 'inventory_general.product_name')
-        ->get();
+            ->join('inventory_general', 'inventory_general.id', 'website_products.inventory_id')
+            ->where('website_products.website_id', $request->id)
+            ->where('website_products.status', 1)
+            ->when($request->department, function ($query) use ($request) {
+                return $query->where('inventory_general.department_id', $request->department);
+            })
+            ->when($request->subDepart, function ($query) use ($request) {
+                return $query->where('inventory_general.sub_department_id', $request->subDepart);
+            })
+            ->select('inventory_general.id', 'inventory_general.product_name')
+            ->get();
         /* DB::table('website_products')
             ->join('inventory_general', 'inventory_general.id', 'website_products.inventory_id')
             ->where('website_products.website_id', $request->id)
@@ -401,27 +413,27 @@ class WebsiteController extends Controller
         // $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
 
         // return $imageName;
-       $slider_type_exists = false;
-       if(isset($request->slider_type) && \Hash::check('department', $request->slider_type)){
-           $slider_type_exists = true;
+        $slider_type_exists = false;
+        if (isset($request->slider_type) && \Hash::check('department', $request->slider_type)) {
+            $slider_type_exists = true;
             $rules = [
-                       'website_dept_slide'     => 'required',
-                       'department_dpt_slide'   => 'required',
-                       'desktop_slide_dept'     => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024',
-                       'mobile_slide_dept'      => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
+                'website_dept_slide'     => 'required',
+                'department_dpt_slide'   => 'required',
+                'desktop_slide_dept'     => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024',
+                'mobile_slide_dept'      => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
             ];
-       }else{
+        } else {
             $rules = [
-                       'website'       => 'required',
-                       'desktop_slide' => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024',
-                       'mobile_slide'  => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
+                'website'       => 'required',
+                'desktop_slide' => 'required|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024',
+                'mobile_slide'  => 'nullable|mimes:jpg,jpeg,png,webp,mp4,webm,ogg|max:1024'
             ];
-       }
+        }
 
-       $validator = \Validator::make($request->all(), $rules);
+        $validator = \Validator::make($request->all(), $rules);
 
         if ($validator->fails()) {
-            return redirect('website/slider/lists'.($slider_type_exists === true ? '?#departmentSliderNav' : ''))->withErrors($validator)->withInput();
+            return redirect('website/slider/lists' . ($slider_type_exists === true ? '?#departmentSliderNav' : ''))->withErrors($validator)->withInput();
         }
 
         //$this->validate($request, $rules);
@@ -429,7 +441,7 @@ class WebsiteController extends Controller
         $desktop_slide     = $request->file('desktop_slide') ?? $request->file('desktop_slide_dept');
         $imageName         = time() . '.' . strtolower($desktop_slide->getClientOriginalExtension());
         $mobile_slide      = $request->file('mobile_slide') ?? $request->file('mobile_slide_dept') ?? null;
-        $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size'.time() . '.' . strtolower($mobile_slide->getClientOriginalExtension());
+        $mobile_slideName  = $mobile_slide == null ? null : 'mobile_size' . time() . '.' . strtolower($mobile_slide->getClientOriginalExtension());
         $productSlug       = null;
         $invent_department = null;
         $websiteId = isset($request->website) ? $request->website : $request->website_dept_slide;
@@ -444,8 +456,8 @@ class WebsiteController extends Controller
             return response()->json('slider not uploaded.', 500);
         }
 
-        if($mobile_slide != null){
-            if(!$mobile_slide->move($path, $mobile_slideName)){
+        if ($mobile_slide != null) {
+            if (!$mobile_slide->move($path, $mobile_slideName)) {
                 return response()->json('mobile slider not uploaded.', 500);
             }
         }
@@ -481,26 +493,26 @@ class WebsiteController extends Controller
 
         if ($result) {
 
-            if(isset($request->department_dpt_slide) && !empty($request->product_dpt_slide)){
-                  foreach($request->product_dpt_slide as $value){
-                          DB::table('website_slider_product_binds')
-                              ->insert([
-                                         'slider_id'  => $result,
-                                         'product_id' => $value
-                                       ]);
-                  }
+            if (isset($request->department_dpt_slide) && !empty($request->product_dpt_slide)) {
+                foreach ($request->product_dpt_slide as $value) {
+                    DB::table('website_slider_product_binds')
+                        ->insert([
+                            'slider_id'  => $result,
+                            'product_id' => $value
+                        ]);
+                }
             }
 
             Session::flash('success', 'Success!');
         } else {
             Session::flash('error', 'Invalid record');
         }
-      return redirect('website/slider/lists'.(isset($request->department_dpt_slide) ? '?#departmentSliderNav' : ''));
+        return redirect('website/slider/lists' . (isset($request->department_dpt_slide) ? '?#departmentSliderNav' : ''));
     }
 
     public function update_slide(Request $request)
     {
-        if(isset($request->department_slider)){
+        if (isset($request->department_slider)) {
             return $this->department_slider_slide_modify($request);
             die();
         }
@@ -536,8 +548,8 @@ class WebsiteController extends Controller
                 return redirect()->route('sliderLists');
             }
 
-            if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
-                \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide);
+            if (\File::exists('storage/images/website/sliders/' . session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
+                \File::delete('storage/images/website/sliders/' . session('company_id') . '/' . $request->webId . '/' . $get->slide);
             }
             $columnArray['slide'] = $imageName;
         }
@@ -550,7 +562,7 @@ class WebsiteController extends Controller
 
             $this->validate($request, $rules);
 
-            $mobile_slideName   = 'mobile_size'.time() . '.' . $mobile_slide->getClientOriginalExtension();
+            $mobile_slideName   = 'mobile_size' . time() . '.' . $mobile_slide->getClientOriginalExtension();
 
             $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
 
@@ -564,8 +576,8 @@ class WebsiteController extends Controller
                 return redirect()->route('sliderLists');
             }
 
-            if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide)) {
-                \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide);
+            if (\File::exists('storage/images/website/sliders/' . session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide)) {
+                \File::delete('storage/images/website/sliders/' . session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide);
             }
             $columnArray['mobile_slide'] = $mobile_slideName;
         }
@@ -605,7 +617,8 @@ class WebsiteController extends Controller
         return redirect()->route('sliderLists');
     }
 
-    public function department_slider_slide_modify(Request $request){
+    public function department_slider_slide_modify(Request $request)
+    {
         $Slide        = $request->file('desktop_slide');
         $mobile_slide = $request->file('mobile_slide');
         $products     = $request->product_dpt_slide;
@@ -614,9 +627,9 @@ class WebsiteController extends Controller
         $columnArray = ['updated_at' => date("Y-m-d H:i:s")];
 
         $get = DB::table('website_sliders')
-                  ->where('id', '=', $request->id)
-                  ->where('department_slider', '=', $request->deaprtment_slider)
-                  ->first();
+            ->where('id', '=', $request->id)
+            ->where('department_slider', '=', $request->deaprtment_slider)
+            ->first();
 
         if ($Slide != '') {
 
@@ -640,7 +653,7 @@ class WebsiteController extends Controller
                 return redirect()->route('sliderLists');
             }
 
-              $this->removeImage('images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' , $get->slide);
+            $this->removeImage('images/website/sliders/' . session('company_id') . '/' . $request->webId . '/', $get->slide);
             // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide)) {
             //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->slide);
             // }
@@ -655,7 +668,7 @@ class WebsiteController extends Controller
 
             $this->validate($request, $rules);
 
-            $mobile_slideName   = 'mobile_size'.time() . '.' . $mobile_slide->getClientOriginalExtension();
+            $mobile_slideName   = 'mobile_size' . time() . '.' . $mobile_slide->getClientOriginalExtension();
 
             $path = $this->create_folder('sliders/' . session('company_id'), $request->webId);
 
@@ -669,7 +682,7 @@ class WebsiteController extends Controller
                 return redirect()->route('sliderLists');
             }
 
-            $this->removeImage('images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' , $get->mobile_slide);
+            $this->removeImage('images/website/sliders/' . session('company_id') . '/' . $request->webId . '/', $get->mobile_slide);
 
             // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide)) {
             //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $request->webId . '/' . $get->mobile_slide);
@@ -682,20 +695,21 @@ class WebsiteController extends Controller
             ->where('id', '=', $request->id)
             ->update($columnArray);
 
-            DB::table('website_slider_product_binds')->where('slider_id',$request->id)->delete();
+        DB::table('website_slider_product_binds')->where('slider_id', $request->id)->delete();
 
-           if(!empty($products)){
-            foreach($products as $value){
+        if (!empty($products)) {
+            foreach ($products as $value) {
                 DB::table('website_slider_product_binds')->insert(
-                        [
-                                    'slider_id'=>$request->id,
-                                    'product_id'=>$value,
-                                ]);
+                    [
+                        'slider_id' => $request->id,
+                        'product_id' => $value,
+                    ]
+                );
             }
-           }
+        }
 
         // if ($result) {
-            Session::flash('success', 'Success!');
+        Session::flash('success', 'Success!');
         // } else {
         //     Session::flash('error', 'Server Issue record not updated.');
         // }
@@ -705,7 +719,7 @@ class WebsiteController extends Controller
 
     public function create_folder($comFOldName, $webFoldName)
     {
-        $path   = 'storage/images/website/'. $comFOldName . '/' . $webFoldName;
+        $path   = 'storage/images/website/' . $comFOldName . '/' . $webFoldName;
         $result = true;
         if (!File::isDirectory($path)) {
             $result = File::makeDirectory($path, 0777, true, true);
@@ -717,9 +731,9 @@ class WebsiteController extends Controller
     public function destroy_slide(Request $request)
     {
         //  return $request;
-        if(isset($request->depart)){
-           return $this->destroy_department_slide($request);
-           die();
+        if (isset($request->depart)) {
+            return $this->destroy_department_slide($request);
+            die();
         }
 
         if (!isset($request->id)) {
@@ -728,15 +742,15 @@ class WebsiteController extends Controller
         }
 
         $id = $request->id;
-        $path = 'storage/images/website/sliders/'. session('company_id') . '/' . $id . '/';
+        $path = 'storage/images/website/sliders/' . session('company_id') . '/' . $id . '/';
 
         if ($request->post('mode' . $id) == '') {
             $get = DB::table('website_sliders')->where('website_id', '=', $id)->get();
 
             if ($get != null) {
                 foreach ($get as $val) {
-                    $this->removeImage($path,$val->slide);
-                    $this->removeImage($path,$val->mobile_slide);
+                    $this->removeImage($path, $val->slide);
+                    $this->removeImage($path, $val->mobile_slide);
                     // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide)) {
                     //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide);
                     // }
@@ -751,8 +765,8 @@ class WebsiteController extends Controller
         } else {
             $get = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->first();
             if ($get != null) {
-                $this->removeImage($path,$get->slide);
-                $this->removeImage($path,$get->mobile_slide);
+                $this->removeImage($path, $get->slide);
+                $this->removeImage($path, $get->mobile_slide);
                 // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide)) {
                 //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide);
                 // }
@@ -784,20 +798,20 @@ class WebsiteController extends Controller
 
         $id = $request->id;
         $department_slider = $request->depart;
-        $path = 'storage/images/website/sliders/'. session('company_id') . '/' . $id . '/';
+        $path = 'storage/images/website/sliders/' . session('company_id') . '/' . $id . '/';
 
         $process = false;
 
         if ($request->post('mode' . $id) == '') {
             $get = DB::table('website_sliders')
-                        ->where('department_slider', '=', $department_slider)
-                        ->where('website_id', '=', $id)
-                        ->get();
+                ->where('department_slider', '=', $department_slider)
+                ->where('website_id', '=', $id)
+                ->get();
 
             if ($get != null) {
                 foreach ($get as $val) {
-                    $this->removeImage($path,$val->slide);
-                    $this->removeImage($path,$val->mobile_slide);
+                    $this->removeImage($path, $val->slide);
+                    $this->removeImage($path, $val->mobile_slide);
                     // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide)) {
                     //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $val->slide);
                     // }
@@ -808,19 +822,19 @@ class WebsiteController extends Controller
                 }
 
                 $process = DB::table('website_sliders')
-                            ->where('department_slider', '=', $department_slider)
-                            ->where('website_id', '=', $id)
-                            ->delete();
+                    ->where('department_slider', '=', $department_slider)
+                    ->where('website_id', '=', $id)
+                    ->delete();
 
-                            DB::table('website_slider_product_binds')
-                            ->whereIn('slider_id', $get->pluck('id'))
-                            ->delete();
+                DB::table('website_slider_product_binds')
+                    ->whereIn('slider_id', $get->pluck('id'))
+                    ->delete();
             }
         } else {
             $get = DB::table('website_sliders')->where('id', '=', $request->post('mode' . $id))->first();
             if ($get != null) {
-                $this->removeImage($path,$get->slide);
-                $this->removeImage($path,$get->mobile_slide);
+                $this->removeImage($path, $get->slide);
+                $this->removeImage($path, $get->mobile_slide);
                 // if (\File::exists('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide)) {
                 //     \File::delete('storage/images/website/sliders/'. session('company_id') . '/' . $id . '/' . $get->slide);
                 // }
@@ -830,12 +844,12 @@ class WebsiteController extends Controller
                 // }
 
                 $process = DB::table('website_sliders')
-                              ->where('id', '=', $request->post('mode' . $id))
-                              ->delete();
+                    ->where('id', '=', $request->post('mode' . $id))
+                    ->delete();
 
-                           DB::table('website_slider_product_binds')
-                              ->where('slider_id', $request->post('mode' . $id))
-                              ->delete();
+                DB::table('website_slider_product_binds')
+                    ->where('slider_id', $request->post('mode' . $id))
+                    ->delete();
             }
         }
 
@@ -891,7 +905,7 @@ class WebsiteController extends Controller
             //                           ->select('prod_var_rel.id','prod_var_dtl.price','prod_var_dtl.image','variations.name as variat_name','posProducts.item_name as product_name','inventGeneral.product_name as parent_prod')
             //                           ->get();
             "websites"    => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
-            "departments" => InventoryDepartment::where('company_id', Auth::user()->company_id)->where('status',1)->get()
+            "departments" => InventoryDepartment::where('company_id', Auth::user()->company_id)->where('status', 1)->get()
         ]);
     }
 
@@ -998,8 +1012,8 @@ class WebsiteController extends Controller
                 return redirect()->route('AdvertisementLists');
             }
 
-            if (\File::exists('storage/images/website/advertisement/'. session('company_id') . '/' . $request->webId . '/' . $get->image)) {
-                \File::delete('storage/images/website/advertisement/'. session('company_id') . '/' . $request->webId . '/' . $get->image);
+            if (\File::exists('storage/images/website/advertisement/' . session('company_id') . '/' . $request->webId . '/' . $get->image)) {
+                \File::delete('storage/images/website/advertisement/' . session('company_id') . '/' . $request->webId . '/' . $get->image);
             }
             $columnArray['image'] = $imageName;
         }
@@ -1054,8 +1068,8 @@ class WebsiteController extends Controller
 
         if ($get != null) {
             foreach ($get as $val) {
-                if (\File::exists('storage/images/website/advertisements/'. session('company_id') . '/' . $request->website . '/' . $val->image)) {
-                    \File::delete('storage/images/website/advertisements/'. session('company_id') . '/' . $request->website . '/' . $val->image);
+                if (\File::exists('storage/images/website/advertisements/' . session('company_id') . '/' . $request->website . '/' . $val->image)) {
+                    \File::delete('storage/images/website/advertisements/' . session('company_id') . '/' . $request->website . '/' . $val->image);
                 }
             }
 
@@ -1218,12 +1232,12 @@ class WebsiteController extends Controller
             ->get();
 
         $deliveryAreaValues = DB::table('website_delivery_areas as AreaList')
-                                ->leftJoin('city', 'city.city_id', '=', 'AreaList.city_id')
-                                ->whereIn('AreaList.website_id', WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->pluck('id'))
-                                ->where('remove', '=', 0)
-                                ->select('AreaList.*', 'city.city_name')
-                                ->orderByRaw('city.city_name IS NULL, city.city_name ASC')
-                                ->get();
+            ->leftJoin('city', 'city.city_id', '=', 'AreaList.city_id')
+            ->whereIn('AreaList.website_id', WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->pluck('id'))
+            ->where('remove', '=', 0)
+            ->select('AreaList.*', 'city.city_name')
+            ->orderByRaw('city.city_name IS NULL, city.city_name ASC')
+            ->get();
 
         // DB::table('website_delivery_areas as AreaList')
         //     ->leftJoin('city', 'city.city_id', 'AreaList.city_id')
@@ -1242,43 +1256,44 @@ class WebsiteController extends Controller
         ]);
     }
 
-    public function cityLoadnotExistsdilveryArea(Request $request){
+    public function cityLoadnotExistsdilveryArea(Request $request)
+    {
 
-        if(isset($request->branchCode) && isset($request->websiteCode) && $request->mode == 1){
+        if (isset($request->branchCode) && isset($request->websiteCode) && $request->mode == 1) {
             $cities = DB::table('city')
-            ->whereIn('city_id', function($query) use ($request) {
-                $query->select('city')
-                    ->from('website_delivery_areas')
-                    ->where('website_id', $request->websiteCode)
-                    ->where('branch_id', $request->branchCode)
-                    ->where('remove','=', 0);
-            })
-            ->pluck('city_id');
+                ->whereIn('city_id', function ($query) use ($request) {
+                    $query->select('city')
+                        ->from('website_delivery_areas')
+                        ->where('website_id', $request->websiteCode)
+                        ->where('branch_id', $request->branchCode)
+                        ->where('remove', '=', 0);
+                })
+                ->pluck('city_id');
 
-        $result = DB::table('city')
-            ->whereNotIn('city_id', $cities)
-            ->where('country_id',170)
-            ->orderBy('city_name','ASC')
-            ->get();
+            $result = DB::table('city')
+                ->whereNotIn('city_id', $cities)
+                ->where('country_id', 170)
+                ->orderBy('city_name', 'ASC')
+                ->get();
 
 
-        //    $result =   DB::table('website_delivery_areas')
-        //                     ->leftJoin('city', 'city.city_id', '!=', 'website_delivery_areas.city')
-        //                     ->where('website_delivery_areas.website_id', '=', $request->websiteCode)
-        //                     ->where('website_delivery_areas.branch_id', '=', $request->branchCode)
-        //                     ->where('website_delivery_areas.status', '=', 1)
-        //                     // ->where('city.city_id', '!=', 'website_delivery_areas.city') // Ensure cities are not equal
-        //                     ->select('website_delivery_areas.city', 'city.city_name')
-        //                     ->get();
-           return response()->json($result,200);
+            //    $result =   DB::table('website_delivery_areas')
+            //                     ->leftJoin('city', 'city.city_id', '!=', 'website_delivery_areas.city')
+            //                     ->where('website_delivery_areas.website_id', '=', $request->websiteCode)
+            //                     ->where('website_delivery_areas.branch_id', '=', $request->branchCode)
+            //                     ->where('website_delivery_areas.status', '=', 1)
+            //                     // ->where('city.city_id', '!=', 'website_delivery_areas.city') // Ensure cities are not equal
+            //                     ->select('website_delivery_areas.city', 'city.city_name')
+            //                     ->get();
+            return response()->json($result, 200);
         }
 
-        if($request->mode == 0){
-           $result = DB::table('city')->where('country_id', 170)->get();
-           return response()->json($result,200);
+        if ($request->mode == 0) {
+            $result = DB::table('city')->where('country_id', 170)->get();
+            return response()->json($result, 200);
         }
 
-      return response()->json('Record not found!',500);
+        return response()->json('Record not found!', 500);
     }
 
     public function getDeliveryAreaValues(Request $request)
@@ -1288,9 +1303,9 @@ class WebsiteController extends Controller
         return DB::table('website_delivery_areas')
             ->join('city', 'city.city_id', 'website_delivery_areas.city_id')
             ->where('website_delivery_areas.website_id', '=', $request->website)
-            ->where('website_delivery_areas.remove','=',0)
+            ->where('website_delivery_areas.remove', '=', 0)
             ->select('website_delivery_areas.*', 'city.city_name')
-            ->orderBy('city.city_name','ASC')
+            ->orderBy('city.city_name', 'ASC')
             ->get();
 
         // return DB::table('website_delivery_areas')
@@ -1314,68 +1329,68 @@ class WebsiteController extends Controller
 
     public function store_deliveryArea(Request $request)
     {
-       try {
-             DB::beginTransaction();
-        // $rules = [
-        //     'branch'    => 'required',
-        //     'areas'     => 'required',
-        //     'charges'   => 'required',
-        // ];
+        try {
+            DB::beginTransaction();
+            // $rules = [
+            //     'branch'    => 'required',
+            //     'areas'     => 'required',
+            //     'charges'   => 'required',
+            // ];
 
-        // $this->validate($request, $rules);
+            // $this->validate($request, $rules);
 
-        // $result = null;
+            // $result = null;
 
-        if (!isset($request->on_off_btn)) {
-            $city  = $request->city;
+            if (!isset($request->on_off_btn)) {
+                $city  = $request->city;
 
-            for ($i = 0; $i < count($city); $i++) {
+                for ($i = 0; $i < count($city); $i++) {
 
-               $getCity= DB::table('city')->where('city_id', $city[$i])->first();
-                $result = DB::table('website_delivery_areas')
-                    ->insert([
-                        'website_id'         => $request->website,
-                        'branch_id'          => $request->branch,
-                        'name'               => $getCity->city_name,
-                        'city_id'            => addslashes($city[$i]),
-                        'is_city'            => 1,
-                        'estimate_of_days'   => $request->estimate_day,
-                        'charge'             => $request->charges,
-                        'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
-                        'min_order'          => $request->delivery_free_on_min_order == '' ? 0 : $request->delivery_free_on_min_order,
-                        'status'             => 1,
-                    ]);
+                    $getCity = DB::table('city')->where('city_id', $city[$i])->first();
+                    $result = DB::table('website_delivery_areas')
+                        ->insert([
+                            'website_id'         => $request->website,
+                            'branch_id'          => $request->branch,
+                            'name'               => $getCity->city_name,
+                            'city_id'            => addslashes($city[$i]),
+                            'is_city'            => 1,
+                            'estimate_of_days'   => $request->estimate_day,
+                            'charge'             => $request->charges,
+                            'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
+                            'min_order'          => $request->delivery_free_on_min_order == '' ? 0 : $request->delivery_free_on_min_order,
+                            'status'             => 1,
+                        ]);
+                }
+            } else {
+                $areas  = explode(',', $request->areas);
+
+                for ($i = 0; $i < count($areas); $i++) {
+                    DB::table('website_delivery_areas')
+                        ->insert([
+                            'website_id'         => $request->website,
+                            'branch_id'          => $request->branch,
+                            'name'               => addslashes($areas[$i]),
+                            'city_id'            => $request->city,
+                            // 'city'               => $request->city,
+                            'estimate_time'      => $request->time_estimate,
+                            'estimate_of_days'   => $request->estimate_day,
+                            'charge'             => $request->charges,
+                            'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
+                            'status'             => 1,
+                            // 'is_city'            => session('company_id') == 102 ? 1 : 0,
+                        ]);
+                }
             }
-        } else {
-            $areas  = explode(',', $request->areas);
 
-            for ($i = 0; $i < count($areas); $i++) {
-                  DB::table('website_delivery_areas')
-                    ->insert([
-                        'website_id'         => $request->website,
-                        'branch_id'          => $request->branch,
-                        'name'               => addslashes($areas[$i]),
-                        'city_id'            => $request->city,
-                        // 'city'               => $request->city,
-                        'estimate_time'      => $request->time_estimate,
-                        'estimate_of_days'   => $request->estimate_day,
-                        'charge'             => $request->charges,
-                        'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
-                        'status'             => 1,
-                        // 'is_city'            => session('company_id') == 102 ? 1 : 0,
-                    ]);
-            }
-        }
-
-        DB::commit();
-        // if ($result == null) {
-        //     Session::flash('error', 'Record is not created!');
-        // } else {
+            DB::commit();
+            // if ($result == null) {
+            //     Session::flash('error', 'Record is not created!');
+            // } else {
             Session::flash('success', 'Success!');
-        // }
-        }catch(\Exception $e){
+            // }
+        } catch (\Exception $e) {
             DB::rollback();
-            Session::flash('error', 'Error! '.$e->getMessage());
+            Session::flash('error', 'Error! ' . $e->getMessage());
         }
 
         return redirect()->route('deliveryAreasList');
@@ -1493,10 +1508,10 @@ class WebsiteController extends Controller
         //      }
 
         $column = [];
-        $column['charge']     =$charge;
-        $column['updated_at'] =now();
-        if($request->mode != 1){
-          $column['name'] = $areaName;
+        $column['charge']     = $charge;
+        $column['updated_at'] = now();
+        if ($request->mode != 1) {
+            $column['name'] = $areaName;
         }
 
         if (DB::table('website_delivery_areas')->where(['id' => $uniqueId])->update($column)) {
@@ -1506,26 +1521,27 @@ class WebsiteController extends Controller
         }
     }
 
-    public function modify_delivery_parent_detail(Request $request){
+    public function modify_delivery_parent_detail(Request $request)
+    {
         if (!isset($request->website) || !isset($request->branch)) {
             Session::flash('error', 'The required some parameter is missing. Please check and try again.');
             return redirect()->route('deliveryAreasList');
         }
 
         $column = [
-                    'min_order' => $request->min_order,
-                    'delivery_free_on_min_order' =>  $request->delivery_free,
-                    'estimate_time'              => $request->estimate_time,
-                    'estimate_of_days'           => $request->estimate_days
+            'min_order' => $request->min_order,
+            'delivery_free_on_min_order' =>  $request->delivery_free,
+            'estimate_time'              => $request->estimate_time,
+            'estimate_of_days'           => $request->estimate_days
 
         ];
 
-        if(DB::table('website_delivery_areas')
-                  ->where(['website_id' => $request->website,'branch_id'=>$request->branch])
-                  ->update($column))
-        {
+        if (DB::table('website_delivery_areas')
+            ->where(['website_id' => $request->website, 'branch_id' => $request->branch])
+            ->update($column)
+        ) {
             Session::flash('success', 'Successfully');
-        }else{
+        } else {
             Session::flash('error', 'Server issue record is not updated!');
         }
 
@@ -1555,7 +1571,7 @@ class WebsiteController extends Controller
         if (empty($request->id) || empty($request->branchid)) {
 
             // if (!isset($request->stp_redirect)) {
-                return response()->json('Invalid field',500);
+            return response()->json('Invalid field', 500);
             // }
             // Session::flash('error', 'Server issue record is not removed.');
             // return redirect()->route('deliveryAreasList');
@@ -1564,13 +1580,13 @@ class WebsiteController extends Controller
         if (DB::table('website_delivery_areas')->where(['id' => $request->id, 'branch_id' => $request->branchid])->update(['remove' => 1])) {
 
             // if (isset($request->stp_redirect)) {
-                return response()->json('success',200);
+            return response()->json('success', 200);
             // }
             // Session::flash('success', 'Successfully');
         } else {
 
             // if (isset($request->stp_redirect)) {
-                return response()->json('This ' . $request->area . ' delivery area not remove.',500);
+            return response()->json('This ' . $request->area . ' delivery area not remove.', 500);
             // }
 
             // Session::flash('error', 'This ' . $request->areaName . ' delivery area not remove for this ' . $request->branchName . ' branch.');
@@ -1880,11 +1896,11 @@ class WebsiteController extends Controller
             //     }
             // } else {
 
-                if ($getRecord_webTheme[$request->col] == $value) {
-                    return response()->json('success');
-                }
+            if ($getRecord_webTheme[$request->col] == $value) {
+                return response()->json('success');
+            }
 
-                $value = addslashes($value);
+            $value = addslashes($value);
             // }
 
             if (DB::table('website_theme')->where('website_id', '=', $websiteId)->update([$request->col => $value])) {
@@ -1905,7 +1921,7 @@ class WebsiteController extends Controller
                 // Check if validation fails
                 if ($validator->fails()) {
                     // Redirect back with input and errors
-                    return response()->json('error'.$validator);
+                    return response()->json('error' . $validator);
                 }
 
                 // $websiteName  = strtolower(str_replace(array(" ", "'"), '-', $getRecord_webDetail['name']));
@@ -1917,18 +1933,17 @@ class WebsiteController extends Controller
                 // $imglogo = Image::make($request->value)->resize(150, 70);
                 // $image->move(public_path('storage/images/website'), $imageName);
 
-                $getFile = $this->uploads($request->file('value'),'images/website/',$getRecord_webDetail[$request->col]);
+                $getFile = $this->uploads($request->file('value'), 'images/website/', $getRecord_webDetail[$request->col]);
 
                 $value = !empty($getFile) ? $getFile['fileName'] : '';
 
                 // $value = $imageName;
-            }else if($request->col == 'topbar_slide_msg'){
+            } else if ($request->col == 'topbar_slide_msg') {
 
                 //$value = (array) $request->val;
                 // $arrayValue = [];
                 // array_push($arrayValue,$request->val);
                 $value = json_encode($request->val);
-
             } else {
 
                 if ($getRecord_webDetail[$request->col] == $request->val) {
@@ -1956,33 +1971,33 @@ class WebsiteController extends Controller
     // =============================================//
 
 
-    public function getCustomer_reviews(Request $request){
+    public function getCustomer_reviews(Request $request)
+    {
         $data = [];
-        if(isset($request->id)){
+        if (isset($request->id)) {
             $data["websiteId"] = $request->id;
             $data["reviews"] = DB::table('website_customer_reviews')
-                                        ->join('website_details','website_details.id','website_customer_reviews.website_id')
-                                        ->where('website_customer_reviews.website_id',$request->id)
-                                        ->where('website_customer_reviews.status','!=',99)
-                                        ->where('website_details.status','=',1)
-                                        ->where('website_details.company_id',session('company_id'))
-                                        ->select('website_customer_reviews.*')
-                                        ->orderBy('website_customer_reviews.id','DESC')
-                                        ->get();
+                ->join('website_details', 'website_details.id', 'website_customer_reviews.website_id')
+                ->where('website_customer_reviews.website_id', $request->id)
+                ->where('website_customer_reviews.status', '!=', 99)
+                ->where('website_details.status', '=', 1)
+                ->where('website_details.company_id', session('company_id'))
+                ->select('website_customer_reviews.*')
+                ->orderBy('website_customer_reviews.id', 'DESC')
+                ->get();
             $data["images"] = DB::table('website_customer_review_images')
-                                        ->join('website_customer_reviews','website_customer_reviews.id','website_customer_review_images.review_id')
-                                        ->join('website_details','website_details.id','website_customer_reviews.website_id')
-                                        ->where('website_customer_reviews.website_id',$request->id)
-                                        ->where('website_customer_reviews.status','!=',99)
-                                        ->where('website_details.status','=',1)
-                                        ->where('website_details.company_id',session('company_id'))
-                                        ->select('website_customer_review_images.*')
-                                        ->get();
-
+                ->join('website_customer_reviews', 'website_customer_reviews.id', 'website_customer_review_images.review_id')
+                ->join('website_details', 'website_details.id', 'website_customer_reviews.website_id')
+                ->where('website_customer_reviews.website_id', $request->id)
+                ->where('website_customer_reviews.status', '!=', 99)
+                ->where('website_details.status', '=', 1)
+                ->where('website_details.company_id', session('company_id'))
+                ->select('website_customer_review_images.*')
+                ->get();
         }
 
-        $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
-        return view('websites.customer-review.index',$data);
+        $data["websites"] = WebsiteDetail::where('company_id', session('company_id'))->where('status', 1)->get();
+        return view('websites.customer-review.index', $data);
     }
 
     // public function Customer_review_approved(Request $request){
@@ -1994,45 +2009,46 @@ class WebsiteController extends Controller
     //    return response('Record not found!',500);
     // }
 
-    public function activeInactiveCustomer_review(Request $request){
+    public function activeInactiveCustomer_review(Request $request)
+    {
         $websiteId = Crypt::decrypt($request->website);
         $id        = Crypt::decrypt($request->id);
         $getstCode = Crypt::decrypt($request->stcode);
-        $getRecord = DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->first();
+        $getRecord = DB::table('website_customer_reviews')->where('id', $id)->where('website_id', $websiteId)->first();
 
         $status = $getstCode == 1 ? 'Active' : 'In-Active';
         $stCode = $getstCode == 1 ? 0 : 1;
 
         if ($getRecord == null) {
             Session::flash('error', 'Error! record not found! Server Issue!');
-            return redirect()->route("filterCustomerReviews",$websiteId);
+            return redirect()->route("filterCustomerReviews", $websiteId);
         }
 
-        if (DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->update(['status'=>$stCode,'updated_at'=>now()])) {
+        if (DB::table('website_customer_reviews')->where('id', $id)->where('website_id', $websiteId)->update(['status' => $stCode, 'updated_at' => now()])) {
             Session::flash('success', 'Success!');
         } else {
-            Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' review is not been '.$status.' from '.$request->websiteName.' website!');
+            Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' review is not been ' . $status . ' from ' . $request->websiteName . ' website!');
         }
-        return redirect()->route("filterCustomerReviews",$websiteId);
+        return redirect()->route("filterCustomerReviews", $websiteId);
     }
 
-    public function destroyCustomer_review(Request $request,$id){
+    public function destroyCustomer_review(Request $request, $id)
+    {
         $websiteId = Crypt::decrypt($request->website);
         $id        = Crypt::decrypt($request->id);
-        $getRecord = DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->first();
+        $getRecord = DB::table('website_customer_reviews')->where('id', $id)->where('website_id', $websiteId)->first();
 
         if ($getRecord == null) {
             Session::flash('error', 'Error! record not found! Server Issue!');
-            return redirect()->route("filterCustomerReviews",$websiteId);
+            return redirect()->route("filterCustomerReviews", $websiteId);
         }
 
-        if (DB::table('website_customer_reviews')->where('id',$id)->where('website_id',$websiteId)->update(['status'=>99,'updated_at'=>now()])) {
+        if (DB::table('website_customer_reviews')->where('id', $id)->where('website_id', $websiteId)->update(['status' => 99, 'updated_at' => now()])) {
             // $this->removeImage('/images/customer-reviews/',$getRecord->image);
             Session::flash('success', 'Success!');
         } else {
-            Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' review is not removed from '.$request->websiteName.' website !');
+            Session::flash('error', 'Error! this ' . $getRecord->customer_name . ' review is not removed from ' . $request->websiteName . ' website !');
         }
-        return redirect()->route("filterCustomerReviews",$websiteId);
+        return redirect()->route("filterCustomerReviews", $websiteId);
     }
-
 }

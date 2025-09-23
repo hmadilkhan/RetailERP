@@ -134,7 +134,7 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
 
 });
 
-Route::get('/rebuild-site', [DeployController::class, 'rebuild'])->name('rebuild');
+Route::get('/rebuild-site/{websiteId}', [DeployController::class, 'rebuild'])->name('rebuild');
 
 Route::get('/view-inventory', ViewInventory::class);
 Route::get('/vehicle-manager', VehicleManager::class);
