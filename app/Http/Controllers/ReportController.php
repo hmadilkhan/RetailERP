@@ -2043,8 +2043,6 @@ class ReportController extends Controller
 
         $branchname = "";
 
-        
-
         if ($request->branch != "all") {
             $branchname = Branch::where("branch_id", $request->branch)->first();
             $branchname = " (" . $branchname->branch_name . ") ";
@@ -2126,10 +2124,7 @@ class ReportController extends Controller
         $pdf->Cell(28, 7, 'Total', 'B', 0, 'R', 1);
         $pdf->Cell(28, 7, 'On Hand', 'B', 1, 'R', 1);
 
-
         $inventory = $report->get_inventory_details($request->branch, $request->department, $request->subdepartment);
-
-
 
         $pdf->SetFont('Arial', '', 10);
         $pdf->setFillColor(255, 255, 255);
@@ -2143,18 +2138,19 @@ class ReportController extends Controller
         foreach ($inventory as $value) {
             $qty = $qty + $value->qty;
             $totalQty = $totalQty + $value->totalqty;
+            $cost = str_replace(',', '', $value->cost);
             $totalRetail = $totalRetail + $value->retail_price;
             // $totalCost = $totalCost + $value->cost_price;
-            $totalCost = $totalCost + $value->cost;
-
-            $asset = $asset + ($value->qty * number_format($value->cost,2));
+            $totalCost = $totalCost + $cost;
+            // echo $value->qty." | ".$cost." -".  $value->qty * $cost."</br>";   
+            $asset = $asset +  $value->qty * $cost ;//($value->qty * number_format($cost,2));
             $pdf->Cell(28, 5, $value->item_code, 0, 0, 'L', 1);
             $pdf->Cell(50, 5, $value->product_name, 0, 0, 'L', 1);
             // $pdf->Cell(23,5,number_format($value->qty,2),0,0,'L',1);
             $pdf->Cell(10, 5, $value->um, 0, 0, 'L', 1);
             // $pdf->Cell(28,5, number_format($value->cost,2),0,0,'R',1);
             // $pdf->Cell(33,5,number_format($value->qty*$value->cost,2),0,0,'R',1);
-            $pdf->Cell(23, 5, number_format($value->cost,2), 0, 0, 'R', 1);
+            $pdf->Cell(23, 5, number_format($cost,2), 0, 0, 'R', 1);
             $pdf->Cell(23, 5, number_format($value->retail_price, 2), 0, 0, 'R', 1);
             $pdf->Cell(28, 5, number_format($value->totalqty, 2), 0, 0, 'R', 1);
             $pdf->Cell(28, 5, number_format($value->qty, 2), 0, 1, 'R', 1);
