@@ -40,7 +40,7 @@
                             <div class="form-group">
                                 <label class="form-control-label">Room Name</label>
                                 <input class="form-control" type="text" name="room_no" id="room_no" />
-                                <div class="form-control-feedback text-danger" style="display: none;" id="dptname_alert">
+                                <div class="form-control-feedback text-danger" style="display: none;" id="room_no_alert">
                                 </div>
                             </div>
                         </div>
@@ -96,10 +96,9 @@
                                                 class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top"
                                                 title="" data-original-title="Edit"><i
                                                     class="icofont icofont-ui-edit"></i></a>
-                                            <a onclick="deleteFloor('{{ $room->id }}')"
-                                                class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top"
-                                                title="" data-original-title="Edit"><i
-                                                    class="icofont icofont-ui-delete"></i></a>
+                                            <a onclick="deleteFloor('{{ $room->id }}')" class="text-danger p-r-10 f-18"
+                                                data-toggle="tooltip" data-placement="top" title=""
+                                                data-original-title="Edit"><i class="icofont icofont-ui-delete"></i></a>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -126,9 +125,9 @@
 
         $("#btn_save").on('click', function() {
 
-            if ($("#floorname").val() == "") {
-                $("#floorname").focus();
-                $("#deptname_alert").html('Floor name is required.');
+            if ($("#room_no").val() == "") {
+                $("#room_no").focus();
+                $("#room_no_alert").html('Room name is required.');
             } else {
 
                 $.ajax({
@@ -176,7 +175,7 @@
                                 location.reload();
                             }
                             swal_alert('Successfully!', r.msg, '', true);
-                            
+
 
                         } else {
                             $("#deptname_alert").html('');
@@ -250,7 +249,7 @@
             }, function(isConfirm) {
                 if (isConfirm) {
                     if (mode == true) {
-                        window.location = "{{ url('view-floors') }}";
+                        window.location = "{{ url('/rooms') }}";
                     }
                 }
             });
