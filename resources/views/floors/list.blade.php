@@ -149,9 +149,9 @@
             }else{
 
                 $.ajax({
-                    url:'{{ url("update-floors") }}',s
+                    url:'{{ url("update-floors") }}',
                     type:"POST",
-                    data:$('#floorform').serialize(),s
+                    data:$('#floorform').serialize(),
                     dataType:"json",
                     success:function(r){
                         if(r.state == 1){
