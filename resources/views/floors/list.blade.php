@@ -41,9 +41,9 @@
 
                         <div class="col-lg-4 col-md-4">
                             <div class="form-group row">
-                                <button class="btn btn-circle btn-primary f-left m-t-30 m-l-20"  type="button" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus"
+                                <button class="btn btn-circle btn-primary f-left m-t-30 m-l-20"  type="button" id="btn_save" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Floor"><i class="icofont icofont-plus"
                                     ></i>&nbsp; Save</button>
-                                <button style="display: none;" class="btn btn-circle btn-info f-left m-t-30 m-l-20"  type="button" id="btn_update" data-toggle="tooltip" data-placement="top" title="" data-original-title="Add Department"><i class="icofont icofont-plus"
+                                <button style="display: none;" class="btn btn-circle btn-info f-left m-t-30 m-l-20"  type="button" id="btn_update" data-toggle="tooltip" data-placement="top" title="" data-original-title="Update Floor"><i class="icofont icofont-plus"
                                     ></i>&nbsp; Update</button>
                                 <button class="btn btn-circle btn-danger f-left m-t-30 m-l-10" id="btn_clear" type="button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Clear"><i class="icofont icofont-error"
                                     ></i> Clear</button>
@@ -84,7 +84,6 @@
                                         <td>
                                             <a onclick="edit('{{$floor->floor_id}}','{{$floor->floor_name}}','{{$floor->table_qty}}')" class="text-warning p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-edit"></i></a>
                                             <a onclick="deleteFloor('{{$floor->floor_id}}')" class="text-danger p-r-10 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Edit"><i class="icofont icofont-ui-delete"></i></a>
-
                                         </td>
                                     </tr>
                                 @endforeach
@@ -150,9 +149,9 @@
             }else{
 
                 $.ajax({
-                    url:'{{ url("update-floors") }}',
+                    url:'{{ url("update-floors") }}',s
                     type:"POST",
-                    data:$('#floorform').serialize(),
+                    data:$('#floorform').serialize(),s
                     dataType:"json",
                     success:function(r){
                         if(r.state == 1){
@@ -165,7 +164,7 @@
 
                         }else {
                             $("#deptname_alert").html('');
-                            swal_alert('Successfully!',r.msg,'success',true);
+                            swal_alert('Successfully!',r.msg,'s',true);
 
                         }
                     }

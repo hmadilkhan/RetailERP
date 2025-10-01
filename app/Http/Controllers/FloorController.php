@@ -26,7 +26,7 @@ class FloorController extends Controller
         ];
 
         if($floor->check_floor($request->get('deptname'))){
-            return response()->json(array("state"=>1,"msg"=>'This department already exists.',"contrl"=>'deptname'));
+            return response()->json(array("state"=>1,"msg"=>'This floor already exists.',"contrl"=>'deptname'));
         }else {
             $result = $floor->insert_floor($data);
             if($result){
@@ -50,7 +50,7 @@ class FloorController extends Controller
 //        }else {
 
             if($floor->modify("floors",['floor_name'=>$request->get('floorname'),'table_qty' => $request->get('tableQty')],['floor_id' => $request->get('floorid')])){
-                return response()->json(array('state'=>0,'msg'=>'Saved changes :) '));
+                return response()->json(array('state'=>0,'msg'=>'Saved ssssss :) '));
             }else {
                 return response()->json(array('state'=>1,'msg'=>'Oops! not saved changes :('));
             }

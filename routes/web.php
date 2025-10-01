@@ -23,6 +23,7 @@ use App\Http\Controllers\EobiController;
 use App\Http\Controllers\ExcelExportController;
 use App\Http\Controllers\ExpenseCategoryController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\FloorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HrProductController;
 use App\Http\Controllers\ImpersonateController;
@@ -41,6 +42,7 @@ use App\Http\Controllers\purchaseController;
 use App\Http\Controllers\QuickBooksController;
 use App\Http\Controllers\ReceivedDemandController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RoomController;
 use App\Http\Controllers\SalesController;
 use App\Http\Controllers\ServiceProviderOrderController;
 use App\Http\Controllers\SettingsController;
@@ -733,6 +735,12 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/expcate_edit', [ExpenseCategoryController::class, 'edit']);
     Route::put('/expcate-update', [ExpenseCategoryController::class, 'update']);
 
+
+    Route::get('/floors', [FloorController::class, 'index']);
+    Route::get('/rooms', [RoomController::class, 'index']);
+    Route::post('/create-rooms', [RoomController::class, 'store']);
+    Route::post('/update-rooms', [RoomController::class, 'update']);
+    Route::post('/delete-rooms', [RoomController::class, 'deleteRoom']);
 
     //Customer Module
     Route::resource('customer', CustomersController::class);
