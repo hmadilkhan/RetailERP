@@ -35,6 +35,7 @@
                                         <option {{ $oldWebType == 'restaurant' ? 'selected' : '' }} value="restaurant">Restaurant</option>
                                         <option {{ $oldWebType == 'grocery' ? 'selected' : '' }} value="grocery">Grocery</option>
                                         <option {{ $oldWebType == 'boutique' ? 'selected' : '' }} value="boutique">Boutique</option>
+                                        <option {{ $oldWebType == 'shopify' ? 'selected' : '' }} value="shopify">Shopify</option>
                                     </select>
                                     @error('type')
                                         <small class="text-danger">{{ $message }}</small>

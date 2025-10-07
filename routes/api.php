@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\Shopify\ErpWebhookController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebsiteImageController;
@@ -54,5 +55,8 @@ Route::get('website/image/{filename}/{mode?}/{webid?}',[WebsiteImageController::
 Route::get('optimizeimage',[WebsiteImageController::class,'Optimize_testing']);
 
 /******************************************** API ROUTES *************************************************************/
+
+Route::post('/webhooks/order-created', [ErpWebhookController::class, 'orderCreated']);
+Route::post('/webhooks/order-updated', [ErpWebhookController::class, 'orderUpdated']);
 
 

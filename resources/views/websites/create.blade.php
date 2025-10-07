@@ -41,6 +41,7 @@
                                         <option {{ old('type') == 'restaurant' ? 'selected' : '' }} value="restaurant">Restaurant</option>
                                         <option {{ old('type') == 'grocery' ? 'selected' : '' }} value="grocery">Grocery</option>
                                         <option {{ old('type') == 'boutique' ? 'selected' : '' }} value="boutique">Boutique</option>
+                                        <option {{ old('type') == 'shopify' ? 'selected' : '' }} value="shopify">Shopify</option>
                                     </select>
                                     @error('type')
                                         <small class="text-danger">{{ $message }}</small>

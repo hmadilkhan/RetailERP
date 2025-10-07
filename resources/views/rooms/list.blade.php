@@ -4,7 +4,7 @@
 
 @section('breadcrumtitle', 'Add Expense')
 
-@section('navfloor', 'active')
+@section('navRooms', 'active')
 @section('content')
     <section class="panels-wells">
 
