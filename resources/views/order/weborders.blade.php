@@ -185,7 +185,7 @@
                                         <input type="hidden" name="deliveryAreaName{{ $value->id }}" value="{{$value->delivery_area_name}}">
                                         <input type="hidden" name="deliveryType{{ $value->id }}" value="{{$value->delivery_type}}">
                                         
-                                       <a href="{{ route('getWebsiteSaleReceiptDetails',$value->url_orderid) }}" class="m-r-1"><i class='icofont icofont-eye-alt {{($value->isSeen == 1 ? '' : 'text-primary')}}' data-toggle='tooltip' data-placement='top' title='' data-original-title='View'></i> </a>                                       
+                                       <a href="{{ route('getWebsiteSaleReceiptDetails',$value->url_orderid) }}" class="m-r-1"><i class='icofont icofont-eye-alt {{($value->isSeen == 1 ? '' : 'text-primary')}}' data-toggle='tooltip' data-placement='top' title='' data-original-title='View'></i></a>                                       
                                         
                                        <!--<i onclick='getBill("{{--$value->id--}}","{{--$value->receipt_no--}}","{{--$value->date--}}","{{--$value->name--}}","{{--$value->mobile--}}","{{--$value->order_mode--}}","{{--$value->order_status_name--}}","{{--$value->total_amount--}}","{{--$value->receive_amount--}}","{{--$value->payment_mode--}}","{{--$value->address--}}")' class='icofont icofont-eye-alt text-info' data-toggle='tooltip' data-placement='top' title='' data-original-title='View'></i>-->
                                         <!--&nbsp;-->

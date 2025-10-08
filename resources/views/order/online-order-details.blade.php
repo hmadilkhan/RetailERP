@@ -279,7 +279,7 @@
                     </div>
                 </div>
             </div>
-           @if($orders->paymentMethod != null)
+           @if(!empty($orders->paymentMethod) && $orders->paymentMethod != null)
             <div class="mt-5 mt-lg-0">
                 <div class="card border shadow-none">
                     <div class="card-header bg-transparent border-bottom py-3 px-4">

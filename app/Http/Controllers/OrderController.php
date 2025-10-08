@@ -84,17 +84,16 @@ class OrderController extends Controller
 
         // Fetch order details
         $order = $orderService->getOrderWithRelations($orderId);
-
+       
         if ($order && $order->website) {
             $record = $orderApp->web_onlineOrderDetails($order->url_orderid);
-
+            
             if ($record == null) {
                 Session::flash('error', 'Error! order detail not found.');
                 return redirect('web-orders-view');
             }
 
             $orders = new salesReceiptResource($record[0]);
-
             if ($orders != null) {
                 $orders = json_encode($orders);
                 $orders = json_decode($orders);
@@ -354,6 +353,7 @@ class OrderController extends Controller
 
     public function webOrders(Request $Request, order $order, Customer $customer)
     {
+      
         $customer     = $order->getWebsiteCustomers();
         $orders       = $order->orderStatus();
         $paymentMode  = $order->paymentMode();
@@ -433,7 +433,7 @@ class OrderController extends Controller
         }
 
         $orders = new salesReceiptResource($record[0]);
-
+       
         if ($orders != null) {
             $orders = json_encode($orders);
             $orders = json_decode($orders);
