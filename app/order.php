@@ -711,7 +711,7 @@ class order extends Model
 							INNER JOIN branch g on g.branch_id = a.branch
 							INNER JOIN sales_account_general e on e.receipt_id = a.id
 							INNER JOIN sales_payment f on f.payment_id = a.payment_id
-							INNER JOIN customer_addresses h on h.id = a.cust_location_id
+							LEFT JOIN customer_addresses h on h.id = a.cust_location_id
 							INNER JOIN sales_account_subdetails i on i.receipt_id = a.id
                             where  a.web = 1 ' . $filter . '  order by a.id DESC');
 		return $result;
