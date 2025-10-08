@@ -216,7 +216,7 @@
                                                 @foreach ($mode as $val)
                                                     <option
                                                         {{ $val->product_mode_id == $productModeValue ? 'selected' : '' }}
-                                                        selected="selected" value="{{ $val->product_mode_id }}">
+                                                         value="{{ $val->product_mode_id }}">
                                                         {{ $val->product_name }}</option>
                                                 @endforeach
                                             @endif

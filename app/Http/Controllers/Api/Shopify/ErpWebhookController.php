@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Api\Shopify;
 
 use App\Http\Controllers\Controller;
-use App\Services\ErpOrderService;
+use App\Services\Shopify\ErpOrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
