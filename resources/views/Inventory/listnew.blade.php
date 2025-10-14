@@ -7,15 +7,14 @@
 @section('navinventorys', 'active')
 
 @section('content')
-  @if(Session::has('error'))
-          <div class="alert alert-danger">{{ Session::get('error') }}</div>
-  @endif
+    @if (Session::has('error'))
+        <div class="alert alert-danger">{{ Session::get('error') }}</div>
+    @endif
 
     <section class="panels-wells p-t-30 sm-m-t-50">
         <a href="{{ route('create-invent') }}" data-toggle="tooltip" data-placement="bottom" title=""
-        data-original-title="Create Inventory"
-        class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i
-            class="icofont icofont-plus m-r-5"></i> CREATE INVENTORY</a>
+            data-original-title="Create Inventory" class="btn btn-primary waves-effect waves-light f-right d-inline-block"> <i
+                class="icofont icofont-plus m-r-5"></i> CREATE INVENTORY</a>
         <div class="card card inline-form-style m-t-50">
             <div class="card-header">
                 <h5 class="card-header-text">Upload Inventory</h5>
@@ -25,13 +24,14 @@
                         class="fa fa-download">&nbsp;</i> Download Sample</a>
             </div>
             <div class="card-block">
-                <form method='post' class="form-inline" action='{{ url('uploadInventory') }}' enctype='multipart/form-data'>
+                <form method='post' class="form-inline" action='{{ url('uploadInventory') }}'
+                    enctype='multipart/form-data'>
                     {{ csrf_field() }}
                     {{-- <div class="row col-md-2 "> --}}
-                        {{-- <div class="form-group {{ $errors->has('file') ? 'has-danger' : '' }}">
+                    {{-- <div class="form-group {{ $errors->has('file') ? 'has-danger' : '' }}">
                             {{-- <label for="" class="checkbox-inline">Update to Retail Price</label> --}}
 
-                            {{--<label for="" class="checkbox-inline pointer">
+                    {{-- <label for="" class="checkbox-inline pointer">
                                 <input type="checkbox" name="update" id="update" class="custom-control">
                                 Update to Retail Price
                             </label>
@@ -42,27 +42,29 @@
                     {{-- </div> --}}
 
                     {{-- <div class="row col-md-4 "> --}}
-                        <div class="form-group m-r-15 {{ $errors->has('file') ? 'has-danger' : '' }} ">
-                            <label for="vdimg" class="block form-control-label">Select File </label>
-                            <label for="vdimg" class="custom-file">
-                                <input type="file" name="file" id="vdimg" class="custom-file-input">
-                                <span class="custom-file-control"></span>
-                            </label>
-                            @if ($errors->has('file'))
-                                <div class="form-control-feedback">Required field can not be blank.</div>
-                            @endif
-                        </div>
+                    <div class="form-group m-r-15 {{ $errors->has('file') ? 'has-danger' : '' }} ">
+                        <label for="vdimg" class="block form-control-label">Select File </label>
+                        <label for="vdimg" class="custom-file">
+                            <input type="file" name="file" id="vdimg" class="custom-file-input">
+                            <span class="custom-file-control"></span>
+                        </label>
+                        @if ($errors->has('file'))
+                            <div class="form-control-feedback">Required field can not be blank.</div>
+                        @endif
+                    </div>
                     {{-- </div> --}}
 
                     <div class="form-check p-t-35 {{ $errors->has('file') ? 'has-danger' : '' }}">
                         <label for="update" class="form-check-label m-r-15">
-                                     <input name="update" id="update" class="form-check-input" type="checkbox"> Update to Retail Price
+                            <input name="update" id="update" class="form-check-input" type="checkbox"> Update to Retail
+                            Price
                         </label>
-                        <input type='submit' class="btn btn-primary  waves-effect waves-light m-l-5 m-t-35" name='submit' value='Import'>
+                        <input type='submit' class="btn btn-primary  waves-effect waves-light m-l-5 m-t-35" name='submit'
+                            value='Import'>
                         {{-- <button type='submit' class="btn btn-primary waves-effect waves-light" name='submit'>
                             <i class="fa fa-upload">&nbsp;</i> Import</button> --}}
                         @if ($errors->has('file'))
-                         <div class="form-control-feedback">Required field can not be blank.</div>
+                            <div class="form-control-feedback">Required field can not be blank.</div>
                         @endif
                     </div>
 
@@ -149,9 +151,9 @@
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item waves-light waves-effect" id="btn_removeall"><i
                                         class="icofont icofont-close-line"></i>&nbsp;Inactive All</a>
-                                @if(session("roleId") == 2)
-                                <a class="dropdown-item waves-light waves-effect" id="btn_deleteall"><i
-                                        class="icofont icofont-close-line"></i>&nbsp;Delete All</a>
+                                @if (session('roleId') == 2)
+                                    <a class="dropdown-item waves-light waves-effect" id="btn_deleteall"><i
+                                            class="icofont icofont-close-line"></i>&nbsp;Delete All</a>
                                 @endif
                             </div>
                         </div>
@@ -253,78 +255,81 @@
 @endsection
 
 @section('css_code')
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
- <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 
- {{-- <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
+    {{-- <link href="https://cdn.datatables.net/2.1.8/css/dataTables.dataTables.css" rel="stylesheet">
  <link href="https://cdn.datatables.net/responsive/3.0.3/css/responsive.dataTables.css" rel="stylesheet"> --}}
-  <style type="text/css">
-.list-group-item-action1 {
-    width: 100%;
-    color: #555;
-    text-align: inherit;
-}
-.list-group-item1 {
-    position: relative;
-    display: block;
-    padding: .75rem 1.25rem;
-    margin-bottom: -1px;
-    background-color: #fff;
-    border: 1px solid #ddd;
-}
-.list-group-item1:first-child {
-    border-top-right-radius: .25rem;
-    border-top-left-radius: .25rem;
-}
-.list-group-item1:last-child {
-    margin-bottom: 0;
-    border-bottom-right-radius: .25rem;
-    border-bottom-left-radius: .25rem;
-}
-@media only screen and (max-width: 1199px) {
-    .list-group-item1 {
-        display: inline-block;
-        /* padding-top: 5px; */
-        /* padding-bottom: 5px; */
-    }
-}
+    <style type="text/css">
+        .list-group-item-action1 {
+            width: 100%;
+            color: #555;
+            text-align: inherit;
+        }
 
-/* Initially hide the child rows
-.child {
-    display: none;
-}
+        .list-group-item1 {
+            position: relative;
+            display: block;
+            padding: .75rem 1.25rem;
+            margin-bottom: -1px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
 
-/* Style for the toggle button */
-/*.toggle-row {
-    cursor: pointer;
-    text-align: center;
-    background-color: #f1f1f1;
-    padding: 5px;
-}
+        .list-group-item1:first-child {
+            border-top-right-radius: .25rem;
+            border-top-left-radius: .25rem;
+        }
 
-/* Responsive: Move last column data to the child row */
-/*@media (max-width: 768px) {
-    table, th, td {
-        display: block;
-        width: 100%;
+        .list-group-item1:last-child {
+            margin-bottom: 0;
+            border-bottom-right-radius: .25rem;
+            border-bottom-left-radius: .25rem;
+        }
+
+        @media only screen and (max-width: 1199px) {
+            .list-group-item1 {
+                display: inline-block;
+                /* padding-top: 5px; */
+                /* padding-bottom: 5px; */
+            }
+        }
+
+        /* Initially hide the child rows
+    .child {
+        display: none;
     }
 
-    td {
-        text-align: left;
+    /* Style for the toggle button */
+        /*.toggle-row {
+        cursor: pointer;
+        text-align: center;
+        background-color: #f1f1f1;
+        padding: 5px;
     }
 
-    .parent {
-        background-color: #f9f9f9;
-        margin-bottom: 10px;
-    }
+    /* Responsive: Move last column data to the child row */
+        /*@media (max-width: 768px) {
+        table, th, td {
+            display: block;
+            width: 100%;
+        }
 
-    .child-content {
-        font-size: 0.9em;
-        color: #555;
-    }
-} */
+        td {
+            text-align: left;
+        }
 
- </style>
+        .parent {
+            background-color: #f9f9f9;
+            margin-bottom: 10px;
+        }
+
+        .child-content {
+            font-size: 0.9em;
+            color: #555;
+        }
+    } */
+    </style>
 @endsection
 
 @section('scriptcode_three')
@@ -336,93 +341,93 @@
     <script src="https://cdn.datatables.net/responsive/3.0.3/js/dataTables.responsive.js"></script>
     <script src="https://cdn.datatables.net/responsive/3.0.3/js/responsive.dataTables.js"></script> --}}
 
-<script type="text/javascript">
+    <script type="text/javascript">
+        // $('.dataTable').DataTable({
+        //     columnDefs: [
+        //         {
+        //             className: 'dtr-control arrow-right',
+        //             orderable: false,
+        //             target: -1
+        //         }
+        //     ],
+        //     responsive: {
+        //         details: {
+        //             type: 'column',
+        //             target: -1
+        //         }
+        //     },
+        //     paging: false,  // Disable pagination
+        //     searching: false, // Disable the search bar
+        //     info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
+        //     bLengthChange: true, // Disable the length change dropdown ("Show X entries")
+        // });
+        // $(document).ready(function() {
+        //     // Click event to toggle child row
+        //     $('.toggle-row').on('click', function() {
+        //         var $parentRow = $(this).closest('.parent');
+        //         var $childRow = $parentRow.next('.child');
 
-// $('.dataTable').DataTable({
-//     columnDefs: [
-//         {
-//             className: 'dtr-control arrow-right',
-//             orderable: false,
-//             target: -1
-//         }
-//     ],
-//     responsive: {
-//         details: {
-//             type: 'column',
-//             target: -1
-//         }
-//     },
-//     paging: false,  // Disable pagination
-//     searching: false, // Disable the search bar
-//     info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
-//     bLengthChange: true, // Disable the length change dropdown ("Show X entries")
-// });
-// $(document).ready(function() {
-//     // Click event to toggle child row
-//     $('.toggle-row').on('click', function() {
-//         var $parentRow = $(this).closest('.parent');
-//         var $childRow = $parentRow.next('.child');
+        //         // Toggle the visibility of the child row
+        //         $childRow.toggle();
 
-//         // Toggle the visibility of the child row
-//         $childRow.toggle();
+        //         // Change the toggle text (+/-)
+        //         if ($childRow.is(':visible')) {
+        //             $(this).text('-');
+        //         } else {
+        //             $(this).text('+');
+        //         }
+        //     });
 
-//         // Change the toggle text (+/-)
-//         if ($childRow.is(':visible')) {
-//             $(this).text('-');
-//         } else {
-//             $(this).text('+');
-//         }
-//     });
+        //     // Handle the case when the screen is resized
+        //     function handleResponsiveLayout() {
+        //         // For mobile/tablet, transfer last column's content to the child row
+        //         if ($(window).width() <= 768) {
+        //             $('.parent').each(function() {
+        //                 var lastColumnData = $(this).find('td:last-child').text();  // Get the last column data
+        //                 var $childRow = $(this).next('.child');
 
-//     // Handle the case when the screen is resized
-//     function handleResponsiveLayout() {
-//         // For mobile/tablet, transfer last column's content to the child row
-//         if ($(window).width() <= 768) {
-//             $('.parent').each(function() {
-//                 var lastColumnData = $(this).find('td:last-child').text();  // Get the last column data
-//                 var $childRow = $(this).next('.child');
+        //                 // Add last column data to the child row if it's not already added
+        //                 if ($childRow.find('.last-column-data').length === 0) {
+        //                     $childRow.find('.child-content').append('<div class="last-column-data">Details: ' + lastColumnData + '</div>');
+        //                 }
+        //             });
+        //         } else {
+        //             // For larger screens, remove the last column data from the child row
+        //             $('.child').each(function() {
+        //                 $(this).find('.last-column-data').remove();
+        //             });
+        //         }
+        //     }
 
-//                 // Add last column data to the child row if it's not already added
-//                 if ($childRow.find('.last-column-data').length === 0) {
-//                     $childRow.find('.child-content').append('<div class="last-column-data">Details: ' + lastColumnData + '</div>');
-//                 }
-//             });
-//         } else {
-//             // For larger screens, remove the last column data from the child row
-//             $('.child').each(function() {
-//                 $(this).find('.last-column-data').remove();
-//             });
-//         }
-//     }
+        //     // Initialize and run the layout handling on page load and window resize
+        //     handleResponsiveLayout();
+        //     $(window).on('resize', handleResponsiveLayout);
+        // });
 
-//     // Initialize and run the layout handling on page load and window resize
-//     handleResponsiveLayout();
-//     $(window).on('resize', handleResponsiveLayout);
-// });
-
-// $('.dataTable').DataTable({
-//     responsive: {
-//         details: {
-//             type: 'column', // Use columns for responsive details
-//             target: -1 // Target the last column for responsive details
-//         }
-//     },
-//     columnDefs: [
-//         {
-//             className: 'dtr-control icofont icofont-arrow-left', // Custom class for the last column
-//             orderable: false, // Prevent sorting on the last column
-//             targets: -1 // Apply this to the last column (0-indexed)
-//         }
-//     ],
-//     paging: false,  // Disable pagination
-//     searching: false, // Disable the search bar
-//     info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
-//     bLengthChange: false, // Disable the length change dropdown ("Show X entries")
-// });
-
+        // $('.dataTable').DataTable({
+        //     responsive: {
+        //         details: {
+        //             type: 'column', // Use columns for responsive details
+        //             target: -1 // Target the last column for responsive details
+        //         }
+        //     },
+        //     columnDefs: [
+        //         {
+        //             className: 'dtr-control icofont icofont-arrow-left', // Custom class for the last column
+        //             orderable: false, // Prevent sorting on the last column
+        //             targets: -1 // Apply this to the last column (0-indexed)
+        //         }
+        //     ],
+        //     paging: false,  // Disable pagination
+        //     searching: false, // Disable the search bar
+        //     info: false,     // Disable the table info ("Showing 1 to 10 of 50 entries")
+        //     bLengthChange: false, // Disable the length change dropdown ("Show X entries")
+        // });
 
 
-     var crtagprodCode = null;
+
+        var crtagprodCode = null;
+
         function initializeLazyLoading() {
             let lazyImages = [].slice.call(document.querySelectorAll("img.lazy-load"));
 
@@ -933,20 +938,23 @@
                         _token: "{{ csrf_token() }}",
                         inventid: rem_id,
                         website: $('#website_md').val()
-                    },beforeSend:function(){
-                        $("#btnwebsiteSave").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
                     },
-                    success: function(resp,txtStatus,jXStatus) {
+                    beforeSend: function() {
+                        $("#btnwebsiteSave").attr('disabled', true).html(
+                            '<i class="fa fa-spinner fa-spin"></i> Please wait');
+                    },
+                    success: function(resp, txtStatus, jXStatus) {
 
                         if (jXStatus.status == 200) {
                             window.location = "{{ url('inventory-list') }}"
                         } else {
-                            $("#btnwebsiteSave").attr('disabled',false).html('Add');
+                            $("#btnwebsiteSave").attr('disabled', false).html('Add');
                             swal("Cancelled", "Cannot change website. An error occured :)", "error");
                         }
-                    },error:function(errorResp){
-                        $("#btnwebsiteSave").attr('disabled',false).html('Add');
-                        swal('Error!',errorResp.responseText,'error');
+                    },
+                    error: function(errorResp) {
+                        $("#btnwebsiteSave").attr('disabled', false).html('Add');
+                        swal('Error!', errorResp.responseText, 'error');
                     }
 
                 }); //ajax end
@@ -2061,141 +2069,7 @@
 
         });
 
-    $("#btn_unlinkWebsiteProduct").on('click',function(){
-        $(".chkbx").each(function(index) {
-                if ($(this).is(":checked")) {
-                    // console.log($(this).data('id'))
-                    if (jQuery.inArray($(this).data('id'), rem_id) == -1) {
-                        rem_id.push($(this).data('id'));
-                    }
-                }
-            });
-
-           if(rem_id != 0){
-             //console.log(rem_id);
-             swal({
-                title: "UnLink Website",
-                text: "Do you want to unlink from website?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "YES",
-                cancelButtonText: "NO",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },function(isConfirm){
-                if(isConfirm){
-                        $.ajax({
-                            url:'{{ route("all_product_unlink_website") }}',
-                            type:'POST',
-                            data:{_token:'{{ csrf_token() }}',product_id:rem_id},
-                            dataType:'json',
-                            async:true,
-                            success:function(resp,textStatus, jqXHR){
-                                if(jqXHR.status == 200){
-                                swal({
-                                            title: "Success!",
-                                            text: "",
-                                            type: "success"
-                                        }, function(isConfirm) {
-                                            if (isConfirm) {
-                                                window.location =
-                                                    "{{ url('/inventory-list') }}";
-                                            }
-                                        });
-                                }
-
-                                if(jqXHR.status == 500){
-                                    swal('Error!',resp,'error');
-                                }
-                            }
-                        })
-                }else{
-                    swal("Cancel!","All products are safe:)","error");
-                    rem_id = [];
-                }
-
-            });
-           }
-    })
-
-    function UnLinkwebsite(productId,websiteId,websiteName){
-        swal({
-                title: "UnLink Website",
-                text: "Do you want to unlink from "+websiteName+" website?",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonClass: "btn-danger",
-                confirmButtonText: "YES",
-                cancelButtonText: "NO",
-                closeOnConfirm: false,
-                closeOnCancel: false
-            },function(isConfirm){
-                if(isConfirm){
-                    UnLinkwebsite_ajax(websiteId,productId);
-                }else{
-                    swal("Cancel!","All products are safe:)","error");
-                }
-
-            });
-    }
-
-    function UnLinkwebsite_ajax(websiteId,productId){
-        $.ajax({
-            url:'{{ route("website_product_unlink") }}',
-            type:'POST',
-            data:{_token:'{{ csrf_token() }}',website_id:websiteId,product_id:productId},
-            dataType:'json',
-            async:true,
-            success:function(resp,textStatus, jqXHR){
-                if(jqXHR.status == 200){
-                   swal({
-                            title: "Success!",
-                            text: "",
-                            type: "success"
-                        }, function(isConfirm) {
-                            if (isConfirm) {
-                                window.location =
-                                    "{{ url('/inventory-list') }}";
-                            }
-                        });
-                }
-
-                if(jqXHR.status == 500){
-                    swal('Error!',resp,'error');
-                }
-            }
-        })
-    }
-
-
-    function productSetting(id){
-      $("#productSetting-modal").modal('show');
-      $("#linkVariableProd").attr('href','/inventory/'+id+'/variable-products');
-      $("#linkAddon").attr('href','/inventory/'+id+'/variable-products?#addonTab');
-      $("#linkDeal").attr('href','/inventory/'+id+'/deal-products');
-    }
-
-    function tagCreate(){
-        $('#tagname_md').val(null);
-        $("#tags-detail-modal").modal('hide');
-        if(crtagprodCode != null){
-            $("#unlinkTag-modal").modal('hide');
-        }
-
-        $("#createtag-modal").modal('show');
-    }
-
-    function insertProduct_attribute(){
-           if($('#tagname_md').val() == "") {
-             swal({
-                    title: "Error Message",
-                    text: "Required Field can not be blank!",
-                    type: "warning"
-               });
-
-          }else{
-
+        $("#btn_unlinkWebsiteProduct").on('click', function() {
             $(".chkbx").each(function(index) {
                 if ($(this).is(":checked")) {
                     // console.log($(this).data('id'))
@@ -2205,125 +2079,61 @@
                 }
             });
 
-            if(rem_id == null && crtagprodCode != null){
-                rem_id.push(crtagprodCode);
+            if (rem_id != 0) {
+                //console.log(rem_id);
+                swal({
+                    title: "UnLink Website",
+                    text: "Do you want to unlink from website?",
+                    type: "warning",
+                    showCancelButton: true,
+                    confirmButtonClass: "btn-danger",
+                    confirmButtonText: "YES",
+                    cancelButtonText: "NO",
+                    closeOnConfirm: false,
+                    closeOnCancel: false
+                }, function(isConfirm) {
+                    if (isConfirm) {
+                        $.ajax({
+                            url: '{{ route('all_product_unlink_website') }}',
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}',
+                                product_id: rem_id
+                            },
+                            dataType: 'json',
+                            async: true,
+                            success: function(resp, textStatus, jqXHR) {
+                                if (jqXHR.status == 200) {
+                                    swal({
+                                        title: "Success!",
+                                        text: "",
+                                        type: "success"
+                                    }, function(isConfirm) {
+                                        if (isConfirm) {
+                                            window.location =
+                                                "{{ url('/inventory-list') }}";
+                                        }
+                                    });
+                                }
+
+                                if (jqXHR.status == 500) {
+                                    swal('Error!', resp, 'error');
+                                }
+                            }
+                        })
+                    } else {
+                        swal("Cancel!", "All products are safe:)", "error");
+                        rem_id = [];
+                    }
+
+                });
             }
+        })
 
-             $.ajax({
-                    url: "{{route('insertProduct_attribute')}}",
-                    type: 'POST',
-                    data:{_token:"{{ csrf_token() }}",
-                       value:$('#tagname_md').val(),
-                       control:'tag',
-                       products:rem_id
-                    },
-                    dataType:'json',
-                    beforeSend:function(){
-                        $("#btn_tag_save").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
-                    },
-                    success:function(resp,textStatus, getStatus){
-                        $("#btn_tag_save").attr('disabled',false).html('Add');
-                        if(getStatus.status == 200){
-                            $("#createtag-modal").modal('hide');
-                             swal({
-                                    title: "Success!",
-                                    text: "",
-                                    type: "success"
-                                }, function(isConfirm) {
-                                    if (isConfirm) {
-                                        window.location = "{{ route('invent-list') }}";
-                                        swal('Wait Please','','info')
-                                    }
-                            });
-
-                            //    rem_id = [];
-                        //   $(".chkbx").each(function(index) {
-                        //     if ($(this).is(":checked")) {
-                        //          $(this).prop('checked', false);
-                        //         }
-                        //     });
-                        }
-                    },error:function(errorResp){
-                        $("#btn_tag_save").attr('disabled',false).html('Add');
-                        swal('Error!',errorResp.responseText,'error');
-                    }
-                  });
-            }
-     }
-     function getProduct_attribute(){
-             $.ajax({
-                    url: "{{route('getProduct_attribute')}}",
-                    type: 'POST',
-                    dataType:"json",
-                    data:{_token:"{{ csrf_token() }}",
-                       control:'tag',
-                    },success:function(resp,textStatus, getStatus){
-                        if(resp != null){
-                            $("#tags_md").empty();
-                            $.each(resp,function(i,v){
-                                  $("#tags_md").append($('<option>').text(v.name).attr('value', v.id));
-                            });
-
-
-                        }
-                    }
-                  });
-    }
-
-    function UnLinkTag(product){
-        crtagprodCode = product;
-        $.ajax({
-                    url: "{{route('getProduct_attribute')}}",
-                    type: 'POST',
-                    dataType:"json",
-                    data:{_token:"{{ csrf_token() }}",
-                       control:'tag',
-                       product:product
-                    },success:function(resp,textStatus, getStatus){
-                        if(resp != null){
-                            $("#tags_unlkmd").empty();
-                            $.each(resp,function(i,v){
-                                  $("#tags_unlkmd").append($('<option '+(v.inventory_id == product ? 'selected' : '' )+'>').text(v.name).attr('value', v.id));
-                            });
-
-
-                        }
-                    }
-                  });
-
-       $("#unlinkTag-modal").modal('show');
-
-    }
-
-    $("#btntagSave_unlkmd").on('click',function(){
-         if($("#tags_unlkmd").val() != ''){
-            $.ajax({
-                    url: "{{route('updateProductTags')}}",
-                    type: 'POST',
-                    dataType:"json",
-                    data:{_token:"{{ csrf_token() }}",
-                       tags:$("#tags_unlkmd").val(),
-                       product:crtagprodCode
-                    },beforeSend:function(){
-                        $("#btntagSave_unlkmd").attr('disabled',true).html('<i class="fa fa-spinner fa-spin"></i> Please wait');
-                    },success:function(resp,textStatus, getStatus){
-                        if(getStatus.status == 200){
-                            swal('Success!','','success');
-                            $("#unlinkTag-modal").modal('hide');
-                            window.location = '{{ route("invent-list") }}';
-                        }
-                    },error:function(errorResp){
-                        $("#btntagSave_unlkmd").attr('disabled',false).html('Save Changes');
-                        swal('Error!',errorResp.responseText,'error');
-                    }
-                  });
-         }
-    })
-
- function ClonetoThisProduct(prodId,prodName){
-    swal({
-                title: "Clone Product ",
-                text: "Do you want to clone this "+prodName+" product?",
+        function UnLinkwebsite(productId, websiteId, websiteName) {
+            swal({
+                title: "UnLink Website",
+                text: "Do you want to unlink from " + websiteName + " website?",
                 type: "warning",
                 showCancelButton: true,
                 confirmButtonClass: "btn-danger",
@@ -2331,49 +2141,298 @@
                 cancelButtonText: "NO",
                 closeOnConfirm: false,
                 closeOnCancel: false
-            },function(isConfirm){
-                if(isConfirm){
-                       $.ajax({
-                                url: '{{ route("duplicateProductToGeneralInventory") }}',
-                                type: 'POST',
-                                data: {
-                                    _token: '{{ csrf_token() }}',
-                                    productId: prodId,
-                                    productName: prodName
-                                },
-                                dataType: 'json',
-                                success: function(resp, textStatus, jqXHR) {
-                                    // Get the HTTP status code
-                                    var statusCode = jqXHR.status;
-
-                                    // Handle the response based on the status code
-                                    if (statusCode === 200) {
-                                        // If status code is 200, show success message
-                                        swal("Success!","Product successfully duplicated!","success");
-
-                                        // Optionally, you can reload the page or perform other actions
-                                        location.reload(); // Reload the page (optional)
-                                    } else {
-                                        // If status code is not 200, handle error
-                                        swal("Error!","Error: " + resp.message || "Something went wrong!","error");
-                                    }
-                                },
-                                error: function(xhr, status, error) {
-                                    // If there is an error in the AJAX request (e.g., server error)
-                                    var errorMessage = xhr.status + ': ' + xhr.statusText;
-                                    swal("Error!","AJAX error - " + errorMessage,"error");;
-                                }
-                            });
-
-                }else{
-                    swal("Cancel!","This "+prodName+" product to clone","error");
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    UnLinkwebsite_ajax(websiteId, productId);
+                } else {
+                    swal("Cancel!", "All products are safe:)", "error");
                 }
 
             });
-   }
+        }
+
+        function UnLinkwebsite_ajax(websiteId, productId) {
+            $.ajax({
+                url: '{{ route('website_product_unlink') }}',
+                type: 'POST',
+                data: {
+                    _token: '{{ csrf_token() }}',
+                    website_id: websiteId,
+                    product_id: productId
+                },
+                dataType: 'json',
+                async: true,
+                success: function(resp, textStatus, jqXHR) {
+                    if (jqXHR.status == 200) {
+                        swal({
+                            title: "Success!",
+                            text: "",
+                            type: "success"
+                        }, function(isConfirm) {
+                            if (isConfirm) {
+                                window.location =
+                                    "{{ url('/inventory-list') }}";
+                            }
+                        });
+                    }
+
+                    if (jqXHR.status == 500) {
+                        swal('Error!', resp, 'error');
+                    }
+                }
+            })
+        }
 
 
+        function productSetting(id) {
+            $("#productSetting-modal").modal('show');
+            $("#linkVariableProd").attr('href', '/inventory/' + id + '/variable-products');
+            $("#linkAddon").attr('href', '/inventory/' + id + '/variable-products?#addonTab');
+            $("#linkDeal").attr('href', '/inventory/' + id + '/deal-products');
+        }
 
+        function tagCreate() {
+            $('#tagname_md').val(null);
+            $("#tags-detail-modal").modal('hide');
+            if (crtagprodCode != null) {
+                $("#unlinkTag-modal").modal('hide');
+            }
+
+            $("#createtag-modal").modal('show');
+        }
+
+        function insertProduct_attribute() {
+            if ($('#tagname_md').val() == "") {
+                swal({
+                    title: "Error Message",
+                    text: "Required Field can not be blank!",
+                    type: "warning"
+                });
+
+            } else {
+
+                $(".chkbx").each(function(index) {
+                    if ($(this).is(":checked")) {
+                        // console.log($(this).data('id'))
+                        if (jQuery.inArray($(this).data('id'), rem_id) == -1) {
+                            rem_id.push($(this).data('id'));
+                        }
+                    }
+                });
+
+                if (rem_id == null && crtagprodCode != null) {
+                    rem_id.push(crtagprodCode);
+                }
+
+                $.ajax({
+                    url: "{{ route('insertProduct_attribute') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        value: $('#tagname_md').val(),
+                        control: 'tag',
+                        products: rem_id
+                    },
+                    dataType: 'json',
+                    beforeSend: function() {
+                        $("#btn_tag_save").attr('disabled', true).html(
+                            '<i class="fa fa-spinner fa-spin"></i> Please wait');
+                    },
+                    success: function(resp, textStatus, getStatus) {
+                        $("#btn_tag_save").attr('disabled', false).html('Add');
+                        if (getStatus.status == 200) {
+                            $("#createtag-modal").modal('hide');
+                            swal({
+                                title: "Success!",
+                                text: "",
+                                type: "success"
+                            }, function(isConfirm) {
+                                if (isConfirm) {
+                                    window.location = "{{ route('invent-list') }}";
+                                    swal('Wait Please', '', 'info')
+                                }
+                            });
+
+                            //    rem_id = [];
+                            //   $(".chkbx").each(function(index) {
+                            //     if ($(this).is(":checked")) {
+                            //          $(this).prop('checked', false);
+                            //         }
+                            //     });
+                        }
+                    },
+                    error: function(errorResp) {
+                        $("#btn_tag_save").attr('disabled', false).html('Add');
+                        swal('Error!', errorResp.responseText, 'error');
+                    }
+                });
+            }
+        }
+
+        function getProduct_attribute() {
+            $.ajax({
+                url: "{{ route('getProduct_attribute') }}",
+                type: 'POST',
+                dataType: "json",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    control: 'tag',
+                },
+                success: function(resp, textStatus, getStatus) {
+                    if (resp != null) {
+                        $("#tags_md").empty();
+                        $.each(resp, function(i, v) {
+                            $("#tags_md").append($('<option>').text(v.name).attr('value', v.id));
+                        });
+
+
+                    }
+                }
+            });
+        }
+
+        function UnLinkTag(product) {
+            crtagprodCode = product;
+            $.ajax({
+                url: "{{ route('getProduct_attribute') }}",
+                type: 'POST',
+                dataType: "json",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    control: 'tag',
+                    product: product
+                },
+                success: function(resp, textStatus, getStatus) {
+                    if (resp != null) {
+                        $("#tags_unlkmd").empty();
+                        $.each(resp, function(i, v) {
+                            $("#tags_unlkmd").append($('<option ' + (v.inventory_id == product ?
+                                'selected' : '') + '>').text(v.name).attr('value', v.id));
+                        });
+
+
+                    }
+                }
+            });
+
+            $("#unlinkTag-modal").modal('show');
+
+        }
+
+        $("#btntagSave_unlkmd").on('click', function() {
+            if ($("#tags_unlkmd").val() != '') {
+                $.ajax({
+                    url: "{{ route('updateProductTags') }}",
+                    type: 'POST',
+                    dataType: "json",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        tags: $("#tags_unlkmd").val(),
+                        product: crtagprodCode
+                    },
+                    beforeSend: function() {
+                        $("#btntagSave_unlkmd").attr('disabled', true).html(
+                            '<i class="fa fa-spinner fa-spin"></i> Please wait');
+                    },
+                    success: function(resp, textStatus, getStatus) {
+                        if (getStatus.status == 200) {
+                            swal('Success!', '', 'success');
+                            $("#unlinkTag-modal").modal('hide');
+                            window.location = '{{ route('invent-list') }}';
+                        }
+                    },
+                    error: function(errorResp) {
+                        $("#btntagSave_unlkmd").attr('disabled', false).html('Save Changes');
+                        swal('Error!', errorResp.responseText, 'error');
+                    }
+                });
+            }
+        })
+
+        function ClonetoThisProduct(prodId, prodName) {
+            swal({
+                title: "Clone Product ",
+                text: "Do you want to clone this " + prodName + " product?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: '{{ route('duplicateProductToGeneralInventory') }}',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            productId: prodId,
+                            productName: prodName
+                        },
+                        dataType: 'json',
+                        success: function(resp, textStatus, jqXHR) {
+                            // Get the HTTP status code
+                            var statusCode = jqXHR.status;
+
+                            // Handle the response based on the status code
+                            if (statusCode === 200) {
+                                // If status code is 200, show success message
+                                swal("Success!", "Product successfully duplicated!", "success");
+
+                                // Optionally, you can reload the page or perform other actions
+                                location.reload(); // Reload the page (optional)
+                            } else {
+                                // If status code is not 200, handle error
+                                swal("Error!", "Error: " + resp.message || "Something went wrong!",
+                                    "error");
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            // If there is an error in the AJAX request (e.g., server error)
+                            var errorMessage = xhr.status + ': ' + xhr.statusText;
+                            swal("Error!", "AJAX error - " + errorMessage, "error");;
+                        }
+                    });
+
+                } else {
+                    swal("Cancel!", "This " + prodName + " product to clone", "error");
+                }
+
+            });
+        }
+
+        function syncToShopifyModal(inventoryId) 
+        {
+            swal({
+                title: "Sync to Shopify",
+                text: "Do you want to sync this product to Shopify?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-success",
+                confirmButtonText: "YES",
+                cancelButtonText: "NO",
+                closeOnConfirm: false,
+                closeOnCancel: true
+            }, function(isConfirm) {
+                if (isConfirm) {
+                    $.ajax({
+                        url: "{{ route('sync-product-to-shopify') }}",
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            inventoryId: inventoryId
+                        },
+                        success: function(resp) {
+                            swal("Success!", "Product synced to Shopify successfully!", "success");
+                        },
+                        error: function(xhr) {
+                            swal("Error!", "Failed to sync product to Shopify", "error");
+                        }
+                    });
+                }
+            });
+        }
     </script>
 
 @endsection

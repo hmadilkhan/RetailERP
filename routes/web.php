@@ -50,6 +50,7 @@ use App\Http\Controllers\SideBarController;
 use App\Http\Controllers\SMSController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\SyncShopifyController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TerminalController;
 use App\Http\Controllers\TransferController;
@@ -467,6 +468,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/create-wallet-discount', [WalletController::class, 'store']);
     Route::post('/update-wallet-discount', [WalletController::class, 'update']);
     Route::post('/delete-wallet-discount', [WalletController::class, 'deleteDiscount']);
+
+    Route::post('/sync-product-to-shopify', [SyncShopifyController::class, 'sync'])->name('sync-product-to-shopify');
 
     // inventory module //
     Route::get('/create-inventory', [InventoryController::class, "create"])->name('create-invent');

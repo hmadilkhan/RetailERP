@@ -35,4 +35,8 @@ return [
         'model' => env('OPENAI_MODEL', 'gpt-4o-mini'),
     ],
 
+    'shopify' => [
+        'token' => env('SHOPIFY_TOKEN'),
+    ],
+
 ];

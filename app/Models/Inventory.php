@@ -48,4 +48,27 @@ class Inventory extends Model
 	{
 		return $this->hasMany(WebsiteProduct::class, "inventory_id", "id");
 	}
+
+	public function images()
+	{
+		return $this->hasMany(InventoryImage::class, "item_id", "id");
+	}
+
+	public function price()
+	{
+		return $this->hasOne(InventoryPrice::class, "product_id", "id")->where("status_id", 1);
+	}
+
+	public function stock()
+	{
+		return $this->hasMany(InventoryStock::class, "product_id", "id")->where('status_id', 1);
+	}
+
+	public function getTotalStockAttribute()
+	{
+		return DB::table('inventory_stock')
+			->where('product_id', $this->id)
+			->where('status_id', 1)
+			->sum('balance');
+	}
 }

@@ -26,6 +26,11 @@ class InventoryPos extends Model
 	{
 		return $this->belongsTo(InventorySubDepartment::class,"sub_department_id","sub_department_id");
 	}
+
+	public function price()
+	{
+		return $this->belongsTo(PosProductPrice::class,"pos_item_id","price_id")->where("status_id",1);
+	}
 	
 	
 }
