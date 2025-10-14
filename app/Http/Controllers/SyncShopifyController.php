@@ -20,6 +20,7 @@ class SyncShopifyController extends Controller
 
         $payload = [
             'product' => [
+                "id"           => $inventory->id,
                 'sku'          => $inventory->item_code,
                 'title'        => $inventory->product_name,
                 'description'  => $inventory->description ?? null,
