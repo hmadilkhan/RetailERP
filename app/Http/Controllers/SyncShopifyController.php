@@ -51,7 +51,7 @@ class SyncShopifyController extends Controller
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.shopify.token'),
             'Content-Type' => 'application/json',
-        ])->post('https://sync.sabsoft.com.pk/api/webhooks/shopify/product/create', $payload);
+        ])->post('https://sync.sabsoft.com.pk/api/erp/products/sync', $payload);
 
 
 
