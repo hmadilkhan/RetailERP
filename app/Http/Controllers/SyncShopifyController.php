@@ -25,7 +25,7 @@ class SyncShopifyController extends Controller
                 'description'  => $inventory->description ?? null,
                 'price'        => $inventory->price->retail_price ?? 0,
                 'currency'     => $currency,
-                'stock'        => number_format($inventory->total_stock) ?? 0,
+                'stock'        => (int)($inventory->total_stock ?? 0),
                 'vendor'       => null,
                 'product_type' => $inventory->department->department_name ?? null,
                 'status'       => $inventory->status == 1 ? 'active' : 'inactive',
@@ -55,6 +55,12 @@ class SyncShopifyController extends Controller
 
 
 
-        return response()->json(['message' => 'Sync with Shopify initiated', 'response' => $response->json()], 200);
+        $responseData = $response->json();
+        
+        if ($responseData['success']) {
+            return response()->json(['message' => 'Product synced successfully', 'data' => $responseData,"payload" => $payload], 200);
+        } else {
+            return response()->json(['message' => 'Sync failed', 'errors' => $responseData['errors'] ?? $responseData['message'],"payload" => $payload], 400);
+        }
     }
 }
