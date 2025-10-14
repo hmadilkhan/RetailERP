@@ -60,7 +60,7 @@ class SyncShopifyController extends Controller
         if ($responseData['success']) {
             return response()->json(['message' => 'Product synced successfully', 'data' => $responseData, "payload" => $payload], 200);
         } else {
-            return response()->json(['message' => 'Sync failed', 'errors' => $responseData['errors'] ?? $responseData['message'], "payload" => $payload], 400);
+            return response()->json(['message' => 'Sync failed', 'errors' => $responseData['errors'] ?? $responseData, "payload" => $payload], 400);
         }
     }
 }
