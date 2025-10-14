@@ -35,7 +35,8 @@ class SyncShopifyController extends Controller
                         'sku'    => $variant->item_code ?? null,
                         'option' => $variant->item_name ?? null,
                         'price'  => $variant->price->retail_price ?? 0,
-                        'stock'  => $variant->total_stock ?? 0,
+                        // 'stock'  => $variant->total_stock ?? 0,
+                        'inventory_quantity'  => (int)($variant->total_stock ?? 0),
                         'inventory_management' => 'shopify',
                         'inventory_policy' => 'deny',
                         'requires_shipping' => true,
@@ -47,7 +48,7 @@ class SyncShopifyController extends Controller
                 })->values()->toArray(),
             ],
         ];
-       
+
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.shopify.token'),
             'Content-Type' => 'application/json',
@@ -56,11 +57,11 @@ class SyncShopifyController extends Controller
 
 
         $responseData = $response->json();
-        
+
         if ($responseData['success']) {
-            return response()->json(['message' => 'Product synced successfully', 'data' => $responseData,"payload" => $payload], 200);
+            return response()->json(['message' => 'Product synced successfully', 'data' => $responseData, "payload" => $payload], 200);
         } else {
-            return response()->json(['message' => 'Sync failed', 'errors' => $responseData['errors'] ?? $responseData['message'],"payload" => $payload], 400);
+            return response()->json(['message' => 'Sync failed', 'errors' => $responseData['errors'] ?? $responseData['message'], "payload" => $payload], 400);
         }
     }
 }
