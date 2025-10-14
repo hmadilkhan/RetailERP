@@ -47,7 +47,7 @@ class SyncShopifyController extends Controller
                 })->values()->toArray(),
             ],
         ];
-        return $payload;
+       
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.shopify.token'),
             'Content-Type' => 'application/json',
