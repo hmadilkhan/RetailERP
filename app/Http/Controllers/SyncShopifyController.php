@@ -56,7 +56,7 @@ class SyncShopifyController extends Controller
         ])->post('https://sync.sabsoft.com.pk/api/erp/products/sync', $payload);
 
 
-
+return $response;
         $responseData = $response->json();
 
         if ($responseData['success']) {
