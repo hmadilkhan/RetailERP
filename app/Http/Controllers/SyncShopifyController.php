@@ -24,7 +24,7 @@ class SyncShopifyController extends Controller
                 'sku'          => $inventory->item_code,
                 'title'        => $inventory->product_name,
                 'description'  => $inventory->description ?? null,
-                'price'        => $inventory->price->retail_price ?? 0,
+                'price'        => (int)($inventory->price->retail_price ?? 0),
                 'currency'     => $currency,
                 'stock'        => (int)($inventory->total_stock ?? 0),
                 'vendor'       => null,
