@@ -24,6 +24,7 @@ use App\Models\ServiceProviderOrders;
 use App\Models\ServiceProviderLedger;
 use App\Models\ServiceProviderRelation;
 use App\Services\OrderService;
+use App\Services\Shopify\ShopifySyncService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -188,6 +189,9 @@ class OrderController extends Controller
             "status" => $status->order_status_name,
         ];
         $this->sentWhatsAppMessageOrderTrack($orderModel->customer->mobile, $orderModel->website->name, $sentData, $url);
+        if ($orderModel->website->type == "shopify") {
+            ShopifySyncService::sendStatusUpdate($orderModel);
+        }
         if ($request->ordercode == null) {
             return 1;
         }
