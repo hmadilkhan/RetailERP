@@ -188,10 +188,11 @@ class OrderController extends Controller
             "website" => $orderModel->website->name,
             "status" => $status->order_status_name,
         ];
-        $this->sentWhatsAppMessageOrderTrack($orderModel->customer->mobile, $orderModel->website->name, $sentData, $url);
+        
         if ($orderModel->website->type == "shopify") {
-            ShopifySyncService::sendStatusUpdate($orderModel);
+            ShopifySyncService::sendStatusUpdate($orderModel,$status->order_status_name);
         }
+        $this->sentWhatsAppMessageOrderTrack($orderModel->customer->mobile, $orderModel->website->name, $sentData, $url);
         if ($request->ordercode == null) {
             return 1;
         }

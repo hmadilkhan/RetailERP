@@ -10,13 +10,13 @@ class ShopifySyncService
     /**
      * Send order status update to Shopify Sync Server based on status
      */
-    public static function sendStatusUpdate($order)
+    public static function sendStatusUpdate($order,$status)
     {
         try {
             $url = 'https://sync.sabsoft.com.pk/api/erp/orders/update-status';
 
-            $status = strtolower($order->orderStatus->order_status_name);
-
+            $status = strtolower($status);
+          
             // 🧩 Base payload (common fields)
             $payload = [
                 'order_update' => [
@@ -24,7 +24,7 @@ class ShopifySyncService
                     'status'       => $status,
                 ],
             ];
-
+       
             // 🧭 Add fields depending on status type
             switch ($status) {
                 case 'fulfilled':
@@ -83,7 +83,7 @@ class ShopifySyncService
                     'Content-Type' => 'application/json',
                 ])
                 ->post($url, $payload);
-
+            return $response;
             Log::info('✅ Shopify Sync Response', [
                 'status' => $response->status(),
                 'body'   => $response->json(),
