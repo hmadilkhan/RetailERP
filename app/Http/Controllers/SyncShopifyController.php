@@ -44,7 +44,7 @@ class SyncShopifyController extends Controller
                         'inventory_management' => 'shopify',
                         'inventory_policy' => 'deny',
                         'requires_shipping' => true,
-                        'image' => $imageUrl ?  $imageUrl : null,
+                        'image' => $imageUrl ? ['src' => $imageUrl] : null,
                     ];
                 })->values()->toArray(),
 
