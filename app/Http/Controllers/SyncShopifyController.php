@@ -11,13 +11,13 @@ class SyncShopifyController extends Controller
 {
     public function sync(Request $request)
     {
-        $inventory = Inventory::with("uom", "department", "subdepartment", "variations","variations.price", "images", "price", "variations.price")->where("id", $request->inventoryId)->first();
+        $inventory = Inventory::with("uom", "department", "subdepartment", "variations", "variations.price", "images", "price", "variations.price")->where("id", $request->inventoryId)->first();
         $currency = json_decode(DB::table("settings")->where("company_id", $inventory->company_id)->first()->data)->currency;
-     
+
         if (!$inventory) {
             return response()->json(['message' => 'Inventory not found'], 404);
         }
-        
+
         $payload = [
             'product' => [
                 "id"           => $inventory->id,
@@ -40,7 +40,7 @@ class SyncShopifyController extends Controller
                         'option' => $variant->item_name ?? null,
                         'price'  => $variant->price->retail_price ?? 0,
                         // 'stock'  => $variant->total_stock ?? 0,
-                        'inventory_quantity'  => (int)($variant->total_stock ?? 0),
+                        'inventory_quantity'  => (int)($inventory->total_stock ?? 0), // (int)($variant->total_stock ?? 0),
                         'inventory_management' => 'shopify',
                         'inventory_policy' => 'deny',
                         'requires_shipping' => true,
