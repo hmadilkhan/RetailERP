@@ -29,7 +29,7 @@ class InventoryPos extends Model
 
 	public function price()
 	{
-		return $this->belongsTo(PosProductPrice::class,"pos_item_id","price_id")->where("status_id",1);
+		return $this->belongsTo(PosProductPrice::class,"pos_item_id","pos_item_id")->where("status_id",1);
 	}
 	
 	

@@ -11,9 +11,9 @@ class SyncShopifyController extends Controller
 {
     public function sync(Request $request)
     {
-        $inventory = Inventory::with("uom", "department", "subdepartment", "variations", "images", "price", "variations.price")->where("id", $request->inventoryId)->first();
+        $inventory = Inventory::with("uom", "department", "subdepartment", "variations","variations.price", "images", "price", "variations.price")->where("id", $request->inventoryId)->first();
         $currency = json_decode(DB::table("settings")->where("company_id", $inventory->company_id)->first()->data)->currency;
-
+        return $inventory;
         if (!$inventory) {
             return response()->json(['message' => 'Inventory not found'], 404);
         }
