@@ -31,7 +31,7 @@ class SyncShopifyController extends Controller
                 'product_type' => $inventory->department->department_name ?? null,
                 'status'       => $inventory->status == 1 ? 'active' : 'inactive',
 
-                'variants' => collect($inventory->variations ?? [])->map(function ($variant) {
+                'variants' => collect($inventory->variations ?? [])->map(function ($variant) use ($inventory) {
                     $imageUrl = isset($variant->image)
                         ? asset('storage/images/products/' . $variant->image)
                         : null;
