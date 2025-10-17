@@ -68,30 +68,28 @@ class SyncShopifyController extends Controller
                 //     return $images->toArray();
                 // })(),
 
-                // ✅ Collect product + variant images together
                 'images' => (function () use ($inventory) {
                     $images = collect();
 
-                    // 🖼️ Add product-level images
+                    // Product-level images
                     if (!empty($inventory->images)) {
                         $images = collect($inventory->images)->map(function ($image) {
-                            return ['src' => asset('storage/images/products/' . $image->image)];
+                            return asset('storage/images/products/' . $image->image);
                         });
                     }
 
-                    // 🖼️ Add main product image if no gallery
+                    // Add main product image if empty
                     if ($images->isEmpty() && !empty($inventory->image)) {
-                        $images->push(['src' => asset('storage/images/products/' . $inventory->image)]);
+                        $images->push(asset('storage/images/products/' . $inventory->image));
                     }
 
-                    // 🖼️ Add variant images too
+                    // Add variant images too
                     if (!empty($inventory->variations)) {
                         foreach ($inventory->variations as $variant) {
                             if (!empty($variant->image)) {
                                 $variantImage = asset('storage/images/products/' . $variant->image);
-                                // Avoid duplicates
-                                if (!$images->contains(fn($img) => $img['src'] === $variantImage)) {
-                                    $images->push(['src' => $variantImage]);
+                                if (!$images->contains($variantImage)) {
+                                    $images->push($variantImage);
                                 }
                             }
                         }
