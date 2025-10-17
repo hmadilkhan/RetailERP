@@ -32,6 +32,7 @@ class SyncShopifyController extends Controller
                 'status'       => $inventory->status == 1 ? 'active' : 'inactive',
 
                 'variants' => collect($inventory->variations ?? [])->map(function ($variant) use ($inventory) {
+
                     $imageUrl = isset($variant->image)
                         ? asset('storage/images/products/' . $variant->image)
                         : null;
@@ -52,35 +53,51 @@ class SyncShopifyController extends Controller
                 //     return asset('storage/images/products/' . $image->image);
                 // })->values()->toArray(),
 
-                // ✅ Product-level images (for gallery)
+
+
                 // 'images' => (function () use ($inventory) {
                 //     $images = collect($inventory->images ?? [])->map(function ($image) {
-                //         return [
-                //             'src' => asset('storage/images/products/' . $image->image),
-                //         ];
+                //         return asset('storage/images/products/' . $image->image);
                 //     })->values();
 
                 //     // If no images found, but main image exists, add it
                 //     if ($images->isEmpty() && !empty($inventory->image)) {
-                //         $images->push([
-                //             'src' => asset('storage/images/products/' . $inventory->image),
-                //         ]);
+                //         $images->push(asset('storage/images/products/' . $inventory->image));
                 //     }
 
                 //     return $images->toArray();
                 // })(),
 
+                // ✅ Collect product + variant images together
                 'images' => (function () use ($inventory) {
-                    $images = collect($inventory->images ?? [])->map(function ($image) {
-                        return asset('storage/images/products/' . $image->image);
-                    })->values();
+                    $images = collect();
 
-                    // If no images found, but main image exists, add it
-                    if ($images->isEmpty() && !empty($inventory->image)) {
-                        $images->push(asset('storage/images/products/' . $inventory->image));
+                    // 🖼️ Add product-level images
+                    if (!empty($inventory->images)) {
+                        $images = collect($inventory->images)->map(function ($image) {
+                            return ['src' => asset('storage/images/products/' . $image->image)];
+                        });
                     }
 
-                    return $images->toArray();
+                    // 🖼️ Add main product image if no gallery
+                    if ($images->isEmpty() && !empty($inventory->image)) {
+                        $images->push(['src' => asset('storage/images/products/' . $inventory->image)]);
+                    }
+
+                    // 🖼️ Add variant images too
+                    if (!empty($inventory->variations)) {
+                        foreach ($inventory->variations as $variant) {
+                            if (!empty($variant->image)) {
+                                $variantImage = asset('storage/images/products/' . $variant->image);
+                                // Avoid duplicates
+                                if (!$images->contains(fn($img) => $img['src'] === $variantImage)) {
+                                    $images->push(['src' => $variantImage]);
+                                }
+                            }
+                        }
+                    }
+
+                    return $images->values()->toArray();
                 })(),
             ],
         ];
