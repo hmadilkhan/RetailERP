@@ -17,7 +17,7 @@ class SyncShopifyController extends Controller
         if (!$inventory) {
             return response()->json(['message' => 'Inventory not found'], 404);
         }
-
+        // return $inventory;
         $payload = [
             'product' => [
                 "id"           => $inventory->id,
@@ -32,6 +32,9 @@ class SyncShopifyController extends Controller
                 'status'       => $inventory->status == 1 ? 'active' : 'inactive',
 
                 'variants' => collect($inventory->variations ?? [])->map(function ($variant) {
+                    $imageUrl = isset($variant->image)
+                        ? asset('storage/images/products/' . $variant->image)
+                        : null;
                     return [
                         'sku'    => $variant->item_code ?? null,
                         'option' => $variant->item_name ?? null,
@@ -41,15 +44,34 @@ class SyncShopifyController extends Controller
                         'inventory_management' => 'shopify',
                         'inventory_policy' => 'deny',
                         'requires_shipping' => true,
+                        'image' => $imageUrl ? ['src' => $imageUrl] : null,
                     ];
                 })->values()->toArray(),
 
-                'images' => collect($inventory->images ?? [])->map(function ($image) {
-                    return asset('storage/images/products/' . $image->image);
-                })->values()->toArray(),
+                // 'images' => collect($inventory->images ?? [])->map(function ($image) {
+                //     return asset('storage/images/products/' . $image->image);
+                // })->values()->toArray(),
+
+                // ✅ Product-level images (for gallery)
+                'images' => (function () use ($inventory) {
+                    $images = collect($inventory->images ?? [])->map(function ($image) {
+                        return [
+                            'src' => asset('storage/images/products/' . $image->image),
+                        ];
+                    })->values();
+
+                    // If no images found, but main image exists, add it
+                    if ($images->isEmpty() && !empty($inventory->image)) {
+                        $images->push([
+                            'src' => asset('storage/images/products/' . $inventory->image),
+                        ]);
+                    }
+
+                    return $images->toArray();
+                })(),
             ],
         ];
-
+        
         $response = Http::withHeaders([
             'Authorization' => 'Bearer ' . config('services.shopify.token'),
             'Content-Type' => 'application/json',
