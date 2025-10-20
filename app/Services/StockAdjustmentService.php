@@ -48,6 +48,7 @@ class StockAdjustmentService
                 $q->where('branch_id', session('branch'));
             })
             ->where('narration', 'like', '%(Stock Adjustment)%')
+            ->orderBy('date', 'desc')
             ->paginate(50);
 
         return $query;
