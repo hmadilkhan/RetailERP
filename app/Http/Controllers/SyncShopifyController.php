@@ -37,7 +37,7 @@ class SyncShopifyController extends Controller
                         ? asset('storage/images/products/' . $variant->image)
                         : null;
                     return [
-                        'id'    => $variant->pos_item_id ?? null,
+                        'id'    => $variant->id ?? null,
                         'sku'    => $variant->item_code ?? null,
                         'option' => $variant->item_name ?? null,
                         'price'  => $variant->price->retail_price ?? 0,
