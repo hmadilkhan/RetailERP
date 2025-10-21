@@ -68,7 +68,10 @@ class ProductResource extends JsonResource
 		{
 		    return ProductRetailVariationResource::collection(DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'attribute'])->get());
 		  //  return new ProductRetailVariationResource(DB::table("attributes")->whereIn("id",InventoryPos::where("product_id",$this->id)->where("status_id",1)->pluck('attribute'))->get(),$this->id);
-		}
+        }else if(self::$websiteMode == "shopify")
+        {
+            return ProductRetailVariationResource::collection(DB::table('sales_receipt_details')->where(['receipt_id'=>$this->receipt_id,'parent_item_code'=>$this->receipt_detail_id,'mode'=>'attribute'])->get());
+        }
 	}
 
 }
