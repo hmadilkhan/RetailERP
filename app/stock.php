@@ -221,6 +221,6 @@ class stock extends Model
 
     public function stockAdjustmentVoucher($grn)
     {
-        return DB::select("SELECT c.grn_id,b.item_code,b.product_name,a.narration,a.adjustment_mode,a.qty,d.name,a.date,f.fullname,g.branch_name FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_stock c on c.stock_id = a.foreign_id INNER JOIN inventory_uom d on d.uom_id = b.uom_id INNER JOIN purchase_rec_gen e on e.rec_id = c.grn_id INNER JOIN user_details f on f.id = e.user_id INNER JOIN branch g on g.branch_id = a.branch_id where c.grn_id = ? and a.narration like '%(Stock Adjustment)%' order by a.date DESC",[$grn]);
+        return DB::select("SELECT c.grn_id,b.item_code,b.product_name,a.narration,a.adjustment_mode,a.qty,d.name,a.date,f.fullname,g.branch_name,a.cost FROM inventory_stock_report_table a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_stock c on c.stock_id = a.foreign_id INNER JOIN inventory_uom d on d.uom_id = b.uom_id INNER JOIN purchase_rec_gen e on e.rec_id = c.grn_id INNER JOIN user_details f on f.id = e.user_id INNER JOIN branch g on g.branch_id = a.branch_id where c.grn_id = ? and a.narration like '%(Stock Adjustment)%' order by a.date DESC",[$grn]);
     }
 }

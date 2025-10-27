@@ -380,8 +380,9 @@ class StockController extends Controller
         $pdf->SetTextColor(255, 255, 255);
         $pdf->Cell(50, 7, 'Item Code', 'B', 0, 'L', 1);
         $pdf->Cell(50, 7, 'Product Name', 'B', 0, 'L', 1);
-        $pdf->Cell(45, 7, 'Quantity', 'B', 0, 'L', 1);
-        $pdf->Cell(45, 7, 'Unit', 'B', 1, 'L', 1);
+        $pdf->Cell(30, 7, 'Quantity', 'B', 0, 'L', 1);
+        $pdf->Cell(30, 7, 'Cost', 'B', 0, 'L', 1);
+        $pdf->Cell(30, 7, 'Unit', 'B', 1, 'L', 1);
 
         $pdf->SetFont('Arial', '', 10);
         $pdf->setFillColor(255, 255, 255);
@@ -389,8 +390,9 @@ class StockController extends Controller
         foreach ($details as $value) {
             $pdf->Cell(50, 7, $value->item_code, 0, 0, 'L', 1);
             $pdf->Cell(50, 7, $value->product_name, 0, 0, 'L', 1);
-            $pdf->Cell(45, 7, number_format($value->qty, 2), 0, 0, 'L', 1);
-            $pdf->Cell(45, 7, $value->name, 0, 1, 'L', 1);
+            $pdf->Cell(30, 7, number_format($value->qty, 2), 0, 0, 'L', 1);
+            $pdf->Cell(30, 7, number_format($value->cost, 2), 0, 0, 'L', 1);
+            $pdf->Cell(30, 7, $value->name, 0, 1, 'L', 1);
         }
         $pdf->ln(30);
         $pdf->Cell(150, 7, "", 0, 0, 'L', 1);
