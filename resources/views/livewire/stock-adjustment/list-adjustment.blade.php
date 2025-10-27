@@ -89,6 +89,7 @@
                             <th>Code</th>
                             <th>Name</th>
                             <th>Qty</th>
+                            <th>Cost</th>
                             {{-- <th>Stock</th> --}}
                             <th>Created By</th>
                             <th>Narration</th>
@@ -104,6 +105,7 @@
                                     <td>{{ $stock->products->item_code ?? "-" }}</td>
                                     <td>{{ $stock->products->product_name  ?? "-" }}</td>
                                     <td>{{ $stock->qty }}</td>
+                                    <td>{{ $stock->cost }}</td>
                                     {{-- <td>{{ $stock->stock }}</td> --}}
                                     <td>{{ !empty($stock->productstock) ? $stock->productstock->grn->user->fullname : '-' }}
                                     </td>
