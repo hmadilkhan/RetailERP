@@ -2374,7 +2374,7 @@ class InventoryController extends Controller
             'grn_id' => $gen_res,
             'product_id' => $request->productid,
             'uom' => $um[0]->uom_id,
-            'cost_price' => $request->cp,
+            'cost_price' => $request->amount,
             'retail_price' => "0.00",
             'wholesale_price' => "0.00",
             'discount_price' => "0.00",
