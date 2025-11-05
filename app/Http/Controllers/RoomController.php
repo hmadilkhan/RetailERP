@@ -11,7 +11,11 @@ class RoomController extends Controller
     public function index(floor $floor)
     {
         $floors = $floor->getFloors();
-        $rooms = Room::with('floors')->where('status',1)->get();
+        $rooms = Room::with('floors')
+                ->whereHas('floors', function ($query) {
+                    $query->where('branch_id', session("branch"));
+                })
+                ->where('status',1)->get();
         return view("rooms.list", compact('rooms','floors'));
     }
 
