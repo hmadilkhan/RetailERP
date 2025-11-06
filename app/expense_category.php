@@ -38,10 +38,15 @@ class expense_category extends Model
   public static function get()
   {
     if (session('company_id') == 7) {
-      return DB::table('expense_categories')->where('branch_id', session('branch'))->where("platform_type",1)->orderBy('exp_cat_id', 'DESC')->get();
+      return DB::table('expense_categories')->where('branch_id', session('branch'))->where("platform_type", 1)->orderBy('exp_cat_id', 'DESC')->get();
     } else {
       return DB::table('expense_categories')->where('branch_id', session('branch'))->orderBy('exp_cat_id', 'DESC')->get();
     }
+  }
+
+  public static function getAllCategories()
+  {
+    return DB::table('expense_categories')->where('branch_id', session('branch'))->orderBy('exp_cat_id', 'DESC')->get();
   }
 
   public static function get_edit($id)

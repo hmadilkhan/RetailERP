@@ -22,7 +22,7 @@ class ExpenseCategoryController extends Controller
 
     public function index()
     {
-        $category = expense_category::get();
+        $category = expense_category::getAllCategories();
         return view('ExpenseCategory.lists', compact('category'));
     }
 
