@@ -228,31 +228,105 @@ class ExpenseController extends Controller
 
 
 
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(10, 8, 'Sr.', 'B', 0, 'L');
-        $pdf->Cell(25, 8, 'Date.', 'B', 0, 'L');
-        $pdf->Cell(40, 8, 'Category', 'B', 0, 'L');
-        $pdf->Cell(25, 8, 'Amount', 'B', 0, 'L');
-        $pdf->Cell(90, 8, 'Details', 'B', 1, 'L');
-
-        $count = 0;
-        foreach ($result as $key => $value) {
-            $count++;
-            if ($count % 2 == 0) {
-                $pdf->SetFont('Arial', '', 12);
-                $pdf->setFillColor(232, 232, 232);
-                $pdf->SetTextColor(0, 0, 0);
-            } else {
-                $pdf->SetFont('Arial', '', 12);
-                $pdf->setFillColor(255, 255, 255);
-                $pdf->SetTextColor(0, 0, 0);
+        if (session('company_id') == 7) {
+            // Separate expenses by platform_type
+            $webExpenses = collect($result)->where('platform_type', 1);
+            $otherExpenses = collect($result)->where('platform_type', '!=', 1);
+            
+            $count = 0;
+            
+            // Web Expenses Section
+            if ($webExpenses->count() > 0) {
+                $pdf->SetFont('Arial', 'B', 14);
+                $pdf->Cell(190, 8, 'WEB EXPENSES', 'B', 1, 'L');
+                
+                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->Cell(10, 8, 'Sr.', 'B', 0, 'L');
+                $pdf->Cell(25, 8, 'Date.', 'B', 0, 'L');
+                $pdf->Cell(40, 8, 'Category', 'B', 0, 'L');
+                $pdf->Cell(25, 8, 'Amount', 'B', 0, 'L');
+                $pdf->Cell(90, 8, 'Details', 'B', 1, 'L');
+                
+                foreach ($webExpenses as $value) {
+                    $count++;
+                    if ($count % 2 == 0) {
+                        $pdf->SetFont('Arial', '', 12);
+                        $pdf->setFillColor(232, 232, 232);
+                        $pdf->SetTextColor(0, 0, 0);
+                    } else {
+                        $pdf->SetFont('Arial', '', 12);
+                        $pdf->setFillColor(255, 255, 255);
+                        $pdf->SetTextColor(0, 0, 0);
+                    }
+                    $totalBalance += $value->balance;
+                    $pdf->Cell(10, 8, $count, 0, 0, 'L', 1);
+                    $pdf->Cell(25, 8, $value->date, 0, 0, 'L', 1);
+                    $pdf->Cell(40, 8, $value->expense_category, 0, 0, 'L', 1);
+                    $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 0, 'L', 1);
+                    $pdf->Cell(90, 8, $value->expense_details, 0, 1, 'L', 1);
+                }
+                $pdf->ln(5);
             }
-            $totalBalance = $totalBalance + $value->balance;
-            $pdf->Cell(10, 8, $key + 1, 0, 0, 'L', 1);
-            $pdf->Cell(25, 8, $value->date, 0, 0, 'L', 1);
-            $pdf->Cell(40, 8, $value->expense_category, 0, 0, 'L', 1);
-            $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 0, 'L', 1);
-            $pdf->Cell(90, 8, $value->expense_details, 0, 1, 'L', 1);
+            
+            // Other Expenses Section
+            if ($otherExpenses->count() > 0) {
+                $pdf->SetFont('Arial', 'B', 14);
+                $pdf->Cell(190, 8, 'OTHER EXPENSES', 'B', 1, 'L');
+                
+                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->Cell(10, 8, 'Sr.', 'B', 0, 'L');
+                $pdf->Cell(25, 8, 'Date.', 'B', 0, 'L');
+                $pdf->Cell(40, 8, 'Category', 'B', 0, 'L');
+                $pdf->Cell(25, 8, 'Amount', 'B', 0, 'L');
+                $pdf->Cell(90, 8, 'Details', 'B', 1, 'L');
+                
+                foreach ($otherExpenses as $value) {
+                    $count++;
+                    if ($count % 2 == 0) {
+                        $pdf->SetFont('Arial', '', 12);
+                        $pdf->setFillColor(232, 232, 232);
+                        $pdf->SetTextColor(0, 0, 0);
+                    } else {
+                        $pdf->SetFont('Arial', '', 12);
+                        $pdf->setFillColor(255, 255, 255);
+                        $pdf->SetTextColor(0, 0, 0);
+                    }
+                    $totalBalance += $value->balance;
+                    $pdf->Cell(10, 8, $count, 0, 0, 'L', 1);
+                    $pdf->Cell(25, 8, $value->date, 0, 0, 'L', 1);
+                    $pdf->Cell(40, 8, $value->expense_category, 0, 0, 'L', 1);
+                    $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 0, 'L', 1);
+                    $pdf->Cell(90, 8, $value->expense_details, 0, 1, 'L', 1);
+                }
+            }
+        } else {
+            // Original format for other companies
+            $pdf->SetFont('Arial', 'B', 11);
+            $pdf->Cell(10, 8, 'Sr.', 'B', 0, 'L');
+            $pdf->Cell(25, 8, 'Date.', 'B', 0, 'L');
+            $pdf->Cell(40, 8, 'Category', 'B', 0, 'L');
+            $pdf->Cell(25, 8, 'Amount', 'B', 0, 'L');
+            $pdf->Cell(90, 8, 'Details', 'B', 1, 'L');
+            
+            $count = 0;
+            foreach ($result as $key => $value) {
+                $count++;
+                if ($count % 2 == 0) {
+                    $pdf->SetFont('Arial', '', 12);
+                    $pdf->setFillColor(232, 232, 232);
+                    $pdf->SetTextColor(0, 0, 0);
+                } else {
+                    $pdf->SetFont('Arial', '', 12);
+                    $pdf->setFillColor(255, 255, 255);
+                    $pdf->SetTextColor(0, 0, 0);
+                }
+                $totalBalance += $value->balance;
+                $pdf->Cell(10, 8, $key + 1, 0, 0, 'L', 1);
+                $pdf->Cell(25, 8, $value->date, 0, 0, 'L', 1);
+                $pdf->Cell(40, 8, $value->expense_category, 0, 0, 'L', 1);
+                $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 0, 'L', 1);
+                $pdf->Cell(90, 8, $value->expense_details, 0, 1, 'L', 1);
+            }
         }
 
 
