@@ -115,7 +115,7 @@ class report extends Model
     public  function expenses_details($fromdate, $todate, $branch)
     {
         $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT a.date, a.exp_id, a.expense_details, b.expense_category, a.net_amount FROM expenses a INNER JOIN expense_categories b ON b.exp_cat_id = a.exp_cat_id WHERE a.date BETWEEN ? AND ? AND a.branch_id = ?', [$fromdate, $todate, $branch]);
+        $result = DB::select('SELECT a.date, a.exp_id, a.expense_details, b.expense_category, a.net_amount,a.platform_type FROM expenses a INNER JOIN expense_categories b ON b.exp_cat_id = a.exp_cat_id WHERE a.date BETWEEN ? AND ? AND a.branch_id = ?', [$fromdate, $todate, $branch]);
         return $result;
     }
 

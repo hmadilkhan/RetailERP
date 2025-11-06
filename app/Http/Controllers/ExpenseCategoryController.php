@@ -18,12 +18,12 @@ class ExpenseCategoryController extends Controller
     {
         $this->middleware('auth');
     }
-    
+
 
     public function index()
     {
         $category = expense_category::get();
-        return view('ExpenseCategory.lists',compact('category'));
+        return view('ExpenseCategory.lists', compact('category'));
     }
 
     /**
@@ -31,11 +31,7 @@ class ExpenseCategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
-    {
-
-
-    }
+    public function create() {}
 
     /**
      * Store a newly created resource in storage.
@@ -45,21 +41,20 @@ class ExpenseCategoryController extends Controller
      */
     public function store(Request $request, expense_category $expense_category)
     {
-            $data = [
-                'branch_id' => session('branch'),
-                'expense_category'=> $request->get('category'),
-               ];
+        $data = [
+            'branch_id' => session('branch'),
+            'expense_category' => $request->get('category'),
+            'platform_type' => $request->get('platform_type'),
+        ];
 
-        if($expense_category->check($request->get('category'))){
-
-             return response()->json(array("state"=>2,"msg"=>'This category already exists.',"contrl"=>'category'));
-
-        }else {
-            if($expense_category->insert($data)){
-               return response()->json(array("state"=>0,"msg"=>'',"contrl"=>''));
-             }else{
-               return response()->json(array("state"=>1,"msg"=>'Not saved :(',"contrl"=>''));
-             } 
+        if ($expense_category->check($request->get('category'))) {
+            return response()->json(array("state" => 2, "msg" => 'This category already exists.', "contrl" => 'category'));
+        } else {
+            if ($expense_category->insert($data)) {
+                return response()->json(array("state" => 0, "msg" => '', "contrl" => ''));
+            } else {
+                return response()->json(array("state" => 1, "msg" => 'Not saved :(', "contrl" => ''));
+            }
         }
     }
 
@@ -80,14 +75,14 @@ class ExpenseCategoryController extends Controller
      * @param  \App\expense_category  $expense_category
      * @return \Illuminate\Http\Response
      */
-    public function edit(Request $request,expense_category $expense_category)
+    public function edit(Request $request, expense_category $expense_category)
     {
-       $get = $expense_category->get_edit($request->id);
-       if($get){
-           return response()->json($get);
-       }else {
-           return response()->json(array("state"=>0,"msg"=>"Oops! Sorry Can't edit record"));  
-       }
+        $get = $expense_category->get_edit($request->id);
+        if ($get) {
+            return response()->json($get);
+        } else {
+            return response()->json(array("state" => 0, "msg" => "Oops! Sorry Can't edit record"));
+        }
     }
 
     /**
@@ -100,12 +95,12 @@ class ExpenseCategoryController extends Controller
     public function update(Request $request, expense_category $expense_category)
     {
 
-        $result = $expense_category->modify(['expense_category'=>$request->cat],$request->id);
-       if($result){
-           return response()->json(array("state"=>1,"msg"=>"saved changes."));
-       }else {
-           return response()->json(array("state"=>0,"msg"=>"Oops! Sorry Can't update expense category"));  
-       }
+        $result = $expense_category->modify(['expense_category' => $request->cat], $request->id);
+        if ($result) {
+            return response()->json(array("state" => 1, "msg" => "saved changes."));
+        } else {
+            return response()->json(array("state" => 0, "msg" => "Oops! Sorry Can't update expense category"));
+        }
     }
 
     /**

@@ -17,7 +17,7 @@
                                 data-placement="top" title="Add Expense Category"></i>
                             <select class="select2" data-placeholder="Select Category" id="exp_cat" name="exp_cat">
                                 <option value="">Select Category</option>
-
+                                
                             </select>
                             <span class="help-block"></span>
                         </div>

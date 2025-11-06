@@ -2490,32 +2490,94 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(190, 10, 'Expense By Category', 'B,T', 1, 'L');
 
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(20, 8, 'Sr.', 'B,R', 0, 'C');
-        $pdf->Cell(140, 8, 'Expense Discription', 'B,R', 0, 'L');
-        $pdf->Cell(30, 8, 'Amount', 'B', 1, 'R');
-
-
-
-        $total = 0;
-        foreach ($expenses as $key => $value) {
-            $total = $total + $value->net_amount;
+        if (session('company_id') == 7) {
+            // Separate expenses by platform_type
+            $webExpenses = collect($expenses)->where('platform_type', 1);
+            $otherExpenses = collect($expenses)->where('platform_type', '!=', 1);
+            
+            $total = 0;
+            $sr = 1;
+            
+            // Web Expenses Section
+            if ($webExpenses->count() > 0) {
+                $pdf->SetFont('Arial', 'B', 14);
+                $pdf->Cell(190, 8, 'WEB EXPENSES', 'B', 1, 'L');
+                
+                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->Cell(20, 8, 'Sr.', 'B,R', 0, 'C');
+                $pdf->Cell(140, 8, 'Expense Discription', 'B,R', 0, 'L');
+                $pdf->Cell(30, 8, 'Amount', 'B', 1, 'R');
+                
+                foreach ($webExpenses as $value) {
+                    $total += $value->net_amount;
+                    $pdf->SetFont('Arial', 'B', 11);
+                    $pdf->Cell(20, 7, $sr++, 'R', 0, 'C');
+                    $pdf->Cell(140, 7, $value->expense_category . " | " . $value->date, 'R', 0, 'L');
+                    $pdf->Cell(30, 7, number_format($value->net_amount, 2), 0, 1, 'R');
+                    
+                    $pdf->SetFont('Arial', '', 11);
+                    $pdf->Cell(20, 3, '', 'R', 0, 'C');
+                    $pdf->Cell(5, 3, '', '', 0, 'L');
+                    $pdf->Cell(135, 3, $value->expense_details, 'R', 0, 'L');
+                    $pdf->Cell(30, 3, '', 0, 1, 'R');
+                    
+                    $pdf->Cell(20, 3, '', 'R', 0, 'C');
+                    $pdf->Cell(170, 3, '', 0, 1, 'L');
+                }
+                $pdf->ln(5);
+            }
+            
+            // Other Expenses Section
+            if ($otherExpenses->count() > 0) {
+                $pdf->SetFont('Arial', 'B', 14);
+                $pdf->Cell(190, 8, 'OTHER EXPENSES', 'B', 1, 'L');
+                
+                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->Cell(20, 8, 'Sr.', 'B,R', 0, 'C');
+                $pdf->Cell(140, 8, 'Expense Discription', 'B,R', 0, 'L');
+                $pdf->Cell(30, 8, 'Amount', 'B', 1, 'R');
+                
+                foreach ($otherExpenses as $value) {
+                    $total += $value->net_amount;
+                    $pdf->SetFont('Arial', 'B', 11);
+                    $pdf->Cell(20, 7, $sr++, 'R', 0, 'C');
+                    $pdf->Cell(140, 7, $value->expense_category . " | " . $value->date, 'R', 0, 'L');
+                    $pdf->Cell(30, 7, number_format($value->net_amount, 2), 0, 1, 'R');
+                    
+                    $pdf->SetFont('Arial', '', 11);
+                    $pdf->Cell(20, 3, '', 'R', 0, 'C');
+                    $pdf->Cell(5, 3, '', '', 0, 'L');
+                    $pdf->Cell(135, 3, $value->expense_details, 'R', 0, 'L');
+                    $pdf->Cell(30, 3, '', 0, 1, 'R');
+                    
+                    $pdf->Cell(20, 3, '', 'R', 0, 'C');
+                    $pdf->Cell(170, 3, '', 0, 1, 'L');
+                }
+            }
+        } else {
+            // Original format for other companies
             $pdf->SetFont('Arial', 'B', 11);
-            $pdf->Cell(20, 7, $key + 1, 'R', 0, 'C');
-            $pdf->Cell(140, 7, $value->expense_category . " | " . $value->date, 'R', 0, 'L');
-            $pdf->Cell(30, 7, number_format($value->net_amount, 2), 0, 1, 'R');
-
-            $pdf->SetFont('Arial', '', 11);
-            $pdf->Cell(20, 3, '', 'R', 0, 'C');
-            $pdf->Cell(5, 3, '', '', 0, 'L');
-            $pdf->Cell(135, 3, $value->expense_details, 'R', 0, 'L');
-            $pdf->Cell(30, 3, '', 0, 1, 'R');
-
-            $pdf->SetFont('Arial', '', 11);
-            $pdf->Cell(20, 3, '', 'R', 0, 'C');
-            $pdf->Cell(5, 3, '', '', 0, 'L');
-            $pdf->Cell(135, 3, '', 'R', 0, 'L');
-            $pdf->Cell(30, 3, '', 0, 1, 'R');
+            $pdf->Cell(20, 8, 'Sr.', 'B,R', 0, 'C');
+            $pdf->Cell(140, 8, 'Expense Discription', 'B,R', 0, 'L');
+            $pdf->Cell(30, 8, 'Amount', 'B', 1, 'R');
+            
+            $total = 0;
+            foreach ($expenses as $key => $value) {
+                $total += $value->net_amount;
+                $pdf->SetFont('Arial', 'B', 11);
+                $pdf->Cell(20, 7, $key + 1, 'R', 0, 'C');
+                $pdf->Cell(140, 7, $value->expense_category . " | " . $value->date, 'R', 0, 'L');
+                $pdf->Cell(30, 7, number_format($value->net_amount, 2), 0, 1, 'R');
+                
+                $pdf->SetFont('Arial', '', 11);
+                $pdf->Cell(20, 3, '', 'R', 0, 'C');
+                $pdf->Cell(5, 3, '', '', 0, 'L');
+                $pdf->Cell(135, 3, $value->expense_details, 'R', 0, 'L');
+                $pdf->Cell(30, 3, '', 0, 1, 'R');
+                
+                $pdf->Cell(20, 3, '', 'R', 0, 'C');
+                $pdf->Cell(170, 3, '', 0, 1, 'L');
+            }
         }
 
 

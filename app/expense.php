@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class expense extends Model
 {
    protected $fillable = [
-        'branch_id', 'exp_cat_id','tax_id', 'expense_details','tax_amount','amount','net_amount','date'
+        'branch_id', 'exp_cat_id','tax_id', 'expense_details','tax_amount','amount','net_amount','date','platform_type'
     ];
 	
 	public function expense_report_filter($cat,$first,$second)

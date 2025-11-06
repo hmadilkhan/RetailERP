@@ -169,6 +169,16 @@
 
     <script type="text/javascript">
         $(".select2").select2();
+        $('#expensetb').DataTable({
+            displayLength: 50,
+            info: false,
+            language: {
+                search: '',
+                searchPlaceholder: 'Search Expense',
+                lengthMenu: '<span></span> _MENU_'
+            },
+        });
+
         $('#from, #to').bootstrapMaterialDatePicker({
             format: 'YYYY-MM-DD',
             time: false,
@@ -247,15 +257,7 @@
             $("#expensetb tbody").append("<tr><td colspan='5' class='text-center f-24 fw-bold'>Loading...</td></tr>");
         }
 
-        $('#expensetb').DataTable({
-            displayLength: 50,
-            info: false,
-            language: {
-                search: '',
-                searchPlaceholder: 'Search Expense',
-                lengthMenu: '<span></span> _MENU_'
-            },
-        });
+        
 
         $("#btn_clear").on('click', function() {
             $("#btn_save").html('<i class="icofont icofont-plus"></i>&nbsp; Save');
@@ -367,7 +369,7 @@
                 if ($("#hidd_id").val() == "0") {
 
                     $.ajax({
-                        url: '{{ route('expense.store') }}',
+                        url: "{{ route('expense.store') }}",
                         type: "POST",
                         data: $('#expenseform').serialize(),
                         dataType: "json",
