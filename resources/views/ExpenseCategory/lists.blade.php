@@ -62,7 +62,7 @@
                     <thead>
                         <tr>
                             <th>Category</th>
-                            @if (session('company_id') == 7)
+                            @if (session('company_id') == 114)
                                 <th>Platform Type</th>
                             @endif
                             <th>Action</th>
@@ -74,7 +74,7 @@
                             @foreach ($category as $value)
                                 <tr>
                                     <td id="{{ $value->exp_cat_id }}">{{ $value->expense_category }}</td>
-                                    @if (session('company_id') == 7)
+                                    @if (session('company_id') == 114)
                                         <td >{{ $value->platform_type == 1 ? "WEB" : "APP" }}</td>
                                     @endif
                                     <td class="action-icon">

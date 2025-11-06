@@ -228,7 +228,7 @@ class ExpenseController extends Controller
 
 
 
-        if (session('company_id') == 7) {
+        if (session('company_id') == 114) {
             // Separate expenses by platform_type
             $webExpenses = collect($result)->where('platform_type', 1);
             $otherExpenses = collect($result)->where('platform_type', '!=', 1);
