@@ -15,7 +15,7 @@
             </div>
             <div class="card-block">
                 <!-- <form id="expcatform" method="POST" class="form-horizontal" action="">
-             @csrf -->
+                 @csrf -->
                 <input type="hidden" id="hidd_id" name="hidd_id" value="0">
                 <div class="row">
                     <!-- Expense Details -->
@@ -62,8 +62,10 @@
                     <thead>
                         <tr>
                             <th>Category</th>
+                            @if (session('company_id') == 7)
+                                <th>Platform Type</th>
+                            @endif
                             <th>Action</th>
-
                         </tr>
                     </thead>
                     <tbody>
@@ -72,6 +74,9 @@
                             @foreach ($category as $value)
                                 <tr>
                                     <td id="{{ $value->exp_cat_id }}">{{ $value->expense_category }}</td>
+                                    @if (session('company_id') == 7)
+                                        <td >{{ $value->platform_type }}</td>
+                                    @endif
                                     <td class="action-icon">
                                         <i onclick="edit_record('{{ $value->exp_cat_id }}')"
                                             class="text-success text-center icofont icofont-ui-edit" data-toggle="tooltip"
