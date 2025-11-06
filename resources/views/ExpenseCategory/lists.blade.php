@@ -27,7 +27,7 @@
                             <span id="category_alert" class="text-danger help-block"></span>
                         </div>
                     </div>
-
+                     @if (session('company_id') == 114)
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
                             <label class="form-control-label">Platform Type</label>
@@ -39,7 +39,7 @@
                             </select>
                         </div>
                     </div>
-
+                    @endif
                     <div class="col-lg-1 ">
                         <button type="button" id="btn_save" class="btn btn-success btn-circle" data-toggle="tooltip"
                             data-placement="top" title="" data-original-title="Create Category"
