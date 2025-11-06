@@ -39,7 +39,7 @@ class expense extends Model
     		}
     	}
     	
-    	$result = DB::select('SELECT a.exp_id,a.date,b.expense_category,a.expense_details,a.net_amount,a.platform_type FROM expenses a INNER JOIN expense_categories b on b.exp_cat_id = a.exp_cat_id WHERE a.branch_id = ? '.$filter,[session('branch')]);
+    	$result = DB::select('SELECT a.exp_id,a.date,b.expense_category,a.expense_details,a.net_amount,a.platform_type FROM expenses a INNER JOIN expense_categories b on b.exp_cat_id = a.exp_cat_id WHERE a.branch_id = ? '.$filter." order by a.exp_id DESC",[session('branch')]);
     	return $result;
     }
 

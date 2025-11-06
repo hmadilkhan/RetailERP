@@ -178,6 +178,7 @@
         $('#expensetb').DataTable({
             displayLength: 50,
             info: false,
+            sorting: false,
             language: {
                 search: '',
                 searchPlaceholder: 'Search Expense',
