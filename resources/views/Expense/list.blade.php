@@ -239,6 +239,9 @@
                                 "<td>" + result[count].date + "</td>" +
                                 "<td>" + result[count].expense_category + "</td>" +
                                 "<td>" + result[count].net_amount + "</td>" +
+                                @if(session('company_id') == 7)
+                                "<td>" + (result[count].platform_type == 1 ? 'Web' : 'Other') + "</td>" +
+                                @endif
                                 "<td>" + result[count].expense_details + "</td>" +
                                 "<td class='action-icon'>" +
                                 "<i onclick='deleteExpense(" + result[count].exp_id +
