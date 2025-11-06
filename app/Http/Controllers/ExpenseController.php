@@ -248,6 +248,7 @@ class ExpenseController extends Controller
                 $pdf->Cell(25, 8, 'Amount', 'B', 0, 'L');
                 $pdf->Cell(90, 8, 'Details', 'B', 1, 'L');
                 
+                $webTotal = 0;
                 foreach ($webExpenses as $value) {
                     $count++;
                     if ($count % 2 == 0) {
@@ -259,6 +260,7 @@ class ExpenseController extends Controller
                         $pdf->setFillColor(255, 255, 255);
                         $pdf->SetTextColor(0, 0, 0);
                     }
+                    $webTotal += $value->balance;
                     $totalBalance += $value->balance;
                     $pdf->Cell(10, 8, $count, 0, 0, 'L', 1);
                     $pdf->Cell(25, 8, $value->date, 0, 0, 'L', 1);
@@ -266,6 +268,12 @@ class ExpenseController extends Controller
                     $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 0, 'L', 1);
                     $pdf->Cell(90, 8, $value->expense_details, 0, 1, 'L', 1);
                 }
+                
+                $pdf->ln();
+                $pdf->SetFont('Arial', 'B', 12);
+                $pdf->Cell(130, 8, '', 0, 0, 'R');
+                $pdf->Cell(20, 8, 'Web Total:', 'T,B', 0, 'R');
+                $pdf->Cell(40, 8, "Rs. " . number_format($webTotal, 2), 'T,B', 1, 'R');
                 $pdf->ln(5);
             }
             
@@ -281,6 +289,7 @@ class ExpenseController extends Controller
                 $pdf->Cell(25, 8, 'Amount', 'B', 0, 'L');
                 $pdf->Cell(90, 8, 'Details', 'B', 1, 'L');
                 
+                $otherTotal = 0;
                 foreach ($otherExpenses as $value) {
                     $count++;
                     if ($count % 2 == 0) {
@@ -292,6 +301,7 @@ class ExpenseController extends Controller
                         $pdf->setFillColor(255, 255, 255);
                         $pdf->SetTextColor(0, 0, 0);
                     }
+                    $otherTotal += $value->balance;
                     $totalBalance += $value->balance;
                     $pdf->Cell(10, 8, $count, 0, 0, 'L', 1);
                     $pdf->Cell(25, 8, $value->date, 0, 0, 'L', 1);
@@ -299,6 +309,12 @@ class ExpenseController extends Controller
                     $pdf->Cell(25, 8, number_format($value->balance, 2), 0, 0, 'L', 1);
                     $pdf->Cell(90, 8, $value->expense_details, 0, 1, 'L', 1);
                 }
+                
+                $pdf->ln();
+                $pdf->SetFont('Arial', 'B', 12);
+                $pdf->Cell(130, 8, '', 0, 0, 'R');
+                $pdf->Cell(20, 8, 'Other Total:', 'T,B', 0, 'R');
+                $pdf->Cell(40, 8, "Rs. " . number_format($otherTotal, 2), 'T,B', 1, 'R');
             }
         } else {
             // Original format for other companies
