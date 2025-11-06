@@ -100,6 +100,9 @@
                             <th>Date</th>
                             <th>Category</th>
                             <th>Amount</th>
+                            @if (session('company_id') == 7)
+                                <th>Platform Type</th>
+                            @endif
                             <th>Narration</th>
                             @if (session('roleId') == 2 or session('roleId') == 1 or session('roleId') == 10)
                                 <th>Action</th>
@@ -113,6 +116,9 @@
                                     <td>{{ $value->date }}</td>
                                     <td>{{ $value->expense_category }}</td>
                                     <td>{{ number_format($value->net_amount, 2) }}</td>
+                                    @if (session('company_id') == 7)
+                                        <td>{{ $value->platform_type == 1 ? "WEB" : "APP" }}</td>
+                                    @endif
                                     <td>{{ $value->expense_details }}</td>
                                     @if (session('roleId') == 2 or session('roleId') == 1)
                                         <td class="action-icon">

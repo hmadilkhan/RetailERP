@@ -75,7 +75,7 @@
                                 <tr>
                                     <td id="{{ $value->exp_cat_id }}">{{ $value->expense_category }}</td>
                                     @if (session('company_id') == 7)
-                                        <td >{{ $value->platform_type }}</td>
+                                        <td >{{ $value->platform_type == 1 ? "WEB" : "APP" }}</td>
                                     @endif
                                     <td class="action-icon">
                                         <i onclick="edit_record('{{ $value->exp_cat_id }}')"
