@@ -237,6 +237,7 @@ class ExpenseController extends Controller
             
             // Web Expenses Section
             if ($webExpenses->count() > 0) {
+                $pdf->ln(2);
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->Cell(190, 8, 'WEB EXPENSES', 'B', 1, 'L');
                 
