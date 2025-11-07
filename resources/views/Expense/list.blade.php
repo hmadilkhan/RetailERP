@@ -100,7 +100,7 @@
                             <th>Date</th>
                             <th>Category</th>
                             <th>Amount</th>
-                            @if (session('company_id') == 114)
+                            @if (session('company_id') == 134)
                                 <th>Platform Type</th>
                             @endif
                             <th>Narration</th>
@@ -116,7 +116,7 @@
                                     <td>{{ $value->date }}</td>
                                     <td>{{ $value->expense_category }}</td>
                                     <td>{{ number_format($value->net_amount, 2) }}</td>
-                                    @if (session('company_id') == 114)
+                                    @if (session('company_id') == 134)
                                         <td>{{ $value->platform_type == 1 ? "WEB" : "APP" }}</td>
                                     @endif
                                     <td>{{ $value->expense_details }}</td>
@@ -240,7 +240,7 @@
                                 "<td>" + result[count].date + "</td>" +
                                 "<td>" + result[count].expense_category + "</td>" +
                                 "<td>" + result[count].net_amount + "</td>" +
-                                @if(session('company_id') == 114)
+                                @if(session('company_id') == 134)
                                 "<td>" + (result[count].platform_type == 1 ? 'Web' : 'Other') + "</td>" +
                                 @endif
                                 "<td>" + result[count].expense_details + "</td>" +

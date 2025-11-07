@@ -2490,7 +2490,7 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(190, 10, 'Expense By Category', 'B,T', 1, 'L');
 
-        if (session('company_id') == 114) {
+        if (session('company_id') == 134) {
             // Separate expenses by platform_type
             $webExpenses = collect($expenses)->where('platform_type', 1);
             $otherExpenses = collect($expenses)->where('platform_type', '!=', 1);

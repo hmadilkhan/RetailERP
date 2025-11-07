@@ -27,7 +27,7 @@
                             <span id="category_alert" class="text-danger help-block"></span>
                         </div>
                     </div>
-                     @if (session('company_id') == 114)
+                     @if (session('company_id') == 134)
                     <div class="col-lg-4 col-md-4">
                         <div class="form-group">
                             <label class="form-control-label">Platform Type</label>
@@ -62,7 +62,7 @@
                     <thead>
                         <tr>
                             <th>Category</th>
-                            @if (session('company_id') == 114)
+                            @if (session('company_id') == 134)
                                 <th>Platform Type</th>
                             @endif
                             <th>Action</th>
@@ -74,7 +74,7 @@
                             @foreach ($category as $value)
                                 <tr>
                                     <td id="{{ $value->exp_cat_id }}">{{ $value->expense_category }}</td>
-                                    @if (session('company_id') == 114)
+                                    @if (session('company_id') == 134)
                                         <td >{{ $value->platform_type == 1 ? "WEB" : "APP" }}</td>
                                     @endif
                                     <td class="action-icon">

@@ -37,7 +37,7 @@ class expense_category extends Model
   // get record //
   public static function get()
   {
-    if (session('company_id') == 114) {
+    if (session('company_id') == 134) {
       return DB::table('expense_categories')->where('branch_id', session('branch'))->where("platform_type", 1)->orderBy('exp_cat_id', 'DESC')->get();
     } else {
       return DB::table('expense_categories')->where('branch_id', session('branch'))->orderBy('exp_cat_id', 'DESC')->get();
