@@ -355,7 +355,7 @@
         
         <div class="login-container">
             <div class="logo">
-                <img alt="Log in to Sabsoft" src="{{ asset('storage/images/logo-black.png') }}" />
+                {{-- <img alt="Log in to Sabsoft" src="{{ asset('storage/images/logo-black.png') }}" /> --}}
                 <h1>Sabify</h1>
                 <p>Professional Retail Management System</p>
             </div>
