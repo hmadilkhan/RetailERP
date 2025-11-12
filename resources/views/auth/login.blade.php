@@ -39,7 +39,7 @@
             position: absolute;
             background: rgba(255, 255, 255, 0.6);
             border-radius: 50%;
-            animation: float-shapes 5s infinite ease-in-out;
+            animation: float-shapes 12s infinite ease-in-out;
             box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
         }
         
@@ -86,7 +86,7 @@
                         radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.6) 2px, transparent 2px),
                         radial-gradient(circle at 40% 80%, rgba(255, 255, 255, 0.4) 2px, transparent 2px);
             background-size: 60px 60px, 90px 90px, 120px 120px;
-            animation: particles-move 8s infinite linear;
+            animation: particles-move 60s infinite linear;
         }
         
         @keyframes float-shapes {
@@ -357,7 +357,7 @@
             <div class="logo">
                 {{-- <img alt="Log in to Sabsoft" src="{{ asset('storage/images/logo-black.png') }}" /> --}}
                 <h1>Sabify</h1>
-                <p>Professional Retail Management System</p>
+                <p>Retail Management System</p>
             </div>
         
         @if ($errors->any())
