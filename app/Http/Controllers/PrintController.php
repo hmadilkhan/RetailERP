@@ -1075,6 +1075,7 @@ class PrintController extends Controller
                 <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" style="max-width: 80px;">
             </div>
             <div class="company-name">' . $company[0]->name . '</div>
+            <div class="company-name">' . $branch[0]->branch_name . '</div>
             <div class="company-address">' . $branch[0]->branch_address . '</div>
             <div class="company-contact">' . $branch[0]->branch_ptcl . ' | ' . $branch[0]->branch_mobile . '</div>
         </div>
@@ -1084,6 +1085,10 @@ class PrintController extends Controller
                 <tr>
                     <td style="padding:4px; font-weight:bold;">Receipt No</td>
                     <td style="padding:4px; text-align:right;">' . ($general[0]->receipt_no ?? "N/A") . '</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Machine Order No</td>
+                    <td style="padding:4px; text-align:right;">' . ($general[0]->machine_terminal_count ?? "N/A") . '</td>
                 </tr>
                 <tr>
                     <td style="padding:4px; font-weight:bold;">Customer</td>
@@ -1219,11 +1224,13 @@ class PrintController extends Controller
                 <tr>
                     <td style="padding:4px; font-weight:bold;">Receipt Balance:</td>
                     <td style="padding:4px; text-align:right;">' . number_format($general[0]->total_amount, 0) . '</td>
-                </tr>
-                <tr>
-                    <td style="padding:4px; font-weight:bold;font-size:12px;">Total Balance:</td>
-                    <td style="padding:4px; text-align:right;font-size:12px;">' . number_format((!empty($balance) ? $balance[0]->balance : 0), 0) . '</td>
                 </tr>';
+            if (session('company_id') != 74) {
+                $html .= '<tr>
+                            <td style="padding:4px; font-weight:bold;font-size:12px;">Total Balance:</td>
+                            <td style="padding:4px; text-align:right;font-size:12px;">' . number_format((!empty($balance) ? $balance[0]->balance : 0), 0) . '</td>
+                        </tr>';
+            }
         }
 
         $html .= '
