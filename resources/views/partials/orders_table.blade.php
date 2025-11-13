@@ -124,7 +124,7 @@
                                                 data-toggle='tooltip' data-placement='top' title=''
                                                 data-original-title='Show Order Details'></i>Show Order Details</a></li>
                                     @if (session('roleId') != 20 && session('roleId') != 19)
-                                        <li onclick='showReceipt("{{ $order->receipt_no }}")'><a
+                                        <li onclick='showReceipt("{{ $order->id }}")'><a
                                                 class="dropdown-item"><i
                                                     onclick='showReceipt("{{ $order->receipt_no }}")'
                                                     class='icofont icofont-printer text-success mx-2'
