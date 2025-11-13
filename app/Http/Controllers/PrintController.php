@@ -1076,6 +1076,7 @@ class PrintController extends Controller
             </div>
             <div class="company-name">' . $company[0]->name . '</div>
             <div class="company-name">' . $branch[0]->branch_name . '</div>
+            <div class="company-name">' . $general[0]->terminal_name . '</div>
             <div class="company-address">' . $branch[0]->branch_address . '</div>
             <div class="company-contact">' . $branch[0]->branch_ptcl . ' | ' . $branch[0]->branch_mobile . '</div>
         </div>
