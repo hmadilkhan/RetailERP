@@ -990,7 +990,7 @@ class order extends Model
 							INNER JOIN sales_account_subdetails i on i.receipt_id = a.id
                             LEFT JOin delivery_charges y on y.id = i.delivery_charges
                             LEFT JOIN taxes z on z.id = i.credit_card_transaction
-							INNER JOIN terminal_details t on t.terminal_id = a.terminal
+							INNER JOIN terminal_details t on t.terminal_id = a.terminal_id
                             where a.id =  ?  ', [$receipt_id]); //and branch = ? ,session('branch')
  
 		return $result;
