@@ -395,6 +395,15 @@
                                                 </td>
                                             </tr>
                                         @endif
+                                       
+                                        @if ($orders->sales_tax_amount != 0)
+                                            <tr>
+                                                <td>Sales Tax : </td>
+                                                <td class="text-end">
+                                                    {{ session('currency') . ' ' . $orders->sales_tax_amount  }}
+                                                </td>
+                                            </tr>
+                                        @endif
                                         <tr>
                                             <td>Delivery Charge :</td>
                                             <td class="text-end">

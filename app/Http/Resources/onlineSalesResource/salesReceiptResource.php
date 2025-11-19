@@ -36,6 +36,7 @@ class salesReceiptResource extends JsonResource
 			"delivery_type"             =>$this->delivery_type,
 			"delivery_area_name"        =>$this->delivery_area_name,
 			"delivery_charges"          =>$this->delivery_charges,
+			"sales_tax_amount"          =>$this->sales_tax_amount,
 			"delivery_instructions"     =>$this->delivery_instructions,
 			"dateTime"                  =>date('M d, Y  h:i a', strtotime($this->date." ".$this->time)), //date("M ,d Y H:i:s",strtotime($this->date." ".$this->time)),
 			"deliveryDate"              =>$this->delivery_date,
