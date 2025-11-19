@@ -23,7 +23,7 @@
                                 class="form-control select2">
                                 <option value="">Select Expense Category</option>
                                 @if ($cat)
-                                    @foreach ($cat as $value)
+                                    @foreach ($categories as $value)
                                         <option value="{{ $value->exp_cat_id }}">{{ $value->expense_category }}</option>
                                     @endforeach
                                 @endif

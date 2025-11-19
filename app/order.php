@@ -896,6 +896,7 @@ class order extends Model
 		// }
 
 		return DB::table('sales_receipts')
+			// ->join('customers', 'customers.id', 'sales_receipts.customer_id')
 			->join('sales_account_subdetails', 'sales_account_subdetails.receipt_id', 'sales_receipts.id')
 			->join('sales_order_status', 'sales_order_status.order_status_id', 'sales_receipts.status')
 			->join('branch', 'branch.branch_id', 'sales_receipts.branch')
