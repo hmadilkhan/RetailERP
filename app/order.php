@@ -333,6 +333,8 @@ class order extends Model
 	{
 		// Get the orders grouped by hour
 		$orders = DB::table('sales_receipts')
+			->leftjoin("sales_order_status", "sales_order_status.order_status_id", "=", "sales_receipts.status")
+			->leftJoin("customers", "customers.id", "=", "sales_receipts.customer_id")
 			->select(DB::raw('HOUR(time) as hour, COUNT(*) as total_orders,SUM(total_amount) as total_amount'))
 			->groupBy(DB::raw('HOUR(time)'))
 			->whereBetween("date", [$request->first, $request->second])
