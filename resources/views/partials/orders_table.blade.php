@@ -52,6 +52,7 @@
                 <th>Terminal</th>
                 <th>Receipt#</th>
                 <th>Customer</th>
+                <th>Phone</th>
                 <th>Order Type</th>
                 <th>Payment</th>
                 <th>Status</th>
@@ -101,6 +102,7 @@
                         <td>{{ $order->terminal_name }}</td>
                         <td>{{ $order->receipt_no }}</td>
                         <td>{{ $order->name }}</td>
+                        <td>{{ $order->mobile }}</td>
                         <td>{{ $order->order_mode }}</td>
                         <td>{{ $order->payment_mode }}</td>
                         <td><label

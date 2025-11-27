@@ -226,7 +226,7 @@ class order extends Model
 				$query->where("sales_receipts.web", "=", $request->category);
 			})
 
-			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode", "service_provider_details.provider_name","wallet.provider_name as wallet", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"))
+			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "customers.mobile", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode", "service_provider_details.provider_name","wallet.provider_name as wallet", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"))
 			->orderBy("sales_receipts.id", "desc");
 		// ->toSql();
 		// ->paginate(100);
