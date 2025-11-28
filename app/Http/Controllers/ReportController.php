@@ -494,6 +494,7 @@ class ReportController extends Controller
                 $q->when($request->ordermode != "", function ($q) use ($request) {
                     $q->where("order_mode_id", $request->ordermode);
                 });
+                $q->where("status", "!=", 12);
             })
             ->when($request->department != "", function ($q) use ($request) {
                 $q->whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"));
