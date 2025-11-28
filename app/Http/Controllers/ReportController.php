@@ -3489,50 +3489,50 @@ class ReportController extends Controller
                 $pdf->setFillColor(232, 232, 232);
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->ln(2);
-                foreach ($details as $key => $value) {
+                foreach ($details as $key => $receiptValue) {
 
                     if ($permission[0]->fbr_sync == 1) {
-                        $salesTax = $value->sales_tax_amount;
+                        $salesTax = $receiptValue->sales_tax_amount;
                     } else {
-                        $salesTax = $value->srb;
+                        $salesTax = $receiptValue->srb;
                     }
 
-                    if ($value->void_receipt == 0) {
+                    if ($receiptValue->void_receipt == 0) {
                         $totalqty = $totalqty++;
-                        $totalactualamount = $totalactualamount + $value->actual_amount;
+                        $totalactualamount = $totalactualamount + $receiptValue->actual_amount;
                         $totalsalestax = $totalsalestax + $salesTax;
-                        $totalamount = $totalamount + $value->total_amount;
-                        $totaldiscountamount = $totaldiscountamount + $value->discount_amount;
+                        $totalamount = $totalamount + $receiptValue->total_amount;
+                        $totaldiscountamount = $totaldiscountamount + $receiptValue->discount_amount;
                     }
 
                     if ($permission[0]->fbr_sync == 1) {
                         $pdf->SetFont('Arial', 'B', 12);
                         $pdf->setFillColor(54, 69, 79);
                         $pdf->SetTextColor(255, 255, 255);
-                        $pdf->Cell(190, 6, "FBR Invoice Number : " . $value->fbrInvNumber, 0, 1, 'C', 1);
+                        $pdf->Cell(190, 6, "FBR Invoice Number : " . $receiptValue->fbrInvNumber, 0, 1, 'C', 1);
                         $pdf->SetFont('Arial', 'B', 10);
                         $pdf->setFillColor(160, 160, 160);
                         $pdf->SetTextColor(0, 0, 0);
                     }
 
                     $pdf->SetFont('Arial', '', 10);
-                    if ($value->void_receipt == 1) {
+                    if ($receiptValue->void_receipt == 1) {
                         $pdf->setFillColor(255, 0, 0);
                         $pdf->SetTextColor(255, 255, 255);
                     } else {
                         $pdf->setFillColor(160, 160, 160);
                         $pdf->SetTextColor(0, 0, 0);
                     }
-                    $pdf->Cell(20, 6, $value->id, 0, 0, 'L', 1);
-                    $pdf->Cell(60, 6, $value->customer, 0, 0, 'L', 1);
-                    $pdf->Cell(25, 6, $value->order_mode, 0, 0, 'L', 1);
-                    $pdf->Cell(20, 6, number_format($value->actual_amount, 2), 0, 0, 'C', 1);
+                    $pdf->Cell(20, 6, $receiptValue->id, 0, 0, 'L', 1);
+                    $pdf->Cell(60, 6, $receiptValue->customer, 0, 0, 'L', 1);
+                    $pdf->Cell(25, 6, $receiptValue->order_mode, 0, 0, 'L', 1);
+                    $pdf->Cell(20, 6, number_format($receiptValue->actual_amount, 2), 0, 0, 'C', 1);
                     $pdf->Cell(20, 6, number_format($salesTax, 2), 0, 0, 'C', 1);
-                    $pdf->Cell(15, 6, number_format($value->discount_amount, 2), 0, 0, 'C', 1);
-                    $pdf->Cell(30, 6, number_format($value->total_amount, 2), 0, 1, 'C', 1);
+                    $pdf->Cell(15, 6, number_format($receiptValue->discount_amount, 2), 0, 0, 'C', 1);
+                    $pdf->Cell(30, 6, number_format($receiptValue->total_amount, 2), 0, 1, 'C', 1);
                     // $pdf->ln(1);
 
-                    $receiptDetails = $report->receiptDetails($value->id);
+                    $receiptDetails = $report->receiptDetails($receiptValue->id);
 
                     if (!empty($receiptDetails)) {
 
@@ -3559,7 +3559,10 @@ class ReportController extends Controller
                             // }else{
                             // $itemQty = $value->total_qty;
                             // }
+                            if ($receiptValue->void_receipt == 0) {
                             $totalItemCount = $totalItemCount + $itemQty;
+                        }
+                            // $totalItemCount = $totalItemCount + $itemQty;
                             $pdf->SetFont('Arial', '', 10);
                             $pdf->setFillColor(232, 232, 232);
                             $pdf->SetTextColor(0, 0, 0);
@@ -3601,20 +3604,20 @@ class ReportController extends Controller
             $pdf->ln(2);
             $details = $report->totalSales($request->terminalid, $request->fromdate, $request->todate, $request->type, $request->category, $request->customer);
             $permission = $report->terminalPermission($request->terminalid);
-            foreach ($details as $value) {
+            foreach ($details as $receiptValue) {
 
                 if ($permission[0]->fbr_sync == 1) {
-                    $salesTax = $value->sales_tax_amount;
+                    $salesTax = $receiptValue->sales_tax_amount;
                 } else {
-                    $salesTax = $value->srb;
+                    $salesTax = $receiptValue->srb;
                 }
 
-                if ($value->void_receipt == 0) {
+                if ($receiptValue->void_receipt == 0) {
                     $totalqty = $totalqty++;
-                    $totalactualamount = $totalactualamount + $value->actual_amount;
+                    $totalactualamount = $totalactualamount + $receiptValue->actual_amount;
                     $totalsalestax = $totalsalestax + $salesTax;
-                    $totalamount = $totalamount + $value->total_amount;
-                    $totaldiscountamount = $totaldiscountamount + $value->discount_amount;
+                    $totalamount = $totalamount + $receiptValue->total_amount;
+                    $totaldiscountamount = $totaldiscountamount + $receiptValue->discount_amount;
                 }
 
                 $pdf->SetFont('Arial', '', 10);
@@ -3623,13 +3626,13 @@ class ReportController extends Controller
                     $pdf->SetFont('Arial', 'B', 12);
                     $pdf->setFillColor(54, 69, 79);
                     $pdf->SetTextColor(255, 255, 255);
-                    $pdf->Cell(190, 6, "FBR Invoice Number : " . $value->fbrInvNumber, 0, 1, 'C', 1);
+                    $pdf->Cell(190, 6, "FBR Invoice Number : " . $receiptValue->fbrInvNumber, 0, 1, 'C', 1);
                     $pdf->SetFont('Arial', 'B', 10);
                     $pdf->setFillColor(160, 160, 160);
                     $pdf->SetTextColor(0, 0, 0);
                 }
 
-                if ($value->void_receipt == 1) {
+                if ($receiptValue->void_receipt == 1) {
                     $pdf->setFillColor(255, 0, 0);
                     $pdf->SetTextColor(255, 255, 255);
                 } else {
@@ -3637,16 +3640,16 @@ class ReportController extends Controller
                     $pdf->SetTextColor(0, 0, 0);
                 }
 
-                $pdf->Cell(20, 6, $value->id, 0, 0, 'L', 1);
-                $pdf->Cell(60, 6, $value->customer, 0, 0, 'L', 1);
-                $pdf->Cell(25, 6, $value->order_mode, 0, 0, 'L', 1);
-                $pdf->Cell(20, 6, number_format($value->actual_amount, 2), 0, 0, 'C', 1);
+                $pdf->Cell(20, 6, $receiptValue->id, 0, 0, 'L', 1);
+                $pdf->Cell(60, 6, $receiptValue->customer, 0, 0, 'L', 1);
+                $pdf->Cell(25, 6, $receiptValue->order_mode, 0, 0, 'L', 1);
+                $pdf->Cell(20, 6, number_format($receiptValue->actual_amount, 2), 0, 0, 'C', 1);
                 $pdf->Cell(20, 6, number_format($salesTax, 2), 0, 0, 'C', 1);
-                $pdf->Cell(15, 6, number_format($value->discount_amount, 2), 0, 0, 'C', 1);
-                $pdf->Cell(30, 6, number_format($value->total_amount, 2), 0, 1, 'R', 1);
+                $pdf->Cell(15, 6, number_format($receiptValue->discount_amount, 2), 0, 0, 'C', 1);
+                $pdf->Cell(30, 6, number_format($receiptValue->total_amount, 2), 0, 1, 'R', 1);
                 // $pdf->ln(1);
 
-                $receiptDetails = $report->receiptDetails($value->id);
+                $receiptDetails = $report->receiptDetails($receiptValue->id);
 
                 if (!empty($receiptDetails)) {
 
@@ -3673,7 +3676,9 @@ class ReportController extends Controller
                         // }else{
                         // $itemQty = $value->total_qty;
                         // }
-                        $totalItemCount = $totalItemCount + $itemQty;
+                        if ($receiptValue->void_receipt == 0) {
+                            $totalItemCount = $totalItemCount + $itemQty;
+                        }
                         $pdf->SetFont('Arial', '', 10);
                         $pdf->setFillColor(232, 232, 232);
                         $pdf->SetTextColor(0, 0, 0);
