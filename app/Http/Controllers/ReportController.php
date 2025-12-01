@@ -2910,7 +2910,7 @@ class ReportController extends Controller
                 $pdf->Cell(22.5, 7, number_format($value->Expenses, 2), 0, 0, 'L', 1);
                 $pdf->Cell(22.5, 7, number_format($cashinhand, 2), 0, 0, 'L', 1); //cash in hand
                 if (session("company_id") != 102) {
-                    $pdf->Cell(22, 7, number_format($value->closingBal, 2), 0, 1, 'L', 1); //closing amount
+                    $pdf->Cell(22, 7, number_format(floatval($value->closingBal), 2), 0, 1, 'L', 1); //closing amount
                 } else {
                     $pdf->Cell(22, 7, number_format($value->closingBal, 2), 0, 0, 'L', 1);
                     $pdf->Cell(22.5, 7, number_format($balance, 2), 0, 1, 'L', 1);
