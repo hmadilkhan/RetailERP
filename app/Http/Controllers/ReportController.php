@@ -744,6 +744,7 @@ class ReportController extends Controller
             $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
         }
         $q = OrderModel::query();
+        $q->where("status", "!=", 12);
         $q->when($request->declaration == "declaration", function ($q) use ($request, $openingIds) {
             $q->whereIn("opening_id", $openingIds);
         }, function ($q) use ($request) {
@@ -773,6 +774,7 @@ class ReportController extends Controller
             ->when($request->department != "", function ($q) use ($request) {
                 $q->whereIn("id", OrderDetails::whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"))->groupBy("receipt_id")->pluck("receipt_id"));
             })
+            
             ->select(DB::raw('Count(*) as total_receipts'), DB::raw('SUM(total_amount) as total_amount'));
         return $q->get();
     }
@@ -785,6 +787,7 @@ class ReportController extends Controller
         } else {
             $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
         }
+      
         return OrderDetails::with("order", "inventory:id,item_code,product_name,weight_qty", "order.terminal:terminal_id,terminal_name", "order.branchrelation:branch_id,branch_name,code")
             ->whereHas('order', function ($q) use ($request, $openingIds) {
                 $q->when($request->declaration == "declaration", function ($q) use ($request, $openingIds) {
