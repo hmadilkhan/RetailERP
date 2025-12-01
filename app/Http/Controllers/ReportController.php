@@ -2869,7 +2869,7 @@ class ReportController extends Controller
                 if (session("company_id") == 102) {
                     $cashinhand = $cashinhand - $value->bal;
                 }
-                $balance = $value->closingBal - $cashinhand;
+                $balance = floatval($value->closingBal) - floatval($cashinhand);
                 //total calculation
                 $totalsalesreturn = $totalsalesreturn + $value->SalesReturn;
                 $totalop = $totalop + $value->bal;
