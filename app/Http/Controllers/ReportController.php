@@ -1427,7 +1427,7 @@ class ReportController extends Controller
         $pdf->Cell(190, 2, '', '', 1); //SPACE
 
         //COGS START HERE
-        if (session('company_id') != 135) {
+        if (session('company_id') != 134) {
 
 
             $pdf->SetFont('Arial', 'B', 12);
