@@ -2888,7 +2888,7 @@ class ReportController extends Controller
                 $totalcashout = $totalcashout + $value->cashOut;
                 $totalpaid = $totalpaid + $value->paidByCustomer;
                 $totalhand = $totalhand + $cashinhand;
-                $totalclosing = $totalclosing + $value->closingBal;
+                $totalclosing = $totalclosing + floatval($value->closingBal);
                 $totalbalance = $totalbalance + $balance;
 
                 $pdf->SetFont('Arial', '', 9);
