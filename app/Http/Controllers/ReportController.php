@@ -2865,7 +2865,7 @@ class ReportController extends Controller
             $details = $report->sales_details($request->terminalid, $request->fromdate, $request->todate, $request->branch);
 
             foreach ($details as $key => $value) {
-                $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + $value->adv_booking_cash + $value->order_delivered_cash) - ($value->cashOut + $value->Expenses + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
+                $cashinhand = ($value->bal + $value->Cash + $value->sale_tax + $value->service_tax + $value->cashIn + ($value->adv_booking_cash ?? 0) + ($value->order_delivered_cash ?? 0)) - ($value->cashOut + $value->Expenses + $value->SalesReturn); //- $value->Discount - $value->promo - $value->coupon
                 if (session("company_id") == 102) {
                     $cashinhand = $cashinhand - $value->bal;
                 }
