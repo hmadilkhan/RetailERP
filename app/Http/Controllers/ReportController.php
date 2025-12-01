@@ -774,7 +774,7 @@ class ReportController extends Controller
             ->when($request->department != "", function ($q) use ($request) {
                 $q->whereIn("id", OrderDetails::whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"))->groupBy("receipt_id")->pluck("receipt_id"));
             })
-            
+
             ->select(DB::raw('Count(*) as total_receipts'), DB::raw('SUM(total_amount) as total_amount'));
         return $q->get();
     }
@@ -787,7 +787,7 @@ class ReportController extends Controller
         } else {
             $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
         }
-      
+
         return OrderDetails::with("order", "inventory:id,item_code,product_name,weight_qty", "order.terminal:terminal_id,terminal_name", "order.branchrelation:branch_id,branch_name,code")
             ->whereHas('order', function ($q) use ($request, $openingIds) {
                 $q->when($request->declaration == "declaration", function ($q) use ($request, $openingIds) {
@@ -1427,23 +1427,26 @@ class ReportController extends Controller
         $pdf->Cell(190, 2, '', '', 1); //SPACE
 
         //COGS START HERE
+        if (session('company_id') != 135) {
 
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->setFillColor(230, 230, 230);
-        $pdf->Cell(190, 8, 'COST OF GOOD SALES', 0, 1, 'L', 1);
 
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(70, 8, 'Cost of Good Sold - All Products', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', 0, 0, 'L');
-        $pdf->Cell(40, 8, number_format($cogs[0]->cost, 2), 0, 1, 'R');
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->setFillColor(230, 230, 230);
+            $pdf->Cell(190, 8, 'COST OF GOOD SALES', 0, 1, 'L', 1);
 
-        $totalCogs = $cogs[0]->cost;
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(95, 5, 'Total COGS', 0, 0, 'L');
-        $pdf->Cell(95, 5, number_format($totalCogs, 2), 0, 1, 'R');
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(70, 8, 'Cost of Good Sold - All Products', 0, 0, 'L');
+            $pdf->Cell(40, 8, '', 0, 0, 'L');
+            $pdf->Cell(40, 8, '', 0, 0, 'L');
+            $pdf->Cell(40, 8, number_format($cogs[0]->cost, 2), 0, 1, 'R');
 
-        //COGS END HERE
+            $totalCogs = $cogs[0]->cost;
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->Cell(95, 5, 'Total COGS', 0, 0, 'L');
+            $pdf->Cell(95, 5, number_format($totalCogs, 2), 0, 1, 'R');
+
+            //COGS END HERE
+        }
 
         $pdf->Cell(190, 2, '', '', 1); //SPACE
 
@@ -1499,23 +1502,23 @@ class ReportController extends Controller
         $pdf->setFillColor(230, 230, 230);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(95, 8, "Discounts", 0, 0, 'L', 1); //your cell
-        $pdf->Cell(95, 8, "Rs. " . number_format($discounts[0]->discounts, 2), 0, 1, 'R', 1); 
-       
+        $pdf->Cell(95, 8, "Rs. " . number_format($discounts[0]->discounts, 2), 0, 1, 'R', 1);
+
         $pdf->Cell(190, 2, '', '', 1); // EXtra Space
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(230, 230, 230);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(95, 8, "Sales Return", 0, 0, 'L', 1); //your cell
-        $pdf->Cell(95, 8, "Rs. " . number_format($salesreturn[0]->salesreturn, 2), 0, 1, 'R', 1); 
-       
+        $pdf->Cell(95, 8, "Rs. " . number_format($salesreturn[0]->salesreturn, 2), 0, 1, 'R', 1);
+
         $pdf->Cell(190, 2, '', '', 1); // EXtra Space
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(230, 230, 230);
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(95, 8, "Salaries", 0, 0, 'L', 1); //your cell
-        $pdf->Cell(95, 8, "Rs. " . number_format($salaries[0]->salaries, 2), 0, 1, 'R', 1); 
+        $pdf->Cell(95, 8, "Rs. " . number_format($salaries[0]->salaries, 2), 0, 1, 'R', 1);
 
-       
+
 
         // $pdf->Cell(70, 6, 'Discounts', 0, 0, 'L');
         // $pdf->Cell(40, 6, '', 0, 0, 'L');
@@ -2148,14 +2151,14 @@ class ReportController extends Controller
             // $totalCost = $totalCost + $value->cost_price;
             $totalCost = $totalCost + $cost;
             // echo $value->qty." | ".$cost." -".  $value->qty * $cost."</br>";   
-            $asset = $asset +  $value->qty * $cost ;//($value->qty * number_format($cost,2));
+            $asset = $asset +  $value->qty * $cost; //($value->qty * number_format($cost,2));
             $pdf->Cell(28, 5, $value->item_code, 0, 0, 'L', 1);
             $pdf->Cell(50, 5, $value->product_name, 0, 0, 'L', 1);
             // $pdf->Cell(23,5,number_format($value->qty,2),0,0,'L',1);
             $pdf->Cell(10, 5, $value->um, 0, 0, 'L', 1);
             // $pdf->Cell(28,5, number_format($value->cost,2),0,0,'R',1);
             // $pdf->Cell(33,5,number_format($value->qty*$value->cost,2),0,0,'R',1);
-            $pdf->Cell(23, 5, number_format($cost,2), 0, 0, 'R', 1);
+            $pdf->Cell(23, 5, number_format($cost, 2), 0, 0, 'R', 1);
             $pdf->Cell(23, 5, number_format($value->retail_price, 2), 0, 0, 'R', 1);
             $pdf->Cell(28, 5, number_format($value->totalqty, 2), 0, 0, 'R', 1);
             $pdf->Cell(28, 5, number_format($value->qty, 2), 0, 1, 'R', 1);
@@ -2499,62 +2502,62 @@ class ReportController extends Controller
             // Separate expenses by platform_type
             $webExpenses = collect($expenses)->where('platform_type', 1);
             $otherExpenses = collect($expenses)->where('platform_type', '!=', 1);
-            
+
             $total = 0;
             $sr = 1;
-            
+
             // Web Expenses Section
             if ($webExpenses->count() > 0) {
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->Cell(190, 8, 'WEB EXPENSES', 'B', 1, 'L');
-                
+
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->Cell(20, 8, 'Sr.', 'B,R', 0, 'C');
                 $pdf->Cell(140, 8, 'Expense Discription', 'B,R', 0, 'L');
                 $pdf->Cell(30, 8, 'Amount', 'B', 1, 'R');
-                
+
                 foreach ($webExpenses as $value) {
                     $total += $value->net_amount;
                     $pdf->SetFont('Arial', 'B', 11);
                     $pdf->Cell(20, 7, $sr++, 'R', 0, 'C');
                     $pdf->Cell(140, 7, $value->expense_category . " | " . $value->date, 'R', 0, 'L');
                     $pdf->Cell(30, 7, number_format($value->net_amount, 2), 0, 1, 'R');
-                    
+
                     $pdf->SetFont('Arial', '', 11);
                     $pdf->Cell(20, 3, '', 'R', 0, 'C');
                     $pdf->Cell(5, 3, '', '', 0, 'L');
                     $pdf->Cell(135, 3, $value->expense_details, 'R', 0, 'L');
                     $pdf->Cell(30, 3, '', 0, 1, 'R');
-                    
+
                     $pdf->Cell(20, 3, '', 'R', 0, 'C');
                     $pdf->Cell(170, 3, '', 0, 1, 'L');
                 }
                 $pdf->ln(5);
             }
-            
+
             // Other Expenses Section
             if ($otherExpenses->count() > 0) {
                 $pdf->SetFont('Arial', 'B', 14);
                 $pdf->Cell(190, 8, 'OTHER EXPENSES', 'B', 1, 'L');
-                
+
                 $pdf->SetFont('Arial', 'B', 11);
                 $pdf->Cell(20, 8, 'Sr.', 'B,R', 0, 'C');
                 $pdf->Cell(140, 8, 'Expense Discription', 'B,R', 0, 'L');
                 $pdf->Cell(30, 8, 'Amount', 'B', 1, 'R');
-                
+
                 foreach ($otherExpenses as $value) {
                     $total += $value->net_amount;
                     $pdf->SetFont('Arial', 'B', 11);
                     $pdf->Cell(20, 7, $sr++, 'R', 0, 'C');
                     $pdf->Cell(140, 7, $value->expense_category . " | " . $value->date, 'R', 0, 'L');
                     $pdf->Cell(30, 7, number_format($value->net_amount, 2), 0, 1, 'R');
-                    
+
                     $pdf->SetFont('Arial', '', 11);
                     $pdf->Cell(20, 3, '', 'R', 0, 'C');
                     $pdf->Cell(5, 3, '', '', 0, 'L');
                     $pdf->Cell(135, 3, $value->expense_details, 'R', 0, 'L');
                     $pdf->Cell(30, 3, '', 0, 1, 'R');
-                    
+
                     $pdf->Cell(20, 3, '', 'R', 0, 'C');
                     $pdf->Cell(170, 3, '', 0, 1, 'L');
                 }
@@ -2565,7 +2568,7 @@ class ReportController extends Controller
             $pdf->Cell(20, 8, 'Sr.', 'B,R', 0, 'C');
             $pdf->Cell(140, 8, 'Expense Discription', 'B,R', 0, 'L');
             $pdf->Cell(30, 8, 'Amount', 'B', 1, 'R');
-            
+
             $total = 0;
             foreach ($expenses as $key => $value) {
                 $total += $value->net_amount;
@@ -2573,13 +2576,13 @@ class ReportController extends Controller
                 $pdf->Cell(20, 7, $key + 1, 'R', 0, 'C');
                 $pdf->Cell(140, 7, $value->expense_category . " | " . $value->date, 'R', 0, 'L');
                 $pdf->Cell(30, 7, number_format($value->net_amount, 2), 0, 1, 'R');
-                
+
                 $pdf->SetFont('Arial', '', 11);
                 $pdf->Cell(20, 3, '', 'R', 0, 'C');
                 $pdf->Cell(5, 3, '', '', 0, 'L');
                 $pdf->Cell(135, 3, $value->expense_details, 'R', 0, 'L');
                 $pdf->Cell(30, 3, '', 0, 1, 'R');
-                
+
                 $pdf->Cell(20, 3, '', 'R', 0, 'C');
                 $pdf->Cell(170, 3, '', 0, 1, 'L');
             }
@@ -3565,8 +3568,8 @@ class ReportController extends Controller
                             // $itemQty = $value->total_qty;
                             // }
                             if ($receiptValue->void_receipt == 0) {
-                            $totalItemCount = $totalItemCount + $itemQty;
-                        }
+                                $totalItemCount = $totalItemCount + $itemQty;
+                            }
                             // $totalItemCount = $totalItemCount + $itemQty;
                             $pdf->SetFont('Arial', '', 10);
                             $pdf->setFillColor(232, 232, 232);
@@ -4528,7 +4531,7 @@ class ReportController extends Controller
                             number_format($item->amount - $item->cost),
                             $item->order_status_name
                         );
-                        if($item->void_receipt != 1){
+                        if ($item->void_receipt != 1) {
                             $totalCount++;
                             $totalQty += $item->qty;
                             $totalAmount += $item->amount;
