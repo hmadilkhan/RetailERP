@@ -173,6 +173,13 @@ class report extends Model
         $result = DB::select("SELECT SUM(a.total_amount ) AS sales FROM sales_receipts a     WHERE a.status = 4 and a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))", [$fromdate, $todate, $branch]);
         return $result;
     }
+    public  function total_void_sales($fromdate, $todate, $branch)
+    {
+        $branch = ($branch != "" ? $branch : session('branch'));
+        //INNER JOIN sales_account_subdetails c ON c.receipt_id = a.id
+        $result = DB::select("SELECT SUM(a.total_amount ) AS sales FROM sales_receipts a     WHERE a.status = 12 and a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))", [$fromdate, $todate, $branch]);
+        return $result;
+    }
 
 
     public  function expenses($fromdate, $todate, $branch)
