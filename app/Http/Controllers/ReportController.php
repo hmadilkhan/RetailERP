@@ -5556,11 +5556,17 @@ class ReportController extends Controller
             $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->Cash, 0) ?? 0, 0, 1, 'R', 1);
         }
-        if ($permissions[0]->customer_credit_sale == 1) {
+        if ($permissions[0]->card_sale == 1) {
             $pdf->SetFont('Arial', '', 10);
             $pdf->Cell(38, 6, "Credit Card Sales", 0, 0, 'L', 1);
             $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
             $pdf->Cell(30, 6, number_format($heads[0]->CreditCard, 0) ?? 0, 0, 1, 'R', 1);
+        }
+        if ($permissions[0]->customer_credit_sale == 1) {
+            $pdf->SetFont('Arial', '', 10);
+            $pdf->Cell(38, 6, "Customer Credit Sales", 0, 0, 'L', 1);
+            $pdf->Cell(7, 6, ":", 0, 0, 'C', 1);
+            $pdf->Cell(30, 6, number_format($heads[0]->CustomerCredit, 0) ?? 0, 0, 1, 'R', 1);
         }
         if ($permissions[0]->wallets_sales == 1) {
             $pdf->SetFont('Arial', '', 10);
