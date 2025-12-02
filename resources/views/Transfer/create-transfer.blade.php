@@ -76,7 +76,7 @@
                             <div class="form-control-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6">
                         <div class="form-group">
                             <label class="form-control-label">Enter Transfer Quantity</label>
                             <div class="input-group">
