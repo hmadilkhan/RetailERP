@@ -68,7 +68,7 @@
                             <div class="form-control-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-2">
                         <div class="form-group">
                             <label class="form-control-label">Available Stock</label>
                             <label class="form-control-label f-right text-info" id="stock_status"></label>
@@ -76,21 +76,21 @@
                             <div class="form-control-feedback"></div>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <label class="form-control-label">Enter Transfer Quantity</label>
-                            <input class="form-control" type="number" min="1" name="qty" id="qty"
-                                value="0" />
+                            <div class="input-group">
+                                <input class="form-control" type="number" min="1" name="qty" id="qty"
+                                    value="0" />
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary btn-sm" type="button" id="addProductBtn" style="padding: 8px 12px;">
+                                        <i class="icofont icofont-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="form-control-feedback">
                                 <p>Hit Enter to add products</p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-1">
-                            <label class="form-control-label">&nbsp;</label>
-                            <button class="btn btn-primary btn-sm form-control" type="button" id="addProductBtn">
-                                <i class="icofont icofont-plus"></i>
-                            </button>
                         </div>
                     </div>
 
