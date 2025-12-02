@@ -194,7 +194,8 @@
 
         // Add product button click handler
         $('#addProductBtn').click(function() {
-            $('#qty').trigger($.Event('keypress', { which: 13, keyCode: 13 }));
+            add_product()
+            // $('#qty').trigger($.Event('keypress', { which: 13, keyCode: 13 }));
         });
 
         $('#trftable').DataTable({
