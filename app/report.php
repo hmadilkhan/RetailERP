@@ -695,7 +695,7 @@ class report extends Model
         if ($status != "" && $status != "all") {
             $filter .= " and a.status = " . $status;
         }
-        $result = DB::select('SELECT d.id,d.fullname FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter . ' group by d.fullname', [$fromdate, $todate]);
+        $result = DB::select('SELECT d.id,d.fullname,a.bill_print_name FROM sales_receipts a INNER JOIN sales_order_status b on b.order_status_id = a.status INNER JOIN customers c on c.id = a.customer_id INNER JOIN user_details d on d.id = a.sales_person_id WHERE a.date between ? and ?  ' . $filter . ' group by d.fullname', [$fromdate, $todate]);
         return $result;
     }
 

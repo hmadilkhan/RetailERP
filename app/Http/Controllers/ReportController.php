@@ -1511,7 +1511,7 @@ class ReportController extends Controller
         $pdf->SetTextColor(0, 0, 0);
         $pdf->Cell(95, 8, "Sales Return", 0, 0, 'L', 1); //your cell
         $pdf->Cell(95, 8, "Rs. " . number_format($salesreturn[0]->salesreturn, 2), 0, 1, 'R', 1);
-        
+
         $pdf->Cell(190, 2, '', '', 1); // EXtra Space
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->setFillColor(230, 230, 230);
@@ -6733,7 +6733,11 @@ class ReportController extends Controller
                     $pdf->SetTextColor(0, 0, 0);
                     $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
                     $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
-                    $pdf->Cell(45, 6, $values->name, 0, 0, 'L', 1);
+                    if (session('company_id') == 134) {
+                        $pdf->Cell(45, 6, $values->name ?? 'N/A', 0, 0, 'L', 1);
+                    } else {
+                        $pdf->Cell(45, 6, $values->name, 0, 0, 'L', 1);
+                    }
                     $pdf->Cell(40, 6, number_format($values->total_amount, 0), 0, 0, 'C', 1);
                     $pdf->Cell(25, 6, $values->status, 0, 0, 'L', 1);
                     $pdf->Cell(20, 6, date("d-m-Y", strtotime($values->date)), 0, 1, 'L', 1);
@@ -6799,7 +6803,11 @@ class ReportController extends Controller
                 $pdf->SetTextColor(0, 0, 0);
                 $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
                 $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
-                $pdf->Cell(45, 6, $values->name, 0, 0, 'L', 1);
+                if (session('company_id') == 134) {
+                    $pdf->Cell(45, 6, $values->name ?? 'N/A', 0, 0, 'L', 1);
+                } else {
+                    $pdf->Cell(45, 6, $values->name, 0, 0, 'L', 1);
+                }
                 $pdf->Cell(40, 6, number_format($values->total_amount, 0), 0, 0, 'C', 1);
                 $pdf->Cell(25, 6, $values->status, 0, 0, 'L', 1);
                 $pdf->Cell(20, 6, date("d-m-Y", strtotime($values->date)), 0, 1, 'L', 1);
