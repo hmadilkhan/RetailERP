@@ -6734,7 +6734,7 @@ class ReportController extends Controller
                     $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
                     $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
                     if (session('company_id') == 134) {
-                        $pdf->Cell(45, 6, $values->name ?? 'N/A', 0, 0, 'L', 1);
+                        $pdf->Cell(45, 6, $values->bill_print_name ?? 'N/A', 0, 0, 'L', 1);
                     } else {
                         $pdf->Cell(45, 6, $values->name, 0, 0, 'L', 1);
                     }
@@ -6804,7 +6804,7 @@ class ReportController extends Controller
                 $pdf->Cell(20, 6, $values->id, 0, 0, 'L', 1);
                 $pdf->Cell(40, 6, $values->receipt_no, 0, 0, 'L', 1);
                 if (session('company_id') == 134) {
-                    $pdf->Cell(45, 6, $values->name ?? 'N/A', 0, 0, 'L', 1);
+                    $pdf->Cell(45, 6, $values->bill_print_name ?? 'N/A', 0, 0, 'L', 1);
                 } else {
                     $pdf->Cell(45, 6, $values->name, 0, 0, 'L', 1);
                 }
