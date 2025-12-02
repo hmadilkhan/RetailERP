@@ -79,8 +79,15 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="form-control-label">Enter Transfer Quantity</label>
-                            <input class="form-control" type="number" min="1" name="qty" id="qty"
-                                value="0" />
+                            <div class="input-group">
+                                <input class="form-control" type="number" min="1" name="qty" id="qty"
+                                    value="0" />
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary btn-sm" type="button" id="addProductBtn" style="padding: 8px 12px;">
+                                        <i class="icofont icofont-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
                             <div class="form-control-feedback">
                                 <p>Hit Enter to add products</p>
                             </div>
@@ -182,6 +189,11 @@
                 next: "icofont icofont-rounded-right",
                 previous: "icofont icofont-rounded-left"
             }
+        });
+
+        // Add product button click handler
+        $('#addProductBtn').click(function() {
+            $('#qty').trigger($.Event('keypress', { which: 13, keyCode: 13 }));
         });
 
         $('#trftable').DataTable({
