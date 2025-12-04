@@ -306,6 +306,8 @@ Route::get('/send-report', [ReportController::class, 'generatedSystematicReport'
 Route::get('/send-logout-notification/{id}', 'UserDetailsController@sendPushNotificationToUserDevice');
 Route::middleware(['statusCheck'])->group(function () {
     Route::get('/dashboard', [HomeController::class, "index"])->name('home');
+    Route::get('/premium-dashboard', \App\Livewire\Dashboard\PremiumDashboard::class)->name('premium.dashboard');
+    Route::get('/premium-sales-details', \App\Livewire\Sales\PremiumSalesDetails::class)->name('premium.sales.details');
     Route::post('/getTerminals', [HomeController::class, 'getTerminalsByBranch']);
     Route::get('/sales-details', [HomeController::class, 'salesDetails']);
     Route::post('/heads-details', [HomeController::class, 'salesHead']);
