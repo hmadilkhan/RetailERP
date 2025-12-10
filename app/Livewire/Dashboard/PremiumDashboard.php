@@ -8,29 +8,30 @@ use Illuminate\Support\Facades\DB;
 
 class PremiumDashboard extends Component
 {
+    #[Title('Dashboard')]
     public $products;
     public $totalstock;
     public $months;
-    public $year;
     public $orders;
     public $branches;
-    public $sales;
     public $totalSales;
     public $projected;
     public $permission;
+    public $year;
+    public $sales;
 
     public function mount(dashboard $dash)
     {
         $this->products = $dash->getMostSalesProduct();
         $this->totalstock = $dash->getTotalItems();
         $this->months = $dash->getMonthsSales();
-        $this->year = $dash->getYearlySales();
         $this->orders = $dash->orderStatus();
         $this->branches = $dash->branches();
-        $this->sales = $dash->sales();
         $this->totalSales = $dash->totalSales();
         $this->permission = $dash->dashboardRole();
         $this->projected = $dash->getProjectedSales();
+        $this->year = $dash->getYearlySales();
+        $this->sales = $dash->sales();
     }
 
     public function render()

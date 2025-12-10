@@ -308,6 +308,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/dashboard', [HomeController::class, "index"])->name('home');
     Route::get('/premium-dashboard', \App\Livewire\Dashboard\PremiumDashboard::class)->name('premium.dashboard');
     Route::get('/premium-sales-details', \App\Livewire\Sales\PremiumSalesDetails::class)->name('premium.sales.details');
+    Route::get('/premium-terminal-details/{terminal}/{opening}', \App\Livewire\Sales\PremiumTerminalDetails::class)->name('premium.terminal.details');
     Route::post('/getTerminals', [HomeController::class, 'getTerminalsByBranch']);
     Route::get('/sales-details', [HomeController::class, 'salesDetails']);
     Route::post('/heads-details', [HomeController::class, 'salesHead']);

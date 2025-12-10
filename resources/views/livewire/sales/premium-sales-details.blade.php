@@ -1,17 +1,20 @@
 <div class="premium-sales-wrapper">
-    <div class="container-fluid">
+    {{-- <div class="container-fluid">
         <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h2 class="page-title mb-1">Sales Details</h2>
-                        <p class="text-muted mb-0">View and manage all sales transactions</p>
+        <div class="premium-header mb-4">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="icon-wrapper">
+                        <i class="mdi mdi-chart-line"></i>
                     </div>
-                    <a href="{{ route('premium.dashboard') }}" class="btn btn-premium">
-                        <i class="mdi mdi-arrow-left me-2"></i>Back to Dashboard
-                    </a>
+                    <div>
+                        <h2 class="mb-0">Sales Details</h2>
+                        <p class="page-subtitle mb-0">View and manage all sales transactions</p>
+                    </div>
                 </div>
+                <a href="{{ route('premium.dashboard') }}" class="btn btn-premium">
+                    <i class="mdi mdi-arrow-left me-2"></i>Back to Dashboard
+                </a>
             </div>
         </div>
 
@@ -41,77 +44,61 @@
         </div>
 
         <!-- Branches Grid -->
-        <div class="card premium-card mb-4">
-            <div class="card-header bg-white border-0 pt-4 pb-3">
-                <h5 class="card-title mb-0 fw-bold">
-                    <i class="mdi mdi-office-building me-2 text-primary"></i>
+        <div class="branches-section mb-4">
+            <div class="section-header mb-3">
+                <h5 class="section-title">
+                    <i class="mdi mdi-office-building"></i>
                     {{ $selectedTab === 'active' ? 'Active' : 'Closed' }} Branches
                 </h5>
             </div>
-            <div class="card-body p-4">
-                <div class="row g-4">
-                    @if($selectedTab === 'active')
-                        @foreach($branches as $branch)
-                            <div class="col-xl-3 col-lg-4 col-md-6">
-                                <div class="branch-card" 
-                                     onclick="getdetails('{{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}','{{ $branch->identify }}','open')">
-                                    <div class="branch-card-header">
-                                        <div class="branch-logo">
-                                            <img src="{{ asset('storage/images/branch/' . (!empty($branch->branch_logo) ? $branch->branch_logo : 'placeholder.jpg')) }}" 
-                                                 alt="Branch Logo">
-                                        </div>
-                                        <div class="branch-info">
-                                            <h6 class="branch-name">{{ session('roleId') == 2 ? $branch->branch_name : $branch->terminal_name }}</h6>
-                                            <span class="badge bg-success-subtle text-success">
-                                                <i class="mdi mdi-circle-small"></i>Active
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="branch-card-body">
-                                        <div class="sales-amount">
-                                            <span class="currency">{{ session('currency') }}</span>
-                                            <span class="amount">{{ number_format($branch->sales, 0) }}</span>
-                                        </div>
-                                        <p class="sales-label">Total Sales</p>
-                                    </div>
-                                    <div class="branch-card-footer">
-                                        <span class="view-details">View Details <i class="mdi mdi-arrow-right"></i></span>
-                                    </div>
+            <div class="row g-3">
+                @if($selectedTab === 'active')
+                    @foreach($branches as $branch)
+                        <div class="col-xl-3 col-lg-4 col-md-6">
+                            <div class="branch-card" 
+                                 onclick="getdetails('{{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}','{{ $branch->identify }}','open')">
+                                <div class="branch-status-badge {{ $selectedTab === 'active' ? 'status-active' : 'status-closed' }}">
+                                    <i class="mdi mdi-circle"></i>
+                                </div>
+                                <div class="branch-logo-wrapper">
+                                    <img src="{{ asset('storage/images/branch/' . (!empty($branch->branch_logo) ? $branch->branch_logo : 'placeholder.jpg')) }}" 
+                                         alt="Branch Logo">
+                                </div>
+                                <h6 class="branch-name">{{ session('roleId') == 2 ? $branch->branch_name : $branch->terminal_name }}</h6>
+                                <div class="sales-info">
+                                    <div class="sales-amount">{{ session('currency') }} {{ number_format($branch->sales, 0) }}</div>
+                                    <div class="sales-label">Total Sales</div>
+                                </div>
+                                <div class="branch-action">
+                                    <i class="mdi mdi-arrow-right-circle"></i>
                                 </div>
                             </div>
-                        @endforeach
-                    @else
-                        @foreach($branchesClosedSales as $branch)
-                            <div class="col-xl-3 col-lg-4 col-md-6">
-                                <div class="branch-card" 
-                                     onclick="getdetails('{{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}','{{ $branch->identify }}','close')">
-                                    <div class="branch-card-header">
-                                        <div class="branch-logo">
-                                            <img src="{{ asset('storage/images/branch/' . (!empty($branch->branch_logo) ? $branch->branch_logo : 'placeholder.jpg')) }}" 
-                                                 alt="Branch Logo">
-                                        </div>
-                                        <div class="branch-info">
-                                            <h6 class="branch-name">{{ session('roleId') == 2 ? $branch->branch_name : $branch->terminal_name }}</h6>
-                                            <span class="badge bg-danger-subtle text-danger">
-                                                <i class="mdi mdi-circle-small"></i>Closed
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="branch-card-body">
-                                        <div class="sales-amount">
-                                            <span class="currency">{{ session('currency') }}</span>
-                                            <span class="amount">{{ number_format($branch->sales, 0) }}</span>
-                                        </div>
-                                        <p class="sales-label">Total Sales</p>
-                                    </div>
-                                    <div class="branch-card-footer">
-                                        <span class="view-details">View Details <i class="mdi mdi-arrow-right"></i></span>
-                                    </div>
+                        </div>
+                    @endforeach
+                @else
+                    @foreach($branchesClosedSales as $branch)
+                        <div class="col-xl-3 col-lg-4 col-md-6">
+                            <div class="branch-card" 
+                                 onclick="getdetails('{{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}','{{ $branch->identify }}','close')">
+                                <div class="branch-status-badge {{ $selectedTab === 'active' ? 'status-active' : 'status-closed' }}">
+                                    <i class="mdi mdi-circle"></i>
+                                </div>
+                                <div class="branch-logo-wrapper">
+                                    <img src="{{ asset('storage/images/branch/' . (!empty($branch->branch_logo) ? $branch->branch_logo : 'placeholder.jpg')) }}" 
+                                         alt="Branch Logo">
+                                </div>
+                                <h6 class="branch-name">{{ session('roleId') == 2 ? $branch->branch_name : $branch->terminal_name }}</h6>
+                                <div class="sales-info">
+                                    <div class="sales-amount">{{ session('currency') }} {{ number_format($branch->sales, 0) }}</div>
+                                    <div class="sales-label">Total Sales</div>
+                                </div>
+                                <div class="branch-action">
+                                    <i class="mdi mdi-arrow-right-circle"></i>
                                 </div>
                             </div>
-                        @endforeach
-                    @endif
-                </div>
+                        </div>
+                    @endforeach
+                @endif
             </div>
         </div>
 
@@ -153,20 +140,59 @@
             margin: -2rem;
         }
 
+        .premium-header {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .icon-wrapper {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
         .page-title {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #2c3e50;
+        }
+
+        .page-subtitle {
+            font-size: 0.875rem;
+            color: #6c757d;
         }
 
         .btn-premium {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 12px;
+            padding: 0.625rem 1.25rem;
+            border-radius: 10px;
             font-weight: 600;
+            font-size: 0.875rem;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .btn-premium:hover {
@@ -182,108 +208,231 @@
             transition: all 0.3s ease;
         }
 
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title i {
+            color: #667eea;
+            font-size: 1.25rem;
+        }
+
         .branch-card {
             background: white;
             border-radius: 16px;
             padding: 1.5rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-            height: 100%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 2px solid #f0f0f0;
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .branch-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
         }
 
         .branch-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 12px 24px rgba(102, 126, 234, 0.15);
             border-color: #667eea;
         }
 
-        .branch-card-header {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #f0f0f0;
+        .branch-card:hover::before {
+            transform: scaleX(1);
         }
 
-        .branch-logo {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+        .branch-status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .status-active {
+            color: #28a745;
+        }
+
+        .status-closed {
+            color: #dc3545;
+        }
+
+        .branch-logo-wrapper {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+            border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .branch-logo img {
+        .branch-logo-wrapper img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .branch-info {
-            flex: 1;
-        }
-
         .branch-name {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
-            margin-bottom: 0.25rem;
             color: #2c3e50;
+            margin-bottom: 1rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        .branch-card-body {
-            text-align: center;
-            padding: 1rem 0;
+        .sales-info {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
         }
 
         .sales-amount {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
             font-weight: 700;
             color: #667eea;
-            margin-bottom: 0.5rem;
-        }
-
-        .currency {
-            font-size: 1rem;
-            opacity: 0.7;
+            margin-bottom: 0.25rem;
         }
 
         .sales-label {
-            font-size: 0.875rem;
+            font-size: 0.75rem;
             color: #6c757d;
-            margin: 0;
-        }
-
-        .branch-card-footer {
-            text-align: center;
-            padding-top: 1rem;
-            border-top: 1px solid #f0f0f0;
-        }
-
-        .view-details {
-            color: #667eea;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             font-weight: 600;
-            font-size: 0.875rem;
+        }
+
+        .branch-action {
+            color: #667eea;
+            font-size: 1.5rem;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .branch-card:hover .branch-action {
+            opacity: 1;
+            transform: translateX(0);
         }
 
         .terminal-tabs-wrapper, .declaration-tabs-wrapper {
             overflow-x: auto;
             overflow-y: hidden;
+            padding: 0.5rem 0;
+        }
+
+        .terminal-tabs-wrapper::-webkit-scrollbar,
+        .declaration-tabs-wrapper::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .terminal-tabs-wrapper::-webkit-scrollbar-track,
+        .declaration-tabs-wrapper::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .terminal-tabs-wrapper::-webkit-scrollbar-thumb,
+        .declaration-tabs-wrapper::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
         }
 
         .terminal-tabs, .declaration-tabs {
             display: flex;
             gap: 0.75rem;
-            padding: 0.5rem 0;
             flex-wrap: nowrap;
         }
 
-        .terminal-tabs .btn, .declaration-tabs .btn {
-            white-space: nowrap;
+        .terminal-item, .declaration-item {
+            background: white;
+            border: 2px solid #e9ecef;
             border-radius: 12px;
-            padding: 0.75rem 1.5rem;
+            padding: 0.875rem 1.25rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
             font-weight: 600;
+            color: #495057;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-item::before, .declaration-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3px;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .terminal-item:hover, .declaration-item:hover {
+            border-color: #667eea;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .terminal-item:hover::before, .declaration-item:hover::before {
+            transform: scaleY(1);
+        }
+
+        .terminal-item i, .declaration-item i {
+            font-size: 1.125rem;
+            color: #667eea;
+        }
+
+        .terminal-btn-active, .declaration-active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-color: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .terminal-btn-active::before, .declaration-active::before {
+            transform: scaleY(1);
+            background: white;
+        }
+
+        .terminal-btn-active i, .declaration-active i {
+            color: white;
+        }
+
+        .terminal-btn-active:hover, .declaration-active:hover {
+            background: linear-gradient(135deg, #5568d3 0%, #65408b 100%);
+            transform: translateY(-2px);
         }
 
         .bg-success-subtle {
@@ -300,16 +449,32 @@
                 margin: -1rem;
             }
 
-            .page-title {
-                font-size: 1.5rem;
-            }
-
-            .branch-card {
+            .premium-header {
                 padding: 1rem;
             }
 
-            .sales-amount {
-                font-size: 1.5rem;
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-left {
+                width: 100%;
+            }
+
+            .btn-premium {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .page-title {
+                font-size: 1.25rem;
+            }
+
+            .icon-wrapper {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
             }
         }
     </style>
@@ -397,20 +562,7 @@
         }
 
         function getPartial(terminal) {
-            showLoader("div_details");
-            $.ajax({
-                url: "{{ url('/heads') }}",
-                type: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    terminal: terminal,
-                    status: activeStatus
-                },
-                success: function(result) {
-                    $('#div_details').empty();
-                    $('#div_details').html(result);
-                }
-            });
+            window.location.href = "{{ url('/premium-terminal-details') }}/" + terminal + "/" + terminal;
         }
 
         function getLastDayPartial(terminal, openingId) {
@@ -433,5 +585,5 @@
         function showLoader(divName) {
             $('#' + divName).html('<div class="text-center py-4"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div></div>');
         }
-    </script>
+    </script> --}}
 </div>
