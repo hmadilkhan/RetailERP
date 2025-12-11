@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard;
 use App\dashboard;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
 
 class PremiumDashboard extends Component
 {

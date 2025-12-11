@@ -68,7 +68,7 @@ class HomeController extends Controller
         $permission = $dash->dashboardRole();
         $projected = $dash->getProjectedSales();
         // 'customers', 'masters', 'vendors' , 'monthsales', 'expenseAmount', 'vendorPayable', 'customerPayable'  //This is the Previous Graph that is hide
-        return view('dashboard', compact( 'products', 'months', 'year', 'totalstock', 'orders', 'branches', 'sales', 'totalSales',  'currentDate', 'permission', 'projected'));
+        return view('dashboard', compact('products', 'months', 'year', 'totalstock', 'orders', 'branches', 'sales', 'totalSales',  'currentDate', 'permission', 'projected'));
     }
 
     public function getTerminalsByBranch(Request $request, dashboard $dash)
@@ -147,11 +147,29 @@ class HomeController extends Controller
 
     public function lastDayHeads(Request $request, dashboard $dash, userDetails $users)
     {
+        // Redirect to unified getTerminalDetails method
+        return $this->getTerminalDetails($request, $dash, $users);
+    }
 
+    public function getTerminalDetails(Request $request, dashboard $dash, userDetails $users)
+    {
         $result = $users->getPermission($request->terminal);
         $terminal_name = $users->getTerminalName($request->terminal);
-        $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->openingId);
-        return view('Dashboard.partial', compact('heads', 'terminal_name', 'result'));
+
+        // Check if openingId is provided (for closed terminal details)
+        if ($request->has('openingId') && !empty($request->openingId)) {
+            // Fetch closed terminal details using openingId
+            $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->openingId);
+        } else {
+            // Fetch active terminal details
+            $heads = $dash->headsDetails($request->terminal);
+
+            if (empty($heads)) {
+                $heads = $dash->lastDayDetails($request->terminal);
+            }
+        }
+
+        return view('Dashboard.terminal-sales-details', compact('heads', 'terminal_name', 'result'));
     }
 
     public function cheques_notify(dashboard $dash)

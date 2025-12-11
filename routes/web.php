@@ -98,7 +98,7 @@ Route::get('/horizontal', function () {
     return view("Test.index", compact('pages'));
 });
 
-Route::get('run-curl',function(){
+Route::get('run-curl', function () {
     $response = Http::withOptions(['verify' => false])->withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/chat/completions', [
         'model' => 'gpt-4o-mini',
         'messages' => [
@@ -132,9 +132,6 @@ Route::group(['middleware' => ['auth', 'roleChecker']], function () {
     Route::post('/quickbooks/customer', [QuickBooksController::class, 'addCustomer']);
     Route::put('/quickbooks/customer/{id}', [QuickBooksController::class, 'updateCustomer']);
     Route::delete('/quickbooks/customer/{id}', [QuickBooksController::class, 'deleteCustomer']);
-
-    
-
 });
 
 Route::get('/rebuild-site/{websiteId}', [DeployController::class, 'rebuild'])->name('rebuild');
@@ -314,6 +311,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/heads-details', [HomeController::class, 'salesHead']);
     Route::post('/heads', [HomeController::class, 'heads']);
     Route::post('/last-day-heads', [HomeController::class, 'lastDayHeads']);
+    Route::post('/get-terminal-details', [HomeController::class, 'getTerminalDetails']);
     Route::get('/getcheques', [HomeController::class, 'cheques_notify']);
     Route::get('/order-notify', [HomeController::class, 'getUnseenOrders'])->name('order-notify');
     Route::get('/due-date-orders', [HomeController::class, 'getDueDateOrders'])->name('due-date-orders');
@@ -466,7 +464,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
 
 
-   //wallet discount
+    //wallet discount
     Route::get('/wallet-discount', [WalletController::class, 'index']);
     Route::post('/create-wallet-discount', [WalletController::class, 'store']);
     Route::post('/update-wallet-discount', [WalletController::class, 'update']);
@@ -1159,13 +1157,13 @@ Route::middleware(['statusCheck'])->group(function () {
 Route::group(['middleware' => ['auth']], function () {
     Route::get('/chat', \App\Livewire\Chat::class)->name('chat');
     Route::get('/chats', [ChatController::class, 'index'])->name('chat.index');
-    Route::get('/forecast-chat', \App\Livewire\ForecastChat::class) ->name('forecast.chat');
-    
+    Route::get('/forecast-chat', \App\Livewire\ForecastChat::class)->name('forecast.chat');
+
     // Test routes for forecast service
     Route::get('/test-forecast', [App\Http\Controllers\ForecastTestController::class, 'test'])->name('test.forecast');
     Route::get('/test-date-parsing', [App\Http\Controllers\ForecastTestController::class, 'testDateParsing'])->name('test.date.parsing');
 });
 
-Route::middleware(['web','auth'])->group(function () {
+Route::middleware(['web', 'auth'])->group(function () {
     Route::impersonate(); // creates 'impersonate' & 'impersonate.leave'
 });
