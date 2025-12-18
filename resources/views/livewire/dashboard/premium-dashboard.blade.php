@@ -1,67 +1,222 @@
 <div class="premium-dashboard-wrapper">
     @if ($permission)
+    
+    <!-- Date Range Filter -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card premium-card-white border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="row align-items-end g-3">
+                        <div class="col-lg-12 col-md-12">
+                            <label class="form-label small fw-semibold mb-2">Quick Select</label>
+                            <div class="d-flex gap-2 flex-wrap align-items-center">
+                                <span wire:click="setDateRange('today')" class="badge px-3 py-2 cursor-pointer badge-hover {{ $selectedRange == 'today' ? 'bg-success text-white' : 'bg-white text-dark border' }}">Today</span>
+                                <span wire:click="setDateRange('yesterday')" class="badge px-3 py-2 cursor-pointer badge-hover {{ $selectedRange == 'yesterday' ? 'bg-success text-white' : 'bg-white text-dark border' }}">Yesterday</span>
+                                <span wire:click="setDateRange('this_week')" class="badge px-3 py-2 cursor-pointer badge-hover {{ $selectedRange == 'this_week' ? 'bg-success text-white' : 'bg-white text-dark border' }}">This Week</span>
+                                <span wire:click="setDateRange('last_week')" class="badge px-3 py-2 cursor-pointer badge-hover {{ $selectedRange == 'last_week' ? 'bg-success text-white' : 'bg-white text-dark border' }}">Last Week</span>
+                                <span wire:click="setDateRange('this_month')" class="badge px-3 py-2 cursor-pointer badge-hover {{ $selectedRange == 'this_month' ? 'bg-success text-white' : 'bg-white text-dark border' }}">This Month</span>
+                                <span wire:click="setDateRange('lasst_month')" class="badge px-3 py-2 cursor-pointer badge-hover {{ $selectedRange == 'last_month' ? 'bg-success text-white' : 'bg-white text-dark border' }}">Last Month</span>
+                                <span class="badge bg-{{ $salesComparison['isPositive'] ? 'success' : 'danger' }} text-white px-3 py-2 ms-auto">
+                                    <i class="mdi mdi-{{ $salesComparison['isPositive'] ? 'trending-up' : 'trending-down' }}"></i>
+                                    {{ number_format(abs($salesComparison['change']), 1) }}% vs Yesterday
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-2 col-md-4 col-6">
+                            <label class="form-label small fw-semibold mb-2">From Date</label>
+                            <input type="date" wire:model="dateFrom" class="form-control">
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-6">
+                            <label class="form-label small fw-semibold mb-2">To Date</label>
+                            <input type="date" wire:model="dateTo" class="form-control">
+                        </div>
+                        <div class="col-lg-2 col-md-4 col-12">
+                            <div class="d-flex gap-2">
+                                <button wire:click="applyFilter" class="btn btn-primary flex-fill">
+                                    <i class="mdi mdi-filter"></i> Apply
+                                </button>
+                                <button wire:click="exportData" class="btn btn-success flex-fill">
+                                    <i class="mdi mdi-download"></i> Export
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-muted small mt-3">
+                        <i class="mdi mdi-calendar-range"></i> 
+                        Showing data from <strong>{{ date('M d, Y', strtotime($dateFrom)) }}</strong> to <strong>{{ date('M d, Y', strtotime($dateTo)) }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Stats Cards -->
     <div class="row g-4 mb-4">
-        <!-- Projected Sales Card -->
+        <!-- Today Sales Card -->
         <div class="col-xl-3 col-md-6">
-            <div class="card premium-card border-0 h-100 hover-lift gradient-card-1">
+            <div class="card premium-card-white border-0 h-100 hover-lift shadow-sm">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="icon-box icon-box-primary">
-                            <i class="mdi mdi-chart-line"></i>
+                        <div class="icon-box-simple bg-primary bg-opacity-10">
+                            <i class="mdi mdi-calendar-today text-primary"></i>
                         </div>
-                        <span class="badge bg-white bg-opacity-25 text-white">+12%</span>
+                        <span class="badge bg-success text-white">Today</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 mb-2 text-uppercase small fw-semibold">Projected Sales</h6>
-                    <h3 class="text-white fw-bold mb-0">{{ empty($projected) ? 0 : number_format($projected[0]->sales, 2) }}</h3>
+                    <h6 class="text-muted mb-2 text-uppercase small fw-semibold">Today's Sales</h6>
+                    <h3 class="text-dark fw-bold mb-0">{{ number_format($salesComparison['today'], 2) }}</h3>
+                    <small class="text-muted">Yesterday: {{ number_format($salesComparison['yesterday'], 2) }}</small>
                 </div>
             </div>
         </div>
 
         <!-- Total Sales Card -->
         <div class="col-xl-3 col-md-6">
-            <div class="card premium-card border-0 h-100 hover-lift gradient-card-2" style="cursor:pointer;" onclick="window.location='{{ route('premium.sales.details') }}'">
+            <div class="card premium-card-white border-0 h-100 hover-lift shadow-sm" wire:click="openSalesModal" style="cursor: pointer;">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="icon-box icon-box-success">
-                            <i class="mdi mdi-currency-usd"></i>
+                        <div class="icon-box-simple bg-success bg-opacity-10">
+                            <i class="mdi mdi-currency-usd text-success"></i>
                         </div>
-                        <span class="badge bg-white bg-opacity-25 text-white">Live</span>
+                        <span class="badge bg-success text-white">Filtered</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 mb-2 text-uppercase small fw-semibold">All Closed Sales</h6>
-                    <h3 class="text-white fw-bold mb-0">{{ empty($totalSales) ? 0 : number_format($totalSales[0]->TotalSales, 2) }}</h3>
+                    <h6 class="text-muted mb-2 text-uppercase small fw-semibold">Total Sales</h6>
+                    <h3 class="text-dark fw-bold mb-0">{{ empty($totalSales) ? 0 : number_format($totalSales[0]->TotalSales ?? 0, 2) }}</h3>
                 </div>
             </div>
         </div>
 
-        <!-- Total Products Card -->
+        <!-- Profit Margin Card -->
         <div class="col-xl-3 col-md-6">
-            <div class="card premium-card border-0 h-100 hover-lift gradient-card-3">
+            <div class="card premium-card-white border-0 h-100 hover-lift shadow-sm">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="icon-box icon-box-info">
-                            <i class="mdi mdi-package-variant"></i>
+                        <div class="icon-box-simple bg-info bg-opacity-10">
+                            <i class="mdi mdi-chart-line-variant text-info"></i>
                         </div>
-                        <span class="badge bg-white bg-opacity-25 text-white">Active</span>
+                        <span class="badge bg-success text-white">{{ number_format($profitMargin['margin'], 1) }}%</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 mb-2 text-uppercase small fw-semibold">Total Products</h6>
-                    <h3 class="text-white fw-bold mb-0">{{ $totalstock[0]->products ?? 0 }}</h3>
+                    <h6 class="text-muted mb-2 text-uppercase small fw-semibold">Profit Margin</h6>
+                    <h3 class="text-dark fw-bold mb-0">{{ number_format($profitMargin['profit'], 2) }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock Alert Card -->
+        <div class="col-xl-3 col-md-6">
+            <div class="card premium-card-white border-0 h-100 hover-lift shadow-sm">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="icon-box-simple bg-warning bg-opacity-10">
+                            <i class="mdi mdi-alert-circle text-warning"></i>
+                        </div>
+                        <span class="badge bg-success text-white">Alert</span>
+                    </div>
+                    <h6 class="text-muted mb-2 text-uppercase small fw-semibold">Low Stock Items</h6>
+                    <h3 class="text-dark fw-bold mb-0">{{ count($lowStockProducts) }}</h3>
                 </div>
             </div>
         </div>
 
         <!-- Orders Card -->
         <div class="col-xl-3 col-md-6">
-            <div class="card premium-card border-0 h-100 hover-lift gradient-card-4">
+            <div class="card premium-card-white border-0 h-100 hover-lift shadow-sm">
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <div class="icon-box icon-box-warning">
-                            <i class="mdi mdi-cart"></i>
+                        <div class="icon-box-simple bg-danger bg-opacity-10">
+                            <i class="mdi mdi-cart text-danger"></i>
                         </div>
-                        <span class="badge bg-white bg-opacity-25 text-white">Today</span>
+                        <span class="badge bg-success text-white">Today</span>
                     </div>
-                    <h6 class="text-white text-opacity-75 mb-2 text-uppercase small fw-semibold">Total Orders</h6>
-                    <h3 class="text-white fw-bold mb-0">{{ $orders[0]->total ?? 0 }}</h3>
+                    <h6 class="text-muted mb-2 text-uppercase small fw-semibold">Total Orders</h6>
+                    <h3 class="text-dark fw-bold mb-0">{{ $orders[0]->total ?? 0 }}</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- New Widgets Row -->
+    <div class="row g-4 mb-4">
+        <!-- Low Stock Products -->
+        <div class="col-xl-6 col-lg-12">
+            <div class="card premium-card-white border-0 shadow-lg">
+                <div class="card-header bg-white border-0 pt-4 pb-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0 fw-bold text-dark">Low Stock Alert</h5>
+                        <span class="badge bg-danger bg-opacity-10 text-danger px-3 py-2">{{ count($lowStockProducts) }} Items</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if(count($lowStockProducts) > 0)
+                        <table class="table table-modern mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 text-muted text-uppercase small">Product</th>
+                                    <th class="border-0 text-muted text-uppercase small d-none d-md-table-cell">Code</th>
+                                    <th class="border-0 text-muted text-uppercase small text-end">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($lowStockProducts as $product)
+                                <tr class="table-row-modern">
+                                    <td class="py-3 px-4">
+                                        <span class="fw-semibold text-dark d-block">{{ $product->product_name }}</span>
+                                        <small class="text-muted d-md-none">{{ $product->item_code }}</small>
+                                    </td>
+                                    <td class="py-3 d-none d-md-table-cell"><span class="badge bg-light text-dark border px-3 py-2">{{ $product->item_code }}</span></td>
+                                    <td class="py-3 text-end px-4"><span class="badge bg-danger text-white px-3 py-2">{{ $product->balance_qty }}</span></td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center py-5 text-muted">
+                            <i class="mdi mdi-check-circle" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p class="mb-0 mt-3 fw-semibold">All products are well stocked!</p>
+                        </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Top Customers -->
+        <div class="col-xl-6 col-lg-12">
+            <div class="card premium-card-white border-0 shadow-lg">
+                <div class="card-header bg-white border-0 pt-4 pb-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h5 class="card-title mb-0 fw-bold text-dark">Top 5 Customers</h5>
+                        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2">VIP</span>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    @if(count($topCustomers) > 0)
+                        <table class="table table-modern mb-0">
+                            <thead>
+                                <tr>
+                                    <th class="border-0 text-muted text-uppercase small">Customer</th>
+                                    <th class="border-0 text-muted text-uppercase small d-none d-md-table-cell">Mobile</th>
+                                    <th class="border-0 text-muted text-uppercase small text-end">Sales</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($topCustomers as $customer)
+                                <tr class="table-row-modern">
+                                    <td class="py-3 px-4">
+                                        <span class="fw-bold text-dark d-block">{{ $customer->name }}</span>
+                                        <small class="text-muted d-md-none">{{ $customer->mobile }}</small>
+                                    </td>
+                                    <td class="py-3 d-none d-md-table-cell"><span class="badge bg-light text-dark border px-3 py-2">{{ $customer->mobile }}</span></td>
+                                    <td class="py-3 text-end px-4"><span class="fw-bold text-success" style="font-size: 1.1rem;">{{ number_format($customer->total, 2) }}</span></td>
+                                </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    @else
+                        <div class="text-center py-5 text-muted">
+                            <i class="mdi mdi-account-group" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p class="mb-0 mt-3 fw-semibold">No customer data available</p>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -83,7 +238,7 @@
                         <span class="badge bg-success bg-opacity-10 text-success">Best Sellers</span>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <canvas id="topProductsChart" height="300"></canvas>
                 </div>
             </div>
@@ -112,7 +267,7 @@
                         <span class="badge bg-warning bg-opacity-10 text-warning">Live Status</span>
                     </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body p-4">
                     <div class="row g-3">
                         <div class="col-6">
                             <div class="status-card status-pending">
@@ -159,190 +314,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Terminal Sales Chart - Enhanced
-            // const terminalCtx = document.getElementById('terminalSalesChart');
-            // if (terminalCtx) {
-            //     const salesData = @json($sales);
-            //     const ctx = terminalCtx.getContext('2d');
-
-            //     // Create gradients for each dataset
-            //     const cashGradient = ctx.createLinearGradient(0, 0, 0, 400);
-            //     cashGradient.addColorStop(0, 'rgba(54, 162, 235, 0.9)');
-            //     cashGradient.addColorStop(1, 'rgba(54, 162, 235, 0.6)');
-
-            //     const creditCardGradient = ctx.createLinearGradient(0, 0, 0, 400);
-            //     creditCardGradient.addColorStop(0, 'rgba(255, 99, 132, 0.9)');
-            //     creditCardGradient.addColorStop(1, 'rgba(255, 99, 132, 0.6)');
-
-            //     const customerCreditGradient = ctx.createLinearGradient(0, 0, 0, 400);
-            //     customerCreditGradient.addColorStop(0, 'rgba(75, 192, 192, 0.9)');
-            //     customerCreditGradient.addColorStop(1, 'rgba(75, 192, 192, 0.6)');
-
-            //     new Chart(ctx, {
-            //         type: 'bar',
-            //         data: {
-            //             labels: salesData.map(s => s.terminal_name),
-            //             datasets: [{
-            //                 label: 'Cash',
-            //                 data: salesData.map(s => parseFloat(s.cash)),
-            //                 backgroundColor: cashGradient,
-            //                 borderColor: 'rgb(54, 162, 235)',
-            //                 borderWidth: 2,
-            //                 borderRadius: 8,
-            //                 borderSkipped: false,
-            //                 hoverBackgroundColor: 'rgb(54, 162, 235)',
-            //                 hoverBorderWidth: 3
-            //             }, {
-            //                 label: 'Credit Card',
-            //                 data: salesData.map(s => parseFloat(s.creditCard)),
-            //                 backgroundColor: creditCardGradient,
-            //                 borderColor: 'rgb(255, 99, 132)',
-            //                 borderWidth: 2,
-            //                 borderRadius: 8,
-            //                 borderSkipped: false,
-            //                 hoverBackgroundColor: 'rgb(255, 99, 132)',
-            //                 hoverBorderWidth: 3
-            //             }, {
-            //                 label: 'Customer Credit',
-            //                 data: salesData.map(s => parseFloat(s.CustomerCredit)),
-            //                 backgroundColor: customerCreditGradient,
-            //                 borderColor: 'rgb(75, 192, 192)',
-            //                 borderWidth: 2,
-            //                 borderRadius: 8,
-            //                 borderSkipped: false,
-            //                 hoverBackgroundColor: 'rgb(75, 192, 192)',
-            //                 hoverBorderWidth: 3
-            //             }]
-            //         },
-            //         options: {
-            //             responsive: true,
-            //             maintainAspectRatio: false,
-            //             interaction: {
-            //                 mode: 'index',
-            //                 intersect: false
-            //             },
-            //             animation: {
-            //                 duration: 1500,
-            //                 easing: 'easeInOutQuart',
-            //                 delay: (context) => {
-            //                     let delay = 0;
-            //                     if (context.type === 'data' && context.mode === 'default') {
-            //                         delay = context.dataIndex * 80 + context.datasetIndex * 40;
-            //                     }
-            //                     return delay;
-            //                 }
-            //             },
-            //             plugins: {
-            //                 legend: {
-            //                     position: 'top',
-            //                     align: 'end',
-            //                     labels: {
-            //                         padding: 20,
-            //                         font: {
-            //                             size: 13,
-            //                             weight: '600',
-            //                             family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                         },
-            //                         usePointStyle: true,
-            //                         pointStyle: 'circle',
-            //                         boxWidth: 8,
-            //                         boxHeight: 8,
-            //                         color: '#374151'
-            //                     }
-            //                 },
-            //                 tooltip: {
-            //                     backgroundColor: 'rgba(17, 24, 39, 0.95)',
-            //                     titleColor: '#ffffff',
-            //                     bodyColor: '#ffffff',
-            //                     borderColor: 'rgba(255, 255, 255, 0.2)',
-            //                     borderWidth: 1,
-            //                     padding: 16,
-            //                     cornerRadius: 12,
-            //                     titleFont: {
-            //                         size: 14,
-            //                         weight: 'bold',
-            //                         family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                     },
-            //                     bodyFont: {
-            //                         size: 13,
-            //                         family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                     },
-            //                     displayColors: true,
-            //                     boxWidth: 10,
-            //                     boxHeight: 10,
-            //                     boxPadding: 6,
-            //                     usePointStyle: true,
-            //                     callbacks: {
-            //                         label: function(context) {
-            //                             let label = context.dataset.label || '';
-            //                             if (label) {
-            //                                 label += ': ';
-            //                             }
-            //                             if (context.parsed.y !== null) {
-            //                                 label += new Intl.NumberFormat('en-US', {
-            //                                     style: 'currency',
-            //                                     currency: 'USD',
-            //                                     minimumFractionDigits: 0,
-            //                                     maximumFractionDigits: 0
-            //                                 }).format(context.parsed.y);
-            //                             }
-            //                             return label;
-            //                         }
-            //                     }
-            //                 }
-            //             },
-            //             scales: {
-            //                 y: {
-            //                     beginAtZero: true,
-            //                     grid: {
-            //                         color: 'rgba(0, 0, 0, 0.05)',
-            //                         drawBorder: false,
-            //                         lineWidth: 1
-            //                     },
-            //                     border: {
-            //                         display: false
-            //                     },
-            //                     ticks: {
-            //                         font: {
-            //                             size: 12,
-            //                             weight: '500',
-            //                             family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                         },
-            //                         color: '#6B7280',
-            //                         padding: 12,
-            //                         callback: function(value) {
-            //                             return new Intl.NumberFormat('en-US', {
-            //                                 notation: 'compact',
-            //                                 compactDisplay: 'short'
-            //                             }).format(value);
-            //                         }
-            //                     }
-            //                 },
-            //                 x: {
-            //                     grid: {
-            //                         display: false,
-            //                         drawBorder: false
-            //                     },
-            //                     border: {
-            //                         display: false
-            //                     },
-            //                     ticks: {
-            //                         font: {
-            //                             size: 12,
-            //                             weight: '600',
-            //                             family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                         },
-            //                         color: '#374151',
-            //                         padding: 10
-            //                     },
-            //                     barPercentage: 0.7,
-            //                     categoryPercentage: 0.8
-            //                 }
-            //             }
-            //         }
-            //     });
-            // }
-
             // Top Products Chart - Enhanced
             const productsCtx = document.getElementById('topProductsChart');
             if (productsCtx) {
@@ -439,152 +410,6 @@
                     }
                 });
             }
-
-            // Yearly Chart - Enhanced
-            // const yearlyCtx = document.getElementById('yearlyChart');
-            // if (yearlyCtx) {
-            //     const yearData = @json($year);
-            //     const ctx = yearlyCtx.getContext('2d');
-
-            //     // Create gradient for area fill
-            //     const areaGradient = ctx.createLinearGradient(0, 0, 0, 400);
-            //     areaGradient.addColorStop(0, 'rgba(54, 162, 235, 0.3)');
-            //     areaGradient.addColorStop(1, 'rgba(54, 162, 235, 0.01)');
-
-            //     new Chart(ctx, {
-            //         type: 'line',
-            //         data: {
-            //             labels: yearData.map(y => y.year),
-            //             datasets: [{
-            //                 label: 'Sales',
-            //                 data: yearData.map(y => parseFloat(y.amount)),
-            //                 borderColor: 'rgb(54, 162, 235)',
-            //                 backgroundColor: areaGradient,
-            //                 borderWidth: 3,
-            //                 tension: 0.4,
-            //                 fill: true,
-            //                 pointBackgroundColor: 'rgb(54, 162, 235)',
-            //                 pointBorderColor: '#fff',
-            //                 pointBorderWidth: 3,
-            //                 pointRadius: 6,
-            //                 pointHoverRadius: 8,
-            //                 pointHoverBackgroundColor: 'rgb(54, 162, 235)',
-            //                 pointHoverBorderColor: '#fff',
-            //                 pointHoverBorderWidth: 4
-            //             }]
-            //         },
-            //         options: {
-            //             responsive: true,
-            //             maintainAspectRatio: false,
-            //             interaction: {
-            //                 mode: 'index',
-            //                 intersect: false
-            //             },
-            //             animation: {
-            //                 duration: 1500,
-            //                 easing: 'easeInOutQuart',
-            //                 delay: (context) => {
-            //                     let delay = 0;
-            //                     if (context.type === 'data' && context.mode === 'default') {
-            //                         delay = context.dataIndex * 100;
-            //                     }
-            //                     return delay;
-            //                 }
-            //             },
-            //             plugins: {
-            //                 legend: {
-            //                     display: false
-            //                 },
-            //                 tooltip: {
-            //                     backgroundColor: 'rgba(17, 24, 39, 0.95)',
-            //                     titleColor: '#ffffff',
-            //                     bodyColor: '#ffffff',
-            //                     borderColor: 'rgba(255, 255, 255, 0.2)',
-            //                     borderWidth: 1,
-            //                     padding: 16,
-            //                     cornerRadius: 12,
-            //                     titleFont: {
-            //                         size: 14,
-            //                         weight: 'bold',
-            //                         family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                     },
-            //                     bodyFont: {
-            //                         size: 13,
-            //                         family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                     },
-            //                     displayColors: true,
-            //                     boxWidth: 10,
-            //                     boxHeight: 10,
-            //                     boxPadding: 6,
-            //                     usePointStyle: true,
-            //                     callbacks: {
-            //                         label: function(context) {
-            //                             let label = context.dataset.label || '';
-            //                             if (label) {
-            //                                 label += ': ';
-            //                             }
-            //                             if (context.parsed.y !== null) {
-            //                                 label += new Intl.NumberFormat('en-US', {
-            //                                     style: 'currency',
-            //                                     currency: 'USD',
-            //                                     minimumFractionDigits: 0,
-            //                                     maximumFractionDigits: 0
-            //                                 }).format(context.parsed.y);
-            //                             }
-            //                             return label;
-            //                         }
-            //                     }
-            //                 }
-            //             },
-            //             scales: {
-            //                 y: {
-            //                     beginAtZero: true,
-            //                     grid: {
-            //                         color: 'rgba(0, 0, 0, 0.05)',
-            //                         drawBorder: false,
-            //                         lineWidth: 1
-            //                     },
-            //                     border: {
-            //                         display: false
-            //                     },
-            //                     ticks: {
-            //                         font: {
-            //                             size: 12,
-            //                             weight: '500',
-            //                             family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                         },
-            //                         color: '#6B7280',
-            //                         padding: 12,
-            //                         callback: function(value) {
-            //                             return new Intl.NumberFormat('en-US', {
-            //                                 notation: 'compact',
-            //                                 compactDisplay: 'short'
-            //                             }).format(value);
-            //                         }
-            //                     }
-            //                 },
-            //                 x: {
-            //                     grid: {
-            //                         display: false,
-            //                         drawBorder: false
-            //                     },
-            //                     border: {
-            //                         display: false
-            //                     },
-            //                     ticks: {
-            //                         font: {
-            //                             size: 12,
-            //                             weight: '600',
-            //                             family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
-            //                         },
-            //                         color: '#374151',
-            //                         padding: 10
-            //                     }
-            //                 }
-            //             }
-            //         }
-            //     });
-            // }
         });
     </script>
 
@@ -687,6 +512,23 @@
             animation: rotate 20s linear infinite;
         }
 
+        .gradient-card-5 {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .gradient-card-5::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+
         @keyframes rotate {
             from {
                 transform: rotate(0deg);
@@ -702,31 +544,17 @@
             z-index: 1;
         }
 
-        .icon-box {
+        .icon-box-simple {
             width: 60px;
             height: 60px;
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
             font-size: 28px;
-            color: white;
-            animation: pulse 2s ease-in-out infinite;
         }
 
-        @keyframes pulse {
 
-            0%,
-            100% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.05);
-            }
-        }
 
         .status-card {
             padding: 1.5rem;
@@ -840,6 +668,336 @@
             filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.05));
         }
 
+        .table-modern {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table-modern thead th {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .table-modern tbody tr {
+            border-bottom: 1px solid #f0f0f0;
+            transition: all 0.2s ease;
+        }
+
+        .table-row-modern:hover {
+            background-color: #f8f9fa;
+            transform: scale(1.01);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .table-modern tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+        }
+
+        .badge-hover {
+            transition: all 0.3s ease;
+        }
+
+        .badge-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            opacity: 0.9;
+        }
+
+        .sales-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .sales-modal-sidebar {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 450px;
+            height: 100vh;
+            background: white;
+            box-shadow: -4px 0 24px rgba(0, 0, 0, 0.15);
+            animation: slideIn 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        .modal-header-custom {
+            padding: 2rem;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-header-custom h4 {
+            color: white;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .btn-close-custom {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close-custom:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .btn-back-custom {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back-custom:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(-4px);
+        }
+
+        .modal-body-custom {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+        }
+
+        .branches-scroll {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .branch-item-modal {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .branch-item-modal {
+            position: relative;
+        }
+
+        .branch-item-modal:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+            transform: translateX(-4px);
+        }
+
+        .branch-arrow {
+            position: absolute;
+            right: 1.25rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 24px;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .branch-item-modal:hover .branch-arrow {
+            opacity: 1;
+            transform: translateY(-50%) translateX(4px);
+        }
+
+        .branch-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .branch-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .branch-details {
+            flex: 1;
+        }
+
+        .branch-name-modal {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 0.25rem 0;
+        }
+
+        .branch-sales {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 10px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .sales-amount-modal {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 0.25rem;
+        }
+
+        .sales-label-modal {
+            font-size: 0.75rem;
+            color: #6c757d;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .bg-success-subtle {
+            background-color: rgba(40, 167, 69, 0.1);
+        }
+
+        .bg-primary-subtle {
+            background-color: rgba(13, 110, 253, 0.1);
+        }
+
+        .terminals-scroll {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+
+        .terminals-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .terminals-scroll::-webkit-scrollbar-track {
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .terminals-scroll::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border-radius: 10px;
+        }
+
+        .terminal-item-modal {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 1rem;
+            transition: all 0.3s ease;
+            min-width: 200px;
+            flex-shrink: 0;
+            text-align: center;
+        }
+
+        .terminal-item-modal:hover {
+            border-color: #0d6efd;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
+            transform: translateY(-4px);
+        }
+
+        .terminal-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .terminal-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            margin: 0 auto;
+        }
+
+        .terminal-details {
+            width: 100%;
+        }
+
+        .terminal-name-modal {
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin: 0 0 0.5rem 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .terminal-sales {
+            display: none;
+        }
+
         @media (max-width: 768px) {
             .premium-dashboard-wrapper {
                 padding: 1rem;
@@ -855,7 +1013,110 @@
             .status-value {
                 font-size: 1.5rem;
             }
+
+            .sales-modal-sidebar {
+                width: 100%;
+            }
         }
     </style>
+    <!-- Sales Details Modal -->
+    @if($showSalesModal)
+    <div class="sales-modal-overlay" wire:click="closeSalesModal">
+        <div class="sales-modal-sidebar" wire:click.stop>
+            <div class="modal-header-custom">
+                <div class="d-flex align-items-center gap-2">
+                    @if($modalView === 'terminals')
+                    <button wire:click="backToBranches" class="btn-back-custom">
+                        <i class="mdi mdi-arrow-left"></i>
+                    </button>
+                    @endif
+                    <div>
+                        <h4 class="mb-1">{{ $modalView === 'branches' ? 'Sales Details' : 'Terminals' }}</h4>
+                        <p class="text-muted small mb-0">{{ $modalView === 'branches' ? 'Branch-wise sales breakdown' : 'Select a terminal' }}</p>
+                    </div>
+                </div>
+                <button wire:click="closeSalesModal" class="btn-close-custom">
+                    <i class="mdi mdi-close"></i>
+                </button>
+            </div>
+            <div class="modal-body-custom">
+                @if($modalView === 'branches')
+                <div class="branches-scroll">
+                    @foreach($modalBranches as $branch)
+                    <div class="branch-item-modal" wire:click="selectBranch({{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}, '{{ $branch->identify }}')"
+                        style="cursor: pointer;">
+                        <div class="branch-info">
+                            <div class="branch-icon">
+                                <i class="mdi mdi-office-building"></i>
+                            </div>
+                            <div class="branch-details">
+                                <h6 class="branch-name-modal">{{ session('roleId') == 2 ? $branch->branch_name : $branch->terminal_name }}</h6>
+                                <span class="badge bg-success-subtle text-success">Active</span>
+                            </div>
+                        </div>
+                        <div class="branch-sales">
+                            <div class="sales-amount-modal">{{ number_format($branch->sales, 2) }}</div>
+                            <div class="sales-label-modal">Total Sales</div>
+                        </div>
+                        <div class="branch-arrow">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="terminals-scroll" id="terminalTab">
+                    @foreach($modalTerminals as $terminal)
+                    <div class="terminal-item-modal" style="cursor: pointer;" onclick="getPartial({{ $terminal->terminal_id }})">
+                        <div class="terminal-info">
+                            <div class="terminal-icon"><i class="mdi mdi-monitor"></i></div>
+                            <div class="terminal-details">
+                                <h6 class="terminal-name-modal">{{ $terminal->terminal_name }}</h6>
+                                <span class="badge bg-primary-subtle text-primary">Terminal</span>
+                            </div>
+                        </div>
+                        <div class="terminal-sales">
+                            <div class="sales-amount-modal">Active</div>
+                            <div class="sales-label-modal">Status</div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                <div class="mt-4" id="div_details">
+                    <div class="text-center py-5">
+                        <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
+                        <p class="text-muted mt-3">Loading...</p>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
     @endif
 </div>
+
+<script>
+    function getPartial(terminal) {
+        const detailsDiv = document.getElementById('div_details');
+        if (!detailsDiv) return;
+        detailsDiv.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
+        
+        fetch('{{ url("/get-terminal-details") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ terminal: terminal })
+        })
+        .then(response => response.text())
+        .then(html => detailsDiv.innerHTML = html)
+        .catch(() => detailsDiv.innerHTML = '<div class="alert alert-danger">Error loading details</div>');
+    }
+
+    @if($modalView === 'terminals' && count($modalTerminals) > 0)
+    setTimeout(() => getPartial({{ $modalTerminals[0]->terminal_id }}), 100);
+    @endif
+</script>
