@@ -56,7 +56,7 @@
                 @foreach($branches as $branch)
                 <div class="col-xl-3 col-lg-4 col-md-6">
                     <div class="branch-card"
-                        onclick="getdetails('{{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}','{{ $branch->identify }}','open')">
+                        onclick="getdetails('{{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}','{{ addslashes($branch->identify) }}','open')">
                         <div class="branch-status-badge {{ $selectedTab === 'active' ? 'status-active' : 'status-closed' }}">
                             <i class="mdi mdi-circle"></i>
                         </div>
@@ -79,7 +79,7 @@
                 @foreach($branchesClosedSales as $branch)
                 <div class="col-xl-3 col-lg-4 col-md-6">
                     <div class="branch-card"
-                        onclick="getdetails('{{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}','{{ $branch->identify }}','close')">
+                        onclick="getdetails('{{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}','{{ addslashes($branch->identify) }}','close')">
                         <div class="branch-status-badge {{ $selectedTab === 'active' ? 'status-active' : 'status-closed' }}">
                             <i class="mdi mdi-circle"></i>
                         </div>
@@ -111,7 +111,7 @@
                     </div>
                     <div class="header-text">
                         <h5 class="card-title mb-0">Terminals</h5>
-                        <p class="card-subtitle mb-0">Select a terminal to view details</p>
+                        <p class="card-subtitle mb-0" id="terminal-subtitle">Select a terminal to view details</p>
                     </div>
                 </div>
             </div>
@@ -591,6 +591,7 @@
         var activeStatus = "";
 
         function getdetails(branch, status, branchstatus) {
+            console.log(branch, status, branchstatus);
             if (branchstatus == "close") {
                 getCloseTerminals(branch, status)
             } else {
@@ -599,7 +600,23 @@
             $('#div_details').empty();
         }
 
-        getTerminals('{{ $branches[0]->branch_id ?? "" }}');
+        getTerminals('{{ $branches[0]->branch_id ?? "" }}', 'open');
+
+        function selectTerminal(element, id, type) {
+            // Updated active state
+            $('#terminalTab .terminal-item').removeClass('terminal-btn-active');
+            $(element).addClass('terminal-btn-active');
+
+            // Update Subtitle
+            $('#terminal-subtitle').text($(element).text().trim());
+
+            // Fetch details
+            if (type === 'open') {
+                getPartial(id);
+            } else {
+                getDeclarations(id);
+            }
+        }
 
         function getTerminals(branch, status) {
             showLoader("terminalTab");
@@ -619,12 +636,13 @@
                 success: function(result) {
                     $('#terminalTab').empty();
                     $.each(result, function(index, value) {
-                        if (index == 0 && value.terminal_id != "") {
-                            getPartial(value.terminal_id)
-                        }
-                        let terminalDiv = '<button class="btn btn-outline-success" onclick="getPartial(' + value.terminal_id + ')">' + value.terminal_name + '</button>';
+                        let terminalDiv = `<button class="terminal-item" onclick="selectTerminal(this, '${value.terminal_id}', 'open')">
+                            <i class="mdi mdi-monitor-dashboard"></i> ${value.terminal_name}
+                        </button>`;
                         $('#terminalTab').append(terminalDiv);
                     });
+                    // Auto-click first terminal
+                    $('#terminalTab button:first').trigger('click');
                 }
             });
         }
@@ -648,9 +666,13 @@
                 success: function(result) {
                     $('#terminalTab').empty();
                     $.each(result, function(index, value) {
-                        let terminalDiv = '<button class="btn btn-outline-success" onclick="getDeclarations(' + value.terminal_id + ')">' + value.terminal_name + '</button>';
+                        let terminalDiv = `<button class="terminal-item" onclick="selectTerminal(this, '${value.terminal_id}', 'close')">
+                             <i class="mdi mdi-monitor-dashboard"></i> ${value.terminal_name}
+                        </button>`;
                         $('#terminalTab').append(terminalDiv);
                     });
+                    // Auto-click first terminal
+                    $('#terminalTab button:first').trigger('click');
                 }
             });
         }

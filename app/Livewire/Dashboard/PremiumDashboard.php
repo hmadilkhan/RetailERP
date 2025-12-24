@@ -60,6 +60,7 @@ class PremiumDashboard extends Component
         $dash = new dashboard();
         $this->modalTerminals = $dash->getTerminalsByBranch($branchId, $status);
         $this->modalView = 'terminals';
+        $this->dispatch('terminals-loaded');
     }
 
     public function backToBranches()
@@ -71,7 +72,7 @@ class PremiumDashboard extends Component
     public function loadData($dash = null)
     {
         if (!$dash) $dash = new dashboard();
-        
+
         $this->products = $dash->getMostSalesProduct();
         $this->totalstock = $dash->getTotalItems();
         $this->months = $dash->getMonthsSales();
@@ -91,7 +92,7 @@ class PremiumDashboard extends Component
     public function setDateRange($range)
     {
         $this->selectedRange = $range;
-        switch($range) {
+        switch ($range) {
             case 'today':
                 $this->dateFrom = $this->dateTo = date('Y-m-d');
                 break;
@@ -132,7 +133,7 @@ class PremiumDashboard extends Component
             'profitMargin' => $this->profitMargin,
             'topCustomers' => $this->topCustomers,
         ];
-        
+
         session()->flash('message', 'Export functionality ready!');
     }
 

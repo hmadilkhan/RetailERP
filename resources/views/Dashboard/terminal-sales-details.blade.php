@@ -70,7 +70,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
 
 <!-- Summary Cards -->
 <div class="row g-4 mb-4">
-    <div class="col-xl-4 col-md-6">
+    <div class="col-12">
         <div class="summary-card card-opening">
             <div class="card-icon">
                 <i class="mdi mdi-cash-plus"></i>
@@ -88,7 +88,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
             </div>
         </div>
     </div>
-    <div class="col-xl-4 col-md-6">
+    <div class="col-12">
         <div class="summary-card card-sales">
             <div class="card-icon">
                 <i class="mdi mdi-chart-line"></i>
@@ -105,7 +105,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
             </div>
         </div>
     </div>
-    <div class="col-xl-4 col-md-6">
+    <div class="col-12">
         <div class="summary-card card-closing">
             <div class="card-icon">
                 <i class="mdi mdi-cash-minus"></i>
@@ -126,7 +126,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
 
 <!-- Sales Type Cards -->
 <div class="row g-4 mb-4">
-    <div class="col-xl-4 col-md-6">
+    <div class="col-12">
         <div class="sales-type-card type-takeaway">
             <div class="type-icon">
                 <i class="mdi mdi-shopping"></i>
@@ -139,7 +139,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
             </div>
         </div>
     </div>
-    <div class="col-xl-4 col-md-6">
+    <div class="col-12">
         <div class="sales-type-card type-online">
             <div class="type-icon">
                 <i class="mdi mdi-web"></i>
@@ -150,7 +150,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
             </div>
         </div>
     </div>
-    <div class="col-xl-4 col-md-6">
+    <div class="col-12">
         <div class="sales-type-card type-delivery">
             <div class="type-icon">
                 <i class="mdi-truck-delivery"></i>

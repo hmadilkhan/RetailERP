@@ -1,6 +1,6 @@
 <div class="premium-dashboard-wrapper">
     @if ($permission)
-    
+
     <!-- Date Range Filter -->
     <div class="row mb-4">
         <div class="col-12">
@@ -22,7 +22,7 @@
                                 </span>
                             </div>
                         </div>
-                        
+
                         <div class="col-lg-2 col-md-4 col-6">
                             <label class="form-label small fw-semibold mb-2">From Date</label>
                             <input type="date" wire:model="dateFrom" class="form-control">
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                     <div class="text-muted small mt-3">
-                        <i class="mdi mdi-calendar-range"></i> 
+                        <i class="mdi mdi-calendar-range"></i>
                         Showing data from <strong>{{ date('M d, Y', strtotime($dateFrom)) }}</strong> to <strong>{{ date('M d, Y', strtotime($dateTo)) }}</strong>
                     </div>
                 </div>
@@ -148,32 +148,32 @@
                 </div>
                 <div class="card-body p-0">
                     @if(count($lowStockProducts) > 0)
-                        <table class="table table-modern mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="border-0 text-muted text-uppercase small">Product</th>
-                                    <th class="border-0 text-muted text-uppercase small d-none d-md-table-cell">Code</th>
-                                    <th class="border-0 text-muted text-uppercase small text-end">Stock</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($lowStockProducts as $product)
-                                <tr class="table-row-modern">
-                                    <td class="py-3 px-4">
-                                        <span class="fw-semibold text-dark d-block">{{ $product->product_name }}</span>
-                                        <small class="text-muted d-md-none">{{ $product->item_code }}</small>
-                                    </td>
-                                    <td class="py-3 d-none d-md-table-cell"><span class="badge bg-light text-dark border px-3 py-2">{{ $product->item_code }}</span></td>
-                                    <td class="py-3 text-end px-4"><span class="badge bg-danger text-white px-3 py-2">{{ $product->balance_qty }}</span></td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <table class="table table-modern mb-0">
+                        <thead>
+                            <tr>
+                                <th class="border-0 text-muted text-uppercase small">Product</th>
+                                <th class="border-0 text-muted text-uppercase small d-none d-md-table-cell">Code</th>
+                                <th class="border-0 text-muted text-uppercase small text-end">Stock</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($lowStockProducts as $product)
+                            <tr class="table-row-modern">
+                                <td class="py-3 px-4">
+                                    <span class="fw-semibold text-dark d-block">{{ $product->product_name }}</span>
+                                    <small class="text-muted d-md-none">{{ $product->item_code }}</small>
+                                </td>
+                                <td class="py-3 d-none d-md-table-cell"><span class="badge bg-light text-dark border px-3 py-2">{{ $product->item_code }}</span></td>
+                                <td class="py-3 text-end px-4"><span class="badge bg-danger text-white px-3 py-2">{{ $product->balance_qty }}</span></td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                     @else
-                        <div class="text-center py-5 text-muted">
-                            <i class="mdi mdi-check-circle" style="font-size: 3rem; opacity: 0.3;"></i>
-                            <p class="mb-0 mt-3 fw-semibold">All products are well stocked!</p>
-                        </div>
+                    <div class="text-center py-5 text-muted">
+                        <i class="mdi mdi-check-circle" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="mb-0 mt-3 fw-semibold">All products are well stocked!</p>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -190,32 +190,32 @@
                 </div>
                 <div class="card-body p-0">
                     @if(count($topCustomers) > 0)
-                        <table class="table table-modern mb-0">
-                            <thead>
-                                <tr>
-                                    <th class="border-0 text-muted text-uppercase small">Customer</th>
-                                    <th class="border-0 text-muted text-uppercase small d-none d-md-table-cell">Mobile</th>
-                                    <th class="border-0 text-muted text-uppercase small text-end">Sales</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($topCustomers as $customer)
-                                <tr class="table-row-modern">
-                                    <td class="py-3 px-4">
-                                        <span class="fw-bold text-dark d-block">{{ $customer->name }}</span>
-                                        <small class="text-muted d-md-none">{{ $customer->mobile }}</small>
-                                    </td>
-                                    <td class="py-3 d-none d-md-table-cell"><span class="badge bg-light text-dark border px-3 py-2">{{ $customer->mobile }}</span></td>
-                                    <td class="py-3 text-end px-4"><span class="fw-bold text-success" style="font-size: 1.1rem;">{{ number_format($customer->total, 2) }}</span></td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                    <table class="table table-modern mb-0">
+                        <thead>
+                            <tr>
+                                <th class="border-0 text-muted text-uppercase small">Customer</th>
+                                <th class="border-0 text-muted text-uppercase small d-none d-md-table-cell">Mobile</th>
+                                <th class="border-0 text-muted text-uppercase small text-end">Sales</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($topCustomers as $customer)
+                            <tr class="table-row-modern">
+                                <td class="py-3 px-4">
+                                    <span class="fw-bold text-dark d-block">{{ $customer->name }}</span>
+                                    <small class="text-muted d-md-none">{{ $customer->mobile }}</small>
+                                </td>
+                                <td class="py-3 d-none d-md-table-cell"><span class="badge bg-light text-dark border px-3 py-2">{{ $customer->mobile }}</span></td>
+                                <td class="py-3 text-end px-4"><span class="fw-bold text-success" style="font-size: 1.1rem;">{{ number_format($customer->total, 2) }}</span></td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                     @else
-                        <div class="text-center py-5 text-muted">
-                            <i class="mdi mdi-account-group" style="font-size: 3rem; opacity: 0.3;"></i>
-                            <p class="mb-0 mt-3 fw-semibold">No customer data available</p>
-                        </div>
+                    <div class="text-center py-5 text-muted">
+                        <i class="mdi mdi-account-group" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="mb-0 mt-3 fw-semibold">No customer data available</p>
+                    </div>
                     @endif
                 </div>
             </div>
@@ -409,6 +409,19 @@
                         cutout: '70%'
                     }
                 });
+            }
+
+            window.toggleCategory = function(categoryId) {
+                const content = document.getElementById(categoryId);
+                const icon = document.getElementById(categoryId + '-icon');
+
+                if (content.classList.contains('expanded')) {
+                    content.classList.remove('expanded');
+                    icon.classList.remove('rotated');
+                } else {
+                    content.classList.add('expanded');
+                    icon.classList.add('rotated');
+                }
             }
         });
     </script>
@@ -688,7 +701,7 @@
         .table-row-modern:hover {
             background-color: #f8f9fa;
             transform: scale(1.01);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .table-modern tbody tr:last-child {
@@ -721,7 +734,7 @@
 
         .badge-hover:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
             opacity: 0.9;
         }
 
@@ -737,8 +750,13 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .sales-modal-sidebar {
@@ -755,8 +773,13 @@
         }
 
         @keyframes slideIn {
-            from { transform: translateX(100%); }
-            to { transform: translateX(0); }
+            from {
+                transform: translateX(100%);
+            }
+
+            to {
+                transform: translateX(0);
+            }
         }
 
         .modal-header-custom {
@@ -765,7 +788,7 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #09a372 0%, #0aa775 100%);
             color: white;
         }
 
@@ -840,7 +863,7 @@
         }
 
         .branch-item-modal:hover {
-            border-color: #667eea;
+            border-color: #09a372;
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
             transform: translateX(-4px);
         }
@@ -850,7 +873,7 @@
             right: 1.25rem;
             top: 50%;
             transform: translateY(-50%);
-            color: #667eea;
+            color: #09a372;
             font-size: 24px;
             opacity: 0;
             transition: all 0.3s ease;
@@ -871,7 +894,7 @@
         .branch-icon {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #09a372 0%, #0aa775 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -901,7 +924,7 @@
         .sales-amount-modal {
             font-size: 1.75rem;
             font-weight: 700;
-            color: #667eea;
+            color: #09a372;
             margin-bottom: 0.25rem;
         }
 
@@ -938,7 +961,7 @@
         }
 
         .terminals-scroll::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            background: linear-gradient(135deg, #09a372 0%, #0aa775 100%);
             border-radius: 10px;
         }
 
@@ -954,9 +977,30 @@
         }
 
         .terminal-item-modal:hover {
-            border-color: #0d6efd;
+            border-color: #09a372;
             box-shadow: 0 4px 12px rgba(13, 110, 253, 0.15);
             transform: translateY(-4px);
+        }
+
+        .terminal-item-active {
+            background: linear-gradient(135deg, #09a372 0%, #0aa775 100%) !important;
+            border-color: #09a372 !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3) !important;
+        }
+
+        .terminal-item-active .terminal-icon {
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
+        }
+
+        .terminal-item-active .terminal-name-modal {
+            color: white !important;
+        }
+
+        .terminal-item-active .badge {
+            background-color: rgba(255, 255, 255, 0.2) !important;
+            color: white !important;
         }
 
         .terminal-info {
@@ -970,7 +1014,7 @@
         .terminal-icon {
             width: 48px;
             height: 48px;
-            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            background: linear-gradient(135deg, #09a372 0%, #0aa775 100%);
             border-radius: 12px;
             display: flex;
             align-items: center;
@@ -1022,7 +1066,7 @@
     <!-- Sales Details Modal -->
     @if($showSalesModal)
     <div class="sales-modal-overlay" wire:click="closeSalesModal">
-        <div class="sales-modal-sidebar" wire:click.stop>
+        <div class="sales-modal-sidebar" x-on:click.stop>
             <div class="modal-header-custom">
                 <div class="d-flex align-items-center gap-2">
                     @if($modalView === 'terminals')
@@ -1032,7 +1076,7 @@
                     @endif
                     <div>
                         <h4 class="mb-1">{{ $modalView === 'branches' ? 'Sales Details' : 'Terminals' }}</h4>
-                        <p class="text-muted small mb-0">{{ $modalView === 'branches' ? 'Branch-wise sales breakdown' : 'Select a terminal' }}</p>
+                        <p class="text-white fw-bold mb-0" id="terminal-subtitle-modal" style="font-size: 1rem; opacity: 0.9;">{{ $modalView === 'branches' ? 'Branch-wise sales breakdown' : 'Select a terminal' }}</p>
                     </div>
                 </div>
                 <button wire:click="closeSalesModal" class="btn-close-custom">
@@ -1067,7 +1111,7 @@
                 @else
                 <div class="terminals-scroll" id="terminalTab">
                     @foreach($modalTerminals as $terminal)
-                    <div class="terminal-item-modal" style="cursor: pointer;" onclick="getPartial({{ $terminal->terminal_id }})">
+                    <div class="terminal-item-modal" style="cursor: pointer;" onclick="selectTerminal(this, {{ $terminal->terminal_id }})">
                         <div class="terminal-info">
                             <div class="terminal-icon"><i class="mdi mdi-monitor"></i></div>
                             <div class="terminal-details">
@@ -1098,25 +1142,54 @@
 </div>
 
 <script>
+    function selectTerminal(element, terminalId) {
+        // Remove active class from all items
+        document.querySelectorAll('.terminal-item-modal').forEach(el => {
+            el.classList.remove('terminal-item-active');
+        });
+
+        // Add active class to clicked item
+        element.classList.add('terminal-item-active');
+
+        // Update subtitle with terminal name
+        const name = element.querySelector('.terminal-name-modal').innerText;
+        const subtitle = document.getElementById('terminal-subtitle-modal');
+        if (subtitle) {
+            subtitle.innerText = name;
+        }
+
+        // Call existing getPartial
+        getPartial(terminalId);
+    }
+
     function getPartial(terminal) {
         const detailsDiv = document.getElementById('div_details');
         if (!detailsDiv) return;
         detailsDiv.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-primary"></div></div>';
-        
+
         fetch('{{ url("/get-terminal-details") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ terminal: terminal })
-        })
-        .then(response => response.text())
-        .then(html => detailsDiv.innerHTML = html)
-        .catch(() => detailsDiv.innerHTML = '<div class="alert alert-danger">Error loading details</div>');
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    terminal: terminal
+                })
+            })
+            .then(response => response.text())
+            .then(html => detailsDiv.innerHTML = html)
+            .catch(() => detailsDiv.innerHTML = '<div class="alert alert-danger">Error loading details</div>');
     }
 
-    @if($modalView === 'terminals' && count($modalTerminals) > 0)
-    setTimeout(() => getPartial({{ $modalTerminals[0]->terminal_id }}), 100);
-    @endif
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('terminals-loaded', () => {
+            setTimeout(() => {
+                const firstTerminal = document.querySelector('.terminal-item-modal');
+                if (firstTerminal) {
+                    firstTerminal.click();
+                }
+            }, 100);
+        });
+    });
 </script>
