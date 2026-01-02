@@ -788,8 +788,8 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            background: linear-gradient(135deg, #09a372 0%, #0aa775 100%);
-            color: white;
+            background: linear-gradient(135deg, #fbfdfdff 0%, #e9ecebff 100%);
+            color: #2c3e50;
         }
 
         .modal-header-custom h4 {
@@ -1067,70 +1067,164 @@
     @if($showSalesModal)
     <div class="sales-modal-overlay" wire:click="closeSalesModal">
         <div class="sales-modal-sidebar" x-on:click.stop>
-            <div class="modal-header-custom">
-                <div class="d-flex align-items-center gap-2">
-                    @if($modalView === 'terminals')
-                    <button wire:click="backToBranches" class="btn-back-custom">
-                        <i class="mdi mdi-arrow-left"></i>
-                    </button>
-                    @endif
-                    <div>
-                        <h4 class="mb-1">{{ $modalView === 'branches' ? 'Sales Details' : 'Terminals' }}</h4>
-                        <p class="text-white fw-bold mb-0" id="terminal-subtitle-modal" style="font-size: 1rem; opacity: 0.9;">{{ $modalView === 'branches' ? 'Branch-wise sales breakdown' : 'Select a terminal' }}</p>
+            <div class="modal-header-custom bg-white border-bottom sticky-top">
+                <div class="pb-3">
+                    <div class="d-flex justify-content-between align-items-start mb-4">
+                        <div class="d-flex align-items-center gap-3">
+                            @if($modalView !== 'branches')
+                            @php
+                            $backAction = match($modalView) {
+                            'terminals' => 'backToBranches',
+                            'declarations' => 'backToTerminals',
+                            'details' => 'backToDeclarations',
+                            default => 'backToBranches'
+                            };
+                            @endphp
+                            <button wire:click="{{ $backAction }}"
+                                class="btn btn-light rounded-circle shadow-sm p-0 d-flex align-items-center justify-content-center text-primary"
+                                style="width: 36px; height: 36px; transition: all 0.2s ease;">
+                                <i class="mdi mdi-arrow-left fs-5"></i>
+                            </button>
+                            @endif
+
+                            <div>
+                                <h5 class="mb-1 fw-bold text-dark" style="letter-spacing: -0.5px;">
+                                    @switch($modalView)
+                                    @case('branches') Sales Overview @break
+                                    @case('terminals') Select Terminal @break
+                                    @case('declarations') Sales Sessions @break
+                                    @case('details') Transaction Details @break
+                                    @endswitch
+                                </h5>
+                                <p class="text-muted small mb-0 fw-medium">
+                                    @switch($modalView)
+                                    @case('branches') {{ date('d M') }} - {{ date('d M, Y') }} @break
+                                    @case('terminals') {{ $modalBranches[0]->branch_name ?? 'Branch Overview' }} @break
+                                    @case('declarations') {{ $terminalName }} @break
+                                    @case('details') {{ $terminalName }} @break
+                                    @endswitch
+                                </p>
+                            </div>
+                        </div>
+                        <button wire:click="closeSalesModal" class="btn btn-close-custom p-2 text-muted hover-danger" style="background: none; border: none;">
+                            <i class="mdi mdi-close fs-4"></i>
+                        </button>
+                    </div>
+
+                    <div class="date-filter-wrapper bg-light rounded-4 p-2 border border-light-subtle">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="flex-grow-1">
+                                <label class="d-block text-muted ms-2 mb-1" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">From Date</label>
+                                <div class="input-group input-group-sm bg-white rounded-3 overflow-hidden border">
+                                    <span class="input-group-text bg-white border-0 text-primary ps-3 pe-2"><i class="mdi mdi-calendar-range"></i></span>
+                                    <input type="date" wire:model.live="salesDateFrom" class="form-control border-0 shadow-none fw-semibold" style="font-size: 13px; color: #495057;">
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-center pt-3 text-muted opacity-50">
+                                <i class="mdi mdi-arrow-right"></i>
+                            </div>
+                            <div class="flex-grow-1">
+                                <label class="d-block text-muted ms-2 mb-1" style="font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">To Date</label>
+                                <div class="input-group input-group-sm bg-white rounded-3 overflow-hidden border">
+                                    <span class="input-group-text bg-white border-0 text-primary ps-3 pe-2"><i class="mdi mdi-calendar-range"></i></span>
+                                    <input type="date" wire:model.live="salesDateTo" class="form-control border-0 shadow-none fw-semibold" style="font-size: 13px; color: #495057;">
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <button wire:click="closeSalesModal" class="btn-close-custom">
-                    <i class="mdi mdi-close"></i>
-                </button>
             </div>
-            <div class="modal-body-custom">
+
+            <div class="modal-body-custom p-0" style="overflow-y: auto; max-height: calc(100vh - 140px);">
                 @if($modalView === 'branches')
-                <div class="branches-scroll">
+                <div class="list-group list-group-flush">
                     @foreach($modalBranches as $branch)
-                    <div class="branch-item-modal" wire:click="selectBranch({{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}, '{{ $branch->identify }}')"
-                        style="cursor: pointer;">
-                        <div class="branch-info">
-                            <div class="branch-icon">
-                                <i class="mdi mdi-office-building"></i>
+                    <div class="list-group-item list-group-item-action p-3 border-bottom-0 border-top-0 border-start-0 border-end-0"
+                        wire:click="selectBranch({{ session('roleId') == 2 ? $branch->branch_id : $branch->terminal_id }}, '{{ $branch->identify }}')"
+                        style="cursor: pointer; transition: background 0.2s;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3 overflow-hidden flex-grow-1">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center bg-primary-subtle text-primary flex-shrink-0" style="width: 48px; height: 48px; font-size: 24px;">
+                                    <i class="mdi mdi-office-building"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h6 class="mb-1 fw-semibold text-truncate">{{ session('roleId') == 2 ? $branch->branch_name : $branch->terminal_name }}</h6>
+                                    <span class="badge bg-success-subtle text-success rounded-pill px-2">Active</span>
+                                </div>
                             </div>
-                            <div class="branch-details">
-                                <h6 class="branch-name-modal">{{ session('roleId') == 2 ? $branch->branch_name : $branch->terminal_name }}</h6>
-                                <span class="badge bg-success-subtle text-success">Active</span>
+                            <div class="text-end flex-shrink-0 ms-3">
+                                <h6 class="mb-0 fw-bold text-dark">{{ number_format($branch->sales, 2) }}</h6>
+                                <small class="text-muted">Total Sales</small>
                             </div>
-                        </div>
-                        <div class="branch-sales">
-                            <div class="sales-amount-modal">{{ number_format($branch->sales, 2) }}</div>
-                            <div class="sales-label-modal">Total Sales</div>
-                        </div>
-                        <div class="branch-arrow">
-                            <i class="mdi mdi-chevron-right"></i>
+                            <i class="mdi mdi-chevron-right text-muted fs-4 flex-shrink-0 ms-2"></i>
                         </div>
                     </div>
                     @endforeach
                 </div>
-                @else
-                <div class="terminals-scroll" id="terminalTab">
+
+                @elseif($modalView === 'terminals')
+                <div class="list-group list-group-flush">
                     @foreach($modalTerminals as $terminal)
-                    <div class="terminal-item-modal" style="cursor: pointer;" onclick="selectTerminal(this, {{ $terminal->terminal_id }})">
-                        <div class="terminal-info">
-                            <div class="terminal-icon"><i class="mdi mdi-monitor"></i></div>
-                            <div class="terminal-details">
-                                <h6 class="terminal-name-modal">{{ $terminal->terminal_name }}</h6>
-                                <span class="badge bg-primary-subtle text-primary">Terminal</span>
+                    <div class="list-group-item list-group-item-action p-3"
+                        wire:click="selectTerminal({{ $terminal->terminal_id }})"
+                        style="cursor: pointer;">
+                        <div class="d-flex align-items-center gap-3 overflow-hidden">
+                            <div class="rounded-3 d-flex align-items-center justify-content-center bg-info-subtle text-info flex-shrink-0" style="width: 48px; height: 48px; font-size: 24px;">
+                                <i class="mdi mdi-monitor"></i>
                             </div>
-                        </div>
-                        <div class="terminal-sales">
-                            <div class="sales-amount-modal">Active</div>
-                            <div class="sales-label-modal">Status</div>
+                            <div class="flex-grow-1 overflow-hidden">
+                                <h6 class="mb-1 fw-semibold text-truncate">{{ $terminal->terminal_name }}</h6>
+                                <span class="badge bg-light text-dark border">Terminal</span>
+                            </div>
+                            <div class="text-end flex-shrink-0 ms-2">
+                                <i class="mdi mdi-chevron-right text-muted fs-4"></i>
+                            </div>
                         </div>
                     </div>
                     @endforeach
                 </div>
-                <div class="mt-4" id="div_details">
-                    <div class="text-center py-5">
-                        <i class="mdi mdi-information-outline text-muted" style="font-size: 48px;"></i>
-                        <p class="text-muted mt-3">Loading...</p>
+
+                @elseif($modalView === 'declarations')
+                <div class="list-group list-group-flush">
+                    @forelse($modalDeclarations as $decl)
+                    <div class="list-group-item list-group-item-action p-3"
+                        wire:click="selectDeclaration({{ $decl->opening_id }})"
+                        style="cursor: pointer;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-3 d-flex align-items-center justify-content-center {{ $decl->status == 2 ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' }}"
+                                    style="width: 48px; height: 48px; font-size: 24px;">
+                                    <i class="mdi mdi-{{ $decl->status == 2 ? 'lock' : 'lock-open' }}"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-1 fw-semibold">{{ date('d M Y', strtotime($decl->date)) }} <small class="text-muted">{{ date('h:i A', strtotime($decl->time)) }}</small></h6>
+                                    <span class="badge {{ $decl->status == 2 ? 'bg-danger-subtle text-danger' : 'bg-success-subtle text-success' }} rounded-pill px-2">
+                                        {{ $decl->status == 2 ? 'Closed' : 'Open' }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <h6 class="mb-0 fw-bold">{{ number_format($decl->total_sales, 2) }}</h6>
+                                <small class="text-muted">Sales</small>
+                            </div>
+                            <i class="mdi mdi-chevron-right text-muted fs-4"></i>
+                        </div>
                     </div>
+                    @empty
+                    <div class="text-center py-5">
+                        <i class="mdi mdi-history text-muted" style="font-size: 48px;"></i>
+                        <p class="text-muted mt-3">No sales sessions found for this date range.</p>
+                    </div>
+                    @endforelse
+                </div>
+
+                @elseif($modalView === 'details')
+                <div class="p-3">
+                    @include('dashboard.partials.terminal-details-partial', [
+                    'heads' => $declarationDetails,
+                    'result' => $terminalPermissions,
+                    'terminal_name' => [(object)['terminal_name' => $terminalName]]
+                    ])
                 </div>
                 @endif
             </div>

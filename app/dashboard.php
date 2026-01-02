@@ -83,24 +83,38 @@ class dashboard extends Model
         return $result;
     }
 
-    public function branches()
+    public function branches($dateFrom = null, $dateTo = null)
     {
+        $dateFrom = $dateFrom ?? date('Y-m-d');
+        $dateTo = $dateTo ?? date('Y-m-d');
+
         if (session("roleId") == 2) {
-            $result = DB::select("SELECT c.*,(SELECT COALESCE(SUM(a.total_amount),0) AS sales   from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where user_id = c.branch_id and status = 1) and a.status !=12) as sales,'branch' as identify from branch c where c.company_id = ? and c.status_id = 1", [session("company_id")]);
+            $result = DB::select("SELECT c.*,(SELECT COALESCE(SUM(a.total_amount),0) AS sales   from sales_receipts a  where opening_id IN (Select opening_id as opening_id from sales_opening a where user_id = c.branch_id) and a.status !=12 and a.date BETWEEN ? AND ?) as sales,'branch' as identify from branch c where c.company_id = ? and c.status_id = 1", [$dateFrom, $dateTo, session("company_id")]);
             return $result;
         } else {
-            $result = DB::select("SELECT c.*,b.*,(SELECT  COALESCE(SUM(a.total_amount),0) AS sales  from sales_receipts a where opening_id IN (Select opening_id as opening_id from sales_opening a where user_id = c.branch_id and status = 1) and a.status !=12   and a.terminal_id = b.terminal_id) as sales,'terminal' as identify from branch c  INNER JOIN terminal_details b
-    ON b.branch_id = c.branch_id  where c.branch_id = ? and c.status_id = 1 and b.status_id = 1", [session("branch")]);
+            $result = DB::select("SELECT c.*,b.*,(SELECT  COALESCE(SUM(a.total_amount),0) AS sales  from sales_receipts a where opening_id IN (Select opening_id as opening_id from sales_opening a where user_id = c.branch_id) and a.status !=12 and a.date BETWEEN ? AND ?  and a.terminal_id = b.terminal_id) as sales,'terminal' as identify from branch c  INNER JOIN terminal_details b
+    ON b.branch_id = c.branch_id  where c.branch_id = ? and c.status_id = 1 and b.status_id = 1", [$dateFrom, $dateTo, session("branch")]);
             return $result;
         }
-        // $result = DB::table("branch")->where("company_id",session("company_id"))->get();
-
     }
 
     public function getDeclarationsNumber($date, $terminal)
     {
         $declarations =  DB::select("SELECT * FROM `sales_opening` where date = ? and terminal_id = ? and status = 2", [$date, $terminal]);
         return $declarations;
+    }
+
+    public function getDeclarationsByDateRange($terminal, $dateFrom, $dateTo)
+    {
+        return DB::select(
+            "SELECT so.*, 
+            (SELECT COALESCE(SUM(total_amount), 0) FROM sales_receipts sr WHERE sr.opening_id = so.opening_id AND sr.status != 12) as total_sales 
+            FROM sales_opening so 
+            WHERE so.terminal_id = ? 
+            AND so.date BETWEEN ? AND ? 
+            ORDER BY so.date DESC, so.time DESC",
+            [$terminal, $dateFrom, $dateTo]
+        );
     }
 
     public function branchesForClosedSales()
