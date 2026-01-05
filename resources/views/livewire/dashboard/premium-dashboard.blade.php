@@ -1220,7 +1220,7 @@
 
                 @elseif($modalView === 'details')
                 <div class="p-3">
-                    @include('dashboard.partials.terminal-details-partial', [
+                    @include('Dashboard.partials.terminal-details-partial', [
                     'heads' => $declarationDetails,
                     'result' => $terminalPermissions,
                     'terminal_name' => [(object)['terminal_name' => $terminalName]]
