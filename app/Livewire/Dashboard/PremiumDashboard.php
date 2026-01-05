@@ -32,6 +32,7 @@ class PremiumDashboard extends Component
     public $modalTerminals = [];
     public $selectedBranchId = null;
     public $modalView = 'branches';
+    public $selectedBranchIdentify = null;
 
     // New properties for date filtering and declarations
     public $salesDateFrom;
@@ -69,10 +70,16 @@ class PremiumDashboard extends Component
     {
         $dash = new dashboard();
         $this->modalBranches = $dash->branches($this->salesDateFrom, $this->salesDateTo);
-        // If we are in 'branches' view, the list updates automatically.
-        // If in 'declarations' view, we might need to refresh declarations if a terminal is selected.
-        if ($this->modalView === 'declarations' && $this->selectedTerminalId) {
+
+        if ($this->modalView === 'terminals' && $this->selectedBranchId) {
+            $this->modalTerminals = $dash->getTerminalsByBranch($this->selectedBranchId, $this->selectedBranchIdentify);
+        } elseif ($this->modalView === 'declarations' && $this->selectedTerminalId) {
             $this->modalDeclarations = $dash->getDeclarationsByDateRange($this->selectedTerminalId, $this->salesDateFrom, $this->salesDateTo);
+        } elseif ($this->modalView === 'details' && $this->selectedTerminalId) {
+            // If in details view, switch back to declarations list with new date range
+            $this->modalView = 'declarations';
+            $this->modalDeclarations = $dash->getDeclarationsByDateRange($this->selectedTerminalId, $this->salesDateFrom, $this->salesDateTo);
+            $this->declarationDetails = [];
         }
     }
 
@@ -84,6 +91,7 @@ class PremiumDashboard extends Component
     public function selectBranch($branchId, $status)
     {
         $this->selectedBranchId = $branchId;
+        $this->selectedBranchIdentify = $status;
         $dash = new dashboard();
         // Since terminals are structural and not date-dependent (usually), we keep retrieving them as is.
         // However, if terminal sales *stats* in the list depend on date, we might need to update getTerminalsByBranch.
