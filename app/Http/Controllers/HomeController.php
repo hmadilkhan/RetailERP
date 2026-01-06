@@ -85,6 +85,7 @@ class HomeController extends Controller
 
     public function salesDetails(Request $request, dashboard $dash, userDetails $user)
     {
+
         $branches = $dash->branches();
         $branchesClosedSales = $dash->branchesForClosedSales();
         // $permission = $user->getPermission(1);
