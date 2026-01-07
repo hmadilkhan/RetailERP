@@ -85,10 +85,10 @@ class OrderController extends Controller
 
         // Fetch order details
         $order = $orderService->getOrderWithRelations($orderId);
-       
+
         if ($order && $order->website) {
             $record = $orderApp->web_onlineOrderDetails($order->url_orderid);
-            
+
             if ($record == null) {
                 Session::flash('error', 'Error! order detail not found.');
                 return redirect('web-orders-view');
@@ -188,9 +188,9 @@ class OrderController extends Controller
             "website" => $orderModel->website->name,
             "status" => $status->order_status_name,
         ];
-        
+
         if ($orderModel->website->type == "shopify") {
-            ShopifySyncService::sendStatusUpdate($orderModel,$status->order_status_name);
+            ShopifySyncService::sendStatusUpdate($orderModel, $status->order_status_name);
         }
         $this->sentWhatsAppMessageOrderTrack($orderModel->customer->mobile, $orderModel->website->name, $sentData, $url);
         if ($request->ordercode == null) {
@@ -295,7 +295,7 @@ class OrderController extends Controller
             print_r($error_msg);
         }
 
-        print_r($result);
+        // print_r($result);
 
         $result = json_decode($result);
     }
@@ -358,7 +358,7 @@ class OrderController extends Controller
 
     public function webOrders(Request $Request, order $order, Customer $customer)
     {
-      
+
         $customer     = $order->getWebsiteCustomers();
         $orders       = $order->orderStatus();
         $paymentMode  = $order->paymentMode();
@@ -431,12 +431,12 @@ class OrderController extends Controller
         // DB::table('inventory_general')->join('sales_receipt_details','sales_receipt_details.item_code','inventory_general.id')->where('sales_receipt_details.receipt_id',$request->id)->where('sales_receipt_details.mode','inventory-general')->select('sales_receipt_details.receipt_id','sales_receipt_details.item_code','sales_receipt_details.item_name','sales_receipt_details.total_qty','sales_receipt_details.total_amount','sales_receipt_details.calcu_amount_webcart','sales_receipt_details.receipt_detail_id','sales_receipt_details.discount_value','sales_receipt_details.discount_code','sales_receipt_details.actual_price')->get()
 
         $record = $order->web_onlineOrderDetails($request->id);
-        
+
         if ($record == null) {
             Session::flash('error', 'Error! order detail not found.');
             return redirect('web-orders-view');
         }
- 
+
         $orders = new salesReceiptResource($record[0]);
 
         if ($orders != null) {
@@ -863,7 +863,6 @@ class OrderController extends Controller
             });
 
             return response()->json(["status" => 200, "message" => "Receipt has been voided"]);
-
         } catch (\Throwable $e) {
             \Log::error('Void Receipt Failed: ' . $e->getMessage(), [
                 'line' => $e->getLine(),
