@@ -193,6 +193,10 @@ class OrderController extends Controller
             ShopifySyncService::sendStatusUpdate($orderModel, $status->order_status_name);
         }
         $this->sentWhatsAppMessageOrderTrack($orderModel->customer->mobile, $orderModel->website->name, $sentData, $url);
+        $orderModel->update([
+            "status" => $request->status,
+        ]);
+
         if ($request->ordercode == null) {
             return 1;
         }
