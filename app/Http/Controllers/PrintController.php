@@ -1146,8 +1146,9 @@ class PrintController extends Controller
             foreach ($grouped as $deptName => $items) {
                 if (!empty($deptName)) {
                     $html .= '
+                    <hr/>
                     <tr>
-                        <td colspan="4" style="text-align: left; font-weight: bold; background-color: #f2f2f2;">' . $deptName . '</td>
+                        <td colspan="4" style="text-align: left; font-weight: bold; font-italic: true; background-color: #f2f2f2;">' . $deptName . '</td>
                     </tr>';
                 }
                 foreach ($items as $val) {
