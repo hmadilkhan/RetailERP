@@ -144,6 +144,7 @@ Route::get('/customers-list', CustomerList::class);
 Route::get('/report-builder', ReportBuilder::class);
 Route::get('/report-panel', ReportPanel::class);
 Route::get('/logs-panel', ProjectLogs::class);
+Route::get('/service-booking-calendar', \App\Livewire\ServiceBookingCalendar::class)->name('service-booking-calendar');
 // Route::get('/pre-order-booking', PreOrderBooking::class);
 Route::get('/pre-order-booking', [PreOrderBookingController::class, "index"]);
 Route::post('/place-order', [PreOrderBookingController::class, "placeOrder"]);

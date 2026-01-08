@@ -14,6 +14,7 @@ use App\Models\Code128;
 use Illuminate\Support\Facades\DB;
 use PDF;
 use App\Customer;
+use App\Models\Order as ModelsOrder;
 
 class PrintController extends Controller
 {
@@ -1020,9 +1021,10 @@ class PrintController extends Controller
     public function indexMpdf(Request $request, Vendor $vendor, order $order, Customer $customer)
     {
         $request->receipt = str_replace("{{1}}", "", $request->receipt);
+        $orderId = ModelsOrder::where("receipt_no", $request->receipt)->first();
         $itemQty = 0;
         $tQty = 0;
-        $general = $order->getReceiptGeneral($request->receipt);
+        $general = $order->getReceiptGeneral($orderId->id);
         $company = $vendor->getCompanyByBranch($general[0]->branchId);
         $branch = $vendor->getBranch($general[0]->branchId);
         $details = $order->orderItemsForPrint($general[0]->receiptID);
