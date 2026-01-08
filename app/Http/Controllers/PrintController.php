@@ -1148,7 +1148,7 @@ class PrintController extends Controller
                     $html .= '
                     <tr></tr>
                     <tr>
-                        <td colspan="4" style="text-align: left; font-weight: bold; font-italic: true; background-color: #f2f2f2;">' . $deptName . '</td>
+                        <td colspan="4" style="text-align: left; font-weight: bold; font-italic: true; background-color: #f2f2f2;" font-size="10px;">' . $deptName . '</td>
                     </tr>';
                 }
                 foreach ($items as $val) {
