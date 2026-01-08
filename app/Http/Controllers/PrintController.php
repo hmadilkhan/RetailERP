@@ -1088,11 +1088,14 @@ class PrintController extends Controller
                 <tr>
                     <td style="padding:4px; font-weight:bold;">Receipt No</td>
                     <td style="padding:4px; text-align:right;">' . ($general[0]->receipt_no ?? "N/A") . '</td>
-                </tr>
-                <tr>
+                </tr>' .
+            ($general[0]->web ? '<tr>
+                    <td style="padding:4px; font-weight:bold;">Website Order ID</td>
+                    <td style="padding:4px; text-align:right;">' . ($general[0]->url_orderid ?? "N/A") . '</td>
+                </tr>' : '<tr>
                     <td style="padding:4px; font-weight:bold;">Machine Order No</td>
                     <td style="padding:4px; text-align:right;">' . ($general[0]->machine_terminal_count ?? "N/A") . '</td>
-                </tr>
+                </tr>') . '
                 <tr>
                     <td style="padding:4px; font-weight:bold;">Customer</td>
                     <td style="padding:4px; text-align:right;">' . ($general[0]->customerName ?? "N/A") . '</td>
@@ -1138,21 +1141,50 @@ class PrintController extends Controller
             </thead>
             <tbody>';
 
-        foreach ($details as $val) {
-            $itemQty++;
-            $tQty += $val->total_qty;
-            $html .= '
+        if ($general[0]->web) {
+            $grouped = $details->groupBy('department_name');
+            foreach ($grouped as $deptName => $items) {
+                if (!empty($deptName)) {
+                    $html .= '
+                    <tr>
+                        <td colspan="4" style="text-align: left; font-weight: bold; background-color: #f2f2f2;">' . $deptName . '</td>
+                    </tr>';
+                }
+                foreach ($items as $val) {
+                    $itemQty++;
+                    $tQty += $val->total_qty;
+                    $html .= '
                 <tr>
                     <td style="text-align: left;">' . $val->product_name . '</td>
                     <td>' . number_format($val->item_price, 0) . '</td>
                     <td>' . $val->total_qty . '</td>
                     <td>' . number_format($val->total_amount, 0) . '</td>
                 </tr>';
-            if ($val->note != "" && $val->note != "Note : None") {
-                $html .= '
+                    if ($val->note != "" && $val->note != "Note : None") {
+                        $html .= '
                 <tr>
                     <td colspan="4" style="font-style: italic; font-size: 8px;">Note: ' . $val->note . '</td>
                 </tr>';
+                    }
+                }
+            }
+        } else {
+            foreach ($details as $val) {
+                $itemQty++;
+                $tQty += $val->total_qty;
+                $html .= '
+                <tr>
+                    <td style="text-align: left;">' . $val->product_name . '</td>
+                    <td>' . number_format($val->item_price, 0) . '</td>
+                    <td>' . $val->total_qty . '</td>
+                    <td>' . number_format($val->total_amount, 0) . '</td>
+                </tr>';
+                if ($val->note != "" && $val->note != "Note : None") {
+                    $html .= '
+                <tr>
+                    <td colspan="4" style="font-style: italic; font-size: 8px;">Note: ' . $val->note . '</td>
+                </tr>';
+                }
             }
         }
 
