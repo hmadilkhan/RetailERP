@@ -500,7 +500,7 @@ class SalaryController extends Controller
         $pdf->AddPage();
         $pdf->SetFont('Arial', 'B', 16);
 
-        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -100);
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(10, 10, '', 0, 1);
 
