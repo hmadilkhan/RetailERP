@@ -919,6 +919,9 @@
         let departmentQuery = multidepartments.map(dep => `department[]=${dep}`).join('&');
         departmentQuery = "&" + departmentQuery;
 
+        let inventoryQuery = inventory.map(invent => `inventory[]=${invent}`).join('&');
+        inventoryQuery = "&" + inventoryQuery;
+
         if ($('#txtprofitstandard').val() == 1) {
             window.location = "{{ url('profitLossStandardReport') }}?fromdate=" + date + "&todate=" + todate +
                 "&branch=" + branch;
@@ -945,7 +948,8 @@
             window.location = "{{ url('itemsaledatabasepdf') }}?fromdate=" + date + "&todate=" + todate +
                 "&terminalid=" + terminalid + "&type=" + $("#type").val() + departmentQuery +
                 "&branch=" +
-                branch + "&ordermode=" + ordermode + "&status=" + status + "&inventory=" + inventory;
+                branch + "&ordermode=" + ordermode + "&status=" + status + inventoryQuery;
+            // + "&inventory=" + inventory;
         }
         if ($('#txtsalereturn').val() == 1) {
             window.location = "{{ url('salesreturnpdf') }}?fromdate=" + date + "&todate=" + todate + "&terminalid=" +
