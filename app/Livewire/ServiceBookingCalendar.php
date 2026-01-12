@@ -62,7 +62,8 @@ class ServiceBookingCalendar extends Component
         return $bookings->map(function ($booking) {
             // Determine end time based on number of services (approx 30 mins per service?)
             // For now, simplify to 1 hour +
-            $endTime = Carbon::parse($booking->service_date . ' ' . $booking->service_time)->addHour();
+            $startDateTime = Carbon::parse($booking->service_date . ' ' . $booking->service_time);
+            $endTime = $startDateTime->copy()->addHour();
 
             return [
                 'id' => $booking->id,
@@ -72,9 +73,17 @@ class ServiceBookingCalendar extends Component
                 'extendedProps' => [
                     'provider' => $booking->serviceProvider->provider_name ?? 'Unassigned',
                     'services' => $booking->services->pluck('name')->join(', '),
-                    'phone' => $booking->customer->phone ?? '', // Assuming phone is on customer
+                    'servicesArray' => $booking->services->map(fn($s) => ['name' => $s->name, 'price' => $s->price])->toArray(),
+                    'serviceCount' => $booking->services->count(),
+                    'phone' => $booking->customer->phone ?? '',
+                    'address' => $booking->customer->address ?? '',
+                    'status' => $booking->status,
+                    'statusBadge' => ucfirst($booking->status),
+                    'formattedDate' => $startDateTime->format('l, F j, Y'),
+                    'formattedTime' => $startDateTime->format('g:i A') . ' - ' . $endTime->format('g:i A'),
                 ],
                 'backgroundColor' => $this->getColorForStatus($booking->status),
+                'borderColor' => $this->getColorForStatus($booking->status),
             ];
         });
     }
