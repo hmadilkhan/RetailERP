@@ -39,6 +39,8 @@ class ServiceBookingCalendar extends Component
 
     // UI State
     public $isModalOpen = false;
+    public $searchingCustomer = false;
+    public $customerFound = false;
 
     public function render()
     {
@@ -60,10 +62,12 @@ class ServiceBookingCalendar extends Component
         $bookings = $query->get();
 
         return $bookings->map(function ($booking) {
-            // Determine end time based on number of services (approx 30 mins per service?)
-            // For now, simplify to 1 hour +
+            // Calculate duration based on number of services (30 mins per service)
+            $serviceCount = $booking->services->count();
+            $durationMinutes = $serviceCount > 0 ? $serviceCount * 30 : 60; // Default 1 hour if no services
+
             $startDateTime = Carbon::parse($booking->service_date . ' ' . $booking->service_time);
-            $endTime = $startDateTime->copy()->addHour();
+            $endTime = $startDateTime->copy()->addMinutes($durationMinutes);
 
             return [
                 'id' => $booking->id,
@@ -102,24 +106,17 @@ class ServiceBookingCalendar extends Component
     {
         $this->validate();
 
+        // Check for time conflicts before creating the booking
+        if ($this->hasTimeConflict()) {
+            $this->addError('service_time', 'This service provider is already booked during the selected time slot. Please choose a different time.');
+            return;
+        }
+
         // Find or Create Customer
-        // Note: Customer model might differ, using phone as unique identifier
-        // Assuming 'contact' or 'phone' column in existing Customer model.
-        // Based on implementation plan, we assume standard usage.
-        // Let's assume 'mobile' or 'phone'. I need to check Customer model columns again if strict.
-        // For now using updateOrCreate based on phone.
-
-        // I'll assume 'phone_number' maps to 'contact' or 'mobile' in Customer table based on common schemes or just 'phone'.
-        // Wait, I should verify Customer columns. The user just said "Customer Name, Phone...".
-        // I'll assume Customer has 'name' and 'contact' (from service provider list view earlier, providers had 'contact', maybe customers do too? No, usually 'phone').
-        // I will use 'name' and 'phone'.
-
         $customer = Customer::firstOrCreate(
-            ['phone' => $this->phone_number], // Assume phone column exists, if not I'll fix.
+            ['phone' => $this->phone_number],
             ['name' => $this->customer_name, 'address' => $this->address]
         );
-
-        // Update address/name if needed? For now just keep existing.
 
         $booking = Booking::create([
             'customer_id' => $customer->id,
@@ -137,8 +134,79 @@ class ServiceBookingCalendar extends Component
         $this->dispatch('refresh-calendar', events: $this->getEvents());
     }
 
+    /**
+     * Check if the selected time slot conflicts with existing bookings
+     * for the same service provider
+     */
+    private function hasTimeConflict()
+    {
+        // Calculate the duration based on number of services (30 mins per service)
+        $serviceCount = count($this->selected_services);
+        $durationMinutes = $serviceCount * 30; // 30 minutes per service
+
+        // Parse the requested start time
+        $requestedStart = Carbon::parse($this->service_date . ' ' . $this->service_time);
+        $requestedEnd = $requestedStart->copy()->addMinutes($durationMinutes);
+
+        // Get all bookings for this service provider on the same date
+        $existingBookings = Booking::where('service_provider_id', $this->service_provider_id)
+            ->where('service_date', $this->service_date)
+            ->whereIn('status', ['pending', 'confirmed']) // Only check active bookings
+            ->with('services')
+            ->get();
+
+        // Check each existing booking for time overlap
+        foreach ($existingBookings as $booking) {
+            $existingStart = Carbon::parse($booking->service_date . ' ' . $booking->service_time);
+
+            // Calculate existing booking duration based on services
+            $existingServiceCount = $booking->services->count();
+            $existingDurationMinutes = $existingServiceCount > 0 ? $existingServiceCount * 30 : 60; // Default 1 hour if no services
+            $existingEnd = $existingStart->copy()->addMinutes($existingDurationMinutes);
+
+            // Check for overlap
+            // Two time ranges overlap if: (StartA < EndB) AND (EndA > StartB)
+            if ($requestedStart->lt($existingEnd) && $requestedEnd->gt($existingStart)) {
+                return true; // Conflict found
+            }
+        }
+
+        return false; // No conflict
+    }
+
     public function updatedFilterServiceProviderId()
     {
         $this->dispatch('refresh-calendar', events: $this->getEvents());
+    }
+
+    public function updatedPhoneNumber($value)
+    {
+        $this->searchingCustomer = true;
+        $this->customerFound = false;
+        
+        if (!empty($value)) {
+            $customer = Customer::where('phone', $value)->first();
+
+            if ($customer) {
+                $this->customer_name = $customer->name;
+                $this->address = $customer->address ?? '';
+                $this->customerFound = true;
+            } else {
+                $this->customer_name = '';
+                $this->address = '';
+            }
+        }
+        
+        $this->searchingCustomer = false;
+    }
+
+    public function updateBookingStatus($bookingId, $status)
+    {
+        $booking = Booking::find($bookingId);
+        if ($booking) {
+            $booking->update(['status' => $status]);
+            $this->dispatch('refresh-calendar', events: $this->getEvents());
+            $this->dispatch('booking-status-updated');
+        }
     }
 }

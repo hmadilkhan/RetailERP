@@ -1021,7 +1021,7 @@ class PrintController extends Controller
     public function indexMpdf(Request $request, Vendor $vendor, order $order, Customer $customer)
     {
         $request->receipt = str_replace("{{1}}", "", $request->receipt);
-        $orderId = ModelsOrder::where("receipt_no", $request->receipt)->first();
+        $orderId = ModelsOrder::where("receipt_no", $request->receipt)->orWhere("id", $request->receipt)->first();
         $itemQty = 0;
         $tQty = 0;
         $general = $order->getReceiptGeneral($orderId->id);

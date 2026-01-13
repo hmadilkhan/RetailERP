@@ -1,9 +1,9 @@
 <div>
-    <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; overflow: hidden;">
+    <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #1b8bf9 0%, #0d6efd 100%); border-radius: 16px; overflow: hidden;">
         <div class="card-header border-0 d-flex justify-content-between align-items-center" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); padding: 1.5rem;">
             <div>
                 <h5 class="mb-1" style="color: #1a202c; font-weight: 700; font-size: 1.5rem;">
-                    <i class="fas fa-calendar-alt me-2" style="color: #667eea;"></i>Service Booking Calendar
+                    <i class="fas fa-calendar-alt me-2" style="color: #1b8bf9;"></i>Service Booking Calendar
                 </h5>
                 <p class="mb-0 text-muted small">Manage your appointments and bookings</p>
             </div>
@@ -14,7 +14,7 @@
                     <option value="{{ $provider->id }}">{{ $provider->provider_name }}</option>
                     @endforeach
                 </select>
-                <button type="button" class="btn btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#bookingModal" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; padding: 0.5rem 1.25rem; font-weight: 600; transition: all 0.3s ease;">
+                <button type="button" class="btn btn-sm shadow-sm" data-bs-toggle="modal" data-bs-target="#bookingModal" style="background: linear-gradient(135deg, #1b8bf9 0%, #0d6efd 100%); color: white; border: none; border-radius: 8px; padding: 0.5rem 1.25rem; font-weight: 600; transition: all 0.3s ease;">
                     <i class="fas fa-plus-circle me-1"></i> Book Service
                 </button>
             </div>
@@ -37,17 +37,20 @@
                         <!-- Customer Details -->
                         <div class="mb-3">
                             <label class="form-label">Phone Number</label>
-                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" wire:model="phone_number" placeholder="Enter phone to search/create">
+                            <input type="text" class="form-control @error('phone_number') is-invalid @enderror" wire:model.blur="phone_number" placeholder="Enter phone to search/create">
+                            @if($searchingCustomer)
+                                <small class="text-primary"><i class="fas fa-spinner fa-spin me-1"></i>Searching customer...</small>
+                            @endif
                             @error('phone_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Customer Name</label>
-                            <input type="text" class="form-control @error('customer_name') is-invalid @enderror" wire:model="customer_name">
+                            <input type="text" class="form-control @error('customer_name') is-invalid @enderror" wire:model="customer_name" @if($searchingCustomer) disabled @endif>
                             @error('customer_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Address</label>
-                            <input type="text" class="form-control" wire:model="address">
+                            <input type="text" class="form-control" wire:model="address" @if($searchingCustomer) disabled @endif>
                         </div>
 
                         <hr>
@@ -87,6 +90,13 @@
                                 @error('service_time') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
                         </div>
+
+                        @if(count($selected_services) > 0)
+                        <div class="alert alert-info mb-3" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border: none; border-radius: 8px;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Estimated Duration:</strong> {{ count($selected_services) * 30 }} minutes ({{ count($selected_services) }} service{{ count($selected_services) > 1 ? 's' : '' }} × 30 min each)
+                        </div>
+                        @endif
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -98,10 +108,10 @@
     </div>
 
     <!-- Event Detail Modal (triggered via JS) - Premium Design -->
-    <div class="modal fade" id="eventDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal fade in" id="eventDetailModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
-                <div class="modal-header border-0" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem 2rem;">
+                <div class="modal-header border-0" style="background: linear-gradient(135deg, #1b8bf9 0%, #0d6efd 100%); padding: 1.5rem 2rem;">
                     <div>
                         <h5 class="modal-title text-white mb-1" style="font-weight: 700; font-size: 1.5rem;">
                             <i class="fas fa-calendar-check me-2"></i>Booking Details
@@ -120,7 +130,7 @@
                     <div class="card border-0 shadow-sm mb-3" style="border-radius: 12px;">
                         <div class="card-body" style="padding: 1.25rem;">
                             <div class="d-flex align-items-center mb-2">
-                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px; background: linear-gradient(135deg, #1b8bf9 0%, #0d6efd 100%);">
                                     <i class="fas fa-clock text-white"></i>
                                 </div>
                                 <div class="flex-grow-1">
@@ -189,6 +199,12 @@
                     </div>
                 </div>
                 <div class="modal-footer border-0" style="background: #f7fafc; padding: 1.5rem 2rem;">
+                    <button type="button" class="btn btn-success shadow-sm me-2" id="completeBookingBtn" style="border-radius: 8px; padding: 0.5rem 1.5rem; font-weight: 600;">
+                        <i class="fas fa-check-circle me-1"></i>Complete
+                    </button>
+                    <button type="button" class="btn btn-danger shadow-sm me-auto" id="cancelBookingBtn" style="border-radius: 8px; padding: 0.5rem 1.5rem; font-weight: 600;">
+                        <i class="fas fa-times-circle me-1"></i>Cancel
+                    </button>
                     <button type="button" class="btn shadow-sm" data-bs-dismiss="modal" style="background: #e2e8f0; color: #2d3748; border: none; border-radius: 8px; padding: 0.5rem 1.5rem; font-weight: 600;">
                         Close
                     </button>
@@ -209,7 +225,7 @@
         }
 
         .fc .fc-button-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            background: linear-gradient(135deg, #1b8bf9 0%, #0d6efd 100%) !important;
             border: none !important;
             border-radius: 8px !important;
             font-weight: 600 !important;
@@ -219,7 +235,7 @@
 
         .fc .fc-button-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+            box-shadow: 0 4px 12px rgba(27, 139, 249, 0.4) !important;
         }
 
         .fc-theme-standard td,
@@ -228,7 +244,7 @@
         }
 
         .fc .fc-daygrid-day.fc-day-today {
-            background: rgba(102, 126, 234, 0.1) !important;
+            background: rgba(27, 139, 249, 0.1) !important;
         }
 
         /* Premium Event Cards */
@@ -289,7 +305,7 @@
         /* Button hover effect */
         button[data-bs-target="#bookingModal"]:hover {
             transform: translateY(-2px) !important;
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4) !important;
+            box-shadow: 0 6px 20px rgba(27, 139, 249, 0.4) !important;
         }
     </style>
     @endassets
@@ -366,6 +382,7 @@
                 eventClick: function(info) {
                     // Populate premium modal with all details
                     const props = info.event.extendedProps;
+                    const bookingId = info.event.id;
 
                     // Status Badge
                     const statusBadge = document.getElementById('detail-status-badge');
@@ -430,6 +447,29 @@
                         servicesContainer.innerHTML = '<p class="mb-0 text-muted">No services listed</p>';
                     }
 
+                    // Setup action buttons
+                    const completeBtn = document.getElementById('completeBookingBtn');
+                    const cancelBtn = document.getElementById('cancelBookingBtn');
+                    
+                    // Remove old event listeners by cloning
+                    const newCompleteBtn = completeBtn.cloneNode(true);
+                    const newCancelBtn = cancelBtn.cloneNode(true);
+                    completeBtn.parentNode.replaceChild(newCompleteBtn, completeBtn);
+                    cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+                    
+                    // Add new event listeners
+                    document.getElementById('completeBookingBtn').addEventListener('click', function() {
+                        if (confirm('Mark this booking as completed?')) {
+                            $wire.updateBookingStatus(bookingId, 'completed');
+                        }
+                    });
+                    
+                    document.getElementById('cancelBookingBtn').addEventListener('click', function() {
+                        if (confirm('Cancel this booking?')) {
+                            $wire.updateBookingStatus(bookingId, 'cancelled');
+                        }
+                    });
+
                     var modal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
                     modal.show();
                 }
@@ -448,6 +488,15 @@
             Livewire.on('booking-saved', () => {
                 var bookingModallEl = document.getElementById('bookingModal');
                 var modal = bootstrap.Modal.getInstance(bookingModallEl);
+                if (modal) {
+                    modal.hide();
+                }
+            });
+
+            // Close detail modal and refresh on status update
+            Livewire.on('booking-status-updated', () => {
+                var detailModalEl = document.getElementById('eventDetailModal');
+                var modal = bootstrap.Modal.getInstance(detailModalEl);
                 if (modal) {
                     modal.hide();
                 }
