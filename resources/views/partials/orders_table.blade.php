@@ -59,7 +59,11 @@
                 <th>Amount</th>
                 <th>Items / Total</th>
                 <th>Sales Person</th>
+                @if(session('company_id') != 74)
                 <th>Wallet</th>
+                @else
+                <th>Department</th>
+                @endif
                 <th>Action</th>
             </tr>
         </thead>
@@ -111,7 +115,11 @@
                         <td>{{ $order->total_amount }}</td>
                         <td>{{ $order->itemcount }}/{{ $order->itemstotalqty }}</td>
                         <td>{{ !empty($order->provider_name) ? $order->provider_name : '-' }}</td>
+                        @if(session('company_id') != 74)
                         <td>{{ !empty($order->wallet) ? $order->wallet : '-' }}</td>
+                        @else
+                        <td>{{  $order->inventory_department ?? '-' }}</td>
+                        @endif
                         <td>
                             <!-- Large button groups (default and split) -->
                             <div class="btn-group border border-black">

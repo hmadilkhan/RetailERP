@@ -194,6 +194,20 @@
                             <option value="1">Website</option>
                         </select>
                     </div>
+                    <div class="col-xl-2 col-lg-4 col-md-6 col-sm-12" style="">
+                        <label class="form-control-label">Select Department</label>
+                        <i id="btn_depart" class="icofont icofont-eraser mt-2 f-right text-success" data-toggle="tooltip"
+                            data-placement="top" title="" data-original-title="Clear All"
+                            onclick="clearControl('department')"></i>
+                        <select id="department" name="department" data-placeholder="Select Department"
+                            class="f-right select2" multiple>
+                            <option selected value="all">All</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->department_id }}">
+                                    {{ $department->department_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
 
                 <div class="row">
@@ -549,22 +563,26 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="form-control-label">Enter Discount Amount :</label>
-                                        <input type="text" name="discountamount" id="discountamount" class="form-control" />
+                                        <input type="text" name="discountamount" id="discountamount"
+                                            class="form-control" />
                                         <span id="discountamount_message" class="text-danger"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label class="form-control-label">Reason :</label>
-                                        <textarea rows="3" type="text" name="discountreason" id="discountreason" class="form-control" ></textarea>
+                                        <textarea rows="3" type="text" name="discountreason" id="discountreason" class="form-control"></textarea>
                                         <span id="discountreason_message" class="text-danger"></span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-success waves-effect waves-light" onClick="applyDiscount()">Submit</button>
-                            <button type="button" data-dismiss="modal" aria-label="Close" class=" btn btn-danger waves-effect waves-light" onclick="$('#discount-modal').modal('hide');">Cancel</button>
+                            <button type="button" class="btn btn-success waves-effect waves-light"
+                                onClick="applyDiscount()">Submit</button>
+                            <button type="button" data-dismiss="modal" aria-label="Close"
+                                class=" btn btn-danger waves-effect waves-light"
+                                onclick="$('#discount-modal').modal('hide');">Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -575,35 +593,34 @@
 
 @section('css_code')
 
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
-integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
-<link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
-</script>
-<style>
-.bg-success {
-    background-color: #4CAF50 !important;
-}
-nav .navbar{
-    position: relative;
-}
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
+        integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
+    <style>
+        .bg-success {
+            background-color: #4CAF50 !important;
+        }
 
-.navbar-custom-menu{
-    position: absolute;
-    right: 0;
-}
-</style>
- 
+        nav .navbar {
+            position: relative;
+        }
+
+        .navbar-custom-menu {
+            position: absolute;
+            right: 0;
+        }
+    </style>
+
 @endsection
 
 @section('scriptcode_three')
     <script type="text/javascript">
-
-
         $(".select2").select2();
         getTerminal();
 
@@ -694,6 +711,7 @@ nav .navbar{
                     deli_from: $('#del_from').val(),
                     deli_to: $('#del_to').val(),
                     branch: $('#branch').val(),
+                    department: $('#department').val(),
                     terminal: $('#terminal').val(),
                     order_no: $('#order_no').val(),
                     sales_tax: $('#sales_tax').val(),
@@ -728,7 +746,7 @@ nav .navbar{
         // });
 
         function clearSearchFields() {
-            $(".buttons").prop("disabled",true);
+            $(".buttons").prop("disabled", true);
             $('#paymentmode').val("").change()
             $('#rpdate').val("")
             $('#date').val("")
@@ -742,7 +760,7 @@ nav .navbar{
             $('#order_no').val("")
             $('#sales_tax').val("").change();
             $('#orderstatus').val("").change();
-            $(".buttons").prop("disabled",false);
+            $(".buttons").prop("disabled", false);
         }
 
         function assignToServiceProviderModal(receiptId) {
@@ -905,6 +923,10 @@ nav .navbar{
             clearAllFromControl($(this).val(), 'orderstatus');
         })
 
+        $("#department").change(function() {
+            clearAllFromControl($(this).val(), 'department');
+        })
+
 
 
         function clearAllFromControl(values, controlId) {
@@ -997,13 +1019,14 @@ nav .navbar{
             $("#voidId").val(id);
             $("#void-modal").modal("show");
         }
-        $("#btnMarkVoid").click(function(){
+        $("#btnMarkVoid").click(function() {
             console.log("Btn calling");
-            
+
         })
+
         function saveVoid() {
             console.log("jdhfjsdhfj");
-            
+
             $("#reason_mesasge").html("");
             if ($("#reason").val() == "") {
                 $("#reason_message").html("Please select reason");
@@ -1052,7 +1075,7 @@ nav .navbar{
             $("#discountreason_message").html("");
             if ($("#discountamount").val() == "") {
                 $("#discountamount_message").html("Please enter discount amount");
-            }else if ($("#discountreason").val() == "") {
+            } else if ($("#discountreason").val() == "") {
                 $("#discountreason_message").html("Please enter reason.");
             } else {
 
@@ -1092,7 +1115,7 @@ nav .navbar{
             }
         }
 
-       
+
 
 
 
@@ -1187,7 +1210,6 @@ nav .navbar{
         var data;
 
         // MULTIPLE CHECKBOXED LOGIC
-         // Checkbox selection logic
-        
+        // Checkbox selection logic
     </script>
 @endsection

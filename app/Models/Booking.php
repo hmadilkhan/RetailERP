@@ -22,6 +22,7 @@ class Booking extends Model
 
     public function services()
     {
-        return $this->belongsToMany(SaloonService::class, 'booking_pivot', 'booking_id', 'saloon_service_id')->withTimestamps();
+        return $this->belongsToMany(Inventory::class, 'booking_pivot', 'booking_id', 'saloon_service_id')->withTimestamps();
+        // return $this->belongsToMany(SaloonService::class, 'booking_pivot', 'booking_id', 'saloon_service_id')->withTimestamps();
     }
 }

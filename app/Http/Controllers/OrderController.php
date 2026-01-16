@@ -319,15 +319,17 @@ class OrderController extends Controller
         $mode = $order->ordersMode();
         $branch = $order->getBranch();
         $serviceproviders = $orderService->getServiceProviders();
+        $departments = $order->getDepartments();
         $orders = [];
         $totalorders = []; //$order->getTotalAndSumofOrdersQuery($request);
-        return view('order.orderviewnew', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'orders', 'serviceproviders', 'totalorders', 'statuses'));
+        return view('order.orderviewnew', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'orders', 'serviceproviders', 'totalorders', 'statuses', 'departments'));
     }
 
     public function getNewPOSOrders(Request $request, order $order)
     {
         // return $request;
         $orders = $order->getNewPOSOrdersQuery($request);
+    //    return $orders;
         // return $orders;
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
         $totaltax = $order->getTotalTax($request);

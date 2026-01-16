@@ -34,7 +34,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('booking_id')->references('id')->on('bookings')->onDelete('cascade');
-            $table->foreign('saloon_service_id')->references('id')->on('saloon_services')->onDelete('cascade');
+            $table->foreign('saloon_inventory_id')->references('id')->on('inventory_general')->onDelete('cascade');
         });
     }
 

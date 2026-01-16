@@ -8,10 +8,13 @@ use App\Models\Booking;
 use App\Models\SaloonService;
 use App\Models\ServiceProvider;
 use App\Models\Customer;
+use App\Models\Inventory;
 use Carbon\Carbon;
+use Livewire\Attributes\Title;
 
 class ServiceBookingCalendar extends Component
 {
+    #[Title('Service Booking Calendar')]
     // Filter
     public $filter_service_provider_id = '';
 
@@ -47,7 +50,7 @@ class ServiceBookingCalendar extends Component
         return view('livewire.service-booking-calendar', [
             'events' => $this->getEvents(),
             'providers' => ServiceProvider::all(),
-            'saloon_services' => SaloonService::all()
+            'saloon_services' => Inventory::with("price")->where('inventory_type_id', 2)->get(),
         ]);
     }
 
@@ -60,12 +63,12 @@ class ServiceBookingCalendar extends Component
         }
 
         $bookings = $query->get();
-
+        // dd($bookings);
         return $bookings->map(function ($booking) {
             // Calculate duration based on number of services (30 mins per service)
             $serviceCount = $booking->services->count();
             $durationMinutes = $serviceCount > 0 ? $serviceCount * 30 : 60; // Default 1 hour if no services
-
+         
             $startDateTime = Carbon::parse($booking->service_date . ' ' . $booking->service_time);
             $endTime = $startDateTime->copy()->addMinutes($durationMinutes);
 
@@ -77,7 +80,7 @@ class ServiceBookingCalendar extends Component
                 'extendedProps' => [
                     'provider' => $booking->serviceProvider->provider_name ?? 'Unassigned',
                     'services' => $booking->services->pluck('name')->join(', '),
-                    'servicesArray' => $booking->services->map(fn($s) => ['name' => $s->name, 'price' => $s->price])->toArray(),
+                    'servicesArray' => $booking->services->map(fn($s) => ['name' => $s->product_name, 'price' => $s->price->retail_price])->toArray(),
                     'serviceCount' => $booking->services->count(),
                     'phone' => $booking->customer->phone ?? '',
                     'address' => $booking->customer->address ?? '',

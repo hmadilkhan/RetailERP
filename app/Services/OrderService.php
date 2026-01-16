@@ -92,6 +92,7 @@ class OrderService
         return Order::with([
             'orderdetails',
             'orderdetails.inventory',
+            'orderdetails.inventory.department',
             'orderdetails.itemstatus',
             'orderdetails.statusLogs',
             'orderdetails.statusLogs.status',

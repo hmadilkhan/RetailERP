@@ -225,8 +225,26 @@ class order extends Model
 			->when($request->category != "" && $request->category != "all", function ($query) use ($request) {
 				$query->where("sales_receipts.web", "=", $request->category);
 			})
+			->when(!empty($request->department) && $request->department[0] != 'all', function ($query) use ($request) {
+				$query->whereExists(function ($q) use ($request) {
+					$q->select(DB::raw(1))
+						->from('sales_receipt_details as srd')
+						->join('inventory_general as ig', 'ig.id', '=', 'srd.item_code')
+						->whereColumn('srd.receipt_id', 'sales_receipts.id')
+						->whereIn('ig.department_id', $request->department);
+				});
+			})
 
-			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "customers.mobile", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode", "service_provider_details.provider_name", "wallet.provider_name as wallet", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"))
+			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "customers.mobile", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode", "service_provider_details.provider_name", "wallet.provider_name as wallet", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"),
+			DB::raw("
+				(
+					SELECT GROUP_CONCAT(DISTINCT inv_dept.department_name SEPARATOR ', ')
+					FROM sales_receipt_details srd
+					JOIN inventory_general ig ON ig.id = srd.item_code
+					JOIN inventory_department inv_dept ON inv_dept.department_id = ig.department_id
+					WHERE srd.receipt_id = sales_receipts.id
+				) AS inventory_department
+			"))
 			->orderBy("sales_receipts.id", "desc");
 		// ->toSql();
 		// ->paginate(100);
@@ -1233,5 +1251,10 @@ class order extends Model
 	public function getRiders()
 	{
 		return DB::table("service_provider_details")->where("branch_id", session("branch"))->where("categor_id", 1)->where("status_id", 1)->get();
+	}
+
+	public function getDepartments()
+	{
+		return DB::table("inventory_department")->where("company_id", session("company_id"))->get();	
 	}
 }

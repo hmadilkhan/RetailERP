@@ -380,9 +380,12 @@
                                         <div class="flex-grow-1 align-self-center overflow-hidden">
                                             <div>
                                                 <h5 class="text-truncate font-size-18"><a href="#"
-                                                        class="code{{ $key }} text-dark fw-bold">({{ $item->inventory->item_code }})
+                                                        class="code{{ $key }} text-dark fw-bold">({{ $item->inventory->item_code }} )
                                                     </a> <a href="#"
                                                         class="name{{ $key }} text-dark">{{ $item->item_name }}
+                                                        @if($item->inventory->department)
+                                                            <span class="badge bg-primary ms-2">{{ $item->inventory->department->department_name }}</span>
+                                                        @endif
                                                     </a>
                                                 </h5>
                                                 <p class="mb-0 mt-1  fs-5"><span class="fw-bold">Comments : </span><span

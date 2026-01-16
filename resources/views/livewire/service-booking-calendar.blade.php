@@ -71,7 +71,7 @@
                             <label class="form-label">Services</label>
                             <select class="form-select @error('selected_services') is-invalid @enderror" wire:model="selected_services" multiple style="height: 100px;">
                                 @foreach($saloon_services as $service)
-                                <option value="{{ $service->id }}">{{ $service->name }} ({{ number_format($service->price, 2) }})</option>
+                                <option value="{{ $service->id }}">{{ $service->product_name }} ({{ number_format($service->price->retail_price, 2) }})</option>
                                 @endforeach
                             </select>
                             <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
@@ -430,15 +430,18 @@
                     document.getElementById('detail-service-count').textContent = `${serviceCount} service${serviceCount !== 1 ? 's' : ''} selected`;
 
                     servicesContainer.innerHTML = '';
+                    
                     if (servicesArray.length > 0) {
                         servicesArray.forEach((service, index) => {
+                           
+                            
                             const serviceCard = document.createElement('div');
                             serviceCard.className = 'mb-2';
                             serviceCard.style.cssText = 'background: #f7fafc; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #4299e1;';
                             serviceCard.innerHTML = `
                                 <div class="d-flex justify-content-between align-items-center">
                                     <span style="color: #2d3748; font-weight: 500;">${index + 1}. ${service.name}</span>
-                                    <span style="color: #4a5568; font-weight: 600;">$${parseFloat(service.price).toFixed(2)}</span>
+                                    <span style="color: #4a5568; font-weight: 600;">Rs. ${parseFloat(service.price).toFixed(2)}</span>
                                 </div>
                             `;
                             servicesContainer.appendChild(serviceCard);
