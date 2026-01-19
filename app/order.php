@@ -235,8 +235,21 @@ class order extends Model
 				});
 			})
 
-			->select("sales_receipts.*", "sales_receipts.time", "branch.branch_name", "terminal_details.terminal_name", "customers.name", "customers.mobile", "sales_order_mode.order_mode", "sales_order_status.order_status_name", "sales_payment.payment_mode", "service_provider_details.provider_name", "wallet.provider_name as wallet", DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"), DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"),
-			DB::raw("
+			->select(
+				"sales_receipts.*",
+				"sales_receipts.time",
+				"branch.branch_name",
+				"terminal_details.terminal_name",
+				"customers.name",
+				"customers.mobile",
+				"sales_order_mode.order_mode",
+				"sales_order_status.order_status_name",
+				"sales_payment.payment_mode",
+				"service_provider_details.provider_name",
+				"wallet.provider_name as wallet",
+				DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"),
+				DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"),
+				DB::raw("
 				(
 					SELECT GROUP_CONCAT(DISTINCT inv_dept.department_name SEPARATOR ', ')
 					FROM sales_receipt_details srd
@@ -244,7 +257,8 @@ class order extends Model
 					JOIN inventory_department inv_dept ON inv_dept.department_id = ig.department_id
 					WHERE srd.receipt_id = sales_receipts.id
 				) AS inventory_department
-			"))
+			")
+			)
 			->orderBy("sales_receipts.id", "desc");
 		// ->toSql();
 		// ->paginate(100);
@@ -920,7 +934,14 @@ class order extends Model
 			->join('branch', 'branch.branch_id', 'sales_receipts.branch')
 			->join('company', 'company.company_id', 'branch.company_id')
 			->join('website_details', 'website_details.id', 'sales_receipts.website_id')
-			->select('sales_receipts.*', 'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.type as website_type', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'sales_account_subdetails.sales_tax_amount', 'sales_account_subdetails.delivery_charges', 'branch.branch_name', 'company.name as company_name')
+			->leftJoin('booking_slots as pickupslots', 'pickupslots.id', 'sales_receipts.pickup_slot')
+			->leftJoin('booking_slots as deliveryslots', 'deliveryslots.id', 'sales_receipts.delivery_slot')
+			->select('sales_receipts.*', 
+			'pickupslots.start_time as pickup_start_time',
+			'pickupslots.end_time as pickup_end_time',
+			'deliveryslots.start_time as delivery_start_time',
+			'deliveryslots.end_time as delivery_end_time',
+			'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.type as website_type', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'sales_account_subdetails.sales_tax_amount', 'sales_account_subdetails.delivery_charges', 'branch.branch_name', 'company.name as company_name')
 			->whereRaw('sales_receipts.url_orderid = "' . $id . '" ' . $filter)
 			->get();
 	}
@@ -1255,6 +1276,6 @@ class order extends Model
 
 	public function getDepartments()
 	{
-		return DB::table("inventory_department")->where("company_id", session("company_id"))->get();	
+		return DB::table("inventory_department")->where("company_id", session("company_id"))->get();
 	}
 }

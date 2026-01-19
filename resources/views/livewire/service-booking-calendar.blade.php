@@ -7,8 +7,8 @@
                 </h5>
                 <p class="mb-0 text-muted small">Manage your appointments and bookings</p>
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <select wire:model.live="filter_service_provider_id" class="form-select form-select-sm shadow-sm" style="width: 220px; border-radius: 8px; border: 2px solid #e2e8f0; font-weight: 500;">
+            <div class="d-flex align-items-center gap-3 ms-auto" wire:ignore>
+                <select id="filter_service_provider_id" wire:model.live="filter_service_provider_id" class="form-select form-select-sm shadow-sm select2-custom" style="width: 280px; border-radius: 8px; border: 2px solid #e2e8f0; font-weight: 500;">
                     <option value="">🔍 All Service Men</option>
                     @foreach($providers as $provider)
                     <option value="{{ $provider->id }}">{{ $provider->provider_name }}</option>
@@ -39,7 +39,7 @@
                             <label class="form-label">Phone Number</label>
                             <input type="text" class="form-control @error('phone_number') is-invalid @enderror" wire:model.blur="phone_number" placeholder="Enter phone to search/create">
                             @if($searchingCustomer)
-                                <small class="text-primary"><i class="fas fa-spinner fa-spin me-1"></i>Searching customer...</small>
+                            <small class="text-primary"><i class="fas fa-spinner fa-spin me-1"></i>Searching customer...</small>
                             @endif
                             @error('phone_number') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
@@ -56,9 +56,9 @@
                         <hr>
 
                         <!-- Service Details -->
-                        <div class="mb-3">
+                        <div class="mb-3" wire:ignore>
                             <label class="form-label">Service Man</label>
-                            <select class="form-select @error('service_provider_id') is-invalid @enderror" wire:model="service_provider_id">
+                            <select id="service_provider_id" class="form-select @error('service_provider_id') is-invalid @enderror select2-custom" wire:model="service_provider_id">
                                 <option value="">Select Service Man</option>
                                 @foreach($providers as $provider)
                                 <option value="{{ $provider->id }}">{{ $provider->provider_name }}</option>
@@ -67,14 +67,14 @@
                             @error('service_provider_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-3" wire:ignore>
                             <label class="form-label">Services</label>
-                            <select class="form-select @error('selected_services') is-invalid @enderror" wire:model="selected_services" multiple style="height: 100px;">
+                            <select id="selected_services" class="form-select @error('selected_services') is-invalid @enderror select2-custom" wire:model="selected_services" multiple style="height: 100px;">
                                 @foreach($saloon_services as $service)
                                 <option value="{{ $service->id }}">{{ $service->product_name }} ({{ number_format($service->price->retail_price, 2) }})</option>
                                 @endforeach
                             </select>
-                            <small class="text-muted">Hold Ctrl/Cmd to select multiple</small>
+                            <small class="text-muted">Search and select items</small>
                             @error('selected_services') <div class="invalid-feedback">{{ $message }}</div> @enderror
                         </div>
 
@@ -214,29 +214,39 @@
     </div>
 
     @assets
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
     <style>
         /* Premium Calendar Styling */
+        /* Standard Calendar Styling */
         .fc-header-toolbar {
             margin-bottom: 1.5rem !important;
-            padding: 1rem;
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 12px;
         }
 
         .fc .fc-button-primary {
-            background: linear-gradient(135deg, #1b8bf9 0%, #0d6efd 100%) !important;
-            border: none !important;
-            border-radius: 8px !important;
+            background-color: #f8f9fa !important;
+            border-color: #dee2e6 !important;
+            color: #212529 !important;
             font-weight: 600 !important;
-            padding: 0.5rem 1rem !important;
-            transition: all 0.3s ease !important;
+            box-shadow: none !important;
         }
 
         .fc .fc-button-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(27, 139, 249, 0.4) !important;
+            background-color: #e2e6ea !important;
+            border-color: #dae0e5 !important;
+            color: #212529 !important;
         }
+
+        .fc .fc-button-primary:not(:disabled):active,
+        .fc .fc-button-primary:not(:disabled).fc-button-active {
+            background-color: #dae0e5 !important;
+            border-color: #d3d9df !important;
+            color: #212529 !important;
+            box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125) !important;
+        }
+
 
         .fc-theme-standard td,
         .fc-theme-standard th {
@@ -307,12 +317,135 @@
             transform: translateY(-2px) !important;
             box-shadow: 0 6px 20px rgba(27, 139, 249, 0.4) !important;
         }
+
+        /* Select2 Custom Styling */
+        .select2-container--default .select2-selection--multiple {
+            border: 2px solid #e2e8f0 !important;
+            border-radius: 8px !important;
+            min-height: 42px !important;
+            padding: 4px 8px !important;
+            display: flex !important;
+            flex-wrap: wrap !important;
+            align-items: center !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 4px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            width: 100% !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background: linear-gradient(135deg, #1b8bf9 0%, #0d6efd 100%) !important;
+            border: none !important;
+            border-radius: 6px !important;
+            color: white !important;
+            padding: 0 !important;
+            /* Reset padding to handle it in children */
+            margin: 4px 4px 0 0 !important;
+            font-size: 0.85rem !important;
+            font-weight: 600 !important;
+            display: flex !important;
+            align-items: center !important;
+            overflow: hidden !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__display {
+            padding: 4px 10px 4px 6px !important;
+            display: inline-block !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: white !important;
+            border: none !important;
+            border-right: 1px solid rgba(255, 255, 255, 0.3) !important;
+            padding: 4px 8px !important;
+            margin: 0 !important;
+            position: static !important;
+            /* Crucial: override absolute positioning */
+            height: 100% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+            background: rgba(255, 255, 255, 0.2) !important;
+            color: #fff !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-search--inline {
+            flex-grow: 1 !important;
+        }
+
+        .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+            margin: 0 !important;
+            height: 28px !important;
+            line-height: 28px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__arrow {
+            height: 36px !important;
+        }
+
+        .select2-container--default .select2-selection--single .select2-selection__rendered {
+            line-height: 32px !important;
+            font-weight: 500;
+        }
+
+        .select2-container {
+            width: 100% !important;
+        }
     </style>
     @endassets
 
     @script
     <script>
         document.addEventListener('livewire:initialized', () => {
+            // Function to initialize Select2
+            // Function to initialize Select2
+            const initSelect2 = () => {
+                $('.select2-custom').each(function() {
+                    const $el = $(this);
+
+                    // Destroy if already initialized to avoid duplicates
+                    if ($el.hasClass('select2-hidden-accessible')) {
+                        $el.select2('destroy');
+                    }
+
+                    const isModal = $el.closest('.modal').length > 0;
+
+                    $el.select2({
+                        placeholder: $el.attr('placeholder') || 'Select an option',
+                        allowClear: true,
+                        dropdownParent: isModal ? $('#bookingModal') : null,
+                        width: '100%'
+                    });
+
+                    // Sync Select2 with Livewire
+                    $el.on('change', function(e) {
+                        const data = $(this).val();
+                        const model = $el.attr('wire:model') || $el.attr('wire:model.live');
+                        if (model) {
+                            $wire.set(model, data);
+                        }
+                    });
+                });
+            };
+
+            // Initial call
+            initSelect2();
+
+            // Handle Livewire updates
+            Livewire.hook('morph.updated', (el) => {
+                initSelect2();
+            });
+
             var calendarEl = document.getElementById('calendar');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
@@ -430,11 +563,11 @@
                     document.getElementById('detail-service-count').textContent = `${serviceCount} service${serviceCount !== 1 ? 's' : ''} selected`;
 
                     servicesContainer.innerHTML = '';
-                    
+
                     if (servicesArray.length > 0) {
                         servicesArray.forEach((service, index) => {
-                           
-                            
+
+
                             const serviceCard = document.createElement('div');
                             serviceCard.className = 'mb-2';
                             serviceCard.style.cssText = 'background: #f7fafc; padding: 0.75rem; border-radius: 8px; border-left: 3px solid #4299e1;';
@@ -453,20 +586,20 @@
                     // Setup action buttons
                     const completeBtn = document.getElementById('completeBookingBtn');
                     const cancelBtn = document.getElementById('cancelBookingBtn');
-                    
+
                     // Remove old event listeners by cloning
                     const newCompleteBtn = completeBtn.cloneNode(true);
                     const newCancelBtn = cancelBtn.cloneNode(true);
                     completeBtn.parentNode.replaceChild(newCompleteBtn, completeBtn);
                     cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-                    
+
                     // Add new event listeners
                     document.getElementById('completeBookingBtn').addEventListener('click', function() {
                         if (confirm('Mark this booking as completed?')) {
                             $wire.updateBookingStatus(bookingId, 'completed');
                         }
                     });
-                    
+
                     document.getElementById('cancelBookingBtn').addEventListener('click', function() {
                         if (confirm('Cancel this booking?')) {
                             $wire.updateBookingStatus(bookingId, 'cancelled');

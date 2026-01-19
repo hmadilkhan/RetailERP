@@ -661,54 +661,59 @@
                             <h5 class="font-size-16 mb-0">Order Status Logs </h5>
                         </div>
                         <div class="card-body p-4 pt-2">
-                            @foreach ($order->statusLogs as $log)
-                                <div class="row">
-                                    <!-- timeline item 1 left dot -->
-                                    <div class="col-auto text-center flex-column d-none d-sm-flex">
-                                        <div class="row h-50">
-                                            <div class="col">&nbsp;</div>
-                                            <div class="col">&nbsp;</div>
+                            @if($order->statusLogs->isEmpty())
+                                <p class="text-muted text-center">No logs</p>
+                            @else
+                                @foreach ($order->statusLogs as $log)
+                                    <div class="row">
+                                        <!-- timeline item 1 left dot -->
+                                        <div class="col-auto text-center flex-column d-none d-sm-flex">
+                                            <div class="row h-50">
+                                                <div class="col">&nbsp;</div>
+                                                <div class="col">&nbsp;</div>
+                                            </div>
+                                            <h5 class="m-2">
+                                                <span
+                                                    class="badge rounded-pill {{ $log->status->order_status_name == 'Pending' ? 'bg-danger' : ($log->status->order_status_name == 'Processing' ? 'bg-warning' : ($log->status->order_status_name == 'Ready for Delivery' ? 'bg-primary' : ($log->status->order_status_name == 'Order Picked Up' ? 'bg-info' : 'bg-success'))) }} border">&nbsp;</span>
+                                            </h5>
+                                            <div class="row h-50">
+                                                <div class="col border-end order">&nbsp;</div>
+                                                <div class="col">&nbsp;</div>
+                                            </div>
                                         </div>
-                                        <h5 class="m-2">
-                                            <span
-                                                class="badge rounded-pill {{ $log->status->order_status_name == 'Pending' ? 'bg-danger' : ($log->status->order_status_name == 'Processing' ? 'bg-warning' : ($log->status->order_status_name == 'Ready for Delivery' ? 'bg-primary' : ($log->status->order_status_name == 'Order Picked Up' ? 'bg-info' : 'bg-success'))) }} border">&nbsp;</span>
-                                        </h5>
-                                        <div class="row h-50">
-                                            <div class="col border-end order">&nbsp;</div>
-                                            <div class="col">&nbsp;</div>
-                                        </div>
-                                    </div>
-                                    <!-- timeline item 1 event content -->
-                                    <div class="col py-2">
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <div class="float-end text-muted">
-                                                    {{ date('d M Y', strtotime($log->date)) . ' ' . date('H:i a', strtotime($log->time)) }}
-                                                    <br /> <strong
-                                                        class="card-title float-end text-primary">{{ !empty($log->user) ? $log->user->fullname : '' }}</strong>
+                                        <!-- timeline item 1 event content -->
+                                        <div class="col py-2">
+                                            <div class="card">
+                                                <div class="card-body">
+                                                    <div class="float-end text-muted">
+                                                        {{ date('d M Y', strtotime($log->date)) . ' ' . date('H:i a', strtotime($log->time)) }}
+                                                        <br /> <strong
+                                                            class="card-title float-end text-primary">{{ !empty($log->user) ? $log->user->fullname : '' }}</strong>
+                                                    </div>
+                                                    @if ($log->status->order_status_name == 'Ready for Delivery')
+                                                        <h4 class="card-title text-muted">Ready</h4>
+                                                    @elseif($log->status->order_status_name == 'Dispatch')
+                                                        <h4 class="card-title text-muted">Dispatch from workshop</h4>
+                                                    @elseif($log->status->order_status_name == 'Order Picked Up')
+                                                        <h4 class="card-title text-muted">Picked Up By Branch</h4>
+                                                        <h5 class="card-title float-end text-primary">
+                                                            {{ (!empty($log->branch) ? $log->branch->branch_name . ' | ' : '') . $log->name . ' | ' . $log->mobile }}
+                                                        </h5>
+                                                    @else
+                                                        <h4 class="card-title text-muted">
+                                                            {{ $log->status->order_status_name }}</h4>
+                                                    @endif
+                                                    {{-- <h4 class="card-title text-muted">{{($log->status->order_status_name == "Ready for Delivery" ? "Ready" : $log->status->order_status_name) }}</h4> --}}
                                                 </div>
-                                                @if ($log->status->order_status_name == 'Ready for Delivery')
-                                                    <h4 class="card-title text-muted">Ready</h4>
-                                                @elseif($log->status->order_status_name == 'Dispatch')
-                                                    <h4 class="card-title text-muted">Dispatch from workshop</h4>
-                                                @elseif($log->status->order_status_name == 'Order Picked Up')
-                                                    <h4 class="card-title text-muted">Picked Up By Branch</h4>
-                                                    <h5 class="card-title float-end text-primary">
-                                                        {{ (!empty($log->branch) ? $log->branch->branch_name . ' | ' : '') . $log->name . ' | ' . $log->mobile }}
-                                                    </h5>
-                                                @else
-                                                    <h4 class="card-title text-muted">
-                                                        {{ $log->status->order_status_name }}</h4>
-                                                @endif
-                                                {{-- <h4 class="card-title text-muted">{{($log->status->order_status_name == "Ready for Delivery" ? "Ready" : $log->status->order_status_name) }}</h4> --}}
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            @endif
                         </div>
                     </div>
                 </div>
+                
             </div>
             @if ($order->payment_id == 3 && session('roleId') == 2)
                 <div class="col-xl-8">
