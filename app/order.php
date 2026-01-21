@@ -936,12 +936,14 @@ class order extends Model
 			->join('website_details', 'website_details.id', 'sales_receipts.website_id')
 			->leftJoin('booking_slots as pickupslots', 'pickupslots.id', 'sales_receipts.pickup_slot')
 			->leftJoin('booking_slots as deliveryslots', 'deliveryslots.id', 'sales_receipts.delivery_slot')
+			->leftJoin('sales_receipts_services', 'sales_receipts_services.sales_receipt_id', 'sales_receipts.id')
+			->leftJoin('sales_receipt_service_types', 'sales_receipt_service_types.id', 'sales_receipts_services.service_type_id')
 			->select('sales_receipts.*', 
 			'pickupslots.start_time as pickup_start_time',
 			'pickupslots.end_time as pickup_end_time',
 			'deliveryslots.start_time as delivery_start_time',
 			'deliveryslots.end_time as delivery_end_time',
-			'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.type as website_type', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'sales_account_subdetails.sales_tax_amount', 'sales_account_subdetails.delivery_charges', 'branch.branch_name', 'company.name as company_name')
+			'sales_order_status.order_status_name as status_name', 'website_details.name as website_name', 'website_details.type as website_type', 'website_details.order_estimate_time', 'sales_account_subdetails.discount_amount', 'sales_account_subdetails.discount_percentage', 'sales_account_subdetails.sales_tax_amount', 'sales_account_subdetails.delivery_charges', 'branch.branch_name', 'company.name as company_name', 'sales_receipt_service_types.name as service_type_name')
 			->whereRaw('sales_receipts.url_orderid = "' . $id . '" ' . $filter)
 			->get();
 	}

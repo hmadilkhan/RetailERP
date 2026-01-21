@@ -24,6 +24,7 @@
                 <th style="background-color: #1a4567;color:white;text-align: center;">Branch</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Terminal</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Customer</th>
+                <th style="background-color: #1a4567;color:white;text-align: center;">Mobile</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">OrderType</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Payment</th>
                 <th style="background-color: #1a4567;color:white;text-align: center;">Sales Person</th>
@@ -72,6 +73,7 @@
                         <td style="text-align: center;">{{ $value->branchrelation->branch_name }}</td>
                         <td style="text-align: center;">{{ $value->terminal->terminal_name }}</td>
                         <td style="text-align: left;">{{ !empty($value->customer) ? $value->customer->name : '-' }}
+                        <td style="text-align: left;">{{ !empty($value->customer) ? $value->customer->mobile : '-' }}
                         </td>
                         <td style="text-align: center;">{{ !empty($value->mode) ? $value->mode->order_mode : '-' }}</td>
                         <td style="text-align: center;">

@@ -41,12 +41,13 @@ class salesReceiptResource extends JsonResource
 			"delivery_instructions"     => $this->delivery_instructions,
 			"dateTime"                  => date('M d, Y  h:i a', strtotime($this->date . " " . $this->time)), //date("M ,d Y H:i:s",strtotime($this->date." ".$this->time)),
 			"deliveryDate"              => $this->delivery_date,
-			"pickupDate"   => $this->pickup_date,
-			"pickupSlot"   => ($this->pickup_start_time && $this->pickup_end_time)
+			"pickupDate"   				=> $this->pickup_date,
+			"serviceType"   			=> $this->service_type_name,
+			"pickupSlot"   				=> ($this->pickup_start_time && $this->pickup_end_time)
 				?  date("h:i a", strtotime($this->pickup_start_time)) . ' - ' .  date("h:i a", strtotime($this->pickup_end_time))
 				: null,
-			"deliveryDate" => $this->delivery_date,
-			"deliverySlot" => ($this->delivery_start_time && $this->delivery_end_time)
+			"deliveryDate" 				=> $this->delivery_date,
+			"deliverySlot" 				=> ($this->delivery_start_time && $this->delivery_end_time)
 				?  date("h:i a", strtotime($this->delivery_start_time)) . ' - ' .  date("h:i a", strtotime($this->delivery_end_time))
 				: null,
 			"Rider"                     => ServiceProviderOrderResource::collection(DB::table('service_provider_orders')
