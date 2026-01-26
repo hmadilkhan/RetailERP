@@ -603,6 +603,7 @@ class ReportController extends Controller
         $request->branch = explode(",", $request->branch);
         $request->terminal = explode(",", $request->terminal);
         $request->status = explode(",", $request->status);
+        $request->department = explode(",", $request->department);
 
         if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
             $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
@@ -611,15 +612,6 @@ class ReportController extends Controller
         } else {
             $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
         }
-
-        // if (!empty($request->branch) && $request->branch[0] == "all") {
-        //     return 1;
-        //     $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
-        // } else {
-        //     return 2;
-        //     $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
-        // }
-
 
         $amountSum = OrderDetails::selectRaw('sum(total_qty)')
             ->whereColumn('receipt_id', 'id')
@@ -637,13 +629,6 @@ class ReportController extends Controller
             ->when(!empty($request->branch) && $request->branch[0] == "all", function ($q) use ($request) {
                 $q->whereIn("branch", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
             })
-            // ->when($request->branch == "all", function ($query) use ($request) {
-            //     $query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
-            // })
-            // ->when($request->terminal != "" && $request->terminal != "null", function ($q) use ($request) {
-            //     $q->where("terminal_id", $request->terminal);
-            // })
-
             ->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
                 $query->whereIn('terminal_id', $request->terminal);
             })
@@ -656,8 +641,14 @@ class ReportController extends Controller
             ->when($request->ordermode != "", function ($q) use ($request) {
                 $q->where("order_mode_id", $request->ordermode);
             })
-            ->when($request->department != "", function ($q) use ($request) {
-                $q->whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"));
+            ->when(!empty($request->department) && $request->department[0] != 'all', function ($query) use ($request) {
+                $query->whereExists(function ($q) use ($request) {
+                    $q->select(DB::raw(1))
+                        ->from('sales_receipt_details as srd')
+                        ->join('inventory_general as ig', 'ig.id', '=', 'srd.item_code')
+                        ->whereColumn('srd.receipt_id', 'sales_receipts.id')
+                        ->whereIn('ig.department_id', $request->department);
+                });
             })
             ->when($request->customerNo != "", function ($query) use ($request) {
                 $query->where('customers.mobile', $request->customerNo);
@@ -680,8 +671,14 @@ class ReportController extends Controller
             ->when($request->category != "" && $request->category != "all", function ($query) use ($request) {
                 $query->where("web", "=", $request->category);
             })
-            // ->where("web", "=", 0)
             ->selectSub($amountSum, 'amount_sum')
+            ->selectSub(function ($q) {
+                $q->from('sales_receipt_details as srd')
+                    ->selectRaw("GROUP_CONCAT(DISTINCT inv_dept.department_name SEPARATOR ', ')")
+                    ->join('inventory_general as ig', 'ig.id', '=', 'srd.item_code')
+                    ->join('inventory_department as inv_dept', 'inv_dept.department_id', '=', 'ig.department_id')
+                    ->whereColumn('srd.receipt_id', 'sales_receipts.id');
+            }, 'inventory_department')
             ->orderBy("id", "asc")
             ->get();
         // ->toSql();

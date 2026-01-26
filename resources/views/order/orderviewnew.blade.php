@@ -1171,7 +1171,7 @@
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
                     .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
                     "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
-                    "&report=excel&salesperson=" + $('#orderserviceprovider').val() + "&category=" + $(
+                    "&report=excel&salesperson=" + $('#orderserviceprovider').val() + "&department=" + $("#department").val() + "&category=" + $(
                         '#category').val());
             }
         })
