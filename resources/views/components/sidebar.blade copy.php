@@ -3,9 +3,6 @@
  Whenever add new page in the backend please make sure to add the translation in sidebar.php lang file
  
 --}}
-@php
-    $currentUrl = request()->path();
-@endphp
 <aside class="main-sidebar hidden-print bg-success">
     <section class="sidebar" id="sidebar-scroll">
         <!-- Sidebar Menu-->
@@ -16,23 +13,13 @@
                         <li class="nav-level">-------- .{{ __('sidebar.' . Str::snake(strtolower($pages->page_name))) }}<span></span></li>
                     @elseif($pages->page_mode == 'Parent')
                         @if ($pages->icofont_arrow == 0)
-                            <li class="treeview {{ $currentUrl == $pages->page_url ? 'active' : '' }}">
+                            <li class="treeview @yield('{{ $pages->navclass }}') ">
                                 <a href="{{ url('/' . $pages->page_url) }}" class="bg-success">
                                     <i class='{{ $pages->icofont }}'></i><span>{{ __('sidebar.' . Str::snake(strtolower($pages->page_name))) }}</span>
                                 </a>
                             </li>
                         @else
-                            @php
-                                $hasActiveChild = $result->where('parent_id', $pages->id)->contains(function($child) use ($currentUrl, $result) {
-                                    if ($child->page_url == $currentUrl) return true;
-                                    $hasActiveGrandchild = $result->where('parent_id', $child->id)->contains(function($grandchild) use ($currentUrl, $result) {
-                                        if ($grandchild->page_url == $currentUrl) return true;
-                                        return $result->where('parent_id', $grandchild->id)->contains('page_url', $currentUrl);
-                                    });
-                                    return $hasActiveGrandchild;
-                                });
-                            @endphp
-                            <li class="treeview {{ $hasActiveChild ? 'active' : '' }}">
+                            <li class="treeview @yield('{{ $pages->navclass }}') ">
                                 <a class="bg-success">
                                     <i class='{{ $pages->icofont }}'></i><span>{{ __('sidebar.' . Str::snake(strtolower($pages->page_name))) }}</span><i
                                         class="icon-arrow-down"></i>
@@ -41,20 +28,14 @@
                                     @foreach ($result as $childs)
                                         @if ($pages->id == $childs->parent_id)
                                             @if ($childs->icofont_arrow == 0)
-                                                <li class="treeview {{ $currentUrl == $childs->page_url ? 'active' : '' }}">
+                                                <li class="treeview @yield('{{ $childs->navclass }}')">
                                                     <a href="{{ url('/' . $childs->page_url) }}">
                                                         <i
                                                             class='{{ $childs->icofont }}'></i><span>{{ __('sidebar.' . Str::snake(strtolower($childs->page_name))) }}</span>
                                                     </a>
                                                 </li>
                                             @else
-                                                @php
-                                                    $hasActiveGrandchild = $result->where('parent_id', $childs->id)->contains(function($grandchild) use ($currentUrl, $result) {
-                                                        if ($grandchild->page_url == $currentUrl) return true;
-                                                        return $result->where('parent_id', $grandchild->id)->contains('page_url', $currentUrl);
-                                                    });
-                                                @endphp
-                                                <li class="treeview {{ $hasActiveGrandchild ? 'active' : '' }}">
+                                                <li class="treeview @yield('{{ $childs->navclass }}')">
                                                     <a class="bg-success">
                                                         <i
                                                             class='{{ $childs->icofont }}'></i><span>{{ __('sidebar.' . Str::snake(strtolower($childs->page_name))) }}</span><i
@@ -63,10 +44,7 @@
                                                     <ul class="treeview-menu">
                                                         @foreach ($result as $grandchild)
                                                             @if ($childs->id == $grandchild->parent_id)
-                                                                @php
-                                                                    $hasActiveGreatGrandchild = $result->where('parent_id', $grandchild->id)->contains('page_url', $currentUrl);
-                                                                @endphp
-                                                                <li class="treeview {{ $currentUrl == $grandchild->page_url || $hasActiveGreatGrandchild ? 'active' : '' }}">
+                                                                <li class="treeview @yield('{{ $grandchild->navclass }}')">
                                                                     <a href="{{ url('/' . $grandchild->page_url) }}">
                                                                         <i
                                                                             class='{{ $grandchild->icofont }}'></i><span>{{ __('sidebar.' . Str::snake(strtolower($grandchild->page_name))) }}</span>
@@ -75,7 +53,7 @@
                                                                     @foreach ($result as $grandgrandchild)
                                                                         @if ($grandchild->id == $grandgrandchild->parent_id)
                                                                             <ul class="treeview-menu">
-                                                                                <li class="treeview {{ $currentUrl == $grandgrandchild->page_url ? 'active' : '' }}">
+                                                                                <li class="treeview @yield('{{ $grandgrandchild->navclass }}')">
                                                                                     <a
                                                                                         href="{{ url('/' . $grandgrandchild->page_url) }}">
                                                                                         <i

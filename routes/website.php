@@ -61,6 +61,10 @@ Route::middleware(['statusCheck'])->group(function () {
         Route::post('/branch-timing-delete', [WebsiteController::class, 'deleteBranchTiming'])->name('deleteBranchTiming');
     });
 
+    Route::get('website/booking-slots', function () {
+        return view('websites.booking-slots.index');
+    })->name('bookingSlots');
+
     Route::prefix('website/')->group(function () {
         Route::get('theme-setting/{id?}', [WebsiteController::class, 'website_setting'])->name('getWebSetting');
         Route::post('save-changes', [WebsiteController::class, 'webSetting_saveChanges'])->name('webSetSaveChanges');

@@ -355,6 +355,15 @@ class order extends Model
 			->when($request->category != "" && $request->category != "all", function ($query) use ($request) {
 				$query->where("sales_receipts.web", "=", $request->category);
 			})
+			->when(!empty($request->department) && $request->department[0] != 'all', function ($query) use ($request) {
+				$query->whereExists(function ($q) use ($request) {
+					$q->select(DB::raw(1))
+						->from('sales_receipt_details as srd')
+						->join('inventory_general as ig', 'ig.id', '=', 'srd.item_code')
+						->whereColumn('srd.receipt_id', 'sales_receipts.id')
+						->whereIn('ig.department_id', $request->department);
+				});
+			})
 			// ->where("sales_receipts.web", "=", 0)
 			->selectRaw("COUNT(sales_receipts.id) as totalorders,sales_order_status.order_status_name,SUM(sales_receipts.total_amount) as sales")
 			->groupBy("status")

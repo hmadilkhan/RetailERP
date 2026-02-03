@@ -286,6 +286,9 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::post('/delete-bind-terminals', [TerminalController::class, 'deleteBindTerminal']);
     Route::get('/printing-details/{id}', [TerminalController::class, 'getPrintingDetails']);
     Route::post('/store-printer-details', [TerminalController::class, 'storePrintDetails']);
+    Route::post('/lock-terminal', [TerminalController::class, 'lockTerminal']);
+    Route::post('/unlock-terminal', [TerminalController::class, 'unlockTerminal']);
+    Route::post('/device-status', [TerminalController::class, 'checkTerminalStatus']);
 
     // BRANCHES
     Route::get('/branches', [BranchController::class, 'show']);

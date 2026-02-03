@@ -163,6 +163,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
 	    SimpleSoftwareIO\QrCode\QrCodeServiceProvider::class,
         Lab404\Impersonate\ImpersonateServiceProvider::class,
+        App\Providers\SunmiServiceProvider::class,
 
 
         /*
@@ -242,6 +243,7 @@ return [
         // 'dPDF' => Barryvdh\DomPDF\Facade::class,
 		'domPDF' =>\Barryvdh\DomPDF\ServiceProvider::class,
         'Cloudinary' => CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::class,
+        'Sunmi' => App\Facades\Sunmi::class,
     ],
 
 ];

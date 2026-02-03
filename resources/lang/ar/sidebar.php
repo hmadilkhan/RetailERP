@@ -145,4 +145,5 @@ return [
     'department_section' => 'قسم الإدارات',
     'stock_report' => 'تقرير المخزون',
     'pre_order_booking' => 'حجز الطلب المسبق',
+    'booking_slots' => 'فترات الحجز',
 ];

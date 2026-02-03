@@ -145,4 +145,5 @@ return [
     'department_section' => 'Department Section',
     'stock_report' => 'Stock Report',
     'pre_order_booking' => 'Pre Order Booking',
+    'booking_slots' => 'Booking Slots',
 ];

@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Facades\Sunmi;
+use App\Models\Terminal as ModelsTerminal;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 use App\Terminal;
@@ -30,8 +32,8 @@ class TerminalController extends Controller
     public function store(terminal $terminal, Request $request, userDetails $users)
     {
 
-        $chk = $terminal->exsist_chk($request->terminalname, $request->macaddress,$request->branch); 
-        if ($chk[0]->counts == 0) { 
+        $chk = $terminal->exsist_chk($request->terminalname, $request->macaddress, $request->branch);
+        if ($chk[0]->counts == 0) {
 
             $items = [
                 'branch_id' => $request->branch,
@@ -119,7 +121,7 @@ class TerminalController extends Controller
     public function getPrintingDetails(terminal $terminal, Request $request)
     {
         $terminals = $terminal->printingDetails(Crypt::decrypt($request->id));
-        $terminal_id =Crypt::decrypt($request->id);
+        $terminal_id = Crypt::decrypt($request->id);
         return view('Terminal.terminal-print', compact('terminals', 'terminal_id'));
     }
 
@@ -136,10 +138,10 @@ class TerminalController extends Controller
 
         $lan = $request->optionsRadios == "lan" ? 1 : 0;
         $bluetooth = $request->optionsRadios == "bluetooth" ? 1 : 0;
-		$pts = $request->optionsRadios == "pts" ? 1 : 0;
-		$desktop = $request->optionsRadios == "desktop" ? 1 : 0;
-		$cloud = $request->optionsRadios == "cloud" ? 1 : 0;
-		
+        $pts = $request->optionsRadios == "pts" ? 1 : 0;
+        $desktop = $request->optionsRadios == "desktop" ? 1 : 0;
+        $cloud = $request->optionsRadios == "cloud" ? 1 : 0;
+
         if ($request->mode == "insert") {
 
             if (count(terminal_print_details::where('terminal_id', $request->terminal_id)->get()) == 0) {
@@ -152,7 +154,7 @@ class TerminalController extends Controller
                     // $request->image->move(public_path('assets/images/receipt/'), $imageName);
 
                     $file = $this->uploads($request->image, 'images/receipt/');
-                    $imageName =  !empty($file) ? $file["fileName"] :  '' ;
+                    $imageName =  !empty($file) ? $file["fileName"] :  '';
                 }
 
                 $header_text = $request->header;
@@ -169,7 +171,7 @@ class TerminalController extends Controller
                 $ter->footer = $footer;
                 $ter->LAN = $lan;
                 $ter->bluetooth = $bluetooth;
-				$ter->pts = $pts;
+                $ter->pts = $pts;
                 $ter->desktop = $desktop;
                 $ter->cloud = $cloud;
                 $ter->printer_name = $request->printerName;
@@ -185,7 +187,7 @@ class TerminalController extends Controller
         } else {
 
             if (!empty($request->image)) {
-                
+
                 // $image_path = public_path('assets/images/receipt/' . $request->previous_image);  // Value is not URL but directory file path
                 // if ($request->previmage != "") {
                 //     unlink($image_path);
@@ -201,7 +203,7 @@ class TerminalController extends Controller
                 // $imageName = time() . '.' . $request->image->getClientOriginalExtension();
                 // $request->image->move(public_path('assets/images/receipt/'), $imageName);
                 $file = $this->uploads($request->image, 'images/receipt/');
-                $imageName =  !empty($file) ? $file["fileName"] :  '' ;
+                $imageName =  !empty($file) ? $file["fileName"] :  '';
             } else {
                 $imageName = $request->previous_image;
             }
@@ -212,7 +214,7 @@ class TerminalController extends Controller
             $ter->footer = $request->footer;
             $ter->LAN = $lan;
             $ter->bluetooth = $bluetooth;
-			$ter->pts = $pts;
+            $ter->pts = $pts;
             $ter->desktop = $desktop;
             $ter->cloud = $cloud;
             $ter->printer_name = $request->printerName;
@@ -225,37 +227,104 @@ class TerminalController extends Controller
         }
     }
 
-    public function bindTerminals(terminal $terminal,Request $request)
+    public function bindTerminals(terminal $terminal, Request $request)
     {
         $terminals = $terminal->getterminals(Crypt::decrypt($request->branch));
         $branch = Crypt::decrypt($request->branch);
         $terminalID = Crypt::decrypt($request->id);
         $bindTerminals = $terminal->getBindTerminals($terminalID);
         $terminal_name = $terminal->getTerminalName($terminalID);
-        return view('Terminal.bind-terminal',compact('terminals','branch','terminalID','bindTerminals','terminal_name'));
+        return view('Terminal.bind-terminal', compact('terminals', 'branch', 'terminalID', 'bindTerminals', 'terminal_name'));
     }
 
     public function saveBindTerminal(terminal $terminal, Request $request)
-    {   
+    {
         if ($terminal->chkAlreadyExistsBindTerminal($request->terminal) > 0) {
             return redirect()->back();
-        }else {
-            $save = $terminal->saveBindTerminal($request->terminalID,$request->terminal);
-            if($save){
+        } else {
+            $save = $terminal->saveBindTerminal($request->terminalID, $request->terminal);
+            if ($save) {
                 return redirect()->back();
             }
         }
-       
     }
 
     public function deleteBindTerminal(terminal $terminal, Request $request)
-    {   
+    {
         $save = $terminal->deleteBindTerminal($request->id);
-        if($save){
+        if ($save) {
             return 1;
-        }
-        else {
+        } else {
             return 0;
         }
+    }
+
+    private function parseSunmiResponse($response)
+    {
+        if(isset($response['http_code']) && $response['http_code'] == 200 && isset($response['raw'])) {
+            preg_match_all('/{[^{}]*(?:{[^{}]*}[^{}]*)*}/', $response['raw'], $matches);
+            if(!empty($matches[0])) {
+                $lastJson = end($matches[0]);
+                $decoded = json_decode($lastJson, true);
+                if($decoded !== null) {
+                    return $decoded;
+                }
+            }
+        }
+        return ['code' => 0];
+    }
+
+    public function lockTerminal(Request $request)
+    {
+        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no");
+        $lock = Sunmi::lock([
+            'passwd'     => '03008288',
+            'screen_tip' => 'Device Locked',
+            'expire_day' => 7,
+            'msn_list'   => $terminal,
+        ]);
+        
+        $rawData = $this->parseSunmiResponse($lock);
+        if($rawData && isset($rawData['code']) && $rawData['code'] == 1) {
+            ModelsTerminal::where("terminal_id",$request->terminal_id)->update(['is_locked' => 1]);
+            return response()->json(['status' => 200, 'message' => 'Device locked successfully']);
+        }
+        
+        return response()->json(['status' => 500, 'message' => 'Failed to lock device']);
+    }
+
+    public function unlockTerminal(Request $request)
+    {
+        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no");
+        $unlock = Sunmi::unlock([
+            'msn_list' => $terminal,
+        ]);
+        
+        $rawData = $this->parseSunmiResponse($unlock);
+        if($rawData && isset($rawData['code']) && $rawData['code'] == 1) {
+            ModelsTerminal::where("terminal_id",$request->terminal_id)->update(['is_locked' => 0]);
+            return response()->json(['status' => 200, 'message' => 'Device unlocked successfully']);
+        }
+        
+        return response()->json(['status' => 500, 'message' => 'Failed to unlock device']);
+    }
+
+    public function checkTerminalStatus(Request $request)
+    {
+        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no");
+        $status = Sunmi::status([
+            'msn_list' => $terminal,
+        ]);
+
+        // $rawData = $this->parseSunmiResponse($status);
+        if( isset($status) && $status["http_code"] == 200 && isset($status['data']) && $status['data']['code'] == 1) {
+            return response()->json([
+                'status' => 200,
+                'message' => 'Device status fetched successfully',
+                'data' => $status,
+            ]);
+        }
+
+        return response()->json(['status' => 500, 'message' => 'Failed to fetch device status',"data" => $status] );
     }
 }
