@@ -1,39 +1,67 @@
 <style>
-    /* Ensures checkboxes are centered and not overflowing */
     #order_table th,
     #order_table td {
         vertical-align: middle;
+        white-space: nowrap;
     }
 
     #order_table th:first-child,
     #order_table td:first-child {
         min-width: 48px;
         width: 48px;
-        max-width: 60px;
         text-align: center;
         padding-left: 0.25rem;
         padding-right: 0.25rem;
     }
 
     #order_table {
-        table-layout: fixed;
         width: 100%;
     }
 
-    @media (max-width: 576px) {
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
 
+    @media (max-width: 1024px) {
         #order_table th,
         #order_table td {
-            font-size: 0.85rem;
+            font-size: 0.875rem;
+            padding: 0.4rem;
+        }
+        
+        .btn-group .btn {
+            font-size: 0.8rem;
+            padding: 0.25rem 0.5rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        #order_table th,
+        #order_table td {
+            font-size: 0.8rem;
             padding: 0.3rem;
+        }
+        
+        .btn-group .btn {
+            font-size: 0.75rem;
+            padding: 0.2rem 0.4rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        #order_table th,
+        #order_table td {
+            font-size: 0.75rem;
+            padding: 0.25rem;
         }
     }
 </style>
-<div class="col-md-12 mb-3 d-flex justify-content-between align-items-center">
+<div class="col-md-12 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
     <h5 class="mb-0">Orders</h5>
     <div class="btn-group" role="group" aria-label="Bulk actions">
-        <button id="void-selected-btn" class="btn btn-danger" disabled>Mark as Void</button>
-        <button id="deliver-selected-btn" class="btn btn-success" disabled>Mark As Delivered</button>
+        <button id="void-selected-btn" class="btn btn-danger btn-sm" disabled>Mark as Void</button>
+        <button id="deliver-selected-btn" class="btn btn-success btn-sm" disabled>Mark As Delivered</button>
     </div>
 </div>
 <div class="col-md-12 table-responsive">
@@ -78,11 +106,11 @@
                         <td>{{ $order->web == 1 ? strtoupper($order->url_orderid) : $order->machine_terminal_count }}
                         </td>
                         <td>{{ $order->id }}</td>
-                        <td style="width:100px;">
-                            <div style="width:80px;" class="btn-group dropend border border-black">
-                                <button type="button" class="btn btn-sm btn-default dropdown-toggle"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    {{ date('d M Y ', strtotime($order->date)) }}
+                        <td>
+                            <div class="btn-group dropend border border-black">
+                                <button type="button" class="btn btn-sm btn-default dropdown-toggle text-nowrap"
+                                    data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 100px;">
+                                    {{ date('d M Y', strtotime($order->date)) }}
                                 </button>
                                 <ul class="dropdown-menu px-4">
                                     <li><a class="dropdown-item" href="#"><strong>Stamp Date </strong><br />

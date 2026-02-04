@@ -146,4 +146,6 @@ return [
     'stock_report' => 'Stock Report',
     'pre_order_booking' => 'Pre Order Booking',
     'booking_slots' => 'Booking Slots',
+    'wallet_discount' => 'Wallet Discount',
+    'hotel_rooms' => 'Hotel Rooms',
 ];

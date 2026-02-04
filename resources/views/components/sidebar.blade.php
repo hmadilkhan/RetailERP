@@ -1,11 +1,133 @@
-{{-- Sidebar Component 
+{{-- 
 
- Whenever add new page in the backend please make sure to add the translation in sidebar.php lang file
+Sidebar Component 
+
+Whenever add new page in the backend please make sure to add the translation in sidebar.php lang file
  
 --}}
 @php
     $currentUrl = request()->path();
 @endphp
+<style>
+    .main-sidebar {
+        box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-menu {
+        padding: 0.5rem 0;
+    }
+    
+    .sidebar-menu li.nav-level {
+        color: rgba(255,255,255,0.6);
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem 1.5rem 0.5rem;
+        margin-top: 0.5rem;
+    }
+    
+    .sidebar-menu .treeview > a {
+        padding: 0.75rem 1.5rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        border-left: 3px solid transparent;
+        /* text-decoration: none; */
+    }
+    
+    .sidebar-menu .treeview > a:hover {
+        background-color: rgba(255,255,255,0.1) !important;
+        border-left-color: rgba(255,255,255,0.5);
+        text-decoration: none;
+    }
+    
+    .sidebar-menu .treeview.active > a {
+        background-color: rgba(255,255,255,0.15) !important;
+        border-left-color: #fff;
+        font-weight: 600;
+    }
+    
+    .sidebar-menu .treeview > a i:first-child {
+        margin-right: 0.75rem;
+        font-size: 1.1rem;
+        width: 20px;
+        text-align: center;
+    }
+    
+    .sidebar-menu .treeview > a .icon-arrow-down {
+        margin-left: auto;
+        font-size: 0.8rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .sidebar-menu .treeview.active > a .icon-arrow-down {
+        transform: rotate(180deg);
+    }
+    
+    .sidebar-menu .treeview-menu {
+        background-color: #fff;
+    }
+    
+    .sidebar-menu .treeview-menu li a {
+        padding: 0.6rem 1.5rem 0.6rem 3.5rem;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+        color: #333 !important;
+        text-decoration: none;
+    }
+    
+    .sidebar-menu .treeview-menu li a:hover {
+        background-color: #28a745 !important;
+        color: #fff !important;
+        padding-left: 3.75rem;
+        text-decoration: none;
+    }
+    
+    .sidebar-menu .treeview-menu li.active > a {
+        /* background-color: #28a745 !important; */
+        /* color: #fff !important; */
+        color: #000 !important;
+        font-weight: 1000;
+    }
+    
+    .sidebar-menu .treeview-menu li.active > a:hover {
+        background-color: #218838 !important;
+        color: #fff !important;
+    }
+    
+    .sidebar-menu .treeview-menu .treeview-menu li a {
+        padding-left: 4.5rem;
+        font-size: 0.85rem;
+        color: #333 !important;
+    }
+    
+    .sidebar-menu .treeview-menu .treeview-menu li a:hover {
+        padding-left: 4.75rem;
+        background-color: #28a745 !important;
+        color: #fff !important;
+    }
+    
+    .sidebar-menu .treeview-menu .treeview-menu li.active > a {
+        background-color: #28a745 !important;
+        color: #fff !important;
+    }
+    
+    .sidebar-menu .treeview-menu .treeview-menu .treeview-menu li a {
+        padding-left: 5.5rem;
+        color: #333 !important;
+    }
+    
+    .sidebar-menu .treeview-menu .treeview-menu .treeview-menu li a:hover {
+        background-color: #28a745 !important;
+        color: #fff !important;
+    }
+    
+    .sidebar-menu .treeview-menu .treeview-menu .treeview-menu li.active > a {
+        background-color: #28a745 !important;
+        color: #fff !important;
+    }
+</style>
 <aside class="main-sidebar hidden-print bg-success">
     <section class="sidebar" id="sidebar-scroll">
         <!-- Sidebar Menu-->
