@@ -70,8 +70,8 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('components/dropzone/dist/dropzone.css') }}">
 
     <!-- Data Table Css -->
-    <link rel="stylesheet" type="text/css"
-        href="{{ asset('components/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}">
+    {{-- <link rel="stylesheet" type="text/css"
+        href="{{ asset('components/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}"> --}}
     <link rel="stylesheet" type="text/css"
         href="{{ asset('assets/plugins/data-table/css/buttons.dataTables.min.css') }}">
     <link rel="stylesheet" type="text/css"
