@@ -27,6 +27,7 @@
                <th>DO No</th>
                <th >Branch</th>
                <th>Generation Date</th>
+               <th>Generation Time</th>
                <th >Status</th>
                <th>Action</th>
             </tr>
@@ -38,6 +39,7 @@
                    <td>DO-{{$value->demand_id}}</td>
                    <td >{{$value->branch_name}}</td>
                    <td >{{$value->date}}</td>
+                   <td >{{date('h:i A', strtotime($value->time))}}</td>
                    <td >
                     @if($value->name == "Draft")
                     <span class="tag tag-default">  {{$value->name }}</span>
@@ -84,6 +86,7 @@
   $('.table').DataTable({
         displayLength: 10,
         info: false,
+        ordering: false,
         language: {
           search:'', 
           searchPlaceholder: 'Search Demand',

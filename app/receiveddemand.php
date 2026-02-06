@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 class receiveddemand extends Model
 {
 	public function get_demandslist(){
-		$result = DB::select('SELECT a.demand_general_details_id as id, a.demand_id, c.branch_name, a.date,  b.name FROM demand_general_details a
+		$result = DB::select('SELECT a.demand_general_details_id as id, a.demand_id, c.branch_name, a.date,a.time,  b.name FROM demand_general_details a
 INNER JOIN demand_status b ON b.id = a.demand_status_id
 INNER JOIN branch c ON c.branch_id = a.branch_id
 WHERE a.demand_status_id IN (2,7,8) AND a.branch_id IN (Select branch_id from branch where company_id = ?)',[session('company_id')]);
