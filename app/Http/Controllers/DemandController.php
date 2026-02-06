@@ -9,6 +9,7 @@ use App\pdfClass;
 use App\Vendor;
 use Illuminate\Support\Facades\Crypt;
 use Crabbly\Fpdf\Fpdf;
+use Illuminate\Support\Facades\Storage;
 
 
 class DemandController extends Controller
