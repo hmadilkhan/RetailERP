@@ -497,7 +497,13 @@ class ReportController extends Controller
                 $q->where("status", "!=", 12);
             })
             ->when($request->department != "", function ($q) use ($request) {
-                $q->whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"));
+                $q->whereExists(function ($subQuery) use ($request) {
+                    $subQuery->select(DB::raw(1))
+                        ->from('inventory_general')
+                        ->whereColumn('inventory_general.id', 'sales_receipt_details.item_code')
+                        ->where('inventory_general.company_id', session("company_id"))
+                        ->where('inventory_general.department_id', $request->department);
+                });
             })
             ->when($request->product != "", function ($q) use ($request) {
                 $q->where("item_code", $request->product);
@@ -769,7 +775,14 @@ class ReportController extends Controller
                 $q->where("order_mode_id", $request->ordermode);
             })
             ->when($request->department != "", function ($q) use ($request) {
-                $q->whereIn("id", OrderDetails::whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"))->groupBy("receipt_id")->pluck("receipt_id"));
+                $q->whereExists(function ($subQuery) use ($request) {
+                    $subQuery->select(DB::raw(1))
+                        ->from('sales_receipt_details')
+                        ->join('inventory_general', 'inventory_general.id', '=', 'sales_receipt_details.item_code')
+                        ->whereColumn('sales_receipt_details.receipt_id', 'sales_receipts.id')
+                        ->where('inventory_general.company_id', session("company_id"))
+                        ->where('inventory_general.department_id', $request->department);
+                });
             })
 
             ->select(DB::raw('Count(*) as total_receipts'), DB::raw('SUM(total_amount) as total_amount'));
@@ -817,7 +830,13 @@ class ReportController extends Controller
                 $q->where("status", "!=", 12);
             })
             ->when($request->department != "", function ($q) use ($request) {
-                $q->whereIn("item_code", InventoryModel::where("company_id", session("company_id"))->where("department_id", $request->department)->pluck("id"));
+                $q->whereExists(function ($subQuery) use ($request) {
+                    $subQuery->select(DB::raw(1))
+                        ->from('inventory_general')
+                        ->whereColumn('inventory_general.id', 'sales_receipt_details.item_code')
+                        ->where('inventory_general.company_id', session("company_id"))
+                        ->where('inventory_general.department_id', $request->department);
+                });
             })
             ->when($request->product != "", function ($q) use ($request) {
                 $q->where("item_code", $request->product);
