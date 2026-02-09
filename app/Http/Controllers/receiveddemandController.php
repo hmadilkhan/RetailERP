@@ -101,11 +101,11 @@ class ReceivedDemandController extends Controller
 
             $items = [
                 'transfer_id' => $addtransfer,
+                'transfer_type' => 'general',
                 'product_id' => $request->productid,
-                'cp' => 'NULL',
+                'cp' => null,
                 'qty' => $request->qty,
-                'status_id' => 4,
-                'transfer_type' => "general"
+                'status_id' => 4
             ];
             $additems = $recdemand->insert_transfer('transfer_item_details', $items);
             return $additems;
@@ -115,11 +115,11 @@ class ReceivedDemandController extends Controller
 
             $items = [
                 'transfer_id' => $transferid[0]->transfer_id,
+                'transfer_type' => 'general',
                 'product_id' => $request->productid,
-                'cp' => 'NULL',
+                'cp' => null,
                 'qty' => $request->qty,
-                'status_id' => 4,
-                'transfer_type' => "general"
+                'status_id' => 4
             ];
             $additems = $recdemand->insert_transfer('transfer_item_details', $items);
             return $additems;
