@@ -79,17 +79,10 @@
                                             title="" data-original-title="View"><i
                                                 class="icofont icofont-printer"></i></a>
                                     @endif
-
                                 </td>
-
                             </tr>
                         @endforeach
-
-
-
                     </tbody>
-
-
                 </table>
             </div>
         </div>
