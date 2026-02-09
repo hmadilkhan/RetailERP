@@ -130,7 +130,6 @@
          }
 
          function updatedemand_item(statusid, tableid) {
-
              $.ajax({
                  url: "{{ url('/updateitemstatus') }}",
                  type: "PUT",
@@ -142,8 +141,6 @@
                  success: function(resp) {}
              });
          }
-
-
 
          function update_status() {
              $.ajax({

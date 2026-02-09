@@ -280,7 +280,7 @@ class TransferController extends Controller
 
       $items = [
         'po_no' => "PO-" . $count,
-        'user_id' => session('userid'),
+        'user_id' => session('company_id'),
         'vendor_id' => 1,
         'branch_id' => session('branch'),
         'tax_id' => 1,
@@ -922,8 +922,8 @@ class TransferController extends Controller
     $pdf->Cell(30, 6, $details[0]->to_status, 0, 1, 'L');
 
     $pdf->SetFont('Arial', '', 11);
-    $pdf->Cell(70, 6, '', 0, 0);//$details[0]->br_fr_address
-    $pdf->Cell(60, 6, '', 0, 0);//$details[0]->br_to_address
+    $pdf->Cell(70, 6, '', 0, 0); //$details[0]->br_fr_address
+    $pdf->Cell(60, 6, '', 0, 0); //$details[0]->br_to_address
     $pdf->Cell(30, 6, 'Created By :', 0, 0);
     $pdf->SetFont('Arial', 'B', 11);
     $pdf->Cell(30, 6, $details[0]->username, 0, 1, 'L');
@@ -949,7 +949,7 @@ class TransferController extends Controller
       $pdf->Cell(45, 7, $value->item_status, 0, 1, 'L', 1);
     }
 
-    
+
     $pdf->SetFont('Arial', '', 12);
     $pdf->Cell(190, 7, "", 'B', 0, 'R', 1);
     $pdf->ln(30);
