@@ -327,7 +327,7 @@ WHERE a.DC_id = ?', [$dcid]);
 	{
 		$result = DB::select('SELECT a.transfer_id, a.transfer_No, a.date, b.branch_name, c.status_name as name,d.fullname FROM transfer_without_demand a
 		INNER JOIN branch b ON b.branch_id = a.branch_to
-		INNER JOIN transfer_status c ON c.status_id = a.status_id
+		INNER JOIN transfer_status c ON c.status_id = a.status_id 
 		INNER JOIN user_details d ON d.id = a.user_id
 		where a.branch_from IN (Select branch_id from branch where company_id = ?)
 		', [session('company_id')]);
@@ -354,7 +354,7 @@ WHERE a.DC_id = ?', [$dcid]);
 		$result = DB::select('SELECT a.transfer_id, a.transfer_No, a.date, d.branch_name, d.branch_address, f.shipment_amount, g.shipment_charges,(g.cost_price + g.shipment_charges) AS cp , 
 			e.item_code, e.product_name, b.qty AS transfer_qty, c.status_name as item_status
 			FROM transfer_without_demand a
-			INNER JOIN transfer_item_details b ON b.transfer_id = a.transfer_id
+			INNER JOIN transfer_item_details b ON b.transfer_id = a.transfer_id and b.transfer_type = "without_demand"
 			INNER JOIN transfer_status c ON c.status_id = a.status_id
 			INNER JOIN branch d ON d.branch_id = a.branch_to
 			INNER JOIN inventory_general e ON e.id = b.product_id
@@ -394,7 +394,14 @@ WHERE a.DC_id = ?', [$dcid]);
 
 	public function directTransferOrderReport($transferId)
 	{
-		$result = DB::select("SELECT a.transfer_id, a.transfer_No, a.date, e.branch_name as branch_from, e.branch_address as br_fr_address, f.branch_name as branch_to, f.branch_address as br_to_address, c.status_name as to_status, d.item_code, d.product_name, b.qty, g.cost_price, c.status_name as item_status, d.id as product_id, b.transfer_item_id as id,i.fullname as username FROM transfer_without_demand a INNER JOIN transfer_item_details b ON b.transfer_id = a.transfer_id INNER JOIN transfer_status c ON c.status_id = a.status_id INNER JOIN inventory_general d ON d.id = b.product_id INNER JOIN branch e ON e.branch_id = a.branch_from INNER JOIN branch f ON f.branch_id = a.branch_to INNER JOIN deliverychallan_general_details h ON h.Transfer_id = a.transfer_id INNER JOIN deliverychallan_item_details g ON g.DC_Id = h.DC_id and g.product_id = b.product_id INNER JOIN user_details i on i.id = a.user_id WHERE a.transfer_id = ?", [$transferId]);
+		$result = DB::select("SELECT a.transfer_id, a.transfer_No, a.date, e.branch_name as branch_from, e.branch_address as br_fr_address, f.branch_name as branch_to, f.branch_address as br_to_address, c.status_name as to_status, d.item_code, d.product_name, b.qty, g.cost_price, c.status_name as item_status, d.id as product_id, b.transfer_item_id as id,i.fullname as username 
+		FROM transfer_without_demand a 
+		INNER JOIN transfer_item_details b ON b.transfer_id = a.transfer_id and b.transfer_type = 'without_demand' 
+		INNER JOIN transfer_status c ON c.status_id = a.status_id INNER JOIN inventory_general d ON d.id = b.product_id 
+		INNER JOIN branch e ON e.branch_id = a.branch_from INNER JOIN branch f ON f.branch_id = a.branch_to 
+		INNER JOIN deliverychallan_general_details h ON h.Transfer_id = a.transfer_id 
+		INNER JOIN deliverychallan_item_details g ON g.DC_Id = h.DC_id and g.product_id = b.product_id 
+		INNER JOIN user_details i on i.id = a.user_id WHERE a.transfer_id = ?", [$transferId]);
 		return $result;
 	}
 }

@@ -105,6 +105,7 @@ class ReceivedDemandController extends Controller
                 'cp' => 'NULL',
                 'qty' => $request->qty,
                 'status_id' => 4,
+                'transfer_type' => "general"
             ];
             $additems = $recdemand->insert_transfer('transfer_item_details', $items);
             return $additems;
@@ -118,6 +119,7 @@ class ReceivedDemandController extends Controller
                 'cp' => 'NULL',
                 'qty' => $request->qty,
                 'status_id' => 4,
+                'transfer_type' => "general"
             ];
             $additems = $recdemand->insert_transfer('transfer_item_details', $items);
             return $additems;

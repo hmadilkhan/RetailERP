@@ -22,7 +22,6 @@
             <div class="card-block">
 
                 <table id="demandtb" class="table dt-responsive table-striped nowrap" width="100%" cellspacing="0">
-
                     <thead>
                         <tr>
                             <th>Transfer Order No.</th>
@@ -40,7 +39,7 @@
                                 <td>TO-{{ $value->transfer_No }}</td>
                                 <td>Head Office</td>
                                 <td>{{ $value->branch_name }}</td>
-                                <td>{{ $value->date }}</td>
+                                <td data-order="{{ strtotime($value->date) }}">{{ $value->date }}</td>
                                 <td>{{ $value->fullname }}</td>
                                 <td>
                                     @if ($value->name == 'Draft')
@@ -104,16 +103,19 @@
 
     <script>
         $('.table').DataTable({
-            displayLength: 10,
+            displayLength: 20,
             info: false,
+            // ordering: false,
+            order: [
+                [3, 'desc']
+            ],
+            responsive: true,
             language: {
                 search: '',
                 searchPlaceholder: 'Search Transfer Order',
                 lengthMenu: '<span></span> _MENU_'
 
             },
-
-
         });
 
         function edit(id) {

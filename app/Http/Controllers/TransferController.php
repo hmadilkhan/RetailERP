@@ -417,6 +417,7 @@ class TransferController extends Controller
           'cp' => 'NULL',
           'qty' => $request->qty,
           'status_id' => 1,
+          'transfer_type' => "without_demand"
         ];
         $additems = $transfer->insert_trf('transfer_item_details', $items);
         return 1;
@@ -432,6 +433,7 @@ class TransferController extends Controller
           'cp' => 'NULL',
           'qty' => $request->qty,
           'status_id' => 1,
+          'transfer_type' => "without_demand"
         ];
         $additems = $transfer->insert_trf('transfer_item_details', $items);
         return 1;
