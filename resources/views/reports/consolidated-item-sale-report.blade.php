@@ -159,6 +159,16 @@
                      </div>
                   </div>
                </div>
+			   <div class="col-lg-3 col-md-6">
+                  <div class="card dashboard-product">
+                     <span>Total Amount</span>
+                     <h2 class="dashboard-total-products" id="totalamount"></h2>
+                     <span class="label label-warning">Amount</span>
+                     <div class="side-box">
+                        <i class="ti-package text-warning-color"></i>
+                     </div>
+                  </div>
+               </div>
             </div>
          </div>
 	    @include('partials.loader')

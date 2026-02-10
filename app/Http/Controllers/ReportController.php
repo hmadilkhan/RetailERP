@@ -356,6 +356,7 @@ class ReportController extends Controller
             "from" => $request->fromdate,
             "to" => $request->todate,
         ];
+       
         if ($mode == "specific") {
             return Excel::download(new ItemSaleReportExport($record, $branch, $datearray, $mode), "Consolidated Item Sale Report Export.xlsx");
         } else {

@@ -23,10 +23,10 @@
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Article</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Branch Code</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Item Name</th>
-		  @if($mode == "normal")
+		  {{-- @if($mode == "normal") --}}
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Price</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Total Amount</th>
-		  @endif
+		  {{-- @endif --}}
 		  <th style="background-color: #1a4567;color:white;text-align: center;"></th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Qty Sold</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Qty/Cur</th>
@@ -75,30 +75,32 @@
 			  <td style="text-align: center;">{{$value->inventory->item_code ?? "-"}}</td>
 			  <td style="text-align: center;">{{$value->order->branchrelation->code ?? "-"}}</td>
 			  <td style="text-align: left;padding-left:1px;">{{$value->inventory->product_name ?? "-"}}</td>
-			  @if($mode == "normal")
+			  {{-- @if($mode == "normal") --}}
 			  <td style="text-align: center;">{{ $value->item_price }}</td>
 			  <td style="text-align: center;">{{ number_format($value->total_amount,2) }}</td>
-			  @endif
+			  {{-- @endif --}}
 			  <td style="text-align: center;"></td>
 			  <td style="text-align: center;">{{ $value->total_qty }}</td>
 			  <td style="text-align: center;">{{(!empty($value->inventory) ? $value->inventory->weight_qty : 1 )}}</td>
 			  <td style="text-align: center;">{{$totalQty}}</td>
 		   </tr>
 		  @endforeach
-		    @if($mode == "normal")
+		  <tr ><td style="font-size:14px;font-weight:bold;background-color:black;text-align: center;color:white" colspan="10">Total</td></tr>
+		    {{-- @if($mode == "normal")
 			  <tr ><td style="font-size:14px;font-weight:bold;background-color:black;text-align: center;color:white" colspan="8">Total</td></tr>
 			@else
 				<tr ><td style="font-size:14px;font-weight:bold;background-color:black;text-align: center;color:white" colspan="9">Total</td></tr>
-			@endif
+			@endif --}}
 		  <tr>
 				<td style="font-size:12px;font-weight:bold;text-align: center;">{{number_format($calcTotalQty,2) }}</td>
 				<td style="font-size:12px;font-weight:bold;text-align: center;"></td>
 				<td style="font-size:12px;font-weight:bold;text-align: center;" colspan="3"></td>
-				@if($mode == "normal")
+				{{-- @if($mode == "normal") --}}
 				<td style="font-size:12px;font-weight:bold;text-align: center;">{{number_format($grandTotal,2)}}</td>
-				@endif
+				{{-- @endif --}}
 				<td style="font-size:12px;font-weight:bold;text-align: center;"></td>
 				<td style="font-size:12px;font-weight:bold;text-align: center;">{{number_format($actualQty,2)}}</td>
+				<td style="font-size:12px;font-weight:bold;text-align: center;"></td>
 				<td style="font-size:12px;font-weight:bold;text-align: center;">{{number_format($gtotal,2)}}</td>
 		  </tr>
 		@endif

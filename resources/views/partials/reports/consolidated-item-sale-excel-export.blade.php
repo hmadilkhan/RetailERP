@@ -23,6 +23,7 @@
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Article</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Branch Code</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Item Name</th>
+		  <th style="background-color: #1a4567;color:white;text-align: center;">Amount</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;"></th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Qty Sold</th>
 		  <th style="background-color: #1a4567;color:white;text-align: center;">Qty/Cur</th>
@@ -61,6 +62,7 @@
 			  <td style="text-align: center;">{{$value->inventory->item_code}}</td>
 			  <td style="text-align: center;">{{$value->order->branchrelation->code}}</td>
 			  <td style="text-align: center;">{{$value->inventory->product_name}}</td>
+			  <td style="text-align: center;">{{number_format($totalamount,2)}}</td>
 			  <td style="text-align: center;"></td>
 			  <td style="text-align: center;">{{ $value->total_qty }}</td>
 			  <td style="text-align: center;">{{$value->inventory->weight_qty}}</td>
