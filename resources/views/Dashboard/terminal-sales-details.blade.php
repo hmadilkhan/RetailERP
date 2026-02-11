@@ -96,7 +96,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
             <div class="card-content">
                 <h6 class="card-label">Total Sales</h6>
                 <h3 class="card-value">{{ session('currency') }}
-                    {{ number_format($heads[0]->TotalSales + $heads[0]->credit_card_transaction - $heads[0]->Discount ?? 0, 0) }}
+                    {{ number_format($heads[0]->TotalSales + $heads[0]->credit_card_transaction, 0) }}
                 </h3>
                 <p class="card-meta">
                     <i class="mdi mdi-trending-up"></i>
@@ -513,7 +513,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
                     <span>Total Sales</span>
                 </div>
                 <div class="summary-amount">{{ session('currency') }}
-                    {{ number_format($heads[0]->TotalSales + $heads[0]->credit_card_transaction, 0) }}
+                    {{ number_format($heads[0]->TotalSales + $heads[0]->credit_card_transaction - ($heads[0]->Discount ?? 0), 0) }}
                 </div>
             </div>
             <div class="summary-row summary-cash">
