@@ -299,7 +299,7 @@ class dashboard extends Model
 
     public function getDetailsByMode($opening, $terminal, $mode)
     {
-        $result = DB::select("SELECT a.id,a.receipt_no,a.total_item_qty,(a.total_amount + ( SELECT SUM(discount_amount) FROM sales_account_subdetails sas WHERE sas.receipt_id = a.id)) as ActualReceiptAmount,( SELECT SUM(discount_amount) FROM sales_account_subdetails sas WHERE sas.receipt_id = a.id) as discount_amount,a.total_amount,a.date,a.time,c.name as customer FROM sales_receipts a  LEFT join customers c on c.id = a.customer_id   where a.payment_id = ? and a.opening_id = ? and a.terminal_id = ?", [$mode, $opening, $terminal]);
+        $result = DB::select("SELECT a.id,a.receipt_no,a.total_item_qty,a.actual_amount as ActualReceiptAmount,( SELECT SUM(discount_amount) FROM sales_account_subdetails sas WHERE sas.receipt_id = a.id) as discount_amount,a.total_amount,a.date,a.time,c.name as customer FROM sales_receipts a  LEFT join customers c on c.id = a.customer_id   where a.payment_id = ? and a.opening_id = ? and a.terminal_id = ?", [$mode, $opening, $terminal]);
         return $result;
     }
 
