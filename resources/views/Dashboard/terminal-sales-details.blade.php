@@ -513,7 +513,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
                     <span>Total Sales</span>
                 </div>
                 <div class="summary-amount">{{ session('currency') }}
-                    {{ number_format($heads[0]->TotalSales + $heads[0]->credit_card_transaction - ($heads[0]->Discount ?? 0), 0) }}
+                    {{ number_format($heads[0]->TotalSales + $heads[0]->credit_card_transaction - ($heads[0]->Discount ?? 0) + ($heads[0]->srb), 0) }}
                 </div>
             </div>
             <div class="summary-row summary-cash">
