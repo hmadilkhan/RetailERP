@@ -4535,8 +4535,8 @@ class ReportController extends Controller
                 $totalCost = 0;
                 $totalMargin = 0;
                 if (!empty($details)) {
-                    $itemQty = 0;
                     foreach ($details as $item) {
+                        $itemQty = 0;
                         $rowClass = $item->void_receipt == 1 ? 'void' : ($item->is_sale_return == 1 ? 'return' : 'normal');
 
                         if (session('company_id') == 74) {
