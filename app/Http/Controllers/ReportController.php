@@ -4278,11 +4278,7 @@ class ReportController extends Controller
 
     public function newitemsaledatabasepdf(Request $request, Vendor $vendor, Report $report)
     {
-         return  $report->getTotalDiscounts($request->fromdate,
-                $request->todate,
-                $request->terminalid,
-                $request->ordermode,
-                $request->status);
+       
         $company = $vendor->company(session('company_id'));
         $departments = [];
         $branchname = "";
@@ -4473,7 +4469,7 @@ class ReportController extends Controller
                 $request->status);
  
         $grandTotalDiscount =     $totalDiscount[0]->total_discount ?? 0;
-
+    return $grandTotalDiscount;
         foreach ($terminals as $terminal) {
             $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #FFFFFF;">Terminal: ' . $terminal->terminal_name . '</h3>';
 
