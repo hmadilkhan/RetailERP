@@ -32,4 +32,6 @@
 		@endforeach
 	</tbody>
 </table>
-{{$result->links()}}
+<div class="mt-3">
+	{{$result->links()}}
+</div>

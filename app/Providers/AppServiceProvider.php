@@ -7,6 +7,7 @@ use App\Services\QuickBooks\QuickBooksCustomerService;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
+use Illuminate\Pagination\Paginator;
 use MongoDB\Driver\Session;
 use Spatie\Activitylog\ActivityLogger;
 
@@ -29,6 +30,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        Paginator::useBootstrap();
+        
         ActivityLogger::macro('withCompany', function ($companyId) {
             $this->tap(function ($activity) use ($companyId) {
                 $activity->company_id = $companyId;
