@@ -16,6 +16,8 @@ use App\pdfClass;
 use App\Traits\MediaTrait;
 use Illuminate\Support\Str;
 use Exception;
+use Illuminate\Support\Facades\Storage;
+
 class VendorController extends Controller
 {
     use MediaTrait;
@@ -495,9 +497,12 @@ class VendorController extends Controller
         $company = $vendor->company(session('company_id'));
         $result = $vendor->account_payable($request->vendor, $request->first, $request->second);
         $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
-        \QrCode::size(200)
-            ->format('png')
-            ->generate($qrcodetext, public_path('assets/images/company/qrcode.png'));
+        if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
+            \QrCode::size(200)
+                ->format('png')
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
+        }
         $pdf = new pdfClass();
         $pdf->AliasNbPages();
         $pdf->AddPage();
@@ -509,10 +514,10 @@ class VendorController extends Controller
         //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Image(public_path('assets/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
         $pdf->Cell(105, 12, $company[0]->name, 0, 0, 'L');
         $pdf->Cell(50, 0, "", 0, 1, 'R');
-        $pdf->Image(public_path('assets/images/company/qrcode.png'), 175, 10, -200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
         //third row
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(35, 25, '', 0, 0);
@@ -589,7 +594,7 @@ class VendorController extends Controller
         $pdf = app('Fpdf');
         $pdf->AddPage();
         $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Image(public_path('assets/images/company/' . $company[0]->logo), 10, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 10, 10, -200);
         $pdf->SetFont('Arial', 'BU', 18);
         $pdf->MultiCell(0, 10, 'PAYMENT VOUCHER', 0, 'C');
         $pdf->Cell(2, 2, '', 0, 1);
@@ -1005,11 +1010,11 @@ class VendorController extends Controller
         $pdf->AliasNbPages();
         $pdf->AddPage();
         $qrimage = "qr" . $name[0]->vendor_name . ".png";
-        if (!file_exists(public_path('assets/images/vendors/qrcode/' . $qrimage))) {
-            $qrcodetext = $name[0]->vendor_contact . " | " . $name[0]->user_id . " | 1"; //mode 1 for vendor
+         if (!file_exists(asset('storage/images/company/qrcode.png'))) {
+            $qrcodetext = $company[0]->name . " | " . $company[0]->ptcl_contact . " | " . $company[0]->address;
             \QrCode::size(200)
                 ->format('png')
-                ->generate($qrcodetext, public_path('assets/images/vendors/qrcode/' . $qrimage));
+                ->generate($qrcodetext, Storage::disk('public')->put("images/company/", "qrcode.png"));
         }
         //first row
         $pdf->SetFont('Arial', '', 10);
@@ -1020,11 +1025,11 @@ class VendorController extends Controller
         //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Image(public_path('assets/images/company/' . $company[0]->logo), 12, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 12, 10, -200);
         $pdf->Cell(65, 12, $company[0]->name, 0, 0, 'L');
         $pdf->Cell(45, 12, $name[0]->vendor_name, 0, 0, 'L');
         $pdf->Cell(30, 0, "", 0, 1, 'R');
-        $pdf->Image(public_path('assets/images/vendors/qrcode/' . $qrimage), 175, 10, -200);
+        $pdf->Image(asset('storage/images/company/qrcode.png'), 175, 10, -200);
         //third row
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(35, 25, '', 0, 0);
