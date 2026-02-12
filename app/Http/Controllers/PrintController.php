@@ -276,7 +276,7 @@ class PrintController extends Controller
         $itemQty = 0;
         $tQty = 0;
         $general = $order->getReceiptGeneral($request->receipt);
-        $company = $vendor->getCompanyByBranch($general[0]->branchId);
+        $company = $vendor->getCompanyByBranch($general[0]->branchId);//$general[0]->branchId
         $branch = $vendor->getBranch($general[0]->branchId);
         $details = $order->orderItemsForPrint($general[0]->receiptID);
 

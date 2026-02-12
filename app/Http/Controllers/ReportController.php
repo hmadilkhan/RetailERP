@@ -4417,16 +4417,6 @@ class ReportController extends Controller
     </head>
     <body>';
 
-        // Add company header
-        // $html .= '
-        // <div class="header">
-        //     <img src="' . asset('storage/images/company/' . $company[0]->logo) . '" class="company-logo">
-        //     <div class="company-info">
-        //         <h2>' . $company[0]->name . '</h2>
-        //         <p>Contact No: ' . $company[0]->ptcl_contact . '</p>
-        //         <p>Address : ' . $company[0]->address . '</p>
-        //     </div>
-        // </div>';
         $html .= '
         <table>
             <tr>

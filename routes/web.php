@@ -350,8 +350,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/vendor-payment-details', [VendorController::class, 'vendorPaymentDetails']);
     Route::post('/vendor-report-filter', [VendorController::class, 'vendor_report_filter']);
     Route::get('/payable', [VendorController::class, 'exportpDF']);
-    Route::get('/voucher', [VendorController::class, 'voucher']);
-    Route::get('/voucher/{id}', [VendorController::class, 'voucher']);
+    Route::get('/vendor-voucher', [VendorController::class, 'voucher']);
+    Route::get('/vendor-voucher/{id}', [VendorController::class, 'voucher']);
     Route::get('/profit-and-loss', [VendorController::class, 'profitLoss']);
     Route::get('/profit-and-loss-panel', [VendorController::class, 'profitPanel']);
     Route::post('/add-city', [VendorController::class, 'addCity']);
