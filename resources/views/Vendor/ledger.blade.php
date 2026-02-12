@@ -170,7 +170,7 @@
                                             onclick="editNarration('{{ $value->vendor_account_id }}','{{ $value->narration }}')">
                                             {{ $value->narration }}</td>
                                         <td>
-                                            @if ($value->debit != '' && $value->debit != 0)
+                                            @if ($value->debit != '' && $value->debit != 0 && $value->purchase_id != '')
                                                 <a href="{{ url('vendor-voucher', $value->vendor_account_id) }}"
                                                     class="text-success p-r-10 f-18" data-toggle="tooltip"
                                                     data-placement="top" title=""
