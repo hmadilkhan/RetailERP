@@ -4467,7 +4467,7 @@ class ReportController extends Controller
                 $request->terminalid,
                 $request->ordermode,
                 $request->status);
- 
+        return $totalDiscount;
         $grandTotalDiscount =     $totalDiscount[0]->total_discount ?? 0;
     return $grandTotalDiscount;
         foreach ($terminals as $terminal) {
