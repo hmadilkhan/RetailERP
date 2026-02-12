@@ -4631,8 +4631,8 @@ class ReportController extends Controller
         
         $html .= '
                 <tr style="background-color: #1a4567; color: #FFFFFF; font-weight: bold;">
-                    <td style="padding: 10px; border: 1px solid #0d2235;">Total</td>
-                    <td style="padding: 10px; text-align: right; border: 1px solid #0d2235;">' . number_format(array_sum($departmentSales), 2) . '</td>
+                    <td style="padding: 10px; border: 1px solid #0d2235;color: #FFFFFF; ">Total</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #0d2235;color: #FFFFFF;">' . number_format(array_sum($departmentSales), 2) . '</td>
                 </tr>
                 </tbody>
             </table>
