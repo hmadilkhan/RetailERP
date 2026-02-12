@@ -4467,9 +4467,9 @@ class ReportController extends Controller
                 $request->terminalid,
                 $request->ordermode,
                 $request->status);
-        return $totalDiscount[0];
-        $grandTotalDiscount =     $totalDiscount[0]->total_discount ?? 0;
-    return $grandTotalDiscount;
+       
+        $grandTotalDiscount =     $totalDiscount[0]->totaldiscount ?? 0;
+    
         foreach ($terminals as $terminal) {
             $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #FFFFFF;">Terminal: ' . $terminal->terminal_name . '</h3>';
 
