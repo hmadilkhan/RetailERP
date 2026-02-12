@@ -4456,6 +4456,11 @@ class ReportController extends Controller
             $terminals = $report->get_terminals_byid($request->terminalid);
         }
 
+        // Initialize grand totals
+        $grandTotalSales = 0;
+        $grandTotalDiscount = 0;
+        $departmentSales = [];
+
         foreach ($terminals as $terminal) {
             $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #FFFFFF;">Terminal: ' . $terminal->terminal_name . '</h3>';
 
@@ -4552,6 +4557,16 @@ class ReportController extends Controller
                             $totalAmount += $item->amount;
                             $totalCost += $item->cost;
                             $totalMargin += ($item->amount - $item->cost);
+                            
+                            // Track grand totals
+                            $grandTotalSales += $item->amount;
+                            
+                            // Track department-wise sales
+                            $deptName = $item->department_name ?? 'Other';
+                            if (!isset($departmentSales[$deptName])) {
+                                $departmentSales[$deptName] = 0;
+                            }
+                            $departmentSales[$deptName] += $item->amount;
                         }
                     }
                 } else {
@@ -4580,6 +4595,44 @@ class ReportController extends Controller
                 $html .= '</tbody></table>';
             }
         }
+
+        // Add Summary Section
+        $html .= '
+        <div style="margin-top: 30px; page-break-before: avoid;">
+            <h3 style="text-align: center; background-color: #1a4567; color: #FFFFFF; padding: 10px;">SUMMARY</h3>
+            <table style="width: 60%; margin: 20px auto;">
+                <tr style="background-color: #f8f9fa;">
+                    <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Sales</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalSales, 2) . '</td>
+                </tr>
+                <tr style="background-color: #ffffff;">
+                    <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Discount</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalDiscount, 2) . '</td>
+                </tr>
+            </table>
+            
+            <h4 style="text-align: center; margin-top: 20px; color: #1a4567;">Department Wise Sales</h4>
+            <table style="width: 60%; margin: 10px auto;">
+                <thead>
+                    <tr style="background-color: #1a4567; color: #FFFFFF;">
+                        <th style="padding: 10px; text-align: left; border: 1px solid #0d2235;">Department</th>
+                        <th style="padding: 10px; text-align: right; border: 1px solid #0d2235;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>';
+        
+        foreach ($departmentSales as $dept => $amount) {
+            $html .= '
+                <tr style="background-color: #f8f9fa;">
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">' . htmlspecialchars($dept) . '</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">' . number_format($amount, 2) . '</td>
+                </tr>';
+        }
+        
+        $html .= '
+                </tbody>
+            </table>
+        </div>';
 
         $html .= '</body></html>';
 

@@ -149,16 +149,6 @@
                         var body = "Hey you received " + result.onlineorders.length + " new Online Orders"
                         notifyMe(title, body, "online");
                     }
-
-
-                    // $.each(result.order, function( index, value ) {
-                    // console.log(value)
-                    // if(value.order_mode_id != 4){
-                    // var title = value.company_name + " (" + value.branch_name + ")";
-                    // var body = "Hey you received new "+value.payment_mode+" Sales Order # " + value.id
-                    // }
-                    // notifyMe(title,body);
-                    // });
                 }
             });
         }
