@@ -4538,6 +4538,12 @@ class ReportController extends Controller
                     foreach ($details as $item) {
                         $rowClass = $item->void_receipt == 1 ? 'void' : ($item->is_sale_return == 1 ? 'return' : 'normal');
 
+                        if (session('company_id') == 74) {
+                            $itemQty = $itemQty + ($item->total_qty * $item->weight_qty);
+                        } else {
+                            $itemQty = $item->total_qty;
+                        }
+
                         $html .= sprintf(
                             '
                         <tr class="%s">
@@ -4553,7 +4559,7 @@ class ReportController extends Controller
                             $rowClass,
                             $item->code,
                             $item->product_name,
-                            number_format($item->qty),
+                            number_format($itemQty),
                             number_format($item->price),
                             number_format($item->amount),
                             number_format($item->cost),
@@ -4562,7 +4568,7 @@ class ReportController extends Controller
                         );
                         if ($item->void_receipt != 1) {
                             $totalCount++;
-                            $totalQty += $item->qty;
+                            $totalQty += $itemQty;
                             $totalAmount += $item->amount;
                             $totalCost += $item->cost;
                             $totalMargin += ($item->amount - $item->cost);
