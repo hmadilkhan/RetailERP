@@ -4461,6 +4461,13 @@ class ReportController extends Controller
         $grandTotalDiscount = 0;
         $departmentSales = [];
 
+        $totalDiscount = $report->getTotalDiscounts($request->fromdate,
+                $request->todate,
+                $request->terminalid,
+                $request->ordermode,
+                $request->status);
+        $grandTotalDiscount =     $totalDiscount[0]->total_discount ?? 0;
+
         foreach ($terminals as $terminal) {
             $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #FFFFFF;">Terminal: ' . $terminal->terminal_name . '</h3>';
 
@@ -4609,14 +4616,18 @@ class ReportController extends Controller
                     <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Discount</td>
                     <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalDiscount, 2) . '</td>
                 </tr>
+                <tr style="background-color: #f8f9fa;">
+                    <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Discounted Sales</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalSales - $grandTotalDiscount, 2) . '</td>
+                </tr>
             </table>
             
             <h4 style="text-align: center; margin-top: 20px; color: #1a4567;">Department Wise Sales</h4>
             <table style="width: 60%; margin: 10px auto;">
                 <thead>
                     <tr style="background-color: #1a4567; color: #FFFFFF;">
-                        <th style="padding: 10px; text-align: left; border: 1px solid #0d2235;">Department</th>
-                        <th style="padding: 10px; text-align: right; border: 1px solid #0d2235;">Amount</th>
+                        <th style="padding: 10px; text-align: left; border: 1px solid #0d2235;font-weight: bold;">Department</th>
+                        <th style="padding: 10px; text-align: right; border: 1px solid #0d2235;font-weight: bold;">Amount</th>
                     </tr>
                 </thead>
                 <tbody>';

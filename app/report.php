@@ -535,6 +535,20 @@ class report extends Model
         $result = DB::select("SELECT e.order_mode_id,e.order_mode as ordermode FROM sales_receipt_details a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN sales_order_mode e on e.order_mode_id = b.order_mode_id where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ? " . $filter . ") GROUP BY e.order_mode_id", [$fromdate, $todate, $terminalid]);
         return $result;
     }
+    //GET TOTAL DISCOUNTS
+    public function getTotalDiscounts($fromdate, $todate, $terminalid, $mode, $status)
+    {
+        $filter = "";
+
+        if ($mode != "all") {
+            $filter .= " and b.order_mode_id = " . $mode;
+        }
+        if ($status != "all") {
+            $filter .= " and b.status = " . $mode;
+        }
+        $result = DB::select("SELECT IFNULL(SUM(discount_amount),0) as totaldiscount FROM sales_account_subdetails a INNER JOIN sales_receipts b ON b.id = a.receipt_id where receipt_id IN (Select id from sales_receipts where date between ? and ? and terminal_id = ? " . $filter . ")", [$fromdate, $todate, $terminalid]);
+        return $result;
+    }
     //item sale database
     public function  itemsale_details($fromdate, $todate, $terminalid, $type, $department, $subdepartment = "", $mode, $status, $inventory)
     {
