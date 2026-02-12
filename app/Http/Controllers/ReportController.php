@@ -4539,9 +4539,9 @@ class ReportController extends Controller
                         $rowClass = $item->void_receipt == 1 ? 'void' : ($item->is_sale_return == 1 ? 'return' : 'normal');
 
                         if (session('company_id') == 74) {
-                            $itemQty = $itemQty + ($item->item_qty * $item->weight_qty);
+                            $itemQty = $itemQty + ($item->qty * $item->weight_qty);
                         } else {
-                            $itemQty = $item->item_qty;
+                            $itemQty = $item->qty;
                         }
 
                         $html .= sprintf(
