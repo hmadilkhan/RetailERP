@@ -748,7 +748,7 @@ class VendorController extends Controller
         $pdf->AddPage();
         #HEADERS STARTS FROM HERE
         $pdf->SetFont('Arial', 'B', 16);
-        $pdf->Image(public_path('assets/images/company/Sabsons Distribution.jpg'), 10, 10, -200);
+        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 10, 10, -200);
         $pdf->SetFont('Arial', 'BU', 18);
         $pdf->MultiCell(0, 10, 'TAYYEB JAMAL', 0, 'C');
         $pdf->Cell(2, 2, '', 0, 1);
