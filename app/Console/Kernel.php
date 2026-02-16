@@ -16,7 +16,8 @@ class Kernel extends ConsoleKernel
     protected $commands = [
         Commands\TestCommand::class,
         Commands\DateWiseStockCommand::class,
-        Commands\WebsiteScheduleCommand::class
+        Commands\WebsiteScheduleCommand::class,
+        Commands\GenerateDailyUsageCommand::class,
     ];
 
     /**
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
     {
 		// $schedule->command('test:run')->everyMinute();
 		$schedule->command('app:date-wise-stock-command')->dailyAt("12:00");
+        $schedule->command('usage:generate-daily')->dailyAt("06:00");
         $schedule->job(new RefreshQuickBooksTokenJob())->everyThirtyMinutes();
         $schedule->job(new \App\Jobs\SyncQuickBooksCustomersJob)->dailyAt("11:00");
         $schedule->job(new \App\Jobs\SyncQuickBooksItemsJob)->dailyAt("12:00");

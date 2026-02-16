@@ -1002,6 +1002,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('reports/website-items-summary/{from}/{to}',  [ReportController::class, 'websiteItemsSummaryExcel'])->name('websiteItemsSummary');
     Route::get('reports/sales-return-export',  [ReportController::class, 'salesReturnReportExportExcel'])->name('salesReturnReportExportExcel');
     Route::get('raw-usage-report',  [ReportController::class, 'rawUsage'])->name('raw.usage');
+    Route::get('raw-usage-export', [ReportController::class, 'rawUsageExport'])->name('raw.usage.export');
     Route::get('generate-daily-usage/{from}/{to}',  [ReportController::class, 'generateDailyUsage'])->name('generate.raw.usage');
     Route::get('testDeclarationEmail',  [ReportController::class, 'testDeclarationEmail'])->name('testDeclarationEmail');
     Route::get('SendDeclarationEmail/{openingId}',  [ReportController::class, 'SendDeclarationEmail'])->name('SendDeclarationEmail');

@@ -6175,37 +6175,41 @@ class ReportController extends Controller
                     "recipy_id" => $item->recipy_id,
                 ];
                 array_push($totalItemsArray, $recipyitem);
-                // if($key == 1){
-                // echo $recipyItem->item_id."</br>";
-                // echo $item->totalqty * $recipyItem->usage_qty."</br>";
-                // return $this->invent_stock_detection(session("branch"), $recipyItem->item_id, ( $item->totalqty * $recipyItem->usage_qty), "");
-                // }
-
             }
         }
-        // return $totalItemsArray;
-
-        // $collection = collect($totalItemsArray);
-        // $group = $collection->groupBy('item_id');
-        // $resulttotalArray  = $group->map(function($item, $key) {
-        // return [
-        // 'qty' => $item->sum("total_usage"),
-        // 'inventoryProductId' => $key,
-        // ];
-        // })->values();
-
-        // $inventoriesPluck =  $resulttotalArray->pluck("inventoryProductId");
-        // $inventories = $report->getInventories($inventoriesPluck);
-        // foreach($inventories as $inventory){
-        // "item_id" => $inventory->id,
-        // "item_name" => $inventory->product_name,
-        // "uom" => $inventory->name,
-        // "usage_qty" => $inventory->usage_qty,
-        // "total_qty" => $item->totalqty,
-        // "total_usage" => $item->totalqty * $recipyItem->usage_qty,
-        // "recipy_id" => $item->recipy_id,
-        // }
         return view("reports.raw-usage", compact('totalSaleItems', 'totalItemsArray', 'allItemUsage', 'from', 'to'));
+    }
+
+    public function rawUsageExport(Request $request, Report $report)
+    {
+        $from = ($request->from != "" ? $request->from : date("Y-m-d"));
+        $to = ($request->to != "" ? $request->to : date("Y-m-d"));
+
+        $recipyItems = $report->getRecipeDetails(session("company_id"));
+        $totalSaleItems = $report->getSalesItemByDate($from, $to, session("company_id"), session("branch"));
+        $allItemUsage = $report->getAllItemUsage($from, $to);
+        $totalItemsArray = [];
+
+        foreach ($totalSaleItems as $item) {
+            $filteredArray = Arr::where($recipyItems, function ($value, $key) use ($item) {
+                return $value->recipy_id == $item->recipy_id;
+            });
+
+            foreach ($filteredArray as $key => $recipyItem) {
+                $recipyitem = [
+                    "item_id" => $recipyItem->item_id,
+                    "item_name" => $recipyItem->product_name,
+                    "uom" => $recipyItem->uom,
+                    "usage_qty" => $recipyItem->usage_qty,
+                    "total_qty" => $item->totalqty,
+                    "total_usage" => $item->totalqty * $recipyItem->usage_qty,
+                    "recipy_id" => $item->recipy_id,
+                ];
+                array_push($totalItemsArray, $recipyitem);
+            }
+        }
+
+        return Excel::download(new \App\Exports\RawUsageExport($totalSaleItems, $totalItemsArray, $allItemUsage, $from, $to), 'Raw Usage Report.xlsx');
     }
 
     public function generateDailyUsage($from, $to)
