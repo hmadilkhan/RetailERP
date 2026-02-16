@@ -6241,7 +6241,7 @@ class ReportController extends Controller
                 $previousStock = DB::table("inventory_stock")->where("product_id", $recipyItem->item_id)->get();
                 // return $previousStock->isEmpty();
                 // return empty($previousStock);
-                // $this->invent_stock_detection(session("branch"), $recipyItem->item_id, ( $item->totalqty * $recipyItem->usage_qty), "");
+                $this->invent_stock_detection(session("branch"), $recipyItem->item_id, ( $item->totalqty * $recipyItem->usage_qty), "");
                 $currentStock = DB::table("inventory_stock")->where("product_id", $recipyItem->item_id)->get();
                 // return ;
                 // array_push($totals,[
