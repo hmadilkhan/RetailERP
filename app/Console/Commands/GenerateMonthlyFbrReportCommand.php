@@ -77,10 +77,16 @@ class GenerateMonthlyFbrReportCommand extends Command
         //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Image(public_path('storage/images/company/' . $report->logo), 12, 10, -200);
+        $logoPath = public_path('storage/images/company/' . $report->logo);
+        if (file_exists($logoPath) && !is_dir($logoPath)) {
+            $pdf->Image($logoPath, 12, 10, -200);
+        }
         $pdf->Cell(105, 12, "FBR REPORT", 0, 0, 'L');
         $pdf->Cell(50, 0, "", 0, 1, 'R');
-        $pdf->Image(public_path('storage/images/company/qrcode.png'), 175, 10, -200);
+        $qrPath = public_path('storage/images/company/qrcode.png');
+        if (file_exists($qrPath) && !is_dir($qrPath)) {
+            $pdf->Image($qrPath, 175, 10, -200);
+        }
 
         //third row
         $pdf->SetFont('Arial', '', 10);
