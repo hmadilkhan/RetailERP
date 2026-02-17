@@ -5375,7 +5375,7 @@ class ReportController extends Controller
 
     public function sendSingleEmail($from, $report, $reportname, $file)
     {
-        $data["email"] =  $report->branch_email;
+        $data["email"] =  "hmadilkhan@gmail.com";//$report->branch_email;
         $data["title"] =  $reportname;
         $data["body"]  =  $report;
         $data["from"]  =  $from;

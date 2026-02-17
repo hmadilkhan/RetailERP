@@ -149,9 +149,11 @@
                                 <a class="dropdown-item waves-light waves-effect" id="btn_activeall"><i
                                         class="icofont icofont-ui-check"></i>&nbsp;Active All</a>
                                 <div class="dropdown-divider"></div>
+                                @if (session('roleId') == 2)
                                 <a class="dropdown-item waves-light waves-effect" id="btn_removeall"><i
                                         class="icofont icofont-close-line"></i>&nbsp;Inactive All</a>
-                                @if (session('roleId') == 2)
+                                @endif
+                                @if (session('roleId') == 1)
                                     <a class="dropdown-item waves-light waves-effect" id="btn_deleteall"><i
                                             class="icofont icofont-close-line"></i>&nbsp;Delete All</a>
                                 @endif
