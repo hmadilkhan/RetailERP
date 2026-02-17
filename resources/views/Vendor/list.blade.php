@@ -37,6 +37,7 @@
                            <th>Preview</th>
                            <th>Vendor Name | Balance</th>
                            <th>Contact</th>
+                           <th>Created At</th>
 {{--                           <th>Email</th>--}}
                            <th>Payment Terms</th>
                            <th>Action</th>
@@ -59,6 +60,7 @@
 {{--                                       <span class="text-muted f-12">{{number_format($value->balance,2)}}</span>--}}
                                    </td>
                                    <td>{{$value->vendor_contact}}</td>
+                                   <td>{{date('d-m-Y', strtotime($value->created_at))}}</td>
 {{--                                   <td>{{$value->vendor_email }} </td>--}}
                                     <td>{{$value->payment_terms }} Days</td>
                                   <!-- <td class="action-icon">
