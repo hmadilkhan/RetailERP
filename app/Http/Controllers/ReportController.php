@@ -5370,7 +5370,7 @@ class ReportController extends Controller
         array_push($this->filesArray, storage_path('app/public/pdfs/' . $fileName));
         // //save file
         $pdf->Output($filePath, 'F');
-        $this->sendSingleEmail("2024-09-01", $report, "FBR Report", $filePath);
+        $this->sendSingleEmail($from, $report, "FBR Report", $filePath);
     }
 
     public function sendSingleEmail($from, $report, $reportname, $file)
