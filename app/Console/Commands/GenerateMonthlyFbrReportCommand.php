@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use App\Report;
+use App\report;
 use App\pdfClass;
 use Exception;
 use Illuminate\Support\Facades\Mail;
@@ -53,7 +53,8 @@ class GenerateMonthlyFbrReportCommand extends Command
 
     private function saveFbrReport($report, $from, $to)
     {
-        $reportmodel = new Report();
+        // changes in report model
+        $reportmodel = new report();
 
         if (!file_exists(public_path('storage/images/company/qrcode.png'))) {
             $qrcodetext = $report->company_name . " | " . $report->ptcl_contact . " | " . $report->address;
