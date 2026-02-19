@@ -42,6 +42,7 @@ use App\Exports\StockReportExcelExport;
 use App\Exports\StockReportExport;
 use App\Exports\WebsiteItemSummaryExport;
 use App\Exports\SaleReturnExport;
+use App\Jobs\SendWhatsappReportJob;
 use App\Mail\DeclarationEmail;
 use App\Models\Company;
 use App\Models\DailyStock;
@@ -356,7 +357,7 @@ class ReportController extends Controller
             "from" => $request->fromdate,
             "to" => $request->todate,
         ];
-       
+
         if ($mode == "specific") {
             return Excel::download(new ItemSaleReportExport($record, $branch, $datearray, $mode), "Consolidated Item Sale Report Export.xlsx");
         } else {
@@ -4278,7 +4279,7 @@ class ReportController extends Controller
 
     public function newitemsaledatabasepdf(Request $request, Vendor $vendor, Report $report)
     {
-       
+
         $company = $vendor->company(session('company_id'));
         $departments = [];
         $branchname = "";
@@ -4462,14 +4463,16 @@ class ReportController extends Controller
         $grandTotalDiscount = 0;
         $departmentSales = [];
 
-        $totalDiscount = $report->getTotalDiscounts($request->fromdate,
-                $request->todate,
-                $request->terminalid,
-                $request->ordermode,
-                $request->status);
-       
+        $totalDiscount = $report->getTotalDiscounts(
+            $request->fromdate,
+            $request->todate,
+            $request->terminalid,
+            $request->ordermode,
+            $request->status
+        );
+
         $grandTotalDiscount =     $totalDiscount[0]->totaldiscount ?? 0;
-    
+
         foreach ($terminals as $terminal) {
             $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #FFFFFF;">Terminal: ' . $terminal->terminal_name . '</h3>';
 
@@ -4573,10 +4576,10 @@ class ReportController extends Controller
                             $totalAmount += $item->amount;
                             $totalCost += $item->cost;
                             $totalMargin += ($item->amount - $item->cost);
-                            
+
                             // Track grand totals
                             $grandTotalSales += $item->amount;
-                            
+
                             // Track department-wise sales
                             $deptName = $item->department_name ?? 'Other';
                             if (!isset($departmentSales[$deptName])) {
@@ -4640,7 +4643,7 @@ class ReportController extends Controller
                     </tr>
                 </thead>
                 <tbody>';
-        
+
         foreach ($departmentSales as $dept => $amount) {
             $html .= '
                 <tr style="background-color: #f8f9fa;">
@@ -4648,7 +4651,7 @@ class ReportController extends Controller
                     <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">' . number_format($amount, 2) . '</td>
                 </tr>';
         }
-        
+
         $html .= '
                 <tr style="background-color: #1a4567; color: #FFFFFF; font-weight: bold;">
                     <td style="padding: 10px; border: 1px solid #0d2235;color: #FFFFFF; ">Total</td>
@@ -5217,6 +5220,17 @@ class ReportController extends Controller
         $pdf->Output('Stock_Adjustment.pdf', 'I');
     }
 
+    public function testWhatsApp()
+    {
+     SendWhatsappReportJob::dispatch(
+            '923112108156',
+            'https://yourdomain.com/storage/reports/test.pdf',
+            'Test User',
+            'January 2026',
+            'test.pdf'
+        );  
+    }
+
     public function generatedSystematicReport(Request $request)
     {
         $this->filesArray = [];
@@ -5375,7 +5389,7 @@ class ReportController extends Controller
 
     public function sendSingleEmail($from, $report, $reportname, $file)
     {
-        $data["email"] =  "hmadilkhan@gmail.com";//$report->branch_email;
+        $data["email"] =  "hmadilkhan@gmail.com"; //$report->branch_email;
         $data["title"] =  $reportname;
         $data["body"]  =  $report;
         $data["from"]  =  $from;
@@ -6245,7 +6259,7 @@ class ReportController extends Controller
                 $previousStock = DB::table("inventory_stock")->where("product_id", $recipyItem->item_id)->get();
                 // return $previousStock->isEmpty();
                 // return empty($previousStock);
-                $this->invent_stock_detection(session("branch"), $recipyItem->item_id, ( $item->totalqty * $recipyItem->usage_qty), "");
+                $this->invent_stock_detection(session("branch"), $recipyItem->item_id, ($item->totalqty * $recipyItem->usage_qty), "");
                 $currentStock = DB::table("inventory_stock")->where("product_id", $recipyItem->item_id)->get();
                 // return ;
                 // array_push($totals,[

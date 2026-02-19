@@ -40,6 +40,8 @@ class GenerateMonthlyFbrReportCommand extends Command
                 try {
                     $this->info("Processing: {$report->company_name} - {$report->branch_name}");
                     $this->saveFbrReport($report, $from, $to);
+                    // Sleep for 2 seconds to avoid mail rate limits
+                    sleep(2);
                 } catch (Exception $e) {
                     $this->error("Error processing {$report->company_name}: {$e->getMessage()}");
                 }

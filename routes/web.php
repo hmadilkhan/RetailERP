@@ -302,6 +302,7 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::post('/delete-email', [BranchController::class, 'deleteEmail']);
 });
 Route::get('/send-report', [ReportController::class, 'generatedSystematicReport']);
+Route::get('/test-whatsapp', [ReportController::class, 'testWhatsApp']);
 
 
 Route::get('/send-logout-notification/{id}', 'UserDetailsController@sendPushNotificationToUserDevice');
