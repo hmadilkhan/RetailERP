@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Services\BranchService;
+use App\Traits\ActivityLoggerTrait;
 use App\Traits\MediaTrait;
 use App\userDetails;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ use Image;
 
 class UserDetailsController extends Controller
 {
-    use MediaTrait;
+    use MediaTrait,ActivityLoggerTrait;
 
     public function __construct()
     {
@@ -34,7 +35,7 @@ class UserDetailsController extends Controller
     public function getBranchesByCompany(Request $request)
     {
         if ($request->company != "") {
-            return DB::table("branch")->where("company_id", $request->company)->where("status_id",1)->get();
+            return DB::table("branch")->where("company_id", $request->company)->where("status_id", 1)->get();
         }
     }
 
@@ -43,7 +44,7 @@ class UserDetailsController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(userDetails $users,BranchService $branchService)
+    public function create(userDetails $users, BranchService $branchService)
     {
         $country = $users->getcountry();
         $city = $users->getcity();
@@ -172,6 +173,7 @@ class UserDetailsController extends Controller
             'password' => 'required',
         ];
         $this->validate($request, $rules);
+        $userModel  = User::findOrFail($request->id);
         // This condition is for checking Regional Manager 
         $branch = ($request->role == 16 || $request->role == 18 ?  $request->branches[0] : $request->branch);
         if (!empty($request->vdimg)) {
@@ -237,6 +239,23 @@ class UserDetailsController extends Controller
                 }
             }
         }
+        // Logging The Update Event
+        $properties = [
+            'fullname' => $request->fullname,
+            'username' => $request->username,
+            'password' => Hash::make($request->password),
+            'email' => $request->email,
+            'contact' => $request->contact,
+            'country_id' => $request->country,
+            'city_id' => $request->city,
+            'address' => $request->address,
+            // 'remember_token' => null,
+            // 'created_at' => $request->createdat,
+            'updated_at' => date('Y-m-d H:i:s'),
+            'show_password' => $request->password,
+        ];
+        $description = auth()->user()->fullname . " updated the user details.";
+        $this->logActivity('users', $userModel, "Update", $properties, $description);
 
 
         return redirect('usersDetails');
