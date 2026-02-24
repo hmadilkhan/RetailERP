@@ -21,7 +21,8 @@
                     <thead>
                         <tr>
                             <th>Logo</th>
-                            <th>Branch Name</th>
+                            <th>Code</th>
+                            <th>Name</th>
                             <th>City</th>
                             <th>Mobile</th>
                             <th>Email</th>
@@ -40,6 +41,7 @@
                                         alt="{{ !empty($value->branch_logo) ? $value->branch_logo : 'placeholder.jpg' }}">
                                 </td>
 
+                                <td>{{ $value->code ?? '-' }}</td>
                                 <td>{{ $value->branch_name }}</td>
                                 <td>{{ $value->city->city_name ?? '-' }}</td>
                                 <td>{{ $value->branch_mobile ?? '-' }}</td>

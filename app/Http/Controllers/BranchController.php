@@ -12,9 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
-use Image;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Models\Activity;
+use Illuminate\Validation\ValidationException;
 
 
 class BranchController extends Controller
@@ -49,6 +47,24 @@ class BranchController extends Controller
 		$company = "";
 		$company = $request->company;
 
+		$rules = [
+			'branchname' => 'required',
+			'br_address' => 'required',
+			'br_ptcl' => 'required',
+			'br_mobile' => 'required',
+			'br_email' => 'required',
+		];
+		$validator = Validator::make($request->all(), $rules, [
+			'required' => 'Required field can not be blank.',
+		]);
+		if ($validator->fails()) {
+			return response()->json([
+				'status' => 422,
+				'message' => 'Required fields are mandatory.',
+				'errors' => $validator->errors(),
+			], 422);
+		}
+
 		$check = $branch->exist($request->branchname, $company);
 
 		try {
@@ -57,21 +73,12 @@ class BranchController extends Controller
 
 				if (!empty($request->vdimg)) {
 					$request->validate([
-						'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
+						'vdimg' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
 					]);
 					$file = $this->uploads($request->vdimg, 'images/branch/');
 				}
 
 				DB::beginTransaction();
-
-				$rules = [
-					'branchname' => 'required',
-					'br_address' => 'required',
-					'br_ptcl' => 'required',
-					'br_mobile' => 'required',
-					'br_email' => 'required',
-				];
-				$this->validate($request, $rules);
 
 				$items = [
 					'company_id' => $company,
@@ -87,7 +94,7 @@ class BranchController extends Controller
 					'branch_email' => $request->br_email,
 					'code' => $request->br_code,
 					'record_daily_stock' => $request->record_daily_stock,
-					'branch_logo' => $file["fileName"],
+					'branch_logo' => $file["fileName"] ?? "",
 					'modify_by' => session('userid'),
 					'modify_date' => date('Y-m-d'),
 					'modify_time' => date('H:i:s'),
@@ -95,7 +102,6 @@ class BranchController extends Controller
 					'time' => date('H:i:s'),
 				];
 				$branch = ModelsBranch::create($items);
-				// $branch = $branch->insert_branch($items);
 
 				if ($request->report != "" && count($request->report) > 0) {
 					foreach ($request->report as $report) {
@@ -113,32 +119,22 @@ class BranchController extends Controller
 					'branch_email' => $request->br_email,
 					'code' => $request->br_code,
 					'record_daily_stock' => $request->record_daily_stock,
-					'branch_logo' => $file["fileName"],
+					'branch_logo' => $file["fileName"] ?? "",
 				];
 				$description = auth()->user()->fullname . " created the new branch with name {$request->branchname}.";
 				$this->logActivity('branch', $branch, "Create", $properties, $description);
-				// activity('branch')
-				// 	->performedOn($branch)
-				// 	->causedBy(auth()->user()->id) // Log who did the action
-				// 	->withCompany(session('company_id'))
-				// 	->withBranch(session('branch'))
-				// 	->withProperties([
-				// 		'branch_name' => $request->branchname,
-				// 		'branch_address' => $request->br_address,
-				// 		'branch_ptcl' => $request->br_ptcl,
-				// 		'branch_mobile' => $request->br_mobile,
-				// 		'branch_email' => $request->br_email,
-				// 		'code' => $request->br_code,
-				// 		'record_daily_stock' => $request->record_daily_stock,
-				// 		'branch_logo' => $file["fileName"],
-				// 	])
-				// 	->setEvent("Create")
-				// 	->log(auth()->user()->fullname . " created the new branch with name {$request->branchname}.");
 				DB::commit();
 				return 1;
 			} else {
 				return 0;
 			}
+		} catch (ValidationException $e) {
+			DB::rollBack();
+			return response()->json([
+				'status' => 422,
+				'message' => 'Required fields are mandatory.',
+				'errors' => $e->errors(),
+			], 422);
 		} catch (Exception $e) {
 			DB::rollBack();
 			return $e->getMessage();
@@ -245,24 +241,7 @@ class BranchController extends Controller
 		];
 		$description = auth()->user()->fullname . " updated the branch.";
 		$this->logActivity('branch', $branchModel, "Update", $properties, $description);
-		// activity('branch')
-		// 	->performedOn($branchModel)
-		// 	->causedBy(auth()->user()) // Log who did the action
-		// 	->withCompany(session('company_id'))
-		// 	->withBranch(session('branch'))
-		// 	->withProperties([
-		// 		'branch_name' => $request->branchname,
-		// 		'branch_address' => $request->br_address,
-		// 		'branch_ptcl' => $request->br_ptcl,
-		// 		'branch_mobile' => $request->br_mobile,
-		// 		'branch_email' => $request->br_email,
-		// 		'code' => $request->br_code,
-		// 		'record_daily_stock' => $request->record_daily_stock,
-		// 		'branch_logo' => $imageName,
-		// 	])
-		// 	->setEvent("Update")
-		// 	->log(auth()->user()->fullname . " updated the branch.");
-
+		
 		return 1;
 	}
 

@@ -61,6 +61,7 @@ use App\Http\Controllers\VariationProductController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\VendorController;
 use App\Http\Controllers\WalletController;
+use App\Http\Controllers\WhatsAppController;
 use App\Livewire\Customers\CustomerList;
 use App\Livewire\Inventory\Inventory;
 use App\Livewire\Orders\PreOrderBooking;
@@ -1173,3 +1174,7 @@ Route::group(['middleware' => ['auth']], function () {
 Route::middleware(['web', 'auth'])->group(function () {
     Route::impersonate(); // creates 'impersonate' & 'impersonate.leave'
 });
+
+
+Route::get('/whatsapp/webhook', [WhatsAppController::class, 'verify']);
+Route::post('/whatsapp/webhook', [WhatsAppController::class, 'handle']);

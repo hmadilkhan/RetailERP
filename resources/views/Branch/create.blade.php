@@ -20,7 +20,7 @@
 
                     <div class="row">
                         <!-- @if (session('roleId') == 1) -->
-                        <div class="col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <div class="form-group">
                                 <label class="form-control-label">Company</label>
                                 <select name="company" id="company" data-placeholder="Select Company"
@@ -37,7 +37,17 @@
                         </div>
                         <!-- @endif -->
 
-                        <div class="col-lg-3 col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-2">
+                            <div class="form-group">
+                                <label class="form-control-label">Branch Code</label>
+                                <input class="form-control" type="text" name="branchcode" id="branchcode"
+                                    value="{{ old('branchcode') }}" />
+                                @if ($errors->has('branchcode'))
+                                    <div class="form-control-feedback">Required field can not be blank.</div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <div class="form-group">
                                 <label class="form-control-label">Branch Name</label>
                                 <input class="form-control" type="text" name="branchname" id="branchname"
@@ -48,7 +58,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <div class="form-group">
                                 <label class="form-control-label">Country</label>
                                 <select name="country" id="country" data-placeholder="Select Country"
@@ -63,7 +73,7 @@
                                 <div class="form-control-feedback"></div>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <div class="form-group">
                                 <label class="form-control-label">City</label>
                                 <select disabled="disabled" name="city" id="city" data-placeholder="Select City"
@@ -80,7 +90,7 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-2 col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <div class="form-group">
                                 <label class="form-control-label">Branch Email</label>
                                 <input class="form-control" type="text" name="br_email" id="email" />
@@ -89,7 +99,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-lg-2 col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <div class="form-group">
                                 <label class="form-control-label">Mobile Number</label>
                                 <input class="form-control" type="text" name="br_mobile" id="mobile" />
@@ -98,7 +108,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-lg-2 col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-2">
                             <div class="form-group">
                                 <label class="form-control-label">Ptcl Number</label>
                                 <input class="form-control" type="text" name="br_ptcl" id="ptcl" />
@@ -107,7 +117,7 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3">
+                        <div class="col-12 col-sm-6 col-lg-3">
                             <div class="form-group">
                                 <label class="form-control-label">Branch Code</label>
                                 <input class="form-control" type="text" name="br_code" id="code" />
@@ -116,21 +126,21 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-lg-3 col-md-3">
-                          <div class="form-group">
-                              <label class="form-control-label">Record Daily Stock ?</label>
-                              <select name="record_daily_stock" id="record_daily_stock" data-placeholder="Record Daily Stock"
-                                  class="form-control select2">
-                                  <option value="1">Yes</option>
-                                  <option selected value="0">No</option>
-                              </select>
-                              <span class="form-control-feedback text-danger" id="record_daily_stock_message"></span>
-                          </div>
-                      </div>
+                        <div class="col-12 col-sm-6 col-lg-3">
+                            <div class="form-group">
+                                <label class="form-control-label">Record Daily Stock ?</label>
+                                <select name="record_daily_stock" id="record_daily_stock"
+                                    data-placeholder="Record Daily Stock" class="form-control select2">
+                                    <option value="1">Yes</option>
+                                    <option selected value="0">No</option>
+                                </select>
+                                <span class="form-control-feedback text-danger" id="record_daily_stock_message"></span>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
-                        
-                        <div class="col-lg-4 col-md-3">
+
+                        <div class="col-12 col-md-6 col-lg-4">
                             <div class="form-group">
                                 <label class="form-control-label">Reports</label>
                                 <select multiple name="report[]" id="report" data-placeholder="Select Company"
@@ -145,7 +155,7 @@
                                 <span class="form-control-feedback text-danger" id="reportmessage"></span>
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-5">
+                        <div class="col-12 col-md-6 col-lg-4">
                             <div class="form-group">
                                 <label class="form-control-label">Branch Address</label>
                                 <textarea name="br_address" id="address" class="form-control"></textarea>
@@ -154,8 +164,8 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-md-4">
-                            <a href="#">
+                        <div class="col-12 col-md-12 col-lg-4">
+                            <a href="#" class="d-inline-block mb-2">
                                 <img id="vdpimg" src="{{ asset('assets/images/placeholder.jpg') }}"
                                     class="thumb-img img-fluid width-100" alt="img"
                                     style="width: 128px;height: 128px;">
@@ -173,9 +183,10 @@
                             </div>
                         </div>
                     </div>
-
+                    <div class="col-12 col-md-12 col-lg-2 f-right">
                     <button type="submit" id="btnsubmit"
-                        class="btn btn-md btn-success waves-effect waves-light f-right"> Create Branch </button>
+                        class="btn btn-md btn-success waves-effect waves-light btn-block f-right"> Create Branch </button>
+                    </div>
 
                 </form>
             </div>
@@ -218,6 +229,33 @@
 
         $('#upload_form').on('submit', function(event) {
             event.preventDefault();
+            clearValidationErrors();
+
+            var requiredFields = {
+                branchname: '#branchname',
+                br_address: '#address',
+                br_ptcl: '#ptcl',
+                br_mobile: '#mobile',
+                br_email: '#email'
+            };
+            var missingFields = [];
+
+            $.each(requiredFields, function(field, selector) {
+                if ($.trim($(selector).val()) === '') {
+                    missingFields.push(field);
+                    setFieldError(selector, 'Required field can not be blank.');
+                }
+            });
+
+            if (missingFields.length > 0) {
+                swal({
+                    title: "Validation Error",
+                    text: "Required fields are mandatory.",
+                    type: "warning"
+                });
+                return;
+            }
+
             $.ajax({
                 url: "{{ url('/submitbranch') }}",
                 method: 'POST',
@@ -227,7 +265,6 @@
                 cache: false,
                 processData: false,
                 success: function(resp) {
-
                     if (resp == 1) {
                         swal({
                                 title: "Operation Performed",
@@ -246,10 +283,64 @@
                             type: "warning"
                         });
                     }
+                },
+                error: function(xhr) {
+                    if (xhr.status === 422 && xhr.responseJSON && xhr.responseJSON.errors) {
+                        $.each(xhr.responseJSON.errors, function(field, messages) {
+                            var selector = getFieldSelector(field);
+                            if (selector) {
+                                setFieldError(selector, messages[0]);
+                            }
+                        });
+
+                        swal({
+                            title: "Validation Error",
+                            text: "Required fields are mandatory.",
+                            type: "warning"
+                        });
+                        return;
+                    }
+
+                    swal({
+                        title: "Error",
+                        text: "Unable to submit branch right now.",
+                        type: "error"
+                    });
                 }
 
             });
         });
+
+        function getFieldSelector(field) {
+            var fieldMap = {
+                branchname: '#branchname',
+                br_address: '#address',
+                br_ptcl: '#ptcl',
+                br_mobile: '#mobile',
+                br_email: '#email',
+                vdimg: '#vdimg'
+            };
+            return fieldMap[field] || ('[name="' + field + '"]');
+        }
+
+        function setFieldError(selector, message) {
+            var $field = $(selector);
+            var $formGroup = $field.closest('.form-group');
+            var $feedback = $formGroup.find('.form-control-feedback').first();
+
+            if ($feedback.length === 0) {
+                $feedback = $('<div class="form-control-feedback"></div>');
+                $formGroup.append($feedback);
+            }
+
+            $field.addClass('form-control-danger');
+            $feedback.text(message);
+        }
+
+        function clearValidationErrors() {
+            $('#upload_form .form-control-danger').removeClass('form-control-danger');
+            $('#upload_form .form-control-feedback').text('');
+        }
     </script>
 
 
