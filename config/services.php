@@ -43,6 +43,11 @@ return [
         'token' => env('WHATSAPP_TOKEN'),
         'phone_id' => env('WHATSAPP_PHONE_NUMBER_ID', env('WHATSAPP_PHONE_ID')),
         'verify_token' => env('WHATSAPP_VERIFY_TOKEN'),
+        'template_lang' => env('WHATSAPP_TEMPLATE_LANG', 'en'),
+        'templates' => [
+            'fbr_report' => env('WHATSAPP_TEMPLATE_FBR_REPORT', 'fbr_report_delivery'),
+            'sales_report' => env('WHATSAPP_TEMPLATE_SALES_REPORT', 'sales_report_delivery'),
+        ],
     ],
 
 ];
