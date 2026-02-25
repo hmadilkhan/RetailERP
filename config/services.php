@@ -39,4 +39,10 @@ return [
         'token' => env('SHOPIFY_TOKEN'),
     ],
 
+    'whatsapp' => [
+        'token' => env('WHATSAPP_TOKEN'),
+        'phone_id' => env('WHATSAPP_PHONE_NUMBER_ID', env('WHATSAPP_PHONE_ID')),
+        'verify_token' => env('WHATSAPP_VERIFY_TOKEN'),
+    ],
+
 ];
