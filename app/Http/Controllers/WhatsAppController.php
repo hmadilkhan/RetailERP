@@ -15,6 +15,7 @@ class WhatsAppController extends Controller
 {
     private const STATE_TTL_SECONDS = 1800;
     private const BRANCH_PAGE_SIZE = 8;
+    private const TERMINAL_PAGE_SIZE = 8;
 
     private $token;
     private $phoneId;
@@ -94,6 +95,50 @@ class WhatsAppController extends Controller
 
                 $state['branch_id'] = (int) $branch->branch_id;
                 $state['branch_name'] = $branch->branch_name;
+                $state['step'] = 'awaiting_terminal_selection';
+                $state['terminal_page'] = 1;
+                $this->setConversationState($from, $state);
+                $this->sendTerminalMenu($from, $state['branch_id'], 1);
+                return response()->json(['status' => 'ok']);
+            }
+
+            if (($state['step'] ?? null) === 'awaiting_terminal_selection' && str_starts_with($listId, 'terminal_page_')) {
+                $page = (int) str_replace('terminal_page_', '', $listId);
+                if ($page < 1) {
+                    $page = 1;
+                }
+
+                $state['terminal_page'] = $page;
+                $this->setConversationState($from, $state);
+                $this->sendTerminalMenu($from, $state['branch_id'], $page);
+                return response()->json(['status' => 'ok']);
+            }
+
+            if (($state['step'] ?? null) === 'awaiting_terminal_selection' && $listId === 'terminal_all') {
+                $state['terminal'] = '0';
+                $state['terminal_name'] = 'All Terminals';
+                $state['step'] = 'awaiting_month';
+                $this->setConversationState($from, $state);
+                $this->sendLastSixMonthsMenu($from);
+                return response()->json(['status' => 'ok']);
+            }
+
+            if (($state['step'] ?? null) === 'awaiting_terminal_selection' && str_starts_with($listId, 'terminal_')) {
+                $terminalId = (int) str_replace('terminal_', '', $listId);
+
+                $terminal = DB::table('terminal_details')
+                    ->select('terminal_id', 'terminal_name')
+                    ->where('terminal_id', $terminalId)
+                    ->where('branch_id', $state['branch_id'] ?? 0)
+                    ->first();
+
+                if (!$terminal) {
+                    $this->sendText($from, "Invalid terminal selection. Please select from the list.");
+                    return response()->json(['status' => 'ok']);
+                }
+
+                $state['terminal'] = (string) $terminal->terminal_id;
+                $state['terminal_name'] = $terminal->terminal_name;
                 $state['step'] = 'awaiting_month';
                 $this->setConversationState($from, $state);
                 $this->sendLastSixMonthsMenu($from);
@@ -110,7 +155,10 @@ class WhatsAppController extends Controller
 
                 $state['from_date'] = Carbon::createFromFormat('Y-m', $monthKey)->startOfMonth()->format('Y-m-d');
                 $state['to_date'] = Carbon::createFromFormat('Y-m', $monthKey)->endOfMonth()->format('Y-m-d');
-                $state['terminal'] = '0';
+                if (!isset($state['terminal'])) {
+                    $state['terminal'] = '0';
+                    $state['terminal_name'] = 'All Terminals';
+                }
                 $this->processReportRequest($from, $state);
                 $this->clearConversationState($from);
                 return response()->json(['status' => 'ok']);
@@ -423,6 +471,81 @@ class WhatsAppController extends Controller
         $this->sendRequest($payload);
     }
 
+    private function sendTerminalMenu($number, $branchId, $page = 1)
+    {
+        $page = max(1, (int) $page);
+        $offset = ($page - 1) * self::TERMINAL_PAGE_SIZE;
+
+        $totalTerminals = DB::table('terminal_details')
+            ->where('branch_id', $branchId)
+            ->count();
+
+        $terminals = DB::table('terminal_details')
+            ->select('terminal_id', 'terminal_name')
+            ->where('branch_id', $branchId)
+            ->orderBy('terminal_name')
+            ->skip($offset)
+            ->take(self::TERMINAL_PAGE_SIZE)
+            ->get();
+
+        $rows = [];
+        if ($page === 1) {
+            $rows[] = [
+                "id" => "terminal_all",
+                "title" => "All Terminals",
+                "description" => "Generate report for all terminals",
+            ];
+        }
+
+        foreach ($terminals as $terminal) {
+            $rows[] = [
+                "id" => "terminal_" . $terminal->terminal_id,
+                "title" => $terminal->terminal_name,
+                "description" => "Select this terminal",
+            ];
+        }
+
+        $totalPages = (int) ceil($totalTerminals / self::TERMINAL_PAGE_SIZE);
+        if ($totalPages > 1 && $page > 1) {
+            $rows[] = [
+                "id" => "terminal_page_" . ($page - 1),
+                "title" => "Previous Terminals",
+                "description" => "Page " . ($page - 1) . " of " . $totalPages,
+            ];
+        }
+
+        if ($totalPages > 1 && $page < $totalPages) {
+            $rows[] = [
+                "id" => "terminal_page_" . ($page + 1),
+                "title" => "More Terminals",
+                "description" => "Page " . ($page + 1) . " of " . $totalPages,
+            ];
+        }
+
+        $payload = [
+            "messaging_product" => "whatsapp",
+            "to" => $number,
+            "type" => "interactive",
+            "interactive" => [
+                "type" => "list",
+                "body" => [
+                    "text" => "Please select terminal:"
+                ],
+                "action" => [
+                    "button" => "Select Terminal",
+                    "sections" => [
+                        [
+                            "title" => "Terminals (Page {$page}/" . max($totalPages, 1) . ")",
+                            "rows" => $rows
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        $this->sendRequest($payload);
+    }
+
     /*
     |--------------------------------------------------------------------------
     | 4️⃣ Send Simple Text Message
@@ -501,7 +624,7 @@ class WhatsAppController extends Controller
             $filename,
             $reportName,
             $mobile,
-            $isFbrFlow ? ($state['branch_name'] ?? 'All Terminals') : $terminal
+            $isFbrFlow ? ($state['terminal_name'] ?? 'All Terminals') : $terminal
         );
     }
 
@@ -597,7 +720,21 @@ class WhatsAppController extends Controller
         $totalTax = 0;
         $totalAmount = 0;
 
-        $terminals = $reportModel->get_terminals_by_branch($branch->branch_id);
+        $selectedTerminalId = (int) ($state['terminal'] ?? 0);
+        if ($selectedTerminalId > 0) {
+            $terminals = DB::table('terminal_details')
+                ->select('terminal_id', 'terminal_name')
+                ->where('branch_id', $branch->branch_id)
+                ->where('terminal_id', $selectedTerminalId)
+                ->get();
+        } else {
+            $terminals = $reportModel->get_terminals_by_branch($branch->branch_id);
+        }
+
+        if ($terminals->isEmpty()) {
+            return null;
+        }
+
         foreach ($terminals as $terminal) {
             $pdf->SetFont('Arial', 'B', 10);
             $pdf->Cell(190, 8, 'Terminal: ' . $terminal->terminal_name, 0, 1, 'L');
@@ -631,7 +768,8 @@ class WhatsAppController extends Controller
 
         $safeCompany = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $company->name);
         $safeBranch = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $branch->branch_name);
-        $fileName = 'FBR_REPORT_' . date('M', strtotime($fromDate)) . '_' . trim($safeCompany) . '_' . trim($safeBranch) . '.pdf';
+        $safeTerminal = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $state['terminal_name'] ?? 'All_Terminals');
+        $fileName = 'FBR_REPORT_' . date('M', strtotime($fromDate)) . '_' . trim($safeCompany) . '_' . trim($safeBranch) . '_' . trim($safeTerminal) . '.pdf';
         $dir = storage_path('app/public/pdfs');
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);
