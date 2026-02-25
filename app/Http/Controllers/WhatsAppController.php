@@ -27,6 +27,7 @@ class WhatsAppController extends Controller
     public function verify(Request $request)
     {
         if ($request->hub_verify_token === $this->verifyToken) {
+            Log::info($request->all());
             return response($request->hub_challenge, 200);
         }
 
