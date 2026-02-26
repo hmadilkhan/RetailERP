@@ -4677,7 +4677,7 @@ class ReportController extends Controller
         $mpdf->WriteHTML($html);
 
         // Output PDF
-        $mpdf->Output('Item_Sale_Database_Urdu.pdf', 'I');
+        $mpdf->Output('Item_Sale_Database.pdf', 'I');
     }
 
     //Sale Return  report

@@ -715,13 +715,13 @@ class WhatsAppController extends Controller
         //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
-        $logoPath = public_path('storage/images/company/' . $company->logo);
+        $logoPath = asset('storage/images/company/' . $company->logo);
         if (file_exists($logoPath) && !is_dir($logoPath)) {
             $pdf->Image($logoPath, 12, 10, -200);
         }
         $pdf->Cell(105, 12, "FBR REPORT", 0, 0, 'L');
         $pdf->Cell(50, 0, "", 0, 1, 'R');
-        $qrPath = public_path('storage/images/company/qrcode.png');
+        $qrPath = asset('storage/images/company/qrcode.png');
         if (file_exists($qrPath) && !is_dir($qrPath)) {
             $pdf->Image($qrPath, 175, 10, -200);
         }
