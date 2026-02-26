@@ -198,6 +198,13 @@ class WhatsAppController extends Controller
             $textRaw = trim($message['text']['body']);
             $text = strtolower($textRaw);
 
+            // Always allow user to restart flow from any step.
+            if ($text == 'hi' || $text == 'hello') {
+                $this->clearConversationState($from);
+                $this->sendMenu($from);
+                return response()->json(['status' => 'ok']);
+            }
+
             if (($state['step'] ?? null) === 'awaiting_mobile') {
                 $mobile = $this->normalizeMobile($textRaw);
 
@@ -291,10 +298,6 @@ class WhatsAppController extends Controller
                 return response()->json(['status' => 'ok']);
             }
 
-            if ($text == 'hi' || $text == 'hello') {
-                $this->clearConversationState($from);
-                $this->sendMenu($from);
-            }
         }
 
         return response()->json(['status' => 'ok']);
