@@ -676,7 +676,7 @@ class WhatsAppController extends Controller
     private function buildFbrReportAndGetPdf(array $state)
     {
         $company = DB::table('company')
-            ->select('company_id', 'name', 'ptcl_contact', 'address')
+            ->select('company_id', 'name', 'ptcl_contact', 'address', 'logo')
             ->where('company_id', $state['company_id'])
             ->first();
 
@@ -700,12 +700,63 @@ class WhatsAppController extends Controller
         $fromLabel = date('F-d-Y', strtotime($fromDate));
         $toLabel = date('F-d-Y', strtotime($toDate));
 
-        $pdf->SetFont('Arial', 'B', 16);
-        $pdf->Cell(190, 10, 'FBR Report (' . $branch->branch_name . ')', 0, 1, 'L');
+        //first row
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(190, 6, $company->name, 0, 1, 'L');
-        $pdf->Cell(190, 6, $fromLabel . ' through ' . $toLabel, 0, 1, 'L');
-        $pdf->Ln(2);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        //second row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $logoPath = public_path('storage/images/company/' . $company->logo);
+        if (file_exists($logoPath) && !is_dir($logoPath)) {
+            $pdf->Image($logoPath, 12, 10, -200);
+        }
+        $pdf->Cell(105, 12, "FBR REPORT", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        $qrPath = public_path('storage/images/company/qrcode.png');
+        if (file_exists($qrPath) && !is_dir($qrPath)) {
+            $pdf->Image($qrPath, 175, 10, -200);
+        }
+
+        //third row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        //forth row
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        //fifth row
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        //sixth row
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        //filter section
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromLabel . ' through ' . $toLabel, 0, 1, 'C');
+
+        //report name
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'FBR Report', 'B,T', 1, 'L');
+        $pdf->ln(1);
 
         $pdf->SetFont('Arial', 'B', 11);
         $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L');
