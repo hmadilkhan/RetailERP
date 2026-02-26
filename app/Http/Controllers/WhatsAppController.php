@@ -60,6 +60,12 @@ class WhatsAppController extends Controller
             return response()->json(['status' => 'no message']);
         }
 
+        $messageId = $message['id'] ?? null;
+        if ($messageId && !$this->acquireInboundMessageLock($messageId)) {
+            Log::info('Duplicate WhatsApp webhook message ignored (in-progress lock)', ['message_id' => $messageId]);
+            return response()->json(['status' => 'ok']);
+        }
+
         $from = $message['from'];
         $state = $this->getConversationState($from);
 
@@ -950,5 +956,15 @@ class WhatsAppController extends Controller
     private function stateKey($number)
     {
         return "wa_state:{$number}";
+    }
+
+    private function acquireInboundMessageLock(string $messageId): bool
+    {
+        return Cache::add($this->inboundMessageLockKey($messageId), true, now()->addMinutes(2));
+    }
+
+    private function inboundMessageLockKey(string $messageId): string
+    {
+        return "wa_inbound_msg_lock:{$messageId}";
     }
 }
