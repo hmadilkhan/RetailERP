@@ -820,7 +820,9 @@ class WhatsAppController extends Controller
         $safeCompany = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $company->name);
         $safeBranch = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $branch->branch_name);
         $safeTerminal = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $state['terminal_name'] ?? 'All_Terminals');
-        $fileName = 'FBR_REPORT_' . date('M', strtotime($fromDate)) . '_' . trim($safeCompany) . '_' . trim($safeBranch) . '_' . trim($safeTerminal) . '.pdf';
+        $period = date('Ymd', strtotime($fromDate)) . '_' . date('Ymd', strtotime($toDate));
+        $generatedAt = date('Ymd_His');
+        $fileName = 'FBR_REPORT_' . $period . '_' . trim($safeCompany) . '_' . trim($safeBranch) . '_' . trim($safeTerminal) . '_' . $generatedAt . '.pdf';
         $dir = storage_path('app/public/pdfs');
         if (!is_dir($dir)) {
             mkdir($dir, 0775, true);
