@@ -4460,8 +4460,10 @@ class ReportController extends Controller
 
         // Initialize grand totals
         $grandTotalSales = 0;
+        $grandTotalQty = 0;
         $grandTotalDiscount = 0;
         $departmentSales = [];
+        $departmentQty = [];
 
         $totalDiscount = $report->getTotalDiscounts(
             $request->fromdate,
@@ -4574,6 +4576,7 @@ class ReportController extends Controller
                             $totalMargin += ($item->amount - $item->cost);
 
                             // Track grand totals
+                            $grandTotalQty += $itemQty;
                             $grandTotalSales += $item->amount;
 
                             // Track department-wise sales
@@ -4581,7 +4584,11 @@ class ReportController extends Controller
                             if (!isset($departmentSales[$deptName])) {
                                 $departmentSales[$deptName] = 0;
                             }
+                            if (!isset($departmentQty[$deptName])) {
+                                $departmentQty[$deptName] = 0;
+                            }
                             $departmentSales[$deptName] += $item->amount;
+                            $departmentQty[$deptName] += $itemQty;
                         }
                     }
                 } else {
@@ -4617,14 +4624,18 @@ class ReportController extends Controller
             <h3 style="text-align: center; background-color: #1a4567; color: #FFFFFF; padding: 10px;">SUMMARY</h3>
             <table style="width: 60%; margin: 20px auto;">
                 <tr style="background-color: #f8f9fa;">
+                    <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Items</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalQty, 2) . '</td>
+                </tr>
+                <tr style="background-color: #ffffff;">
                     <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Sales</td>
                     <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalSales, 2) . '</td>
                 </tr>
-                <tr style="background-color: #ffffff;">
+                <tr style="background-color: #f8f9fa;">
                     <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Discount</td>
                     <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalDiscount, 2) . '</td>
                 </tr>
-                <tr style="background-color: #f8f9fa;">
+                <tr style="background-color: #ffffff;">
                     <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Discounted Sales</td>
                     <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalSales - $grandTotalDiscount, 2) . '</td>
                 </tr>
@@ -4635,6 +4646,7 @@ class ReportController extends Controller
                 <thead>
                     <tr style="background-color: #1a4567; color: #FFFFFF;">
                         <th style="padding: 10px; text-align: left; border: 1px solid #0d2235;font-weight: bold;">Department</th>
+                        <th style="padding: 10px; text-align: right; border: 1px solid #0d2235;font-weight: bold;">Items</th>
                         <th style="padding: 10px; text-align: right; border: 1px solid #0d2235;font-weight: bold;">Amount</th>
                     </tr>
                 </thead>
@@ -4644,6 +4656,7 @@ class ReportController extends Controller
             $html .= '
                 <tr style="background-color: #f8f9fa;">
                     <td style="padding: 8px; border: 1px solid #dee2e6;">' . htmlspecialchars($dept) . '</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">' . number_format($departmentQty[$dept] ?? 0, 2) . '</td>
                     <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">' . number_format($amount, 2) . '</td>
                 </tr>';
         }
@@ -4651,6 +4664,7 @@ class ReportController extends Controller
         $html .= '
                 <tr style="background-color: #1a4567; color: #FFFFFF; font-weight: bold;">
                     <td style="padding: 10px; border: 1px solid #0d2235;color: #FFFFFF; ">Total</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #0d2235;color: #FFFFFF;">' . number_format(array_sum($departmentQty), 2) . '</td>
                     <td style="padding: 10px; text-align: right; border: 1px solid #0d2235;color: #FFFFFF;">' . number_format(array_sum($departmentSales), 2) . '</td>
                 </tr>
                 </tbody>
