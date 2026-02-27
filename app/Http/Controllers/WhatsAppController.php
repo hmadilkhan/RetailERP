@@ -643,6 +643,9 @@ class WhatsAppController extends Controller
                 $mobile,
                 $isFbrFlow ? ($state['terminal_name'] ?? 'All Terminals') : $terminal
             );
+
+            // Re-open main options so user can continue without sending "hi".
+            $this->sendMenu($to);
         } catch (Throwable $e) {
             Log::error('Failed to process WhatsApp report request', [
                 'to' => $to,
