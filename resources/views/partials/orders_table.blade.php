@@ -188,14 +188,14 @@
                                             </li>
                                         @endif
                                     @endif
-                                    @if ($order->status != 12 && (session('roleId') != 20 && session('roleId') != 19))
+                                    @if ($order->status != 12 && (session('roleId') != 20 && session('roleId') != 19 && session('roleId') != 10))
                                         <li onclick='voidReceipt("{{ $order->id }}")'><a class="dropdown-item"><i
                                                     onclick='voidReceipt("{{ $order->id }}")'
                                                     class='alert-confirm text-danger icofont icofont icofont-delete-alt mx-2'
                                                     data-toggle='tooltip' data-placement='top' title=''
                                                     data-original-title='Mark as Void'></i>Mark as Void</a></li>
                                     @endif
-                                    @if ($order->status != 4 && session('roleId') != 20 && session('roleId') != 19)
+                                    @if ($order->status != 4 && session('roleId') != 20 && session('roleId') != 19 && session('roleId') != 10)
                                         <li onclick='deliveredReceipt("{{ $order->id }}")'><a
                                                 class="dropdown-item"><i
                                                     onclick='deliveredReceipt("{{ $order->id }}")'
