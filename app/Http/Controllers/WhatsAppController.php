@@ -10,12 +10,14 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class WhatsAppController extends Controller
 {
     private const STATE_TTL_SECONDS = 1800;
     private const BRANCH_PAGE_SIZE = 8;
     private const TERMINAL_PAGE_SIZE = 8;
+    private const CHAT_SESSION_IDLE_MINUTES = 30;
 
     private $token;
     private $phoneId;
@@ -67,6 +69,7 @@ class WhatsAppController extends Controller
         }
 
         $from = $message['from'];
+        $this->recordInboundMessage($from, $message);
         $state = $this->getConversationState($from);
 
         // LIST RESPONSE
@@ -581,8 +584,12 @@ class WhatsAppController extends Controller
     */
     private function sendRequest($payload)
     {
-        Http::withToken($this->token)
+        $response = Http::withToken($this->token)
             ->post("https://graph.facebook.com/v17.0/{$this->phoneId}/messages", $payload);
+
+        $this->recordOutboundMessage($payload, $response);
+
+        return $response;
     }
 
     private function processReportRequest($to, array $state)
@@ -977,5 +984,242 @@ class WhatsAppController extends Controller
     private function inboundMessageLockKey(string $messageId): string
     {
         return "wa_inbound_msg_lock:{$messageId}";
+    }
+
+    private function recordInboundMessage(string $from, array $message): void
+    {
+        try {
+            $now = now();
+            $parsed = $this->extractInboundMessageDetails($message);
+
+            $messageId = $parsed['wa_message_id'] ?? null;
+            if ($messageId && DB::table('wa_chat_messages')->where('wa_message_id', $messageId)->exists()) {
+                return;
+            }
+
+            $contactId = $this->upsertChatContact($from, $now);
+            $sessionId = $this->resolveChatSessionId(
+                $contactId,
+                'user',
+                $parsed['asked_text'],
+                $now
+            );
+
+            DB::table('wa_chat_messages')->insert([
+                'session_id' => $sessionId,
+                'contact_id' => $contactId,
+                'direction' => 'inbound',
+                'wa_message_id' => $messageId,
+                'message_type' => $parsed['message_type'],
+                'asked_text' => $parsed['asked_text'],
+                'button_id' => $parsed['button_id'],
+                'button_title' => $parsed['button_title'],
+                'list_id' => $parsed['list_id'],
+                'list_title' => $parsed['list_title'],
+                'payload' => json_encode($message, JSON_UNESCAPED_UNICODE),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            DB::table('wa_contacts')
+                ->where('id', $contactId)
+                ->update([
+                    'total_inbound' => DB::raw('total_inbound + 1'),
+                    'updated_at' => $now,
+                ]);
+        } catch (Throwable $e) {
+            Log::warning('Failed to log inbound WhatsApp message', [
+                'from' => $from,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function recordOutboundMessage(array $payload, $response = null): void
+    {
+        try {
+            $to = isset($payload['to']) ? trim((string) $payload['to']) : '';
+            if ($to === '') {
+                return;
+            }
+
+            $now = now();
+            $parsed = $this->extractOutboundMessageDetails($payload, $response);
+            $messageId = $parsed['wa_message_id'] ?? null;
+
+            if ($messageId && DB::table('wa_chat_messages')->where('wa_message_id', $messageId)->exists()) {
+                return;
+            }
+
+            $contactId = $this->upsertChatContact($to, $now);
+            $sessionId = $this->resolveChatSessionId(
+                $contactId,
+                'business',
+                $parsed['asked_text'],
+                $now
+            );
+
+            DB::table('wa_chat_messages')->insert([
+                'session_id' => $sessionId,
+                'contact_id' => $contactId,
+                'direction' => 'outbound',
+                'wa_message_id' => $messageId,
+                'message_type' => $parsed['message_type'],
+                'asked_text' => $parsed['asked_text'],
+                'button_id' => null,
+                'button_title' => null,
+                'list_id' => null,
+                'list_title' => null,
+                'payload' => json_encode($payload, JSON_UNESCAPED_UNICODE),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+            DB::table('wa_contacts')
+                ->where('id', $contactId)
+                ->update([
+                    'total_outbound' => DB::raw('total_outbound + 1'),
+                    'updated_at' => $now,
+                ]);
+        } catch (Throwable $e) {
+            Log::warning('Failed to log outbound WhatsApp message', [
+                'to' => $payload['to'] ?? null,
+                'error' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    private function extractInboundMessageDetails(array $message): array
+    {
+        $messageType = isset($message['type']) ? (string) $message['type'] : 'unknown';
+        $askedText = null;
+        $buttonId = null;
+        $buttonTitle = null;
+        $listId = null;
+        $listTitle = null;
+
+        if (isset($message['text']['body'])) {
+            $askedText = trim((string) $message['text']['body']);
+        }
+
+        if (isset($message['interactive']['button_reply'])) {
+            $messageType = 'interactive_button_reply';
+            $buttonId = $message['interactive']['button_reply']['id'] ?? null;
+            $buttonTitle = $message['interactive']['button_reply']['title'] ?? null;
+            $askedText = $buttonTitle ?? $askedText;
+        }
+
+        if (isset($message['interactive']['list_reply'])) {
+            $messageType = 'interactive_list_reply';
+            $listId = $message['interactive']['list_reply']['id'] ?? null;
+            $listTitle = $message['interactive']['list_reply']['title'] ?? null;
+            $askedText = $listTitle ?? $askedText;
+        }
+
+        return [
+            'wa_message_id' => $message['id'] ?? null,
+            'message_type' => $messageType,
+            'asked_text' => $askedText,
+            'button_id' => $buttonId,
+            'button_title' => $buttonTitle,
+            'list_id' => $listId,
+            'list_title' => $listTitle,
+        ];
+    }
+
+    private function extractOutboundMessageDetails(array $payload, $response = null): array
+    {
+        $messageType = isset($payload['type']) ? (string) $payload['type'] : 'unknown';
+        $askedText = null;
+
+        if ($messageType === 'text') {
+            $askedText = $payload['text']['body'] ?? null;
+        } elseif ($messageType === 'interactive') {
+            $askedText = $payload['interactive']['body']['text'] ?? null;
+            $interactiveType = $payload['interactive']['type'] ?? null;
+            if ($interactiveType) {
+                $messageType = 'interactive_' . $interactiveType;
+            }
+        } elseif ($messageType === 'template') {
+            $templateName = $payload['template']['name'] ?? 'template';
+            $askedText = 'Template: ' . $templateName;
+        }
+
+        return [
+            'wa_message_id' => data_get($response ? $response->json() : [], 'messages.0.id'),
+            'message_type' => $messageType,
+            'asked_text' => $askedText,
+        ];
+    }
+
+    private function upsertChatContact(string $number, $now): int
+    {
+        $number = trim($number);
+        $existing = DB::table('wa_contacts')->select('id')->where('wa_number', $number)->first();
+
+        if ($existing) {
+            DB::table('wa_contacts')
+                ->where('id', $existing->id)
+                ->update([
+                    'last_seen_at' => $now,
+                    'updated_at' => $now,
+                ]);
+
+            return (int) $existing->id;
+        }
+
+        return (int) DB::table('wa_contacts')->insertGetId([
+            'wa_number' => $number,
+            'first_seen_at' => $now,
+            'last_seen_at' => $now,
+            'total_inbound' => 0,
+            'total_outbound' => 0,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+    }
+
+    private function resolveChatSessionId(int $contactId, string $startedBy, ?string $firstMessageText, $now): int
+    {
+        $openSession = DB::table('wa_chat_sessions')
+            ->select('id', 'last_activity_at')
+            ->where('contact_id', $contactId)
+            ->where('status', 'open')
+            ->orderByDesc('id')
+            ->first();
+
+        $idleCutoff = Carbon::parse($now)->subMinutes(self::CHAT_SESSION_IDLE_MINUTES);
+
+        if ($openSession && Carbon::parse($openSession->last_activity_at)->gte($idleCutoff)) {
+            DB::table('wa_chat_sessions')
+                ->where('id', $openSession->id)
+                ->update([
+                    'last_activity_at' => $now,
+                    'updated_at' => $now,
+                ]);
+
+            return (int) $openSession->id;
+        }
+
+        DB::table('wa_chat_sessions')
+            ->where('contact_id', $contactId)
+            ->where('status', 'open')
+            ->update([
+                'status' => 'closed',
+                'ended_at' => $now,
+                'updated_at' => $now,
+            ]);
+
+        return (int) DB::table('wa_chat_sessions')->insertGetId([
+            'contact_id' => $contactId,
+            'started_by' => $startedBy,
+            'started_at' => $now,
+            'last_activity_at' => $now,
+            'ended_at' => null,
+            'status' => 'open',
+            'first_message_text' => $firstMessageText,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
     }
 }
