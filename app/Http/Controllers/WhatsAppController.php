@@ -594,54 +594,63 @@ class WhatsAppController extends Controller
 
     private function processReportRequest($to, array $state)
     {
-        $reportType = $state['report_type'] ?? null;
-        $mobile = $state['mobile'] ?? null;
-        $terminal = $state['terminal'] ?? null;
-        $fromDate = $state['from_date'] ?? null;
-        $toDate = $state['to_date'] ?? null;
+        try {
+            $reportType = $state['report_type'] ?? null;
+            $mobile = $state['mobile'] ?? null;
+            $terminal = $state['terminal'] ?? null;
+            $fromDate = $state['from_date'] ?? null;
+            $toDate = $state['to_date'] ?? null;
 
-        $isFbrFlow = $reportType === 'fbr_report';
+            $isFbrFlow = $reportType === 'fbr_report';
 
-        if (
-            !$reportType || !$mobile || !$fromDate || !$toDate ||
-            ($isFbrFlow && empty($state['company_id'])) ||
-            ($isFbrFlow && empty($state['branch_id'])) ||
-            (!$isFbrFlow && !$terminal)
-        ) {
-            $this->sendText($to, "Missing required details. Please type Hi and try again.");
-            return;
+            if (
+                !$reportType || !$mobile || !$fromDate || !$toDate ||
+                ($isFbrFlow && empty($state['company_id'])) ||
+                ($isFbrFlow && empty($state['branch_id'])) ||
+                (!$isFbrFlow && !$terminal)
+            ) {
+                $this->sendText($to, "Missing required details. Please type Hi and try again.");
+                return;
+            }
+
+            $this->sendText($to, "Please wait while we prepare your report.");
+
+            // TODO: Replace this stub with your actual report generation function.
+            // Expected return:
+            // [
+            //   'url' => 'https://your-domain.com/storage/reports/abc.pdf',
+            //   'filename' => 'report.pdf'
+            // ]
+            $report = $this->buildReportAndGetPdf($reportType, $state);
+
+            if (!$report || empty($report['url'])) {
+                $this->sendText($to, "Could not find report PDF. Please verify dates/terminal and try again.");
+                return;
+            }
+
+            $templateName = 'report';
+            $language = 'en';
+            $reportName = $reportType === 'fbr_report' ? 'FBR Report' : 'Sales Report';
+            $filename = $report['filename'] ?? ($reportName . '.pdf');
+
+            $this->sendTemplateWithDocument(
+                $to,
+                $templateName,
+                $language,
+                $report['url'],
+                $filename,
+                $reportName,
+                $mobile,
+                $isFbrFlow ? ($state['terminal_name'] ?? 'All Terminals') : $terminal
+            );
+        } catch (Throwable $e) {
+            Log::error('Failed to process WhatsApp report request', [
+                'to' => $to,
+                'state' => $state,
+                'error' => $e->getMessage(),
+            ]);
+            $this->sendText($to, "We could not generate your report right now. Please try again.");
         }
-
-        $this->sendText($to, "Please wait while we prepare your report.");
-
-        // TODO: Replace this stub with your actual report generation function.
-        // Expected return:
-        // [
-        //   'url' => 'https://your-domain.com/storage/reports/abc.pdf',
-        //   'filename' => 'report.pdf'
-        // ]
-        $report = $this->buildReportAndGetPdf($reportType, $state);
-
-        if (!$report || empty($report['url'])) {
-            $this->sendText($to, "Could not find report PDF. Please verify dates/terminal and try again.");
-            return;
-        }
-
-        $templateName = 'report';
-        $language = 'en';
-        $reportName = $reportType === 'fbr_report' ? 'FBR Report' : 'Sales Report';
-        $filename = $report['filename'] ?? ($reportName . '.pdf');
-
-        $this->sendTemplateWithDocument(
-            $to,
-            $templateName,
-            $language,
-            $report['url'],
-            $filename,
-            $reportName,
-            $mobile,
-            $isFbrFlow ? ($state['terminal_name'] ?? 'All Terminals') : $terminal
-        );
     }
 
     private function buildReportAndGetPdf($reportType, array $state)
@@ -803,7 +812,8 @@ class WhatsAppController extends Controller
                 ->where('terminal_id', $selectedTerminalId)
                 ->get();
         } else {
-            $terminals = $reportModel->get_terminals_by_branch($branch->branch_id);
+            // report model returns array from DB::select; normalize to collection.
+            $terminals = collect($reportModel->get_terminals_by_branch($branch->branch_id));
         }
 
         if ($terminals->isEmpty()) {
