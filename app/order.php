@@ -1202,7 +1202,7 @@ class order extends Model
 
 	public function getBranch()
 	{
-		if (session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19 or session('roleId') == 20) {
+		if (session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19 or session('roleId') == 20  or session('roleId') == 10) {
 			$result = DB::table('branch')->where('company_id', session('company_id'))->get();
 		} else {
 			$result = DB::table('branch')->where('branch_id', session('branch'))->get();
