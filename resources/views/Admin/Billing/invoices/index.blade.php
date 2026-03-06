@@ -1,0 +1,94 @@
+@extends('layouts.master-layout')
+
+@section('title', 'Billing Invoices')
+@section('breadcrumtitle', 'Billing Invoices')
+@section('content')
+    <section class="panels-wells">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-header-text">Billing Invoices</h5>
+                <a href="{{ route('billing.invoices.create') }}" class="btn btn-primary btn-sm f-right">Generate Invoice</a>
+            </div>
+            <div class="card-block">
+                <form method="get" class="row">
+                    <div class="col-md-3">
+                        <label>Company</label>
+                        <select name="company_id" class="form-control select2">
+                            <option value="">All</option>
+                            @foreach ($companies as $company)
+                                <option value="{{ $company->company_id }}" {{ request('company_id') == $company->company_id ? 'selected' : '' }}>
+                                    {{ $company->name }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Status</label>
+                        <select name="status" class="form-control">
+                            <option value="">All</option>
+                            @foreach (['draft', 'issued', 'partial', 'paid', 'overdue', 'void'] as $status)
+                                <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label>Month</label>
+                        <input type="month" name="month" class="form-control" value="{{ request('month') }}">
+                    </div>
+                    <div class="col-md-3 m-t-25">
+                        <button class="btn btn-success btn-sm">Filter</button>
+                    </div>
+                </form>
+
+                <div class="table-responsive m-t-15">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Company</th>
+                                <th>Period</th>
+                                <th>Total</th>
+                                <th>Paid</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                                <th>Due Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($invoices as $invoice)
+                                <tr>
+                                    <td>{{ $invoice->invoice_no }}</td>
+                                    <td>{{ optional($invoice->company)->name }}</td>
+                                    <td>{{ $invoice->period_start }} to {{ $invoice->period_end }}</td>
+                                    <td>{{ number_format($invoice->total_amount, 2) }}</td>
+                                    <td>{{ number_format($invoice->paid_amount, 2) }}</td>
+                                    <td>{{ number_format($invoice->balance_amount, 2) }}</td>
+                                    <td>{{ ucfirst($invoice->status) }}</td>
+                                    <td>{{ $invoice->due_date }}</td>
+                                    <td>
+                                        <a href="{{ route('billing.invoices.show', $invoice->id) }}" class="btn btn-info btn-sm">View</a>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="9" class="text-center">No invoices found.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+                <div>
+                    {{ $invoices->links('pagination::bootstrap-4') }}
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
+
+@section('scriptcode_three')
+    <script>
+        $('.select2').select2();
+    </script>
+@endsection
+

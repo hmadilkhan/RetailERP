@@ -7,6 +7,7 @@ use App\Http\Controllers\AdminCompanyController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AdminUsersController;
 use App\Http\Controllers\BankController;
+use App\Http\Controllers\BillingController;
 use App\Http\Controllers\BrandController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\BusinessPoliciesController;
@@ -28,6 +29,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HrProductController;
 use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\Inventory_DepartmentController;
+use App\Http\Controllers\InvoiceSetupController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\InventoryDealController;
@@ -246,6 +248,19 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::post('/delete-company/{id}', [AdminCompanyController::class, 'destroy']);
     Route::get('/company-edit/{id}', [AdminCompanyController::class, 'edit']);
     Route::put('/update-company/{id}', [AdminCompanyController::class, 'update'])->name('company.update');
+
+    // billing
+    Route::get('/billing/invoices', [BillingController::class, 'index'])->name('billing.invoices.index');
+    Route::get('/billing/invoices/create', [BillingController::class, 'create'])->name('billing.invoices.create');
+    Route::post('/billing/invoices', [BillingController::class, 'store'])->name('billing.invoices.store');
+    Route::get('/billing/invoices/{id}', [BillingController::class, 'show'])->name('billing.invoices.show');
+    Route::post('/billing/invoices/{id}/payments', [BillingController::class, 'addPayment'])->name('billing.invoices.payments.store');
+    Route::post('/billing/invoices/{id}/adjustments', [BillingController::class, 'addAdjustment'])->name('billing.invoices.adjustments.store');
+
+    // invoice setup
+    Route::get('/invoice-setup', [InvoiceSetupController::class, 'index'])->name('invoice-setup.index');
+    Route::get('/invoice-setup/create', [InvoiceSetupController::class, 'create'])->name('invoice-setup.create');
+    Route::get('/invoice-setup/{id}/edit', [InvoiceSetupController::class, 'edit'])->name('invoice-setup.edit');
 
     // admin branch//
     Route::get('/view-branch', [AdminBranchController::class, 'index']);

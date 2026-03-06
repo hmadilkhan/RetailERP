@@ -169,6 +169,11 @@
                                 @endif
                             </div>
                         </div>
+                    </div>
+
+                    
+
+                    <div class="row">
                         <div class="col-md-4">
                             <a href="#">
                                 <img id="vdpimg" src="{{ asset('storage/images/placeholder.jpg') }}"
@@ -244,9 +249,7 @@
     <script type="text/javascript">
         $(".select2").select2();
 
-
         $("#country").on('change', function() {
-
             if ($(this).val() != "") {
                 $("#city").attr("disabled", false);
             } else {
@@ -255,14 +258,11 @@
         });
 
         function readURL(input, id) {
-
             if (input.files && input.files[0]) {
                 var reader = new FileReader();
-
                 reader.onload = function(e) {
                     $('#' + id).attr('src', e.target.result);
                 }
-
                 reader.readAsDataURL(input.files[0]);
             }
         }
@@ -279,6 +279,4 @@
             readURL(this, 'previewordercallingbgimg');
         });
     </script>
-
-
 @endsection

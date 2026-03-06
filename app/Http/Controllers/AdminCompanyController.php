@@ -60,6 +60,7 @@ class AdminCompanyController extends Controller
     {
         try {
             $data = $request->validated();
+            $data['is_auto_invoice'] = $request->has('is_auto_invoice') ? 1 : 0;
 
             // Handle file uploads
             if ($request->hasFile('vdimg')) {
@@ -123,6 +124,7 @@ class AdminCompanyController extends Controller
     {
         try {
             $data = $request->validated();
+            $data['is_auto_invoice'] = $request->has('is_auto_invoice') ? 1 : 0;
        
             // Handle file uploads
             if ($request->hasFile('vdimg')) {

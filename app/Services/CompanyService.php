@@ -23,6 +23,9 @@ class CompanyService
             'city' => adminCompany::getcity(),
             'currencies' => DB::table('currencies')->get(),
             'packages' => DB::table('packages')->get(),
+            'branches' => collect(),
+            'terminals' => collect(),
+            'billingRates' => collect(),
         ];
     }
 
@@ -40,6 +43,14 @@ class CompanyService
             'currencies' => $currencies,
             'currencyname' => $currencyname,
             'packages' => $packages,
+            'branches' => DB::table('branch')->where('company_id', $id)->select('branch_id', 'branch_name')->orderBy('branch_name')->get(),
+            'terminals' => DB::table('terminal_details')
+                ->join('branch', 'branch.branch_id', '=', 'terminal_details.branch_id')
+                ->where('branch.company_id', $id)
+                ->select('terminal_details.terminal_id', 'terminal_details.terminal_name', 'terminal_details.branch_id')
+                ->orderBy('terminal_details.terminal_name')
+                ->get(),
+            'billingRates' => DB::table('company_billing_rates')->where('company_id', $id)->orderByDesc('id')->get(),
         ];
     }
 
@@ -62,18 +73,28 @@ class CompanyService
             'created_at' => now(),
             'updated_at' => now(),
             'package_id' => $data['package'] ?? null,
+            'invoice_type' => $data['invoice_type'] ?? 'branch',
+            'billing_cycle_day' => $data['billing_cycle_day'] ?? 1,
+            'invoice_prefix' => $data['invoice_prefix'] ?? null,
+            'payment_due_days' => $data['payment_due_days'] ?? 15,
+            'is_auto_invoice' => $data['is_auto_invoice'] ?? 1,
+            'monthly_charges_amount' => $data['monthly_charges_amount'] ?? 0,
         ];
-        $companyId = adminCompany::insert($items);
-        if (!empty($data['currency'])) {
-            $myObj = new \stdClass();
-            $myObj->currency = $data['currency'];
-            $myJSON = json_encode($myObj);
-            DB::table('settings')->insert([
-                'company_id' => $companyId,
-                'data' => $myJSON,
-            ]);
-        }
-        return $companyId;
+        return DB::transaction(function () use ($data, $items) {
+            $companyId = adminCompany::insert($items);
+            if (!empty($data['currency'])) {
+                $myObj = new \stdClass();
+                $myObj->currency = $data['currency'];
+                $myJSON = json_encode($myObj);
+                DB::table('settings')->insert([
+                    'company_id' => $companyId,
+                    'data' => $myJSON,
+                ]);
+            }
+
+            $this->syncBillingRates($companyId, $data['billing_rates'] ?? [], $data['monthly_charges_amount'] ?? 0);
+            return $companyId;
+        });
     }
 
     public function update($id, array $data)
@@ -92,18 +113,79 @@ class CompanyService
             'order_calling_display_image' => $data['ordercallingbgimg'] ?? $data['prev_order_calling_display'] ?? '',
             'updated_at' => now(),
             'package_id' => $data['package'] ?? null,
+            'invoice_type' => $data['invoice_type'] ?? 'branch',
+            'billing_cycle_day' => $data['billing_cycle_day'] ?? 1,
+            'invoice_prefix' => $data['invoice_prefix'] ?? null,
+            'payment_due_days' => $data['payment_due_days'] ?? 15,
+            'is_auto_invoice' => $data['is_auto_invoice'] ?? 1,
+            'monthly_charges_amount' => $data['monthly_charges_amount'] ?? 0,
         ];
-        $result = adminCompany::updateCompany($items, $id);
-        if (!empty($data['currency'])) {
-            $myObj = new \stdClass();
-            $myObj->currency = $data['currency'];
-            $myJSON = json_encode($myObj);
-            DB::table('settings')->updateOrInsert(
-                ['company_id' => $id], // Search conditions
-                ['data' => $myJSON]    // Fields to update or insert
-            );
+        return DB::transaction(function () use ($id, $data, $items) {
+            $result = adminCompany::updateCompany($items, $id);
+            if (!empty($data['currency'])) {
+                $myObj = new \stdClass();
+                $myObj->currency = $data['currency'];
+                $myJSON = json_encode($myObj);
+                DB::table('settings')->updateOrInsert(
+                    ['company_id' => $id],
+                    ['data' => $myJSON]
+                );
+            }
+
+            $this->syncBillingRates($id, $data['billing_rates'] ?? [], $data['monthly_charges_amount'] ?? 0);
+            return $result;
+        });
+    }
+
+    private function syncBillingRates(int $companyId, array $rates, $fallbackAmount = 0): void
+    {
+        DB::table('company_billing_rates')->where('company_id', $companyId)->delete();
+
+        $rows = [];
+        foreach ($rates as $rate) {
+            if (empty($rate['scope_type']) || !isset($rate['rate']) || $rate['rate'] === '') {
+                continue;
+            }
+
+            $scopeType = $rate['scope_type'];
+            $scopeId = $scopeType === 'company' ? null : (!empty($rate['scope_id']) ? (int) $rate['scope_id'] : null);
+
+            if (in_array($scopeType, ['branch', 'terminal'], true) && empty($scopeId)) {
+                continue;
+            }
+
+            $rows[] = [
+                'company_id' => $companyId,
+                'scope_type' => $scopeType,
+                'scope_id' => $scopeId,
+                'charge_type' => $rate['charge_type'] ?? 'flat_monthly',
+                'rate' => (float) $rate['rate'],
+                'effective_from' => $rate['effective_from'] ?? now()->toDateString(),
+                'effective_to' => !empty($rate['effective_to']) ? $rate['effective_to'] : null,
+                'is_active' => !empty($rate['is_active']) ? 1 : 0,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
         }
-        return $result;
+
+        if (empty($rows) && (float) $fallbackAmount > 0) {
+            $rows[] = [
+                'company_id' => $companyId,
+                'scope_type' => 'company',
+                'scope_id' => null,
+                'charge_type' => 'flat_monthly',
+                'rate' => (float) $fallbackAmount,
+                'effective_from' => now()->toDateString(),
+                'effective_to' => null,
+                'is_active' => 1,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+
+        if (!empty($rows)) {
+            DB::table('company_billing_rates')->insert($rows);
+        }
     }
 
     public static function delete($id)

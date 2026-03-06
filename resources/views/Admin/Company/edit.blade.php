@@ -18,6 +18,7 @@
        <form method="post" action="{{ route('company.update',$company[0]->company_id) }}" class="form-horizontal" enctype="multipart/form-data">	        
         @csrf
         @method('PUT')
+       
        	 <div class="row">
            <div class="col-lg-4 col-md-4">
             <input type="hidden" name="company_id" id="company_id" value="{{$company[0]->company_id}}">
@@ -213,7 +214,7 @@
                               </div>
                           </div>
           </div> 
-           
+
   		<button type="submit" id="btnsubmit" class="btn btn-md btn-primary waves-effect waves-light f-right" > Edit Company </button>
                 
                  
@@ -228,9 +229,7 @@
 <script type="text/javascript">
 $(".select2").select2();
 
-
 $("#country").on('change',function(){
-
    if($(this).val() != ""){
        $("#city").attr("disabled",false);
    }else {
@@ -261,16 +260,6 @@ $("#posbgimg").change(function() {
 $("#ordercallingbgimg").change(function() {
     readURL(this,'previewordercallingbgimg');
 });
-
-
- 
-
-
-     
 </script>
 
-
 @endsection
-
-
-

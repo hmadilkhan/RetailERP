@@ -12,8 +12,13 @@ class Company extends Model
     protected $guarded = [];
     public $timestamps = false;
 	
-	public function branch()
+    public function branch()
     {
         return $this->hasMany(Branch::class,"company_id","company_id");
+    }
+
+    public function billingRates()
+    {
+        return $this->hasMany(CompanyBillingRate::class, 'company_id', 'company_id');
     }
 }
