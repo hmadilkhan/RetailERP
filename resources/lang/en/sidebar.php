@@ -148,4 +148,5 @@ return [
     'booking_slots' => 'Booking Slots',
     'wallet_discount' => 'Wallet Discount',
     'hotel_rooms' => 'Hotel Rooms',
+    'billing' => 'Billing',
 ];

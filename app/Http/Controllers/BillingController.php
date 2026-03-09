@@ -14,6 +14,26 @@ use Illuminate\Support\Facades\DB;
 
 class BillingController extends Controller
 {
+    public function summary()
+    {
+        $summary = DB::table('invoices')
+            ->join('company', 'invoices.company_id', '=', 'company.company_id')
+            ->select(
+                'company.company_id',
+                'company.name as company_name',
+                DB::raw('COUNT(invoices.id) as total_invoices'),
+                DB::raw('SUM(invoices.total_amount) as total_amount'),
+                DB::raw('SUM(invoices.paid_amount) as paid_amount'),
+                DB::raw('SUM(invoices.balance_amount) as balance_amount')
+            )
+            ->where('invoices.status', '!=', 'void')
+            ->groupBy('company.company_id', 'company.name')
+            ->orderBy('company.name')
+            ->get();
+
+        return view('Admin.Billing.summary', compact('summary'));
+    }
+
     public function index(Request $request)
     {
         $query = Invoice::with('company');
@@ -197,144 +217,72 @@ class BillingController extends Controller
         return redirect()->route('billing.invoices.show', $invoiceId)->with('success', 'Adjustment added successfully.');
     }
 
-    private function buildInvoiceLines(Company $company, string $from, string $to): array
+    public function downloadPdf($id)
     {
-        $effectiveDate = $to;
-        $rates = CompanyBillingRate::where('company_id', $company->company_id)
-            ->where('is_active', 1)
-            ->whereDate('effective_from', '<=', $effectiveDate)
-            ->where(function ($q) use ($effectiveDate) {
-                $q->whereNull('effective_to')->orWhereDate('effective_to', '>=', $effectiveDate);
-            })->get();
+        $invoice = Invoice::with(['company', 'lines'])->findOrFail($id);
+        $pdf = \PDF::loadView('Admin.Billing.invoices.pdf', compact('invoice'));
+        return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
+    }
 
+    private function buildInvoiceLines($company, $periodStart, $periodEnd)
+    {
         $lines = [];
 
-        $companyRates = $rates->where('scope_type', 'company');
-        foreach ($companyRates as $rate) {
-            $amount = $this->calculateAmount($rate, $from, $to, null, null);
-            $lines[] = [
-                'scope_type' => 'adjustment',
-                'scope_id' => null,
-                'description' => 'Company Monthly Billing',
-                'qty' => (float) $amount['qty'],
-                'unit_price' => (float) $amount['unit_price'],
-                'line_amount' => (float) $amount['line_amount'],
-                'meta' => json_encode(['charge_type' => $rate->charge_type]),
-            ];
-        }
-
         if ($company->invoice_type === 'branch') {
-            $branchIds = DB::table('branch')->where('company_id', $company->company_id)->pluck('branch_id');
-            foreach ($branchIds as $branchId) {
-                $rate = $rates->first(function ($r) use ($branchId) {
-                    return $r->scope_type === 'branch' && (int) $r->scope_id === (int) $branchId;
-                });
+            $branchCount = DB::table('branch')
+                ->where('company_id', $company->company_id)
+                ->where('status_id', 1)
+                ->count();
 
-                if (!$rate) {
-                    continue;
-                }
-
-                $branch = DB::table('branch')->where('branch_id', $branchId)->first();
-                $amount = $this->calculateAmount($rate, $from, $to, (int) $branchId, null);
+            if ($branchCount > 0 && $company->monthly_charges_amount > 0) {
                 $lines[] = [
                     'scope_type' => 'branch',
-                    'scope_id' => (int) $branchId,
-                    'description' => 'Branch: ' . ($branch->branch_name ?? ('#' . $branchId)),
-                    'qty' => (float) $amount['qty'],
-                    'unit_price' => (float) $amount['unit_price'],
-                    'line_amount' => (float) $amount['line_amount'],
-                    'meta' => json_encode(['charge_type' => $rate->charge_type]),
+                    'scope_id' => null,
+                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $branchCount . ' Branch' . ($branchCount > 1 ? 'es' : '') . ')',
+                    'qty' => $branchCount,
+                    'unit_price' => $company->monthly_charges_amount,
+                    'line_amount' => $branchCount * $company->monthly_charges_amount,
                 ];
             }
-        } else {
-            $terminalRows = DB::table('terminal_details')
-                ->join('branch', 'branch.branch_id', '=', 'terminal_details.branch_id')
+        } elseif ($company->invoice_type === 'terminal') {
+            $terminalCount = DB::table('terminal_details')
+                ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
                 ->where('branch.company_id', $company->company_id)
-                ->select('terminal_details.terminal_id', 'terminal_details.terminal_name')
-                ->get();
+                ->where('branch.status_id', 1)
+                ->count();
 
-            foreach ($terminalRows as $terminalRow) {
-                $rate = $rates->first(function ($r) use ($terminalRow) {
-                    return $r->scope_type === 'terminal' && (int) $r->scope_id === (int) $terminalRow->terminal_id;
-                });
-
-                if (!$rate) {
-                    continue;
-                }
-
-                $amount = $this->calculateAmount($rate, $from, $to, null, (int) $terminalRow->terminal_id);
+            if ($terminalCount > 0 && $company->monthly_charges_amount > 0) {
                 $lines[] = [
                     'scope_type' => 'terminal',
-                    'scope_id' => (int) $terminalRow->terminal_id,
-                    'description' => 'Terminal: ' . ($terminalRow->terminal_name ?? ('#' . $terminalRow->terminal_id)),
-                    'qty' => (float) $amount['qty'],
-                    'unit_price' => (float) $amount['unit_price'],
-                    'line_amount' => (float) $amount['line_amount'],
-                    'meta' => json_encode(['charge_type' => $rate->charge_type]),
+                    'scope_id' => null,
+                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $terminalCount . ' Terminal' . ($terminalCount > 1 ? 's' : '') . ')',
+                    'qty' => $terminalCount,
+                    'unit_price' => $company->monthly_charges_amount,
+                    'line_amount' => $terminalCount * $company->monthly_charges_amount,
                 ];
             }
-        }
-
-        if (empty($lines) && (float) $company->monthly_charges_amount > 0) {
-            $lines[] = [
-                'scope_type' => 'adjustment',
-                'scope_id' => null,
-                'description' => 'Company Monthly Billing',
-                'qty' => 1,
-                'unit_price' => (float) $company->monthly_charges_amount,
-                'line_amount' => (float) $company->monthly_charges_amount,
-                'meta' => json_encode(['source' => 'monthly_charges_amount']),
-            ];
         }
 
         return $lines;
     }
 
-    private function calculateAmount(CompanyBillingRate $rate, string $from, string $to, ?int $branchId, ?int $terminalId): array
+    private function generateInvoiceNo($company, $invoiceDate)
     {
-        if ($rate->charge_type === 'flat_monthly') {
-            return [
-                'qty' => 1,
-                'unit_price' => (float) $rate->rate,
-                'line_amount' => (float) $rate->rate,
-            ];
+        $prefix = $company->invoice_prefix ?? 'INV';
+        $year = $invoiceDate->format('Y');
+        $month = $invoiceDate->format('m');
+        
+        $lastInvoice = Invoice::where('company_id', $company->company_id)
+            ->where('invoice_no', 'like', $prefix . '-' . $year . $month . '%')
+            ->orderByDesc('id')
+            ->first();
+
+        $sequence = 1;
+        if ($lastInvoice) {
+            $lastSequence = (int) substr($lastInvoice->invoice_no, -4);
+            $sequence = $lastSequence + 1;
         }
 
-        $query = DB::table('sales_receipts')
-            ->whereDate('date', '>=', $from)
-            ->whereDate('date', '<=', $to)
-            ->where('void_receipt', 0);
-
-        if (!empty($branchId)) {
-            $query->where('branch', $branchId);
-        }
-        if (!empty($terminalId)) {
-            $query->where('terminal_id', $terminalId);
-        }
-
-        if ($rate->charge_type === 'per_order') {
-            $qty = (int) $query->count();
-            return [
-                'qty' => $qty,
-                'unit_price' => (float) $rate->rate,
-                'line_amount' => $qty * (float) $rate->rate,
-            ];
-        }
-
-        $sum = (float) $query->sum('total_amount');
-        return [
-            'qty' => $sum,
-            'unit_price' => (float) $rate->rate,
-            'line_amount' => $sum * (float) $rate->rate,
-        ];
-    }
-
-    private function generateInvoiceNo(Company $company, Carbon $invoiceDate): string
-    {
-        $prefix = $company->invoice_prefix ?: ('CMP' . $company->company_id);
-        $base = $prefix . '-' . $invoiceDate->format('Ym');
-        $count = Invoice::where('invoice_no', 'like', $base . '%')->count() + 1;
-        return $base . '-' . str_pad((string) $count, 4, '0', STR_PAD_LEFT);
+        return $prefix . '-' . $year . $month . str_pad($sequence, 4, '0', STR_PAD_LEFT);
     }
 }
-

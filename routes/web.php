@@ -250,10 +250,12 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::put('/update-company/{id}', [AdminCompanyController::class, 'update'])->name('company.update');
 
     // billing
+    Route::get('/billing/summary', [BillingController::class, 'summary'])->name('billing.summary');
     Route::get('/billing/invoices', [BillingController::class, 'index'])->name('billing.invoices.index');
     Route::get('/billing/invoices/create', [BillingController::class, 'create'])->name('billing.invoices.create');
     Route::post('/billing/invoices', [BillingController::class, 'store'])->name('billing.invoices.store');
     Route::get('/billing/invoices/{id}', [BillingController::class, 'show'])->name('billing.invoices.show');
+    Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'downloadPdf'])->name('billing.invoices.pdf');
     Route::post('/billing/invoices/{id}/payments', [BillingController::class, 'addPayment'])->name('billing.invoices.payments.store');
     Route::post('/billing/invoices/{id}/adjustments', [BillingController::class, 'addAdjustment'])->name('billing.invoices.adjustments.store');
 
