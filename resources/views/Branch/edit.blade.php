@@ -41,13 +41,13 @@
                         </div>
 
 
-                        <div class="col-lg-3 col-md-3">
+                        {{-- <div class="col-lg-3 col-md-3">
                             <div class="form-group">
                                 <label class="form-control-label">Branch Code</label>
                                 <input class="form-control" type="text" required="required" name="branchcode"
                                     id="branchcode" value="{{ $details[0]->branch_code }}" />
                             </div>
-                        </div>
+                        </div> --}}
                         <div class="col-lg-3 col-md-3">
                             <div class="form-group">
                                 <label class="form-control-label">Branch Name</label>
