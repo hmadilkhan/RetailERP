@@ -118,33 +118,33 @@
         <table>
             <tr>
                 <td class="label">Subtotal:</td>
-                <td class="text-right">${{ number_format($invoice->subtotal, 2) }}</td>
+                <td class="text-right">PKR {{ number_format($invoice->subtotal, 2) }}</td>
             </tr>
             @if($invoice->tax_amount > 0)
             <tr>
                 <td class="label">Tax:</td>
-                <td class="text-right">${{ number_format($invoice->tax_amount, 2) }}</td>
+                <td class="text-right">PKR {{ number_format($invoice->tax_amount, 2) }}</td>
             </tr>
             @endif
             @if($invoice->previous_due > 0)
             <tr>
                 <td class="label">Previous Due:</td>
-                <td class="text-right">${{ number_format($invoice->previous_due, 2) }}</td>
+                <td class="text-right">PKR {{ number_format($invoice->previous_due, 2) }}</td>
             </tr>
             @endif
             <tr class="grand-total">
                 <td>Total Amount:</td>
-                <td class="text-right">${{ number_format($invoice->total_amount, 2) }}</td>
+                <td class="text-right">PKR {{ number_format($invoice->total_amount, 2) }}</td>
             </tr>
             @if($invoice->paid_amount > 0)
             <tr>
                 <td class="label">Paid Amount:</td>
-                <td class="text-right">${{ number_format($invoice->paid_amount, 2) }}</td>
+                <td class="text-right">PKR {{ number_format($invoice->paid_amount, 2) }}</td>
             </tr>
             @endif
             <tr class="balance">
                 <td>Balance Due:</td>
-                <td class="text-right">${{ number_format($invoice->balance_amount, 2) }}</td>
+                <td class="text-right">PKR {{ number_format($invoice->balance_amount, 2) }}</td>
             </tr>
         </table>
     </div>
