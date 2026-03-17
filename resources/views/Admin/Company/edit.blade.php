@@ -11,6 +11,15 @@
 <div class="card">
      <div class="card-header">
          <h5 class="card-header-text">Edit Company</h5>
+         @if ($errors->any())
+             <div class="alert alert-danger">
+                 <ul class="m-b-0">
+                     @foreach ($errors->all() as $error)
+                         <li>{{ $error }}</li>
+                     @endforeach
+                 </ul>
+             </div>
+         @endif
          <h5 class=""><a href="{{route('company.index')}}"><i class="text-primary text-center icofont icofont-arrow-left p-r-20 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Back">Back to list</i></a></h5>
          </div>      
 

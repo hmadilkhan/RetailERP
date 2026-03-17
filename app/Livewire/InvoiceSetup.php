@@ -75,7 +75,7 @@ class InvoiceSetup extends Component
     {
         if ($this->company_id) {
             $this->branches = Branch::where('company_id', $this->company_id)->get();
-            $this->terminals = Terminal::where('company_id', $this->company_id)->get();
+            $this->terminals = Terminal::whereIn('branch_id', $this->branches->pluck('branch_id'))->get();
         }
     }
 

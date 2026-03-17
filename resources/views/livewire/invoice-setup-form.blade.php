@@ -10,10 +10,10 @@
                         <div class="col-md-6">
                             <div class="form-group @error('company_id') has-danger @enderror">
                                 <label class="form-control-label">Company <span class="text-danger">*</span></label>
-                                <select wire:model.live="company_id" class="form-control">
+                                <select id="company_id" class="form-control select2">
                                     <option value="">Select Company</option>
                                     @foreach($companies as $company)
-                                        <option value="{{ $company->company_id }}">{{ $company->name }}</option>
+                                        <option value="{{ $company->company_id }}" {{ $company_id == $company->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('company_id') <div class="form-control-feedback">{{ $message }}</div> @enderror
@@ -52,17 +52,17 @@
                                             </td>
                                             <td>
                                                 @if($rate['scope_type'] == 'branch')
-                                                    <select wire:model="billing_rates.{{ $index }}.scope_id" class="form-control">
+                                                    <select id="scope_id_{{ $index }}" class="form-control select2-scope">
                                                         <option value="">Select Branch</option>
                                                         @foreach($branches as $branch)
-                                                            <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
+                                                            <option value="{{ $branch->branch_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $branch->branch_id ? 'selected' : '' }}>{{ $branch->branch_name }}</option>
                                                         @endforeach
                                                     </select>
                                                 @elseif($rate['scope_type'] == 'terminal')
-                                                    <select wire:model="billing_rates.{{ $index }}.scope_id" class="form-control">
+                                                    <select id="scope_id_{{ $index }}" class="form-control select2-scope">
                                                         <option value="">Select Terminal</option>
                                                         @foreach($terminals as $terminal)
-                                                            <option value="{{ $terminal->terminal_id }}">{{ $terminal->terminal_name }}</option>
+                                                            <option value="{{ $terminal->terminal_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $terminal->terminal_id ? 'selected' : '' }}>{{ $terminal->terminal_name }}</option>
                                                         @endforeach
                                                     </select>
                                                 @else
@@ -156,3 +156,25 @@
         </div>
     </section>
 </div>
+@script
+    <script>
+        $(document).ready(function() {
+            $('.select2').select2();
+            
+            $('#company_id').on('change', function(e) {
+                var data = $('#company_id').select2("val");
+                @this.set('company_id', data);
+            });
+            
+            $(document).on('change', '.select2-scope', function(e) {
+                var index = $(this).attr('id').replace('scope_id_', '');
+                var data = $(this).select2("val");
+                @this.set('billing_rates.' + index + '.scope_id', data);
+            });
+
+            Livewire.hook('morph.updating', ({ component, cleanup }) => {
+                $('.select2').select2();
+            });
+        });
+    </script>
+@endscript

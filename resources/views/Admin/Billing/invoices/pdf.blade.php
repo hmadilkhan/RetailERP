@@ -45,7 +45,7 @@
         <table>
             <tr>
                 <td style="width: 60%;">
-                    <img src="{{ public_path('storage/images/Sabify.fw.png') }}" class="company-logo" alt="Sabify Logo">
+                    <img src="{{ asset('storage/images/Sabify.fw.png') }}" class="company-logo" alt="Sabify Logo">
                     <div class="company-details">
                         Park Avenue, Ground Floor, Showroom No. 7-A, 24-A,<br>
                         P.E.C.H.S, Main Shahrah-e-Faisal Lal Kothi Bus Stop <br>
