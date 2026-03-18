@@ -8,6 +8,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceAdjustment;
 use App\Models\InvoiceLine;
 use App\Models\InvoicePayment;
+use App\Models\InvoiceSetup;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -228,6 +229,108 @@ class BillingController extends Controller
     {
         $lines = [];
 
+        $setup = InvoiceSetup::with(['billingRates' => function ($query) use ($periodStart, $periodEnd) {
+            $query->where('is_active', 1);
+            // ->where('effective_from', '<=', $periodEnd)
+            // ->where(function ($q) use ($periodStart) {
+            //     $q->whereNull('effective_to')
+            //         ->orWhere('effective_to', '>=', $periodStart);
+            // });
+
+        }])->where('company_id', $company->company_id)->first();
+
+        // If InvoiceSetup exists with billing rates, use it
+        if ($setup && $setup->billingRates->count() > 0) {
+            foreach ($setup->billingRates as $rate) {
+                // Formatting description based on charge_type nicely (e.g. flat_monthly -> Flat Monthly)
+                $chargeTypeLabel = ucwords(str_replace('_', ' ', $rate->charge_type));
+
+                if ($rate->scope_type === 'company') {
+                    $lines[] = [
+                        'scope_type' => 'company',
+                        'scope_id' => $rate->scope_id,
+                        'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (Company)',
+                        'qty' => 1,
+                        'unit_price' => $rate->rate,
+                        'line_amount' => $rate->rate,
+                    ];
+                } elseif ($rate->scope_type === 'branch') {
+                    if ($rate->scope_id) {
+                        $branch = DB::table('branch')
+                            ->where('branch_id', $rate->scope_id)
+                            ->where('status_id', 1)
+                            ->first();
+
+                        if ($branch) {
+                            $lines[] = [
+                                'scope_type' => 'branch',
+                                'scope_id' => $rate->scope_id,
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (Branch: ' . $branch->branch_name . ')',
+                                'qty' => 1,
+                                'unit_price' => $rate->rate,
+                                'line_amount' => $rate->rate,
+                            ];
+                        }
+                    } else {
+                        $branchCount = DB::table('branch')
+                            ->where('company_id', $company->company_id)
+                            ->where('status_id', 1)
+                            ->count();
+
+                        if ($branchCount > 0) {
+                            $lines[] = [
+                                'scope_type' => 'branch',
+                                'scope_id' => null,
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $branchCount . ' Branch' . ($branchCount > 1 ? 'es' : '') . ')',
+                                'qty' => $branchCount,
+                                'unit_price' => $rate->rate,
+                                'line_amount' => $branchCount * $rate->rate,
+                            ];
+                        }
+                    }
+                } elseif ($rate->scope_type === 'terminal') {
+                    if ($rate->scope_id) {
+                        $terminal = DB::table('terminal_details')
+                            ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
+                            ->where('terminal_details.terminal_id', $rate->scope_id)
+                            ->where('branch.status_id', 1)
+                            ->select('terminal_details.*')
+                            ->first();
+
+                        if ($terminal) {
+                            $lines[] = [
+                                'scope_type' => 'terminal',
+                                'scope_id' => $rate->scope_id,
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (Terminal: ' . $terminal->terminal_name . ')',
+                                'qty' => 1,
+                                'unit_price' => $rate->rate,
+                                'line_amount' => $rate->rate,
+                            ];
+                        }
+                    } else {
+                        $terminalCount = DB::table('terminal_details')
+                            ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
+                            ->where('branch.company_id', $company->company_id)
+                            ->where('branch.status_id', 1)
+                            ->count();
+
+                        if ($terminalCount > 0) {
+                            $lines[] = [
+                                'scope_type' => 'terminal',
+                                'scope_id' => null,
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $terminalCount . ' Terminal' . ($terminalCount > 1 ? 's' : '') . ')',
+                                'qty' => $terminalCount,
+                                'unit_price' => $rate->rate,
+                                'line_amount' => $terminalCount * $rate->rate,
+                            ];
+                        }
+                    }
+                }
+            }
+            return $lines;
+        }
+
+        // --- Fallback if InvoiceSetup doesn't exist for the company ---
         if ($company->invoice_type === 'branch') {
             $branchCount = DB::table('branch')
                 ->where('company_id', $company->company_id)
@@ -271,7 +374,7 @@ class BillingController extends Controller
         $prefix = $company->invoice_prefix ?? 'INV';
         $year = $invoiceDate->format('Y');
         $month = $invoiceDate->format('m');
-        
+
         $lastInvoice = Invoice::where('company_id', $company->company_id)
             ->where('invoice_no', 'like', $prefix . '-' . $year . $month . '%')
             ->orderByDesc('id')

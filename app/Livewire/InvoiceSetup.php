@@ -44,7 +44,7 @@ class InvoiceSetup extends Component
     public function mount($id = null)
     {
         $this->companies = Company::all();
-        
+
         if ($id) {
             $this->isEdit = true;
             $this->invoiceSetupId = $id;
@@ -62,7 +62,12 @@ class InvoiceSetup extends Component
         $this->payment_due_days = $setup->payment_due_days;
         $this->invoice_prefix = $setup->invoice_prefix;
         $this->is_auto_invoice = $setup->is_auto_invoice;
-        $this->billing_rates = $setup->billingRates->toArray();
+        $this->billing_rates = $setup->billingRates->map(function ($rate) {
+            $data = $rate->toArray();
+            $data['effective_from'] = $rate->effective_from ? $rate->effective_from->format('Y-m-d') : null;
+            $data['effective_to'] = $rate->effective_to ? $rate->effective_to->format('Y-m-d') : null;
+            return $data;
+        })->toArray();
         $this->loadBranchesAndTerminals();
     }
 
@@ -84,7 +89,7 @@ class InvoiceSetup extends Component
         $this->billing_rates[] = [
             'scope_type' => 'company',
             'scope_id' => null,
-            'charge_type' => '',
+            'charge_type' => 'flat_monthly',
             'rate' => 0,
             'effective_from' => now()->format('Y-m-d'),
             'effective_to' => null,

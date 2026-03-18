@@ -13,7 +13,7 @@
                                 <select id="company_id" class="form-control select2">
                                     <option value="">Select Company</option>
                                     @foreach($companies as $company)
-                                        <option value="{{ $company->company_id }}" {{ $company_id == $company->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
+                                    <option value="{{ $company->company_id }}" {{ $company_id == $company->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
                                     @endforeach
                                 </select>
                                 @error('company_id') <div class="form-control-feedback">{{ $message }}</div> @enderror
@@ -32,7 +32,7 @@
                                         <tr>
                                             <th>Scope Type</th>
                                             <th>Scope</th>
-                                            <th>Charge Type</th>
+                                            <!-- <th>Charge Type</th> -->
                                             <th>Rate</th>
                                             <th>Effective From</th>
                                             <th>Effective To</th>
@@ -42,36 +42,36 @@
                                     </thead>
                                     <tbody>
                                         @foreach($billing_rates as $index => $rate)
-                                        <tr>
+                                        <tr wire:key="billing-rate-{{ $index }}">
                                             <td>
-                                                <select wire:model="billing_rates.{{ $index }}.scope_type" class="form-control">
+                                                <select wire:model.live="billing_rates.{{ $index }}.scope_type" class="form-control">
                                                     <option value="company">Company</option>
                                                     <option value="branch">Branch</option>
                                                     <option value="terminal">Terminal</option>
                                                 </select>
                                             </td>
-                                            <td>
+                                            <td wire:key="scope-select-{{ $index }}">
                                                 @if($rate['scope_type'] == 'branch')
-                                                    <select id="scope_id_{{ $index }}" class="form-control select2-scope">
-                                                        <option value="">Select Branch</option>
-                                                        @foreach($branches as $branch)
-                                                            <option value="{{ $branch->branch_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $branch->branch_id ? 'selected' : '' }}>{{ $branch->branch_name }}</option>
-                                                        @endforeach
-                                                    </select>
+                                                <select id="scope_id_{{ $index }}" class="form-control select2-scope">
+                                                    <option value="">Select Branch</option>
+                                                    @foreach($branches as $branch)
+                                                    <option value="{{ $branch->branch_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $branch->branch_id ? 'selected' : '' }}>{{ $branch->branch_name }}</option>
+                                                    @endforeach
+                                                </select>
                                                 @elseif($rate['scope_type'] == 'terminal')
-                                                    <select id="scope_id_{{ $index }}" class="form-control select2-scope">
-                                                        <option value="">Select Terminal</option>
-                                                        @foreach($terminals as $terminal)
-                                                            <option value="{{ $terminal->terminal_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $terminal->terminal_id ? 'selected' : '' }}>{{ $terminal->terminal_name }}</option>
-                                                        @endforeach
-                                                    </select>
+                                                <select id="scope_id_{{ $index }}" class="form-control select2-scope">
+                                                    <option value="">Select Terminal</option>
+                                                    @foreach($terminals as $terminal)
+                                                    <option value="{{ $terminal->terminal_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $terminal->terminal_id ? 'selected' : '' }}>{{ $terminal->terminal_name }}</option>
+                                                    @endforeach
+                                                </select>
                                                 @else
-                                                    <input type="text" class="form-control" value="N/A" readonly>
+                                                <input type="text" class="form-control" value="N/A" readonly>
                                                 @endif
                                             </td>
-                                            <td>
+                                            <!-- <td>
                                                 <input type="text" wire:model="billing_rates.{{ $index }}.charge_type" class="form-control">
-                                            </td>
+                                            </td> -->
                                             <td>
                                                 <input type="number" step="0.01" wire:model="billing_rates.{{ $index }}.rate" class="form-control">
                                             </td>
@@ -157,24 +157,38 @@
     </section>
 </div>
 @script
-    <script>
-        $(document).ready(function() {
-            $('.select2').select2();
-            
-            $('#company_id').on('change', function(e) {
-                var data = $('#company_id').select2("val");
-                @this.set('company_id', data);
-            });
-            
-            $(document).on('change', '.select2-scope', function(e) {
-                var index = $(this).attr('id').replace('scope_id_', '');
-                var data = $(this).select2("val");
-                @this.set('billing_rates.' + index + '.scope_id', data);
-            });
+<script>
+    $(document).ready(function() {
+        function initSelect2() {
+            // Initialize select2 only on elements that haven't been initialized yet.
+            $(".select2:not(.select2-hidden-accessible)").select2();
+            $(".select2-scope:not(.select2-hidden-accessible)").select2();
+        }
 
-            Livewire.hook('morph.updating', ({ component, cleanup }) => {
-                $('.select2').select2();
-            });
+        initSelect2();
+
+        $(document).on('change', '#company_id', function(e) {
+            // Use .val() to get the value, which is the correct method for modern select2.
+            var data = $(this).val();
+            $wire.set('company_id', data);
         });
-    </script>
+
+        $(document).on('change', '.select2-scope', function(e) {
+            var index = $(this).attr('id').replace('scope_id_', '');
+            // Use .val() here as well.
+            var data = $(this).val();
+            $wire.set('billing_rates.' + index + '.scope_id', data);
+        });
+
+        // After Livewire updates the DOM, run initSelect2 to initialize any new dropdowns.
+        Livewire.hook('morph.updated', () => {
+            initSelect2();
+        });
+
+        // Clean up select2 before updating to prevent duplicate rendering issues
+        Livewire.hook('morph.updating', () => {
+            $('.select2-hidden-accessible').select2('destroy');
+        });
+    });
+</script>
 @endscript

@@ -148,5 +148,9 @@ return [
     'booking_slots' => 'Booking Slots',
     'wallet_discount' => 'Wallet Discount',
     'hotel_rooms' => 'Hotel Rooms',
-    'billing' => 'Billing',
+    'billing_section' => 'Billing Section',
+    'billing_section' => 'Billing Section',
+    'invoice_setup' => 'Invoice Setup',
+    'invoices' => 'Invoices',
+    
 ];
