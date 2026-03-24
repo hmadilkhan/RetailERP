@@ -6,6 +6,13 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class CompanyStoreRequest extends FormRequest
 {
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'whatsapp_number' => $this->normalizeWhatsappNumber($this->input('whatsapp_number')),
+        ]);
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      */
@@ -27,6 +34,7 @@ class CompanyStoreRequest extends FormRequest
             'city' => 'required',
             'company_email' => 'required',
             'company_mobile' => 'required',
+            'whatsapp_number' => ['nullable', 'regex:/^92\d{10}$/'],
             'company_ptcl' => 'required',
             'company_address' => 'required',
             'invoice_type' => 'required|in:branch,terminal',
@@ -47,5 +55,28 @@ class CompanyStoreRequest extends FormRequest
             'posbgimg' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
             'ordercallingbgimg' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:1024',
         ];
+    }
+
+    private function normalizeWhatsappNumber($value): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $value);
+
+        if ($digits === '') {
+            return null;
+        }
+
+        if (str_starts_with($digits, '0092')) {
+            $digits = substr($digits, 2);
+        }
+
+        if (str_starts_with($digits, '0')) {
+            $digits = substr($digits, 1);
+        }
+
+        if (!str_starts_with($digits, '92')) {
+            $digits = '92' . $digits;
+        }
+
+        return $digits;
     }
 }

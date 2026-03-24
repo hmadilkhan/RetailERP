@@ -105,6 +105,19 @@
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-4">
+                            <div class="form-group {{ $errors->has('whatsapp_number') ? 'has-danger' : '' }}">
+                                <label class="form-control-label">WhatsApp Number</label>
+                                <input class="form-control" type="text" name="whatsapp_number" id="whatsapp_number"
+                                    value="{{ old('whatsapp_number') }}" />
+                                @if ($errors->has('whatsapp_number'))
+                                    <div class="form-control-feedback">{{ $errors->first('whatsapp_number') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-4 col-md-4">
                             <div class="form-group {{ $errors->has('company_ptcl') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">Ptcl Number</label>
                                 <input class="form-control" type="text" name="company_ptcl" id="company_ptcl"
@@ -114,8 +127,6 @@
                                 @endif
                             </div>
                         </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-4">
                             <div class="form-group {{ $errors->has('country') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">Currency</label>
@@ -160,7 +171,11 @@
                                 @endif
                             </div>
                         </div>
-                        <div class="col-lg-4 col-md-4">
+                        
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
                             <div class="form-group {{ $errors->has('company_address') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">Company Address</label>
                                 <textarea name="company_address" id="company_address" class="form-control">{{ old('company_address') }}</textarea>
@@ -170,8 +185,6 @@
                             </div>
                         </div>
                     </div>
-
-                    
 
                     <div class="row">
                         <div class="col-md-4">
