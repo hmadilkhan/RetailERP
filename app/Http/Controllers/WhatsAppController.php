@@ -107,7 +107,7 @@ class WhatsAppController extends Controller
                 $state['step'] = 'awaiting_terminal_selection';
                 $state['terminal_page'] = 1;
                 $this->setConversationState($from, $state);
-                $this->sendTerminalMenu($from, $state['branch_id'], 1);
+                $this->sendTerminalMenu($from, $state['branch_id'], 1, ($state['report_type'] ?? null) === 'fbr_report');
                 return response()->json(['status' => 'ok']);
             }
 
@@ -119,11 +119,16 @@ class WhatsAppController extends Controller
 
                 $state['terminal_page'] = $page;
                 $this->setConversationState($from, $state);
-                $this->sendTerminalMenu($from, $state['branch_id'], $page);
+                $this->sendTerminalMenu($from, $state['branch_id'], $page, ($state['report_type'] ?? null) === 'fbr_report');
                 return response()->json(['status' => 'ok']);
             }
 
             if (($state['step'] ?? null) === 'awaiting_terminal_selection' && $listId === 'terminal_all') {
+                if (($state['report_type'] ?? null) !== 'fbr_report') {
+                    $this->sendText($from, "Invalid terminal selection. Please select from the list.");
+                    return response()->json(['status' => 'ok']);
+                }
+
                 $state['terminal'] = '0';
                 $state['terminal_name'] = 'All Terminals';
                 $state['step'] = 'awaiting_month';
@@ -188,11 +193,8 @@ class WhatsAppController extends Controller
             }
 
             if ($buttonId == "fbr_report" || $buttonId == "sales_report") {
-                $this->setConversationState($from, [
-                    'step' => 'awaiting_mobile',
-                    'report_type' => $buttonId,
-                ]);
-                $this->sendText($from, "Please enter your registered mobile number.");
+                $this->startReportFlowUsingSenderNumber($from, $buttonId);
+                return response()->json(['status' => 'ok']);
             }
         }
 
@@ -202,102 +204,9 @@ class WhatsAppController extends Controller
             $text = strtolower($textRaw);
 
             // Always allow user to restart flow from any step.
-            if ($text == 'hi' || $text == 'hello') {
+            if ($text == 'sabify') {  // if ($text == 'hi' || $text == 'hello') {
                 $this->clearConversationState($from);
                 $this->sendMenu($from);
-                return response()->json(['status' => 'ok']);
-            }
-
-            if (($state['step'] ?? null) === 'awaiting_mobile') {
-                $mobile = $this->normalizeMobile($textRaw);
-
-                if (!$mobile) {
-                    $this->sendText($from, "Invalid mobile number. Please enter a valid registered mobile number.");
-                    return response()->json(['status' => 'ok']);
-                }
-
-                if (($state['report_type'] ?? '') === 'fbr_report') {
-                    $company = $this->findCompanyByWhatsAppNumber($mobile, $textRaw);
-
-                    if (!$company) {
-                        $this->sendText($from, "This mobile number is not registered for WhatsApp reports.");
-                        return response()->json(['status' => 'ok']);
-                    }
-
-                    $branches = DB::table('branch')
-                        ->select('branch_id', 'branch_name')
-                        ->where('company_id', $company->company_id)
-                        ->orderBy('branch_name')
-                        ->get();
-
-                    if ($branches->isEmpty()) {
-                        $this->sendText($from, "No branches found for this company.");
-                        return response()->json(['status' => 'ok']);
-                    }
-
-                    $state['mobile'] = $mobile;
-                    $state['company_id'] = (int) $company->company_id;
-                    $state['company_name'] = $company->name;
-                    $state['step'] = 'awaiting_branch';
-                    $state['branch_page'] = 1;
-                    $this->setConversationState($from, $state);
-                    $this->sendBranchMenu($from, $company->company_id, 1);
-                    return response()->json(['status' => 'ok']);
-                }
-
-                $state['mobile'] = $mobile;
-                $state['step'] = 'awaiting_terminal';
-                $this->setConversationState($from, $state);
-                $this->sendText($from, "Please enter terminal number.");
-                return response()->json(['status' => 'ok']);
-            }
-
-            if (($state['step'] ?? null) === 'awaiting_terminal') {
-                $terminal = trim($textRaw);
-
-                if ($terminal === '') {
-                    $this->sendText($from, "Terminal number is required. Please enter terminal number.");
-                    return response()->json(['status' => 'ok']);
-                }
-
-                $state['terminal'] = $terminal;
-                $state['step'] = 'awaiting_from_date';
-                $this->setConversationState($from, $state);
-                $this->sendText($from, "Please enter from date in YYYY-MM-DD format.");
-                return response()->json(['status' => 'ok']);
-            }
-
-            if (($state['step'] ?? null) === 'awaiting_from_date') {
-                $fromDate = $this->normalizeDate($textRaw);
-
-                if (!$fromDate) {
-                    $this->sendText($from, "Invalid from date. Please use YYYY-MM-DD format.");
-                    return response()->json(['status' => 'ok']);
-                }
-
-                $state['from_date'] = $fromDate;
-                $state['step'] = 'awaiting_to_date';
-                $this->setConversationState($from, $state);
-                $this->sendText($from, "Please enter to date in YYYY-MM-DD format.");
-                return response()->json(['status' => 'ok']);
-            }
-
-            if (($state['step'] ?? null) === 'awaiting_to_date') {
-                $toDate = $this->normalizeDate($textRaw);
-
-                if (!$toDate) {
-                    $this->sendText($from, "Invalid to date. Please use YYYY-MM-DD format.");
-                    return response()->json(['status' => 'ok']);
-                }
-
-                if ($toDate < ($state['from_date'] ?? '')) {
-                    $this->sendText($from, "To date cannot be earlier than from date. Please enter a valid to date.");
-                    return response()->json(['status' => 'ok']);
-                }
-
-                $state['to_date'] = $toDate;
-                $this->processReportRequest($from, $state);
-                $this->clearConversationState($from);
                 return response()->json(['status' => 'ok']);
             }
 
@@ -483,7 +392,7 @@ class WhatsAppController extends Controller
         $this->sendRequest($payload);
     }
 
-    private function sendTerminalMenu($number, $branchId, $page = 1)
+    private function sendTerminalMenu($number, $branchId, $page = 1, $allowAll = true)
     {
         $page = max(1, (int) $page);
         $offset = ($page - 1) * self::TERMINAL_PAGE_SIZE;
@@ -501,7 +410,7 @@ class WhatsAppController extends Controller
             ->get();
 
         $rows = [];
-        if ($page === 1) {
+        if ($allowAll && $page === 1) {
             $rows[] = [
                 "id" => "terminal_all",
                 "title" => "All Terminals",
@@ -590,6 +499,49 @@ class WhatsAppController extends Controller
         $this->recordOutboundMessage($payload, $response);
 
         return $response;
+    }
+
+    private function startReportFlowUsingSenderNumber(string $from, string $reportType): void
+    {
+        $mobile = $this->normalizeMobile($from);
+
+        if (!$mobile) {
+            $this->clearConversationState($from);
+            $this->sendText($from, "Invalid mobile number. Please enter a valid registered mobile number.");
+            return;
+        }
+
+        $company = $this->findCompanyByWhatsAppNumber($mobile, $from);
+
+        if (!$company) {
+            $this->clearConversationState($from);
+            $this->sendText($from, "This mobile number is not registered for WhatsApp reports.");
+            return;
+        }
+
+        $state = [
+            'report_type' => $reportType,
+            'mobile' => $mobile,
+            'company_id' => (int) $company->company_id,
+            'company_name' => $company->name,
+        ];
+
+        $branches = DB::table('branch')
+            ->select('branch_id', 'branch_name')
+            ->where('company_id', $company->company_id)
+            ->orderBy('branch_name')
+            ->get();
+
+        if ($branches->isEmpty()) {
+            $this->clearConversationState($from);
+            $this->sendText($from, "No branches found for this company.");
+            return;
+        }
+
+        $state['step'] = 'awaiting_branch';
+        $state['branch_page'] = 1;
+        $this->setConversationState($from, $state);
+        $this->sendBranchMenu($from, $company->company_id, 1);
     }
 
     private function processReportRequest($to, array $state)
