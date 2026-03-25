@@ -255,6 +255,7 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/billing/invoices/create', [BillingController::class, 'create'])->name('billing.invoices.create');
     Route::post('/billing/invoices', [BillingController::class, 'store'])->name('billing.invoices.store');
     Route::get('/billing/invoices/{id}', [BillingController::class, 'show'])->name('billing.invoices.show');
+    Route::delete('/billing/invoices/{id}', [BillingController::class, 'destroy'])->name('billing.invoices.destroy');
     Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'downloadPdf'])->name('billing.invoices.pdf');
     Route::post('/billing/invoices/{id}/payments', [BillingController::class, 'addPayment'])->name('billing.invoices.payments.store');
     Route::post('/billing/invoices/{id}/adjustments', [BillingController::class, 'addAdjustment'])->name('billing.invoices.adjustments.store');

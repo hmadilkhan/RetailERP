@@ -10,6 +10,18 @@
                 <a href="{{ route('billing.invoices.create') }}" class="btn btn-primary btn-sm f-right">Generate Invoice</a>
             </div>
             <div class="card-block">
+                @if(session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if($errors->has('error'))
+                    <div class="alert alert-danger">
+                        {{ $errors->first('error') }}
+                    </div>
+                @endif
+
                 <form method="get" class="row">
                     <div class="col-md-3">
                         <label>Company</label>
@@ -68,6 +80,15 @@
                                     <td>{{ $invoice->due_date }}</td>
                                     <td>
                                         <a href="{{ route('billing.invoices.show', $invoice->id) }}" class="btn btn-info btn-sm">View</a>
+                                        @if($invoice->payments_count == 0)
+                                            <form method="post" action="{{ route('billing.invoices.destroy', $invoice->id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this invoice?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-danger btn-sm" disabled title="Payment already received">Delete</button>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
@@ -91,4 +112,3 @@
         $('.select2').select2();
     </script>
 @endsection
-

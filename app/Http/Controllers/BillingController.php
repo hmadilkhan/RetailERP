@@ -37,7 +37,7 @@ class BillingController extends Controller
 
     public function index(Request $request)
     {
-        $query = Invoice::with('company');
+        $query = Invoice::with('company')->withCount('payments');
 
         if (!empty($request->company_id)) {
             $query->where('company_id', $request->company_id);
@@ -142,6 +142,24 @@ class BillingController extends Controller
         return view('Admin.Billing.invoices.show', compact('invoice'));
     }
 
+    public function destroy($id)
+    {
+        $invoice = Invoice::withCount('payments')->findOrFail($id);
+
+        if ($invoice->payments_count > 0) {
+            return redirect()->route('billing.invoices.index')
+                ->withErrors(['error' => 'Invoice cannot be deleted because payment has already been received.']);
+        }
+
+        DB::transaction(function () use ($invoice) {
+            InvoiceLine::where('invoice_id', $invoice->id)->delete();
+            InvoiceAdjustment::where('invoice_id', $invoice->id)->delete();
+            $invoice->delete();
+        });
+
+        return redirect()->route('billing.invoices.index')->with('success', 'Invoice deleted successfully.');
+    }
+
     public function addPayment(Request $request, $invoiceId)
     {
         $data = $request->validate([
@@ -228,6 +246,8 @@ class BillingController extends Controller
     private function buildInvoiceLines($company, $periodStart, $periodEnd)
     {
         $lines = [];
+        $billingMonths = $this->getBillingPeriodMonths($periodStart, $periodEnd);
+        $billingPeriodLabel = $this->formatBillingPeriodLabel($periodStart, $periodEnd);
 
         $setup = InvoiceSetup::with(['billingRates' => function ($query) use ($periodStart, $periodEnd) {
             $query->where('is_active', 1);
@@ -244,15 +264,16 @@ class BillingController extends Controller
             foreach ($setup->billingRates as $rate) {
                 // Formatting description based on charge_type nicely (e.g. flat_monthly -> Flat Monthly)
                 $chargeTypeLabel = ucwords(str_replace('_', ' ', $rate->charge_type));
+                $rateMultiplier = $this->isMonthlyChargeType($rate->charge_type) ? $billingMonths : 1;
 
                 if ($rate->scope_type === 'company') {
                     $lines[] = [
                         'scope_type' => 'company',
                         'scope_id' => $rate->scope_id,
-                        'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (Company)',
-                        'qty' => 1,
+                        'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $billingPeriodLabel . ') (Company)',
+                        'qty' => $rateMultiplier,
                         'unit_price' => $rate->rate,
-                        'line_amount' => $rate->rate,
+                        'line_amount' => $rateMultiplier * $rate->rate,
                     ];
                 } elseif ($rate->scope_type === 'branch') {
                     if ($rate->scope_id) {
@@ -265,10 +286,10 @@ class BillingController extends Controller
                             $lines[] = [
                                 'scope_type' => 'branch',
                                 'scope_id' => $rate->scope_id,
-                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (Branch: ' . $branch->branch_name . ')',
-                                'qty' => 1,
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $billingPeriodLabel . ') (Branch: ' . $branch->branch_name . ')',
+                                'qty' => $rateMultiplier,
                                 'unit_price' => $rate->rate,
-                                'line_amount' => $rate->rate,
+                                'line_amount' => $rateMultiplier * $rate->rate,
                             ];
                         }
                     } else {
@@ -281,10 +302,10 @@ class BillingController extends Controller
                             $lines[] = [
                                 'scope_type' => 'branch',
                                 'scope_id' => null,
-                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $branchCount . ' Branch' . ($branchCount > 1 ? 'es' : '') . ')',
-                                'qty' => $branchCount,
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $billingPeriodLabel . ') (' . $branchCount . ' Branch' . ($branchCount > 1 ? 'es' : '') . ')',
+                                'qty' => $branchCount * $rateMultiplier,
                                 'unit_price' => $rate->rate,
-                                'line_amount' => $branchCount * $rate->rate,
+                                'line_amount' => $branchCount * $rateMultiplier * $rate->rate,
                             ];
                         }
                     }
@@ -301,10 +322,10 @@ class BillingController extends Controller
                             $lines[] = [
                                 'scope_type' => 'terminal',
                                 'scope_id' => $rate->scope_id,
-                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (Terminal: ' . $terminal->terminal_name . ')',
-                                'qty' => 1,
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $billingPeriodLabel . ') (Terminal: ' . $terminal->terminal_name . ')',
+                                'qty' => $rateMultiplier,
                                 'unit_price' => $rate->rate,
-                                'line_amount' => $rate->rate,
+                                'line_amount' => $rateMultiplier * $rate->rate,
                             ];
                         }
                     } else {
@@ -318,10 +339,10 @@ class BillingController extends Controller
                             $lines[] = [
                                 'scope_type' => 'terminal',
                                 'scope_id' => null,
-                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $terminalCount . ' Terminal' . ($terminalCount > 1 ? 's' : '') . ')',
-                                'qty' => $terminalCount,
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $billingPeriodLabel . ') (' . $terminalCount . ' Terminal' . ($terminalCount > 1 ? 's' : '') . ')',
+                                'qty' => $terminalCount * $rateMultiplier,
                                 'unit_price' => $rate->rate,
-                                'line_amount' => $terminalCount * $rate->rate,
+                                'line_amount' => $terminalCount * $rateMultiplier * $rate->rate,
                             ];
                         }
                     }
@@ -341,10 +362,10 @@ class BillingController extends Controller
                 $lines[] = [
                     'scope_type' => 'branch',
                     'scope_id' => null,
-                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $branchCount . ' Branch' . ($branchCount > 1 ? 'es' : '') . ')',
-                    'qty' => $branchCount,
+                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $billingPeriodLabel . ') (' . $branchCount . ' Branch' . ($branchCount > 1 ? 'es' : '') . ')',
+                    'qty' => $branchCount * $billingMonths,
                     'unit_price' => $company->monthly_charges_amount,
-                    'line_amount' => $branchCount * $company->monthly_charges_amount,
+                    'line_amount' => $branchCount * $billingMonths * $company->monthly_charges_amount,
                 ];
             }
         } elseif ($company->invoice_type === 'terminal') {
@@ -358,15 +379,36 @@ class BillingController extends Controller
                 $lines[] = [
                     'scope_type' => 'terminal',
                     'scope_id' => null,
-                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $terminalCount . ' Terminal' . ($terminalCount > 1 ? 's' : '') . ')',
-                    'qty' => $terminalCount,
+                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $billingPeriodLabel . ') (' . $terminalCount . ' Terminal' . ($terminalCount > 1 ? 's' : '') . ')',
+                    'qty' => $terminalCount * $billingMonths,
                     'unit_price' => $company->monthly_charges_amount,
-                    'line_amount' => $terminalCount * $company->monthly_charges_amount,
+                    'line_amount' => $terminalCount * $billingMonths * $company->monthly_charges_amount,
                 ];
             }
         }
 
         return $lines;
+    }
+
+    private function getBillingPeriodMonths($periodStart, $periodEnd)
+    {
+        $start = Carbon::parse($periodStart)->startOfMonth();
+        $end = Carbon::parse($periodEnd)->startOfMonth();
+
+        return $start->diffInMonths($end) + 1;
+    }
+
+    private function formatBillingPeriodLabel($periodStart, $periodEnd)
+    {
+        $start = Carbon::parse($periodStart);
+        $end = Carbon::parse($periodEnd);
+
+        return $start->format('M-Y') . ' to ' . $end->format('M-Y');
+    }
+
+    private function isMonthlyChargeType($chargeType)
+    {
+        return $chargeType === 'flat_monthly';
     }
 
     private function generateInvoiceNo($company, $invoiceDate)
