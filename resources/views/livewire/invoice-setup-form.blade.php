@@ -62,7 +62,7 @@
                                                 <select id="scope_id_{{ $index }}" class="form-control select2-scope">
                                                     <option value="">Select Terminal</option>
                                                     @foreach($terminals as $terminal)
-                                                    <option value="{{ $terminal->terminal_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $terminal->terminal_id ? 'selected' : '' }}>{{ $terminal->terminal_name }}</option>
+                                                    <option value="{{ $terminal->terminal_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $terminal->terminal_id ? 'selected' : '' }}>{{ $terminal->terminal_id }} | {{ $terminal->terminal_name }}</option>
                                                     @endforeach
                                                 </select>
                                                 @else
