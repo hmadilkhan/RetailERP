@@ -322,7 +322,7 @@ class BillingController extends Controller
                             $lines[] = [
                                 'scope_type' => 'terminal',
                                 'scope_id' => $rate->scope_id,
-                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $billingPeriodLabel . ') (Terminal: ' . $terminal->terminal_name . ')',
+                                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $billingPeriodLabel . ') (Terminal: ' . $terminal->terminal_name . ' | TID # ' . $terminal->terminal_id . ')',
                                 'qty' => $rateMultiplier,
                                 'unit_price' => $rate->rate,
                                 'line_amount' => $rateMultiplier * $rate->rate,
