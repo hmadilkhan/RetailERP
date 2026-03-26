@@ -107,7 +107,7 @@ class WhatsAppController extends Controller
                 $state['step'] = 'awaiting_terminal_selection';
                 $state['terminal_page'] = 1;
                 $this->setConversationState($from, $state);
-                $this->sendTerminalMenu($from, $state['branch_id'], 1, ($state['report_type'] ?? null) === 'fbr_report');
+                $this->sendTerminalMenu($from, $state['branch_id'], 1, $this->reportAllowsAllTerminals($state['report_type'] ?? null));
                 return response()->json(['status' => 'ok']);
             }
 
@@ -119,12 +119,12 @@ class WhatsAppController extends Controller
 
                 $state['terminal_page'] = $page;
                 $this->setConversationState($from, $state);
-                $this->sendTerminalMenu($from, $state['branch_id'], $page, ($state['report_type'] ?? null) === 'fbr_report');
+                $this->sendTerminalMenu($from, $state['branch_id'], $page, $this->reportAllowsAllTerminals($state['report_type'] ?? null));
                 return response()->json(['status' => 'ok']);
             }
 
             if (($state['step'] ?? null) === 'awaiting_terminal_selection' && $listId === 'terminal_all') {
-                if (($state['report_type'] ?? null) !== 'fbr_report') {
+                if (!$this->reportAllowsAllTerminals($state['report_type'] ?? null)) {
                     $this->sendText($from, "Invalid terminal selection. Please select from the list.");
                     return response()->json(['status' => 'ok']);
                 }
@@ -192,7 +192,7 @@ class WhatsAppController extends Controller
                 $this->sendMonthlyReportMenu($from);
             }
 
-            if ($buttonId == "fbr_report" || $buttonId == "sales_report") {
+            if ($buttonId == "fbr_report" || $buttonId == "sales_report" || $buttonId == "item_sale_database") {
                 $this->startReportFlowUsingSenderNumber($from, $buttonId);
                 return response()->json(['status' => 'ok']);
             }
@@ -280,6 +280,13 @@ class WhatsAppController extends Controller
                             "reply" => [
                                 "id" => "sales_report",
                                 "title" => "Sales Report"
+                            ]
+                        ],
+                        [
+                            "type" => "reply",
+                            "reply" => [
+                                "id" => "item_sale_database",
+                                "title" => "Item Sale Database"
                             ]
                         ]
                     ]
@@ -553,13 +560,13 @@ class WhatsAppController extends Controller
             $fromDate = $state['from_date'] ?? null;
             $toDate = $state['to_date'] ?? null;
 
-            $isFbrFlow = $reportType === 'fbr_report';
+            $isBranchBasedFlow = $this->isBranchBasedReport($reportType);
 
             if (
                 !$reportType || !$mobile || !$fromDate || !$toDate ||
-                ($isFbrFlow && empty($state['company_id'])) ||
-                ($isFbrFlow && empty($state['branch_id'])) ||
-                (!$isFbrFlow && !$terminal)
+                ($isBranchBasedFlow && empty($state['company_id'])) ||
+                ($isBranchBasedFlow && empty($state['branch_id'])) ||
+                (!$isBranchBasedFlow && !$terminal)
             ) {
                 $this->sendText($to, "Missing required details. Please type Hi and try again.");
                 return;
@@ -582,7 +589,7 @@ class WhatsAppController extends Controller
 
             $templateName = 'report';
             $language = 'en';
-            $reportName = $reportType === 'fbr_report' ? 'FBR Report' : 'Sales Report';
+            $reportName = $this->getReportDisplayName($reportType);
             $filename = $report['filename'] ?? ($reportName . '.pdf');
 
             $this->sendTemplateWithDocument(
@@ -593,7 +600,7 @@ class WhatsAppController extends Controller
                 $filename,
                 $reportName,
                 $mobile,
-                $isFbrFlow ? ($state['terminal_name'] ?? 'All Terminals') : $terminal
+                $isBranchBasedFlow ? ($state['terminal_name'] ?? 'All Terminals') : $terminal
             );
 
             // Re-open main options so user can continue without sending "hi".
@@ -621,6 +628,10 @@ class WhatsAppController extends Controller
 
         if ($reportType === 'fbr_report') {
             return $this->buildFbrReportAndGetPdf($state);
+        }
+
+        if ($reportType === 'item_sale_database') {
+            return $this->buildItemSaleDatabaseReportAndGetPdf($state);
         }
 
         if ($reportType !== 'sales_report') {
@@ -823,6 +834,382 @@ class WhatsAppController extends Controller
             'url' => 'https://retail.sabsoft.com.pk/storage/pdfs/' . rawurlencode($fileName),
             'filename' => $fileName,
         ];
+    }
+
+    private function buildItemSaleDatabaseReportAndGetPdf(array $state)
+    {
+        $company = DB::table('company')
+            ->select('company_id', 'name', 'ptcl_contact', 'address', 'logo')
+            ->where('company_id', $state['company_id'])
+            ->first();
+
+        $branch = DB::table('branch')
+            ->select('branch_id', 'branch_name')
+            ->where('branch_id', $state['branch_id'])
+            ->where('company_id', $state['company_id'])
+            ->first();
+
+        if (!$company || !$branch) {
+            return null;
+        }
+
+        $reportModel = new ReportModel();
+        $fromDate = $state['from_date'];
+        $toDate = $state['to_date'];
+        $selectedTerminalId = (int) ($state['terminal'] ?? 0);
+
+        if ($selectedTerminalId > 0) {
+            $terminals = collect($reportModel->get_terminals_byid($selectedTerminalId))
+                ->where('branch_id', $branch->branch_id)
+                ->values();
+        } else {
+            $terminals = collect($reportModel->get_terminals_by_branch($branch->branch_id));
+        }
+
+        if ($terminals->isEmpty()) {
+            return null;
+        }
+
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font' => 'jameel-noori-nastaleeq',
+            'default_font_size' => 12,
+            'margin_left' => 15,
+            'margin_right' => 15,
+            'margin_top' => 15,
+            'margin_bottom' => 15,
+            'margin_header' => 10,
+            'margin_footer' => 10,
+            'direction' => 'rtl',
+        ]);
+
+        $mpdf->fontdata['jameel-noori-nastaleeq'] = [
+            'R' => 'Jameel-Noori-Nastaleeq.ttf',
+            'useOTL' => 0xFF,
+        ];
+
+        $companyLogo = asset('storage/images/company/' . $company->logo);
+        $qrImage = asset('storage/images/company/qrcode.png');
+        $branchLabel = ' (' . $branch->branch_name . ') ';
+
+        $html = '
+    <html dir="ltr">
+    <head>
+        <style>
+            body { font-family: jameel-noori-nastaleeq; }
+            h1 { line-height: 0.6; }
+            .text-bold { font-weight: bold; }
+            p { font-size: 14px; line-height: 0.9; margin: 5px 0; }
+            h2 { font-size: 14px; line-height: 0.6; color: green; }
+            .text-center { text-align: center; }
+            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            td { vertical-align: top; padding: 5px; }
+            .company-info { width: 50%; }
+            .qr-section { width: 50%; }
+            .header-row td {
+                font-size: 18px;
+                font-weight: bold;
+                padding: 10px;
+                text-align: center;
+                background-color: #f8f9fa;
+                border-bottom: 2px solid #dee2e6;
+            }
+            thead th {
+                background-color: #1a4567;
+                color: white;
+                padding: 12px 8px;
+                text-align: center;
+                font-weight: bold;
+                border: 1px solid #0d2235;
+                font-size: 14px;
+            }
+            tbody td {
+                padding: 8px;
+                text-align: center;
+                border: 1px solid #dee2e6;
+                font-size: 13px;
+            }
+            tbody tr:nth-child(even) { background-color: #f8f9fa; }
+            .summary {
+                margin-top: 30px;
+                page-break-before: avoid;
+            }
+            .void { background-color: #ffcccc; }
+            .return { background-color: #ffd9cc; }
+            .normal { background-color: #f2f2f2; }
+        </style>
+    </head>
+    <body>';
+
+        $html .= '
+        <table>
+            <tr>
+                <td class="company-info">
+                    <table style="width: auto;">
+                        <tr>
+                            <td>
+                                <img width="100" height="100" src="' . $companyLogo . '" alt="">
+                            </td>
+                            <td style="padding-left: 16px;">
+                                <p>Company Name:</p>
+                                <h4 class="text-bold">' . e($company->name) . '</h4>
+                                <p>Contact Number</p>
+                                <p class="text-bold">0' . e($company->ptcl_contact) . '</p>
+                                <p>Company Address</p>
+                                <p class="text-bold">' . e($company->address) . '</p>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <td class="qr-section" style="width: 100px; text-align: right;">
+                    <img width="100" height="100" src="' . $qrImage . '" alt="" style="margin-left: auto; display: block;">
+                </td>
+            </tr>
+        </table>';
+
+        $html .= '<h4 style="text-align: center;">Date: ' . date('Y-m-d', strtotime($fromDate)) . ' From ' . date('Y-m-d', strtotime($toDate)) . ' To </h4>';
+        $html .= '<h2 style="text-align: center;">Item Sale Database' . e($branchLabel) . '</h2>';
+
+        $grandTotalSales = 0;
+        $grandTotalQty = 0;
+        $grandTotalDiscount = 0;
+        $departmentSales = [];
+        $departmentQty = [];
+
+        foreach ($terminals as $terminal) {
+            $html .= '<h3 style="text-align: center;background-color: #1a4567;color: #FFFFFF;">Terminal: ' . e($terminal->terminal_name) . '</h3>';
+
+            $modes = $reportModel->itemSalesOrderMode($fromDate, $toDate, $terminal->terminal_id, 'all', 'all');
+
+            if (empty($modes)) {
+                $html .= '<div style="text-align: center; padding: 20px; background-color: #f9f9f9; border: 1px solid #ddd; margin: 10px 0;">
+                    <p style="color: #666; font-size: 16px; margin: 0;">Modes are empty</p>
+                    <p style="color: #999; font-size: 14px; margin: 5px 0 0 0;">No Data Found</p>
+                </div>';
+                continue;
+            }
+
+            $totalDiscount = $reportModel->getTotalDiscounts($fromDate, $toDate, $terminal->terminal_id, 'all', 'all');
+            $grandTotalDiscount += (float) ($totalDiscount[0]->totaldiscount ?? 0);
+
+            foreach ($modes as $mode) {
+                $html .= '<h5 style="text-align: center;background-color: #ddd;color: #000;margin-bottom: -2px;padding: 12px 8px;">' . e($mode->ordermode) . '</h5>';
+
+                $html .= '
+            <table>
+                <thead>
+                    <tr>
+                        <th>Item code</th>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Amount</th>
+                        <th>COGS</th>
+                        <th>Margin</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+                $details = $reportModel->itemsale_details(
+                    $fromDate,
+                    $toDate,
+                    $terminal->terminal_id,
+                    $mode->order_mode_id,
+                    '',
+                    '',
+                    'all',
+                    'all',
+                    ''
+                );
+
+                if (empty($details)) {
+                    $html .= '<tr><td colspan="8" style="text-align: center;">No data found</td></tr>';
+                }
+
+                $totalCount = 0;
+                $totalQty = 0;
+                $totalAmount = 0;
+                $totalCost = 0;
+                $totalMargin = 0;
+
+                if (!empty($details)) {
+                    foreach ($details as $item) {
+                        $itemQty = 0;
+                        $rowClass = $item->void_receipt == 1 ? 'void' : ($item->is_sale_return == 1 ? 'return' : 'normal');
+
+                        if ((int) $state['company_id'] === 74) {
+                            $itemQty += ($item->qty * $item->weight_qty);
+                        } else {
+                            $itemQty = $item->qty;
+                        }
+
+                        $html .= sprintf(
+                            '
+                        <tr class="%s">
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                            <td>%s</td>
+                        </tr>',
+                            $rowClass,
+                            e($item->code),
+                            e($item->product_name),
+                            number_format($itemQty),
+                            number_format($item->price),
+                            number_format($item->amount),
+                            number_format($item->cost),
+                            number_format($item->amount - $item->cost),
+                            e($item->order_status_name)
+                        );
+
+                        if ($item->void_receipt != 1) {
+                            $totalCount++;
+                            $totalQty += $itemQty;
+                            $totalAmount += $item->amount;
+                            $totalCost += $item->cost;
+                            $totalMargin += ($item->amount - $item->cost);
+                            $grandTotalQty += $itemQty;
+                            $grandTotalSales += $item->amount;
+
+                            $deptName = $item->department_name ?? 'Other';
+                            if (!isset($departmentSales[$deptName])) {
+                                $departmentSales[$deptName] = 0;
+                            }
+                            if (!isset($departmentQty[$deptName])) {
+                                $departmentQty[$deptName] = 0;
+                            }
+                            $departmentSales[$deptName] += $item->amount;
+                            $departmentQty[$deptName] += $itemQty;
+                        }
+                    }
+                } else {
+                    $html .= '<tr><td colspan="8" style="text-align: center;">No data found</td></tr>';
+                }
+
+                $html .= sprintf(
+                    '
+                <tr style="font-weight: bold;background-color: #00000;color: #FFFFFF;">
+                    <td colspan="2" style="color: #FFFFFF;font-weight: bold;">Total Items: %s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">%s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">-</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">%s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">%s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">%s</td>
+                    <td style="color: #FFFFFF;font-weight: bold;">-</td>
+                </tr>',
+                    $totalCount,
+                    number_format($totalQty),
+                    number_format($totalAmount),
+                    number_format($totalCost),
+                    number_format($totalMargin)
+                );
+
+                $html .= '</tbody></table>';
+            }
+        }
+
+        $html .= '
+        <div class="summary">
+            <h3 style="text-align: center; background-color: #1a4567; color: #FFFFFF; padding: 10px;">SUMMARY</h3>
+            <table style="width: 60%; margin: 20px auto;">
+                <tr style="background-color: #f8f9fa;">
+                    <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Items</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalQty, 2) . '</td>
+                </tr>
+                <tr style="background-color: #ffffff;">
+                    <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Sales</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalSales, 2) . '</td>
+                </tr>
+                <tr style="background-color: #f8f9fa;">
+                    <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Total Discount</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalDiscount, 2) . '</td>
+                </tr>
+                <tr style="background-color: #ffffff;">
+                    <td style="padding: 10px; font-weight: bold; border: 1px solid #dee2e6;">Discounted Sales</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #dee2e6;">' . number_format($grandTotalSales - $grandTotalDiscount, 2) . '</td>
+                </tr>
+            </table>
+            <h4 style="text-align: center; margin-top: 20px; color: #1a4567;">Department Wise Sales</h4>
+            <table style="width: 60%; margin: 10px auto;">
+                <thead>
+                    <tr style="background-color: #1a4567; color: #FFFFFF;">
+                        <th style="padding: 10px; text-align: left; border: 1px solid #0d2235;font-weight: bold;">Department</th>
+                        <th style="padding: 10px; text-align: right; border: 1px solid #0d2235;font-weight: bold;">Items</th>
+                        <th style="padding: 10px; text-align: right; border: 1px solid #0d2235;font-weight: bold;">Amount</th>
+                    </tr>
+                </thead>
+                <tbody>';
+
+        foreach ($departmentSales as $dept => $amount) {
+            $html .= '
+                <tr style="background-color: #f8f9fa;">
+                    <td style="padding: 8px; border: 1px solid #dee2e6;">' . e($dept) . '</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">' . number_format($departmentQty[$dept] ?? 0, 2) . '</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #dee2e6;">' . number_format($amount, 2) . '</td>
+                </tr>';
+        }
+
+        $html .= '
+                <tr style="background-color: #1a4567; color: #FFFFFF; font-weight: bold;">
+                    <td style="padding: 10px; border: 1px solid #0d2235;color: #FFFFFF;">Total</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #0d2235;color: #FFFFFF;">' . number_format(array_sum($departmentQty), 2) . '</td>
+                    <td style="padding: 10px; text-align: right; border: 1px solid #0d2235;color: #FFFFFF;">' . number_format(array_sum($departmentSales), 2) . '</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+        </body>
+        </html>';
+
+        $mpdf->WriteHTML($html);
+
+        $safeCompany = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $company->name);
+        $safeBranch = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $branch->branch_name);
+        $safeTerminal = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $state['terminal_name'] ?? 'All_Terminals');
+        $period = date('Ymd', strtotime($fromDate)) . '_' . date('Ymd', strtotime($toDate));
+        $generatedAt = date('Ymd_His');
+        $fileName = 'ITEM_SALE_DATABASE_' . $period . '_' . trim($safeCompany) . '_' . trim($safeBranch) . '_' . trim($safeTerminal) . '_' . $generatedAt . '.pdf';
+        $dir = storage_path('app/public/pdfs');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
+        $filePath = $dir . DIRECTORY_SEPARATOR . $fileName;
+        $mpdf->Output($filePath, 'F');
+
+        return [
+            'url' => 'https://retail.sabsoft.com.pk/storage/pdfs/' . rawurlencode($fileName),
+            'filename' => $fileName,
+        ];
+    }
+
+    private function isBranchBasedReport(?string $reportType): bool
+    {
+        return in_array($reportType, ['fbr_report', 'item_sale_database'], true);
+    }
+
+    private function reportAllowsAllTerminals(?string $reportType): bool
+    {
+        return in_array($reportType, ['fbr_report', 'item_sale_database'], true);
+    }
+
+    private function getReportDisplayName(?string $reportType): string
+    {
+        if ($reportType === 'fbr_report') {
+            return 'FBR Report';
+        }
+
+        if ($reportType === 'item_sale_database') {
+            return 'Item Sale Database';
+        }
+
+        return 'Sales Report';
     }
 
     private function sendTemplateWithDocument($to, $templateName, $language, $documentUrl, $filename, $reportName, $mobile, $terminal)
