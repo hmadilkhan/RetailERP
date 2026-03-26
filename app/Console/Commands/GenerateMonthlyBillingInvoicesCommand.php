@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Console\Commands;
+
+use App\Models\InvoiceSetup;
+use App\Services\InvoiceGenerationService;
+use Carbon\Carbon;
+use Illuminate\Console\Command;
+use Throwable;
+
+class GenerateMonthlyBillingInvoicesCommand extends Command
+{
+    protected $signature = 'billing:generate-monthly';
+    protected $description = 'Generate monthly billing invoices for the current month';
+
+    public function handle(InvoiceGenerationService $invoiceGenerationService)
+    {
+        $invoiceDate = Carbon::today();
+        $periodStart = $invoiceDate->copy()->startOfMonth()->toDateString();
+        $periodEnd = $invoiceDate->copy()->endOfMonth()->toDateString();
+
+        $this->info("Generating billing invoices for {$periodStart} to {$periodEnd}");
+
+        $invoiceSetups = InvoiceSetup::with('company')
+            ->where('is_auto_invoice', 1)
+            ->get();
+
+        if ($invoiceSetups->isEmpty()) {
+            $this->info('No auto-invoice setups found.');
+            return self::SUCCESS;
+        }
+
+        $generatedCount = 0;
+        $skippedCount = 0;
+        $failedCount = 0;
+
+        foreach ($invoiceSetups as $setup) {
+            $company = $setup->company;
+
+            if (!$company || (int) $company->status_id !== 1) {
+                $skippedCount++;
+                $this->warn("Skipping setup #{$setup->id}: company is missing or inactive.");
+                continue;
+            }
+
+            if ($invoiceGenerationService->invoiceExists($company->company_id, $periodStart, $periodEnd)) {
+                $skippedCount++;
+                $this->line("Skipping {$company->name}: invoice already exists for {$periodStart} to {$periodEnd}.");
+                continue;
+            }
+
+            try {
+                $invoice = $invoiceGenerationService->generateInvoice($company, $periodStart, $periodEnd, $invoiceDate, [
+                    'generated_by' => null,
+                    'tax_amount' => 0,
+                    'notes' => 'Auto-generated monthly invoice.',
+                ]);
+
+                $generatedCount++;
+                $this->info("Generated invoice {$invoice->invoice_no} for {$company->name}.");
+            } catch (Throwable $exception) {
+                $failedCount++;
+                $this->error("Failed for {$company->name}: {$exception->getMessage()}");
+            }
+        }
+
+        $this->info("Billing generation complete. Generated: {$generatedCount}, Skipped: {$skippedCount}, Failed: {$failedCount}");
+
+        return self::SUCCESS;
+    }
+}
