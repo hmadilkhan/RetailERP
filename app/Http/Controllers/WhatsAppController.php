@@ -314,12 +314,20 @@ class WhatsAppController extends Controller
             ->take(self::BRANCH_PAGE_SIZE)
             ->get();
 
+        Log::info('WhatsApp branch menu prepared', [
+            'to' => $number,
+            'company_id' => $companyId,
+            'page' => $page,
+            'total_branches' => $totalBranches,
+            'fetched_branches' => $branches->count(),
+        ]);
+
         $rows = [];
         foreach ($branches as $branch) {
             $rows[] = [
                 "id" => "branch_" . $branch->branch_id,
-                "title" => $branch->branch_name,
-                "description" => "Select this branch",
+                "title" => $this->truncateWhatsAppText($branch->branch_name, 24),
+                "description" => $this->truncateWhatsAppText("Select this branch", 72),
             ];
         }
 
@@ -350,16 +358,24 @@ class WhatsAppController extends Controller
                     "text" => "Please select branch:"
                 ],
                 "action" => [
-                    "button" => "Select Branch",
+                    "button" => $this->truncateWhatsAppText("Select Branch", 20),
                     "sections" => [
                         [
-                            "title" => "Branches (Page {$page}/" . max($totalPages, 1) . ")",
+                            "title" => $this->truncateWhatsAppText("Branches (Page {$page}/" . max($totalPages, 1) . ")", 24),
                             "rows" => $rows
                         ]
                     ]
                 ]
             ]
         ];
+
+        Log::info('WhatsApp branch menu payload ready', [
+            'to' => $number,
+            'company_id' => $companyId,
+            'page' => $page,
+            'row_count' => count($rows),
+            'row_titles' => array_column($rows, 'title'),
+        ]);
 
         $this->sendRequest($payload);
     }
@@ -428,8 +444,8 @@ class WhatsAppController extends Controller
         foreach ($terminals as $terminal) {
             $rows[] = [
                 "id" => "terminal_" . $terminal->terminal_id,
-                "title" => $terminal->terminal_name,
-                "description" => "Select this terminal",
+                "title" => $this->truncateWhatsAppText($terminal->terminal_name, 24),
+                "description" => $this->truncateWhatsAppText("Select this terminal", 72),
             ];
         }
 
@@ -460,10 +476,10 @@ class WhatsAppController extends Controller
                     "text" => "Please select terminal:"
                 ],
                 "action" => [
-                    "button" => "Select Terminal",
+                    "button" => $this->truncateWhatsAppText("Select Terminal", 20),
                     "sections" => [
                         [
-                            "title" => "Terminals (Page {$page}/" . max($totalPages, 1) . ")",
+                            "title" => $this->truncateWhatsAppText("Terminals (Page {$page}/" . max($totalPages, 1) . ")", 24),
                             "rows" => $rows
                         ]
                     ]
@@ -500,8 +516,29 @@ class WhatsAppController extends Controller
     */
     private function sendRequest($payload)
     {
+        Log::info('WhatsApp API request sending', [
+            'to' => $payload['to'] ?? null,
+            'type' => $payload['type'] ?? null,
+            'interactive_type' => $payload['interactive']['type'] ?? null,
+        ]);
+
         $response = Http::withToken($this->token)
             ->post("https://graph.facebook.com/v17.0/{$this->phoneId}/messages", $payload);
+
+        if (!$response->successful()) {
+            Log::warning('WhatsApp API request failed', [
+                'status' => $response->status(),
+                'payload_type' => $payload['type'] ?? null,
+                'response' => $response->body(),
+            ]);
+        } else {
+            Log::info('WhatsApp API request succeeded', [
+                'status' => $response->status(),
+                'payload_type' => $payload['type'] ?? null,
+                'interactive_type' => $payload['interactive']['type'] ?? null,
+                'response' => $response->json(),
+            ]);
+        }
 
         $this->recordOutboundMessage($payload, $response);
 
@@ -512,6 +549,12 @@ class WhatsAppController extends Controller
     {
         $mobile = $this->normalizeMobile($from);
 
+        Log::info('WhatsApp report flow started', [
+            'from' => $from,
+            'report_type' => $reportType,
+            'normalized_mobile' => $mobile,
+        ]);
+
         if (!$mobile) {
             $this->clearConversationState($from);
             $this->sendText($from, "Invalid mobile number. Please enter a valid registered mobile number.");
@@ -519,6 +562,14 @@ class WhatsAppController extends Controller
         }
 
         $company = $this->findCompanyByWhatsAppNumber($mobile, $from);
+
+        Log::info('WhatsApp company lookup result', [
+            'from' => $from,
+            'normalized_mobile' => $mobile,
+            'report_type' => $reportType,
+            'company_id' => $company->company_id ?? null,
+            'company_name' => $company->name ?? null,
+        ]);
 
         if (!$company) {
             $this->clearConversationState($from);
@@ -538,6 +589,13 @@ class WhatsAppController extends Controller
             ->where('company_id', $company->company_id)
             ->orderBy('branch_name')
             ->get();
+
+        Log::info('WhatsApp branch lookup result', [
+            'from' => $from,
+            'company_id' => $company->company_id,
+            'report_type' => $reportType,
+            'branch_count' => $branches->count(),
+        ]);
 
         if ($branches->isEmpty()) {
             $this->clearConversationState($from);
@@ -1286,6 +1344,11 @@ class WhatsAppController extends Controller
                 ->where('whatsapp_number', $candidate)
                 ->first();
 
+            Log::info('WhatsApp company candidate checked', [
+                'candidate' => $candidate,
+                'matched_company_id' => $company->company_id ?? null,
+            ]);
+
             if ($company) {
                 return $company;
             }
@@ -1306,6 +1369,20 @@ class WhatsAppController extends Controller
         }
 
         return $months;
+    }
+
+    private function truncateWhatsAppText(?string $value, int $maxLength): string
+    {
+        $value = trim((string) $value);
+        if ($value === '') {
+            return '';
+        }
+
+        if (mb_strlen($value) <= $maxLength) {
+            return $value;
+        }
+
+        return rtrim(mb_substr($value, 0, max(1, $maxLength - 1))) . '…';
     }
 
     private function getConversationState($number)
