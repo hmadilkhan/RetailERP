@@ -327,7 +327,7 @@ class WhatsAppController extends Controller
             $rows[] = [
                 "id" => "branch_" . $branch->branch_id,
                 "title" => $this->truncateWhatsAppText($branch->branch_name, 24),
-                "description" => $this->truncateWhatsAppText("Tap to open this branch", 72),
+                "description" => $this->truncateWhatsAppText("You selected this branch", 72),
             ];
         }
 
@@ -455,7 +455,7 @@ class WhatsAppController extends Controller
             $rows[] = [
                 "id" => "terminal_" . $terminal->terminal_id,
                 "title" => $this->truncateWhatsAppText($terminal->terminal_name, 24),
-                "description" => $this->truncateWhatsAppText("Tap to open this terminal", 72),
+                "description" => $this->truncateWhatsAppText("You selected this terminal", 72),
             ];
         }
 
