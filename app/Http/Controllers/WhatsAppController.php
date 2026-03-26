@@ -327,24 +327,39 @@ class WhatsAppController extends Controller
             $rows[] = [
                 "id" => "branch_" . $branch->branch_id,
                 "title" => $this->truncateWhatsAppText($branch->branch_name, 24),
-                "description" => $this->truncateWhatsAppText("Select this branch", 72),
+                "description" => $this->truncateWhatsAppText("Tap to open this branch", 72),
             ];
         }
 
         $totalPages = (int) ceil($totalBranches / self::BRANCH_PAGE_SIZE);
+        $navigationRows = [];
         if ($totalPages > 1 && $page > 1) {
-            $rows[] = [
+            $navigationRows[] = [
                 "id" => "branch_page_" . ($page - 1),
-                "title" => "Previous Branches",
-                "description" => "Page " . ($page - 1) . " of " . $totalPages,
+                "title" => "<< Previous Page",
+                "description" => "Go to page " . ($page - 1) . " of " . $totalPages,
             ];
         }
 
         if ($totalPages > 1 && $page < $totalPages) {
-            $rows[] = [
+            $navigationRows[] = [
                 "id" => "branch_page_" . ($page + 1),
-                "title" => "More Branches",
-                "description" => "Page " . ($page + 1) . " of " . $totalPages,
+                "title" => "Next Page >>",
+                "description" => "Go to page " . ($page + 1) . " of " . $totalPages,
+            ];
+        }
+
+        $sections = [
+            [
+                "title" => $this->truncateWhatsAppText("Branches  Page {$page}/" . max($totalPages, 1), 24),
+                "rows" => $rows,
+            ],
+        ];
+
+        if (!empty($navigationRows)) {
+            $sections[] = [
+                "title" => "Navigation",
+                "rows" => $navigationRows,
             ];
         }
 
@@ -359,12 +374,7 @@ class WhatsAppController extends Controller
                 ],
                 "action" => [
                     "button" => $this->truncateWhatsAppText("Select Branch", 20),
-                    "sections" => [
-                        [
-                            "title" => $this->truncateWhatsAppText("Branches (Page {$page}/" . max($totalPages, 1) . ")", 24),
-                            "rows" => $rows
-                        ]
-                    ]
+                    "sections" => $sections
                 ]
             ]
         ];
@@ -373,8 +383,8 @@ class WhatsAppController extends Controller
             'to' => $number,
             'company_id' => $companyId,
             'page' => $page,
-            'row_count' => count($rows),
-            'row_titles' => array_column($rows, 'title'),
+            'row_count' => count($rows) + count($navigationRows),
+            'row_titles' => array_merge(array_column($rows, 'title'), array_column($navigationRows, 'title')),
         ]);
 
         $this->sendRequest($payload);
@@ -437,7 +447,7 @@ class WhatsAppController extends Controller
             $rows[] = [
                 "id" => "terminal_all",
                 "title" => "All Terminals",
-                "description" => "Generate report for all terminals",
+                "description" => "Generate one report for every terminal",
             ];
         }
 
@@ -445,24 +455,39 @@ class WhatsAppController extends Controller
             $rows[] = [
                 "id" => "terminal_" . $terminal->terminal_id,
                 "title" => $this->truncateWhatsAppText($terminal->terminal_name, 24),
-                "description" => $this->truncateWhatsAppText("Select this terminal", 72),
+                "description" => $this->truncateWhatsAppText("Tap to open this terminal", 72),
             ];
         }
 
         $totalPages = (int) ceil($totalTerminals / self::TERMINAL_PAGE_SIZE);
+        $navigationRows = [];
         if ($totalPages > 1 && $page > 1) {
-            $rows[] = [
+            $navigationRows[] = [
                 "id" => "terminal_page_" . ($page - 1),
-                "title" => "Previous Terminals",
-                "description" => "Page " . ($page - 1) . " of " . $totalPages,
+                "title" => "<< Previous Page",
+                "description" => "Go to page " . ($page - 1) . " of " . $totalPages,
             ];
         }
 
         if ($totalPages > 1 && $page < $totalPages) {
-            $rows[] = [
+            $navigationRows[] = [
                 "id" => "terminal_page_" . ($page + 1),
-                "title" => "More Terminals",
-                "description" => "Page " . ($page + 1) . " of " . $totalPages,
+                "title" => "Next Page >>",
+                "description" => "Go to page " . ($page + 1) . " of " . $totalPages,
+            ];
+        }
+
+        $sections = [
+            [
+                "title" => $this->truncateWhatsAppText("Terminals  Page {$page}/" . max($totalPages, 1), 24),
+                "rows" => $rows,
+            ],
+        ];
+
+        if (!empty($navigationRows)) {
+            $sections[] = [
+                "title" => "Navigation",
+                "rows" => $navigationRows,
             ];
         }
 
@@ -477,12 +502,7 @@ class WhatsAppController extends Controller
                 ],
                 "action" => [
                     "button" => $this->truncateWhatsAppText("Select Terminal", 20),
-                    "sections" => [
-                        [
-                            "title" => $this->truncateWhatsAppText("Terminals (Page {$page}/" . max($totalPages, 1) . ")", 24),
-                            "rows" => $rows
-                        ]
-                    ]
+                    "sections" => $sections
                 ]
             ]
         ];
