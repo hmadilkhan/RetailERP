@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\WhatsAppUserAccess;
 use App\pdfClass;
 use App\report as ReportModel;
 use Carbon\Carbon;
@@ -581,17 +582,20 @@ class WhatsAppController extends Controller
             return;
         }
 
-        $company = $this->findCompanyByWhatsAppNumber($mobile, $from);
+        $access = $this->findWhatsAppAccessByNumber($mobile, $from);
 
-        Log::info('WhatsApp company lookup result', [
+        Log::info('WhatsApp access lookup result', [
             'from' => $from,
             'normalized_mobile' => $mobile,
             'report_type' => $reportType,
-            'company_id' => $company->company_id ?? null,
-            'company_name' => $company->name ?? null,
+            'company_id' => $access->company_id ?? null,
+            'company_name' => $access->company_name ?? null,
+            'branch_id' => $access->branch_id ?? null,
+            'branch_name' => $access->branch_name ?? null,
+            'access_level' => $access->access_level ?? null,
         ]);
 
-        if (!$company) {
+        if (!$access) {
             $this->clearConversationState($from);
             $this->sendText($from, "This mobile number is not registered for WhatsApp reports.");
             return;
@@ -600,19 +604,31 @@ class WhatsAppController extends Controller
         $state = [
             'report_type' => $reportType,
             'mobile' => $mobile,
-            'company_id' => (int) $company->company_id,
-            'company_name' => $company->name,
+            'company_id' => (int) $access->company_id,
+            'company_name' => $access->company_name,
+            'access_level' => $access->access_level,
         ];
+
+        if (($access->access_level ?? null) === 'branch') {
+            $state['branch_id'] = (int) $access->branch_id;
+            $state['branch_name'] = $access->branch_name;
+            $state['step'] = 'awaiting_terminal_selection';
+            $state['terminal_page'] = 1;
+
+            $this->setConversationState($from, $state);
+            $this->sendTerminalMenu($from, $state['branch_id'], 1, $this->reportAllowsAllTerminals($reportType));
+            return;
+        }
 
         $branches = DB::table('branch')
             ->select('branch_id', 'branch_name')
-            ->where('company_id', $company->company_id)
+            ->where('company_id', $access->company_id)
             ->orderBy('branch_name')
             ->get();
 
         Log::info('WhatsApp branch lookup result', [
             'from' => $from,
-            'company_id' => $company->company_id,
+            'company_id' => $access->company_id,
             'report_type' => $reportType,
             'branch_count' => $branches->count(),
         ]);
@@ -626,7 +642,7 @@ class WhatsAppController extends Controller
         $state['step'] = 'awaiting_branch';
         $state['branch_page'] = 1;
         $this->setConversationState($from, $state);
-        $this->sendBranchMenu($from, $company->company_id, 1);
+        $this->sendBranchMenu($from, $access->company_id, 1);
     }
 
     private function processReportRequest($to, array $state)
@@ -1349,7 +1365,7 @@ class WhatsAppController extends Controller
         }
     }
 
-    private function findCompanyByWhatsAppNumber($normalizedMobile, $rawInput)
+    private function findWhatsAppAccessByNumber($normalizedMobile, $rawInput)
     {
         $candidates = array_unique([
             trim($rawInput),
@@ -1359,22 +1375,60 @@ class WhatsAppController extends Controller
         ]);
 
         foreach ($candidates as $candidate) {
-            $company = DB::table('company')
-                ->select('company_id', 'name', 'whatsapp_number')
-                ->where('whatsapp_number', $candidate)
+            $access = WhatsAppUserAccess::query()
+                ->join('whatsapp_users', 'whatsapp_users.id', '=', 'whatsapp_user_access.whatsapp_user_id')
+                ->join('company', 'company.company_id', '=', 'whatsapp_user_access.company_id')
+                ->leftJoin('branch', 'branch.branch_id', '=', 'whatsapp_user_access.branch_id')
+                ->select([
+                    'whatsapp_user_access.id',
+                    'whatsapp_user_access.company_id',
+                    'whatsapp_user_access.branch_id',
+                    'whatsapp_user_access.access_level',
+                    'company.name as company_name',
+                    'branch.branch_name as branch_name',
+                    'whatsapp_users.mobile_number',
+                ])
+                ->where('whatsapp_users.mobile_number', $candidate)
+                ->where('whatsapp_user_access.status', 1)
+                ->when($this->hasTableColumn('whatsapp_users', 'status'), function ($query) {
+                    $query->where('whatsapp_users.status', 1);
+                })
+                ->orderByRaw("CASE WHEN whatsapp_user_access.access_level = 'branch' THEN 0 ELSE 1 END")
                 ->first();
 
-            Log::info('WhatsApp company candidate checked', [
+            Log::info('WhatsApp access candidate checked', [
                 'candidate' => $candidate,
-                'matched_company_id' => $company->company_id ?? null,
+                'matched_access_id' => $access->id ?? null,
+                'matched_company_id' => $access->company_id ?? null,
+                'matched_branch_id' => $access->branch_id ?? null,
+                'access_level' => $access->access_level ?? null,
             ]);
 
-            if ($company) {
-                return $company;
+            if ($access) {
+                return $access;
             }
         }
 
         return null;
+    }
+
+    private function hasTableColumn(string $table, string $column): bool
+    {
+        static $columnMap = [];
+
+        $cacheKey = $table . '.' . $column;
+
+        if (array_key_exists($cacheKey, $columnMap)) {
+            return $columnMap[$cacheKey];
+        }
+
+        try {
+            $columnMap[$cacheKey] = DB::getSchemaBuilder()->hasColumn($table, $column);
+        } catch (Throwable $e) {
+            $columnMap[$cacheKey] = false;
+        }
+
+        return $columnMap[$cacheKey];
     }
 
     private function getLastSixMonthsOldestFirst()
