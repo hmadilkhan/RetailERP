@@ -74,6 +74,7 @@ use App\Livewire\StockAdjustment\ListAdjustment;
 use App\Livewire\StockReport;
 use App\Livewire\VehicleManager;
 use App\Livewire\ViewInventory;
+use App\Livewire\WhatsAppAccessManager;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
@@ -330,6 +331,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/premium-dashboard', \App\Livewire\Dashboard\PremiumDashboard::class)->name('premium.dashboard');
     Route::get('/premium-sales-details', \App\Livewire\Sales\PremiumSalesDetails::class)->name('premium.sales.details');
     Route::get('/premium-terminal-details/{terminal}/{opening}', \App\Livewire\Sales\PremiumTerminalDetails::class)->name('premium.terminal.details');
+    Route::get('/whatsapp-access-manager', WhatsAppAccessManager::class)->name('whatsapp.access.manager');
     Route::post('/getTerminals', [HomeController::class, 'getTerminalsByBranch']);
     Route::get('/sales-details', [HomeController::class, 'salesDetails']);
     Route::post('/heads-details', [HomeController::class, 'salesHead']);
