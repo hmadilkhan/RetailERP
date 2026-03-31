@@ -33,6 +33,9 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
         $generatedCount = 0;
         $skippedCount = 0;
         $failedCount = 0;
+        $whatsAppSentCount = 0;
+        $whatsAppSkippedCount = 0;
+        $whatsAppFailedCount = 0;
 
         foreach ($invoiceSetups as $setup) {
             $company = $setup->company;
@@ -58,13 +61,31 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
 
                 $generatedCount++;
                 $this->info("Generated invoice {$invoice->invoice_no} for {$company->name}.");
+
+                try {
+                    $whatsAppResult = $invoiceGenerationService->sendInvoicePdfToWhatsapp($invoice);
+
+                    if (($whatsAppResult['status'] ?? null) === 'sent') {
+                        $whatsAppSentCount++;
+                        $this->line("WhatsApp sent to {$whatsAppResult['to']} for invoice {$invoice->invoice_no}.");
+                    } else {
+                        $whatsAppSkippedCount++;
+                        $this->warn("WhatsApp skipped for {$company->name}: " . ($whatsAppResult['reason'] ?? 'Unknown reason.'));
+                    }
+                } catch (Throwable $exception) {
+                    $whatsAppFailedCount++;
+                    $this->error("WhatsApp failed for {$company->name}: {$exception->getMessage()}");
+                }
             } catch (Throwable $exception) {
                 $failedCount++;
                 $this->error("Failed for {$company->name}: {$exception->getMessage()}");
             }
         }
 
-        $this->info("Billing generation complete. Generated: {$generatedCount}, Skipped: {$skippedCount}, Failed: {$failedCount}");
+        $this->info(
+            "Billing generation complete. Generated: {$generatedCount}, Skipped: {$skippedCount}, Failed: {$failedCount}, " .
+            "WhatsApp Sent: {$whatsAppSentCount}, WhatsApp Skipped: {$whatsAppSkippedCount}, WhatsApp Failed: {$whatsAppFailedCount}"
+        );
 
         return self::SUCCESS;
     }

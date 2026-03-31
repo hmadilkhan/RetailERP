@@ -6,8 +6,13 @@ use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceLine;
 use App\Models\InvoiceSetup;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class InvoiceGenerationService
 {
@@ -38,6 +43,10 @@ class InvoiceGenerationService
             $taxAmount = (float) ($options['tax_amount'] ?? 0);
             $totalAmount = $subtotal + $taxAmount + $previousDue;
 
+            if (empty($lines) && $totalAmount <= 0) {
+                throw new \RuntimeException('No billable items found for the selected period. Please check the company billing setup.');
+            }
+
             $invoice = Invoice::create([
                 'company_id' => $company->company_id,
                 'invoice_no' => $this->generateInvoiceNo($company, $invoiceDate),
@@ -65,18 +74,199 @@ class InvoiceGenerationService
         });
     }
 
+    public function sendInvoicePdfToWhatsapp(Invoice $invoice, array $options = []): array
+    {
+        $invoice->loadMissing(['company', 'lines', 'payments', 'adjustments']);
+
+        $company = $invoice->company;
+        if (!$company) {
+            throw new \RuntimeException('Invoice company not found.');
+        }
+
+        $to = $this->resolveWhatsAppNumber($company, $options['to'] ?? null);
+        if (!$to) {
+            return [
+                'status' => 'skipped',
+                'reason' => 'Company WhatsApp number is not configured.',
+            ];
+        }
+
+        $templateName = (string) ($options['template'] ?? config('services.whatsapp.templates.billing_invoice', 'report'));
+        $language = (string) ($options['language'] ?? config('services.whatsapp.template_lang', 'en'));
+
+        if ($templateName === '') {
+            return [
+                'status' => 'skipped',
+                'reason' => 'WhatsApp invoice template is not configured.',
+            ];
+        }
+
+        $document = $this->storeInvoicePdf($invoice);
+        $response = $this->sendWhatsAppTemplateWithDocument(
+            $to,
+            $templateName,
+            $language,
+            $document['url'],
+            $document['filename'],
+            [
+                (string) $company->name,
+                'Billing Invoice',
+                (string) $invoice->invoice_no,
+            ]
+        );
+
+        if (!$response->successful()) {
+            Log::warning('WhatsApp billing invoice send failed', [
+                'invoice_id' => $invoice->id,
+                'invoice_no' => $invoice->invoice_no,
+                'company_id' => $company->company_id,
+                'to' => $to,
+                'status' => $response->status(),
+                'response' => $response->body(),
+            ]);
+
+            throw new \RuntimeException('WhatsApp send failed with status ' . $response->status() . '.');
+        }
+
+        Log::info('WhatsApp billing invoice sent successfully', [
+            'invoice_id' => $invoice->id,
+            'invoice_no' => $invoice->invoice_no,
+            'company_id' => $company->company_id,
+            'to' => $to,
+            'filename' => $document['filename'],
+        ]);
+
+        return [
+            'status' => 'sent',
+            'to' => $to,
+            'filename' => $document['filename'],
+            'url' => $document['url'],
+        ];
+    }
+
+    private function storeInvoicePdf(Invoice $invoice): array
+    {
+        $pdf = Pdf::loadView('Admin.Billing.invoices.pdf', [
+            'invoice' => $invoice,
+        ]);
+
+        $filename = 'invoice-' . preg_replace('/[^A-Za-z0-9._-]/', '-', (string) $invoice->invoice_no) . '.pdf';
+        $directory = 'pdfs/billing-invoices';
+        $path = $directory . '/' . $filename;
+
+        Storage::disk('public')->put($path, $pdf->output());
+
+        return [
+            'filename' => $filename,
+            'path' => $path,
+            'url' => url(Storage::disk('public')->url($path)),
+        ];
+    }
+
+    private function sendWhatsAppTemplateWithDocument(
+        string $to,
+        string $templateName,
+        string $language,
+        string $documentUrl,
+        string $filename,
+        array $bodyParameters
+    ) {
+        $token = config('services.whatsapp.token');
+        $phoneId = config('services.whatsapp.phone_id');
+
+        if (!$token || !$phoneId) {
+            throw new \RuntimeException('WhatsApp credentials are not configured.');
+        }
+
+        $payload = [
+            'messaging_product' => 'whatsapp',
+            'to' => $to,
+            'type' => 'template',
+            'template' => [
+                'name' => $templateName,
+                'language' => [
+                    'code' => $language,
+                ],
+                'components' => [
+                    [
+                        'type' => 'header',
+                        'parameters' => [
+                            [
+                                'type' => 'document',
+                                'document' => [
+                                    'link' => $documentUrl,
+                                    'filename' => $filename,
+                                ],
+                            ],
+                        ],
+                    ],
+                    [
+                        'type' => 'body',
+                        'parameters' => array_map(function ($value) {
+                            return [
+                                'type' => 'text',
+                                'text' => (string) $value,
+                            ];
+                        }, $bodyParameters),
+                    ],
+                ],
+            ],
+        ];
+
+        return Http::withToken($token)
+            ->post("https://graph.facebook.com/v17.0/{$phoneId}/messages", $payload);
+    }
+
+    private function resolveWhatsAppNumber(Company $company, ?string $fallback = null): ?string
+    {
+        $candidates = [
+            $fallback,
+            $company->whatsapp_number ?? null,
+            $company->mobile_contact ?? null,
+        ];
+
+        foreach ($candidates as $candidate) {
+            $normalized = $this->normalizeWhatsAppNumber($candidate);
+            if ($normalized) {
+                return $normalized;
+            }
+        }
+
+        return null;
+    }
+
+    private function normalizeWhatsAppNumber(?string $value): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $value);
+        if ($digits === '') {
+            return null;
+        }
+
+        if (str_starts_with($digits, '0092')) {
+            $digits = substr($digits, 2);
+        }
+
+        if (str_starts_with($digits, '0')) {
+            $digits = substr($digits, 1);
+        }
+
+        if (!str_starts_with($digits, '92')) {
+            $digits = '92' . $digits;
+        }
+
+        return preg_match('/^92\d{10}$/', $digits) ? $digits : null;
+    }
+
     private function buildInvoiceLines($company, $periodStart, $periodEnd)
     {
         $lines = [];
         $billingMonths = $this->getBillingPeriodMonths($periodStart, $periodEnd);
         $billingPeriodLabel = $this->formatBillingPeriodLabel($periodStart, $periodEnd);
 
-        $setup = InvoiceSetup::with(['billingRates' => function ($query) use ($periodStart, $periodEnd) {
-            $query->where('is_active', 1);
-        }])->where('company_id', $company->company_id)->first();
+        $billingRates = $this->getBillingRates($company->company_id, $periodStart, $periodEnd);
 
-        if ($setup && $setup->billingRates->count() > 0) {
-            foreach ($setup->billingRates as $rate) {
+        if ($billingRates->count() > 0) {
+            foreach ($billingRates as $rate) {
                 $chargeTypeLabel = ucwords(str_replace('_', ' ', $rate->charge_type));
                 $rateMultiplier = $this->isMonthlyChargeType($rate->charge_type) ? $billingMonths : 1;
 
@@ -202,6 +392,33 @@ class InvoiceGenerationService
         }
 
         return $lines;
+    }
+
+    private function getBillingRates(int $companyId, string $periodStart, string $periodEnd)
+    {
+        $setup = InvoiceSetup::with(['billingRates' => function ($query) use ($periodStart, $periodEnd) {
+            $query->where('is_active', 1)
+                ->whereDate('effective_from', '<=', $periodEnd)
+                ->where(function ($innerQuery) use ($periodStart) {
+                    $innerQuery->whereNull('effective_to')
+                        ->orWhereDate('effective_to', '>=', $periodStart);
+                });
+        }])->where('company_id', $companyId)->first();
+
+        if ($setup && $setup->billingRates->count() > 0) {
+            return $setup->billingRates;
+        }
+
+        return DB::table('company_billing_rates')
+            ->where('company_id', $companyId)
+            ->where('is_active', 1)
+            ->whereDate('effective_from', '<=', $periodEnd)
+            ->where(function ($query) use ($periodStart) {
+                $query->whereNull('effective_to')
+                    ->orWhereDate('effective_to', '>=', $periodStart);
+            })
+            ->orderBy('id')
+            ->get();
     }
 
     private function getBillingPeriodMonths($periodStart, $periodEnd)
