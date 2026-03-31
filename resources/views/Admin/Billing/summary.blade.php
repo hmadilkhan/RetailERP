@@ -5,15 +5,15 @@
 
 @section('content')
 <section class="panels-wells">
-    <div class="card" style="margin-top: 20px; border: 0; overflow: hidden; box-shadow: 0 18px 40px rgba(32, 56, 85, 0.12);">
-        <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+    <div class="card" style="margin-top: 20px; border: 0; overflow: hidden; box-shadow: 0 18px 40px rgba(32, 56, 85, 0.12);margin-top:70px;">
+        <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div>
                     <h5 class="card-header-text text-white m-b-5">Company Billing Summary</h5>
                     <p class="m-b-0" style="color: rgba(255,255,255,0.82);">Track invoice totals, collections, and pending balances company-wise.</p>
                 </div>
-                <a href="{{ route('billing.invoices.index') }}" class="btn btn-light btn-sm" style="color: #0f8d56; border: 0; font-weight: 600; padding: 10px 16px;">
-                    <i class="icofont icofont-list"></i> All Invoices
+                <a href="{{ route('billing.invoices.index') }}" class="btn btn-light btn-sm" style="color: #white; margin-left: auto; border: 0; font-weight: 600; padding: 10px 16px;">
+                    <i class="icofont icofont-list" style="color:white;"></i><label class="f-w-600" style="color:white;">View All Invoices</label>
                 </a>
             </div>
         </div>
@@ -47,7 +47,7 @@
 
             <div class="table-responsive" style="border-radius: 16px; overflow: hidden; box-shadow: 0 12px 35px rgba(30, 54, 80, 0.08);">
                 <table class="table table-bordered table-hover m-b-0" style="background: #fff;">
-                    <thead style="background: linear-gradient(90deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+                    <thead style="background: linear-gradient(90deg, #a8b4c0 0%, #c7d0d9 100%); color: #fff;">
                         <tr>
                             <th>#</th>
                             <th>Company Name</th>
@@ -99,7 +99,7 @@
                         @endforelse
                     </tbody>
                     <tfoot>
-                        <tr style="background: #ecf8f1;">
+                        <tr style="background: #f3f5f7;">
                             <th colspan="3" class="text-right">Grand Total:</th>
                             <th>PKR {{ number_format($summary->sum('total_amount'), 2) }}</th>
                             <th class="text-success">PKR {{ number_format($summary->sum('paid_amount'), 2) }}</th>

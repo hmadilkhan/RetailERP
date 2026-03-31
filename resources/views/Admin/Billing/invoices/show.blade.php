@@ -3,20 +3,20 @@
 @section('title', 'Invoice Detail')
 @section('breadcrumtitle', 'Invoice Detail')
 @section('content')
-<section class="panels-wells">
+<section class="panels-wells" style="margin-top:70px;">
     <div class="card" style="margin-top: 20px; border: 0; overflow: hidden; box-shadow: 0 18px 40px rgba(32, 56, 85, 0.12);">
-        <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+        <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
                 <div>
                     <h5 class="card-header-text text-white m-b-5">Invoice #{{ $invoice->invoice_no }}</h5>
                     <p class="m-b-0" style="color: rgba(255,255,255,0.82);">Detailed invoice breakdown, payments, adjustments, and current receivable status.</p>
                 </div>
-                <div class="d-flex align-items-center flex-wrap">
-                <a href="{{ route('billing.invoices.pdf', $invoice->id) }}" class="btn btn-light btn-sm m-r-10" style="color: #0f8d56; border: 0; font-weight: 600; padding: 10px 16px;">
-                    <i class="icofont icofont-file-pdf"></i> Download PDF
+                <div class="d-flex align-items-center flex-wrap" style="margin-left: auto;">
+                <a href="{{ route('billing.invoices.pdf', $invoice->id) }}" class="btn btn-light btn-sm m-r-10" style="color: white; border: 0; font-weight: 600; padding: 10px 16px;">
+                    <i class="icofont icofont-file-pdf" style="color:white;"></i> Download PDF
                 </a>
-                <a href="{{ route('billing.invoices.index', ['company_id' => $invoice->company_id]) }}" class="btn btn-outline-light btn-sm" style="padding: 10px 16px; border-width: 1px;">
-                    <i class="icofont icofont-arrow-left"></i> Back
+                <a href="{{ route('billing.invoices.index', ['company_id' => $invoice->company_id]) }}" class="btn btn-outline-light btn-sm" style="color:white; padding: 10px 16px; border-width: 1px;">
+                    <i class="icofont icofont-arrow-left" style="color:white;"></i> Back
                 </a>
                 </div>
             </div>
@@ -71,7 +71,7 @@
 
             <div class="table-responsive m-t-10" style="border-radius: 16px; overflow: hidden; box-shadow: 0 12px 35px rgba(30, 54, 80, 0.08);">
                 <table class="table table-bordered table-hover m-b-0" style="background: #fff;">
-                    <thead style="background: linear-gradient(90deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+                    <thead style="background: linear-gradient(90deg, #EFEFEF 0%, #EFEFEF 100%); color: black;">
                         <tr>
                             <th width="50%" class="f-w-600">Description</th>
                             <th width="10%" class="text-center f-w-600">Qty</th>
@@ -106,7 +106,7 @@
                             <td class="text-right">PKR {{ number_format($invoice->previous_due, 2) }}</td>
                         </tr>
                         @endif
-                        <tr style="background: #ecf8f1;">
+                        <tr style="background: #f3f5f7;">
                             <td colspan="3" class="text-right"><strong>Total Amount:</strong></td>
                             <td class="text-right"><strong>PKR {{ number_format($invoice->total_amount, 2) }}</strong></td>
                         </tr>
@@ -129,7 +129,7 @@
     <div class="row">
         <div class="col-md-6">
             <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
-                <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+                <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
                     <h5 class="card-header-text text-white"><i class="icofont icofont-cur-dollar"></i> Receive Payment</h5>
                 </div>
                 <div class="card-block" style="background: #fff;">
@@ -163,7 +163,7 @@
 
         <div class="col-md-6">
             <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
-                <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+                <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
                     <h5 class="card-header-text text-white"><i class="icofont icofont-edit"></i> Add Adjustment</h5>
                 </div>
                 <div class="card-block" style="background: #fff;">
@@ -196,13 +196,13 @@
     </div>
 
     <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
-        <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+        <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
             <h5 class="card-header-text text-white"><i class="icofont icofont-history"></i> Payment History</h5>
         </div>
         <div class="card-block" style="background: #fff;">
             <div class="table-responsive" style="border-radius: 14px; overflow: hidden;">
                 <table class="table table-striped table-hover m-b-0">
-                    <thead style="background: #ecf8f1;">
+                    <thead style="background: #f3f5f7;">
                         <tr>
                             <th>#</th>
                             <th>Date</th>
@@ -234,13 +234,13 @@
     </div>
 
     <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
-        <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+        <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
             <h5 class="card-header-text text-white"><i class="icofont icofont-ui-edit"></i> Adjustments</h5>
         </div>
         <div class="card-block" style="background: #fff;">
             <div class="table-responsive" style="border-radius: 14px; overflow: hidden;">
                 <table class="table table-striped table-hover m-b-0">
-                    <thead style="background: #ecf8f1;">
+                    <thead style="background: #f3f5f7;">
                         <tr>
                             <th>#</th>
                             <th>Date</th>

@@ -4,15 +4,15 @@
 
 @section('content')
 <section class="panels-wells">
-    <div class="card" style="border: 0; overflow: hidden; box-shadow: 0 18px 40px rgba(32, 56, 85, 0.12);">
-        <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+    <div class="card" style="border: 0; overflow: hidden; box-shadow: 0 18px 40px rgba(32, 56, 85, 0.12);margin-top:70px;">
+        <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
             <div class="d-flex align-items-center flex-wrap w-100">
                 <div>
                     <h5 class="card-header-text m-b-5 text-white">Invoice Setup List</h5>
                     <p class="m-b-0" style="color: rgba(255, 255, 255, 0.82);">Manage billing setup rules and jump directly to each company invoice history.</p>
                 </div>
-                <a href="{{ route('invoice-setup.create') }}" class="btn btn-light btn-sm" style="margin-left: auto; color: #0f8d56; border: 0; font-weight: 600; padding: 10px 16px; box-shadow: 0 10px 24px rgba(6, 56, 32, 0.18);">
-                    <i class="icofont icofont-plus"></i> Create Invoice Setup
+                <a href="{{ route('invoice-setup.create') }}" class="btn btn-light btn-sm text-white" style="margin-left: auto; color: white; border: 0; font-weight: 600; padding: 10px 16px; box-shadow: 0 10px 24px rgba(90, 102, 114, 0.18);">
+                    <i class="icofont icofont-plus " style="color: white"></i> Create Invoice Setup
                 </a>
             </div>
         </div>
@@ -100,7 +100,7 @@
             
             <div class="table-responsive" style="border-radius: 16px; overflow: hidden; box-shadow: 0 12px 35px rgba(30, 54, 80, 0.08);">
                 <table class="table table-bordered table-hover m-b-0" style="background: #fff;">
-                    <thead style="background: linear-gradient(90deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+                    <thead style="background: linear-gradient(90deg, #a8b4c0 0%, #c7d0d9 100%); color: #fff;">
                         <tr>
                             <th style="width: 70px;">#</th>
                             <th>Company</th>

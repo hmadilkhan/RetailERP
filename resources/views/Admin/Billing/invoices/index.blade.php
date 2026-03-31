@@ -3,7 +3,7 @@
 @section('title', 'Billing Invoices')
 @section('breadcrumtitle', 'Billing Invoices')
 @section('content')
-    <section class="panels-wells">
+    <section class="panels-wells" style="margin-top:70px;">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">Billing Invoices</h5>
