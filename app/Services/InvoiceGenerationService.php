@@ -262,8 +262,9 @@ class InvoiceGenerationService
         $lines = [];
         $billingMonths = $this->getBillingPeriodMonths($periodStart, $periodEnd);
         $billingPeriodLabel = $this->formatBillingPeriodLabel($periodStart, $periodEnd);
-
-        $billingRates = $this->getBillingRates($company->company_id, $periodStart, $periodEnd);
+        $billingContext = $this->getBillingContext($company->company_id, $periodStart, $periodEnd);
+        $billingRates = $billingContext['rates'];
+        $setup = $billingContext['setup'];
 
         if ($billingRates->count() > 0) {
             foreach ($billingRates as $rate) {
@@ -352,41 +353,46 @@ class InvoiceGenerationService
                     }
                 }
             }
+        }
 
+        if (!empty($lines)) {
             return $lines;
         }
 
-        if ($company->invoice_type === 'branch') {
+        $invoiceType = $setup->invoice_type ?? null;
+        $monthlyChargesAmount = (float) ($setup->monthly_charges_amount ?? 0);
+
+        if ($invoiceType === 'branch') {
             $branchCount = DB::table('branch')
                 ->where('company_id', $company->company_id)
                 ->where('status_id', 1)
                 ->count();
 
-            if ($branchCount > 0 && $company->monthly_charges_amount > 0) {
+            if ($branchCount > 0 && $monthlyChargesAmount > 0) {
                 $lines[] = [
                     'scope_type' => 'branch',
                     'scope_id' => null,
                     'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $billingPeriodLabel . ') (' . $branchCount . ' Branch' . ($branchCount > 1 ? 'es' : '') . ')',
                     'qty' => $branchCount * $billingMonths,
-                    'unit_price' => $company->monthly_charges_amount,
-                    'line_amount' => $branchCount * $billingMonths * $company->monthly_charges_amount,
+                    'unit_price' => $monthlyChargesAmount,
+                    'line_amount' => $branchCount * $billingMonths * $monthlyChargesAmount,
                 ];
             }
-        } elseif ($company->invoice_type === 'terminal') {
+        } elseif ($invoiceType === 'terminal') {
             $terminalCount = DB::table('terminal_details')
                 ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
                 ->where('branch.company_id', $company->company_id)
                 ->where('branch.status_id', 1)
                 ->count();
 
-            if ($terminalCount > 0 && $company->monthly_charges_amount > 0) {
+            if ($terminalCount > 0 && $monthlyChargesAmount > 0) {
                 $lines[] = [
                     'scope_type' => 'terminal',
                     'scope_id' => null,
                     'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $billingPeriodLabel . ') (' . $terminalCount . ' Terminal' . ($terminalCount > 1 ? 's' : '') . ')',
                     'qty' => $terminalCount * $billingMonths,
-                    'unit_price' => $company->monthly_charges_amount,
-                    'line_amount' => $terminalCount * $billingMonths * $company->monthly_charges_amount,
+                    'unit_price' => $monthlyChargesAmount,
+                    'line_amount' => $terminalCount * $billingMonths * $monthlyChargesAmount,
                 ];
             }
         }
@@ -394,7 +400,7 @@ class InvoiceGenerationService
         return $lines;
     }
 
-    private function getBillingRates(int $companyId, string $periodStart, string $periodEnd)
+    private function getBillingContext(int $companyId, string $periodStart, string $periodEnd): array
     {
         $setup = InvoiceSetup::with(['billingRates' => function ($query) use ($periodStart, $periodEnd) {
             $query->where('is_active', 1)
@@ -405,20 +411,10 @@ class InvoiceGenerationService
                 });
         }])->where('company_id', $companyId)->first();
 
-        if ($setup && $setup->billingRates->count() > 0) {
-            return $setup->billingRates;
-        }
-
-        return DB::table('company_billing_rates')
-            ->where('company_id', $companyId)
-            ->where('is_active', 1)
-            ->whereDate('effective_from', '<=', $periodEnd)
-            ->where(function ($query) use ($periodStart) {
-                $query->whereNull('effective_to')
-                    ->orWhereDate('effective_to', '>=', $periodStart);
-            })
-            ->orderBy('id')
-            ->get();
+        return [
+            'setup' => $setup,
+            'rates' => $setup ? $setup->billingRates : collect(),
+        ];
     }
 
     private function getBillingPeriodMonths($periodStart, $periodEnd)
