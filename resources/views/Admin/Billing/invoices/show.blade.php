@@ -4,43 +4,74 @@
 @section('breadcrumtitle', 'Invoice Detail')
 @section('content')
 <section class="panels-wells">
-    <div class="card" style="margin-top: 20px;">
-        <div class="card-header">
-            <h5 class="card-header-text">Invoice #{{ $invoice->invoice_no }}</h5>
-            <div class="card-header-right">
-                <a href="{{ route('billing.invoices.pdf', $invoice->id) }}" class="btn btn-primary btn-sm">
+    <div class="card" style="margin-top: 20px; border: 0; overflow: hidden; box-shadow: 0 18px 40px rgba(32, 56, 85, 0.12);">
+        <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h5 class="card-header-text text-white m-b-5">Invoice #{{ $invoice->invoice_no }}</h5>
+                    <p class="m-b-0" style="color: rgba(255,255,255,0.82);">Detailed invoice breakdown, payments, adjustments, and current receivable status.</p>
+                </div>
+                <div class="d-flex align-items-center flex-wrap">
+                <a href="{{ route('billing.invoices.pdf', $invoice->id) }}" class="btn btn-light btn-sm m-r-10" style="color: #0f8d56; border: 0; font-weight: 600; padding: 10px 16px;">
                     <i class="icofont icofont-file-pdf"></i> Download PDF
                 </a>
-                <a href="{{ route('billing.invoices.index') }}" class="btn btn-inverse btn-sm">
+                <a href="{{ route('billing.invoices.index', ['company_id' => $invoice->company_id]) }}" class="btn btn-outline-light btn-sm" style="padding: 10px 16px; border-width: 1px;">
                     <i class="icofont icofont-arrow-left"></i> Back
                 </a>
+                </div>
             </div>
         </div>
-        <div class="card-block">
-            <div class="row">
-                <div class="col-lg-8 col-md-7">
-                    <h6 class="text-muted f-w-400">Company Information</h6>
-                    <h5 class="m-b-5">{{ optional($invoice->company)->name }}</h5>
-                    <p class="text-muted m-b-0"><i class="icofont icofont-calendar"></i> {{ date('M d, Y', strtotime($invoice->period_start)) }} - {{ date('M d, Y', strtotime($invoice->period_end)) }}</p>
+        <div class="card-block" style="background: linear-gradient(180deg, #fbfcfe 0%, #f4f7fb 100%);">
+            <div class="row m-b-20">
+                <div class="col-md-3 col-sm-6">
+                    <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
+                        <div class="card-block">
+                            <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Company</p>
+                            <h5 class="m-b-0" style="font-weight: 700;">{{ optional($invoice->company)->name }}</h5>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-4 col-md-5 text-right">
-                    <h6 class="text-muted f-w-400">Invoice Status</h6>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
+                        <div class="card-block">
+                            <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Invoice Status</p>
+                            <div>
                     @if($invoice->status == 'paid')
-                        <span class="badge badge-success f-14">PAID</span>
+                        <span class="badge badge-success f-14" style="padding: 9px 12px;">PAID</span>
                     @elseif($invoice->status == 'partial')
-                        <span class="badge badge-warning f-14">PARTIAL</span>
+                        <span class="badge badge-warning f-14" style="padding: 9px 12px;">PARTIAL</span>
                     @elseif($invoice->status == 'void')
-                        <span class="badge badge-danger f-14">VOID</span>
+                        <span class="badge badge-danger f-14" style="padding: 9px 12px;">VOID</span>
                     @else
-                        <span class="badge badge-info f-14">ISSUED</span>
+                        <span class="badge badge-info f-14" style="padding: 9px 12px;">ISSUED</span>
                     @endif
-                    <p class="m-t-15 m-b-0"><strong>Due:</strong> {{ date('M d, Y', strtotime($invoice->due_date)) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
+                        <div class="card-block">
+                            <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Billing Period</p>
+                            <h6 class="m-b-0" style="font-weight: 700;">{{ date('M d, Y', strtotime($invoice->period_start)) }}</h6>
+                            <small class="text-muted">to {{ date('M d, Y', strtotime($invoice->period_end)) }}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
+                        <div class="card-block">
+                            <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Balance Due</p>
+                            <h4 class="m-b-0 text-danger" style="font-weight: 700;">PKR {{ number_format($invoice->balance_amount, 2) }}</h4>
+                            <small class="text-muted">Due {{ date('M d, Y', strtotime($invoice->due_date)) }}</small>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="table-responsive m-t-30">
-                <table class="table table-bordered table-hover m-b-0">
-                    <thead style="background-color: #f8f9fa;">
+            <div class="table-responsive m-t-10" style="border-radius: 16px; overflow: hidden; box-shadow: 0 12px 35px rgba(30, 54, 80, 0.08);">
+                <table class="table table-bordered table-hover m-b-0" style="background: #fff;">
+                    <thead style="background: linear-gradient(90deg, #0d8f55 0%, #16a765 100%); color: #fff;">
                         <tr>
                             <th width="50%" class="f-w-600">Description</th>
                             <th width="10%" class="text-center f-w-600">Qty</th>
@@ -75,7 +106,7 @@
                             <td class="text-right">PKR {{ number_format($invoice->previous_due, 2) }}</td>
                         </tr>
                         @endif
-                        <tr class="table-active">
+                        <tr style="background: #ecf8f1;">
                             <td colspan="3" class="text-right"><strong>Total Amount:</strong></td>
                             <td class="text-right"><strong>PKR {{ number_format($invoice->total_amount, 2) }}</strong></td>
                         </tr>
@@ -85,7 +116,7 @@
                             <td class="text-right text-success">PKR {{ number_format($invoice->paid_amount, 2) }}</td>
                         </tr>
                         @endif
-                        <tr class="table-warning">
+                        <tr style="background: #fff6e6;">
                             <td colspan="3" class="text-right"><strong>Balance Due:</strong></td>
                             <td class="text-right"><strong class="text-danger">PKR {{ number_format($invoice->balance_amount, 2) }}</strong></td>
                         </tr>
@@ -97,11 +128,11 @@
 
     <div class="row">
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-header-text"><i class="icofont icofont-cur-dollar"></i> Receive Payment</h5>
+            <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+                <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+                    <h5 class="card-header-text text-white"><i class="icofont icofont-cur-dollar"></i> Receive Payment</h5>
                 </div>
-                <div class="card-block">
+                <div class="card-block" style="background: #fff;">
                     <form method="post" action="{{ route('billing.invoices.payments.store', $invoice->id) }}">
                         @csrf
                         <div class="form-group">
@@ -131,11 +162,11 @@
         </div>
 
         <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5 class="card-header-text"><i class="icofont icofont-edit"></i> Add Adjustment</h5>
+            <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+                <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+                    <h5 class="card-header-text text-white"><i class="icofont icofont-edit"></i> Add Adjustment</h5>
                 </div>
-                <div class="card-block">
+                <div class="card-block" style="background: #fff;">
                     <form method="post" action="{{ route('billing.invoices.adjustments.store', $invoice->id) }}">
                         @csrf
                         <div class="form-group">
@@ -164,14 +195,14 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-header-text"><i class="icofont icofont-history"></i> Payment History</h5>
+    <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+        <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+            <h5 class="card-header-text text-white"><i class="icofont icofont-history"></i> Payment History</h5>
         </div>
-        <div class="card-block">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
+        <div class="card-block" style="background: #fff;">
+            <div class="table-responsive" style="border-radius: 14px; overflow: hidden;">
+                <table class="table table-striped table-hover m-b-0">
+                    <thead style="background: #ecf8f1;">
                         <tr>
                             <th>#</th>
                             <th>Date</th>
@@ -202,14 +233,14 @@
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            <h5 class="card-header-text"><i class="icofont icofont-ui-edit"></i> Adjustments</h5>
+    <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+        <div class="card-header" style="background: linear-gradient(135deg, #0d8f55 0%, #16a765 100%); color: #fff;">
+            <h5 class="card-header-text text-white"><i class="icofont icofont-ui-edit"></i> Adjustments</h5>
         </div>
-        <div class="card-block">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead>
+        <div class="card-block" style="background: #fff;">
+            <div class="table-responsive" style="border-radius: 14px; overflow: hidden;">
+                <table class="table table-striped table-hover m-b-0">
+                    <thead style="background: #ecf8f1;">
                         <tr>
                             <th>#</th>
                             <th>Date</th>
