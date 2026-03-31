@@ -35,10 +35,20 @@ class InvoiceSetupController extends Controller
             });
         }
 
+        $statsQuery = clone $query;
+
+        $summary = [
+            'total' => (clone $statsQuery)->count(),
+            'auto_enabled' => (clone $statsQuery)->where('is_auto_invoice', 1)->count(),
+            'auto_disabled' => (clone $statsQuery)->where('is_auto_invoice', 0)->count(),
+            'branch_based' => (clone $statsQuery)->where('invoice_type', 'branch')->count(),
+            'terminal_based' => (clone $statsQuery)->where('invoice_type', 'terminal')->count(),
+        ];
+
         $invoiceSetups = $query->orderByDesc('id')->paginate(20)->withQueryString();
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
 
-        return view('Admin.InvoiceSetup.index', compact('invoiceSetups', 'companies'));
+        return view('Admin.InvoiceSetup.index', compact('invoiceSetups', 'companies', 'summary'));
     }
 
     public function create()
