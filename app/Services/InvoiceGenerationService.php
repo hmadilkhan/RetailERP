@@ -111,7 +111,7 @@ class InvoiceGenerationService
             [
                 (string) $company->name,
                 'Billing Invoice',
-                (string) $invoice->invoice_no,
+                $this->formatWhatsAppBillingPeriod($invoice),
             ]
         );
 
@@ -255,6 +255,18 @@ class InvoiceGenerationService
         }
 
         return preg_match('/^92\d{10}$/', $digits) ? $digits : null;
+    }
+
+    private function formatWhatsAppBillingPeriod(Invoice $invoice): string
+    {
+        $periodStart = Carbon::parse($invoice->period_start);
+        $periodEnd = Carbon::parse($invoice->period_end);
+
+        if ($periodStart->format('Y-m') === $periodEnd->format('Y-m')) {
+            return $periodStart->format('F-Y');
+        }
+
+        return $periodStart->format('F-Y') . ' to ' . $periodEnd->format('F-Y');
     }
 
     private function buildInvoiceLines($company, $periodStart, $periodEnd)
