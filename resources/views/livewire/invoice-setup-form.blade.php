@@ -1,5 +1,5 @@
 <div>
-    <section class="panels-wells">
+    <section class="panels-wells" style="margin-top:70px;">
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">{{ $isEdit ? 'Edit' : 'Create' }} Invoice Setup</h5>

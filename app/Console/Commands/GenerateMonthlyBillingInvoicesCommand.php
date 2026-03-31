@@ -10,7 +10,7 @@ use Throwable;
 
 class GenerateMonthlyBillingInvoicesCommand extends Command
 {
-    protected $signature = 'billing:generate-monthly';
+    protected $signature = 'billing:generate-monthly {company_id?}';
     protected $description = 'Generate monthly billing invoices for the current month';
 
     public function handle(InvoiceGenerationService $invoiceGenerationService)
@@ -18,12 +18,19 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
         $invoiceDate = Carbon::today();
         $periodStart = $invoiceDate->copy()->startOfMonth()->toDateString();
         $periodEnd = $invoiceDate->copy()->endOfMonth()->toDateString();
+        $companyId = $this->argument('company_id');
 
         $this->info("Generating billing invoices for {$periodStart} to {$periodEnd}");
 
-        $invoiceSetups = InvoiceSetup::with('company')
-            ->where('is_auto_invoice', 1)
-            ->get();
+        $query = InvoiceSetup::with('company')
+            ->where('is_auto_invoice', 1);
+
+        if (!empty($companyId)) {
+            $query->where('company_id', $companyId);
+            $this->line("Company filter applied: {$companyId}");
+        }
+
+        $invoiceSetups = $query->get();
 
         if ($invoiceSetups->isEmpty()) {
             $this->info('No auto-invoice setups found.');
