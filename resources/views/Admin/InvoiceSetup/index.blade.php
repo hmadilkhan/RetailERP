@@ -15,6 +15,44 @@
             @if(session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
             @endif
+
+            <form method="get" class="row m-b-15">
+                <div class="col-md-3">
+                    <label>Company</label>
+                    <select name="company_id" class="form-control select2">
+                        <option value="">All Companies</option>
+                        @foreach ($companies as $company)
+                            <option value="{{ $company->company_id }}" {{ request('company_id') == $company->company_id ? 'selected' : '' }}>
+                                {{ $company->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label>Invoice Type</label>
+                    <select name="invoice_type" class="form-control">
+                        <option value="">All Types</option>
+                        <option value="branch" {{ request('invoice_type') == 'branch' ? 'selected' : '' }}>Branch</option>
+                        <option value="terminal" {{ request('invoice_type') == 'terminal' ? 'selected' : '' }}>Terminal</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Auto Invoice</label>
+                    <select name="is_auto_invoice" class="form-control">
+                        <option value="">All</option>
+                        <option value="1" {{ request('is_auto_invoice') === '1' ? 'selected' : '' }}>Enabled</option>
+                        <option value="0" {{ request('is_auto_invoice') === '0' ? 'selected' : '' }}>Disabled</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <label>Search</label>
+                    <input type="text" name="search" class="form-control" value="{{ request('search') }}" placeholder="Company or prefix">
+                </div>
+                <div class="col-md-2 m-t-25">
+                    <button class="btn btn-success btn-sm">Filter</button>
+                    <a href="{{ route('invoice-setup.index') }}" class="btn btn-default btn-sm">Reset</a>
+                </div>
+            </form>
             
             <div class="table-responsive">
                 <table class="table table-bordered">
@@ -58,7 +96,17 @@
                     </tbody>
                 </table>
             </div>
+
+            <div class="m-t-15">
+                {{ $invoiceSetups->links('pagination::bootstrap-4') }}
+            </div>
         </div>
     </div>
 </section>
+@endsection
+
+@section('scriptcode_three')
+    <script>
+        $('.select2').select2();
+    </script>
 @endsection
