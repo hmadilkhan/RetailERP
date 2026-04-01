@@ -11,6 +11,7 @@ use App\Services\InvoiceGenerationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Throwable;
 
 class BillingController extends Controller
 {
@@ -105,6 +106,31 @@ class BillingController extends Controller
     {
         $invoice = Invoice::with(['company', 'lines', 'payments', 'adjustments'])->findOrFail($id);
         return view('Admin.Billing.invoices.show', compact('invoice'));
+    }
+
+    public function sendToWhatsApp($id, InvoiceGenerationService $invoiceGenerationService)
+    {
+        $invoice = Invoice::with(['company', 'lines', 'payments', 'adjustments'])->findOrFail($id);
+
+        try {
+            $result = $invoiceGenerationService->sendInvoicePdfToWhatsapp($invoice, [
+                'to' => request('to'),
+            ]);
+
+            if (($result['status'] ?? null) === 'skipped') {
+                return redirect()
+                    ->route('billing.invoices.show', $invoice->id)
+                    ->withErrors(['error' => $result['reason'] ?? 'WhatsApp invoice was skipped.']);
+            }
+
+            return redirect()
+                ->route('billing.invoices.show', $invoice->id)
+                ->with('success', 'Invoice PDF sent to WhatsApp successfully.');
+        } catch (Throwable $exception) {
+            return redirect()
+                ->route('billing.invoices.show', $invoice->id)
+                ->withErrors(['error' => 'Unable to send invoice to WhatsApp. ' . $exception->getMessage()]);
+        }
     }
 
     public function destroy($id)
