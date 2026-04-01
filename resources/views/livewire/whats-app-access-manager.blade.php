@@ -594,7 +594,7 @@
 
                         <div class="form-group">
                             <label class="wa-form-label">Status</label>
-                            <select wire:model.defer="user_status" class="form-control wa-control select2-wa" data-placeholder="Select status">
+                            <select wire:model.defer="user_status" class="form-control wa-control">
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
@@ -650,7 +650,7 @@
 
                             <div class="col-md-4 form-group">
                                 <label class="wa-form-label">Access Level</label>
-                                <select wire:model.live="access_level" class="form-control wa-control select2-wa" data-placeholder="Select access level">
+                                <select wire:model.live="access_level" class="form-control wa-control">
                                     <option value="company">Company</option>
                                     <option value="branch">Branch</option>
                                 </select>
@@ -670,7 +670,7 @@
 
                             <div class="col-md-4 form-group">
                                 <label class="wa-form-label">Status</label>
-                                <select wire:model.defer="access_status" class="form-control wa-control select2-wa" data-placeholder="Select status">
+                                <select wire:model.defer="access_status" class="form-control wa-control">
                                     <option value="1">Active</option>
                                     <option value="0">Inactive</option>
                                 </select>
@@ -710,7 +710,7 @@
                 </div>
                 <div class="col-lg-3 form-group mb-0">
                     <label class="wa-form-label">Filter Scope</label>
-                    <select wire:model.live="scopeFilter" class="form-control wa-control select2-wa" data-placeholder="All scopes">
+                    <select wire:model.live="scopeFilter" class="form-control wa-control">
                         <option value="">All scopes</option>
                         <option value="company">Company</option>
                         <option value="branch">Branch</option>
@@ -854,28 +854,18 @@
                 || $el.attr('wire:model');
         };
 
-        const destroySelect2 = () => {
-            $('.select2-wa').each(function() {
-                if ($(this).hasClass('select2-hidden-accessible')) {
-                    $(this).select2('destroy');
-                }
-            });
-        };
-
         const initSelect2 = () => {
             $('.select2-wa').each(function() {
                 const $el = $(this);
                 const model = getWireModel($el);
 
-                if ($el.hasClass('select2-hidden-accessible')) {
-                    $el.select2('destroy');
+                if (!$el.hasClass('select2-hidden-accessible')) {
+                    $el.select2({
+                        width: '100%',
+                        placeholder: $el.data('placeholder') || 'Select an option',
+                        allowClear: true
+                    });
                 }
-
-                $el.select2({
-                    width: '100%',
-                    placeholder: $el.data('placeholder') || 'Select an option',
-                    allowClear: true
-                });
 
                 $el.off('change.whatsapp-access').on('change.whatsapp-access', function() {
                     if (!model) {
@@ -884,17 +874,15 @@
 
                     $wire.set(model, $(this).val());
                 });
+
+                $el.trigger('change.select2');
             });
         };
 
         initSelect2();
 
-        Livewire.hook('morph.updating', () => {
-            destroySelect2();
-        });
-
         Livewire.hook('morph.updated', () => {
-            initSelect2();
+            window.requestAnimationFrame(initSelect2);
         });
     });
 </script>

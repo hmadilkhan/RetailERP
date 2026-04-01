@@ -9,6 +9,7 @@ use App\WhatsAppUserAccess;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Collection;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -34,10 +35,28 @@ class WhatsAppAccessManager extends Component
     public $access_status = 1;
 
     protected $paginationTheme = 'bootstrap';
+    protected bool $userHasNameColumn = false;
+    protected bool $userHasStatusColumn = false;
+    protected bool $userHasCreatedAtColumn = false;
+    protected bool $userHasUpdatedAtColumn = false;
+    protected bool $accessHasStatusColumn = false;
+    protected bool $accessHasCreatedAtColumn = false;
+    protected bool $accessHasUpdatedAtColumn = false;
 
     public function mount(): void
     {
         abort_unless(session('roleId') == 1, 403);
+    }
+
+    public function boot(): void
+    {
+        $this->userHasNameColumn = $this->hasColumn('whatsapp_users', 'name');
+        $this->userHasStatusColumn = $this->hasColumn('whatsapp_users', 'status');
+        $this->userHasCreatedAtColumn = $this->hasColumn('whatsapp_users', 'created_at');
+        $this->userHasUpdatedAtColumn = $this->hasColumn('whatsapp_users', 'updated_at');
+        $this->accessHasStatusColumn = $this->hasColumn('whatsapp_user_access', 'status');
+        $this->accessHasCreatedAtColumn = $this->hasColumn('whatsapp_user_access', 'created_at');
+        $this->accessHasUpdatedAtColumn = $this->hasColumn('whatsapp_user_access', 'updated_at');
     }
 
     public function updatedSearch(): void
@@ -86,11 +105,11 @@ class WhatsAppAccessManager extends Component
             ],
         ];
 
-        if ($this->hasColumn('whatsapp_users', 'name')) {
+        if ($this->userHasNameColumn) {
             $rules['user_name'] = ['nullable', 'string', 'max:150'];
         }
 
-        if ($this->hasColumn('whatsapp_users', 'status')) {
+        if ($this->userHasStatusColumn) {
             $rules['user_status'] = ['required', 'integer', 'in:0,1'];
         }
 
@@ -102,15 +121,15 @@ class WhatsAppAccessManager extends Component
             'mobile_number' => $this->normalizeMobile($validated['mobile_number']),
         ];
 
-        if ($this->hasColumn('whatsapp_users', 'name')) {
+        if ($this->userHasNameColumn) {
             $payload['name'] = trim((string) $this->user_name) ?: null;
         }
 
-        if ($this->hasColumn('whatsapp_users', 'status')) {
+        if ($this->userHasStatusColumn) {
             $payload['status'] = (int) $this->user_status;
         }
 
-        if ($this->hasColumn('whatsapp_users', 'updated_at')) {
+        if ($this->userHasUpdatedAtColumn) {
             $payload['updated_at'] = now();
         }
 
@@ -118,7 +137,7 @@ class WhatsAppAccessManager extends Component
             WhatsAppUser::whereKey($this->editingUserId)->update($payload);
             $message = 'WhatsApp user updated successfully.';
         } else {
-            if ($this->hasColumn('whatsapp_users', 'created_at')) {
+            if ($this->userHasCreatedAtColumn) {
                 $payload['created_at'] = now();
             }
 
@@ -138,8 +157,8 @@ class WhatsAppAccessManager extends Component
 
         $this->editingUserId = $user->id;
         $this->mobile_number = $user->mobile_number;
-        $this->user_name = $this->hasColumn('whatsapp_users', 'name') ? (string) ($user->name ?? '') : '';
-        $this->user_status = $this->hasColumn('whatsapp_users', 'status') ? (int) ($user->status ?? 1) : 1;
+        $this->user_name = $this->userHasNameColumn ? (string) ($user->name ?? '') : '';
+        $this->user_status = $this->userHasStatusColumn ? (int) ($user->status ?? 1) : 1;
     }
 
     public function resetUserForm(): void
@@ -198,11 +217,11 @@ class WhatsAppAccessManager extends Component
             'access_level' => $validated['access_level'],
         ];
 
-        if ($this->hasColumn('whatsapp_user_access', 'status')) {
+        if ($this->accessHasStatusColumn) {
             $payload['status'] = (int) $this->access_status;
         }
 
-        if ($this->hasColumn('whatsapp_user_access', 'updated_at')) {
+        if ($this->accessHasUpdatedAtColumn) {
             $payload['updated_at'] = now();
         }
 
@@ -210,7 +229,7 @@ class WhatsAppAccessManager extends Component
             WhatsAppUserAccess::whereKey($this->editingAccessId)->update($payload);
             $message = 'Access rule updated successfully.';
         } else {
-            if ($this->hasColumn('whatsapp_user_access', 'created_at')) {
+            if ($this->accessHasCreatedAtColumn) {
                 $payload['created_at'] = now();
             }
 
@@ -232,7 +251,7 @@ class WhatsAppAccessManager extends Component
         $this->company_id = (string) $access->company_id;
         $this->access_level = $access->access_level;
         $this->branch_id = $access->branch_id ? (string) $access->branch_id : '';
-        $this->access_status = $this->hasColumn('whatsapp_user_access', 'status') ? (int) ($access->status ?? 1) : 1;
+        $this->access_status = $this->accessHasStatusColumn ? (int) ($access->status ?? 1) : 1;
     }
 
     public function resetAccessForm(): void
@@ -248,7 +267,7 @@ class WhatsAppAccessManager extends Component
 
     public function toggleUserStatus(int $userId): void
     {
-        if (!$this->hasColumn('whatsapp_users', 'status')) {
+        if (!$this->userHasStatusColumn) {
             return;
         }
 
@@ -256,7 +275,7 @@ class WhatsAppAccessManager extends Component
         $newStatus = (int) !((int) $user->status);
 
         $payload = ['status' => $newStatus];
-        if ($this->hasColumn('whatsapp_users', 'updated_at')) {
+        if ($this->userHasUpdatedAtColumn) {
             $payload['updated_at'] = now();
         }
 
@@ -266,7 +285,7 @@ class WhatsAppAccessManager extends Component
 
     public function toggleAccessStatus(int $accessId): void
     {
-        if (!$this->hasColumn('whatsapp_user_access', 'status')) {
+        if (!$this->accessHasStatusColumn) {
             return;
         }
 
@@ -274,7 +293,7 @@ class WhatsAppAccessManager extends Component
         $newStatus = (int) !((int) $access->status);
 
         $payload = ['status' => $newStatus];
-        if ($this->hasColumn('whatsapp_user_access', 'updated_at')) {
+        if ($this->accessHasUpdatedAtColumn) {
             $payload['updated_at'] = now();
         }
 
@@ -282,7 +301,7 @@ class WhatsAppAccessManager extends Component
         session()->flash('whatsapp_access_message', 'Access status updated.');
     }
 
-    public function getCompaniesProperty()
+    public function getCompaniesProperty(): Collection
     {
         return Company::query()
             ->select('company_id', 'name')
@@ -290,7 +309,7 @@ class WhatsAppAccessManager extends Component
             ->get();
     }
 
-    public function getBranchesProperty()
+    public function getBranchesProperty(): Collection
     {
         if (!$this->company_id) {
             return collect();
@@ -305,21 +324,21 @@ class WhatsAppAccessManager extends Component
 
     public function getUsersProperty()
     {
-        return WhatsAppUser::query()
+        $query = WhatsAppUser::query()
+            ->select($this->getUserListingColumns())
             ->when($this->search !== '', function ($query) {
                 $query->where(function ($innerQuery) {
                     $innerQuery->where('mobile_number', 'like', '%' . $this->search . '%');
 
-                    if ($this->hasColumn('whatsapp_users', 'name')) {
+                    if ($this->userHasNameColumn) {
                         $innerQuery->orWhere('name', 'like', '%' . $this->search . '%');
                     }
                 });
             })
-            ->when($this->hasColumn('whatsapp_users', 'status'), function ($query) {
-                $query->orderByDesc('status');
-            })
-            ->orderByDesc('id')
-            ->paginate(8, ['*'], 'usersPage');
+            ->when($this->userHasStatusColumn, fn ($query) => $query->orderByDesc('status'))
+            ->orderByDesc('id');
+
+        return $query->simplePaginate(8, ['*'], 'usersPage');
     }
 
     public function getAccessesProperty()
@@ -334,9 +353,9 @@ class WhatsAppAccessManager extends Component
                 'whatsapp_user_access.branch_id',
                 'whatsapp_user_access.company_id',
                 'whatsapp_user_access.whatsapp_user_id',
-                DB::raw($this->hasColumn('whatsapp_user_access', 'status') ? 'whatsapp_user_access.status as status' : '1 as status'),
+                DB::raw($this->accessHasStatusColumn ? 'whatsapp_user_access.status as status' : '1 as status'),
                 'whatsapp_users.mobile_number',
-                DB::raw($this->hasColumn('whatsapp_users', 'name') ? 'whatsapp_users.name as user_name' : 'NULL as user_name'),
+                DB::raw($this->userHasNameColumn ? 'whatsapp_users.name as user_name' : 'NULL as user_name'),
                 'company.name as company_name',
                 'branch.branch_name'
             )
@@ -346,7 +365,7 @@ class WhatsAppAccessManager extends Component
                         ->orWhere('company.name', 'like', '%' . $this->search . '%')
                         ->orWhere('branch.branch_name', 'like', '%' . $this->search . '%');
 
-                    if ($this->hasColumn('whatsapp_users', 'name')) {
+                    if ($this->userHasNameColumn) {
                         $innerQuery->orWhere('whatsapp_users.name', 'like', '%' . $this->search . '%');
                     }
                 });
@@ -354,18 +373,30 @@ class WhatsAppAccessManager extends Component
             ->when($this->companyFilter !== '', fn ($query) => $query->where('whatsapp_user_access.company_id', $this->companyFilter))
             ->when($this->scopeFilter !== '', fn ($query) => $query->where('whatsapp_user_access.access_level', $this->scopeFilter))
             ->orderByDesc('whatsapp_user_access.id')
-            ->paginate(10, ['*'], 'accessPage');
+            ->simplePaginate(10, ['*'], 'accessPage');
     }
 
     public function getStatsProperty(): array
     {
+        $userStats = WhatsAppUser::query()
+            ->selectRaw('COUNT(*) as users')
+            ->selectRaw(
+                $this->userHasStatusColumn
+                    ? 'SUM(CASE WHEN status = 1 THEN 1 ELSE 0 END) as active_users'
+                    : 'COUNT(*) as active_users'
+            )
+            ->first();
+
+        $accessStats = WhatsAppUserAccess::query()
+            ->selectRaw('COUNT(*) as access_rules')
+            ->selectRaw("SUM(CASE WHEN access_level = 'branch' THEN 1 ELSE 0 END) as branch_scope")
+            ->first();
+
         return [
-            'users' => WhatsAppUser::count(),
-            'active_users' => $this->hasColumn('whatsapp_users', 'status')
-                ? WhatsAppUser::where('status', 1)->count()
-                : WhatsAppUser::count(),
-            'access_rules' => WhatsAppUserAccess::count(),
-            'branch_scope' => WhatsAppUserAccess::where('access_level', 'branch')->count(),
+            'users' => (int) ($userStats->users ?? 0),
+            'active_users' => (int) ($userStats->active_users ?? 0),
+            'access_rules' => (int) ($accessStats->access_rules ?? 0),
+            'branch_scope' => (int) ($accessStats->branch_scope ?? 0),
         ];
     }
 
@@ -382,9 +413,9 @@ class WhatsAppAccessManager extends Component
                 ->select(
                     'id',
                     'mobile_number',
-                    DB::raw($this->hasColumn('whatsapp_users', 'name') ? 'name' : 'NULL as name')
+                    DB::raw($this->userHasNameColumn ? 'name' : 'NULL as name')
                 )
-                ->when($this->hasColumn('whatsapp_users', 'status'), fn ($query) => $query->where('status', 1))
+                ->when($this->userHasStatusColumn, fn ($query) => $query->where('status', 1))
                 ->orderBy('mobile_number')
                 ->get(),
         ]);
@@ -410,5 +441,20 @@ class WhatsAppAccessManager extends Component
         }
 
         return $cache[$key];
+    }
+
+    private function getUserListingColumns(): array
+    {
+        $columns = ['id', 'mobile_number'];
+
+        if ($this->userHasNameColumn) {
+            $columns[] = 'name';
+        }
+
+        if ($this->userHasStatusColumn) {
+            $columns[] = 'status';
+        }
+
+        return $columns;
     }
 }
