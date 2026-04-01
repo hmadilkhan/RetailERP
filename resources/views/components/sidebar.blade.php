@@ -225,7 +225,7 @@ Whenever add new page in the backend please make sure to add the translation in 
             @endif
 
             @if(session('roleId') == 1)
-                <li class="nav-level">-------- .Admin Tools<span></span></li>
+                <li class="nav-level">Admin Tools<span></span></li>
                 <li class="treeview {{ $currentUrl == 'whatsapp-access-manager' ? 'active' : '' }}">
                     <a href="{{ route('whatsapp.access.manager') }}" class="bg-success">
                         <i class="icofont icofont-ui-social-link text-white"></i>
