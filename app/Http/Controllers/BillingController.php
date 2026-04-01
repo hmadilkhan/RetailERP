@@ -20,12 +20,12 @@ class BillingController extends Controller
             ->join('company', 'invoices.company_id', '=', 'company.company_id')
             ->select(
                 'company.company_id',
-                'company.name as company_name',
-                DB::raw('COUNT(invoices.id) as total_invoices'),
-                DB::raw('SUM(invoices.total_amount) as total_amount'),
-                DB::raw('SUM(invoices.paid_amount) as paid_amount'),
-                DB::raw('SUM(invoices.balance_amount) as balance_amount')
+                'company.name as company_name'
             )
+            ->selectRaw('COUNT(invoices.id) as total_invoices')
+            ->selectRaw('COALESCE(SUM(invoices.total_amount - invoices.previous_due), 0) as total_amount')
+            ->selectRaw('COALESCE(SUM(invoices.paid_amount), 0) as paid_amount')
+            ->selectRaw('GREATEST(COALESCE(SUM(invoices.total_amount - invoices.previous_due), 0) - COALESCE(SUM(invoices.paid_amount), 0), 0) as balance_amount')
             ->where('invoices.status', '!=', 'void')
             ->groupBy('company.company_id', 'company.name')
             ->orderBy('company.name')

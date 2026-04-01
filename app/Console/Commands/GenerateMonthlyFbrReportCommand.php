@@ -199,14 +199,14 @@ class GenerateMonthlyFbrReportCommand extends Command
 
     public function sendSingleEmail($from, $report, $reportname, $file)
     {
-        $data["email"] = "hmadilkhan@gmail.com"; // $report->branch_email;
+        $data["email"] = $report->branch_email;
         $data["title"] = $reportname;
         $data["body"] = $report;
         $data["from"] = $from;
 
         Mail::send('emails.automaticemail', $data, function ($message) use ($data, $file) {
             $message->to($data["email"], "Sabify")
-                ->cc(['faizanakramkhanfaizan@gmail.com'])
+                ->cc(['humayunshamimbarry@gmail.com','hmadilkhan@gmail.com'])
                 ->subject($data["title"]);
             $message->attach($file);
         });

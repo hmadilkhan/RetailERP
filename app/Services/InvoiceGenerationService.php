@@ -36,9 +36,7 @@ class InvoiceGenerationService
             $lines = $this->buildInvoiceLines($company, $periodStart, $periodEnd);
             $subtotal = collect($lines)->sum('line_amount');
 
-            $previousDue = (float) Invoice::where('company_id', $company->company_id)
-                ->whereNotIn('status', ['paid', 'void'])
-                ->sum('balance_amount');
+            $previousDue = $this->calculateOutstandingPreviousDue($company->company_id);
 
             $taxAmount = (float) ($options['tax_amount'] ?? 0);
             $totalAmount = $subtotal + $taxAmount + $previousDue;
@@ -72,6 +70,21 @@ class InvoiceGenerationService
 
             return $invoice;
         });
+    }
+
+    private function calculateOutstandingPreviousDue(int $companyId): float
+    {
+        $summary = Invoice::where('company_id', $companyId)
+            ->where('status', '!=', 'void')
+            ->selectRaw('COALESCE(SUM(total_amount - previous_due), 0) as net_charges')
+            ->selectRaw('COALESCE(SUM(paid_amount), 0) as total_paid')
+            ->lockForUpdate()
+            ->first();
+
+        $netCharges = (float) ($summary->net_charges ?? 0);
+        $totalPaid = (float) ($summary->total_paid ?? 0);
+
+        return max(0, $netCharges - $totalPaid);
     }
 
     public function sendInvoicePdfToWhatsapp(Invoice $invoice, array $options = []): array
