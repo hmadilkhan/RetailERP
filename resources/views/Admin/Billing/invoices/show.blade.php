@@ -12,12 +12,12 @@
                     <p class="m-b-0" style="color: rgba(255,255,255,0.82);">Detailed invoice breakdown, payments, adjustments, and current receivable status.</p>
                 </div>
                 <div class="d-flex align-items-center flex-wrap" style="margin-left: auto;">
-                {{-- <form method="post" action="{{ route('billing.invoices.whatsapp.send', $invoice->id) }}" class="m-r-10 m-b-0">
+                <form method="post" action="{{ route('billing.invoices.whatsapp.send', $invoice->id) }}" class="m-r-10 m-b-0">
                     @csrf
                     <button type="submit" class="btn btn-light btn-sm" style="color: white; border: 0; font-weight: 600; padding: 10px 16px;background-color:#4CAF50;">
                         <i class="icofont icofont-social-whatsapp" style="color:white;"></i> Send WhatsApp
                     </button>
-                </form> --}}
+                </form>
                 <a href="{{ route('billing.invoices.pdf', $invoice->id) }}" class="btn btn-light btn-sm m-r-10" style="color: white; border: 0; font-weight: 600; padding: 10px 16px;">
                     <i class="icofont icofont-file-pdf" style="color:white;"></i> Download PDF
                 </a>
