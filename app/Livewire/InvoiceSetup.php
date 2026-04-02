@@ -7,6 +7,7 @@ use App\Models\InvoiceSetup as InvoiceSetupModel;
 use App\Models\Company;
 use App\Models\Branch;
 use App\Models\Terminal;
+use Illuminate\Validation\Rule;
 
 class InvoiceSetup extends Component
 {
@@ -24,21 +25,32 @@ class InvoiceSetup extends Component
     public $terminals = [];
     public $isEdit = false;
 
-    protected $rules = [
-        'company_id' => 'required|exists:company,company_id',
-        'invoice_type' => 'required|in:branch,terminal',
-        'monthly_charges_amount' => 'required|numeric|min:0',
-        'billing_cycle_day' => 'required|integer|min:1|max:28',
-        'payment_due_days' => 'required|integer|min:1|max:90',
-        'invoice_prefix' => 'nullable|string|max:30',
-        'is_auto_invoice' => 'boolean',
-        'billing_rates.*.scope_type' => 'required|in:company,branch,terminal',
-        'billing_rates.*.scope_id' => 'nullable',
-        'billing_rates.*.charge_type' => 'required|string',
-        'billing_rates.*.rate' => 'required|numeric|min:0',
-        'billing_rates.*.effective_from' => 'required|date',
-        'billing_rates.*.effective_to' => 'nullable|date|after:effective_from',
-        'billing_rates.*.is_active' => 'boolean',
+    protected function rules()
+    {
+        return [
+            'company_id' => [
+                'required',
+                'exists:company,company_id',
+                Rule::unique('invoice_setups', 'company_id')->ignore($this->invoiceSetupId, 'id'),
+            ],
+            'invoice_type' => 'required|in:branch,terminal',
+            'monthly_charges_amount' => 'required|numeric|min:0',
+            'billing_cycle_day' => 'required|integer|min:1|max:28',
+            'payment_due_days' => 'required|integer|min:1|max:90',
+            'invoice_prefix' => 'nullable|string|max:30',
+            'is_auto_invoice' => 'boolean',
+            'billing_rates.*.scope_type' => 'required|in:company,branch,terminal',
+            'billing_rates.*.scope_id' => 'nullable',
+            'billing_rates.*.charge_type' => 'required|string',
+            'billing_rates.*.rate' => 'required|numeric|min:0',
+            'billing_rates.*.effective_from' => 'required|date',
+            'billing_rates.*.effective_to' => 'nullable|date|after:effective_from',
+            'billing_rates.*.is_active' => 'boolean',
+        ];
+    }
+
+    protected $messages = [
+        'company_id.unique' => 'An invoice setup already exists for this company.',
     ];
 
     public function mount($id = null)

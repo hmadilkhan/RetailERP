@@ -6,6 +6,17 @@
             </div>
             <div class="card-block">
                 <form wire:submit.prevent="save">
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <strong>Please fix the following issues:</strong>
+                            <ul class="m-b-0 m-t-5" style="padding-left: 18px;">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group @error('company_id') has-danger @enderror">
