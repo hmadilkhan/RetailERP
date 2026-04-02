@@ -253,6 +253,7 @@ Route::middleware(['roleChecker'])->group(function () {
     // billing
     Route::get('/billing/summary', [BillingController::class, 'summary'])->name('billing.summary');
     Route::get('/billing/invoices', [BillingController::class, 'index'])->name('billing.invoices.index');
+    Route::get('/billing/delivery-history', [BillingController::class, 'deliveryHistory'])->name('billing.delivery-history');
     Route::get('/billing/invoices/create', [BillingController::class, 'create'])->name('billing.invoices.create');
     Route::post('/billing/invoices', [BillingController::class, 'store'])->name('billing.invoices.store');
     Route::get('/billing/invoices/{id}', [BillingController::class, 'show'])->name('billing.invoices.show');

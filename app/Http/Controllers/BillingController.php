@@ -59,6 +59,96 @@ class BillingController extends Controller
         return view('Admin.Billing.invoices.index', compact('invoices', 'companies'));
     }
 
+    public function deliveryHistory(Request $request)
+    {
+        $logsQuery = DB::table('activity_log as al')
+            ->leftJoin('invoices', function ($join) {
+                $join->on('invoices.id', '=', 'al.subject_id')
+                    ->where('al.subject_type', '=', Invoice::class);
+            })
+            ->leftJoin('company', 'company.company_id', '=', 'al.company_id')
+            ->select([
+                'al.id',
+                'al.log_name',
+                'al.description',
+                'al.event',
+                'al.properties',
+                'al.batch_uuid',
+                'al.company_id',
+                'al.created_at',
+                'invoices.id as invoice_id',
+                'invoices.invoice_no',
+                'company.name as company_name',
+            ])
+            ->where('al.log_name', 'billing_invoice_whatsapp')
+            ->orderByDesc('al.id');
+
+        if (!empty($request->company_id)) {
+            $logsQuery->where('al.company_id', $request->company_id);
+        }
+
+        if (!empty($request->status)) {
+            $logsQuery->where('al.event', 'whatsapp_' . $request->status);
+        }
+
+        if (!empty($request->invoice_no)) {
+            $logsQuery->where('invoices.invoice_no', 'like', '%' . trim($request->invoice_no) . '%');
+        }
+
+        if (!empty($request->run_id)) {
+            $logsQuery->where('al.batch_uuid', trim($request->run_id));
+        }
+
+        if (!empty($request->date)) {
+            $logsQuery->whereDate('al.created_at', Carbon::parse($request->date)->toDateString());
+        }
+
+        $deliveryLogs = $logsQuery->paginate(25)->appends($request->query());
+        $deliveryLogs->setCollection(
+            $deliveryLogs->getCollection()->map(function ($log) {
+                $properties = json_decode($log->properties ?? '{}', true) ?: [];
+                $status = str_replace('whatsapp_', '', (string) ($log->event ?? ''));
+
+                $log->status = $status !== '' ? $status : ($properties['status'] ?? 'unknown');
+                $log->to = $properties['to'] ?? null;
+                $log->reason = $properties['reason'] ?? null;
+                $log->trigger = $properties['trigger'] ?? null;
+                $log->filename = $properties['filename'] ?? null;
+
+                return $log;
+            })
+        );
+
+        $recentRuns = DB::table('activity_log')
+            ->select(['id', 'description', 'properties', 'batch_uuid', 'created_at'])
+            ->where('log_name', 'billing_invoice_run')
+            ->orderByDesc('id')
+            ->limit(8)
+            ->get()
+            ->map(function ($run) {
+                $properties = json_decode($run->properties ?? '{}', true) ?: [];
+
+                return (object) [
+                    'id' => $run->id,
+                    'description' => $run->description,
+                    'batch_uuid' => $run->batch_uuid,
+                    'created_at' => $run->created_at,
+                    'period_start' => $properties['period_start'] ?? null,
+                    'period_end' => $properties['period_end'] ?? null,
+                    'generated_count' => $properties['generated_count'] ?? 0,
+                    'skipped_count' => $properties['skipped_count'] ?? 0,
+                    'failed_count' => $properties['failed_count'] ?? 0,
+                    'whatsapp_sent_count' => $properties['whatsapp_sent_count'] ?? 0,
+                    'whatsapp_skipped_count' => $properties['whatsapp_skipped_count'] ?? 0,
+                    'whatsapp_failed_count' => $properties['whatsapp_failed_count'] ?? 0,
+                ];
+            });
+
+        $companies = Company::select('company_id', 'name')->orderBy('name')->get();
+
+        return view('Admin.Billing.delivery-history', compact('deliveryLogs', 'recentRuns', 'companies'));
+    }
+
     public function create()
     {
         $companies = Company::select('company_id', 'name', 'invoice_type', 'payment_due_days', 'invoice_prefix', 'monthly_charges_amount')

@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Throwable;
 
 class InvoiceGenerationService
@@ -98,20 +99,28 @@ class InvoiceGenerationService
 
         $to = $this->resolveWhatsAppNumber($company, $options['to'] ?? null);
         if (!$to) {
-            return [
+            $result = [
                 'status' => 'skipped',
                 'reason' => 'Company WhatsApp number is not configured.',
             ];
+
+            $this->logInvoiceWhatsappActivity($invoice, $company, $result, $options);
+
+            return $result;
         }
 
         $templateName = (string) ($options['template'] ?? config('services.whatsapp.templates.billing_invoice', 'report'));
         $language = (string) ($options['language'] ?? config('services.whatsapp.template_lang', 'en'));
 
         if ($templateName === '') {
-            return [
+            $result = [
                 'status' => 'skipped',
                 'reason' => 'WhatsApp invoice template is not configured.',
             ];
+
+            $this->logInvoiceWhatsappActivity($invoice, $company, $result, $options);
+
+            return $result;
         }
 
         $document = $this->storeInvoicePdf($invoice);
@@ -138,6 +147,16 @@ class InvoiceGenerationService
                 'response' => $response->body(),
             ]);
 
+            $this->logInvoiceWhatsappActivity($invoice, $company, [
+                'status' => 'failed',
+                'to' => $to,
+                'filename' => $document['filename'],
+                'url' => $document['url'],
+                'http_status' => $response->status(),
+                'response_body' => Str::limit($response->body(), 2000),
+                'reason' => 'WhatsApp send failed with status ' . $response->status() . '.',
+            ], $options);
+
             throw new \RuntimeException('WhatsApp send failed with status ' . $response->status() . '.');
         }
 
@@ -149,12 +168,55 @@ class InvoiceGenerationService
             'filename' => $document['filename'],
         ]);
 
-        return [
+        $result = [
             'status' => 'sent',
             'to' => $to,
             'filename' => $document['filename'],
             'url' => $document['url'],
         ];
+
+        $this->logInvoiceWhatsappActivity($invoice, $company, $result, $options);
+
+        return $result;
+    }
+
+    private function logInvoiceWhatsappActivity(Invoice $invoice, Company $company, array $result, array $options = []): void
+    {
+        try {
+            $status = (string) ($result['status'] ?? 'unknown');
+            $batchUuid = $options['batch_uuid'] ?? null;
+
+            activity('billing_invoice_whatsapp')
+                ->withCompany($company->company_id)
+                ->performedOn($invoice)
+                ->withProperties([
+                    'invoice_id' => $invoice->id,
+                    'invoice_no' => $invoice->invoice_no,
+                    'company_id' => $company->company_id,
+                    'company_name' => $company->name,
+                    'status' => $status,
+                    'to' => $result['to'] ?? null,
+                    'filename' => $result['filename'] ?? null,
+                    'url' => $result['url'] ?? null,
+                    'reason' => $result['reason'] ?? null,
+                    'http_status' => $result['http_status'] ?? null,
+                    'response_body' => $result['response_body'] ?? null,
+                    'trigger' => $options['trigger'] ?? 'manual',
+                ])
+                ->tap(function ($activity) use ($batchUuid) {
+                    if ($batchUuid) {
+                        $activity->batch_uuid = $batchUuid;
+                    }
+                })
+                ->event('whatsapp_' . $status)
+                ->log("Billing invoice WhatsApp {$status}");
+        } catch (Throwable $exception) {
+            Log::warning('Failed to record billing invoice WhatsApp activity', [
+                'invoice_id' => $invoice->id,
+                'status' => $result['status'] ?? null,
+                'error' => $exception->getMessage(),
+            ]);
+        }
     }
 
     private function storeInvoicePdf(Invoice $invoice): array

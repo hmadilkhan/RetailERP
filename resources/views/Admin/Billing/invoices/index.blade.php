@@ -7,6 +7,7 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">Billing Invoices</h5>
+                <a href="{{ route('billing.delivery-history') }}" class="btn btn-success btn-sm f-right m-l-10">Delivery History</a>
                 <a href="{{ route('billing.invoices.create') }}" class="btn btn-primary btn-sm f-right">Generate Invoice</a>
             </div>
             <div class="card-block">

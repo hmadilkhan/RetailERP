@@ -21,6 +21,9 @@
                 <a href="{{ route('billing.invoices.pdf', $invoice->id) }}" class="btn btn-light btn-sm m-r-10" style="color: white; border: 0; font-weight: 600; padding: 10px 16px;">
                     <i class="icofont icofont-file-pdf" style="color:white;"></i> Download PDF
                 </a>
+                <a href="{{ route('billing.delivery-history', ['invoice_no' => $invoice->invoice_no]) }}" class="btn btn-light btn-sm m-r-10" style="color: white; border: 0; font-weight: 600; padding: 10px 16px;">
+                    <i class="icofont icofont-history" style="color:white;"></i> Delivery History
+                </a>
                 <a href="{{ route('billing.invoices.index', ['company_id' => $invoice->company_id]) }}" class="btn btn-outline-light btn-sm" style="color:white; padding: 10px 16px; border-width: 1px;">
                     <i class="icofont icofont-arrow-left" style="color:white;"></i> Back
                 </a>
