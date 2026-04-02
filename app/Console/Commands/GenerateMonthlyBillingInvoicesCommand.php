@@ -62,6 +62,15 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
                     'whatsapp' => 'not_attempted',
                     'detail' => 'Company missing or inactive',
                 ];
+                $this->logBillingRunActivity($runId, 'billing_invoice_generation', 'generation_skipped', null, [
+                    'setup_id' => $setup->id,
+                    'company_id' => $company->company_id ?? null,
+                    'company_name' => $company->name ?? null,
+                    'status' => 'skipped',
+                    'stage' => 'generation',
+                    'reason' => 'Company missing or inactive',
+                    'trigger' => 'billing:generate-monthly',
+                ], 'Billing invoice generation skipped');
                 continue;
             }
 
@@ -75,6 +84,17 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
                     'whatsapp' => 'not_attempted',
                     'detail' => 'Invoice already exists for billing period',
                 ];
+                $this->logBillingRunActivity($runId, 'billing_invoice_generation', 'generation_skipped', null, [
+                    'setup_id' => $setup->id,
+                    'company_id' => $company->company_id,
+                    'company_name' => $company->name,
+                    'status' => 'skipped',
+                    'stage' => 'generation',
+                    'reason' => 'Invoice already exists for billing period',
+                    'period_start' => $periodStart,
+                    'period_end' => $periodEnd,
+                    'trigger' => 'billing:generate-monthly',
+                ], 'Billing invoice generation skipped');
                 continue;
             }
 
@@ -148,7 +168,10 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
                 $this->logBillingRunActivity($runId, 'billing_invoice_generation', 'generation_failed', null, [
                     'company_id' => $company->company_id,
                     'company_name' => $company->name,
+                    'status' => 'failed',
+                    'stage' => 'generation',
                     'reason' => $exception->getMessage(),
+                    'trigger' => 'billing:generate-monthly',
                 ], 'Billing invoice generation failed');
             }
         }

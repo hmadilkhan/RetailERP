@@ -80,7 +80,7 @@ class BillingController extends Controller
                 'invoices.invoice_no',
                 'company.name as company_name',
             ])
-            ->where('al.log_name', 'billing_invoice_whatsapp')
+            ->whereIn('al.log_name', ['billing_invoice_whatsapp', 'billing_invoice_generation'])
             ->orderByDesc('al.id');
 
         if (!empty($request->company_id)) {
@@ -108,12 +108,20 @@ class BillingController extends Controller
             $deliveryLogs->getCollection()->map(function ($log) {
                 $properties = json_decode($log->properties ?? '{}', true) ?: [];
                 $status = str_replace('whatsapp_', '', (string) ($log->event ?? ''));
+                if ($status === (string) ($log->event ?? '')) {
+                    $status = str_replace('generation_', '', (string) ($log->event ?? ''));
+                }
 
                 $log->status = $status !== '' ? $status : ($properties['status'] ?? 'unknown');
+                $log->stage = $properties['stage']
+                    ?? ($log->log_name === 'billing_invoice_generation' ? 'generation' : 'whatsapp');
                 $log->to = $properties['to'] ?? null;
                 $log->reason = $properties['reason'] ?? null;
                 $log->trigger = $properties['trigger'] ?? null;
                 $log->filename = $properties['filename'] ?? null;
+                $log->invoice_no = $log->invoice_no ?? ($properties['invoice_no'] ?? null);
+                $log->company_name = $log->company_name ?? ($properties['company_name'] ?? null);
+                $log->invoice_id = $log->invoice_id ?? ($properties['invoice_id'] ?? null);
 
                 return $log;
             })

@@ -9,7 +9,7 @@
                 <div class="d-flex justify-content-between align-items-center flex-wrap">
                     <div>
                         <h5 class="card-header-text text-white m-b-5">Billing Delivery History</h5>
-                        <p class="m-b-0" style="color: rgba(255,255,255,0.82);">Track invoice WhatsApp attempts by run ID, company, invoice number, and delivery status.</p>
+                        <p class="m-b-0" style="color: rgba(255,255,255,0.82);">Track billing generation skips/failures and invoice WhatsApp attempts by run ID, company, invoice number, and status.</p>
                     </div>
                     <div class="d-flex align-items-center flex-wrap" style="margin-left:auto;">
                         <a href="{{ route('billing.invoices.index') }}" class="btn btn-light btn-sm m-r-10" style="border:0; font-weight:600; padding:10px 16px;">
@@ -101,6 +101,7 @@
                         <thead style="background: #f3f5f7;">
                             <tr>
                                 <th>Date</th>
+                                <th>Stage</th>
                                 <th>Company</th>
                                 <th>Invoice</th>
                                 <th>Status</th>
@@ -115,6 +116,13 @@
                             @forelse($deliveryLogs as $log)
                                 <tr>
                                     <td>{{ date('M d, Y h:i A', strtotime($log->created_at)) }}</td>
+                                    <td>
+                                        @if($log->stage === 'generation')
+                                            <span class="badge badge-primary">GENERATION</span>
+                                        @else
+                                            <span class="badge badge-info">WHATSAPP</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $log->company_name ?? 'N/A' }}</td>
                                     <td>{{ $log->invoice_no ?? 'N/A' }}</td>
                                     <td>
@@ -128,7 +136,7 @@
                                             <span class="badge badge-default">{{ strtoupper($log->status) }}</span>
                                         @endif
                                     </td>
-                                    <td>{{ $log->to ?? '-' }}</td>
+                                    <td>{{ $log->stage === 'whatsapp' ? ($log->to ?? '-') : '-' }}</td>
                                     <td>
                                         @if($log->batch_uuid)
                                             <a href="{{ route('billing.delivery-history', ['run_id' => $log->batch_uuid]) }}">
@@ -150,7 +158,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center text-muted">No delivery history found for the selected filters.</td>
+                                    <td colspan="10" class="text-center text-muted">No delivery history found for the selected filters.</td>
                                 </tr>
                             @endforelse
                         </tbody>
