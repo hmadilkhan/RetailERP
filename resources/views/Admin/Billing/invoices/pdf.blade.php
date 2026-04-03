@@ -36,6 +36,9 @@
         .notes { clear: both; margin-top: 20px; padding-top: 15px; }
         .notes-title { font-weight: bold; margin-bottom: 8px; font-size: 12px; }
         .notes-content { background-color: #f9f9f9; padding: 12px; border-left: 3px solid #2c3e50; font-size: 11px; }
+        .customer-notice { clear: both; margin-top: 18px; }
+        .customer-notice-title { font-weight: bold; margin-bottom: 8px; font-size: 12px; color: #8a5a00; }
+        .customer-notice-content { background-color: #fff7e6; border-left: 3px solid #d4a017; padding: 12px; font-size: 11px; color: #6b4f1d; line-height: 1.6; }
         .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center; font-size: 10px; color: #666; clear: both; }
     </style>
 </head>
@@ -156,6 +159,13 @@
         <div class="notes-content">{{ $invoice->notes }}</div>
     </div>
     @endif
+
+    <div class="customer-notice">
+        <div class="customer-notice-title">Note to Customer:</div>
+        <div class="customer-notice-content">
+            If dues remain unpaid for more than three (3) months, the POS hardware will be locked until the outstanding amount is settled.
+        </div>
+    </div>
 
     <!-- Footer -->
     <div class="footer">
