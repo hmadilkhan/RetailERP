@@ -155,7 +155,7 @@
     <!-- Notes -->
     @if($invoice->notes)
     <div class="notes">
-        <div class="notes-title">Notes:</div>
+        {{-- <div class="notes-title">Notes:</div> --}}
         <div class="notes-content">{{ $invoice->notes }}</div>
     </div>
     @endif
