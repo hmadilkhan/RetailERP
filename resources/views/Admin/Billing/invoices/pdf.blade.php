@@ -161,7 +161,7 @@
     @endif
 
     <div class="customer-notice">
-        <div class="customer-notice-title">Note to Customer:</div>
+        {{-- <div class="customer-notice-title">Note to Customer:</div> --}}
         <div class="customer-notice-content">
             If dues remain unpaid for more than three (3) months, the POS hardware will be locked until the outstanding amount is settled.
         </div>
