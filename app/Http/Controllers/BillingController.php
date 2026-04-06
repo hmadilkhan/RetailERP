@@ -206,8 +206,26 @@ class BillingController extends Controller
     {
         $invoice = Invoice::with(['company', 'lines', 'payments.paymentMode', 'adjustments'])->findOrFail($id);
         $paymentModes = OrderPayment::orderBy('payment_mode')->get(['payment_id', 'payment_mode']);
+        $olderInvoicesQuery = Invoice::where('company_id', $invoice->company_id)
+            ->where('status', '!=', 'void')
+            ->whereDate('period_end', '<', $invoice->period_start);
 
-        return view('Admin.Billing.invoices.show', compact('invoice', 'paymentModes'));
+        $olderInvoiceIds = (clone $olderInvoicesQuery)->pluck('id');
+        $olderOutstandingNow = (float) (clone $olderInvoicesQuery)->sum('balance_amount');
+        $olderDuesPaidTotal = (float) InvoicePayment::whereIn('invoice_id', $olderInvoiceIds)->sum('amount');
+        $olderDuesPayments = InvoicePayment::with(['invoice', 'paymentMode'])
+            ->whereIn('invoice_id', $olderInvoiceIds)
+            ->orderByDesc('payment_date')
+            ->orderByDesc('id')
+            ->get();
+
+        return view('Admin.Billing.invoices.show', compact(
+            'invoice',
+            'paymentModes',
+            'olderDuesPayments',
+            'olderDuesPaidTotal',
+            'olderOutstandingNow'
+        ));
     }
 
     public function sendToWhatsApp($id, InvoiceGenerationService $invoiceGenerationService)

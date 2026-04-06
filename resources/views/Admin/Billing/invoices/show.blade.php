@@ -126,6 +126,14 @@
                             <td colspan="3" class="text-right">Older Outstanding at Issue:</td>
                             <td class="text-right">PKR {{ number_format($invoice->previous_due, 2) }}</td>
                         </tr>
+                        <tr>
+                            <td colspan="3" class="text-right">Older Dues Paid:</td>
+                            <td class="text-right text-success">PKR {{ number_format($olderDuesPaidTotal, 2) }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" class="text-right">Older Outstanding Now:</td>
+                            <td class="text-right text-danger">PKR {{ number_format($olderOutstandingNow, 2) }}</td>
+                        </tr>
                         @endif
                         <tr style="background: #f3f5f7;">
                             <td colspan="3" class="text-right"><strong>Current Invoice Total:</strong></td>
@@ -231,6 +239,62 @@
             </div>
         </div>
     </div>
+
+    @if($invoice->previous_due > 0)
+    <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+        <div class="card-header" style="background: linear-gradient(135deg, #f0ad4e 0%, #e49d32 100%); color: #fff;">
+            <h5 class="card-header-text text-white"><i class="icofont icofont-list"></i> Older Dues Payment Detail</h5>
+        </div>
+        <div class="card-block" style="background: #fff;">
+            <div class="row m-b-15">
+                <div class="col-md-6">
+                    <strong>Total Paid Toward Older Dues:</strong> PKR {{ number_format($olderDuesPaidTotal, 2) }}
+                </div>
+                <div class="col-md-6 text-right">
+                    <strong>Remaining Older Outstanding:</strong> PKR {{ number_format($olderOutstandingNow, 2) }}
+                </div>
+            </div>
+            <div class="table-responsive" style="border-radius: 14px; overflow: hidden;">
+                <table class="table table-striped table-hover m-b-0">
+                    <thead style="background: #fdf4e7;">
+                        <tr>
+                            <th>#</th>
+                            <th>Payment Date</th>
+                            <th>Invoice #</th>
+                            <th>Month / Period</th>
+                            <th>Amount</th>
+                            <th>Mode</th>
+                            <th>Reference</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($olderDuesPayments as $payment)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ date('M d, Y', strtotime($payment->payment_date)) }}</td>
+                            <td>{{ optional($payment->invoice)->invoice_no ?? '-' }}</td>
+                            <td>
+                                @if(optional($payment->invoice)->period_start && optional($payment->invoice)->period_end)
+                                    {{ date('M d, Y', strtotime($payment->invoice->period_start)) }} to {{ date('M d, Y', strtotime($payment->invoice->period_end)) }}
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td class="text-success"><strong>PKR {{ number_format($payment->amount, 2) }}</strong></td>
+                            <td>{{ optional($payment->paymentMode)->payment_mode ?? 'N/A' }}</td>
+                            <td>{{ $payment->reference_no ?? '-' }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="7" class="text-center text-muted">No older dues payments recorded yet.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    @endif
 
     <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
         <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
