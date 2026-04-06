@@ -21,7 +21,6 @@ class InvoiceSettlementService
 
     public function applyPaymentToCompany(Invoice $invoice, array $paymentData): array
     {
-        $paymentDate = Carbon::parse($paymentData['payment_date'])->toDateString();
         $requestedAmount = round((float) $paymentData['amount'], 2);
 
         if ($requestedAmount <= 0) {
@@ -42,7 +41,6 @@ class InvoiceSettlementService
         $allocations = $this->allocatePaymentAcrossInvoices(
             $openInvoices,
             $requestedAmount,
-            $paymentDate,
             function (Invoice $targetInvoice, float $amount) use ($invoice, $paymentData) {
                 InvoicePayment::create([
                     'invoice_id' => $targetInvoice->id,
@@ -157,7 +155,6 @@ class InvoiceSettlementService
                     $paymentAllocations = $this->allocatePaymentAcrossInvoices(
                         $invoices,
                         $payment['amount'],
-                        $payment['payment_date'],
                         function (Invoice $targetInvoice, float $amount) use ($payment, $dryRun) {
                             if ($dryRun) {
                                 return;
@@ -219,14 +216,13 @@ class InvoiceSettlementService
     private function allocatePaymentAcrossInvoices(
         Collection $invoices,
         float $amount,
-        string $paymentDate,
         callable $persistAllocation,
         bool $persistInvoiceState = true
     ): array {
         $remaining = round($amount, 2);
         $allocations = [];
 
-        $orderedInvoices = $this->buildAllocationOrder($invoices, $paymentDate);
+        $orderedInvoices = $this->buildAllocationOrder($invoices);
 
         /** @var Invoice $targetInvoice */
         foreach ($orderedInvoices as $targetInvoice) {
@@ -274,17 +270,10 @@ class InvoiceSettlementService
         return $allocations;
     }
 
-    private function buildAllocationOrder(Collection $invoices, string $paymentDate): Collection
+    private function buildAllocationOrder(Collection $invoices): Collection
     {
-        $eligible = $invoices->filter(function (Invoice $invoice) use ($paymentDate) {
-            return (float) $invoice->balance_amount > 0
-                && (!$invoice->invoice_date || $invoice->invoice_date <= $paymentDate);
-        });
-
-        $fallback = $invoices->filter(function (Invoice $invoice) {
+        return $invoices->filter(function (Invoice $invoice) {
             return (float) $invoice->balance_amount > 0;
-        });
-
-        return $eligible->concat($fallback)->unique('id')->values();
+        })->values();
     }
 }

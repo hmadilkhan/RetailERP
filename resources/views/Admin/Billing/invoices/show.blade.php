@@ -161,7 +161,7 @@
                 </div>
                 <div class="card-block" style="background: #fff;">
                     <div class="alert alert-info">
-                        Payments are applied automatically to the oldest outstanding invoices for this company first.
+                        Payments are applied automatically to the oldest outstanding invoices for this company first. A partial payment may settle older invoices before this one, so this page balance may stay the same until prior dues are cleared.
                     </div>
                     <form method="post" action="{{ route('billing.invoices.payments.store', $invoice->id) }}">
                         @csrf
