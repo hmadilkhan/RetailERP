@@ -72,49 +72,35 @@
         </table>
     </div>
 
-    @php
-        $groupedPayments = $voucher->invoicePayments->groupBy('invoice_id')->map(function ($payments) {
-            $invoice = $payments->first()->invoice;
-            if (!$invoice) {
-                return null;
-            }
-
-            $months = \Carbon\Carbon::parse($invoice->period_start)->startOfMonth()
-                ->diffInMonths(\Carbon\Carbon::parse($invoice->period_end)->startOfMonth()) + 1;
-
-            return [
-                'invoice_no' => $invoice->invoice_no,
-                'period' => date('M d, Y', strtotime($invoice->period_start)) . ' to ' . date('M d, Y', strtotime($invoice->period_end)),
-                'months' => $months,
-                'invoice_total' => (float) $invoice->total_amount,
-                'paid_amount' => (float) $payments->sum('amount'),
-                'balance_amount' => (float) $invoice->balance_amount,
-            ];
-        })->filter()->values();
-    @endphp
+    <div class="section-title">Yearly Invoice Summary {{ \Carbon\Carbon::parse($voucher->payment_date)->format('Y') }}</div>
 
     <table class="items">
         <thead>
             <tr>
-                <th style="width: 18%;">Invoice No</th>
-                <th style="width: 28%;">Period</th>
-                <th style="width: 10%;" class="text-right">Months</th>
-                <th style="width: 15%;" class="text-right">Invoice Total</th>
-                <th style="width: 15%;" class="text-right">Paid</th>
-                <th style="width: 14%;" class="text-right">Balance</th>
+                <th style="width: 16%;">Invoice No</th>
+                <th style="width: 30%;">Period</th>
+                <th style="width: 9%;" class="text-right">Months</th>
+                <th style="width: 15%;" class="text-right">Total Amount</th>
+                <th style="width: 15%;" class="text-right">Paid Amount</th>
+                <th style="width: 15%;" class="text-right">Balance</th>
             </tr>
         </thead>
         <tbody>
-            @foreach($groupedPayments as $row)
+            @foreach($yearlyInvoices as $row)
             <tr>
                 <td>{{ $row['invoice_no'] }}</td>
                 <td>{{ $row['period'] }}</td>
                 <td class="text-right">{{ $row['months'] }}</td>
-                <td class="text-right">PKR {{ number_format($row['invoice_total'], 2) }}</td>
+                <td class="text-right">PKR {{ number_format($row['total_amount'], 2) }}</td>
                 <td class="text-right">PKR {{ number_format($row['paid_amount'], 2) }}</td>
                 <td class="text-right">PKR {{ number_format($row['balance_amount'], 2) }}</td>
             </tr>
             @endforeach
+            @if($yearlyInvoices->isEmpty())
+            <tr>
+                <td colspan="6" class="text-right">No invoices found for this year.</td>
+            </tr>
+            @endif
         </tbody>
     </table>
 
@@ -122,15 +108,15 @@
         <table>
             <tr>
                 <td class="label">Total Invoice Amount:</td>
-                <td class="text-right">PKR {{ number_format($groupedPayments->sum('invoice_total'), 2) }}</td>
+                <td class="text-right">PKR {{ number_format($yearlyInvoices->sum('total_amount'), 2) }}</td>
             </tr>
             <tr>
                 <td class="label">Total Paid:</td>
-                <td class="text-right">PKR {{ number_format($groupedPayments->sum('paid_amount'), 2) }}</td>
+                <td class="text-right">PKR {{ number_format($yearlyInvoices->sum('paid_amount'), 2) }}</td>
             </tr>
             <tr class="grand-total">
                 <td>Total Balance:</td>
-                <td class="text-right">PKR {{ number_format($groupedPayments->sum('balance_amount'), 2) }}</td>
+                <td class="text-right">PKR {{ number_format($yearlyInvoices->sum('balance_amount'), 2) }}</td>
             </tr>
         </table>
     </div>

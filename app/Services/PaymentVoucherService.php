@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Company;
+use App\Models\Invoice;
 use App\Models\PaymentVoucher;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
@@ -34,9 +35,11 @@ class PaymentVoucherService
     public function storeVoucherPdf(PaymentVoucher $voucher): array
     {
         $voucher->loadMissing(['company', 'paymentMode', 'invoicePayments.invoice']);
+        $yearlyInvoices = $this->getYearlyInvoiceSummary($voucher);
 
         $pdf = Pdf::loadView('Admin.Billing.payments.voucher-pdf', [
             'voucher' => $voucher,
+            'yearlyInvoices' => $yearlyInvoices,
         ]);
 
         $filename = 'payment-voucher-' . preg_replace('/[^A-Za-z0-9._-]/', '-', (string) $voucher->voucher_no) . '.pdf';
@@ -222,5 +225,31 @@ class PaymentVoucherService
         }
 
         return preg_match('/^92\d{10}$/', $digits) ? $digits : null;
+    }
+
+    private function getYearlyInvoiceSummary(PaymentVoucher $voucher)
+    {
+        $year = Carbon::parse($voucher->payment_date)->year;
+
+        return Invoice::where('company_id', $voucher->company_id)
+            ->whereYear('invoice_date', $year)
+            ->where('status', '!=', 'void')
+            ->orderBy('invoice_date')
+            ->orderBy('id')
+            ->get()
+            ->map(function (Invoice $invoice) {
+                $months = Carbon::parse($invoice->period_start)->startOfMonth()
+                    ->diffInMonths(Carbon::parse($invoice->period_end)->startOfMonth()) + 1;
+
+                return [
+                    'invoice_no' => $invoice->invoice_no,
+                    'period' => date('M d, Y', strtotime($invoice->period_start)) . ' to ' . date('M d, Y', strtotime($invoice->period_end)),
+                    'months' => $months,
+                    'total_amount' => (float) $invoice->total_amount,
+                    'paid_amount' => (float) $invoice->paid_amount,
+                    'balance_amount' => (float) $invoice->balance_amount,
+                ];
+            })
+            ->values();
     }
 }
