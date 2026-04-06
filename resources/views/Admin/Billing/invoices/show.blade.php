@@ -83,7 +83,7 @@
                     <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
                         <div class="card-block">
                             <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Balance Due</p>
-                            <h4 class="m-b-0 text-danger" style="font-weight: 700;">PKR {{ number_format($invoice->balance_amount, 2) }}</h4>
+                            <h4 class="m-b-0 text-danger" style="font-weight: 700;">PKR {{ number_format($invoice->balance_amount + $invoice->previous_due, 2) }}</h4>
                             <small class="text-muted">Due {{ date('M d, Y', strtotime($invoice->due_date)) }}</small>
                         </div>
                     </div>
@@ -138,9 +138,15 @@
                         </tr>
                         @endif
                         <tr style="background: #fff6e6;">
-                            <td colspan="3" class="text-right"><strong>Balance Due:</strong></td>
+                            <td colspan="3" class="text-right"><strong>Current Invoice Balance:</strong></td>
                             <td class="text-right"><strong class="text-danger">PKR {{ number_format($invoice->balance_amount, 2) }}</strong></td>
                         </tr>
+                        @if($invoice->previous_due > 0)
+                        <tr style="background: #fdebd0;">
+                            <td colspan="3" class="text-right"><strong>Total Outstanding at Issue:</strong></td>
+                            <td class="text-right"><strong class="text-danger">PKR {{ number_format($invoice->balance_amount + $invoice->previous_due, 2) }}</strong></td>
+                        </tr>
+                        @endif
                     </tfoot>
                 </table>
             </div>

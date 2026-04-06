@@ -146,9 +146,15 @@
             </tr>
             @endif
             <tr class="balance">
-                <td>Balance Due:</td>
+                <td>Current Invoice Balance:</td>
                 <td class="text-right">PKR {{ number_format($invoice->balance_amount, 2) }}</td>
             </tr>
+            @if($invoice->previous_due > 0)
+            <tr>
+                <td class="label">Total Outstanding at Issue:</td>
+                <td class="text-right">PKR {{ number_format($invoice->balance_amount + $invoice->previous_due, 2) }}</td>
+            </tr>
+            @endif
         </table>
     </div>
 
