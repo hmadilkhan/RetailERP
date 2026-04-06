@@ -18,4 +18,9 @@ class InvoicePayment extends Model
     {
         return $this->belongsTo(OrderPayment::class, 'payment_mode_id', 'payment_id');
     }
+
+    public function voucher()
+    {
+        return $this->belongsTo(PaymentVoucher::class, 'payment_voucher_id');
+    }
 }

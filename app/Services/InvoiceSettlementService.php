@@ -45,6 +45,7 @@ class InvoiceSettlementService
                 InvoicePayment::create([
                     'invoice_id' => $targetInvoice->id,
                     'company_id' => $targetInvoice->company_id,
+                    'payment_voucher_id' => $paymentData['payment_voucher_id'] ?? null,
                     'payment_date' => $paymentData['payment_date'],
                     'payment_mode_id' => $paymentData['payment_mode_id'] ?? null,
                     'amount' => $amount,
@@ -111,6 +112,7 @@ class InvoiceSettlementService
                     ->get()
                     ->map(function (InvoicePayment $payment) {
                         return [
+                            'payment_voucher_id' => $payment->payment_voucher_id,
                             'payment_date' => $payment->payment_date,
                             'payment_mode_id' => $payment->payment_mode_id,
                             'amount' => round((float) $payment->amount, 2),
@@ -163,6 +165,7 @@ class InvoiceSettlementService
                             InvoicePayment::create([
                                 'invoice_id' => $targetInvoice->id,
                                 'company_id' => $targetInvoice->company_id,
+                                'payment_voucher_id' => $payment['payment_voucher_id'] ?? null,
                                 'payment_date' => $payment['payment_date'],
                                 'payment_mode_id' => $payment['payment_mode_id'],
                                 'amount' => $amount,

@@ -154,15 +154,6 @@
                 <td class="label">Total Outstanding at Issue:</td>
                 <td class="text-right">PKR {{ number_format($invoice->balance_amount + $invoice->previous_due, 2) }}</td>
             </tr>
-            <tr>
-                <td class="label">
-                    Paid Outstanding Dues Detail:
-                    <div style="margin-top: 4px; font-size: 10px; font-weight: normal; color: #6b4f1d; line-height: 1.5;">
-                        {{ $olderDuesData['paid_summary_text'] ?? 'No older dues payments recorded yet.' }}
-                    </div>
-                </td>
-                <td class="text-right" style="color: #27ae60; font-weight: bold;">PKR {{ number_format($olderDuesData['paid_total'], 2) }}</td>
-            </tr>
             @endif
         </table>
     </div>

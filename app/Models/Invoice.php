@@ -28,5 +28,16 @@ class Invoice extends Model
     {
         return $this->hasMany(InvoiceAdjustment::class, 'invoice_id');
     }
-}
 
+    public function paymentVouchers()
+    {
+        return $this->hasManyThrough(
+            PaymentVoucher::class,
+            InvoicePayment::class,
+            'invoice_id',
+            'id',
+            'id',
+            'payment_voucher_id'
+        );
+    }
+}

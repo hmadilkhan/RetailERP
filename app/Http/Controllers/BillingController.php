@@ -8,8 +8,10 @@ use App\Models\InvoiceAdjustment;
 use App\Models\InvoiceLine;
 use App\Models\InvoicePayment;
 use App\Models\OrderPayment;
+use App\Models\PaymentVoucher;
 use App\Services\InvoiceGenerationService;
 use App\Services\InvoiceSettlementService;
+use App\Services\PaymentVoucherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -204,15 +206,10 @@ class BillingController extends Controller
 
     public function show($id)
     {
-        $invoice = Invoice::with(['company', 'lines', 'payments.paymentMode', 'adjustments'])->findOrFail($id);
+        $invoice = Invoice::with(['company', 'lines', 'payments.paymentMode', 'payments.voucher', 'adjustments'])->findOrFail($id);
         $paymentModes = OrderPayment::orderBy('payment_mode')->get(['payment_id', 'payment_mode']);
-        $olderDuesData = $this->getOlderDuesData($invoice);
 
-        return view('Admin.Billing.invoices.show', compact(
-            'invoice',
-            'paymentModes',
-            'olderDuesData'
-        ));
+        return view('Admin.Billing.invoices.show', compact('invoice', 'paymentModes'));
     }
 
     public function sendToWhatsApp($id, InvoiceGenerationService $invoiceGenerationService)
@@ -258,7 +255,12 @@ class BillingController extends Controller
         return redirect()->route('billing.invoices.index')->with('success', 'Invoice deleted successfully.');
     }
 
-    public function addPayment(Request $request, $invoiceId, InvoiceSettlementService $invoiceSettlementService)
+    public function addPayment(
+        Request $request,
+        $invoiceId,
+        InvoiceSettlementService $invoiceSettlementService,
+        PaymentVoucherService $paymentVoucherService
+    )
     {
         $data = $request->validate([
             'payment_date' => 'required|date',
@@ -269,16 +271,36 @@ class BillingController extends Controller
         ]);
 
         try {
-            $allocation = DB::transaction(function () use ($invoiceId, $data, $invoiceSettlementService) {
+            $result = DB::transaction(function () use ($invoiceId, $data, $invoiceSettlementService, $paymentVoucherService) {
                 $invoice = Invoice::lockForUpdate()->findOrFail($invoiceId);
-                return $invoiceSettlementService->applyPaymentToCompany($invoice, [
+                $paymentDate = Carbon::parse($data['payment_date']);
+
+                $voucher = PaymentVoucher::create([
+                    'voucher_no' => $paymentVoucherService->createVoucherNumber($paymentDate),
+                    'company_id' => $invoice->company_id,
+                    'payment_date' => $paymentDate->toDateString(),
+                    'payment_mode_id' => $data['payment_mode_id'] ?? null,
+                    'total_received_amount' => $data['amount'],
+                    'reference_no' => $data['reference_no'] ?? null,
+                    'narration' => $data['narration'] ?? null,
+                    'received_by' => session('userid'),
+                    'whatsapp_status' => 'pending',
+                ]);
+
+                $allocation = $invoiceSettlementService->applyPaymentToCompany($invoice, [
                     'payment_date' => $data['payment_date'],
                     'amount' => $data['amount'],
                     'payment_mode_id' => $data['payment_mode_id'] ?? null,
                     'reference_no' => $data['reference_no'] ?? null,
                     'narration' => $data['narration'] ?? null,
                     'received_by' => session('userid'),
+                    'payment_voucher_id' => $voucher->id,
                 ]);
+
+                return [
+                    'voucher' => $voucher->fresh(['company', 'paymentMode', 'invoicePayments.invoice']),
+                    'allocation' => $allocation,
+                ];
             });
         } catch (Throwable $exception) {
             return redirect()
@@ -286,15 +308,30 @@ class BillingController extends Controller
                 ->withErrors(['error' => $exception->getMessage()]);
         }
 
-        $summary = collect($allocation['allocations'])
+        $summary = collect($result['allocation']['allocations'])
             ->map(function (array $item) {
                 return $item['invoice_no'] . ' (PKR ' . number_format($item['amount'], 2) . ')';
             })
             ->implode(', ');
 
+        $whatsAppMessage = '';
+        try {
+            $whatsAppResult = $paymentVoucherService->sendVoucherToWhatsapp($result['voucher'], [
+                'trigger' => 'manual_payment',
+            ]);
+
+            if (($whatsAppResult['status'] ?? null) === 'sent') {
+                $whatsAppMessage = ' Payment voucher sent to WhatsApp.';
+            } elseif (($whatsAppResult['status'] ?? null) === 'skipped') {
+                $whatsAppMessage = ' Payment voucher created, but WhatsApp was skipped: ' . ($whatsAppResult['reason'] ?? 'Unknown reason.') . '.';
+            }
+        } catch (Throwable $exception) {
+            $whatsAppMessage = ' Payment voucher created, but WhatsApp sending failed: ' . $exception->getMessage() . '.';
+        }
+
         return redirect()
             ->route('billing.invoices.show', $invoiceId)
-            ->with('success', 'Payment received successfully. Allocated to: ' . $summary);
+            ->with('success', 'Payment received successfully. Voucher ' . $result['voucher']->voucher_no . ' created. Allocated to: ' . $summary . '.' . $whatsAppMessage);
     }
 
     public function addAdjustment(Request $request, $invoiceId)
@@ -343,56 +380,7 @@ class BillingController extends Controller
     public function downloadPdf($id)
     {
         $invoice = Invoice::with(['company', 'lines'])->findOrFail($id);
-        $olderDuesData = $this->getOlderDuesData($invoice);
-        $pdf = \PDF::loadView('Admin.Billing.invoices.pdf', compact('invoice', 'olderDuesData'));
+        $pdf = \PDF::loadView('Admin.Billing.invoices.pdf', compact('invoice'));
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
-    }
-
-    private function getOlderDuesData(Invoice $invoice): array
-    {
-        $olderInvoicesQuery = Invoice::where('company_id', $invoice->company_id)
-            ->where('status', '!=', 'void')
-            ->whereDate('period_end', '<', $invoice->period_start);
-
-        $olderInvoiceIds = (clone $olderInvoicesQuery)->pluck('id');
-        $olderOutstandingNow = (float) (clone $olderInvoicesQuery)->sum('balance_amount');
-        $olderDuesPaidTotal = (float) InvoicePayment::whereIn('invoice_id', $olderInvoiceIds)->sum('amount');
-        $olderDuesPayments = InvoicePayment::with(['invoice', 'paymentMode'])
-            ->whereIn('invoice_id', $olderInvoiceIds)
-            ->orderByDesc('payment_date')
-            ->orderByDesc('id')
-            ->get();
-
-        $olderDuesPaymentBreakdown = $olderDuesPayments
-            ->groupBy('invoice_id')
-            ->map(function ($payments) {
-                $payment = $payments->first();
-                $relatedInvoice = $payment->invoice;
-
-                if (!$relatedInvoice) {
-                    return null;
-                }
-
-                return [
-                    'invoice_no' => $relatedInvoice->invoice_no,
-                    'period_label' => date('M d, Y', strtotime($relatedInvoice->period_start)) . ' to ' . date('M d, Y', strtotime($relatedInvoice->period_end)),
-                    'amount' => (float) $payments->sum('amount'),
-                ];
-            })
-            ->filter()
-            ->values();
-
-        $olderDuesPaidSummaryText = $olderDuesPaymentBreakdown->isNotEmpty()
-            ? $olderDuesPaymentBreakdown->map(function (array $item) {
-                return $item['invoice_no'] . ' (' . $item['period_label'] . ') PKR ' . number_format($item['amount'], 2);
-            })->implode(', ')
-            : null;
-
-        return [
-            'payments' => $olderDuesPayments,
-            'paid_total' => $olderDuesPaidTotal,
-            'outstanding_now' => $olderOutstandingNow,
-            'paid_summary_text' => $olderDuesPaidSummaryText,
-        ];
     }
 }
