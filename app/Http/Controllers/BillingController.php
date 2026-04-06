@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceAdjustment;
 use App\Models\InvoiceLine;
 use App\Models\InvoicePayment;
+use App\Models\OrderPayment;
 use App\Services\InvoiceGenerationService;
 use App\Services\InvoiceSettlementService;
 use Carbon\Carbon;
@@ -203,8 +204,10 @@ class BillingController extends Controller
 
     public function show($id)
     {
-        $invoice = Invoice::with(['company', 'lines', 'payments', 'adjustments'])->findOrFail($id);
-        return view('Admin.Billing.invoices.show', compact('invoice'));
+        $invoice = Invoice::with(['company', 'lines', 'payments.paymentMode', 'adjustments'])->findOrFail($id);
+        $paymentModes = OrderPayment::orderBy('payment_mode')->get(['payment_id', 'payment_mode']);
+
+        return view('Admin.Billing.invoices.show', compact('invoice', 'paymentModes'));
     }
 
     public function sendToWhatsApp($id, InvoiceGenerationService $invoiceGenerationService)
@@ -255,7 +258,7 @@ class BillingController extends Controller
         $data = $request->validate([
             'payment_date' => 'required|date',
             'amount' => 'required|numeric|min:0.01',
-            'payment_mode_id' => 'nullable|integer',
+            'payment_mode_id' => 'nullable|integer|exists:sales_payment,payment_id',
             'reference_no' => 'nullable|string|max:100',
             'narration' => 'nullable|string|max:255',
         ]);

@@ -174,8 +174,15 @@
                             <input type="number" class="form-control" name="amount" min="0.01" step="0.01" placeholder="0.00" required>
                         </div>
                         <div class="form-group">
-                            <label>Payment Mode ID</label>
-                            <input type="number" class="form-control" name="payment_mode_id" placeholder="Optional">
+                            <label>Payment Mode</label>
+                            <select class="form-control" name="payment_mode_id">
+                                <option value="">Select payment mode</option>
+                                @foreach($paymentModes as $paymentMode)
+                                    <option value="{{ $paymentMode->payment_id }}" {{ old('payment_mode_id') == $paymentMode->payment_id ? 'selected' : '' }}>
+                                        {{ $paymentMode->payment_mode }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
                             <label>Reference #</label>
@@ -248,7 +255,7 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ date('M d, Y', strtotime($payment->payment_date)) }}</td>
                             <td class="text-success"><strong>PKR {{ number_format($payment->amount, 2) }}</strong></td>
-                            <td>{{ $payment->payment_mode_id ?? 'N/A' }}</td>
+                            <td>{{ optional($payment->paymentMode)->payment_mode ?? 'N/A' }}</td>
                             <td>{{ $payment->reference_no ?? '-' }}</td>
                             <td>{{ $payment->narration ?? '-' }}</td>
                         </tr>
