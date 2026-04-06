@@ -131,12 +131,12 @@
             @endif
             @if($invoice->previous_due > 0)
             <tr>
-                <td class="label">Previous Due:</td>
+                <td class="label">Older Outstanding at Issue:</td>
                 <td class="text-right">PKR {{ number_format($invoice->previous_due, 2) }}</td>
             </tr>
             @endif
             <tr class="grand-total">
-                <td>Total Amount:</td>
+                <td>Current Invoice Total:</td>
                 <td class="text-right">PKR {{ number_format($invoice->total_amount, 2) }}</td>
             </tr>
             @if($invoice->paid_amount > 0)

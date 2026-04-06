@@ -4,6 +4,18 @@
 @section('breadcrumtitle', 'Invoice Detail')
 @section('content')
 <section class="panels-wells" style="margin-top:70px;">
+    @if(session('success'))
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if($errors->has('error'))
+        <div class="alert alert-danger">
+            {{ $errors->first('error') }}
+        </div>
+    @endif
+
     <div class="card" style="margin-top: 20px; border: 0; overflow: hidden; box-shadow: 0 18px 40px rgba(32, 56, 85, 0.12);">
         <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -111,12 +123,12 @@
                         @endif
                         @if($invoice->previous_due > 0)
                         <tr>
-                            <td colspan="3" class="text-right">Previous Due:</td>
+                            <td colspan="3" class="text-right">Older Outstanding at Issue:</td>
                             <td class="text-right">PKR {{ number_format($invoice->previous_due, 2) }}</td>
                         </tr>
                         @endif
                         <tr style="background: #f3f5f7;">
-                            <td colspan="3" class="text-right"><strong>Total Amount:</strong></td>
+                            <td colspan="3" class="text-right"><strong>Current Invoice Total:</strong></td>
                             <td class="text-right"><strong>PKR {{ number_format($invoice->total_amount, 2) }}</strong></td>
                         </tr>
                         @if($invoice->paid_amount > 0)
@@ -142,6 +154,9 @@
                     <h5 class="card-header-text text-white"><i class="icofont icofont-cur-dollar"></i> Receive Payment</h5>
                 </div>
                 <div class="card-block" style="background: #fff;">
+                    <div class="alert alert-info">
+                        Payments are applied automatically to the oldest outstanding invoices for this company first.
+                    </div>
                     <form method="post" action="{{ route('billing.invoices.payments.store', $invoice->id) }}">
                         @csrf
                         <div class="form-group">

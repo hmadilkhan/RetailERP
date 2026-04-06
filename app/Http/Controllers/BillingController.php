@@ -8,6 +8,7 @@ use App\Models\InvoiceAdjustment;
 use App\Models\InvoiceLine;
 use App\Models\InvoicePayment;
 use App\Services\InvoiceGenerationService;
+use App\Services\InvoiceSettlementService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,9 +25,9 @@ class BillingController extends Controller
                 'company.name as company_name'
             )
             ->selectRaw('COUNT(invoices.id) as total_invoices')
-            ->selectRaw('COALESCE(SUM(invoices.total_amount - invoices.previous_due), 0) as total_amount')
+            ->selectRaw('COALESCE(SUM(invoices.total_amount), 0) as total_amount')
             ->selectRaw('COALESCE(SUM(invoices.paid_amount), 0) as paid_amount')
-            ->selectRaw('GREATEST(COALESCE(SUM(invoices.total_amount - invoices.previous_due), 0) - COALESCE(SUM(invoices.paid_amount), 0), 0) as balance_amount')
+            ->selectRaw('COALESCE(SUM(invoices.balance_amount), 0) as balance_amount')
             ->where('invoices.status', '!=', 'void')
             ->groupBy('company.company_id', 'company.name')
             ->orderBy('company.name')
@@ -249,7 +250,7 @@ class BillingController extends Controller
         return redirect()->route('billing.invoices.index')->with('success', 'Invoice deleted successfully.');
     }
 
-    public function addPayment(Request $request, $invoiceId)
+    public function addPayment(Request $request, $invoiceId, InvoiceSettlementService $invoiceSettlementService)
     {
         $data = $request->validate([
             'payment_date' => 'required|date',
@@ -259,27 +260,33 @@ class BillingController extends Controller
             'narration' => 'nullable|string|max:255',
         ]);
 
-        DB::transaction(function () use ($invoiceId, $data) {
-            $invoice = Invoice::lockForUpdate()->findOrFail($invoiceId);
+        try {
+            $allocation = DB::transaction(function () use ($invoiceId, $data, $invoiceSettlementService) {
+                $invoice = Invoice::lockForUpdate()->findOrFail($invoiceId);
+                return $invoiceSettlementService->applyPaymentToCompany($invoice, [
+                    'payment_date' => $data['payment_date'],
+                    'amount' => $data['amount'],
+                    'payment_mode_id' => $data['payment_mode_id'] ?? null,
+                    'reference_no' => $data['reference_no'] ?? null,
+                    'narration' => $data['narration'] ?? null,
+                    'received_by' => session('userid'),
+                ]);
+            });
+        } catch (Throwable $exception) {
+            return redirect()
+                ->route('billing.invoices.show', $invoiceId)
+                ->withErrors(['error' => $exception->getMessage()]);
+        }
 
-            InvoicePayment::create([
-                'invoice_id' => $invoice->id,
-                'company_id' => $invoice->company_id,
-                'payment_date' => $data['payment_date'],
-                'payment_mode_id' => $data['payment_mode_id'] ?? null,
-                'amount' => $data['amount'],
-                'reference_no' => $data['reference_no'] ?? null,
-                'narration' => $data['narration'] ?? null,
-                'received_by' => session('userid'),
-            ]);
+        $summary = collect($allocation['allocations'])
+            ->map(function (array $item) {
+                return $item['invoice_no'] . ' (PKR ' . number_format($item['amount'], 2) . ')';
+            })
+            ->implode(', ');
 
-            $invoice->paid_amount = (float) $invoice->paid_amount + (float) $data['amount'];
-            $invoice->balance_amount = max(0, (float) $invoice->total_amount - (float) $invoice->paid_amount);
-            $invoice->status = $invoice->balance_amount <= 0 ? 'paid' : 'partial';
-            $invoice->save();
-        });
-
-        return redirect()->route('billing.invoices.show', $invoiceId)->with('success', 'Payment received successfully.');
+        return redirect()
+            ->route('billing.invoices.show', $invoiceId)
+            ->with('success', 'Payment received successfully. Allocated to: ' . $summary);
     }
 
     public function addAdjustment(Request $request, $invoiceId)
