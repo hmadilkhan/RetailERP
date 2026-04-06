@@ -128,11 +128,11 @@
                         </tr>
                         <tr>
                             <td colspan="3" class="text-right">Older Dues Paid:</td>
-                            <td class="text-right text-success">PKR {{ number_format($olderDuesPaidTotal, 2) }}</td>
+                            <td class="text-right text-success">PKR {{ number_format($olderDuesData['paid_total'], 2) }}</td>
                         </tr>
                         <tr>
                             <td colspan="3" class="text-right">Older Outstanding Now:</td>
-                            <td class="text-right text-danger">PKR {{ number_format($olderOutstandingNow, 2) }}</td>
+                            <td class="text-right text-danger">PKR {{ number_format($olderDuesData['outstanding_now'], 2) }}</td>
                         </tr>
                         @endif
                         <tr style="background: #f3f5f7;">
@@ -153,6 +153,15 @@
                         <tr style="background: #fdebd0;">
                             <td colspan="3" class="text-right"><strong>Total Outstanding at Issue:</strong></td>
                             <td class="text-right"><strong class="text-danger">PKR {{ number_format($invoice->balance_amount + $invoice->previous_due, 2) }}</strong></td>
+                        </tr>
+                        <tr style="background: #fdf6ea;">
+                            <td colspan="3" class="text-right">
+                                <strong>Paid Outstanding Dues Detail:</strong>
+                                <div style="margin-top: 4px; color: #6c5a2b; font-size: 11px;">
+                                    {{ $olderDuesData['paid_summary_text'] ?? 'No older dues payments recorded yet.' }}
+                                </div>
+                            </td>
+                            <td class="text-right"><strong class="text-success">PKR {{ number_format($olderDuesData['paid_total'], 2) }}</strong></td>
                         </tr>
                         @endif
                     </tfoot>
@@ -248,10 +257,10 @@
         <div class="card-block" style="background: #fff;">
             <div class="row m-b-15">
                 <div class="col-md-6">
-                    <strong>Total Paid Toward Older Dues:</strong> PKR {{ number_format($olderDuesPaidTotal, 2) }}
+                    <strong>Total Paid Toward Older Dues:</strong> PKR {{ number_format($olderDuesData['paid_total'], 2) }}
                 </div>
                 <div class="col-md-6 text-right">
-                    <strong>Remaining Older Outstanding:</strong> PKR {{ number_format($olderOutstandingNow, 2) }}
+                    <strong>Remaining Older Outstanding:</strong> PKR {{ number_format($olderDuesData['outstanding_now'], 2) }}
                 </div>
             </div>
             <div class="table-responsive" style="border-radius: 14px; overflow: hidden;">
@@ -268,7 +277,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($olderDuesPayments as $payment)
+                        @forelse($olderDuesData['payments'] as $payment)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ date('M d, Y', strtotime($payment->payment_date)) }}</td>

@@ -206,25 +206,12 @@ class BillingController extends Controller
     {
         $invoice = Invoice::with(['company', 'lines', 'payments.paymentMode', 'adjustments'])->findOrFail($id);
         $paymentModes = OrderPayment::orderBy('payment_mode')->get(['payment_id', 'payment_mode']);
-        $olderInvoicesQuery = Invoice::where('company_id', $invoice->company_id)
-            ->where('status', '!=', 'void')
-            ->whereDate('period_end', '<', $invoice->period_start);
-
-        $olderInvoiceIds = (clone $olderInvoicesQuery)->pluck('id');
-        $olderOutstandingNow = (float) (clone $olderInvoicesQuery)->sum('balance_amount');
-        $olderDuesPaidTotal = (float) InvoicePayment::whereIn('invoice_id', $olderInvoiceIds)->sum('amount');
-        $olderDuesPayments = InvoicePayment::with(['invoice', 'paymentMode'])
-            ->whereIn('invoice_id', $olderInvoiceIds)
-            ->orderByDesc('payment_date')
-            ->orderByDesc('id')
-            ->get();
+        $olderDuesData = $this->getOlderDuesData($invoice);
 
         return view('Admin.Billing.invoices.show', compact(
             'invoice',
             'paymentModes',
-            'olderDuesPayments',
-            'olderDuesPaidTotal',
-            'olderOutstandingNow'
+            'olderDuesData'
         ));
     }
 
@@ -356,8 +343,56 @@ class BillingController extends Controller
     public function downloadPdf($id)
     {
         $invoice = Invoice::with(['company', 'lines'])->findOrFail($id);
-        $pdf = \PDF::loadView('Admin.Billing.invoices.pdf', compact('invoice'));
+        $olderDuesData = $this->getOlderDuesData($invoice);
+        $pdf = \PDF::loadView('Admin.Billing.invoices.pdf', compact('invoice', 'olderDuesData'));
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
     }
 
+    private function getOlderDuesData(Invoice $invoice): array
+    {
+        $olderInvoicesQuery = Invoice::where('company_id', $invoice->company_id)
+            ->where('status', '!=', 'void')
+            ->whereDate('period_end', '<', $invoice->period_start);
+
+        $olderInvoiceIds = (clone $olderInvoicesQuery)->pluck('id');
+        $olderOutstandingNow = (float) (clone $olderInvoicesQuery)->sum('balance_amount');
+        $olderDuesPaidTotal = (float) InvoicePayment::whereIn('invoice_id', $olderInvoiceIds)->sum('amount');
+        $olderDuesPayments = InvoicePayment::with(['invoice', 'paymentMode'])
+            ->whereIn('invoice_id', $olderInvoiceIds)
+            ->orderByDesc('payment_date')
+            ->orderByDesc('id')
+            ->get();
+
+        $olderDuesPaymentBreakdown = $olderDuesPayments
+            ->groupBy('invoice_id')
+            ->map(function ($payments) {
+                $payment = $payments->first();
+                $relatedInvoice = $payment->invoice;
+
+                if (!$relatedInvoice) {
+                    return null;
+                }
+
+                return [
+                    'invoice_no' => $relatedInvoice->invoice_no,
+                    'period_label' => date('M d, Y', strtotime($relatedInvoice->period_start)) . ' to ' . date('M d, Y', strtotime($relatedInvoice->period_end)),
+                    'amount' => (float) $payments->sum('amount'),
+                ];
+            })
+            ->filter()
+            ->values();
+
+        $olderDuesPaidSummaryText = $olderDuesPaymentBreakdown->isNotEmpty()
+            ? $olderDuesPaymentBreakdown->map(function (array $item) {
+                return $item['invoice_no'] . ' (' . $item['period_label'] . ') PKR ' . number_format($item['amount'], 2);
+            })->implode(', ')
+            : null;
+
+        return [
+            'payments' => $olderDuesPayments,
+            'paid_total' => $olderDuesPaidTotal,
+            'outstanding_now' => $olderOutstandingNow,
+            'paid_summary_text' => $olderDuesPaidSummaryText,
+        ];
+    }
 }
