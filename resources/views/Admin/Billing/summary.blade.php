@@ -175,14 +175,15 @@
                 });
         }
 
-        form.addEventListener('submit', function (event) {
+        $(form).on('submit', function (event) {
             event.preventDefault();
             var url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
             updateSummary(url);
         });
 
         $(companyFilter).on('change', function () {
-            $(form).trigger('submit');
+            var url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
+            updateSummary(url);
         });
 
         if (resetButton) {
