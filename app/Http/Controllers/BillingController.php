@@ -193,14 +193,31 @@ class BillingController extends Controller
             ]);
         }
 
-        $setup = InvoiceSetup::where('company_id', $companyId)->first();
+        $setup = InvoiceSetup::with(['billingRates' => function ($query) {
+            $query->where('is_active', 1);
+        }])->where('company_id', $companyId)->first();
         $invoiceType = $setup->invoice_type ?? (Company::where('company_id', $companyId)->value('invoice_type') ?? 'branch');
+        $configuredScopeIds = collect($setup?->billingRates ?? [])
+            ->where('scope_type', $invoiceType)
+            ->pluck('scope_id')
+            ->filter()
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values();
 
         if ($invoiceType === 'terminal') {
+            if ($configuredScopeIds->isEmpty()) {
+                return response()->json([
+                    'invoice_type' => $invoiceType,
+                    'items' => [],
+                ]);
+            }
+
             $items = DB::table('terminal_details')
                 ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
                 ->where('branch.company_id', $companyId)
                 ->where('branch.status_id', 1)
+                ->whereIn('terminal_details.terminal_id', $configuredScopeIds->all())
                 ->select([
                     'terminal_details.terminal_id as id',
                     'terminal_details.terminal_name as name',
@@ -218,9 +235,17 @@ class BillingController extends Controller
                 })
                 ->values();
         } else {
+            if ($configuredScopeIds->isEmpty()) {
+                return response()->json([
+                    'invoice_type' => $invoiceType,
+                    'items' => [],
+                ]);
+            }
+
             $items = DB::table('branch')
                 ->where('company_id', $companyId)
                 ->where('status_id', 1)
+                ->whereIn('branch_id', $configuredScopeIds->all())
                 ->select([
                     'branch_id as id',
                     'branch_name as name',
@@ -263,7 +288,9 @@ class BillingController extends Controller
         ]);
 
         $company = Company::findOrFail($data['company_id']);
-        $setup = InvoiceSetup::where('company_id', $company->company_id)->first();
+        $setup = InvoiceSetup::with(['billingRates' => function ($query) {
+            $query->where('is_active', 1);
+        }])->where('company_id', $company->company_id)->first();
         $scopeType = ($setup->invoice_type ?? $company->invoice_type ?? 'branch') === 'terminal' ? 'terminal' : 'branch';
 
         $manualScopePeriods = collect($data['scope_overrides'] ?? [])
@@ -289,22 +316,13 @@ class BillingController extends Controller
             ->values();
 
         if ($manualScopePeriods->isNotEmpty()) {
-            if ($scopeType === 'terminal') {
-                $validScopeIds = DB::table('terminal_details')
-                    ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
-                    ->where('branch.company_id', $company->company_id)
-                    ->where('branch.status_id', 1)
-                    ->pluck('terminal_details.terminal_id')
-                    ->map(fn ($id) => (int) $id)
-                    ->all();
-            } else {
-                $validScopeIds = DB::table('branch')
-                    ->where('company_id', $company->company_id)
-                    ->where('status_id', 1)
-                    ->pluck('branch_id')
-                    ->map(fn ($id) => (int) $id)
-                    ->all();
-            }
+            $validScopeIds = collect($setup?->billingRates ?? [])
+                ->where('scope_type', $scopeType)
+                ->pluck('scope_id')
+                ->filter()
+                ->map(fn ($id) => (int) $id)
+                ->unique()
+                ->all();
 
             foreach ($manualScopePeriods as $scopePeriod) {
                 if (!$scopePeriod['period_start'] || !$scopePeriod['period_end']) {
@@ -321,7 +339,7 @@ class BillingController extends Controller
 
                 if (!in_array($scopePeriod['scope_id'], $validScopeIds, true)) {
                     throw ValidationException::withMessages([
-                        'scope_overrides' => 'One or more selected items do not belong to the selected company.',
+                        'scope_overrides' => 'One or more selected items are not configured in invoice setup billing rates.',
                     ]);
                 }
             }
