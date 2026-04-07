@@ -5,6 +5,64 @@
 
 @section('content')
 <section class="panels-wells">
+    <style>
+        .billing-summary-shell {
+            position: relative;
+        }
+
+        .billing-summary-loader {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(248, 251, 255, 0.78);
+            backdrop-filter: blur(3px);
+            z-index: 5;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+        }
+
+        .billing-summary-loader.is-active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .billing-summary-loader-card {
+            min-width: 220px;
+            padding: 22px 26px;
+            border-radius: 18px;
+            background: linear-gradient(135deg, #ffffff 0%, #f1f7ff 100%);
+            box-shadow: 0 18px 45px rgba(31, 57, 84, 0.18);
+            text-align: center;
+        }
+
+        .billing-summary-spinner {
+            width: 48px;
+            height: 48px;
+            margin: 0 auto 14px;
+            border-radius: 50%;
+            border: 4px solid rgba(76, 175, 80, 0.18);
+            border-top-color: #4CAF50;
+            animation: billing-spin 0.9s linear infinite;
+        }
+
+        .billing-summary-fade {
+            transition: opacity 0.18s ease;
+        }
+
+        .billing-summary-fade.is-loading {
+            opacity: 0.4;
+        }
+
+        @keyframes billing-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+
     <div class="card" style="margin-top: 20px; border: 0; overflow: hidden; box-shadow: 0 18px 40px rgba(32, 56, 85, 0.12);margin-top:70px;">
         <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
             <div class="d-flex justify-content-between align-items-center flex-wrap">
@@ -18,98 +76,118 @@
             </div>
         </div>
         <div class="card-block" style="background: linear-gradient(180deg, #fbfcfe 0%, #f4f7fb 100%);">
-            <div class="row m-b-20">
-                <div class="col-md-4">
-                    <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
-                        <div class="card-block">
-                            <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Companies</p>
-                            <h3 class="m-b-0" style="font-weight: 700;">{{ $summary->count() }}</h3>
+            <form method="GET" action="{{ route('billing.summary') }}" id="billing-summary-filter-form" class="card m-b-20" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
+                <div class="card-block">
+                    <div class="row align-items-end">
+                        <div class="col-md-4">
+                            <label class="f-w-600">Filter by Company</label>
+                            <select name="company_id" id="billing-summary-company-filter" class="form-control">
+                                <option value="">All Companies</option>
+                                @foreach($companies as $company)
+                                    <option value="{{ $company->company_id }}" {{ (string) $selectedCompanyId === (string) $company->company_id ? 'selected' : '' }}>
+                                        {{ $company->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-8">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="icofont icofont-search"></i> Apply Filter
+                            </button>
+                            <a href="{{ route('billing.summary') }}" class="btn btn-outline-secondary" style="margin-left: 8px;">
+                                <i class="icofont icofont-refresh"></i> Reset
+                            </a>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
-                        <div class="card-block">
-                            <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Total Outstanding</p>
-                            <h3 class="m-b-0 text-danger" style="font-weight: 700;">PKR {{ number_format($summary->sum('balance_amount'), 2) }}</h3>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
-                        <div class="card-block">
-                            <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Collected</p>
-                            <h3 class="m-b-0 text-success" style="font-weight: 700;">PKR {{ number_format($summary->sum('paid_amount'), 2) }}</h3>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            </form>
 
-            <div class="table-responsive" style="border-radius: 16px; overflow: hidden; box-shadow: 0 12px 35px rgba(30, 54, 80, 0.08);">
-                <table class="table table-bordered table-hover m-b-0" style="background: #fff;">
-                    <thead style="background: linear-gradient(90deg, #a8b4c0 0%, #c7d0d9 100%); color: #fff;">
-                        <tr>
-                            <th>#</th>
-                            <th>Company Name</th>
-                            <th>Total Invoices</th>
-                            <th>Total Amount</th>
-                            <th>Paid Amount</th>
-                            <th>Balance Amount</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($summary as $item)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>
-                                <div class="f-w-600 text-dark">{{ $item->company_name }}</div>
-                                <small class="text-muted">Company ID: {{ $item->company_id }}</small>
-                            </td>
-                            <td><span class="badge badge-default" style="padding: 8px 10px;">{{ $item->total_invoices }}</span></td>
-                            <td class="f-w-600">PKR {{ number_format($item->total_amount, 2) }}</td>
-                            <td class="text-success f-w-600">PKR {{ number_format($item->paid_amount, 2) }}</td>
-                            <td class="text-danger f-w-600">PKR {{ number_format($item->balance_amount, 2) }}</td>
-                            <td>
-                                @if($item->balance_amount <= 0)
-                                    <span class="badge badge-success" style="padding: 8px 10px;">Paid</span>
-                                @elseif($item->paid_amount > 0)
-                                    <span class="badge badge-warning" style="padding: 8px 10px;">Partial</span>
-                                @else
-                                    <span class="badge badge-danger" style="padding: 8px 10px;">Unpaid</span>
-                                @endif
-                            </td>
-                            <td>
-                                <a href="{{ route('billing.invoices.index', ['company_id' => $item->company_id]) }}" 
-                                   class="btn btn-sm btn-info">
-                                    <i class="icofont icofont-eye"></i> View Invoices
-                                </a>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="8" class="text-center p-4">
-                                <div class="text-muted">
-                                    <i class="icofont icofont-inbox f-28 d-block m-b-10"></i>
-                                    No billing data found.
-                                </div>
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                    <tfoot>
-                        <tr style="background: #f3f5f7;">
-                            <th colspan="3" class="text-right">Grand Total:</th>
-                            <th>PKR {{ number_format($summary->sum('total_amount'), 2) }}</th>
-                            <th class="text-success">PKR {{ number_format($summary->sum('paid_amount'), 2) }}</th>
-                            <th class="text-danger">PKR {{ number_format($summary->sum('balance_amount'), 2) }}</th>
-                            <th colspan="2"></th>
-                        </tr>
-                    </tfoot>
-                </table>
+            <div class="billing-summary-shell">
+                <div id="billing-summary-loader" class="billing-summary-loader">
+                    <div class="billing-summary-loader-card">
+                        <div class="billing-summary-spinner"></div>
+                        <div class="f-w-600 text-dark">Loading company summary</div>
+                        <small class="text-muted">Refreshing totals and invoice details...</small>
+                    </div>
+                </div>
+
+                <div id="billing-summary-content" class="billing-summary-fade">
+                    @include('Admin.Billing.partials.summary-content', ['summary' => $summary])
+                </div>
             </div>
         </div>
     </div>
 </section>
+@endsection
+
+@section('scriptcode')
+<script>
+    (function () {
+        var form = document.getElementById('billing-summary-filter-form');
+        var companyFilter = document.getElementById('billing-summary-company-filter');
+        var content = document.getElementById('billing-summary-content');
+        var loader = document.getElementById('billing-summary-loader');
+
+        if (!form || !companyFilter || !content || !loader || !window.fetch) {
+            return;
+        }
+
+        var currentController = null;
+
+        function setLoading(isLoading) {
+            loader.classList.toggle('is-active', isLoading);
+            content.classList.toggle('is-loading', isLoading);
+        }
+
+        function updateSummary(url) {
+            if (currentController) {
+                currentController.abort();
+            }
+
+            currentController = new AbortController();
+            setLoading(true);
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                signal: currentController.signal
+            })
+                .then(function (response) {
+                    if (!response.ok) {
+                        throw new Error('Request failed');
+                    }
+
+                    return response.text();
+                })
+                .then(function (html) {
+                    content.innerHTML = html;
+                    window.history.replaceState({}, '', url);
+                })
+                .catch(function (error) {
+                    if (error.name !== 'AbortError') {
+                        window.location.href = url;
+                    }
+                })
+                .finally(function () {
+                    setLoading(false);
+                });
+        }
+
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            var url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
+            updateSummary(url);
+        });
+
+        companyFilter.addEventListener('change', function () {
+            if (form.requestSubmit) {
+                form.requestSubmit();
+                return;
+            }
+
+            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        });
+    })();
+</script>
 @endsection

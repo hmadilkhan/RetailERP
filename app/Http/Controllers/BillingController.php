@@ -19,7 +19,7 @@ use Throwable;
 
 class BillingController extends Controller
 {
-    public function summary()
+    public function summary(Request $request)
     {
         $summary = DB::table('invoices')
             ->join('company', 'invoices.company_id', '=', 'company.company_id')
@@ -32,11 +32,21 @@ class BillingController extends Controller
             ->selectRaw('COALESCE(SUM(invoices.paid_amount), 0) as paid_amount')
             ->selectRaw('COALESCE(SUM(invoices.balance_amount), 0) as balance_amount')
             ->where('invoices.status', '!=', 'void')
+            ->when(!empty($request->company_id), function ($query) use ($request) {
+                $query->where('invoices.company_id', $request->company_id);
+            })
             ->groupBy('company.company_id', 'company.name')
             ->orderBy('company.name')
             ->get();
 
-        return view('Admin.Billing.summary', compact('summary'));
+        $companies = Company::select('company_id', 'name')->orderBy('name')->get();
+        $selectedCompanyId = $request->company_id;
+
+        if ($request->ajax()) {
+            return view('Admin.Billing.partials.summary-content', compact('summary'));
+        }
+
+        return view('Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId'));
     }
 
     public function index(Request $request)
