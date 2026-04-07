@@ -445,18 +445,8 @@ class InvoiceGenerationService
 
         $invoiceType = $setup->invoice_type ?? null;
         $monthlyChargesAmount = (float) ($setup->monthly_charges_amount ?? 0);
-        $configuredBranchIds = collect($billingRates)
-            ->where('scope_type', 'branch')
-            ->pluck('scope_id')
-            ->filter()
-            ->unique()
-            ->values();
-        $configuredTerminalIds = collect($billingRates)
-            ->where('scope_type', 'terminal')
-            ->pluck('scope_id')
-            ->filter()
-            ->unique()
-            ->values();
+        $configuredBranchIds = $this->getConfiguredScopeIds($company->company_id, 'branch');
+        $configuredTerminalIds = $this->getConfiguredScopeIds($company->company_id, 'terminal');
 
         if ($invoiceType === 'branch') {
             if ($configuredBranchIds->isNotEmpty()) {
@@ -646,6 +636,21 @@ class InvoiceGenerationService
             'setup' => $setup,
             'rates' => $setup ? $setup->billingRates : collect(),
         ];
+    }
+
+    private function getConfiguredScopeIds(int $companyId, string $scopeType)
+    {
+        $setup = InvoiceSetup::with(['billingRates' => function ($query) use ($scopeType) {
+            $query->where('is_active', 1)
+                ->where('scope_type', $scopeType)
+                ->whereNotNull('scope_id');
+        }])->where('company_id', $companyId)->first();
+
+        return collect($setup?->billingRates ?? [])
+            ->pluck('scope_id')
+            ->filter()
+            ->unique()
+            ->values();
     }
 
     private function getBillingPeriodMonths($periodStart, $periodEnd)
