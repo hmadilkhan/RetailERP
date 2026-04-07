@@ -1263,7 +1263,7 @@ class WhatsAppController extends Controller
     private function buildSalesReportAndGetPdf(array $state)
     {
         $company = DB::table('company')
-            ->select('company_id', 'name', 'ptcl_contact', 'address', 'logo')
+            ->select('company_id', 'name', 'ptcl_contact', 'address', 'logo', 'ntn', 'srb')
             ->where('company_id', $state['company_id'])
             ->first();
 
@@ -1286,24 +1286,27 @@ class WhatsAppController extends Controller
         $toDate = $state['to_date'];
         $fromLabel = date('F-d-Y', strtotime($fromDate));
         $toLabel = date('F-d-Y', strtotime($toDate));
+        $branchLabel = ' (' . $branch->branch_name . ') ';
 
+        //first row
         $pdf->SetFont('Arial', '', 10);
         $pdf->Cell(35, 0, '', 0, 0);
-        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
-        $pdf->Cell(50, 0, "", 0, 1, 'L');
+        $pdf->Cell(90, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(75, 0, "NTN #", 0, 1, 'L');
 
+        //second row
         $pdf->SetFont('Arial', 'B', 14);
         $pdf->Cell(35, 0, '', 0, 0);
 
         $logoPath = public_path('storage/images/company/' . $company->logo);
         $logoUrl = asset('storage/images/company/' . $company->logo);
         if (file_exists($logoPath) && !is_dir($logoPath)) {
-            $pdf->Image($logoPath, 12, 10, -200);
+            $pdf->Image($logoPath, 10, 10, -200);
         } else {
-            $pdf->Image($logoUrl, 12, 10, -200);
+            $pdf->Image($logoUrl, 10, 10, -200);
         }
-        $pdf->Cell(105, 12, $company->name, 0, 0, 'L');
-        $pdf->Cell(50, 0, "", 0, 1, 'R');
+        $pdf->Cell(90, 10, $company->name, 0, 0, 'L');
+        $pdf->Cell(75, 10, "(" . ($company->ntn ?? '') . ")", 0, 1, 'L');
 
         $qrPath = public_path('storage/images/company/qrcode.png');
         $qrUrl = asset('storage/images/company/qrcode.png');
@@ -1313,54 +1316,49 @@ class WhatsAppController extends Controller
             $pdf->Image($qrUrl, 175, 10, -200);
         }
 
+        //third row
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(35, 25, '', 0, 0);
-        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
-        $pdf->Cell(50, 25, "", 0, 1, 'L');
+        $pdf->Cell(35, 4, '', 0, 0);
+        $pdf->Cell(90, 4, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(75, 4, "SRB #", 0, 1, 'L');
 
+        //forth row
         $pdf->SetFont('Arial', 'B', 14);
-        $pdf->Cell(35, -15, '', 0, 0);
-        $pdf->Cell(105, -15, $company->ptcl_contact, 0, 0, 'L');
-        $pdf->Cell(50, -15, "", 0, 1, 'L');
+        $pdf->Cell(35, 6, '', 0, 0);
+        $pdf->Cell(90, 6, $company->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(75, 6, "(" . ($company->srb ?? '') . ")", 0, 1, 'L');
 
+        //fifth row
         $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(35, 7, '', 0, 0);
         $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
-        $pdf->Cell(50, 28, "", 0, 1, 'L');
+        $pdf->Cell(50, 7, "", 0, 1, 'R');
 
+        //sixth row
         $pdf->SetFont('Arial', 'B', 9);
-        $pdf->Cell(35, -18, '', 0, 0);
-        $pdf->Cell(105, -18, $company->address, 0, 0, 'L');
+        $pdf->Cell(35, 5, '', 0, 0);
+        $pdf->Cell(105, 5, $company->address, 0, 0, 'L');
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+        $pdf->Cell(50, 5, "", 0, 1, 'R');
 
-        $pdf->ln(12);
+        //filter section
+        $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 12);
         $pdf->SetTextColor(0, 128, 0);
         $pdf->Cell(190, 10, $fromLabel . ' through ' . $toLabel, 0, 1, 'C');
 
+        //report name
         $pdf->ln(1);
         $pdf->SetFont('Arial', 'B', 18);
         $pdf->SetTextColor(0, 0, 0);
-        $pdf->Cell(190, 10, 'Sales Report', 'B,T', 1, 'L');
+        $pdf->Cell(190, 10, 'Sales Invoice Details Report ' . $branchLabel, 'B,T', 1, 'L');
         $pdf->ln(1);
-
-        $pdf->SetFont('Arial', 'B', 11);
-        $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L');
-        $pdf->Cell(30, 7, 'Sales ID', 'B', 0, 'C');
-        $pdf->Cell(45, 7, 'FBR Inv Number', 'B', 0, 'L');
-        $pdf->Cell(25, 7, 'Date', 'B', 0, 'C');
-        $pdf->Cell(25, 7, 'Sales', 'B', 0, 'C');
-        $pdf->Cell(20, 7, 'S.Tax', 'B', 0, 'C');
-        $pdf->Cell(35, 7, 'Total Amount', 'B', 1, 'C');
 
         $selectedTerminalId = (int) ($state['terminal'] ?? 0);
         if ($selectedTerminalId > 0) {
-            $terminals = DB::table('terminal_details')
-                ->select('terminal_id', 'terminal_name')
+            $terminals = collect($reportModel->get_terminals_byid($selectedTerminalId))
                 ->where('branch_id', $branch->branch_id)
-                ->where('terminal_id', $selectedTerminalId)
-                ->get();
+                ->values();
         } else {
             $terminals = collect($reportModel->get_terminals_by_branch($branch->branch_id));
         }
@@ -1371,51 +1369,131 @@ class WhatsAppController extends Controller
 
         $totalActual = 0;
         $totalTax = 0;
+        $totalDiscount = 0;
         $totalAmount = 0;
-        $hasRows = false;
+        $totalItemCount = 0;
+        $hasReceiptRows = false;
 
         foreach ($terminals as $terminal) {
-            $details = $reportModel->sales($terminal->terminal_id, $fromDate, $toDate);
-
             $pdf->SetFont('Arial', 'B', 10);
-            $pdf->Cell(190, 8, 'Terminal: ' . $terminal->terminal_name, 0, 1, 'L');
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->Cell(190, 10, 'Terminal Name: ' . $terminal->terminal_name, 0, 1, 'L');
+
+            $details = $reportModel->totalSales($terminal->terminal_id, $fromDate, $toDate, 'datewise', 'all', '');
+            $permission = $reportModel->terminalPermission($terminal->terminal_id);
+
+            $pdf->SetFont('Arial', 'B', 12);
+            $pdf->setFillColor(0, 0, 0);
+            $pdf->SetTextColor(255, 255, 255);
+            $pdf->Cell(20, 7, 'No.', 'B', 0, 'C', 1);
+            $pdf->Cell(60, 7, 'Name', 'B', 0, 'L', 1);
+            $pdf->Cell(25, 7, 'Type', 'B', 0, 'C', 1);
+            $pdf->Cell(20, 7, 'Base', 'B', 0, 'C', 1);
+            $pdf->Cell(20, 7, 'Tax', 'B', 0, 'C', 1);
+            $pdf->Cell(15, 7, 'Disc.', 'B', 0, 'C', 1);
+            $pdf->Cell(30, 7, 'Total Amount', 'B', 1, 'R', 1);
+            $pdf->setFillColor(232, 232, 232);
+            $pdf->SetTextColor(0, 0, 0);
+            $pdf->ln(2);
 
             if (empty($details)) {
                 $pdf->SetFont('Arial', '', 9);
                 $pdf->Cell(190, 6, 'No data found for this terminal.', 0, 1, 'L');
+                $pdf->ln(4);
                 continue;
             }
 
-            foreach ($details as $index => $value) {
-                $actualAmount = $value->actual_amount == 0
-                    ? ($value->total_amount - $value->sales_tax_amount)
-                    : $value->actual_amount;
+            foreach ($details as $receiptValue) {
+                $salesTax = ((int) data_get($permission, '0.fbr_sync', 0) === 1)
+                    ? (float) ($receiptValue->sales_tax_amount ?? 0)
+                    : (float) ($receiptValue->srb ?? 0);
 
-                $totalActual += $actualAmount;
-                $totalTax += $value->sales_tax_amount;
-                $totalAmount += $value->total_amount;
-                $hasRows = true;
+                if ((int) ($receiptValue->void_receipt ?? 0) === 0) {
+                    $totalActual += (float) ($receiptValue->actual_amount ?? 0);
+                    $totalTax += $salesTax;
+                    $totalAmount += (float) ($receiptValue->total_amount ?? 0);
+                    $totalDiscount += (float) ($receiptValue->discount_amount ?? 0);
+                }
+                $hasReceiptRows = true;
 
-                $pdf->SetFont('Arial', '', 9);
-                $pdf->Cell(10, 6, $index + 1, 0, 0, 'L');
-                $pdf->Cell(30, 6, $value->id, 0, 0, 'C');
-                $pdf->Cell(45, 6, $value->fbrInvNumber, 0, 0, 'L');
-                $pdf->Cell(25, 6, date('d M Y', strtotime($value->date)), 0, 0, 'C');
-                $pdf->Cell(25, 6, number_format($actualAmount, 2), 0, 0, 'C');
-                $pdf->Cell(20, 6, number_format($value->sales_tax_amount, 2), 0, 0, 'C');
-                $pdf->Cell(35, 6, number_format($value->total_amount, 2), 0, 1, 'C');
+                if ((int) data_get($permission, '0.fbr_sync', 0) === 1 && !empty($receiptValue->fbrInvNumber)) {
+                    $pdf->SetFont('Arial', 'B', 12);
+                    $pdf->setFillColor(54, 69, 79);
+                    $pdf->SetTextColor(255, 255, 255);
+                    $pdf->Cell(190, 6, 'FBR Invoice Number : ' . $receiptValue->fbrInvNumber, 0, 1, 'C', 1);
+                    $pdf->SetFont('Arial', 'B', 10);
+                    $pdf->setFillColor(160, 160, 160);
+                    $pdf->SetTextColor(0, 0, 0);
+                }
+
+                $pdf->SetFont('Arial', '', 10);
+                if ((int) ($receiptValue->void_receipt ?? 0) === 1) {
+                    $pdf->setFillColor(255, 0, 0);
+                    $pdf->SetTextColor(255, 255, 255);
+                } else {
+                    $pdf->setFillColor(160, 160, 160);
+                    $pdf->SetTextColor(0, 0, 0);
+                }
+                $pdf->Cell(20, 6, $receiptValue->id, 0, 0, 'L', 1);
+                $pdf->Cell(60, 6, $this->truncateWhatsAppText((string) ($receiptValue->customer ?? ''), 32), 0, 0, 'L', 1);
+                $pdf->Cell(25, 6, $this->truncateWhatsAppText((string) ($receiptValue->order_mode ?? ''), 16), 0, 0, 'L', 1);
+                $pdf->Cell(20, 6, number_format((float) ($receiptValue->actual_amount ?? 0), 2), 0, 0, 'C', 1);
+                $pdf->Cell(20, 6, number_format($salesTax, 2), 0, 0, 'C', 1);
+                $pdf->Cell(15, 6, number_format((float) ($receiptValue->discount_amount ?? 0), 2), 0, 0, 'C', 1);
+                $pdf->Cell(30, 6, number_format((float) ($receiptValue->total_amount ?? 0), 2), 0, 1, 'R', 1);
+
+                $receiptDetails = $reportModel->receiptDetails($receiptValue->id);
+                if (!empty($receiptDetails)) {
+                    $pdf->SetFont('Arial', 'B', 12);
+                    $pdf->setFillColor(0, 153, 76);
+                    $pdf->SetTextColor(255, 255, 255);
+                    $pdf->Cell(20, 7, 'No.', 'B', 0, 'C', 1);
+                    $pdf->Cell(65, 7, 'Name', 'B', 0, 'L', 1);
+                    $pdf->Cell(30, 7, 'Price', 'B', 0, 'C', 1);
+                    $pdf->Cell(30, 7, 'Qty', 'B', 0, 'C', 1);
+                    $pdf->Cell(15, 7, 'Tax', 'B', 0, 'C', 1);
+                    $pdf->Cell(30, 7, 'Total Amount', 'B', 1, 'R', 1);
+
+                    foreach ($receiptDetails as $value) {
+                        $itemQty = 0;
+                        if ((int) $state['company_id'] === 74) {
+                            $itemQty += ((float) ($value->total_qty ?? 0) * (float) ($value->weight_qty ?? 0));
+                        } else {
+                            $itemQty = (float) ($value->total_qty ?? 0);
+                        }
+
+                        if ((int) ($receiptValue->void_receipt ?? 0) === 0) {
+                            $totalItemCount += $itemQty;
+                        }
+
+                        $pdf->SetFont('Arial', '', 10);
+                        $pdf->setFillColor(232, 232, 232);
+                        $pdf->SetTextColor(0, 0, 0);
+                        $pdf->Cell(20, 7, $value->item_code, 'B', 0, 'C', 1);
+                        $pdf->Cell(65, 7, $this->truncateWhatsAppText((string) ($value->item_name ?? ''), 36), 'B', 0, 'L', 1);
+                        $pdf->Cell(30, 7, number_format((float) ($value->item_price ?? 0), 2), 'B', 0, 'C', 1);
+                        $pdf->Cell(30, 7, number_format($itemQty, 2), 'B', 0, 'C', 1);
+                        $pdf->Cell(15, 7, number_format((float) ($value->taxamount ?? 0), 2), 'B', 0, 'C', 1);
+                        $pdf->Cell(30, 7, number_format((float) ($value->total_amount ?? 0), 2), 'B', 1, 'R', 1);
+                    }
+                    $pdf->ln(4);
+                }
             }
         }
 
-        if (!$hasRows) {
+        if (!$hasReceiptRows) {
             return null;
         }
 
+        $pdf->SetTextColor(0, 0, 0);
         $pdf->SetFont('Arial', 'B', 10);
-        $pdf->Cell(110, 7, 'Total', 'B,T', 0, 'R');
-        $pdf->Cell(25, 7, number_format($totalActual, 2), 'B,T', 0, 'C');
-        $pdf->Cell(20, 7, number_format($totalTax, 2), 'B,T', 0, 'C');
-        $pdf->Cell(35, 7, number_format($totalAmount, 2), 'B,T', 1, 'C');
+        $pdf->Cell(20, 6, 'Total Items :', 0, 0, 'L', 1);
+        $pdf->Cell(65, 6, number_format($totalItemCount, 2), 0, 0, 'C', 1);
+        $pdf->Cell(20, 6, '', 0, 0, 'L', 1);
+        $pdf->Cell(20, 6, number_format($totalActual, 2), 0, 0, 'C', 1);
+        $pdf->Cell(20, 6, number_format($totalTax, 2), 0, 0, 'C', 1);
+        $pdf->Cell(15, 6, number_format($totalDiscount, 2), 0, 0, 'C', 1);
+        $pdf->Cell(30, 6, number_format($totalAmount, 2), 0, 1, 'C', 1);
 
         $safeCompany = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $company->name);
         $safeBranch = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $branch->branch_name);
