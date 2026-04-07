@@ -335,12 +335,12 @@ class InvoiceGenerationService
 
     private function buildInvoiceLines($company, $periodStart, $periodEnd, array $options = [])
     {
-        $manualBranchPeriods = collect($options['manual_branch_periods'] ?? [])
-            ->filter(fn ($row) => !empty($row['branch_id']) && !empty($row['period_start']) && !empty($row['period_end']))
+        $manualScopePeriods = collect($options['manual_scope_periods'] ?? [])
+            ->filter(fn ($row) => !empty($row['scope_type']) && !empty($row['scope_id']) && !empty($row['period_start']) && !empty($row['period_end']))
             ->values();
 
-        if ($manualBranchPeriods->isNotEmpty()) {
-            return $this->buildManualBranchInvoiceLines($company, $periodStart, $periodEnd, $manualBranchPeriods);
+        if ($manualScopePeriods->isNotEmpty()) {
+            return $this->buildManualScopedInvoiceLines($company, $periodStart, $periodEnd, $manualScopePeriods);
         }
 
         $lines = [];
@@ -484,58 +484,75 @@ class InvoiceGenerationService
         return $lines;
     }
 
-    private function buildManualBranchInvoiceLines(Company $company, string $periodStart, string $periodEnd, $manualBranchPeriods)
+    private function buildManualScopedInvoiceLines(Company $company, string $periodStart, string $periodEnd, $manualScopePeriods)
     {
         $lines = [];
         $billingContext = $this->getBillingContext($company->company_id, $periodStart, $periodEnd);
         $billingRates = collect($billingContext['rates']);
         $setup = $billingContext['setup'];
+        $invoiceType = $setup->invoice_type ?? 'branch';
+        $scopeType = $invoiceType === 'terminal' ? 'terminal' : 'branch';
 
-        $branchIds = $manualBranchPeriods->pluck('branch_id')->map(fn ($id) => (int) $id)->all();
-        $branches = DB::table('branch')
-            ->where('company_id', $company->company_id)
-            ->whereIn('branch_id', $branchIds)
-            ->where('status_id', 1)
-            ->select('branch_id', 'branch_name')
-            ->get()
-            ->keyBy('branch_id');
+        if ($scopeType === 'branch') {
+            $scopeIds = $manualScopePeriods->where('scope_type', 'branch')->pluck('scope_id')->map(fn ($id) => (int) $id)->all();
+            $scopes = DB::table('branch')
+                ->where('company_id', $company->company_id)
+                ->whereIn('branch_id', $scopeIds)
+                ->where('status_id', 1)
+                ->select('branch_id as id', 'branch_name as name')
+                ->get()
+                ->keyBy('id');
+        } else {
+            $scopeIds = $manualScopePeriods->where('scope_type', 'terminal')->pluck('scope_id')->map(fn ($id) => (int) $id)->all();
+            $scopes = DB::table('terminal_details')
+                ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
+                ->where('branch.company_id', $company->company_id)
+                ->where('branch.status_id', 1)
+                ->whereIn('terminal_details.terminal_id', $scopeIds)
+                ->select('terminal_details.terminal_id as id', 'terminal_details.terminal_name as name')
+                ->get()
+                ->keyBy('id');
+        }
 
-        foreach ($manualBranchPeriods as $branchPeriod) {
-            $branchId = (int) $branchPeriod['branch_id'];
-            $branch = $branches->get($branchId);
-            if (!$branch) {
+        foreach ($manualScopePeriods->where('scope_type', $scopeType) as $scopePeriod) {
+            $scopeId = (int) $scopePeriod['scope_id'];
+            $scope = $scopes->get($scopeId);
+            if (!$scope) {
                 continue;
             }
 
-            $branchStart = Carbon::parse($branchPeriod['period_start'])->toDateString();
-            $branchEnd = Carbon::parse($branchPeriod['period_end'])->toDateString();
-            $branchMonths = $this->getBillingPeriodMonths($branchStart, $branchEnd);
-            $branchPeriodLabel = $this->formatBillingPeriodLabel($branchStart, $branchEnd);
+            $scopeStart = Carbon::parse($scopePeriod['period_start'])->toDateString();
+            $scopeEnd = Carbon::parse($scopePeriod['period_end'])->toDateString();
+            $scopeMonths = $this->getBillingPeriodMonths($scopeStart, $scopeEnd);
+            $scopePeriodLabel = $this->formatBillingPeriodLabel($scopeStart, $scopeEnd);
+            $scopeDisplay = $scopeType === 'branch'
+                ? 'Branch: ' . $scope->name
+                : 'Terminal: ' . $scope->name . ' | TID # ' . $scopeId;
 
-            $applicableBranchRates = $billingRates
-                ->filter(function ($rate) use ($branchId, $branchStart, $branchEnd) {
-                    if ($rate->scope_type !== 'branch') {
+            $applicableRates = $billingRates
+                ->filter(function ($rate) use ($scopeType, $scopeId, $scopeStart, $scopeEnd) {
+                    if ($rate->scope_type !== $scopeType) {
                         return false;
                     }
 
-                    if ($rate->scope_id && (int) $rate->scope_id !== $branchId) {
+                    if ($rate->scope_id && (int) $rate->scope_id !== $scopeId) {
                         return false;
                     }
 
-                    return $rate->effective_from <= $branchEnd
-                        && (empty($rate->effective_to) || $rate->effective_to >= $branchStart);
+                    return $rate->effective_from <= $scopeEnd
+                        && (empty($rate->effective_to) || $rate->effective_to >= $scopeStart);
                 })
                 ->values();
 
-            if ($applicableBranchRates->isNotEmpty()) {
-                foreach ($applicableBranchRates as $rate) {
+            if ($applicableRates->isNotEmpty()) {
+                foreach ($applicableRates as $rate) {
                     $chargeTypeLabel = ucwords(str_replace('_', ' ', $rate->charge_type));
-                    $rateMultiplier = $this->isMonthlyChargeType($rate->charge_type) ? $branchMonths : 1;
+                    $rateMultiplier = $this->isMonthlyChargeType($rate->charge_type) ? $scopeMonths : 1;
 
                     $lines[] = [
-                        'scope_type' => 'branch',
-                        'scope_id' => $branchId,
-                        'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $branchPeriodLabel . ') (Branch: ' . $branch->branch_name . ')',
+                        'scope_type' => $scopeType,
+                        'scope_id' => $scopeId,
+                        'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $scopePeriodLabel . ') (' . $scopeDisplay . ')',
                         'qty' => $rateMultiplier,
                         'unit_price' => $rate->rate,
                         'line_amount' => $rateMultiplier * $rate->rate,
@@ -545,14 +562,14 @@ class InvoiceGenerationService
                 continue;
             }
 
-            if (($setup->invoice_type ?? null) === 'branch' && (float) ($setup->monthly_charges_amount ?? 0) > 0) {
+            if (($setup->invoice_type ?? null) === $scopeType && (float) ($setup->monthly_charges_amount ?? 0) > 0) {
                 $lines[] = [
-                    'scope_type' => 'branch',
-                    'scope_id' => $branchId,
-                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $branchPeriodLabel . ') (Branch: ' . $branch->branch_name . ')',
-                    'qty' => $branchMonths,
+                    'scope_type' => $scopeType,
+                    'scope_id' => $scopeId,
+                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $scopePeriodLabel . ') (' . $scopeDisplay . ')',
+                    'qty' => $scopeMonths,
                     'unit_price' => (float) $setup->monthly_charges_amount,
-                    'line_amount' => $branchMonths * (float) $setup->monthly_charges_amount,
+                    'line_amount' => $scopeMonths * (float) $setup->monthly_charges_amount,
                 ];
             }
         }

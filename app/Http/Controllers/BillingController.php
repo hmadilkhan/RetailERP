@@ -7,6 +7,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceAdjustment;
 use App\Models\InvoiceLine;
 use App\Models\InvoicePayment;
+use App\Models\InvoiceSetup;
 use App\Models\OrderPayment;
 use App\Models\PaymentVoucher;
 use App\Services\InvoiceGenerationService;
@@ -182,6 +183,66 @@ class BillingController extends Controller
         return view('Admin.Billing.invoices.create', compact('companies'));
     }
 
+    public function invoiceGenerationTargets(Request $request)
+    {
+        $companyId = (int) $request->query('company_id');
+        if (!$companyId) {
+            return response()->json([
+                'invoice_type' => null,
+                'items' => [],
+            ]);
+        }
+
+        $setup = InvoiceSetup::where('company_id', $companyId)->first();
+        $invoiceType = $setup->invoice_type ?? (Company::where('company_id', $companyId)->value('invoice_type') ?? 'branch');
+
+        if ($invoiceType === 'terminal') {
+            $items = DB::table('terminal_details')
+                ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
+                ->where('branch.company_id', $companyId)
+                ->where('branch.status_id', 1)
+                ->select([
+                    'terminal_details.terminal_id as id',
+                    'terminal_details.terminal_name as name',
+                    'branch.branch_name',
+                ])
+                ->orderBy('branch.branch_name')
+                ->orderBy('terminal_details.terminal_name')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => (int) $item->id,
+                        'name' => $item->name,
+                        'meta' => $item->branch_name,
+                    ];
+                })
+                ->values();
+        } else {
+            $items = DB::table('branch')
+                ->where('company_id', $companyId)
+                ->where('status_id', 1)
+                ->select([
+                    'branch_id as id',
+                    'branch_name as name',
+                ])
+                ->orderBy('branch_name')
+                ->get()
+                ->map(function ($item) {
+                    return [
+                        'id' => (int) $item->id,
+                        'name' => $item->name,
+                        'meta' => null,
+                    ];
+                })
+                ->values();
+        }
+
+        return response()->json([
+            'invoice_type' => $invoiceType,
+            'items' => $items,
+        ]);
+    }
+
     public function store(Request $request, InvoiceGenerationService $invoiceGenerationService)
     {
         $data = $request->validate([
@@ -192,60 +253,85 @@ class BillingController extends Controller
             'due_date' => 'nullable|date|after_or_equal:invoice_date',
             'tax_amount' => 'nullable|numeric|min:0',
             'notes' => 'nullable|string',
-            'branch_overrides' => 'nullable|array',
-            'branch_overrides.*.branch_id' => 'nullable|integer|exists:branch,branch_id',
-            'branch_overrides.*.include' => 'nullable',
-            'branch_overrides.*.period_start' => 'nullable|date',
-            'branch_overrides.*.period_end' => 'nullable|date',
+            'generation_mode' => 'required|in:auto,manual',
+            'scope_overrides' => 'nullable|array',
+            'scope_overrides.*.scope_type' => 'nullable|in:branch,terminal',
+            'scope_overrides.*.scope_id' => 'nullable|integer',
+            'scope_overrides.*.include' => 'nullable',
+            'scope_overrides.*.period_start' => 'nullable|date',
+            'scope_overrides.*.period_end' => 'nullable|date',
         ]);
 
         $company = Company::findOrFail($data['company_id']);
-        $manualBranchPeriods = collect($data['branch_overrides'] ?? [])
-            ->filter(function (array $row) {
-                return !empty($row['include']) && !empty($row['branch_id']);
+        $setup = InvoiceSetup::where('company_id', $company->company_id)->first();
+        $scopeType = ($setup->invoice_type ?? $company->invoice_type ?? 'branch') === 'terminal' ? 'terminal' : 'branch';
+
+        $manualScopePeriods = collect($data['scope_overrides'] ?? [])
+            ->filter(function (array $row) use ($data, $scopeType) {
+                if (($data['generation_mode'] ?? 'auto') !== 'manual') {
+                    return false;
+                }
+
+                if (($row['scope_type'] ?? null) !== $scopeType) {
+                    return false;
+                }
+
+                return !empty($row['include']) && !empty($row['scope_id']);
             })
             ->map(function (array $row) {
                 return [
-                    'branch_id' => (int) $row['branch_id'],
+                    'scope_type' => $row['scope_type'],
+                    'scope_id' => (int) $row['scope_id'],
                     'period_start' => !empty($row['period_start']) ? Carbon::parse($row['period_start'])->toDateString() : null,
                     'period_end' => !empty($row['period_end']) ? Carbon::parse($row['period_end'])->toDateString() : null,
                 ];
             })
             ->values();
 
-        if ($manualBranchPeriods->isNotEmpty()) {
-            $validBranchIds = DB::table('branch')
-                ->where('company_id', $company->company_id)
-                ->pluck('branch_id')
-                ->map(fn ($id) => (int) $id)
-                ->all();
+        if ($manualScopePeriods->isNotEmpty()) {
+            if ($scopeType === 'terminal') {
+                $validScopeIds = DB::table('terminal_details')
+                    ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
+                    ->where('branch.company_id', $company->company_id)
+                    ->where('branch.status_id', 1)
+                    ->pluck('terminal_details.terminal_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            } else {
+                $validScopeIds = DB::table('branch')
+                    ->where('company_id', $company->company_id)
+                    ->where('status_id', 1)
+                    ->pluck('branch_id')
+                    ->map(fn ($id) => (int) $id)
+                    ->all();
+            }
 
-            foreach ($manualBranchPeriods as $index => $branchPeriod) {
-                if (!$branchPeriod['period_start'] || !$branchPeriod['period_end']) {
+            foreach ($manualScopePeriods as $scopePeriod) {
+                if (!$scopePeriod['period_start'] || !$scopePeriod['period_end']) {
                     throw ValidationException::withMessages([
-                        'branch_overrides' => 'Each selected branch must have both start and end date.',
+                        'scope_overrides' => 'Each selected item must have both start and end date.',
                     ]);
                 }
 
-                if ($branchPeriod['period_end'] < $branchPeriod['period_start']) {
+                if ($scopePeriod['period_end'] < $scopePeriod['period_start']) {
                     throw ValidationException::withMessages([
-                        'branch_overrides' => 'Branch due end date must be after or equal to the start date.',
+                        'scope_overrides' => 'Due end date must be after or equal to the start date.',
                     ]);
                 }
 
-                if (!in_array($branchPeriod['branch_id'], $validBranchIds, true)) {
+                if (!in_array($scopePeriod['scope_id'], $validScopeIds, true)) {
                     throw ValidationException::withMessages([
-                        'branch_overrides' => 'One or more selected branches do not belong to the selected company.',
+                        'scope_overrides' => 'One or more selected items do not belong to the selected company.',
                     ]);
                 }
             }
         }
 
-        $periodStart = $manualBranchPeriods->isNotEmpty()
-            ? $manualBranchPeriods->min('period_start')
+        $periodStart = $manualScopePeriods->isNotEmpty()
+            ? $manualScopePeriods->min('period_start')
             : Carbon::parse($data['period_start'])->toDateString();
-        $periodEnd = $manualBranchPeriods->isNotEmpty()
-            ? $manualBranchPeriods->max('period_end')
+        $periodEnd = $manualScopePeriods->isNotEmpty()
+            ? $manualScopePeriods->max('period_end')
             : Carbon::parse($data['period_end'])->toDateString();
         $invoiceDate = Carbon::parse($data['invoice_date']);
 
@@ -260,7 +346,7 @@ class BillingController extends Controller
             'tax_amount' => $data['tax_amount'] ?? 0,
             'notes' => $data['notes'] ?? null,
             'generated_by' => session('userid'),
-            'manual_branch_periods' => $manualBranchPeriods->all(),
+            'manual_scope_periods' => $manualScopePeriods->all(),
         ]);
 
         return redirect()->route('billing.invoices.index')->with('success', 'Invoice generated successfully.');

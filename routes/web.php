@@ -255,6 +255,7 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/billing/invoices', [BillingController::class, 'index'])->name('billing.invoices.index');
     Route::get('/billing/delivery-history', [BillingController::class, 'deliveryHistory'])->name('billing.delivery-history');
     Route::get('/billing/invoices/create', [BillingController::class, 'create'])->name('billing.invoices.create');
+    Route::get('/billing/invoices/generation-targets', [BillingController::class, 'invoiceGenerationTargets'])->name('billing.invoices.generation-targets');
     Route::post('/billing/invoices', [BillingController::class, 'store'])->name('billing.invoices.store');
     Route::get('/billing/invoices/{id}', [BillingController::class, 'show'])->name('billing.invoices.show');
     Route::delete('/billing/invoices/{id}', [BillingController::class, 'destroy'])->name('billing.invoices.destroy');
