@@ -445,12 +445,32 @@ class InvoiceGenerationService
 
         $invoiceType = $setup->invoice_type ?? null;
         $monthlyChargesAmount = (float) ($setup->monthly_charges_amount ?? 0);
+        $configuredBranchIds = collect($billingRates)
+            ->where('scope_type', 'branch')
+            ->pluck('scope_id')
+            ->filter()
+            ->unique()
+            ->values();
+        $configuredTerminalIds = collect($billingRates)
+            ->where('scope_type', 'terminal')
+            ->pluck('scope_id')
+            ->filter()
+            ->unique()
+            ->values();
 
         if ($invoiceType === 'branch') {
-            $branchCount = DB::table('branch')
-                ->where('company_id', $company->company_id)
-                ->where('status_id', 1)
-                ->count();
+            if ($configuredBranchIds->isNotEmpty()) {
+                $branchCount = DB::table('branch')
+                    ->where('company_id', $company->company_id)
+                    ->where('status_id', 1)
+                    ->whereIn('branch_id', $configuredBranchIds->all())
+                    ->count();
+            } else {
+                $branchCount = DB::table('branch')
+                    ->where('company_id', $company->company_id)
+                    ->where('status_id', 1)
+                    ->count();
+            }
 
             if ($branchCount > 0 && $monthlyChargesAmount > 0) {
                 $lines[] = [
@@ -463,11 +483,20 @@ class InvoiceGenerationService
                 ];
             }
         } elseif ($invoiceType === 'terminal') {
-            $terminalCount = DB::table('terminal_details')
-                ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
-                ->where('branch.company_id', $company->company_id)
-                ->where('branch.status_id', 1)
-                ->count();
+            if ($configuredTerminalIds->isNotEmpty()) {
+                $terminalCount = DB::table('terminal_details')
+                    ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
+                    ->where('branch.company_id', $company->company_id)
+                    ->where('branch.status_id', 1)
+                    ->whereIn('terminal_details.terminal_id', $configuredTerminalIds->all())
+                    ->count();
+            } else {
+                $terminalCount = DB::table('terminal_details')
+                    ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
+                    ->where('branch.company_id', $company->company_id)
+                    ->where('branch.status_id', 1)
+                    ->count();
+            }
 
             if ($terminalCount > 0 && $monthlyChargesAmount > 0) {
                 $lines[] = [
