@@ -728,34 +728,11 @@ class WhatsAppController extends Controller
             return $this->buildItemSaleDatabaseReportAndGetPdf($state);
         }
 
-        if ($reportType !== 'sales_report') {
-            return null;
+        if ($reportType === 'sales_report') {
+            return $this->buildSalesReportAndGetPdf($state);
         }
 
-        $fromDate = $state['from_date'];
-        $terminal = $state['terminal'];
-        $terminalInfo = DB::table('terminal_details')
-            ->join('branch', 'branch.branch_id', '=', 'terminal_details.branch_id')
-            ->join('company', 'company.company_id', '=', 'branch.company_id')
-            ->select('terminal_details.terminal_id', 'company.name as company_name')
-            ->where('terminal_details.terminal_id', $terminal)
-            ->first();
-
-        if (!$terminalInfo) {
-            return null;
-        }
-
-        $fileName = 'FBR_REPORT_' . date('M', strtotime($fromDate)) . '_' . $terminalInfo->company_name . '.pdf';
-        $filePath = storage_path('app/public/pdfs/' . $fileName);
-
-        if (!file_exists($filePath)) {
-            return null;
-        }
-
-        return [
-            'url' => 'https://retail.sabsoft.com.pk/storage/pdfs/' . rawurlencode($fileName),
-            'filename' => $fileName,
-        ];
+        return null;
     }
 
     private function buildFbrReportAndGetPdf(array $state)
@@ -1283,14 +1260,191 @@ class WhatsAppController extends Controller
         ];
     }
 
+    private function buildSalesReportAndGetPdf(array $state)
+    {
+        $company = DB::table('company')
+            ->select('company_id', 'name', 'ptcl_contact', 'address', 'logo')
+            ->where('company_id', $state['company_id'])
+            ->first();
+
+        $branch = DB::table('branch')
+            ->select('branch_id', 'branch_name')
+            ->where('branch_id', $state['branch_id'])
+            ->where('company_id', $state['company_id'])
+            ->first();
+
+        if (!$company || !$branch) {
+            return null;
+        }
+
+        $reportModel = new ReportModel();
+        $pdf = new pdfClass();
+        $pdf->AliasNbPages();
+        $pdf->AddPage();
+
+        $fromDate = $state['from_date'];
+        $toDate = $state['to_date'];
+        $fromLabel = date('F-d-Y', strtotime($fromDate));
+        $toLabel = date('F-d-Y', strtotime($toDate));
+
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 0, '', 0, 0);
+        $pdf->Cell(105, 0, "Company Name:", 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'L');
+
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, 0, '', 0, 0);
+
+        $logoPath = public_path('storage/images/company/' . $company->logo);
+        $logoUrl = asset('storage/images/company/' . $company->logo);
+        if (file_exists($logoPath) && !is_dir($logoPath)) {
+            $pdf->Image($logoPath, 12, 10, -200);
+        } else {
+            $pdf->Image($logoUrl, 12, 10, -200);
+        }
+        $pdf->Cell(105, 12, $company->name, 0, 0, 'L');
+        $pdf->Cell(50, 0, "", 0, 1, 'R');
+
+        $qrPath = public_path('storage/images/company/qrcode.png');
+        $qrUrl = asset('storage/images/company/qrcode.png');
+        if (file_exists($qrPath) && !is_dir($qrPath)) {
+            $pdf->Image($qrPath, 175, 10, -200);
+        } else {
+            $pdf->Image($qrUrl, 175, 10, -200);
+        }
+
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 25, '', 0, 0);
+        $pdf->Cell(105, 25, "Contact Number:", 0, 0, 'L');
+        $pdf->Cell(50, 25, "", 0, 1, 'L');
+
+        $pdf->SetFont('Arial', 'B', 14);
+        $pdf->Cell(35, -15, '', 0, 0);
+        $pdf->Cell(105, -15, $company->ptcl_contact, 0, 0, 'L');
+        $pdf->Cell(50, -15, "", 0, 1, 'L');
+
+        $pdf->SetFont('Arial', '', 10);
+        $pdf->Cell(35, 28, '', 0, 0);
+        $pdf->Cell(105, 28, "Company Address:", 0, 0, 'L');
+        $pdf->Cell(50, 28, "", 0, 1, 'L');
+
+        $pdf->SetFont('Arial', 'B', 9);
+        $pdf->Cell(35, -18, '', 0, 0);
+        $pdf->Cell(105, -18, $company->address, 0, 0, 'L');
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(50, -18, "Generate Date:  " . date('Y-m-d'), 0, 1, 'R');
+
+        $pdf->ln(12);
+        $pdf->SetFont('Arial', 'B', 12);
+        $pdf->SetTextColor(0, 128, 0);
+        $pdf->Cell(190, 10, $fromLabel . ' through ' . $toLabel, 0, 1, 'C');
+
+        $pdf->ln(1);
+        $pdf->SetFont('Arial', 'B', 18);
+        $pdf->SetTextColor(0, 0, 0);
+        $pdf->Cell(190, 10, 'Sales Report', 'B,T', 1, 'L');
+        $pdf->ln(1);
+
+        $pdf->SetFont('Arial', 'B', 11);
+        $pdf->Cell(10, 7, 'S.No', 'B', 0, 'L');
+        $pdf->Cell(30, 7, 'Sales ID', 'B', 0, 'C');
+        $pdf->Cell(45, 7, 'FBR Inv Number', 'B', 0, 'L');
+        $pdf->Cell(25, 7, 'Date', 'B', 0, 'C');
+        $pdf->Cell(25, 7, 'Sales', 'B', 0, 'C');
+        $pdf->Cell(20, 7, 'S.Tax', 'B', 0, 'C');
+        $pdf->Cell(35, 7, 'Total Amount', 'B', 1, 'C');
+
+        $selectedTerminalId = (int) ($state['terminal'] ?? 0);
+        if ($selectedTerminalId > 0) {
+            $terminals = DB::table('terminal_details')
+                ->select('terminal_id', 'terminal_name')
+                ->where('branch_id', $branch->branch_id)
+                ->where('terminal_id', $selectedTerminalId)
+                ->get();
+        } else {
+            $terminals = collect($reportModel->get_terminals_by_branch($branch->branch_id));
+        }
+
+        if ($terminals->isEmpty()) {
+            return null;
+        }
+
+        $totalActual = 0;
+        $totalTax = 0;
+        $totalAmount = 0;
+        $hasRows = false;
+
+        foreach ($terminals as $terminal) {
+            $details = $reportModel->sales($terminal->terminal_id, $fromDate, $toDate);
+
+            $pdf->SetFont('Arial', 'B', 10);
+            $pdf->Cell(190, 8, 'Terminal: ' . $terminal->terminal_name, 0, 1, 'L');
+
+            if (empty($details)) {
+                $pdf->SetFont('Arial', '', 9);
+                $pdf->Cell(190, 6, 'No data found for this terminal.', 0, 1, 'L');
+                continue;
+            }
+
+            foreach ($details as $index => $value) {
+                $actualAmount = $value->actual_amount == 0
+                    ? ($value->total_amount - $value->sales_tax_amount)
+                    : $value->actual_amount;
+
+                $totalActual += $actualAmount;
+                $totalTax += $value->sales_tax_amount;
+                $totalAmount += $value->total_amount;
+                $hasRows = true;
+
+                $pdf->SetFont('Arial', '', 9);
+                $pdf->Cell(10, 6, $index + 1, 0, 0, 'L');
+                $pdf->Cell(30, 6, $value->id, 0, 0, 'C');
+                $pdf->Cell(45, 6, $value->fbrInvNumber, 0, 0, 'L');
+                $pdf->Cell(25, 6, date('d M Y', strtotime($value->date)), 0, 0, 'C');
+                $pdf->Cell(25, 6, number_format($actualAmount, 2), 0, 0, 'C');
+                $pdf->Cell(20, 6, number_format($value->sales_tax_amount, 2), 0, 0, 'C');
+                $pdf->Cell(35, 6, number_format($value->total_amount, 2), 0, 1, 'C');
+            }
+        }
+
+        if (!$hasRows) {
+            return null;
+        }
+
+        $pdf->SetFont('Arial', 'B', 10);
+        $pdf->Cell(110, 7, 'Total', 'B,T', 0, 'R');
+        $pdf->Cell(25, 7, number_format($totalActual, 2), 'B,T', 0, 'C');
+        $pdf->Cell(20, 7, number_format($totalTax, 2), 'B,T', 0, 'C');
+        $pdf->Cell(35, 7, number_format($totalAmount, 2), 'B,T', 1, 'C');
+
+        $safeCompany = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $company->name);
+        $safeBranch = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $branch->branch_name);
+        $safeTerminal = preg_replace('/[\\\\\/:*?"<>|]+/', ' ', $state['terminal_name'] ?? 'All_Terminals');
+        $period = date('Ymd', strtotime($fromDate)) . '_' . date('Ymd', strtotime($toDate));
+        $generatedAt = date('Ymd_His');
+        $fileName = 'SALES_REPORT_' . $period . '_' . trim($safeCompany) . '_' . trim($safeBranch) . '_' . trim($safeTerminal) . '_' . $generatedAt . '.pdf';
+        $dir = storage_path('app/public/pdfs');
+        if (!is_dir($dir)) {
+            mkdir($dir, 0775, true);
+        }
+
+        $filePath = $dir . DIRECTORY_SEPARATOR . $fileName;
+        $pdf->Output($filePath, 'F');
+
+        return [
+            'url' => 'https://retail.sabsoft.com.pk/storage/pdfs/' . rawurlencode($fileName),
+            'filename' => $fileName,
+        ];
+    }
+
     private function isBranchBasedReport(?string $reportType): bool
     {
-        return in_array($reportType, ['fbr_report', 'item_sale_database'], true);
+        return in_array($reportType, ['fbr_report', 'sales_report', 'item_sale_database'], true);
     }
 
     private function reportAllowsAllTerminals(?string $reportType): bool
     {
-        return in_array($reportType, ['fbr_report', 'item_sale_database'], true);
+        return in_array($reportType, ['fbr_report', 'sales_report', 'item_sale_database'], true);
     }
 
     private function getReportDisplayName(?string $reportType): string
