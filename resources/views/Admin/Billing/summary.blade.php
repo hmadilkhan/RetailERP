@@ -79,9 +79,9 @@
             <form method="GET" action="{{ route('billing.summary') }}" id="billing-summary-filter-form" class="card m-b-20" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
                 <div class="card-block">
                     <div class="row align-items-end">
-                        <div class="col-md-4">
+                        <div class="col-lg-6 col-md-12 m-b-10">
                             <label class="f-w-600">Filter by Company</label>
-                            <select name="company_id" id="billing-summary-company-filter" class="form-control">
+                            <select name="company_id" id="billing-summary-company-filter" class="form-control select2" data-placeholder="Search company">
                                 <option value="">All Companies</option>
                                 @foreach($companies as $company)
                                     <option value="{{ $company->company_id }}" {{ (string) $selectedCompanyId === (string) $company->company_id ? 'selected' : '' }}>
@@ -90,13 +90,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-8">
-                            <button type="submit" class="btn btn-primary">
+                        <div class="col-lg-6 col-md-12 m-b-10">
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 38px;">
+                                <button type="submit" class="btn btn-primary">
                                 <i class="icofont icofont-search"></i> Apply Filter
-                            </button>
-                            <a href="{{ route('billing.summary') }}" class="btn btn-outline-secondary" style="margin-left: 8px;">
-                                <i class="icofont icofont-refresh"></i> Reset
-                            </a>
+                                </button>
+                                <a href="{{ route('billing.summary') }}" id="billing-summary-reset" class="btn btn-outline-secondary">
+                                    <i class="icofont icofont-refresh"></i> Reset
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -120,19 +122,31 @@
 </section>
 @endsection
 
-@section('scriptcode')
+@section('scriptcode_three')
 <script>
     (function () {
+        var $ = window.jQuery;
         var form = document.getElementById('billing-summary-filter-form');
         var companyFilter = document.getElementById('billing-summary-company-filter');
         var content = document.getElementById('billing-summary-content');
         var loader = document.getElementById('billing-summary-loader');
+        var resetButton = document.getElementById('billing-summary-reset');
 
-        if (!form || !companyFilter || !content || !loader || !window.fetch) {
+        if (!form || !companyFilter || !content || !loader || !$) {
             return;
         }
 
-        var currentController = null;
+        function initSelect2() {
+            if (!$.fn.select2) {
+                return;
+            }
+
+            $(companyFilter).select2({
+                width: '100%',
+                allowClear: true,
+                placeholder: $(companyFilter).data('placeholder') || 'Select company'
+            });
+        }
 
         function setLoading(isLoading) {
             loader.classList.toggle('is-active', isLoading);
@@ -140,34 +154,21 @@
         }
 
         function updateSummary(url) {
-            if (currentController) {
-                currentController.abort();
-            }
-
-            currentController = new AbortController();
             setLoading(true);
 
-            fetch(url, {
+            $.ajax({
+                url: url,
+                type: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
-                },
-                signal: currentController.signal
+                }
             })
-                .then(function (response) {
-                    if (!response.ok) {
-                        throw new Error('Request failed');
-                    }
-
-                    return response.text();
-                })
-                .then(function (html) {
+                .done(function (html) {
                     content.innerHTML = html;
                     window.history.replaceState({}, '', url);
                 })
-                .catch(function (error) {
-                    if (error.name !== 'AbortError') {
-                        window.location.href = url;
-                    }
+                .fail(function () {
+                    window.location.href = url;
                 })
                 .finally(function () {
                     setLoading(false);
@@ -180,14 +181,19 @@
             updateSummary(url);
         });
 
-        companyFilter.addEventListener('change', function () {
-            if (form.requestSubmit) {
-                form.requestSubmit();
-                return;
-            }
-
-            form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        $(companyFilter).on('change', function () {
+            $(form).trigger('submit');
         });
+
+        if (resetButton) {
+            resetButton.addEventListener('click', function (event) {
+                event.preventDefault();
+                $(companyFilter).val('').trigger('change.select2');
+                updateSummary(form.action);
+            });
+        }
+
+        initSelect2();
     })();
 </script>
 @endsection
