@@ -91,7 +91,7 @@
                             </select>
                         </div>
                         <div class="col-lg-6 col-md-12 m-b-10">
-                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; min-height: 38px;">
+                            <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 2px;">
                                 <button type="submit" class="btn btn-primary">
                                 <i class="icofont icofont-search"></i> Apply Filter
                                 </button>
