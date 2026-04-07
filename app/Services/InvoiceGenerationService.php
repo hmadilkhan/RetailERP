@@ -38,7 +38,7 @@ class InvoiceGenerationService
             : $invoiceDate->copy()->addDays((int) ($company->payment_due_days ?? 15))->toDateString();
 
         return DB::transaction(function () use ($company, $periodStart, $periodEnd, $invoiceDate, $dueDate, $options) {
-            $lines = $this->buildInvoiceLines($company, $periodStart, $periodEnd);
+            $lines = $this->buildInvoiceLines($company, $periodStart, $periodEnd, $options);
             $subtotal = collect($lines)->sum('line_amount');
 
             $previousDue = $this->invoiceSettlementService->calculateOutstandingPreviousDue($company->company_id);
@@ -333,8 +333,16 @@ class InvoiceGenerationService
         return $periodStart->format('F-Y') . ' to ' . $periodEnd->format('F-Y');
     }
 
-    private function buildInvoiceLines($company, $periodStart, $periodEnd)
+    private function buildInvoiceLines($company, $periodStart, $periodEnd, array $options = [])
     {
+        $manualBranchPeriods = collect($options['manual_branch_periods'] ?? [])
+            ->filter(fn ($row) => !empty($row['branch_id']) && !empty($row['period_start']) && !empty($row['period_end']))
+            ->values();
+
+        if ($manualBranchPeriods->isNotEmpty()) {
+            return $this->buildManualBranchInvoiceLines($company, $periodStart, $periodEnd, $manualBranchPeriods);
+        }
+
         $lines = [];
         $billingMonths = $this->getBillingPeriodMonths($periodStart, $periodEnd);
         $billingPeriodLabel = $this->formatBillingPeriodLabel($periodStart, $periodEnd);
@@ -471,6 +479,107 @@ class InvoiceGenerationService
                     'line_amount' => $terminalCount * $billingMonths * $monthlyChargesAmount,
                 ];
             }
+        }
+
+        return $lines;
+    }
+
+    private function buildManualBranchInvoiceLines(Company $company, string $periodStart, string $periodEnd, $manualBranchPeriods)
+    {
+        $lines = [];
+        $billingContext = $this->getBillingContext($company->company_id, $periodStart, $periodEnd);
+        $billingRates = collect($billingContext['rates']);
+        $setup = $billingContext['setup'];
+
+        $branchIds = $manualBranchPeriods->pluck('branch_id')->map(fn ($id) => (int) $id)->all();
+        $branches = DB::table('branch')
+            ->where('company_id', $company->company_id)
+            ->whereIn('branch_id', $branchIds)
+            ->where('status_id', 1)
+            ->select('branch_id', 'branch_name')
+            ->get()
+            ->keyBy('branch_id');
+
+        foreach ($manualBranchPeriods as $branchPeriod) {
+            $branchId = (int) $branchPeriod['branch_id'];
+            $branch = $branches->get($branchId);
+            if (!$branch) {
+                continue;
+            }
+
+            $branchStart = Carbon::parse($branchPeriod['period_start'])->toDateString();
+            $branchEnd = Carbon::parse($branchPeriod['period_end'])->toDateString();
+            $branchMonths = $this->getBillingPeriodMonths($branchStart, $branchEnd);
+            $branchPeriodLabel = $this->formatBillingPeriodLabel($branchStart, $branchEnd);
+
+            $applicableBranchRates = $billingRates
+                ->filter(function ($rate) use ($branchId, $branchStart, $branchEnd) {
+                    if ($rate->scope_type !== 'branch') {
+                        return false;
+                    }
+
+                    if ($rate->scope_id && (int) $rate->scope_id !== $branchId) {
+                        return false;
+                    }
+
+                    return $rate->effective_from <= $branchEnd
+                        && (empty($rate->effective_to) || $rate->effective_to >= $branchStart);
+                })
+                ->values();
+
+            if ($applicableBranchRates->isNotEmpty()) {
+                foreach ($applicableBranchRates as $rate) {
+                    $chargeTypeLabel = ucwords(str_replace('_', ' ', $rate->charge_type));
+                    $rateMultiplier = $this->isMonthlyChargeType($rate->charge_type) ? $branchMonths : 1;
+
+                    $lines[] = [
+                        'scope_type' => 'branch',
+                        'scope_id' => $branchId,
+                        'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $branchPeriodLabel . ') (Branch: ' . $branch->branch_name . ')',
+                        'qty' => $rateMultiplier,
+                        'unit_price' => $rate->rate,
+                        'line_amount' => $rateMultiplier * $rate->rate,
+                    ];
+                }
+
+                continue;
+            }
+
+            if (($setup->invoice_type ?? null) === 'branch' && (float) ($setup->monthly_charges_amount ?? 0) > 0) {
+                $lines[] = [
+                    'scope_type' => 'branch',
+                    'scope_id' => $branchId,
+                    'description' => 'Sabsoft (Sabify) POS Application - Monthly Subscription (' . $branchPeriodLabel . ') (Branch: ' . $branch->branch_name . ')',
+                    'qty' => $branchMonths,
+                    'unit_price' => (float) $setup->monthly_charges_amount,
+                    'line_amount' => $branchMonths * (float) $setup->monthly_charges_amount,
+                ];
+            }
+        }
+
+        $companyScopedRates = $billingRates
+            ->filter(function ($rate) use ($periodStart, $periodEnd) {
+                return $rate->scope_type === 'company'
+                    && $rate->effective_from <= $periodEnd
+                    && (empty($rate->effective_to) || $rate->effective_to >= $periodStart);
+            })
+            ->values();
+
+        $overallBillingMonths = $this->getBillingPeriodMonths($periodStart, $periodEnd);
+        $overallBillingLabel = $this->formatBillingPeriodLabel($periodStart, $periodEnd);
+
+        foreach ($companyScopedRates as $rate) {
+            $chargeTypeLabel = ucwords(str_replace('_', ' ', $rate->charge_type));
+            $rateMultiplier = $this->isMonthlyChargeType($rate->charge_type) ? $overallBillingMonths : 1;
+
+            $lines[] = [
+                'scope_type' => 'company',
+                'scope_id' => $rate->scope_id,
+                'description' => 'Sabsoft (Sabify) POS Application - ' . $chargeTypeLabel . ' (' . $overallBillingLabel . ') (Company)',
+                'qty' => $rateMultiplier,
+                'unit_price' => $rate->rate,
+                'line_amount' => $rateMultiplier * $rate->rate,
+            ];
         }
 
         return $lines;
