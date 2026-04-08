@@ -7,17 +7,18 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">Billing Invoices</h5>
-                <a href="{{ route('billing.delivery-history') }}" class="btn btn-success btn-sm f-right m-l-10">Delivery History</a>
+                <a href="{{ route('billing.delivery-history') }}" class="btn btn-success btn-sm f-right m-l-10">Delivery
+                    History</a>
                 <a href="{{ route('billing.invoices.create') }}" class="btn btn-primary btn-sm f-right">Generate Invoice</a>
             </div>
             <div class="card-block">
-                @if(session('success'))
+                @if (session('success'))
                     <div class="alert alert-success">
                         {{ session('success') }}
                     </div>
                 @endif
 
-                @if($errors->has('error'))
+                @if ($errors->has('error'))
                     <div class="alert alert-danger">
                         {{ $errors->first('error') }}
                     </div>
@@ -29,7 +30,8 @@
                         <select name="company_id" class="form-control select2">
                             <option value="">All</option>
                             @foreach ($companies as $company)
-                                <option value="{{ $company->company_id }}" {{ request('company_id') == $company->company_id ? 'selected' : '' }}>
+                                <option value="{{ $company->company_id }}"
+                                    {{ request('company_id') == $company->company_id ? 'selected' : '' }}>
                                     {{ $company->name }}
                                 </option>
                             @endforeach
@@ -40,7 +42,8 @@
                         <select name="status" class="form-control">
                             <option value="">All</option>
                             @foreach (['draft', 'issued', 'partial', 'paid', 'overdue', 'void'] as $status)
-                                <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
+                                <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
+                                    {{ ucfirst($status) }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -80,15 +83,30 @@
                                     <td>{{ ucfirst($invoice->status) }}</td>
                                     <td>{{ $invoice->due_date }}</td>
                                     <td>
-                                        <a href="{{ route('billing.invoices.show', $invoice->id) }}" class="btn btn-info btn-sm">View</a>
-                                        @if($invoice->payments_count == 0)
-                                            <form method="post" action="{{ route('billing.invoices.destroy', $invoice->id) }}" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this invoice?');">
+                                        <a href="{{ route('billing.invoices.show', $invoice->id) }}"
+                                            class="btn btn-info btn-sm">View</a>
+                                        <form method="post"
+                                            action="{{ route('billing.invoices.whatsapp.send', $invoice->id) }}"
+                                            class="m-r-10 m-b-0">
+                                            @csrf
+                                            <button type="submit" class="btn btn-light btn-sm"
+                                                style="color: white; border: 0; font-weight: 600; padding: 10px 16px;background-color:#4CAF50;">
+                                                <i class="icofont icofont-social-whatsapp" style="color:white;"></i> Send
+                                                WhatsApp
+                                            </button>
+                                        </form>
+                                        @if ($invoice->payments_count == 0)
+                                            <form method="post"
+                                                action="{{ route('billing.invoices.destroy', $invoice->id) }}"
+                                                style="display:inline;"
+                                                onsubmit="return confirm('Are you sure you want to delete this invoice?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm">Delete</button>
                                             </form>
                                         @else
-                                            <button type="button" class="btn btn-danger btn-sm" disabled title="Payment already received">Delete</button>
+                                            <button type="button" class="btn btn-danger btn-sm" disabled
+                                                title="Payment already received">Delete</button>
                                         @endif
                                     </td>
                                 </tr>
