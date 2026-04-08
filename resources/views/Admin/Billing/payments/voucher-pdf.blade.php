@@ -28,6 +28,12 @@
         .totals .label { font-weight: bold; }
         .totals .grand-total { background-color: #2c3e50; color: white; font-weight: bold; }
         .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center; font-size: 10px; color: #666; clear: both; }
+        .page-break { page-break-before: always; }
+        .screenshot-grid { width: 100%; }
+        .screenshot-card { border: 1px solid #d9dee5; border-radius: 10px; padding: 10px; margin-bottom: 18px; page-break-inside: avoid; }
+        .screenshot-title { font-size: 12px; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
+        .screenshot-image { width: 100%; max-height: 720px; object-fit: contain; border: 1px solid #edf1f5; }
+        .screenshot-meta { margin-top: 6px; font-size: 10px; color: #666; }
     </style>
 </head>
 <body>
@@ -125,5 +131,35 @@
         <p>Thank you. This voucher confirms receipt and allocation of your payment.</p>
         <p>This is a computer-generated voucher and does not require a signature.</p>
     </div>
+
+    @if(($screenshots ?? collect())->isNotEmpty())
+        <div class="page-break"></div>
+
+        <div class="header" style="margin-top: 0;">
+            <table>
+                <tr>
+                    <td style="width: 60%;">
+                        <div class="title" style="text-align: left; font-size: 22px;">Payment Screenshots</div>
+                        <div class="subtitle" style="text-align: left;">Reference page for voucher #{{ $voucher->voucher_no }}</div>
+                    </td>
+                    <td style="width: 40%; vertical-align: top; text-align: right;">
+                        <div class="section-title" style="text-align: right;">Attachment Summary</div>
+                        <span class="info-label">Count:</span> {{ $screenshots->count() }}<br>
+                        <span class="info-label">Payment Date:</span> {{ date('M d, Y', strtotime($voucher->payment_date)) }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="screenshot-grid">
+            @foreach($screenshots as $index => $screenshot)
+                <div class="screenshot-card">
+                    <div class="screenshot-title">Screenshot {{ $index + 1 }}</div>
+                    <img src="{{ $screenshot['data_uri'] }}" class="screenshot-image" alt="{{ $screenshot['name'] }}">
+                    <div class="screenshot-meta">{{ $screenshot['name'] }}</div>
+                </div>
+            @endforeach
+        </div>
+    @endif
 </body>
 </html>

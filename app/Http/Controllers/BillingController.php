@@ -10,12 +10,16 @@ use App\Models\InvoicePayment;
 use App\Models\InvoiceSetup;
 use App\Models\OrderPayment;
 use App\Models\PaymentVoucher;
+use App\Models\PaymentVoucherScreenshot;
 use App\Services\InvoiceGenerationService;
 use App\Services\InvoiceSettlementService;
 use App\Services\PaymentVoucherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Throwable;
 
@@ -372,7 +376,14 @@ class BillingController extends Controller
 
     public function show($id)
     {
-        $invoice = Invoice::with(['company', 'lines', 'payments.paymentMode', 'payments.voucher', 'adjustments'])->findOrFail($id);
+        $invoice = Invoice::with([
+            'company',
+            'lines',
+            'payments.paymentMode',
+            'payments.voucher',
+            'payments.screenshots',
+            'adjustments',
+        ])->findOrFail($id);
         $paymentModes = OrderPayment::orderBy('payment_mode')->get(['payment_id', 'payment_mode']);
 
         return view('Admin.Billing.invoices.show', compact('invoice', 'paymentModes'));
@@ -422,16 +433,41 @@ class BillingController extends Controller
         PaymentVoucherService $paymentVoucherService
     )
     {
-        $data = $request->validate([
+        $paymentModeId = $request->input('payment_mode_id');
+        $selectedPaymentMode = $paymentModeId
+            ? OrderPayment::query()->find($paymentModeId, ['payment_id', 'payment_mode'])
+            : null;
+        $isCashPayment = $selectedPaymentMode
+            ? strcasecmp(trim((string) $selectedPaymentMode->payment_mode), 'cash') === 0
+            : false;
+
+        $validator = Validator::make($request->all(), [
             'payment_date' => 'required|date',
             'amount' => 'required|numeric|min:0.01',
             'payment_mode_id' => 'nullable|integer|exists:sales_payment,payment_id',
             'reference_no' => 'nullable|string|max:100',
             'narration' => 'nullable|string|max:255',
+            'screenshots' => [
+                Rule::requiredIf(function () use ($request, $isCashPayment) {
+                    return $request->filled('payment_mode_id') && !$isCashPayment;
+                }),
+                'array',
+                'max:8',
+            ],
+            'screenshots.*' => 'image|mimes:jpg,jpeg,png,webp|max:5120',
+        ], [
+            'screenshots.required' => 'Payment screenshot is required for non-cash payments.',
+            'screenshots.array' => 'Screenshots must be uploaded as a list of image files.',
+            'screenshots.max' => 'You can upload up to 8 payment screenshots at a time.',
+            'screenshots.*.image' => 'Each screenshot must be a valid image.',
+            'screenshots.*.mimes' => 'Screenshots must be JPG, JPEG, PNG, or WEBP files.',
+            'screenshots.*.max' => 'Each screenshot must not be larger than 5 MB.',
         ]);
 
+        $data = $validator->validate();
+
         try {
-            $result = DB::transaction(function () use ($invoiceId, $data, $invoiceSettlementService, $paymentVoucherService) {
+            $result = DB::transaction(function () use ($invoiceId, $data, $request, $invoiceSettlementService, $paymentVoucherService) {
                 $invoice = Invoice::lockForUpdate()->findOrFail($invoiceId);
                 $paymentDate = Carbon::parse($data['payment_date']);
 
@@ -447,6 +483,21 @@ class BillingController extends Controller
                     'whatsapp_status' => 'pending',
                 ]);
 
+                foreach ($request->file('screenshots', []) as $index => $file) {
+                    $path = $file->store('billing/payment-screenshots/' . $voucher->id, 'public');
+
+                    PaymentVoucherScreenshot::create([
+                        'payment_voucher_id' => $voucher->id,
+                        'disk' => 'public',
+                        'file_path' => $path,
+                        'original_name' => $file->getClientOriginalName(),
+                        'file_name' => basename($path),
+                        'mime_type' => $file->getClientMimeType(),
+                        'file_size' => $file->getSize(),
+                        'sort_order' => $index + 1,
+                    ]);
+                }
+
                 $allocation = $invoiceSettlementService->applyPaymentToCompany($invoice, [
                     'payment_date' => $data['payment_date'],
                     'amount' => $data['amount'],
@@ -458,7 +509,7 @@ class BillingController extends Controller
                 ]);
 
                 return [
-                    'voucher' => $voucher->fresh(['company', 'paymentMode', 'invoicePayments.invoice']),
+                    'voucher' => $voucher->fresh(['company', 'paymentMode', 'invoicePayments.invoice', 'screenshots']),
                     'allocation' => $allocation,
                 ];
             });
@@ -492,6 +543,21 @@ class BillingController extends Controller
         return redirect()
             ->route('billing.invoices.show', $invoiceId)
             ->with('success', 'Payment received successfully. Voucher ' . $result['voucher']->voucher_no . ' created. Allocated to: ' . $summary . '.' . $whatsAppMessage);
+    }
+
+    public function downloadPaymentScreenshot($id)
+    {
+        $screenshot = PaymentVoucherScreenshot::findOrFail($id);
+        $disk = $screenshot->disk ?: 'public';
+
+        if (!Storage::disk($disk)->exists($screenshot->file_path)) {
+            abort(404);
+        }
+
+        return Storage::disk($disk)->download(
+            $screenshot->file_path,
+            $screenshot->original_name ?: $screenshot->file_name ?: ('payment-screenshot-' . $screenshot->id)
+        );
     }
 
     public function addAdjustment(Request $request, $invoiceId)

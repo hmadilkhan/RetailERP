@@ -131,7 +131,7 @@
             @endif
             @if($invoice->previous_due > 0)
             <tr>
-                <td class="label">Older Outstanding at Issue:</td>
+                <td class="label">Outstanding at Issue:</td>
                 <td class="text-right">PKR {{ number_format($invoice->previous_due, 2) }}</td>
             </tr>
             @endif

@@ -23,4 +23,9 @@ class PaymentVoucher extends Model
     {
         return $this->hasMany(InvoicePayment::class, 'payment_voucher_id');
     }
+
+    public function screenshots()
+    {
+        return $this->hasMany(PaymentVoucherScreenshot::class, 'payment_voucher_id')->orderBy('sort_order')->orderBy('id');
+    }
 }

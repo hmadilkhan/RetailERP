@@ -40,4 +40,16 @@ class Invoice extends Model
             'payment_voucher_id'
         );
     }
+
+    public function paymentScreenshots()
+    {
+        return $this->hasManyThrough(
+            PaymentVoucherScreenshot::class,
+            InvoicePayment::class,
+            'invoice_id',
+            'payment_voucher_id',
+            'id',
+            'payment_voucher_id'
+        );
+    }
 }
