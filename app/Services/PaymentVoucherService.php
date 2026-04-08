@@ -113,8 +113,7 @@ class PaymentVoucherService
         }
 
         $document = $this->storeVoucherPdf($voucher, [
-            // Keep WhatsApp payloads lightweight; embedded screenshots can make DomPDF output too heavy.
-            'include_screenshots' => (bool) ($options['include_screenshots'] ?? false),
+            'include_screenshots' => (bool) ($options['include_screenshots'] ?? true),
         ]);
         $response = $this->sendWhatsAppTemplateWithDocument(
             $to,
