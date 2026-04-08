@@ -388,18 +388,12 @@ class BillingController extends Controller
             ]);
 
             if (($result['status'] ?? null) === 'skipped') {
-                return redirect()
-                    ->route('billing.invoices.show', $invoice->id)
-                    ->withErrors(['error' => $result['reason'] ?? 'WhatsApp invoice was skipped.']);
+                return back()->withErrors(['error' => $result['reason'] ?? 'WhatsApp invoice was skipped.']);
             }
 
-            return redirect()
-                ->route('billing.invoices.show', $invoice->id)
-                ->with('success', 'Invoice PDF sent to WhatsApp successfully.');
+            return back()->with('success', 'Invoice PDF sent to WhatsApp successfully.');
         } catch (Throwable $exception) {
-            return redirect()
-                ->route('billing.invoices.show', $invoice->id)
-                ->withErrors(['error' => 'Unable to send invoice to WhatsApp. ' . $exception->getMessage()]);
+            return back()->withErrors(['error' => 'Unable to send invoice to WhatsApp. ' . $exception->getMessage()]);
         }
     }
 
