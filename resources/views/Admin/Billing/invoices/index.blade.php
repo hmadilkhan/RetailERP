@@ -87,7 +87,8 @@
                                             class="btn btn-info btn-sm">View</a>
                                         <form method="post"
                                             action="{{ route('billing.invoices.whatsapp.send', $invoice->id) }}"
-                                            class="m-r-10 m-b-0">
+                                            style="display:inline;"
+                                            class="m-b-0">
                                             @csrf
                                             <button type="submit" class="btn btn-light btn-sm"
                                                 style="color: white; border: 0; font-weight: 600; padding: 10px 16px;background-color:#4CAF50;">
