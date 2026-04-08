@@ -30,14 +30,14 @@
         .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center; font-size: 10px; color: #666; clear: both; }
         .page-break { page-break-before: always; }
         .attachment-page { page-break-inside: avoid; }
-        .attachment-grid { width: 100%; border-collapse: separate; border-spacing: 10px 12px; table-layout: fixed; }
+        .attachment-grid { width: 100%; border-collapse: separate; border-spacing: 8px 10px; table-layout: fixed; }
         .attachment-grid td { width: 50%; vertical-align: top; }
-        .screenshot-card { border: 1px solid #d9dee5; border-radius: 10px; padding: 10px; height: 330px; page-break-inside: avoid; }
-        .screenshot-title { font-size: 12px; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
-        .screenshot-frame { width: 100%; height: 270px; border: 1px solid #edf1f5; text-align: center; vertical-align: middle; }
+        .screenshot-card { border: 1px solid #d9dee5; border-radius: 10px; padding: 8px; height: 355px; page-break-inside: avoid; }
+        .screenshot-title { font-size: 12px; font-weight: bold; color: #2c3e50; margin-bottom: 6px; }
+        .screenshot-frame { width: 100%; height: 315px; border: 1px solid #edf1f5; text-align: center; vertical-align: middle; }
         .screenshot-frame td { vertical-align: middle; text-align: center; }
-        .screenshot-image { max-width: 100%; max-height: 250px; width: auto; height: auto; }
-        .screenshot-meta { margin-top: 6px; font-size: 10px; color: #666; }
+        .screenshot-image { max-width: 100%; max-height: 100%; width: auto; height: auto; }
+        .screenshot-meta { margin-top: 4px; font-size: 9px; color: #666; line-height: 1.2; }
     </style>
 </head>
 <body>
