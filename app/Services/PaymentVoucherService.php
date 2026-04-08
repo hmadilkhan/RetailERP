@@ -32,26 +32,31 @@ class PaymentVoucherService
         return $seriesPrefix . str_pad((string) $sequence, 4, '0', STR_PAD_LEFT);
     }
 
-    public function storeVoucherPdf(PaymentVoucher $voucher): array
+    public function storeVoucherPdf(PaymentVoucher $voucher, array $options = []): array
     {
         $voucher->loadMissing(['company', 'paymentMode', 'invoicePayments.invoice', 'screenshots']);
         $yearlyInvoices = $this->getYearlyInvoiceSummary($voucher);
-        $screenshots = $voucher->screenshots->map(function ($screenshot) {
-            $disk = $screenshot->disk ?: 'public';
-            $path = $screenshot->file_path;
+        $includeScreenshots = (bool) ($options['include_screenshots'] ?? true);
+        $screenshots = collect();
 
-            if (!$path || !Storage::disk($disk)->exists($path)) {
-                return null;
-            }
+        if ($includeScreenshots) {
+            $screenshots = $voucher->screenshots->map(function ($screenshot) {
+                $disk = $screenshot->disk ?: 'public';
+                $path = $screenshot->file_path;
 
-            $mimeType = $screenshot->mime_type ?: Storage::disk($disk)->mimeType($path);
+                if (!$path || !Storage::disk($disk)->exists($path)) {
+                    return null;
+                }
 
-            return [
-                'name' => $screenshot->original_name ?: $screenshot->file_name,
-                'url' => $screenshot->url,
-                'data_uri' => 'data:' . $mimeType . ';base64,' . base64_encode(Storage::disk($disk)->get($path)),
-            ];
-        })->filter()->values();
+                $mimeType = $screenshot->mime_type ?: Storage::disk($disk)->mimeType($path);
+
+                return [
+                    'name' => $screenshot->original_name ?: $screenshot->file_name,
+                    'url' => $screenshot->url,
+                    'data_uri' => 'data:' . $mimeType . ';base64,' . base64_encode(Storage::disk($disk)->get($path)),
+                ];
+            })->filter()->values();
+        }
 
         $pdf = Pdf::loadView('Admin.Billing.payments.voucher-pdf', [
             'voucher' => $voucher,
@@ -107,7 +112,10 @@ class PaymentVoucherService
             ];
         }
 
-        $document = $this->storeVoucherPdf($voucher);
+        $document = $this->storeVoucherPdf($voucher, [
+            // Keep WhatsApp payloads lightweight; embedded screenshots can make DomPDF output too heavy.
+            'include_screenshots' => (bool) ($options['include_screenshots'] ?? false),
+        ]);
         $response = $this->sendWhatsAppTemplateWithDocument(
             $to,
             $templateName,
