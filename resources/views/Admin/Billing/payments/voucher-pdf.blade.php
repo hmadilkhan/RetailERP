@@ -29,10 +29,14 @@
         .totals .grand-total { background-color: #2c3e50; color: white; font-weight: bold; }
         .footer { margin-top: 30px; padding-top: 15px; border-top: 1px solid #ddd; text-align: center; font-size: 10px; color: #666; clear: both; }
         .page-break { page-break-before: always; }
-        .screenshot-grid { width: 100%; }
-        .screenshot-card { border: 1px solid #d9dee5; border-radius: 10px; padding: 10px; margin-bottom: 18px; page-break-inside: avoid; }
+        .attachment-page { page-break-inside: avoid; }
+        .attachment-grid { width: 100%; border-collapse: separate; border-spacing: 10px 12px; table-layout: fixed; }
+        .attachment-grid td { width: 50%; vertical-align: top; }
+        .screenshot-card { border: 1px solid #d9dee5; border-radius: 10px; padding: 10px; height: 330px; page-break-inside: avoid; }
         .screenshot-title { font-size: 12px; font-weight: bold; color: #2c3e50; margin-bottom: 8px; }
-        .screenshot-image { width: 100%; max-height: 720px; object-fit: contain; border: 1px solid #edf1f5; }
+        .screenshot-frame { width: 100%; height: 270px; border: 1px solid #edf1f5; text-align: center; vertical-align: middle; }
+        .screenshot-frame td { vertical-align: middle; text-align: center; }
+        .screenshot-image { max-width: 100%; max-height: 250px; width: auto; height: auto; }
         .screenshot-meta { margin-top: 6px; font-size: 10px; color: #666; }
     </style>
 </head>
@@ -133,33 +137,58 @@
     </div>
 
     @if(($screenshots ?? collect())->isNotEmpty())
-        <div class="page-break"></div>
+        @foreach($screenshots->chunk(4) as $pageIndex => $screenshotPage)
+            <div class="page-break"></div>
 
-        <div class="header" style="margin-top: 0;">
-            <table>
-                <tr>
-                    <td style="width: 60%;">
-                        <div class="title" style="text-align: left; font-size: 22px;">Payment Screenshots</div>
-                        <div class="subtitle" style="text-align: left;">Reference page for voucher #{{ $voucher->voucher_no }}</div>
-                    </td>
-                    <td style="width: 40%; vertical-align: top; text-align: right;">
-                        <div class="section-title" style="text-align: right;">Attachment Summary</div>
-                        <span class="info-label">Count:</span> {{ $screenshots->count() }}<br>
-                        <span class="info-label">Payment Date:</span> {{ date('M d, Y', strtotime($voucher->payment_date)) }}
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="screenshot-grid">
-            @foreach($screenshots as $index => $screenshot)
-                <div class="screenshot-card">
-                    <div class="screenshot-title">Screenshot {{ $index + 1 }}</div>
-                    <img src="{{ $screenshot['data_uri'] }}" class="screenshot-image" alt="{{ $screenshot['name'] }}">
-                    <div class="screenshot-meta">{{ $screenshot['name'] }}</div>
+            <div class="attachment-page">
+                <div class="header" style="margin-top: 0;">
+                    <table>
+                        <tr>
+                            <td style="width: 60%;">
+                                <div class="title" style="text-align: left; font-size: 22px;">Payment Screenshots</div>
+                                <div class="subtitle" style="text-align: left;">Reference page {{ $pageIndex + 1 }} for voucher #{{ $voucher->voucher_no }}</div>
+                            </td>
+                            <td style="width: 40%; vertical-align: top; text-align: right;">
+                                <div class="section-title" style="text-align: right;">Attachment Summary</div>
+                                <span class="info-label">Count:</span> {{ $screenshots->count() }}<br>
+                                <span class="info-label">Page:</span> {{ $pageIndex + 1 }} of {{ $screenshots->chunk(4)->count() }}<br>
+                                <span class="info-label">Payment Date:</span> {{ date('M d, Y', strtotime($voucher->payment_date)) }}
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-            @endforeach
-        </div>
+
+                <table class="attachment-grid">
+                    @foreach($screenshotPage->chunk(2) as $row)
+                        <tr>
+                            @foreach($row as $index => $screenshot)
+                                <td>
+                                    <div class="screenshot-card">
+                                        <div class="screenshot-title">Screenshot {{ ($pageIndex * 4) + $loop->parent->index * 2 + $loop->iteration }}</div>
+                                        <table class="screenshot-frame">
+                                            <tr>
+                                                <td>
+                                                    <img src="{{ $screenshot['data_uri'] }}" class="screenshot-image" alt="{{ $screenshot['name'] }}">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <div class="screenshot-meta">{{ $screenshot['name'] }}</div>
+                                    </div>
+                                </td>
+                            @endforeach
+                            @if($row->count() === 1)
+                                <td></td>
+                            @endif
+                        </tr>
+                    @endforeach
+                    @if($screenshotPage->count() <= 2)
+                        <tr>
+                            <td colspan="2" style="border: 0; padding: 0;"></td>
+                        </tr>
+                    @endif
+                </table>
+            </div>
+        @endforeach
     @endif
 </body>
 </html>
