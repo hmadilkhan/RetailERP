@@ -11,8 +11,20 @@
     @endif
 
     @if($errors->has('error'))
-        <div class="alert alert-danger">
-            {{ $errors->first('error') }}
+        <div class="alert alert-danger" style="border: 0; border-left: 6px solid #a71d2a; border-radius: 12px; padding: 18px 22px; box-shadow: 0 12px 30px rgba(167, 29, 42, 0.18); background: linear-gradient(135deg, #fff1f2 0%, #ffe2e6 100%); color: #7f1d1d; margin-bottom: 20px;">
+            <div class="d-flex align-items-start">
+                <div style="font-size: 22px; line-height: 1; margin-right: 12px;">
+                    <i class="icofont icofont-warning-alt"></i>
+                </div>
+                <div>
+                    <div style="font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 6px;">
+                        Action Required
+                    </div>
+                    <div style="font-size: 15px; font-weight: 600; line-height: 1.6;">
+                        {{ $errors->first('error') }}
+                    </div>
+                </div>
+            </div>
         </div>
     @endif
 
