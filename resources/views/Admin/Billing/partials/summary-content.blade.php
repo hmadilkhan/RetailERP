@@ -26,11 +26,10 @@
     <div class="col-lg-3 col-md-6">
         <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
             <div class="card-block">
-                <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Estimated Unpaid Months</p>
-                <h3 class="m-b-0" style="font-weight: 700; color: #c25b12;">{{ number_format($summary->sum('unpaid_months'), 1) }}</h3>
+                <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Billing Time Due</p>
+                <h3 class="m-b-0" style="font-weight: 700; color: #c25b12;">{{ number_format($summary->sum('unpaid_months'), 1) }} months</h3>
                 <small class="text-muted">
-                    {{ number_format($summary->sum('full_unpaid_months'), 0) }} full months
-                    + {{ number_format($summary->sum('partial_unpaid_months'), 1) }} partial
+                    {{ number_format($summary->sum('full_unpaid_months'), 0) }} months + {{ number_format($summary->sum('partial_unpaid_months'), 1) }} partial month equivalent
                 </small>
             </div>
         </div>
@@ -47,7 +46,7 @@
                 <th>Total Amount</th>
                 <th>Paid Amount</th>
                 <th>Balance Amount</th>
-                <th>Unpaid Months</th>
+                <th>Billing Time Due</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -66,10 +65,10 @@
                 <td class="text-danger f-w-600">PKR {{ number_format($item->balance_amount, 2) }}</td>
                 <td>
                     <span class="badge" style="padding: 8px 10px; background: #fff3e8; color: #b45309; font-weight: 700;">
-                        {{ number_format($item->unpaid_months, 1) }} months
+                        {{ number_format($item->unpaid_months, 1) }} billing months due
                     </span>
                     <div class="text-muted" style="font-size: 12px; margin-top: 4px;">
-                        {{ number_format($item->full_unpaid_months, 0) }} full + {{ number_format($item->partial_unpaid_months, 1) }} partial
+                        {{ number_format($item->full_unpaid_months, 0) }} months + {{ number_format($item->partial_unpaid_months, 1) }} partial month equivalent
                     </div>
                 </td>
                 <td>
@@ -105,9 +104,9 @@
                 <th class="text-success">PKR {{ number_format($summary->sum('paid_amount'), 2) }}</th>
                 <th class="text-danger">PKR {{ number_format($summary->sum('balance_amount'), 2) }}</th>
                 <th style="color: #b45309;">
-                    {{ number_format($summary->sum('unpaid_months'), 1) }} months
+                    {{ number_format($summary->sum('unpaid_months'), 1) }} billing months due
                     <div class="text-muted" style="font-size: 12px;">
-                        {{ number_format($summary->sum('full_unpaid_months'), 0) }} full + {{ number_format($summary->sum('partial_unpaid_months'), 1) }} partial
+                        {{ number_format($summary->sum('full_unpaid_months'), 0) }} months + {{ number_format($summary->sum('partial_unpaid_months'), 1) }} partial month equivalent
                     </div>
                 </th>
                 <th colspan="2"></th>
