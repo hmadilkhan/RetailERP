@@ -45,6 +45,41 @@ class BillingController extends Controller
             ->orderBy('company.name')
             ->get();
 
+        $invoicePeriodsByCompany = DB::table('invoices')
+            ->select(
+                'company_id',
+                'period_start',
+                'period_end',
+                'total_amount',
+                'balance_amount'
+            )
+            ->where('status', '!=', 'void')
+            ->when(!empty($request->company_id), function ($query) use ($request) {
+                $query->where('company_id', $request->company_id);
+            })
+            ->get()
+            ->groupBy('company_id');
+
+        $summary = $summary->map(function ($item) use ($invoicePeriodsByCompany) {
+            $companyInvoices = $invoicePeriodsByCompany->get($item->company_id, collect());
+
+            $item->unpaid_months = round($companyInvoices->sum(function ($invoice) {
+                $periodStart = Carbon::parse($invoice->period_start)->startOfMonth();
+                $periodEnd = Carbon::parse($invoice->period_end)->startOfMonth();
+                $invoiceMonths = $periodStart->diffInMonths($periodEnd) + 1;
+                $totalAmount = (float) $invoice->total_amount;
+                $balanceAmount = max((float) $invoice->balance_amount, 0);
+
+                if ($invoiceMonths <= 0 || $totalAmount <= 0 || $balanceAmount <= 0) {
+                    return 0;
+                }
+
+                return $invoiceMonths * min($balanceAmount / $totalAmount, 1);
+            }), 1);
+
+            return $item;
+        });
+
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
         $selectedCompanyId = $request->company_id;
 

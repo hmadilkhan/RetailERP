@@ -1,5 +1,5 @@
 <div class="row m-b-20">
-    <div class="col-md-4">
+    <div class="col-lg-3 col-md-6">
         <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
             <div class="card-block">
                 <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Companies</p>
@@ -7,7 +7,7 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-lg-3 col-md-6">
         <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
             <div class="card-block">
                 <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Total Outstanding</p>
@@ -15,11 +15,19 @@
             </div>
         </div>
     </div>
-    <div class="col-md-4">
+    <div class="col-lg-3 col-md-6">
         <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
             <div class="card-block">
                 <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Collected</p>
                 <h3 class="m-b-0 text-success" style="font-weight: 700;">PKR {{ number_format($summary->sum('paid_amount'), 2) }}</h3>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card m-b-15" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
+            <div class="card-block">
+                <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Estimated Unpaid Months</p>
+                <h3 class="m-b-0" style="font-weight: 700; color: #c25b12;">{{ number_format($summary->sum('unpaid_months'), 1) }}</h3>
             </div>
         </div>
     </div>
@@ -35,6 +43,7 @@
                 <th>Total Amount</th>
                 <th>Paid Amount</th>
                 <th>Balance Amount</th>
+                <th>Unpaid Months</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -52,6 +61,11 @@
                 <td class="text-success f-w-600">PKR {{ number_format($item->paid_amount, 2) }}</td>
                 <td class="text-danger f-w-600">PKR {{ number_format($item->balance_amount, 2) }}</td>
                 <td>
+                    <span class="badge" style="padding: 8px 10px; background: #fff3e8; color: #b45309; font-weight: 700;">
+                        {{ number_format($item->unpaid_months, 1) }} months
+                    </span>
+                </td>
+                <td>
                     @if($item->balance_amount <= 0)
                         <span class="badge badge-success" style="padding: 8px 10px;">Paid</span>
                     @elseif($item->paid_amount > 0)
@@ -68,7 +82,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="8" class="text-center p-4">
+                <td colspan="9" class="text-center p-4">
                     <div class="text-muted">
                         <i class="icofont icofont-inbox f-28 d-block m-b-10"></i>
                         No billing data found.
@@ -83,6 +97,7 @@
                 <th>PKR {{ number_format($summary->sum('total_amount'), 2) }}</th>
                 <th class="text-success">PKR {{ number_format($summary->sum('paid_amount'), 2) }}</th>
                 <th class="text-danger">PKR {{ number_format($summary->sum('balance_amount'), 2) }}</th>
+                <th style="color: #b45309;">{{ number_format($summary->sum('unpaid_months'), 1) }} months</th>
                 <th colspan="2"></th>
             </tr>
         </tfoot>
