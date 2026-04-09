@@ -28,6 +28,10 @@
             <div class="card-block">
                 <p class="text-muted text-uppercase m-b-5" style="letter-spacing: 0.08em; font-size: 11px;">Estimated Unpaid Months</p>
                 <h3 class="m-b-0" style="font-weight: 700; color: #c25b12;">{{ number_format($summary->sum('unpaid_months'), 1) }}</h3>
+                <small class="text-muted">
+                    {{ number_format($summary->sum('full_unpaid_months'), 0) }} full months
+                    + {{ number_format($summary->sum('partial_unpaid_months'), 1) }} partial
+                </small>
             </div>
         </div>
     </div>
@@ -64,6 +68,9 @@
                     <span class="badge" style="padding: 8px 10px; background: #fff3e8; color: #b45309; font-weight: 700;">
                         {{ number_format($item->unpaid_months, 1) }} months
                     </span>
+                    <div class="text-muted" style="font-size: 12px; margin-top: 4px;">
+                        {{ number_format($item->full_unpaid_months, 0) }} full + {{ number_format($item->partial_unpaid_months, 1) }} partial
+                    </div>
                 </td>
                 <td>
                     @if($item->balance_amount <= 0)
@@ -97,7 +104,12 @@
                 <th>PKR {{ number_format($summary->sum('total_amount'), 2) }}</th>
                 <th class="text-success">PKR {{ number_format($summary->sum('paid_amount'), 2) }}</th>
                 <th class="text-danger">PKR {{ number_format($summary->sum('balance_amount'), 2) }}</th>
-                <th style="color: #b45309;">{{ number_format($summary->sum('unpaid_months'), 1) }} months</th>
+                <th style="color: #b45309;">
+                    {{ number_format($summary->sum('unpaid_months'), 1) }} months
+                    <div class="text-muted" style="font-size: 12px;">
+                        {{ number_format($summary->sum('full_unpaid_months'), 0) }} full + {{ number_format($summary->sum('partial_unpaid_months'), 1) }} partial
+                    </div>
+                </th>
                 <th colspan="2"></th>
             </tr>
         </tfoot>

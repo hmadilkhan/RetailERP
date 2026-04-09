@@ -63,7 +63,7 @@ class BillingController extends Controller
         $summary = $summary->map(function ($item) use ($invoicePeriodsByCompany) {
             $companyInvoices = $invoicePeriodsByCompany->get($item->company_id, collect());
 
-            $item->unpaid_months = round($companyInvoices->sum(function ($invoice) {
+            $estimatedUnpaidMonths = $companyInvoices->sum(function ($invoice) {
                 $periodStart = Carbon::parse($invoice->period_start)->startOfMonth();
                 $periodEnd = Carbon::parse($invoice->period_end)->startOfMonth();
                 $invoiceMonths = $periodStart->diffInMonths($periodEnd) + 1;
@@ -75,7 +75,11 @@ class BillingController extends Controller
                 }
 
                 return $invoiceMonths * min($balanceAmount / $totalAmount, 1);
-            }), 1);
+            });
+
+            $item->unpaid_months = round($estimatedUnpaidMonths, 1);
+            $item->full_unpaid_months = (int) floor($estimatedUnpaidMonths);
+            $item->partial_unpaid_months = round(max($estimatedUnpaidMonths - $item->full_unpaid_months, 0), 1);
 
             return $item;
         });
