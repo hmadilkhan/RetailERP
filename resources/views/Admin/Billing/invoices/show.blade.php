@@ -4,6 +4,12 @@
 @section('breadcrumtitle', 'Invoice Detail')
 @section('content')
 <section class="panels-wells" style="margin-top:70px;">
+    @php
+        $paidDate = $invoice->status === 'paid'
+            ? optional($invoice->payments->sortByDesc('payment_date')->first())->payment_date
+            : null;
+    @endphp
+
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -86,9 +92,12 @@
                         <span class="badge badge-warning f-14" style="padding: 9px 12px;">PARTIAL</span>
                     @elseif($invoice->status == 'void')
                         <span class="badge badge-danger f-14" style="padding: 9px 12px;">VOID</span>
-                    @else
+                            @else
                         <span class="badge badge-info f-14" style="padding: 9px 12px;">ISSUED</span>
                     @endif
+                                @if($paidDate)
+                                    <div class="text-muted m-t-10">Paid on {{ \Carbon\Carbon::parse($paidDate)->format('M d, Y') }}</div>
+                                @endif
                             </div>
                         </div>
                     </div>

@@ -27,8 +27,16 @@ class BillingController extends Controller
 {
     public function summary(Request $request)
     {
+        $invoicePaidDates = DB::table('invoice_payments')
+            ->select('invoice_id')
+            ->selectRaw('MAX(payment_date) as paid_date')
+            ->groupBy('invoice_id');
+
         $summary = DB::table('invoices')
             ->join('company', 'invoices.company_id', '=', 'company.company_id')
+            ->leftJoinSub($invoicePaidDates, 'invoice_paid_dates', function ($join) {
+                $join->on('invoice_paid_dates.invoice_id', '=', 'invoices.id');
+            })
             ->select(
                 'company.company_id',
                 'company.name as company_name'
@@ -37,9 +45,13 @@ class BillingController extends Controller
             ->selectRaw('COALESCE(SUM(invoices.total_amount), 0) as total_amount')
             ->selectRaw('COALESCE(SUM(invoices.paid_amount), 0) as paid_amount')
             ->selectRaw('COALESCE(SUM(invoices.balance_amount), 0) as balance_amount')
+            ->selectRaw('MAX(invoice_paid_dates.paid_date) as latest_paid_date')
             ->where('invoices.status', '!=', 'void')
             ->when(!empty($request->company_id), function ($query) use ($request) {
                 $query->where('invoices.company_id', $request->company_id);
+            })
+            ->tap(function ($query) use ($request) {
+                $this->applyInvoiceStatusFilter($query, $request->status, 'invoices');
             })
             ->groupBy('company.company_id', 'company.name')
             ->orderBy('company.name')
@@ -56,6 +68,9 @@ class BillingController extends Controller
             ->where('status', '!=', 'void')
             ->when(!empty($request->company_id), function ($query) use ($request) {
                 $query->where('company_id', $request->company_id);
+            })
+            ->tap(function ($query) use ($request) {
+                $this->applyInvoiceStatusFilter($query, $request->status, 'invoices');
             })
             ->get()
             ->groupBy('company_id');
@@ -86,24 +101,27 @@ class BillingController extends Controller
 
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
         $selectedCompanyId = $request->company_id;
+        $selectedStatus = $request->status;
 
         if ($request->ajax()) {
             return view('Admin.Billing.partials.summary-content', compact('summary'));
         }
 
-        return view('Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId'));
+        return view('Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId', 'selectedStatus'));
     }
 
     public function index(Request $request)
     {
-        $query = Invoice::with('company')->withCount('payments');
+        $query = Invoice::with('company')
+            ->withCount('payments')
+            ->withMax('payments', 'payment_date');
 
         if (!empty($request->company_id)) {
             $query->where('company_id', $request->company_id);
         }
 
         if (!empty($request->status)) {
-            $query->where('status', $request->status);
+            $this->applyInvoiceStatusFilter($query, $request->status, 'invoices');
         }
 
         if (!empty($request->month)) {
@@ -647,5 +665,33 @@ class BillingController extends Controller
         $invoice = Invoice::with(['company', 'lines'])->findOrFail($id);
         $pdf = \PDF::loadView('Admin.Billing.invoices.pdf', compact('invoice'));
         return $pdf->download('invoice-' . $invoice->invoice_no . '.pdf');
+    }
+
+    private function applyInvoiceStatusFilter($query, ?string $status, string $table = 'invoices'): void
+    {
+        $status = strtolower(trim((string) $status));
+        $qualifiedPaidAmount = $table . '.paid_amount';
+        $qualifiedBalanceAmount = $table . '.balance_amount';
+
+        if ($status === 'paid') {
+            $query->where($qualifiedBalanceAmount, '<=', 0);
+            return;
+        }
+
+        if ($status === 'partial') {
+            $query->where($qualifiedBalanceAmount, '>', 0)
+                ->where($qualifiedPaidAmount, '>', 0);
+            return;
+        }
+
+        if ($status === 'unpaid') {
+            $query->where($qualifiedBalanceAmount, '>', 0)
+                ->where($qualifiedPaidAmount, '<=', 0);
+            return;
+        }
+
+        if ($status !== '') {
+            $query->where($table . '.status', $status);
+        }
     }
 }

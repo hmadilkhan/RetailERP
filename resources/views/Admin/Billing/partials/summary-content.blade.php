@@ -48,6 +48,7 @@
                 <th>Balance Amount</th>
                 <th>Billing Time Due</th>
                 <th>Status</th>
+                <th>Paid Date</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -81,14 +82,21 @@
                     @endif
                 </td>
                 <td>
-                    <a href="{{ route('billing.invoices.index', ['company_id' => $item->company_id]) }}" class="btn btn-sm btn-info">
+                    @if($item->balance_amount <= 0 && !empty($item->latest_paid_date))
+                        <span class="f-w-600 text-success">{{ \Carbon\Carbon::parse($item->latest_paid_date)->format('M d, Y') }}</span>
+                    @else
+                        <span class="text-muted">-</span>
+                    @endif
+                </td>
+                <td>
+                    <a href="{{ route('billing.invoices.index', ['company_id' => $item->company_id, 'status' => request('status')]) }}" class="btn btn-sm btn-info">
                         <i class="icofont icofont-eye"></i> View Invoices
                     </a>
                 </td>
             </tr>
             @empty
             <tr>
-                <td colspan="9" class="text-center p-4">
+                <td colspan="10" class="text-center p-4">
                     <div class="text-muted">
                         <i class="icofont icofont-inbox f-28 d-block m-b-10"></i>
                         No billing data found.
@@ -109,7 +117,7 @@
                         {{ number_format($summary->sum('full_unpaid_months'), 0) }} months + {{ number_format($summary->sum('partial_unpaid_months'), 1) }} partial month equivalent
                     </div>
                 </th>
-                <th colspan="2"></th>
+                <th colspan="3"></th>
             </tr>
         </tfoot>
     </table>

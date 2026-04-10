@@ -68,6 +68,7 @@
                                 <th>Balance</th>
                                 <th>Status</th>
                                 <th>Due Date</th>
+                                <th>Paid Date</th>
                                 <th>Action</th>
                             </tr>
                         </thead>
@@ -82,6 +83,13 @@
                                     <td>{{ number_format($invoice->balance_amount, 2) }}</td>
                                     <td>{{ ucfirst($invoice->status) }}</td>
                                     <td>{{ $invoice->due_date }}</td>
+                                    <td>
+                                        @if($invoice->status === 'paid' && !empty($invoice->payments_max_payment_date))
+                                            {{ \Carbon\Carbon::parse($invoice->payments_max_payment_date)->format('M d, Y') }}
+                                        @else
+                                            -
+                                        @endif
+                                    </td>
                                     <td>
                                         <a href="{{ route('billing.invoices.show', $invoice->id) }}"
                                             class="btn btn-info btn-sm">View</a>
@@ -113,7 +121,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center">No invoices found.</td>
+                                    <td colspan="10" class="text-center">No invoices found.</td>
                                 </tr>
                             @endforelse
                         </tbody>
