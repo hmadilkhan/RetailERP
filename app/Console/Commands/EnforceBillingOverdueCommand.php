@@ -163,7 +163,7 @@ class EnforceBillingOverdueCommand extends Command
                 return (object) [
                     'company_id' => (int) $groupCompanyId,
                     'oldest_due_date' => $invoices
-                        ->filter(fn ($invoice) => !empty($invoice->due_date))
+                        ->filter(fn($invoice) => !empty($invoice->due_date))
                         ->min('due_date'),
                     'open_invoices' => $invoices->count(),
                     'outstanding_balance' => (float) $invoices->sum('balance_amount'),
@@ -210,8 +210,8 @@ class EnforceBillingOverdueCommand extends Command
                 ->pluck('branch_id');
 
             if ($branchIds->isNotEmpty()) {
-                Terminal::query()->whereIn('branch_id', $branchIds)->update(['status_id' => 2]);
-                Branch::query()->whereIn('branch_id', $branchIds)->update(['status_id' => 2]);
+                Terminal::query()->whereIn('branch_id', $branchIds)->update(['status_id' => 2, 'deleted_at' => now()]);
+                Branch::query()->whereIn('branch_id', $branchIds)->update(['status_id' => 2, 'deleted_at' => now()]);
             }
         });
 
