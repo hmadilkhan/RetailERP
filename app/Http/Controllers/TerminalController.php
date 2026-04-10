@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Terminal;
 use App\terminal_print_details;
 use App\Traits\MediaTrait;
+use App\Services\TerminalLockService;
 use App\userDetails;
 
 class TerminalController extends Controller
@@ -274,23 +275,14 @@ class TerminalController extends Controller
         return ['code' => 0];
     }
 
-    public function lockTerminal(Request $request)
+    public function lockTerminal(Request $request, TerminalLockService $terminalLockService)
     {
-        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no");
-        $lock = Sunmi::lock([
-            'passwd'     => '03008288',
-            'screen_tip' => 'Device Locked',
-            'expire_day' => 7,
-            'msn_list'   => $terminal,
-        ]);
-        
-        $rawData = $this->parseSunmiResponse($lock);
-        if($rawData && isset($rawData['code']) && $rawData['code'] == 1) {
-            ModelsTerminal::where("terminal_id",$request->terminal_id)->update(['is_locked' => 1]);
-            return response()->json(['status' => 200, 'message' => 'Device locked successfully']);
-        }
-        
-        return response()->json(['status' => 500, 'message' => 'Failed to lock device']);
+        $result = $terminalLockService->lockTerminalById((int) $request->terminal_id);
+
+        return response()->json([
+            'status' => $result['status'],
+            'message' => $result['message'],
+        ], $result['status'] === 200 ? 200 : 500);
     }
 
     public function unlockTerminal(Request $request)
