@@ -24,13 +24,13 @@ class EnforceBillingOverdueCommand extends Command
         $companyId = $this->argument('company_id');
         $dryRun = (bool) $this->option('dry-run');
         $today = Carbon::today();
-        $deactivateCutoff = $today->copy()->subMonthsNoOverflow(3)->subDays(5)->toDateString();
-        $lockCutoff = $today->copy()->subMonthsNoOverflow(4)->subDays(5)->toDateString();
+        $deactivateThresholdMonths = 3 + $this->daysToBillingMonthFraction(5);
+        $lockThresholdMonths = 4 + $this->daysToBillingMonthFraction(5);
 
         $this->info('Checking overdue billing thresholds...');
         $this->line('Reference date: ' . $today->toDateString());
-        $this->line('Company deactivation threshold due on or before: ' . $deactivateCutoff);
-        $this->line('Device lock threshold due on or before: ' . $lockCutoff);
+        $this->line('Company deactivation threshold: ' . number_format($deactivateThresholdMonths, 1) . ' billing months due');
+        $this->line('Device lock threshold: ' . number_format($lockThresholdMonths, 1) . ' billing months due');
         if ($companyId) {
             $this->line('Company filter applied: ' . $companyId);
         }
@@ -38,10 +38,20 @@ class EnforceBillingOverdueCommand extends Command
             $this->warn('Dry run enabled. No records will be updated and no terminals will be locked.');
         }
 
-        $companies = $this->getCompaniesWithOutstandingInvoices($companyId);
+        $companies = $this->getCompaniesWithOutstandingInvoices($companyId)
+            ->map(function ($row) {
+                $row->billing_time_due = $this->calculateBillingTimeDue($row->invoices);
+                return $row;
+            })
+            ->filter(function ($row) use ($deactivateThresholdMonths, $lockThresholdMonths) {
+                return $row->billing_time_due >= $deactivateThresholdMonths
+                    || $row->billing_time_due >= $lockThresholdMonths;
+            })
+            ->sortByDesc('billing_time_due')
+            ->values();
 
         if ($companies->isEmpty()) {
-            $this->info('No companies with outstanding overdue invoices were found.');
+            $this->info('No companies crossed the billing overdue thresholds.');
             return self::SUCCESS;
         }
 
@@ -53,9 +63,9 @@ class EnforceBillingOverdueCommand extends Command
                 continue;
             }
 
-            $oldestDueDate = Carbon::parse($row->oldest_due_date);
-            $shouldDeactivate = $oldestDueDate->lessThanOrEqualTo(Carbon::parse($deactivateCutoff));
-            $shouldLock = $oldestDueDate->lessThanOrEqualTo(Carbon::parse($lockCutoff));
+            $oldestDueDate = !empty($row->oldest_due_date) ? Carbon::parse($row->oldest_due_date) : null;
+            $shouldDeactivate = $row->billing_time_due >= $deactivateThresholdMonths;
+            $shouldLock = $row->billing_time_due >= $lockThresholdMonths;
 
             $companyAction = 'none';
             $lockAction = 'none';
@@ -104,8 +114,9 @@ class EnforceBillingOverdueCommand extends Command
             $rows[] = [
                 'company_id' => $company->company_id,
                 'company_name' => $company->name,
-                'oldest_due_date' => $oldestDueDate->toDateString(),
-                'days_overdue' => $oldestDueDate->diffInDays($today),
+                'oldest_due_date' => $oldestDueDate ? $oldestDueDate->toDateString() : '-',
+                'days_overdue' => $oldestDueDate ? $oldestDueDate->diffInDays($today) : 0,
+                'billing_time_due' => number_format($row->billing_time_due, 1),
                 'open_invoices' => (int) $row->open_invoices,
                 'outstanding_balance' => number_format((float) $row->outstanding_balance, 2),
                 'company_action' => $companyAction,
@@ -116,11 +127,12 @@ class EnforceBillingOverdueCommand extends Command
 
         $this->newLine();
         $this->table(
-            ['Company ID', 'Company', 'Oldest Due', 'Days Overdue', 'Open Invoices', 'Outstanding', 'Company Action', 'Lock Action', 'Detail'],
+            ['Company ID', 'Company', 'Billing Time Due', 'Oldest Due', 'Days Overdue', 'Open Invoices', 'Outstanding', 'Company Action', 'Lock Action', 'Detail'],
             array_map(function (array $row) {
                 return [
                     $row['company_id'],
                     $row['company_name'],
+                    $row['billing_time_due'] . ' months',
                     $row['oldest_due_date'],
                     $row['days_overdue'],
                     $row['open_invoices'],
@@ -140,20 +152,51 @@ class EnforceBillingOverdueCommand extends Command
     private function getCompaniesWithOutstandingInvoices($companyId = null): Collection
     {
         return Invoice::query()
-            ->select('company_id')
-            ->selectRaw('MIN(due_date) as oldest_due_date')
-            ->selectRaw('COUNT(*) as open_invoices')
-            ->selectRaw('SUM(balance_amount) as outstanding_balance')
             ->where('status', '!=', 'void')
             ->where('balance_amount', '>', 0)
-            ->whereNotNull('due_date')
-            ->whereDate('due_date', '<', Carbon::today()->toDateString())
             ->when($companyId, function ($query) use ($companyId) {
                 $query->where('company_id', $companyId);
             })
+            ->get()
             ->groupBy('company_id')
-            ->orderBy('oldest_due_date')
-            ->get();
+            ->map(function (Collection $invoices, $groupCompanyId) {
+                return (object) [
+                    'company_id' => (int) $groupCompanyId,
+                    'oldest_due_date' => $invoices
+                        ->filter(fn ($invoice) => !empty($invoice->due_date))
+                        ->min('due_date'),
+                    'open_invoices' => $invoices->count(),
+                    'outstanding_balance' => (float) $invoices->sum('balance_amount'),
+                    'invoices' => $invoices,
+                ];
+            })
+            ->values();
+    }
+
+    private function calculateBillingTimeDue(Collection $invoices): float
+    {
+        return round($invoices->sum(function ($invoice) {
+            if (empty($invoice->period_start) || empty($invoice->period_end)) {
+                return 0;
+            }
+
+            $periodStart = Carbon::parse($invoice->period_start)->startOfMonth();
+            $periodEnd = Carbon::parse($invoice->period_end)->startOfMonth();
+            $invoiceMonths = $periodStart->diffInMonths($periodEnd) + 1;
+            $totalAmount = (float) $invoice->total_amount;
+            $balanceAmount = max((float) $invoice->balance_amount, 0);
+
+            if ($invoiceMonths <= 0 || $totalAmount <= 0 || $balanceAmount <= 0) {
+                return 0;
+            }
+
+            return $invoiceMonths * min($balanceAmount / $totalAmount, 1);
+        }), 1);
+    }
+
+    private function daysToBillingMonthFraction(int $days): float
+    {
+        return $days / 30;
     }
 
     private function deactivateCompany(int $companyId): string
