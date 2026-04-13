@@ -103,7 +103,7 @@ class TransferController extends Controller
   public function insert(Request $request, transfer $transfer)
   {
 
-    $exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid, 'without_demand');
+    $exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid, 'general');
 
     if ($exsitschk == 0) {
 
