@@ -13,6 +13,18 @@ use Illuminate\Support\Facades\Storage;
 
 class TransferController extends Controller
 {
+  protected function normalizeTransferDate($value)
+  {
+    if (empty($value)) {
+      return date('Y-m-d');
+    }
+
+    $normalized = str_replace('/', '-', trim($value));
+    $timestamp = strtotime($normalized);
+
+    return $timestamp ? date('Y-m-d', $timestamp) : date('Y-m-d');
+  }
+
   public function index(Request $request, transfer $transfer)
   {
     $gettransfer = $transfer->get_transfer_orders($request->id);
@@ -401,7 +413,7 @@ class TransferController extends Controller
         'transfer_No' => $request->trfid,
         'user_id' => session('userid'),
         'status_id' => 1,
-        'date' => $request->trfdate,
+        'date' => $this->normalizeTransferDate($request->trfdate),
         'time' => date('H:s:i'),
         'company_id' => session('company_id'),
         'branch_from' => $request->branchfrom,

@@ -61,7 +61,7 @@
                         <div class="form-group">
                             <label class="form-control-label">Transfer Order Date</label>
                             <input class="form-control" type="text" name="trfdate" id="trfdate"
-                                placeholder="DD-MM-YYYY" value="{{ $getdetails[0]->date }}" />
+                                placeholder="DD-MM-YYYY" value="{{ date('d-m-Y', strtotime($getdetails[0]->date)) }}" />
                             <div class="form-control-feedback"></div>
                         </div>
                     </div>
