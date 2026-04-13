@@ -81,9 +81,18 @@ GROUP BY b.branch_id', [$itemcode, session('branch')]);
 	// 		return $result;
 	// 	}   
 
-	public function exsits_chk($brnchfrom, $transferid)
+	public function exsits_chk($brnchfrom, $transferid, $transferType = null)
 	{
-		$result = DB::table('deliverychallan_general_details')->where(['branch_from' => $brnchfrom, 'Transfer_id' => $transferid])->count();
+		$query = DB::table('deliverychallan_general_details')->where([
+			'branch_from' => $brnchfrom,
+			'Transfer_id' => $transferid
+		]);
+
+		if ($transferType !== null) {
+			$query->where('transfer_type', $transferType);
+		}
+
+		$result = $query->count();
 		return $result;
 	}
 
@@ -92,10 +101,15 @@ GROUP BY b.branch_id', [$itemcode, session('branch')]);
 
 
 
-	public function getchallanid($transferid, $brnchfrom)
+	public function getchallanid($transferid, $brnchfrom, $transferType = null)
 	{
-		$result = DB::select('SELECT DC_id FROM deliverychallan_general_details
-		WHERE Transfer_id = ? AND branch_from = ?  ', [$transferid, $brnchfrom]);
+		if ($transferType === null) {
+			$result = DB::select('SELECT DC_id FROM deliverychallan_general_details
+			WHERE Transfer_id = ? AND branch_from = ?  ', [$transferid, $brnchfrom]);
+		} else {
+			$result = DB::select('SELECT DC_id FROM deliverychallan_general_details
+			WHERE Transfer_id = ? AND branch_from = ? AND transfer_type = ?', [$transferid, $brnchfrom, $transferType]);
+		}
 		return $result;
 	}
 
@@ -187,12 +201,12 @@ WHERE a.DC_id = ?', [$dcid]);
 	public function getPO($demandid)
 	{
 		$result = DB::select('SELECT e.product_name, b.product_id, c.qty AS demandqty, b.qty AS transferqty,
-	IFNULL((SELECT a.deliverd_qty FROM deliverychallan_item_details a INNER JOIN deliverychallan_general_details b on b.DC_id = a.DC_Id  WHERE product_id = c.product_id and  b.Transfer_id = a.transfer_id),0)  AS deliverdqty, IFNULL((SELECT a.qty_rec FROM purchase_rec_dc_details a
+	IFNULL((SELECT a.deliverd_qty FROM deliverychallan_item_details a INNER JOIN deliverychallan_general_details b on b.DC_id = a.DC_Id  WHERE product_id = c.product_id and  b.Transfer_id = a.transfer_id AND b.transfer_type = "general"),0)  AS deliverdqty, IFNULL((SELECT a.qty_rec FROM purchase_rec_dc_details a
 	INNER JOIN deliverychallan_general_details b ON b.DC_id = a.DC_id
-	WHERE a.item_id = c.product_id AND b.Transfer_id = a.transfer_id),0) AS grnqty FROM transfer_general_details a
-	INNER JOIN transfer_item_details b ON b.transfer_id = a.transfer_id
+	WHERE a.item_id = c.product_id AND b.Transfer_id = a.transfer_id AND b.transfer_type = "general"),0) AS grnqty FROM transfer_general_details a
+	INNER JOIN transfer_item_details b ON b.transfer_id = a.transfer_id AND b.transfer_type = "general"
 	INNER JOIN demand_item_details c ON c.demand_id = a.demand_id
-	INNER JOIN deliverychallan_general_details d ON d.Transfer_id = a.transfer_id INNER JOIN inventory_general e ON e.id = c.product_id
+	INNER JOIN deliverychallan_general_details d ON d.Transfer_id = a.transfer_id AND d.transfer_type = "general" INNER JOIN inventory_general e ON e.id = c.product_id
 	WHERE a.demand_id = ? GROUP BY b.product_id', [$demandid]);
 		return $result;
 	}
@@ -295,7 +309,7 @@ WHERE a.DC_id = ?', [$dcid]);
 	{
 		$result = DB::select('SELECT a.transfer_item_id, a.product_id,b.item_code, b.image as product_image,b.url as product_image_url, b.product_name,b.uom_id, a.qty AS Transfer_Qty,(SELECT MAX(cost_price) FROM inventory_stock WHERE branch_id = ? AND status_id = 1 AND product_id = a.product_id) AS cp FROM transfer_item_details a
 			INNER JOIN inventory_general b ON b.id = a.product_id
-			WHERE a.transfer_id = ?', [session('branch'), $trfid]);
+			WHERE a.transfer_id = ? AND a.transfer_type = ?', [session('branch'), $trfid, 'without_demand']);
 		return $result;
 	}
 
@@ -308,9 +322,13 @@ WHERE a.DC_id = ?', [$dcid]);
 		}
 	}
 
-	public function product_exsist($trfid, $productid)
+	public function product_exsist($trfid, $productid, $transferType = null)
 	{
-		$result = DB::select('SELECT COUNT(product_id) as counter FROM transfer_item_details WHERE transfer_id = ? AND product_id = ?', [$trfid, $productid]);
+		if ($transferType === null) {
+			$result = DB::select('SELECT COUNT(product_id) as counter FROM transfer_item_details WHERE transfer_id = ? AND product_id = ?', [$trfid, $productid]);
+		} else {
+			$result = DB::select('SELECT COUNT(product_id) as counter FROM transfer_item_details WHERE transfer_id = ? AND product_id = ? AND transfer_type = ?', [$trfid, $productid, $transferType]);
+		}
 		return $result;
 	}
 
@@ -318,7 +336,10 @@ WHERE a.DC_id = ?', [$dcid]);
 	{
 		$result = DB::table('transfer_without_demand')->where('transfer_id', $id)->update(['status_id' => $statusid]);
 
-		$items = DB::table('transfer_item_details')->where('transfer_id', $id)->update(['status_id' => $statusid]);
+		$items = DB::table('transfer_item_details')->where([
+			'transfer_id' => $id,
+			'transfer_type' => 'without_demand'
+		])->update(['status_id' => $statusid]);
 
 		return $items;
 	}
@@ -358,7 +379,7 @@ WHERE a.DC_id = ?', [$dcid]);
 			INNER JOIN transfer_status c ON c.status_id = a.status_id
 			INNER JOIN branch d ON d.branch_id = a.branch_to
 			INNER JOIN inventory_general e ON e.id = b.product_id
-            INNER JOIN deliverychallan_general_details f ON f.Transfer_id = a.transfer_id
+            INNER JOIN deliverychallan_general_details f ON f.Transfer_id = a.transfer_id AND f.transfer_type = "without_demand"
             INNER JOIN deliverychallan_item_details g ON g.DC_Id = f.DC_id and g.product_id = b.product_id
             WHERE a.transfer_id = ?', [$trfid]);
 		return $result;
@@ -384,11 +405,11 @@ WHERE a.DC_id = ?', [$dcid]);
 		$result = DB::select('SELECT a.transfer_id, a.transfer_No, a.date, a.branch_from, a.branch_to, d.branch_name, d.branch_address,
 			e.item_code, e.product_name, b.qty AS transfer_qty, c.status_name as item_status
 			FROM transfer_without_demand a
-			LEFT JOIN transfer_item_details b ON b.transfer_id = a.transfer_id
+			LEFT JOIN transfer_item_details b ON b.transfer_id = a.transfer_id AND b.transfer_type = ?
 			LEFT JOIN transfer_status c ON c.status_id = a.status_id
 			LEFT JOIN branch d ON d.branch_id = a.branch_to
 			LEFT JOIN inventory_general e ON e.id = b.product_id
-            WHERE a.transfer_id = ?', [$trfid]);
+            WHERE a.transfer_id = ?', ['without_demand', $trfid]);
 		return $result;
 	}
 
@@ -399,7 +420,7 @@ WHERE a.DC_id = ?', [$dcid]);
 		INNER JOIN transfer_item_details b ON b.transfer_id = a.transfer_id and b.transfer_type = 'without_demand' 
 		INNER JOIN transfer_status c ON c.status_id = a.status_id INNER JOIN inventory_general d ON d.id = b.product_id 
 		INNER JOIN branch e ON e.branch_id = a.branch_from INNER JOIN branch f ON f.branch_id = a.branch_to 
-		INNER JOIN deliverychallan_general_details h ON h.Transfer_id = a.transfer_id 
+		INNER JOIN deliverychallan_general_details h ON h.Transfer_id = a.transfer_id AND h.transfer_type = 'without_demand' 
 		INNER JOIN deliverychallan_item_details g ON g.DC_Id = h.DC_id and g.product_id = b.product_id 
 		INNER JOIN user_details i on i.id = a.user_id WHERE a.transfer_id = ?", [$transferId]);
 		return $result;

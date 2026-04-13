@@ -62,7 +62,7 @@ class TransferController extends Controller
   public function updatechllan(Request $request, transfer $transfer)
   {
 
-    $challanid = $transfer->getchallanid($request->transferid, session('branch'));
+    $challanid = $transfer->getchallanid($request->transferid, session('branch'), 'general');
 
     $challanitems_id = $transfer->get_challanitems_id($challanid[0]->DC_id);
 
@@ -91,7 +91,7 @@ class TransferController extends Controller
   public function insert(Request $request, transfer $transfer)
   {
 
-    $exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid);
+    $exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid, 'without_demand');
 
     if ($exsitschk == 0) {
 
@@ -103,6 +103,7 @@ class TransferController extends Controller
       $items = [
         'DC_No' => $count,
         'Transfer_id' => $request->transferid,
+        'transfer_type' => 'general',
         'date' => date('Y-m-d'),
         'branch_from' => session('branch'),
         'branch_to' => $brto[0]->branch_to,
@@ -125,7 +126,7 @@ class TransferController extends Controller
 
       return $deliveryitems;
     } else {
-      $challanid = $transfer->getchallanid($request->transferid, session('branch'));
+      $challanid = $transfer->getchallanid($request->transferid, session('branch'), 'general');
 
 
       $items = [
@@ -409,7 +410,7 @@ class TransferController extends Controller
 
       $updatetrf = $transfer->update_trf($request->trfid, $items);
 
-      $exsist = $transfer->product_exsist($request->trfid, $request->productid);
+      $exsist = $transfer->product_exsist($request->trfid, $request->productid, 'without_demand');
       if ($exsist[0]->counter == 0) {
         $items = [
           'transfer_id' => $request->trfid,
@@ -425,7 +426,7 @@ class TransferController extends Controller
         return 0;
       }
     } else {
-      $exsist = $transfer->product_exsist($request->trfid, $request->productid);
+      $exsist = $transfer->product_exsist($request->trfid, $request->productid, 'without_demand');
       if ($exsist[0]->counter == 0) {
         $items = [
           'transfer_id' => $request->trfid,
@@ -488,93 +489,95 @@ class TransferController extends Controller
   public function insert_direct_chalan(Request $request, transfer $transfer)
   {
 
-    $exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid);
+    $exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid, 'general');
 
     if ($exsitschk == 0) {
-
-      $count = $transfer->get_count();
-      $count = $count + 1;
-
-      $items = [
-        'DC_No' => $count,
-        'Transfer_id' => $request->transferid,
-        'date' => date('Y-m-d'),
-        'branch_from' => session('branch'),
-        'branch_to' => $request->branchto,
-        'user_id' => session('userid'),
-        'shipment_amount' => $request->shipmentamt,
-      ];
-
-      $deliverychallan = $transfer->insert_deliverychallan('deliverychallan_general_details', $items);
-
-      // CREATE GRN FOR RECEIVING STOCK
-      $grncount = $transfer->get_count_GRN();
-      $grncount = $grncount + 1;
-      $items = [
-        'GRN' => 'GIN-' . $grncount,
-        'user_id' => session('userid'),
-        'created_at' => date('Y-m-d'),
-        'updated_at' => date('Y-m-d'),
-      ];
-
-      $grn_general = $transfer->insert_GRN('purchase_rec_gen', $items);
-
-
-
-      //get details for loop
       $trfdetails = $transfer->trf_details($request->transferid);
-      $count = sizeof($trfdetails);
-
-      for ($i = 0; $i < sizeof($trfdetails); $i++) {
-
-        //calculation of shipment charges
-        $totalcp = 0;
-        $totalcp =  $totalcp + ($trfdetails[$i]->cp * $trfdetails[$i]->Transfer_Qty);
-
-        $amount = $trfdetails[$i]->cp * $trfdetails[$i]->Transfer_Qty;
-        $amount = ($amount ?? 1 / $totalcp ?? 1) * 100;
-        $unitcp = ($amount * $request->shipmentamt) / 100;
-        $unitcp = ($unitcp / $trfdetails[$i]->Transfer_Qty);
-
-        $items = [
-          'DC_Id' => $deliverychallan,
-          'product_id' => $trfdetails[$i]->product_id,
-          'deliverd_qty' => $trfdetails[$i]->Transfer_Qty,
-          'cost_price' => $trfdetails[$i]->cp,
-          'shipment_charges' => $unitcp,
-        ];
-
-        $deliveryitems = $transfer->insert_deliverychallan('deliverychallan_item_details', $items);
-
-        $items = [
-          'GRN' => $grn_general,
-          'dc_item_id' => $deliveryitems,
-          'item_id' => $trfdetails[$i]->product_id,
-          'qty_rec' => $trfdetails[$i]->Transfer_Qty,
-          'status_id' => 3,
-          'DC_id' => $deliverychallan,
-        ];
-        $grn_items = $transfer->insert_GRN('purchase_rec_dc_details', $items);
-
-        $stockresult =  $this->stock_dedcution($transfer, $trfdetails[$i]->product_id, $trfdetails[$i]->Transfer_Qty);
-
-        $items = [
-          'grn_id' => $grn_general,
-          'product_id' => $trfdetails[$i]->product_id,
-          'uom' => $trfdetails[$i]->uom_id,
-          'cost_price' => $trfdetails[$i]->cp,
-          'retail_price' => $trfdetails[$i]->cp,
-          'wholesale_price' => 0,
-          'discount_price' => 0,
-          'qty' => $trfdetails[$i]->Transfer_Qty,
-          'balance' => $trfdetails[$i]->Transfer_Qty,
-          'status_id' => 1,
-          'branch_id' => $request->branchto,
-          'date' => date('Y-m-d'),
-        ];
-        $stock = $transfer->insert_stock($items);
+      if (sizeof($trfdetails) === 0) {
+        return 0;
       }
-      return $deliverychallan;
+
+      return DB::transaction(function () use ($request, $transfer, $trfdetails) {
+        $count = $transfer->get_count();
+        $count = $count + 1;
+
+        $items = [
+          'DC_No' => $count,
+          'Transfer_id' => $request->transferid,
+          'transfer_type' => 'without_demand',
+          'date' => date('Y-m-d'),
+          'branch_from' => session('branch'),
+          'branch_to' => $request->branchto,
+          'user_id' => session('userid'),
+          'shipment_amount' => $request->shipmentamt,
+        ];
+
+        $deliverychallan = $transfer->insert_deliverychallan('deliverychallan_general_details', $items);
+
+        // CREATE GRN FOR RECEIVING STOCK
+        $grncount = $transfer->get_count_GRN();
+        $grncount = $grncount + 1;
+        $items = [
+          'GRN' => 'GIN-' . $grncount,
+          'user_id' => session('userid'),
+          'created_at' => date('Y-m-d'),
+          'updated_at' => date('Y-m-d'),
+        ];
+
+        $grn_general = $transfer->insert_GRN('purchase_rec_gen', $items);
+
+        $totalcp = 0;
+        foreach ($trfdetails as $detail) {
+          $totalcp += ((float) $detail->cp * (float) $detail->Transfer_Qty);
+        }
+
+        foreach ($trfdetails as $detail) {
+          $amount = (float) $detail->cp * (float) $detail->Transfer_Qty;
+          $percentage = $totalcp > 0 ? (($amount / $totalcp) * 100) : 0;
+          $unitcp = ($percentage * (float) $request->shipmentamt) / 100;
+          $unitcp = $detail->Transfer_Qty > 0 ? ($unitcp / $detail->Transfer_Qty) : 0;
+
+          $items = [
+            'DC_Id' => $deliverychallan,
+            'product_id' => $detail->product_id,
+            'deliverd_qty' => $detail->Transfer_Qty,
+            'cost_price' => $detail->cp,
+            'shipment_charges' => $unitcp,
+          ];
+
+          $deliveryitems = $transfer->insert_deliverychallan('deliverychallan_item_details', $items);
+
+          $items = [
+            'GRN' => $grn_general,
+            'dc_item_id' => $deliveryitems,
+            'item_id' => $detail->product_id,
+            'qty_rec' => $detail->Transfer_Qty,
+            'status_id' => 3,
+            'DC_id' => $deliverychallan,
+          ];
+          $grn_items = $transfer->insert_GRN('purchase_rec_dc_details', $items);
+
+          $stockresult =  $this->stock_dedcution($transfer, $detail->product_id, $detail->Transfer_Qty);
+
+          $items = [
+            'grn_id' => $grn_general,
+            'product_id' => $detail->product_id,
+            'uom' => $detail->uom_id,
+            'cost_price' => $detail->cp,
+            'retail_price' => $detail->cp,
+            'wholesale_price' => 0,
+            'discount_price' => 0,
+            'qty' => $detail->Transfer_Qty,
+            'balance' => $detail->Transfer_Qty,
+            'status_id' => 1,
+            'branch_id' => $request->branchto,
+            'date' => date('Y-m-d'),
+          ];
+          $stock = $transfer->insert_stock($items);
+        }
+
+        return $deliverychallan;
+      });
     } else {
       return 0;
     }
