@@ -36,7 +36,7 @@
                     <tbody>
                         @foreach ($gettransfer as $value)
                             <tr>
-                                <td>TO-{{ $value->transfer_No }}</td>
+                                <td data-order="{{ $value->transfer_id }}">TO-{{ $value->transfer_No }}</td>
                                 <td>Head Office</td>
                                 <td>{{ $value->branch_name }}</td>
                                 <td data-order="{{ strtotime($value->date) }}">{{ $value->date }}</td>
@@ -100,7 +100,7 @@
             info: false,
             // ordering: false,
             order: [
-                [3, 'desc']
+                [0, 'desc']
             ],
             responsive: true,
             language: {

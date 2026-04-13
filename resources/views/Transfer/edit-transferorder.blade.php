@@ -375,20 +375,7 @@
 
         function trf_status_change(statusid) {
             if (statusid == 8) {
-
-                $.ajax({
-                    url: "{{ url('/trf_change_status') }}",
-                    type: 'PUT',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: '{{ $getdetails[0]->transfer_id }}',
-                        statusid: statusid,
-                    },
-                    success: function(resp) {
-                        shipment();
-                    }
-
-                });
+                shipment();
             } else {
 
                 $.ajax({
@@ -415,6 +402,36 @@
 
                 });
             }
+        }
+
+        function finalize_transfer(statusid) {
+            $.ajax({
+                url: "{{ url('/trf_change_status') }}",
+                type: 'PUT',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    id: '{{ $getdetails[0]->transfer_id }}',
+                    statusid: statusid,
+                },
+                success: function(resp) {
+                    if (resp) {
+                        window.location = "{{ url('/trf_list') }}";
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: "Delivery challan was created but transfer status could not be updated.",
+                            type: "error"
+                        });
+                    }
+                },
+                error: function() {
+                    swal({
+                        title: "Error",
+                        text: "Delivery challan was created but transfer status could not be updated.",
+                        type: "error"
+                    });
+                }
+            });
         }
 
         function changeqty(id, qty) {
@@ -474,19 +491,32 @@
                             closeOnConfirm: false,
                             inputPlaceholder: "Should be greater than 0"
                         }, function(inputValue) {
-                            if (inputValue > 0) {
+                            if (inputValue === false) {
+                                create_dc(0);
+                            } else if (inputValue > 0) {
                                 create_dc(inputValue);
 
                             } else {
-                                create_dc(inputValue = 0);
+                                create_dc(0);
                             }
                         });
+                    } else {
+                        create_dc(0);
                     }
                 });
         }
 
 
         function create_dc(shipmentamt) {
+            if ($('#branchto').val() == "") {
+                swal({
+                    title: "Error",
+                    text: "Please select destination branch first.",
+                    type: "error"
+                });
+                return;
+            }
+
             $.ajax({
                 url: "{{ url('/insert_direct_chalan') }}",
                 type: 'POST',
@@ -498,8 +528,21 @@
                 },
                 success: function(resp) {
                     if (resp) {
-                        window.location = "{{ url('/trf_list') }}";
+                        finalize_transfer(8);
+                    } else {
+                        swal({
+                            title: "Error",
+                            text: "Delivery challan could not be created. Please verify branch and transfer items.",
+                            type: "error"
+                        });
                     }
+                },
+                error: function() {
+                    swal({
+                        title: "Error",
+                        text: "Delivery challan could not be created.",
+                        type: "error"
+                    });
                 }
             });
 
