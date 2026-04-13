@@ -21,27 +21,42 @@ class InvoiceGenerationService
     {
     }
 
-    public function invoiceExists($companyId, $periodStart, $periodEnd)
+    public function invoiceExists($companyId, $periodStart, $periodEnd, string $invoiceType = 'monthly')
     {
-        return Invoice::where('company_id', $companyId)
+        $query = Invoice::where('company_id', $companyId)
             ->whereDate('period_start', $periodStart)
-            ->whereDate('period_end', $periodEnd)
-            ->exists();
+            ->whereDate('period_end', $periodEnd);
+
+        if ($invoiceType === 'monthly') {
+            $query->where(function ($innerQuery) {
+                $innerQuery->whereNull('invoice_type')
+                    ->orWhere('invoice_type', 'monthly');
+            });
+        } else {
+            $query->where('invoice_type', $invoiceType);
+        }
+
+        return $query->exists();
     }
 
     public function generateInvoice(Company $company, $periodStart, $periodEnd, Carbon $invoiceDate, array $options = [])
     {
         $periodStart = Carbon::parse($periodStart)->toDateString();
         $periodEnd = Carbon::parse($periodEnd)->toDateString();
+        $invoiceType = (string) ($options['invoice_type'] ?? 'monthly');
         $dueDate = !empty($options['due_date'])
             ? Carbon::parse($options['due_date'])->toDateString()
             : $invoiceDate->copy()->addDays((int) ($company->payment_due_days ?? 15))->toDateString();
 
-        return DB::transaction(function () use ($company, $periodStart, $periodEnd, $invoiceDate, $dueDate, $options) {
-            $lines = $this->buildInvoiceLines($company, $periodStart, $periodEnd, $options);
+        return DB::transaction(function () use ($company, $periodStart, $periodEnd, $invoiceDate, $dueDate, $options, $invoiceType) {
+            $lines = $invoiceType === 'previous_due'
+                ? $this->buildPreviousDueInvoiceLines($company)
+                : $this->buildInvoiceLines($company, $periodStart, $periodEnd, $options);
             $subtotal = collect($lines)->sum('line_amount');
 
-            $previousDue = $this->invoiceSettlementService->calculateOutstandingPreviousDue($company->company_id);
+            $previousDue = $invoiceType === 'previous_due'
+                ? 0
+                : $this->invoiceSettlementService->calculateOutstandingPreviousDue($company->company_id);
 
             $taxAmount = (float) ($options['tax_amount'] ?? 0);
             $totalAmount = $subtotal + $taxAmount;
@@ -53,6 +68,7 @@ class InvoiceGenerationService
             $invoice = Invoice::create([
                 'company_id' => $company->company_id,
                 'invoice_no' => $this->generateInvoiceNo($company, $invoiceDate),
+                'invoice_type' => $invoiceType,
                 'period_start' => $periodStart,
                 'period_end' => $periodEnd,
                 'invoice_date' => $invoiceDate->toDateString(),
@@ -75,6 +91,22 @@ class InvoiceGenerationService
 
             return $invoice;
         });
+    }
+
+    public function generatePreviousDueInvoice(Company $company, Carbon $invoiceDate, array $options = [])
+    {
+        $periodStart = !empty($options['period_start'])
+            ? Carbon::parse($options['period_start'])->startOfMonth()->toDateString()
+            : $invoiceDate->copy()->startOfMonth()->toDateString();
+        $periodEnd = !empty($options['period_end'])
+            ? Carbon::parse($options['period_end'])->endOfMonth()->toDateString()
+            : $invoiceDate->copy()->endOfMonth()->toDateString();
+
+        return $this->generateInvoice($company, $periodStart, $periodEnd, $invoiceDate, array_merge($options, [
+            'invoice_type' => 'previous_due',
+            'tax_amount' => $options['tax_amount'] ?? 0,
+            'notes' => $options['notes'] ?? 'Outstanding previous dues invoice.',
+        ]));
     }
 
     public function sendInvoicePdfToWhatsapp(Invoice $invoice, array $options = []): array
@@ -498,6 +530,36 @@ class InvoiceGenerationService
                     'line_amount' => $terminalCount * $billingMonths * $monthlyChargesAmount,
                 ];
             }
+        }
+
+        return $lines;
+    }
+
+    private function buildPreviousDueInvoiceLines(Company $company): array
+    {
+        $outstandingInvoices = Invoice::query()
+            ->where('company_id', $company->company_id)
+            ->where('status', '!=', 'void')
+            ->where('balance_amount', '>', 0)
+            ->where(function ($query) {
+                $query->whereNull('invoice_type')
+                    ->orWhere('invoice_type', 'monthly');
+            })
+            ->orderBy('period_start')
+            ->orderBy('id')
+            ->get();
+
+        $lines = [];
+
+        foreach ($outstandingInvoices as $invoice) {
+            $lines[] = [
+                'scope_type' => 'company',
+                'scope_id' => $company->company_id,
+                'description' => 'Previous due for Invoice ' . $invoice->invoice_no . ' (' . $this->formatBillingPeriodLabel($invoice->period_start, $invoice->period_end) . ')',
+                'qty' => 1,
+                'unit_price' => (float) $invoice->balance_amount,
+                'line_amount' => (float) $invoice->balance_amount,
+            ];
         }
 
         return $lines;

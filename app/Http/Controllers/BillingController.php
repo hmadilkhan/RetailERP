@@ -27,6 +27,7 @@ class BillingController extends Controller
 {
     public function summary(Request $request)
     {
+        $invoiceType = $request->invoice_type === 'previous_due' ? 'previous_due' : 'monthly';
         $invoicePaidDates = DB::table('invoice_payments')
             ->select('invoice_id')
             ->selectRaw('MAX(payment_date) as paid_date')
@@ -47,6 +48,14 @@ class BillingController extends Controller
             ->selectRaw('COALESCE(SUM(invoices.balance_amount), 0) as balance_amount')
             ->selectRaw('MAX(invoice_paid_dates.paid_date) as latest_paid_date')
             ->where('invoices.status', '!=', 'void')
+            ->where(function ($query) use ($invoiceType) {
+                if ($invoiceType === 'monthly') {
+                    $query->whereNull('invoices.invoice_type')
+                        ->orWhere('invoices.invoice_type', 'monthly');
+                } else {
+                    $query->where('invoices.invoice_type', $invoiceType);
+                }
+            })
             ->when(!empty($request->company_id), function ($query) use ($request) {
                 $query->where('invoices.company_id', $request->company_id);
             })
@@ -66,6 +75,14 @@ class BillingController extends Controller
                 'balance_amount'
             )
             ->where('status', '!=', 'void')
+            ->where(function ($query) use ($invoiceType) {
+                if ($invoiceType === 'monthly') {
+                    $query->whereNull('invoice_type')
+                        ->orWhere('invoice_type', 'monthly');
+                } else {
+                    $query->where('invoice_type', $invoiceType);
+                }
+            })
             ->when(!empty($request->company_id), function ($query) use ($request) {
                 $query->where('company_id', $request->company_id);
             })
@@ -107,14 +124,24 @@ class BillingController extends Controller
             return view('Admin.Billing.partials.summary-content', compact('summary'));
         }
 
-        return view('Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId', 'selectedStatus'));
+        return view('Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId', 'selectedStatus', 'invoiceType'));
     }
 
     public function index(Request $request)
     {
+        $invoiceType = $request->invoice_type === 'previous_due' ? 'previous_due' : 'monthly';
         $query = Invoice::with('company')
             ->withCount('payments')
             ->withMax('payments', 'payment_date');
+
+        $query->where(function ($innerQuery) use ($invoiceType) {
+            if ($invoiceType === 'monthly') {
+                $innerQuery->whereNull('invoice_type')
+                    ->orWhere('invoice_type', 'monthly');
+            } else {
+                $innerQuery->where('invoice_type', $invoiceType);
+            }
+        });
 
         if (!empty($request->company_id)) {
             $query->where('company_id', $request->company_id);
@@ -133,7 +160,7 @@ class BillingController extends Controller
         $invoices = $query->orderByDesc('id')->paginate(20);
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
 
-        return view('Admin.Billing.invoices.index', compact('invoices', 'companies'));
+        return view('Admin.Billing.invoices.index', compact('invoices', 'companies', 'invoiceType'));
     }
 
     public function deliveryHistory(Request $request)
@@ -414,13 +441,14 @@ class BillingController extends Controller
             : Carbon::parse($data['period_end'])->toDateString();
         $invoiceDate = Carbon::parse($data['invoice_date']);
 
-        $exists = $invoiceGenerationService->invoiceExists($company->company_id, $periodStart, $periodEnd);
+        $exists = $invoiceGenerationService->invoiceExists($company->company_id, $periodStart, $periodEnd, 'monthly');
 
         if ($exists) {
             return back()->withInput()->withErrors(['error' => 'Invoice already exists for this period.']);
         }
 
         $invoiceGenerationService->generateInvoice($company, $periodStart, $periodEnd, $invoiceDate, [
+            'invoice_type' => 'monthly',
             'due_date' => $data['due_date'] ?? null,
             'tax_amount' => $data['tax_amount'] ?? 0,
             'notes' => $data['notes'] ?? null,

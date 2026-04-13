@@ -38,6 +38,13 @@
                         </select>
                     </div>
                     <div class="col-md-3">
+                        <label>Invoice Type</label>
+                        <select name="invoice_type" class="form-control">
+                            <option value="monthly" {{ ($invoiceType ?? 'monthly') == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                            <option value="previous_due" {{ ($invoiceType ?? 'monthly') == 'previous_due' ? 'selected' : '' }}>Previous Due</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
                         <label>Status</label>
                         <select name="status" class="form-control">
                             <option value="">All</option>
@@ -61,6 +68,7 @@
                         <thead>
                             <tr>
                                 <th>Invoice #</th>
+                                <th>Type</th>
                                 <th>Company</th>
                                 <th>Period</th>
                                 <th>Total</th>
@@ -76,6 +84,7 @@
                             @forelse($invoices as $invoice)
                                 <tr>
                                     <td>{{ $invoice->invoice_no }}</td>
+                                    <td>{{ ucfirst($invoice->invoice_type ?? 'monthly') }}</td>
                                     <td>{{ optional($invoice->company)->name }}</td>
                                     <td>{{ $invoice->period_start }} to {{ $invoice->period_end }}</td>
                                     <td>{{ number_format($invoice->total_amount, 2) }}</td>
@@ -121,7 +130,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="10" class="text-center">No invoices found.</td>
+                                    <td colspan="11" class="text-center">No invoices found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

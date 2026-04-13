@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Throwable;
 
-class GenerateMonthlyBillingInvoicesCommand extends Command
+class GeneratePreviousDueInvoicesCommand extends Command
 {
-    protected $signature = 'billing:generate-monthly {company_id?}';
-    protected $description = 'Generate monthly billing invoices for the current month';
+    protected $signature = 'billing:generate-previous-due {company_id?}';
+    protected $description = 'Generate previous due invoices for companies marked for due reminders';
 
     public function handle(InvoiceGenerationService $invoiceGenerationService)
     {
@@ -24,11 +24,11 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
         $companyId = $this->argument('company_id');
         $auditRows = [];
 
-        $this->info("Generating billing invoices for {$periodStart} to {$periodEnd}");
+        $this->info("Generating previous due invoices for {$periodStart} to {$periodEnd}");
         $this->line("Run ID: {$runId}");
 
         $query = InvoiceSetup::with('company')
-            ->where('is_auto_invoice', 1);
+            ->where('is_auto_invoice', 0);
 
         if (!empty($companyId)) {
             $query->where('company_id', $companyId);
@@ -38,7 +38,7 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
         $invoiceSetups = $query->get();
 
         if ($invoiceSetups->isEmpty()) {
-            $this->info('No auto-invoice setups found.');
+            $this->info('No previous-due invoice setups found.');
             return self::SUCCESS;
         }
 
@@ -52,67 +52,68 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
         foreach ($invoiceSetups as $setup) {
             $company = $setup->company;
 
-            if (!$company || (int) $company->status_id !== 1) {
+            if (!$company) {
                 $skippedCount++;
-                $this->warn("Skipping setup #{$setup->id}: company is missing or inactive.");
+                $this->warn("Skipping setup #{$setup->id}: company is missing.");
                 $auditRows[] = [
-                    'company' => $company->name ?? ('Setup #' . $setup->id),
+                    'company' => 'Setup #' . $setup->id,
                     'invoice' => '-',
                     'generation' => 'skipped',
                     'whatsapp' => 'not_attempted',
-                    'detail' => 'Company missing or inactive',
+                    'detail' => 'Company missing',
                 ];
-                $this->logBillingRunActivity($runId, 'billing_invoice_generation', 'generation_skipped', null, [
+                $this->logBillingRunActivity($runId, 'billing_previous_due_generation', 'generation_skipped', null, [
                     'setup_id' => $setup->id,
-                    'company_id' => $company->company_id ?? null,
-                    'company_name' => $company->name ?? null,
+                    'company_id' => null,
+                    'company_name' => null,
                     'status' => 'skipped',
                     'stage' => 'generation',
-                    'reason' => 'Company missing or inactive',
-                    'trigger' => 'billing:generate-monthly',
-                ], 'Billing invoice generation skipped');
+                    'reason' => 'Company missing',
+                    'trigger' => 'billing:generate-previous-due',
+                ], 'Previous due invoice generation skipped');
                 continue;
             }
 
-            if ($invoiceGenerationService->invoiceExists($company->company_id, $periodStart, $periodEnd, 'monthly')) {
+            if ($invoiceGenerationService->invoiceExists($company->company_id, $periodStart, $periodEnd, 'previous_due')) {
                 $skippedCount++;
-                $this->line("Skipping {$company->name}: invoice already exists for {$periodStart} to {$periodEnd}.");
+                $this->line("Skipping {$company->name}: previous due invoice already exists for {$periodStart} to {$periodEnd}.");
                 $auditRows[] = [
                     'company' => $company->name,
                     'invoice' => '-',
                     'generation' => 'skipped',
                     'whatsapp' => 'not_attempted',
-                    'detail' => 'Invoice already exists for billing period',
+                    'detail' => 'Previous due invoice already exists for billing period',
                 ];
-                $this->logBillingRunActivity($runId, 'billing_invoice_generation', 'generation_skipped', null, [
+                $this->logBillingRunActivity($runId, 'billing_previous_due_generation', 'generation_skipped', null, [
                     'setup_id' => $setup->id,
                     'company_id' => $company->company_id,
                     'company_name' => $company->name,
                     'status' => 'skipped',
                     'stage' => 'generation',
-                    'reason' => 'Invoice already exists for billing period',
+                    'reason' => 'Previous due invoice already exists for billing period',
                     'period_start' => $periodStart,
                     'period_end' => $periodEnd,
-                    'trigger' => 'billing:generate-monthly',
-                ], 'Billing invoice generation skipped');
+                    'trigger' => 'billing:generate-previous-due',
+                ], 'Previous due invoice generation skipped');
                 continue;
             }
 
             try {
-                $invoice = $invoiceGenerationService->generateInvoice($company, $periodStart, $periodEnd, $invoiceDate, [
-                    'invoice_type' => 'monthly',
+                $invoice = $invoiceGenerationService->generatePreviousDueInvoice($company, $invoiceDate, [
                     'generated_by' => null,
                     'tax_amount' => 0,
-                    'notes' => 'Auto-generated monthly invoice.',
+                    'notes' => 'Auto-generated previous due invoice.',
+                    'period_start' => $periodStart,
+                    'period_end' => $periodEnd,
                 ]);
 
                 $generatedCount++;
-                $this->info("Generated invoice {$invoice->invoice_no} for {$company->name}.");
+                $this->info("Generated previous due invoice {$invoice->invoice_no} for {$company->name}.");
 
                 try {
                     $whatsAppResult = $invoiceGenerationService->sendInvoicePdfToWhatsapp($invoice, [
                         'batch_uuid' => $runId,
-                        'trigger' => 'billing:generate-monthly',
+                        'trigger' => 'billing:generate-previous-due',
                     ]);
 
                     if (($whatsAppResult['status'] ?? null) === 'sent') {
@@ -150,10 +151,11 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
                     $this->logBillingRunActivity($runId, 'billing_invoice_whatsapp', 'whatsapp_failed', $invoice, [
                         'invoice_id' => $invoice->id,
                         'invoice_no' => $invoice->invoice_no,
+                        'invoice_type' => 'previous_due',
                         'company_id' => $company->company_id,
                         'company_name' => $company->name,
                         'reason' => $exception->getMessage(),
-                    ], 'Billing invoice WhatsApp failed');
+                    ], 'Previous due invoice WhatsApp failed');
                 }
             } catch (Throwable $exception) {
                 $failedCount++;
@@ -166,14 +168,14 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
                     'detail' => $exception->getMessage(),
                 ];
 
-                $this->logBillingRunActivity($runId, 'billing_invoice_generation', 'generation_failed', null, [
+                $this->logBillingRunActivity($runId, 'billing_previous_due_generation', 'generation_failed', null, [
                     'company_id' => $company->company_id,
                     'company_name' => $company->name,
                     'status' => 'failed',
                     'stage' => 'generation',
                     'reason' => $exception->getMessage(),
-                    'trigger' => 'billing:generate-monthly',
-                ], 'Billing invoice generation failed');
+                    'trigger' => 'billing:generate-previous-due',
+                ], 'Previous due invoice generation failed');
             }
         }
 
@@ -194,12 +196,12 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
         }
 
         $this->info(
-            "Billing generation complete. Generated: {$generatedCount}, Skipped: {$skippedCount}, Failed: {$failedCount}, " .
+            "Previous due generation complete. Generated: {$generatedCount}, Skipped: {$skippedCount}, Failed: {$failedCount}, " .
             "WhatsApp Sent: {$whatsAppSentCount}, WhatsApp Skipped: {$whatsAppSkippedCount}, WhatsApp Failed: {$whatsAppFailedCount}"
         );
         $this->line("Audit saved with Run ID: {$runId}");
 
-        $this->logBillingRunActivity($runId, 'billing_invoice_run', 'completed', null, [
+        $this->logBillingRunActivity($runId, 'billing_previous_due_run', 'completed', null, [
             'period_start' => $periodStart,
             'period_end' => $periodEnd,
             'company_filter' => $companyId,
@@ -210,7 +212,7 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
             'whatsapp_skipped_count' => $whatsAppSkippedCount,
             'whatsapp_failed_count' => $whatsAppFailedCount,
             'audit_rows' => $auditRows,
-        ], 'Monthly billing invoice run completed');
+        ], 'Previous due invoice run completed');
 
         return self::SUCCESS;
     }
@@ -241,7 +243,7 @@ class GenerateMonthlyBillingInvoicesCommand extends Command
 
             $logger->log($description ?? $event);
         } catch (Throwable $exception) {
-            Log::warning('Failed to record monthly billing command activity', [
+            Log::warning('Failed to record previous due command activity', [
                 'run_id' => $runId,
                 'log_name' => $logName,
                 'event' => $event,

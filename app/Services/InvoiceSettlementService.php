@@ -15,6 +15,10 @@ class InvoiceSettlementService
     {
         return (float) Invoice::where('company_id', $companyId)
             ->where('status', '!=', 'void')
+            ->where(function ($query) {
+                $query->whereNull('invoice_type')
+                    ->orWhere('invoice_type', 'monthly');
+            })
             ->lockForUpdate()
             ->sum('balance_amount');
     }
@@ -209,6 +213,10 @@ class InvoiceSettlementService
         return Invoice::where('company_id', $companyId)
             ->where('status', '!=', 'void')
             ->where('balance_amount', '>', 0)
+            ->where(function ($query) {
+                $query->whereNull('invoice_type')
+                    ->orWhere('invoice_type', 'monthly');
+            })
             ->orderBy('invoice_date')
             ->orderBy('due_date')
             ->orderBy('id')

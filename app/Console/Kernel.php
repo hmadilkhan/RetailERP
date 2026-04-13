@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel
         Commands\GenerateDailyUsageCommand::class,
         Commands\GenerateMonthlyFbrReportCommand::class,
         Commands\GenerateMonthlyBillingInvoicesCommand::class,
+        Commands\GeneratePreviousDueInvoicesCommand::class,
         Commands\RepairBillingInvoiceCarryForwardCommand::class,
         Commands\EnforceBillingOverdueCommand::class,
     ];
