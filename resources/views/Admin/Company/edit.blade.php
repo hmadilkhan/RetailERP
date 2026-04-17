@@ -187,6 +187,18 @@
                                 @endif
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group {{ $errors->has('permanent_close') ? 'has-danger' : '' }}">
+                                <label class="form-control-label">Permanent Close</label>
+                                <select name="permanent_close" id="permanent_close" class="form-control select2">
+                                    <option value="0" {{ (string) old('permanent_close', $company[0]->permanent_close ?? 0) === '0' ? 'selected' : '' }}>No</option>
+                                    <option value="1" {{ (string) old('permanent_close', $company[0]->permanent_close ?? 0) === '1' ? 'selected' : '' }}>Yes</option>
+                                </select>
+                                @if ($errors->has('permanent_close'))
+                                    <div class="form-control-feedback">{{ $errors->first('permanent_close') }}</div>
+                                @endif
+                            </div>
+                        </div>
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group {{ $errors->has('company_address') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">Company Address</label>

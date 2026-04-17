@@ -45,6 +45,7 @@ class CompanyUpdateRequest extends FormRequest
             'payment_due_days' => 'nullable|integer|min:1|max:90',
             'monthly_charges_amount' => 'nullable|numeric|min:0',
             'is_auto_invoice' => 'nullable|boolean',
+            'permanent_close' => 'required|boolean',
             'billing_rates' => 'nullable|array',
             'billing_rates.*.scope_type' => 'required_with:billing_rates|in:company,branch,terminal',
             'billing_rates.*.scope_id' => 'nullable|integer',

@@ -79,6 +79,7 @@ class CompanyService
             'invoice_prefix' => $data['invoice_prefix'] ?? null,
             'payment_due_days' => $data['payment_due_days'] ?? 15,
             'is_auto_invoice' => $data['is_auto_invoice'] ?? 1,
+            'permanent_close' => $data['permanent_close'] ?? 0,
             'monthly_charges_amount' => $data['monthly_charges_amount'] ?? 0,
         ];
         return DB::transaction(function () use ($data, $items) {
