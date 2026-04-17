@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceAdjustment;
@@ -11,6 +12,8 @@ use App\Models\InvoiceSetup;
 use App\Models\OrderPayment;
 use App\Models\PaymentVoucher;
 use App\Models\PaymentVoucherScreenshot;
+use App\Models\Terminal;
+use App\Models\UserAuthorization;
 use App\Services\InvoiceGenerationService;
 use App\Services\InvoiceSettlementService;
 use App\Services\PaymentVoucherService;
@@ -289,7 +292,7 @@ class BillingController extends Controller
             ->where('scope_type', $invoiceType)
             ->pluck('scope_id')
             ->filter()
-            ->map(fn ($id) => (int) $id)
+            ->map(fn($id) => (int) $id)
             ->unique()
             ->values();
 
@@ -408,7 +411,7 @@ class BillingController extends Controller
                 ->where('scope_type', $scopeType)
                 ->pluck('scope_id')
                 ->filter()
-                ->map(fn ($id) => (int) $id)
+                ->map(fn($id) => (int) $id)
                 ->unique()
                 ->all();
 
@@ -516,8 +519,7 @@ class BillingController extends Controller
         $invoiceId,
         InvoiceSettlementService $invoiceSettlementService,
         PaymentVoucherService $paymentVoucherService
-    )
-    {
+    ) {
         $paymentModeId = $request->input('payment_mode_id');
         $selectedPaymentMode = $paymentModeId
             ? OrderPayment::query()->find($paymentModeId, ['payment_id', 'payment_mode'])
@@ -592,6 +594,15 @@ class BillingController extends Controller
                     'received_by' => session('userid'),
                     'payment_voucher_id' => $voucher->id,
                 ]);
+
+                $company = Company::query()
+                    ->where('company_id', $invoice->company_id)
+                    ->lockForUpdate()
+                    ->first(['company_id', 'status_id', 'permanent_close']);
+
+                if ($company && (int) $company->status_id !== 1 && (int) ($company->permanent_close ?? 0) !== 1) {
+                    $this->reactivateCompany($company->company_id);
+                }
 
                 return [
                     'voucher' => $voucher->fresh(['company', 'paymentMode', 'invoicePayments.invoice', 'screenshots']),
@@ -754,5 +765,33 @@ class BillingController extends Controller
         if ($status !== '') {
             $query->where($table . '.status', $status);
         }
+    }
+
+    private function reactivateCompany(int $companyId): void
+    {
+        Company::query()->where('company_id', $companyId)->update(['status_id' => 1]);
+        UserAuthorization::query()->where('company_id', $companyId)->update(['status_id' => 1]);
+
+        $branchIds = Branch::query()
+            ->where('company_id', $companyId)
+            ->pluck('branch_id');
+
+        if ($branchIds->isEmpty()) {
+            return;
+        }
+
+        Terminal::query()
+            ->whereIn('branch_id', $branchIds)
+            ->update([
+                'status_id' => 1,
+                'deleted_at' => null,
+            ]);
+
+        Branch::query()
+            ->whereIn('branch_id', $branchIds)
+            ->update([
+                'status_id' => 1,
+                'deleted_at' => null,
+            ]);
     }
 }
