@@ -13,6 +13,47 @@ use Illuminate\Support\Facades\Storage;
 
 class TransferController extends Controller
 {
+  protected function resolveTransferPrices(int $productId, ?int $sourceBranchId = null): array
+  {
+    $latestStock = DB::table('inventory_stock')
+      ->where('product_id', $productId)
+      ->when($sourceBranchId, function ($query) use ($sourceBranchId) {
+        $query->where('branch_id', $sourceBranchId);
+      })
+      ->orderByDesc('stock_id')
+      ->first(['cost_price', 'retail_price', 'wholesale_price', 'discount_price']);
+
+    $activePrice = DB::table('inventory_price')
+      ->where('product_id', $productId)
+      ->where('status_id', 1)
+      ->orderByDesc('price_id')
+      ->first(['cost_price', 'actual_price', 'retail_price', 'wholesale_price', 'discount_price']);
+
+    $costPrice = ($latestStock->cost_price ?? null)
+      ?? ($activePrice->cost_price ?? null)
+      ?? ($activePrice->actual_price ?? null)
+      ?? 0;
+
+    $retailPrice = ($latestStock->retail_price ?? null)
+      ?? ($activePrice->retail_price ?? null)
+      ?? $costPrice;
+
+    $wholesalePrice = ($latestStock->wholesale_price ?? null)
+      ?? ($activePrice->wholesale_price ?? null)
+      ?? 0;
+
+    $discountPrice = ($latestStock->discount_price ?? null)
+      ?? ($activePrice->discount_price ?? null)
+      ?? 0;
+
+    return [
+      'cost_price' => (float) $costPrice,
+      'retail_price' => (float) $retailPrice,
+      'wholesale_price' => (float) $wholesalePrice,
+      'discount_price' => (float) $discountPrice,
+    ];
+  }
+
   protected function normalizeTransferDate($value)
   {
     if (empty($value)) {
@@ -540,11 +581,13 @@ class TransferController extends Controller
 
         $totalcp = 0;
         foreach ($trfdetails as $detail) {
-          $totalcp += ((float) $detail->cp * (float) $detail->Transfer_Qty);
+          $prices = $this->resolveTransferPrices((int) $detail->product_id, (int) session('branch'));
+          $totalcp += ($prices['cost_price'] * (float) $detail->Transfer_Qty);
         }
 
         foreach ($trfdetails as $detail) {
-          $amount = (float) $detail->cp * (float) $detail->Transfer_Qty;
+          $prices = $this->resolveTransferPrices((int) $detail->product_id, (int) session('branch'));
+          $amount = $prices['cost_price'] * (float) $detail->Transfer_Qty;
           $percentage = $totalcp > 0 ? (($amount / $totalcp) * 100) : 0;
           $unitcp = ($percentage * (float) $request->shipmentamt) / 100;
           $unitcp = $detail->Transfer_Qty > 0 ? ($unitcp / $detail->Transfer_Qty) : 0;
@@ -553,7 +596,7 @@ class TransferController extends Controller
             'DC_Id' => $deliverychallan,
             'product_id' => $detail->product_id,
             'deliverd_qty' => $detail->Transfer_Qty,
-            'cost_price' => $detail->cp,
+            'cost_price' => $prices['cost_price'],
             'shipment_charges' => $unitcp,
           ];
 
@@ -575,10 +618,10 @@ class TransferController extends Controller
             'grn_id' => $grn_general,
             'product_id' => $detail->product_id,
             'uom' => $detail->uom_id,
-            'cost_price' => $detail->cp,
-            'retail_price' => $detail->cp,
-            'wholesale_price' => 0,
-            'discount_price' => 0,
+            'cost_price' => $prices['cost_price'],
+            'retail_price' => $prices['retail_price'],
+            'wholesale_price' => $prices['wholesale_price'],
+            'discount_price' => $prices['discount_price'],
             'qty' => $detail->Transfer_Qty,
             'balance' => $detail->Transfer_Qty,
             'status_id' => 1,
