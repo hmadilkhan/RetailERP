@@ -187,18 +187,26 @@
                                 @endif
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-4">
                             <div class="form-group {{ $errors->has('permanent_close') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">Permanent Close</label>
                                 <select name="permanent_close" id="permanent_close" class="form-control select2">
-                                    <option value="0" {{ (string) old('permanent_close', $company[0]->permanent_close ?? 0) === '0' ? 'selected' : '' }}>No</option>
-                                    <option value="1" {{ (string) old('permanent_close', $company[0]->permanent_close ?? 0) === '1' ? 'selected' : '' }}>Yes</option>
+                                    <option value="0"
+                                        {{ (string) old('permanent_close', $company[0]->permanent_close ?? 0) === '0' ? 'selected' : '' }}>
+                                        No</option>
+                                    <option value="1"
+                                        {{ (string) old('permanent_close', $company[0]->permanent_close ?? 0) === '1' ? 'selected' : '' }}>
+                                        Yes</option>
                                 </select>
                                 @if ($errors->has('permanent_close'))
                                     <div class="form-control-feedback">{{ $errors->first('permanent_close') }}</div>
                                 @endif
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-lg-12 col-md-12">
                             <div class="form-group {{ $errors->has('company_address') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">Company Address</label>
@@ -208,76 +216,75 @@
                                 @endif
                             </div>
                         </div>
-                        <br/>
-                        <div class="col-md-4">
-                            <a href="#">
-                                <img id="vdpimg" src="{{ asset('storage/images/company/' . $company[0]->logo) }}"
-                                    class="thumb-img img-fluid width-100" alt="img"
-                                    style="width: 128px;height: 128px;">
-                            </a>
-                            <div class="form-group {{ $errors->has('vdimg') ? 'has-danger' : '' }} ">
+                    </div>
 
-                                <label for="vdimg" class="form-control-label">Company Logo</label>
-                                <br />
-                                <label for="vdimg" class="custom-file">
-                                    <input type="file" name="vdimg" id="vdimg" class="custom-file-input">
-                                    <span class="custom-file-control"></span>
-                                </label>
-                                @if ($errors->has('vdimg'))
-                                    <div class="form-control-feedback">{{ $errors->first('vdimg') }}</div>
-                                @endif
-                            </div>
-                        </div>
+                    <br />
+                    <div class="col-md-4">
+                        <a href="#">
+                            <img id="vdpimg" src="{{ asset('storage/images/company/' . $company[0]->logo) }}"
+                                class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                        </a>
+                        <div class="form-group {{ $errors->has('vdimg') ? 'has-danger' : '' }} ">
 
-                        <div class="col-md-4">
-                            <a href="#">
-                                <img id="posbimg"
-                                    src="{{ asset('storage/images/pos-background/' . $company[0]->pos_background) }}"
-                                    class="thumb-img img-fluid width-100" alt="img"
-                                    style="width: 128px;height: 128px;">
-                            </a>
-                            <div class="form-group {{ $errors->has('posbgimg') ? 'has-danger' : '' }} ">
-                                <label for="posbgimg" class="form-control-label">POS Background</label>
-                                <br />
-                                <label for="posbgimg" class="custom-file ">
-                                    <input type="file" name="posbgimg" id="posbgimg" class="custom-file-input">
-                                    <span class="custom-file-control"></span>
-                                </label>
-                                @if ($errors->has('posbgimg'))
-                                    <div class="form-control-feedback">{{ $errors->first('posbgimg') }}</div>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="col-md-4">
-                            <a href="#">
-                                <img id="previewordercallingbgimg"
-                                    src="{{ asset('storage/images/order-calling/' . $company[0]->order_calling_display_image) }}"
-                                    class="thumb-img img-fluid width-100" alt="img"
-                                    style="width: 128px;height: 128px;">
-                            </a>
-                            <div class="form-group {{ $errors->has('ordercallingbgimg') ? 'has-danger' : '' }} ">
-                                <label for="ordercallingbgimg" class="form-control-label">Order Calling Display</label>
-                                <br />
-                                <label for="ordercallingbgimg" class="custom-file ">
-                                    <input type="file" name="ordercallingbgimg" id="ordercallingbgimg"
-                                        class="custom-file-input">
-                                    <span class="custom-file-control"></span>
-                                </label>
-                                @if ($errors->has('ordercallingbgimg'))
-                                    <div class="form-control-feedback">{{ $errors->first('ordercallingbgimg') }}</div>
-                                @endif
-                            </div>
+                            <label for="vdimg" class="form-control-label">Company Logo</label>
+                            <br />
+                            <label for="vdimg" class="custom-file">
+                                <input type="file" name="vdimg" id="vdimg" class="custom-file-input">
+                                <span class="custom-file-control"></span>
+                            </label>
+                            @if ($errors->has('vdimg'))
+                                <div class="form-control-feedback">{{ $errors->first('vdimg') }}</div>
+                            @endif
                         </div>
                     </div>
 
-                    <button type="submit" id="btnsubmit"
-                        class="btn btn-md btn-primary waves-effect waves-light f-right"> Edit Company </button>
+                    <div class="col-md-4">
+                        <a href="#">
+                            <img id="posbimg"
+                                src="{{ asset('storage/images/pos-background/' . $company[0]->pos_background) }}"
+                                class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                        </a>
+                        <div class="form-group {{ $errors->has('posbgimg') ? 'has-danger' : '' }} ">
+                            <label for="posbgimg" class="form-control-label">POS Background</label>
+                            <br />
+                            <label for="posbgimg" class="custom-file ">
+                                <input type="file" name="posbgimg" id="posbgimg" class="custom-file-input">
+                                <span class="custom-file-control"></span>
+                            </label>
+                            @if ($errors->has('posbgimg'))
+                                <div class="form-control-feedback">{{ $errors->first('posbgimg') }}</div>
+                            @endif
+                        </div>
+                    </div>
 
-
-
-                </form>
+                    <div class="col-md-4">
+                        <a href="#">
+                            <img id="previewordercallingbgimg"
+                                src="{{ asset('storage/images/order-calling/' . $company[0]->order_calling_display_image) }}"
+                                class="thumb-img img-fluid width-100" alt="img" style="width: 128px;height: 128px;">
+                        </a>
+                        <div class="form-group {{ $errors->has('ordercallingbgimg') ? 'has-danger' : '' }} ">
+                            <label for="ordercallingbgimg" class="form-control-label">Order Calling Display</label>
+                            <br />
+                            <label for="ordercallingbgimg" class="custom-file ">
+                                <input type="file" name="ordercallingbgimg" id="ordercallingbgimg"
+                                    class="custom-file-input">
+                                <span class="custom-file-control"></span>
+                            </label>
+                            @if ($errors->has('ordercallingbgimg'))
+                                <div class="form-control-feedback">{{ $errors->first('ordercallingbgimg') }}</div>
+                            @endif
+                        </div>
+                    </div>
             </div>
+
+            <button type="submit" id="btnsubmit" class="btn btn-md btn-primary waves-effect waves-light f-right"> Edit
+                Company </button>
+
+
+
+            </form>
+        </div>
         </div>
     </section>
 @endsection
