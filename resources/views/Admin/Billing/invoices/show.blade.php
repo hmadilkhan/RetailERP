@@ -291,6 +291,7 @@
                             <th>Reference</th>
                             <th>Narration</th>
                             <th>Screenshots</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -322,10 +323,22 @@
                                     <span class="text-muted">No screenshots</span>
                                 @endif
                             </td>
+                            <td style="min-width: 160px;">
+                                @if($payment->voucher)
+                                    <form method="post" action="{{ route('billing.invoices.payments.voucher.send', [$invoice->id, $payment->id]) }}">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success btn-block">
+                                            <i class="icofont icofont-social-whatsapp"></i> Send Voucher
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-muted">No voucher</span>
+                                @endif
+                            </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted">No payments recorded yet.</td>
+                            <td colspan="9" class="text-center text-muted">No payments recorded yet.</td>
                         </tr>
                         @endforelse
                     </tbody>

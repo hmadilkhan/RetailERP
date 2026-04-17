@@ -645,6 +645,39 @@ class BillingController extends Controller
         );
     }
 
+    public function sendPaymentVoucher($id, $paymentId, PaymentVoucherService $paymentVoucherService)
+    {
+        $payment = InvoicePayment::with(['voucher.company', 'voucher.paymentMode', 'voucher.invoicePayments.invoice', 'voucher.screenshots'])
+            ->where('invoice_id', $id)
+            ->findOrFail($paymentId);
+
+        if (!$payment->voucher) {
+            return redirect()
+                ->route('billing.invoices.show', $id)
+                ->withErrors(['error' => 'No payment voucher is linked to this payment.']);
+        }
+
+        try {
+            $result = $paymentVoucherService->sendVoucherToWhatsapp($payment->voucher, [
+                'trigger' => 'manual_resend',
+            ]);
+
+            if (($result['status'] ?? null) === 'skipped') {
+                return redirect()
+                    ->route('billing.invoices.show', $id)
+                    ->withErrors(['error' => 'Payment voucher was not sent: ' . ($result['reason'] ?? 'Unknown reason.')]);
+            }
+
+            return redirect()
+                ->route('billing.invoices.show', $id)
+                ->with('success', 'Payment voucher ' . $payment->voucher->voucher_no . ' sent to WhatsApp successfully.');
+        } catch (Throwable $exception) {
+            return redirect()
+                ->route('billing.invoices.show', $id)
+                ->withErrors(['error' => 'Unable to send payment voucher. ' . $exception->getMessage()]);
+        }
+    }
+
     public function addAdjustment(Request $request, $invoiceId)
     {
         $data = $request->validate([

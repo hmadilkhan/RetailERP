@@ -262,6 +262,7 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/billing/invoices/{id}/pdf', [BillingController::class, 'downloadPdf'])->name('billing.invoices.pdf');
     Route::post('/billing/invoices/{id}/send-whatsapp', [BillingController::class, 'sendToWhatsApp'])->name('billing.invoices.whatsapp.send');
     Route::post('/billing/invoices/{id}/payments', [BillingController::class, 'addPayment'])->name('billing.invoices.payments.store');
+    Route::post('/billing/invoices/{id}/payments/{paymentId}/send-voucher', [BillingController::class, 'sendPaymentVoucher'])->name('billing.invoices.payments.voucher.send');
     Route::get('/billing/payment-screenshots/{id}/download', [BillingController::class, 'downloadPaymentScreenshot'])->name('billing.payment-screenshots.download');
     Route::post('/billing/invoices/{id}/adjustments', [BillingController::class, 'addAdjustment'])->name('billing.invoices.adjustments.store');
 
