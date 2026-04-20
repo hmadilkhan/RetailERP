@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Services\Crm\LeadNotificationService;
 use App\Services\QuickBooks\QuickBooksAuthService;
 use App\Services\QuickBooks\QuickBooksCustomerService;
 use Illuminate\Support\ServiceProvider;
@@ -46,6 +47,12 @@ class AppServiceProvider extends ServiceProvider
             });
 
             return $this;
+        });
+
+        View::composer('crm.layouts.app', function ($view): void {
+            $view->with(
+                app(LeadNotificationService::class)->layoutData(auth()->user())
+            );
         });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App\Support\CrmLeadPermissions;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -69,5 +70,15 @@ class User extends Authenticatable
     public function canBeImpersonated(): bool
     {
         return session("roleId") !== 1;
+    }
+
+    public function crmRole(): string
+    {
+        return CrmLeadPermissions::resolveRole($this);
+    }
+
+    public function crmRoleLabel(): string
+    {
+        return CrmLeadPermissions::roleLabel($this);
     }
 }
