@@ -566,17 +566,23 @@
 				  console.log("",data); // show response from the php script.
 				  if(data == 1)
 				  {
+                    if("{{session('companyId')}}" == 7){
+                        sunmiCloud(function() {
+						//   location.reload();
+						});
+                    } else {
 					  location.reload();
+					}
 				  }
 				  
 		
 				}
 			});
 		});
-		
-		function sunmiCloud(){
-			rem_id.push($("#id").val());
-			// console.log(rem_id)		
+      
+		function sunmiCloud(callback){
+			rem_id = [$("#id").val()];
+			console.log(rem_id)		
 			$.ajax({
 				url: "{{url('/sunmi-cloud')}}",
 				type: "POST",
@@ -585,6 +591,12 @@
 				},
 				success:function(resp){
 					sendToSunmi(resp)
+					if (typeof callback === "function") {
+						callback();
+					}
+				},
+				error:function(xhr){
+					console.log(xhr.responseText);
 				}
 			});
 		}
@@ -619,7 +631,7 @@
 			  success: function(response){
 				console.log(response)
 				if(response.msg == "succeed"){
-					location.reload()
+					// location.reload()
 				}else{
 					swal({
 						title: "Error!",
