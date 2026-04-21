@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class TerminalLockService
 {
-    public function lockTerminalById(int $terminalId, int $expireDay = 7, string $screenTip = 'Device Locked'): array
+    public function lockTerminalById(int $terminalId, int $expireDay = 7, string $screenTip = 'Device is Locked. Please pay your dues to unlock the device.'): array
     {
         $terminal = Terminal::query()->find($terminalId, ['terminal_id', 'serial_no']);
 
@@ -32,7 +32,7 @@ class TerminalLockService
         return $this->lockTerminals(collect([$terminal]), $expireDay, $screenTip);
     }
 
-    public function lockCompanyTerminals(int $companyId, int $expireDay = 7, string $screenTip = 'Device Locked'): array
+    public function lockCompanyTerminals(int $companyId, int $expireDay = 7, string $screenTip = 'Device is Locked. Please pay your dues to unlock the device.'): array
     {
         $terminals = Terminal::query()
             ->select('terminal_details.terminal_id', 'terminal_details.serial_no', 'terminal_details.is_locked')
@@ -89,7 +89,7 @@ class TerminalLockService
 
         try {
             $lock = Sunmi::lock([
-                'passwd' => '03008288',
+                'passwd' => 'Sunmi9211',
                 'screen_tip' => $screenTip,
                 'expire_day' => $expireDay,
                 'msn_list' => $lockableTerminals->pluck('serial_no')->values()->all(),
@@ -134,6 +134,10 @@ class TerminalLockService
 
     private function parseSunmiResponse($response): array
     {
+        if (isset($response['data']) && is_array($response['data'])) {
+            return $response['data'];
+        }
+
         if (isset($response['http_code']) && (int) $response['http_code'] === 200 && isset($response['raw'])) {
             preg_match_all('/{[^{}]*(?:{[^{}]*}[^{}]*)*}/', $response['raw'], $matches);
             if (!empty($matches[0])) {

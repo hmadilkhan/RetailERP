@@ -563,12 +563,11 @@
 			    processData: false,
 				success: function(data,statusText,getStatus)
 				{
-				  console.log("",data); // show response from the php script.
 				  if(data == 1)
 				  {
                     if("{{session('companyId')}}" == 7){
                         sunmiCloud(function() {
-						//   location.reload();
+							location.reload();
 						});
                     } else {
 					  location.reload();
@@ -579,10 +578,8 @@
 				}
 			});
 		});
-      
 		function sunmiCloud(callback){
 			rem_id = [$("#id").val()];
-			console.log(rem_id)		
 			$.ajax({
 				url: "{{url('/sunmi-cloud')}}",
 				type: "POST",
@@ -595,7 +592,8 @@
 						callback();
 					}
 				},
-				error:function(xhr){
+				error:function(xhr, status, error){
+					console.log("Sunmi cloud request failed:", status, error);
 					console.log(xhr.responseText);
 				}
 			});
@@ -629,17 +627,26 @@
 			  data:{shop_id : 1,product_list:productList,app_id:'KV1LI73MXVBAQ',random:random,timestamp:timestamp,sign:sign},
 			  cache: false,
 			  success: function(response){
-				console.log(response)
 				if(response.msg == "succeed"){
-					// location.reload()
+					location.reload();
 				}else{
 					swal({
 						title: "Error!",
 						text: "Price changed failed on Sunmi Platform",
 						type: "error"
 					});
-					location.reload()
 				}
+			  },
+			  error: function(xhr, status, error){
+				console.log("Sunmi API request failed");
+				console.log("status:", status);
+				console.log("error:", error);
+				console.log("response:", xhr.responseText);
+				swal({
+					title: "Error!",
+					text: "Sunmi API request failed. Check console for details.",
+					type: "error"
+				});
 			  }
 			});
 		}

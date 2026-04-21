@@ -262,6 +262,10 @@ class TerminalController extends Controller
 
     private function parseSunmiResponse($response)
     {
+        if (isset($response['data']) && is_array($response['data'])) {
+            return $response['data'];
+        }
+
         if(isset($response['http_code']) && $response['http_code'] == 200 && isset($response['raw'])) {
             preg_match_all('/{[^{}]*(?:{[^{}]*}[^{}]*)*}/', $response['raw'], $matches);
             if(!empty($matches[0])) {
@@ -287,7 +291,7 @@ class TerminalController extends Controller
 
     public function unlockTerminal(Request $request)
     {
-        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no");
+        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no")->values()->all();
         $unlock = Sunmi::unlock([
             'msn_list' => $terminal,
         ]);
@@ -298,12 +302,16 @@ class TerminalController extends Controller
             return response()->json(['status' => 200, 'message' => 'Device unlocked successfully']);
         }
         
-        return response()->json(['status' => 500, 'message' => 'Failed to unlock device']);
+        return response()->json([
+            'status' => 500,
+            'message' => 'Failed to unlock device',
+            'response' => $rawData,
+        ]);
     }
 
     public function checkTerminalStatus(Request $request)
     {
-        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no");
+        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no")->values()->all();
         $status = Sunmi::status([
             'msn_list' => $terminal,
         ]);

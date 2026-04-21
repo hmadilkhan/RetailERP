@@ -32,7 +32,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Http;
 // use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Exception;
 use Symfony\Component\Process\Process;
@@ -2940,11 +2939,53 @@ class InventoryController extends Controller
 
     public function sunmiCloud(Request $request)
     {
+        $inventoryIds = collect((array) $request->input('inventory', []))
+            ->filter(function ($id) {
+                return !empty($id);
+            })
+            ->map(function ($id) {
+                return (int) $id;
+            })
+            ->unique()
+            ->values();
 
-        $response = Http::asForm()->post('https://sabsoft.com.pk/Retail/webservice/sendinventorytosunmi.php', [
-            'inventory' => implode(',', $request->inventory),
-        ]);
-        return $response;
+        if ($inventoryIds->isEmpty()) {
+            return response('[]', 200)->header('Content-Type', 'text/plain');
+        }
+
+        $products = DB::table('inventory_general')
+            ->whereIn('inventory_general.id', $inventoryIds)
+            ->select(
+                'inventory_general.id',
+                'inventory_general.item_code',
+                'inventory_general.product_name'
+            )
+            ->selectSub(function ($query) {
+                $query->from('inventory_price')
+                    ->select('retail_price')
+                    ->whereColumn('product_id', 'inventory_general.id')
+                    ->where('status_id', 1)
+                    ->limit(1);
+            }, 'price')
+            ->selectSub(function ($query) {
+                $query->from('inventory_uom')
+                    ->select('name')
+                    ->whereColumn('uom_id', 'inventory_general.uom_id')
+                    ->limit(1);
+            }, 'unit')
+            ->get()
+            ->map(function ($product) {
+                return [
+                    'id' => $product->id,
+                    'name' => $product->product_name,
+                    'bar_code' => $product->item_code,
+                    'unit' => $product->unit,
+                    'price' => $product->price,
+                ];
+            })
+            ->values();
+
+        return response($products->toJson(), 200)->header('Content-Type', 'text/plain');
     }
 
 
