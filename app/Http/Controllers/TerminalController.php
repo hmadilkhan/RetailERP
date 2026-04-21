@@ -298,7 +298,10 @@ class TerminalController extends Controller
         
         $rawData = $this->parseSunmiResponse($unlock);
         if($rawData && isset($rawData['code']) && $rawData['code'] == 1) {
-            ModelsTerminal::where("terminal_id",$request->terminal_id)->update(['is_locked' => 0]);
+            ModelsTerminal::where("terminal_id",$request->terminal_id)->update([
+                'is_locked' => 0,
+                'lock_password' => null,
+            ]);
             return response()->json(['status' => 200, 'message' => 'Device unlocked successfully']);
         }
         

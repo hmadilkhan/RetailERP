@@ -6,6 +6,7 @@ use App\Facades\Sunmi;
 use App\Models\Terminal;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class TerminalLockService
 {
@@ -87,9 +88,11 @@ class TerminalLockService
             ];
         }
 
+        $lockPassword = $this->generateLockPassword();
+
         try {
             $lock = Sunmi::lock([
-                'passwd' => 'Sunmi9211',
+                'passwd' => $lockPassword,
                 'screen_tip' => $screenTip,
                 'expire_day' => $expireDay,
                 'msn_list' => $lockableTerminals->pluck('serial_no')->values()->all(),
@@ -119,12 +122,16 @@ class TerminalLockService
         }
 
         $terminalIds = $lockableTerminals->pluck('terminal_id')->map(fn ($id) => (int) $id)->values()->all();
-        Terminal::query()->whereIn('terminal_id', $terminalIds)->update(['is_locked' => 1]);
+        Terminal::query()->whereIn('terminal_id', $terminalIds)->update([
+            'is_locked' => 1,
+            'lock_password' => $lockPassword,
+        ]);
 
         return [
             'status' => 200,
             'success' => true,
             'message' => 'Device locked successfully.',
+            'lock_password' => $lockPassword,
             'locked_terminal_ids' => $terminalIds,
             'already_locked_terminal_ids' => $alreadyLockedIds,
             'skipped_terminal_ids' => $skippedTerminalIds,
@@ -150,5 +157,10 @@ class TerminalLockService
         }
 
         return ['code' => 0];
+    }
+
+    private function generateLockPassword(): string
+    {
+        return Str::upper(Str::random(8));
     }
 }
