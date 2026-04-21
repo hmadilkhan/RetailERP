@@ -25,7 +25,7 @@ class EnforceBillingOverdueCommand extends Command
         $dryRun = (bool) $this->option('dry-run');
         $today = Carbon::today();
         $deactivateThresholdMonths = 3 + $this->daysToBillingMonthFraction(5);
-        $lockThresholdMonths = 4 + $this->daysToBillingMonthFraction(5);
+        $lockThresholdMonths = 4 + $this->daysToBillingMonthFraction(10);
 
         $this->info('Checking overdue billing thresholds...');
         $this->line('Reference date: ' . $today->toDateString());
