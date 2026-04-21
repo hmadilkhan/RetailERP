@@ -101,6 +101,7 @@ class TerminalLockService
             return [
                 'status' => 500,
                 'success' => false,
+                'passwd' => $lockPassword,
                 'message' => 'Failed to lock device: ' . $exception->getMessage(),
                 'locked_terminal_ids' => [],
                 'already_locked_terminal_ids' => $alreadyLockedIds,
@@ -161,6 +162,13 @@ class TerminalLockService
 
     private function generateLockPassword(): string
     {
-        return Str::upper(Str::random(8));
+        $letters = collect(range('A', 'Z'))->shuffle()->take(4)->all();
+        $numbers = collect(range(0, 9))->shuffle()->take(4)->map(function ($number) {
+            return (string) $number;
+        })->all();
+
+        return collect(array_merge($letters, $numbers))
+            ->shuffle()
+            ->implode('');
     }
 }
