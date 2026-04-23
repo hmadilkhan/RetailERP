@@ -5,7 +5,6 @@ namespace App\Services\Crm;
 use App\Models\Crm\Lead;
 use App\Models\Crm\LeadFollowup;
 use App\Notifications\Crm\CrmLeadNotification;
-use App\Support\CrmLeadPermissions;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +13,10 @@ use Illuminate\Support\Collection;
 
 class LeadNotificationService
 {
+    public function __construct(private readonly LeadAccessService $leadAccessService)
+    {
+    }
+
     public function notifyLeadAssigned(Lead $lead, ?User $actor = null): void
     {
         $lead->loadMissing(['assignedUser', 'status']);
@@ -309,16 +312,6 @@ class LeadNotificationService
 
     private function visibleLeadsQuery(User $user): Builder
     {
-        $query = Lead::query();
-
-        if (CrmLeadPermissions::canViewAll($user)) {
-            return $query;
-        }
-
-        return $query->where(function (Builder $builder) use ($user): void {
-            $builder
-                ->where('assigned_to', $user->id)
-                ->orWhere('created_by', $user->id);
-        });
+        return $this->leadAccessService->visibleQuery($user);
     }
 }

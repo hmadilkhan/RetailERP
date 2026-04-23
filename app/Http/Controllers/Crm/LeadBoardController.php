@@ -9,8 +9,10 @@ use App\Models\Crm\LeadStatus;
 use App\Services\Crm\LeadActivityLogger;
 use App\Services\Crm\LeadBoardService;
 use App\Services\Crm\LeadNotificationService;
+use App\Support\CrmFilterState;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class LeadBoardController extends Controller
@@ -22,16 +24,28 @@ class LeadBoardController extends Controller
     ) {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $this->authorize('viewAny', Lead::class);
+
+        $filterState = CrmFilterState::restore($request, 'crm.board.filters', [
+            'assigned_to',
+            'lead_source_id',
+            'product_type_id',
+            'date_from',
+            'date_to',
+        ]);
+
+        if ($filterState['redirect']) {
+            return redirect()->route('crm.board', $filterState['values']);
+        }
 
         $board = $this->boardService->boardData($request->user(), $request);
 
         return view('crm.leads.board', [
             'columns' => $board['columns'],
             'summary' => $board['summary'],
-            'filters' => $request->only(['assigned_to', 'lead_source_id', 'product_type_id', 'date_from', 'date_to']),
+            'filters' => $filterState['values'],
             'canChangeStatusGlobally' => $request->user()->can('viewAny', Lead::class),
         ] + $this->boardService->filterOptions());
     }

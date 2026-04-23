@@ -200,9 +200,26 @@
                 </div>
             @endif
 
+            @if (session('crm_error'))
+                <div class="mb-5 rounded-3xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-800 shadow-crm-soft">
+                    {{ session('crm_error') }}
+                </div>
+            @endif
+
             @if (session('crm_duplicate_warning'))
                 <div class="mb-5 rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-800 shadow-crm-soft">
                     {{ session('crm_duplicate_warning') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="mb-5 rounded-3xl border border-rose-200 bg-rose-50 px-5 py-4 text-sm text-rose-800 shadow-crm-soft">
+                    <p class="font-semibold">Please review the highlighted CRM form fields.</p>
+                    <ul class="mt-2 space-y-1 text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
             @endif
 
@@ -211,6 +228,32 @@
     </div>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        (function() {
+            document.addEventListener('submit', function(event) {
+                const form = event.target;
+
+                if (!(form instanceof HTMLFormElement) || !form.matches('[data-crm-submit]')) {
+                    return;
+                }
+
+                const buttons = form.querySelectorAll('[type="submit"]');
+                buttons.forEach(function(button) {
+                    if (!(button instanceof HTMLButtonElement)) {
+                        return;
+                    }
+
+                    if (!button.dataset.originalLabel) {
+                        button.dataset.originalLabel = button.innerHTML;
+                    }
+
+                    button.disabled = true;
+                    button.classList.add('opacity-70', 'cursor-not-allowed');
+                    button.innerHTML = button.dataset.loadingLabel || 'Processing...';
+                });
+            });
+        })();
+    </script>
     @stack('crm_scripts')
 </body>
 

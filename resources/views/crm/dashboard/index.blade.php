@@ -4,29 +4,19 @@
 @section('page_title', 'Executive CRM Dashboard')
 @section('page_subtitle', 'Premium lead performance intelligence across acquisition, ownership, conversion, and pipeline value.')
 
-@php
-    $cardTones = [
-        'blue' => 'from-blue-50 to-white text-blue-900 ring-blue-200',
-        'cyan' => 'from-cyan-50 to-white text-cyan-900 ring-cyan-200',
-        'indigo' => 'from-indigo-50 to-white text-indigo-900 ring-indigo-200',
-        'amber' => 'from-amber-50 to-white text-amber-900 ring-amber-200',
-        'rose' => 'from-rose-50 to-white text-rose-900 ring-rose-200',
-        'emerald' => 'from-emerald-50 to-white text-emerald-900 ring-emerald-200',
-        'slate' => 'from-slate-100 to-white text-slate-900 ring-slate-200',
-        'violet' => 'from-violet-50 to-white text-violet-900 ring-violet-200',
-    ];
-@endphp
-
 @section('content')
-    <section class="rounded-[32px] border border-white/70 bg-white/90 p-6 shadow-crm backdrop-blur">
-        <div class="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-            <div>
-                <h2 class="text-xl font-semibold tracking-tight text-crm-ink">Performance Filters</h2>
-                <p class="mt-1 text-sm text-crm-mute">Refine the dashboard by period, funnel dimensions, product interest, owner, and lead status.</p>
+    <x-crm.panel class="backdrop-blur" title="Performance Filters"
+        subtitle="Refine the dashboard by period, funnel dimensions, product interest, owner, and lead status.">
+        @if ($activeFilterSummary)
+            <div class="mb-5 flex flex-wrap items-center gap-2 rounded-[24px] border border-crm-line bg-crm-soft/70 px-4 py-4 text-sm text-crm-text">
+                <span class="text-xs font-semibold uppercase tracking-[0.22em] text-crm-mute">Active Filters</span>
+                <span class="inline-flex rounded-full bg-white px-3 py-1 font-medium text-crm-text ring-1 ring-slate-200">
+                    {{ $activeFilterSummary }}
+                </span>
             </div>
-        </div>
+        @endif
 
-        <form method="GET" action="{{ route('crm.dashboard') }}" class="mt-6 grid gap-4 lg:grid-cols-12">
+        <form method="GET" action="{{ route('crm.dashboard') }}" data-crm-submit class="grid gap-4 lg:grid-cols-12">
             <div class="lg:col-span-2">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-crm-mute">Date From</label>
                 <input type="date" name="date_from" value="{{ $filters['date_from'] ?? '' }}"
@@ -83,25 +73,21 @@
                 </select>
             </div>
             <div class="flex items-end gap-3 lg:col-span-9 lg:justify-end">
-                <button type="submit"
+                <button type="submit" data-loading-label="Applying..."
                     class="inline-flex items-center justify-center rounded-2xl bg-crm-blue px-5 py-3 text-sm font-semibold text-white transition hover:bg-crm-deep">
                     Apply Filters
                 </button>
-                <a href="{{ route('crm.dashboard') }}"
+                <a href="{{ route('crm.dashboard', ['reset_filters' => 1]) }}"
                     class="inline-flex items-center justify-center rounded-2xl border border-crm-line bg-white px-5 py-3 text-sm font-semibold text-crm-text transition hover:border-crm-blue hover:text-crm-blue">
                     Reset
                 </a>
             </div>
         </form>
-    </section>
+    </x-crm.panel>
 
     <section class="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         @foreach ($summaryCards as $card)
-            <div class="rounded-[28px] border border-white/70 bg-gradient-to-br {{ $cardTones[$card['tone']] ?? 'from-slate-100 to-white text-slate-900 ring-slate-200' }} p-5 shadow-crm-soft ring-1">
-                <p class="text-xs font-semibold uppercase tracking-[0.22em] opacity-70">{{ $card['label'] }}</p>
-                <p class="mt-4 text-3xl font-semibold">{{ number_format($card['value']) }}</p>
-                <p class="mt-2 text-sm opacity-75">{{ $card['helper'] }}</p>
-            </div>
+            <x-crm.stat-card :label="$card['label']" :value="number_format($card['value'])" :helper="$card['helper']" :tone="$card['tone']" />
         @endforeach
     </section>
 
@@ -381,10 +367,7 @@
                                 @forelse ($reports['statusWise'] as $row)
                                     <tr>
                                         <td class="px-5 py-4">
-                                            <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold"
-                                                style="background-color: {{ ($row->color ?? '#114a8f') }}15; color: {{ $row->color ?? '#114a8f' }};">
-                                                {{ $row->name }}
-                                            </span>
+                                            <x-crm.status-badge :label="$row->name" :color="$row->color ?? '#114a8f'" />
                                         </td>
                                         <td class="px-5 py-4 font-medium text-crm-ink">{{ number_format($row->total) }}</td>
                                         <td class="px-5 py-4 text-crm-text">{{ number_format((float) $row->expected_value, 2) }}</td>

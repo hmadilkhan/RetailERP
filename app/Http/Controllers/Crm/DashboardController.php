@@ -11,8 +11,10 @@ use App\Http\Requests\Crm\LeadDashboardFilterRequest;
 use App\Models\Crm\Lead;
 use App\Services\Crm\LeadDashboardReportService;
 use App\Services\Crm\LeadNotificationService;
+use App\Support\CrmFilterState;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -26,15 +28,30 @@ class DashboardController extends Controller
     {
     }
 
-    public function index(LeadDashboardFilterRequest $request): View
+    public function index(LeadDashboardFilterRequest $request): View|RedirectResponse
     {
         $this->authorize('viewAny', Lead::class);
 
-        $filters = $request->validated();
+        $filterState = CrmFilterState::restore($request, 'crm.dashboard.filters', [
+            'date_from',
+            'date_to',
+            'lead_source_id',
+            'product_type_id',
+            'product_id',
+            'assigned_to',
+            'status_id',
+        ]);
+
+        if ($filterState['redirect']) {
+            return redirect()->route('crm.dashboard', $filterState['values']);
+        }
+
+        $filters = array_merge($request->validated(), $filterState['values']);
         $dashboardData = $this->reportService->getDashboardData($request->user(), $filters);
 
         return view('crm.dashboard.index', [
             'filters' => $filters,
+            'activeFilterSummary' => $this->reportService->filterSummary($filters),
             'summaryCards' => $dashboardData['summaryCards'],
             'reports' => $dashboardData['reports'],
             'charts' => $dashboardData['charts'],

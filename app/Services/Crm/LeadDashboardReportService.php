@@ -7,7 +7,6 @@ use App\Models\Crm\LeadSource;
 use App\Models\Crm\LeadStatus;
 use App\Models\Crm\Product;
 use App\Models\Crm\ProductType;
-use App\Support\CrmLeadPermissions;
 use App\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -17,6 +16,10 @@ use Illuminate\Support\Facades\DB;
 
 class LeadDashboardReportService
 {
+    public function __construct(private readonly LeadAccessService $leadAccessService)
+    {
+    }
+
     public function filters(): array
     {
         return [
@@ -24,7 +27,7 @@ class LeadDashboardReportService
             'productTypes' => ProductType::query()->where('is_active', true)->orderBy('sort_order')->get(),
             'products' => Product::query()->where('is_active', true)->orderBy('name')->get(),
             'leadStatuses' => LeadStatus::query()->where('is_active', true)->orderBy('sort_order')->get(),
-            'users' => $this->assignmentUsers(),
+            'users' => $this->leadAccessService->assignmentUsers(),
         ];
     }
 
@@ -123,7 +126,7 @@ class LeadDashboardReportService
 
     public function filteredLeadsQuery(User $user, array $filters): Builder
     {
-        return $this->visibleLeadsQuery($user)
+        return $this->leadAccessService->visibleQuery($user)
             ->when(!empty($filters['date_from']), fn (Builder $query) => $query->whereDate('created_at', '>=', $filters['date_from']))
             ->when(!empty($filters['date_to']), fn (Builder $query) => $query->whereDate('created_at', '<=', $filters['date_to']))
             ->when(!empty($filters['lead_source_id']), fn (Builder $query) => $query->where('lead_source_id', $filters['lead_source_id']))
@@ -408,39 +411,4 @@ class LeadDashboardReportService
         ];
     }
 
-    private function visibleLeadsQuery(User $user): Builder
-    {
-        $query = Lead::query();
-
-        if (CrmLeadPermissions::canViewAll($user)) {
-            return $query;
-        }
-
-        return $query->where(function (Builder $builder) use ($user): void {
-            $builder
-                ->where('assigned_to', $user->id)
-                ->orWhere('created_by', $user->id);
-        });
-    }
-
-    private function assignmentUsers(): Collection
-    {
-        return User::query()
-            ->select('user_details.id', 'user_details.fullname')
-            ->leftJoin('user_authorization', function ($join): void {
-                $join->on('user_authorization.user_id', '=', 'user_details.id')
-                    ->where('user_authorization.status_id', 1);
-            })
-            ->leftJoin('user_roles', 'user_roles.role_id', '=', 'user_authorization.role_id')
-            ->where(function ($query): void {
-                $query
-                    ->where('user_roles.role', 'like', '%admin%')
-                    ->orWhere('user_roles.role', 'like', '%sales manager%')
-                    ->orWhere('user_roles.role', 'like', '%sales executive%')
-                    ->orWhereNull('user_roles.role');
-            })
-            ->orderBy('user_details.fullname')
-            ->distinct()
-            ->get();
-    }
 }

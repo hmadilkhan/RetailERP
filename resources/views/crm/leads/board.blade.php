@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <form method="GET" action="{{ route('crm.board') }}" class="mt-6 grid gap-4 lg:grid-cols-12">
+        <form method="GET" action="{{ route('crm.board') }}" data-crm-submit class="mt-6 grid gap-4 lg:grid-cols-12">
             <div class="lg:col-span-3">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-crm-mute">Assigned User</label>
                 <select name="assigned_to" class="block w-full rounded-2xl border-crm-line bg-crm-soft px-4 py-3 text-sm focus:border-crm-blue focus:ring-crm-blue">
@@ -84,11 +84,11 @@
                     class="block w-full rounded-2xl border-crm-line bg-crm-soft px-4 py-3 text-sm focus:border-crm-blue focus:ring-crm-blue">
             </div>
             <div class="flex items-end gap-3 lg:col-span-9 lg:justify-end">
-                <button type="submit"
+                <button type="submit" data-loading-label="Applying..."
                     class="inline-flex items-center justify-center rounded-2xl bg-crm-blue px-5 py-3 text-sm font-semibold text-white transition hover:bg-crm-deep">
                     Apply Filters
                 </button>
-                <a href="{{ route('crm.board') }}"
+                <a href="{{ route('crm.board', ['reset_filters' => 1]) }}"
                     class="inline-flex items-center justify-center rounded-2xl border border-crm-line bg-white px-5 py-3 text-sm font-semibold text-crm-text transition hover:border-crm-blue hover:text-crm-blue">
                     Reset
                 </a>

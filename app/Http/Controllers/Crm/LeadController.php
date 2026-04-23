@@ -15,13 +15,13 @@ use App\Models\Crm\LeadStatus;
 use App\Models\Crm\Product;
 use App\Models\Crm\ProductType;
 use App\Services\Crm\LeadActivityLogger;
+use App\Services\Crm\LeadAccessService;
 use App\Services\Crm\LeadConversionService;
 use App\Services\Crm\LeadNotificationService;
+use App\Support\CrmFilterState;
 use App\Support\CrmLeadPermissions;
-use App\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Contracts\View\View;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -35,36 +35,54 @@ class LeadController extends Controller
 {
     public function __construct(
         private readonly LeadActivityLogger $activityLogger,
+        private readonly LeadAccessService $leadAccessService,
         private readonly LeadConversionService $leadConversionService,
         private readonly LeadNotificationService $notificationService
     )
     {
     }
 
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $this->authorize('viewAny', Lead::class);
 
-        $visibleLeads = $this->visibleLeadsQuery($request->user());
+        $filterState = CrmFilterState::restore($request, 'crm.leads.filters', [
+            'search',
+            'lead_source_id',
+            'product_type_id',
+            'product_id',
+            'status_id',
+            'city',
+            'assigned_to',
+            'my_leads',
+            'unassigned_only',
+        ]);
+
+        if ($filterState['redirect']) {
+            return redirect()->route('crm.leads.index', $filterState['values']);
+        }
+
+        $filters = $filterState['values'];
+        $visibleLeads = $this->leadAccessService->visibleQuery($request->user());
 
         $leads = (clone $visibleLeads)
             ->with(['leadSource', 'productType', 'product', 'status', 'assignedUser', 'latestFollowup'])
             ->withCount('followups')
-            ->search($request->string('search')->toString())
-            ->when($request->filled('lead_source_id'), fn ($query) => $query->where('lead_source_id', $request->integer('lead_source_id')))
-            ->when($request->filled('product_type_id'), fn ($query) => $query->where('product_type_id', $request->integer('product_type_id')))
-            ->when($request->filled('product_id'), fn ($query) => $query->where('product_id', $request->integer('product_id')))
-            ->when($request->filled('status_id'), fn ($query) => $query->where('status_id', $request->integer('status_id')))
-            ->when($request->filled('city'), fn ($query) => $query->where('city', 'like', '%' . trim((string) $request->input('city')) . '%'))
-            ->when($request->filled('assigned_to'), fn ($query) => $query->where('assigned_to', $request->integer('assigned_to')))
-            ->when($request->boolean('my_leads'), function ($query) use ($request) {
+            ->search($filters['search'] ?? null)
+            ->when(!empty($filters['lead_source_id']), fn ($query) => $query->where('lead_source_id', (int) $filters['lead_source_id']))
+            ->when(!empty($filters['product_type_id']), fn ($query) => $query->where('product_type_id', (int) $filters['product_type_id']))
+            ->when(!empty($filters['product_id']), fn ($query) => $query->where('product_id', (int) $filters['product_id']))
+            ->when(!empty($filters['status_id']), fn ($query) => $query->where('status_id', (int) $filters['status_id']))
+            ->when(!empty($filters['city']), fn ($query) => $query->where('city', 'like', '%' . trim((string) $filters['city']) . '%'))
+            ->when(!empty($filters['assigned_to']), fn ($query) => $query->where('assigned_to', (int) $filters['assigned_to']))
+            ->when(!empty($filters['my_leads']), function ($query) use ($request) {
                 $query->where(function ($builder) use ($request): void {
                     $builder
                         ->where('assigned_to', $request->user()->id)
                         ->orWhere('created_by', $request->user()->id);
                 });
             })
-            ->when($request->boolean('unassigned_only') || $request->boolean('unassigned'), fn ($query) => $query->whereNull('assigned_to'))
+            ->when(!empty($filters['unassigned_only']), fn ($query) => $query->whereNull('assigned_to'))
             ->latest('id')
             ->paginate(12)
             ->withQueryString();
@@ -73,17 +91,8 @@ class LeadController extends Controller
 
         return view('crm.leads.index', [
             'leads' => $leads,
-            'filters' => $request->only([
-                'search',
-                'lead_source_id',
-                'product_type_id',
-                'product_id',
-                'status_id',
-                'city',
-                'assigned_to',
-                'my_leads',
-                'unassigned_only',
-            ]),
+            'filters' => $filters,
+            'activeFilterSummary' => $this->leadFilterSummaryFromFilters($filters),
             'stats' => [
                 'total' => (clone $statsBaseQuery)->count(),
                 'open' => (clone $statsBaseQuery)->whereHas('status', fn ($query) => $query->whereNotIn('slug', ['won', 'lost', 'junk']))->count(),
@@ -95,7 +104,7 @@ class LeadController extends Controller
             'canExportLeads' => $request->user()->can('export', Lead::class),
             'canAssignLeads' => CrmLeadPermissions::canAssign($request->user()),
             'crmRoleLabel' => $request->user()->crmRoleLabel(),
-        ] + $this->formOptions($request->input('product_type_id')));
+        ] + $this->formOptions($filters['product_type_id'] ?? null));
     }
 
     public function create(Request $request): View
@@ -177,7 +186,7 @@ class LeadController extends Controller
             'canChangeStatus' => auth()->user()->can('changeStatus', $lead),
             'canConvertLead' => auth()->user()->can('convert', $lead),
             'canCreateQuotation' => auth()->user()->can('update', $lead),
-            'assignableUsers' => $this->assignmentUsers(),
+            'assignableUsers' => $this->leadAccessService->assignmentUsers(),
         ]);
     }
 
@@ -422,7 +431,7 @@ class LeadController extends Controller
                 ->orderBy('name')
                 ->get(['id', 'name', 'product_type_id']),
             'leadStatuses' => LeadStatus::query()->where('is_active', true)->orderBy('sort_order')->get(),
-            'users' => $this->assignmentUsers(),
+            'users' => $this->leadAccessService->assignmentUsers(),
             'priorityOptions' => [
                 'low' => 'Low',
                 'medium' => 'Medium',
@@ -443,24 +452,9 @@ class LeadController extends Controller
         ];
     }
 
-    private function visibleLeadsQuery(User $user): Builder
-    {
-        $query = Lead::query();
-
-        if (CrmLeadPermissions::canViewAll($user)) {
-            return $query;
-        }
-
-        return $query->where(function (Builder $builder) use ($user): void {
-            $builder
-                ->where('assigned_to', $user->id)
-                ->orWhere('created_by', $user->id);
-        });
-    }
-
     private function filteredLeadsQuery(Request $request): Builder
     {
-        return $this->visibleLeadsQuery($request->user())
+        return $this->leadAccessService->visibleQuery($request->user())
             ->search($request->string('search')->toString())
             ->when($request->filled('lead_source_id'), fn ($query) => $query->where('lead_source_id', $request->integer('lead_source_id')))
             ->when($request->filled('product_type_id'), fn ($query) => $query->where('product_type_id', $request->integer('product_type_id')))
@@ -478,64 +472,49 @@ class LeadController extends Controller
             ->when($request->boolean('unassigned_only') || $request->boolean('unassigned'), fn ($query) => $query->whereNull('assigned_to'));
     }
 
-    private function assignmentUsers(): Collection
+    private function leadFilterSummary(Request $request): string
     {
-        return User::query()
-            ->select('user_details.id', 'user_details.fullname')
-            ->leftJoin('user_authorization', function ($join): void {
-                $join->on('user_authorization.user_id', '=', 'user_details.id')
-                    ->where('user_authorization.status_id', 1);
-            })
-            ->leftJoin('user_roles', 'user_roles.role_id', '=', 'user_authorization.role_id')
-            ->where(function ($query): void {
-                $query
-                    ->where('user_roles.role', 'like', '%admin%')
-                    ->orWhere('user_roles.role', 'like', '%sales manager%')
-                    ->orWhere('user_roles.role', 'like', '%sales executive%')
-                    ->orWhereNull('user_roles.role');
-            })
-            ->orderBy('user_details.fullname')
-            ->distinct()
-            ->get();
+        return $this->leadFilterSummaryFromFilters($request->all());
     }
 
-    private function leadFilterSummary(Request $request): string
+    private function leadFilterSummaryFromFilters(array $filters): string
     {
         $labels = [];
 
-        if ($request->filled('search')) {
-            $labels[] = 'Search: ' . trim((string) $request->input('search'));
+        if (!empty($filters['search'])) {
+            $labels[] = 'Search: ' . trim((string) $filters['search']);
         }
 
-        if ($request->filled('lead_source_id')) {
-            $labels[] = 'Source: ' . (LeadSource::query()->whereKey($request->integer('lead_source_id'))->value('name') ?? 'Unknown');
+        if (!empty($filters['lead_source_id'])) {
+            $labels[] = 'Source: ' . (LeadSource::query()->whereKey((int) $filters['lead_source_id'])->value('name') ?? 'Unknown');
         }
 
-        if ($request->filled('product_type_id')) {
-            $labels[] = 'Product Type: ' . (ProductType::query()->whereKey($request->integer('product_type_id'))->value('name') ?? 'Unknown');
+        if (!empty($filters['product_type_id'])) {
+            $labels[] = 'Product Type: ' . (ProductType::query()->whereKey((int) $filters['product_type_id'])->value('name') ?? 'Unknown');
         }
 
-        if ($request->filled('product_id')) {
-            $labels[] = 'Product: ' . (Product::query()->whereKey($request->integer('product_id'))->value('name') ?? 'Unknown');
+        if (!empty($filters['product_id'])) {
+            $labels[] = 'Product: ' . (Product::query()->whereKey((int) $filters['product_id'])->value('name') ?? 'Unknown');
         }
 
-        if ($request->filled('status_id')) {
-            $labels[] = 'Status: ' . (LeadStatus::query()->whereKey($request->integer('status_id'))->value('name') ?? 'Unknown');
+        if (!empty($filters['status_id'])) {
+            $labels[] = 'Status: ' . (LeadStatus::query()->whereKey((int) $filters['status_id'])->value('name') ?? 'Unknown');
         }
 
-        if ($request->filled('city')) {
-            $labels[] = 'City: ' . trim((string) $request->input('city'));
+        if (!empty($filters['city'])) {
+            $labels[] = 'City: ' . trim((string) $filters['city']);
         }
 
-        if ($request->filled('assigned_to')) {
-            $labels[] = 'Assigned To: ' . (User::query()->whereKey($request->integer('assigned_to'))->value('fullname') ?? 'Unknown');
+        if (!empty($filters['assigned_to'])) {
+            $assignedUser = $this->leadAccessService->assignmentUsers()->firstWhere('id', (int) $filters['assigned_to']);
+            $labels[] = 'Assigned To: ' . ($assignedUser->fullname ?? 'Unknown');
         }
 
-        if ($request->boolean('my_leads')) {
+        if (!empty($filters['my_leads'])) {
             $labels[] = 'My Leads';
         }
 
-        if ($request->boolean('unassigned_only') || $request->boolean('unassigned')) {
+        if (!empty($filters['unassigned_only']) || !empty($filters['unassigned'])) {
             $labels[] = 'Unassigned Only';
         }
 
