@@ -26,6 +26,7 @@
                             <th>City</th>
                             <th>Mobile</th>
                             <th>Email</th>
+                            <th>Terminal Nos</th>
                             <th>Serials</th>
                             <th>Address</th>
                             <th>Action</th>
@@ -46,6 +47,7 @@
                                 <td>{{ $value->city->city_name ?? '-' }}</td>
                                 <td>{{ $value->branch_mobile ?? '-' }}</td>
                                 <td>{{ $value->branch_email ?? '-' }}</td>
+                                <td>{{ implode(",", $value->terminals->pluck("terminal_id")->filter()->toArray()) }}</td>
                                 <td>{{ implode(",", $value->terminals->pluck("serial_no")->filter()->toArray()) }}</td>
                                 <td>{{ $value->branch_address }}</td>
                                 <td class="action-icon">
