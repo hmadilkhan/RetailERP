@@ -168,6 +168,9 @@ class BillingController extends Controller
 
     public function deliveryHistory(Request $request)
     {
+        $generationLogNames = ['billing_invoice_generation', 'billing_previous_due_generation'];
+        $deliveryLogNames = array_merge(['billing_invoice_whatsapp'], $generationLogNames);
+
         $logsQuery = DB::table('activity_log as al')
             ->leftJoin('invoices', function ($join) {
                 $join->on('invoices.id', '=', 'al.subject_id')
@@ -187,7 +190,7 @@ class BillingController extends Controller
                 'invoices.invoice_no',
                 'company.name as company_name',
             ])
-            ->whereIn('al.log_name', ['billing_invoice_whatsapp', 'billing_invoice_generation'])
+            ->whereIn('al.log_name', $deliveryLogNames)
             ->orderByDesc('al.id');
 
         if (!empty($request->company_id)) {
@@ -195,7 +198,11 @@ class BillingController extends Controller
         }
 
         if (!empty($request->status)) {
-            $logsQuery->where('al.event', 'whatsapp_' . $request->status);
+            $status = trim($request->status);
+            $logsQuery->whereIn('al.event', [
+                'whatsapp_' . $status,
+                'generation_' . $status,
+            ]);
         }
 
         if (!empty($request->invoice_no)) {
@@ -212,7 +219,7 @@ class BillingController extends Controller
 
         $deliveryLogs = $logsQuery->paginate(25)->appends($request->query());
         $deliveryLogs->setCollection(
-            $deliveryLogs->getCollection()->map(function ($log) {
+            $deliveryLogs->getCollection()->map(function ($log) use ($generationLogNames) {
                 $properties = json_decode($log->properties ?? '{}', true) ?: [];
                 $status = str_replace('whatsapp_', '', (string) ($log->event ?? ''));
                 if ($status === (string) ($log->event ?? '')) {
@@ -221,7 +228,7 @@ class BillingController extends Controller
 
                 $log->status = $status !== '' ? $status : ($properties['status'] ?? 'unknown');
                 $log->stage = $properties['stage']
-                    ?? ($log->log_name === 'billing_invoice_generation' ? 'generation' : 'whatsapp');
+                    ?? (in_array($log->log_name, $generationLogNames, true) ? 'generation' : 'whatsapp');
                 $log->to = $properties['to'] ?? null;
                 $log->reason = $properties['reason'] ?? null;
                 $log->trigger = $properties['trigger'] ?? null;
@@ -236,12 +243,16 @@ class BillingController extends Controller
 
         $recentRuns = DB::table('activity_log')
             ->select(['id', 'description', 'properties', 'batch_uuid', 'created_at'])
-            ->where('log_name', 'billing_invoice_run')
+            ->whereIn('log_name', ['billing_invoice_run', 'billing_previous_due_run'])
             ->orderByDesc('id')
             ->limit(8)
             ->get()
             ->map(function ($run) {
                 $properties = json_decode($run->properties ?? '{}', true) ?: [];
+                $skippedCount = (int) ($properties['skipped_count'] ?? 0);
+                $failedCount = (int) ($properties['failed_count'] ?? 0);
+                $whatsAppSkippedCount = (int) ($properties['whatsapp_skipped_count'] ?? 0);
+                $whatsAppFailedCount = (int) ($properties['whatsapp_failed_count'] ?? 0);
 
                 return (object) [
                     'id' => $run->id,
@@ -251,11 +262,13 @@ class BillingController extends Controller
                     'period_start' => $properties['period_start'] ?? null,
                     'period_end' => $properties['period_end'] ?? null,
                     'generated_count' => $properties['generated_count'] ?? 0,
-                    'skipped_count' => $properties['skipped_count'] ?? 0,
-                    'failed_count' => $properties['failed_count'] ?? 0,
+                    'skipped_count' => $skippedCount,
+                    'failed_count' => $failedCount,
                     'whatsapp_sent_count' => $properties['whatsapp_sent_count'] ?? 0,
-                    'whatsapp_skipped_count' => $properties['whatsapp_skipped_count'] ?? 0,
-                    'whatsapp_failed_count' => $properties['whatsapp_failed_count'] ?? 0,
+                    'whatsapp_skipped_count' => $whatsAppSkippedCount,
+                    'whatsapp_failed_count' => $whatsAppFailedCount,
+                    'total_skipped_count' => $skippedCount + $whatsAppSkippedCount,
+                    'total_failed_count' => $failedCount + $whatsAppFailedCount,
                 ];
             });
 

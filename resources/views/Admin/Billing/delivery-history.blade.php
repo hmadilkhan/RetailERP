@@ -82,9 +82,10 @@
                                             {{ $run->period_end ? date('M d', strtotime($run->period_end)) : '-' }}
                                         </p>
                                         <div class="m-b-10">
+                                            <span class="badge badge-primary">Generated {{ $run->generated_count }}</span>
                                             <span class="badge badge-success">Sent {{ $run->whatsapp_sent_count }}</span>
-                                            <span class="badge badge-warning">Skipped {{ $run->whatsapp_skipped_count }}</span>
-                                            <span class="badge badge-danger">Failed {{ $run->whatsapp_failed_count }}</span>
+                                            <span class="badge badge-warning">Skipped {{ $run->total_skipped_count }}</span>
+                                            <span class="badge badge-danger">Failed {{ $run->total_failed_count }}</span>
                                         </div>
                                         <a href="{{ route('billing.delivery-history', ['run_id' => $run->batch_uuid]) }}" class="btn btn-outline-success btn-sm btn-block">
                                             View Run
