@@ -58,12 +58,12 @@
                         <label>Invoice Month</label>
                         <input type="month" name="month" class="form-control" value="{{ request('month') }}">
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-3 m-t-10">
                         <label>Payment Month</label>
                         <input type="month" name="payment_month" class="form-control" value="{{ request('payment_month') }}">
                     </div>
-                    <div class="col-md-3 m-t-25">
-                        <button class="btn btn-success btn-sm">Filter</button>
+                    <div class="col-md-12 m-t-15">
+                        <button class="btn btn-success btn-sm f-right">Filter</button>
                     </div>
                 </form>
 
