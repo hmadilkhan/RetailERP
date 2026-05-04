@@ -280,7 +280,7 @@ class BillingController extends Controller
     public function create()
     {
         $companies = Company::select('company_id', 'name', 'invoice_type', 'payment_due_days', 'invoice_prefix', 'monthly_charges_amount')
-            ->where('status_id', 1)
+            ->whereIn('status_id', [1,2])
             ->orderBy('name')
             ->get();
 
