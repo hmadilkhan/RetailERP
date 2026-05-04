@@ -55,13 +55,46 @@
                         </select>
                     </div>
                     <div class="col-md-3">
-                        <label>Month</label>
+                        <label>Invoice Month</label>
                         <input type="month" name="month" class="form-control" value="{{ request('month') }}">
+                    </div>
+                    <div class="col-md-3">
+                        <label>Payment Month</label>
+                        <input type="month" name="payment_month" class="form-control" value="{{ request('payment_month') }}">
                     </div>
                     <div class="col-md-3 m-t-25">
                         <button class="btn btn-success btn-sm">Filter</button>
                     </div>
                 </form>
+
+                @if(!empty($paymentSummary))
+                    <div class="row m-t-15">
+                        <div class="col-md-4">
+                            <div class="card" style="border:0; box-shadow:0 8px 24px rgba(30,54,80,0.08);">
+                                <div class="card-block">
+                                    <p class="text-muted text-uppercase m-b-5" style="letter-spacing:0.08em; font-size:11px;">Received Amount</p>
+                                    <h4 class="m-b-0">{{ number_format($paymentSummary->received_amount, 2) }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card" style="border:0; box-shadow:0 8px 24px rgba(30,54,80,0.08);">
+                                <div class="card-block">
+                                    <p class="text-muted text-uppercase m-b-5" style="letter-spacing:0.08em; font-size:11px;">Invoices Paid</p>
+                                    <h4 class="m-b-0">{{ number_format($paymentSummary->invoice_count) }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card" style="border:0; box-shadow:0 8px 24px rgba(30,54,80,0.08);">
+                                <div class="card-block">
+                                    <p class="text-muted text-uppercase m-b-5" style="letter-spacing:0.08em; font-size:11px;">Payment Vouchers</p>
+                                    <h4 class="m-b-0">{{ number_format($paymentSummary->voucher_count) }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif
 
                 <div class="table-responsive m-t-15">
                     <table class="table table-striped table-bordered">

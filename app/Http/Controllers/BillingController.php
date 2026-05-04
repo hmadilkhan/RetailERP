@@ -160,10 +160,53 @@ class BillingController extends Controller
                 ->whereDate('period_end', '<=', $month->copy()->endOfMonth()->toDateString());
         }
 
+        $paymentSummary = null;
+        if (!empty($request->payment_month)) {
+            $paymentMonth = Carbon::parse($request->payment_month . '-01');
+            $paymentMonthStart = $paymentMonth->copy()->startOfMonth()->toDateString();
+            $paymentMonthEnd = $paymentMonth->copy()->endOfMonth()->toDateString();
+
+            $query->whereHas('payments', function ($paymentsQuery) use ($paymentMonthStart, $paymentMonthEnd) {
+                $paymentsQuery->whereBetween('payment_date', [$paymentMonthStart, $paymentMonthEnd]);
+            });
+
+            $paymentSummaryQuery = DB::table('invoice_payments as ip')
+                ->join('invoices', 'invoices.id', '=', 'ip.invoice_id')
+                ->whereBetween('ip.payment_date', [$paymentMonthStart, $paymentMonthEnd])
+                ->where(function ($innerQuery) use ($invoiceType) {
+                    if ($invoiceType === 'monthly') {
+                        $innerQuery->whereNull('invoices.invoice_type')
+                            ->orWhere('invoices.invoice_type', 'monthly');
+                    } else {
+                        $innerQuery->where('invoices.invoice_type', $invoiceType);
+                    }
+                });
+
+            if (!empty($request->company_id)) {
+                $paymentSummaryQuery->where('invoices.company_id', $request->company_id);
+            }
+
+            if (!empty($request->status)) {
+                $this->applyInvoiceStatusFilter($paymentSummaryQuery, $request->status, 'invoices');
+            }
+
+            if (!empty($request->month)) {
+                $invoiceMonth = Carbon::parse($request->month . '-01');
+                $paymentSummaryQuery->whereDate('invoices.period_start', '>=', $invoiceMonth->copy()->startOfMonth()->toDateString())
+                    ->whereDate('invoices.period_end', '<=', $invoiceMonth->copy()->endOfMonth()->toDateString());
+            }
+
+            $paymentSummary = $paymentSummaryQuery
+                ->selectRaw('COALESCE(SUM(ip.amount), 0) as received_amount')
+                ->selectRaw('COUNT(DISTINCT ip.invoice_id) as invoice_count')
+                ->selectRaw('COUNT(DISTINCT ip.payment_voucher_id) as voucher_count')
+                ->first();
+        }
+
         $invoices = $query->orderByDesc('id')->paginate(20);
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
 
-        return view('Admin.Billing.invoices.index', compact('invoices', 'companies', 'invoiceType'));
+        return view('Admin.Billing.invoices.index', compact('invoices', 'companies', 'invoiceType', 'paymentSummary'));
     }
 
     public function deliveryHistory(Request $request)
