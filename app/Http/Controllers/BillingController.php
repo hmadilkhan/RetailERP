@@ -343,7 +343,9 @@ class BillingController extends Controller
         $setup = InvoiceSetup::with(['billingRates' => function ($query) {
             $query->where('is_active', 1);
         }])->where('company_id', $companyId)->first();
-        $invoiceType = $setup->invoice_type ?? (Company::where('company_id', $companyId)->value('invoice_type') ?? 'branch');
+        $company = Company::where('company_id', $companyId)->first(['company_id', 'status_id', 'invoice_type']);
+        $invoiceType = $setup->invoice_type ?? ($company->invoice_type ?? 'branch');
+        $includeInactiveScopes = $company && (int) $company->status_id !== 1;
         $configuredScopeIds = collect($setup?->billingRates ?? [])
             ->where('scope_type', $invoiceType)
             ->pluck('scope_id')
@@ -363,7 +365,7 @@ class BillingController extends Controller
             $items = DB::table('terminal_details')
                 ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
                 ->where('branch.company_id', $companyId)
-                ->where('branch.status_id', 1)
+                ->when(!$includeInactiveScopes, fn ($query) => $query->where('branch.status_id', 1))
                 ->whereIn('terminal_details.terminal_id', $configuredScopeIds->all())
                 ->select([
                     'terminal_details.terminal_id as id',
@@ -391,7 +393,7 @@ class BillingController extends Controller
 
             $items = DB::table('branch')
                 ->where('company_id', $companyId)
-                ->where('status_id', 1)
+                ->when(!$includeInactiveScopes, fn ($query) => $query->where('status_id', 1))
                 ->whereIn('branch_id', $configuredScopeIds->all())
                 ->select([
                     'branch_id as id',
@@ -500,7 +502,7 @@ class BillingController extends Controller
             : Carbon::parse($data['period_end'])->toDateString();
         $invoiceDate = Carbon::parse($data['invoice_date']);
 
-        if ((int) $company->status_id !== 1) {
+        if ((int) $company->status_id !== 1 && $manualScopePeriods->isEmpty()) {
             $previousDuePeriodStart = Carbon::parse($periodStart)->startOfMonth()->toDateString();
             $previousDuePeriodEnd = Carbon::parse($periodEnd)->endOfMonth()->toDateString();
 
@@ -541,6 +543,7 @@ class BillingController extends Controller
             'notes' => $data['notes'] ?? null,
             'generated_by' => session('userid'),
             'manual_scope_periods' => $manualScopePeriods->all(),
+            'include_inactive_scopes' => (int) $company->status_id !== 1 && $manualScopePeriods->isNotEmpty(),
         ]);
 
         return redirect()->route('billing.invoices.index')->with('success', 'Invoice generated successfully.');

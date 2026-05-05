@@ -372,7 +372,7 @@ class InvoiceGenerationService
             ->values();
 
         if ($manualScopePeriods->isNotEmpty()) {
-            return $this->buildManualScopedInvoiceLines($company, $periodStart, $periodEnd, $manualScopePeriods);
+            return $this->buildManualScopedInvoiceLines($company, $periodStart, $periodEnd, $manualScopePeriods, $options);
         }
 
         $lines = [];
@@ -565,7 +565,7 @@ class InvoiceGenerationService
         return $lines;
     }
 
-    private function buildManualScopedInvoiceLines(Company $company, string $periodStart, string $periodEnd, $manualScopePeriods)
+    private function buildManualScopedInvoiceLines(Company $company, string $periodStart, string $periodEnd, $manualScopePeriods, array $options = [])
     {
         $lines = [];
         $billingContext = $this->getBillingContext($company->company_id, $periodStart, $periodEnd);
@@ -573,13 +573,14 @@ class InvoiceGenerationService
         $setup = $billingContext['setup'];
         $invoiceType = $setup->invoice_type ?? 'branch';
         $scopeType = $invoiceType === 'terminal' ? 'terminal' : 'branch';
+        $includeInactiveScopes = !empty($options['include_inactive_scopes'] ?? false);
 
         if ($scopeType === 'branch') {
             $scopeIds = $manualScopePeriods->where('scope_type', 'branch')->pluck('scope_id')->map(fn ($id) => (int) $id)->all();
             $scopes = DB::table('branch')
                 ->where('company_id', $company->company_id)
                 ->whereIn('branch_id', $scopeIds)
-                ->where('status_id', 1)
+                ->when(!$includeInactiveScopes, fn ($query) => $query->where('status_id', 1))
                 ->select('branch_id as id', 'branch_name as name')
                 ->get()
                 ->keyBy('id');
@@ -588,7 +589,7 @@ class InvoiceGenerationService
             $scopes = DB::table('terminal_details')
                 ->join('branch', 'terminal_details.branch_id', '=', 'branch.branch_id')
                 ->where('branch.company_id', $company->company_id)
-                ->where('branch.status_id', 1)
+                ->when(!$includeInactiveScopes, fn ($query) => $query->where('branch.status_id', 1))
                 ->whereIn('terminal_details.terminal_id', $scopeIds)
                 ->select('terminal_details.terminal_id as id', 'terminal_details.terminal_name as name')
                 ->get()

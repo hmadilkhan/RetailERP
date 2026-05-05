@@ -14,8 +14,14 @@
                 </h5>
             </div>
             <div class="card-block">
-                @if ($errors->has('error'))
-                    <div class="alert alert-danger">{{ $errors->first('error') }}</div>
+                @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul class="m-b-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
                 @endif
                 <form method="post" action="{{ route('billing.invoices.store') }}" class="row">
                     @csrf
