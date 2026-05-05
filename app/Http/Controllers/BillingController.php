@@ -500,6 +500,34 @@ class BillingController extends Controller
             : Carbon::parse($data['period_end'])->toDateString();
         $invoiceDate = Carbon::parse($data['invoice_date']);
 
+        if ((int) $company->status_id !== 1) {
+            $previousDuePeriodStart = Carbon::parse($periodStart)->startOfMonth()->toDateString();
+            $previousDuePeriodEnd = Carbon::parse($periodEnd)->endOfMonth()->toDateString();
+
+            if (!$this->hasOutstandingMonthlyInvoices($company->company_id)) {
+                return back()->withInput()->withErrors([
+                    'error' => 'Inactive company has no unpaid monthly invoices to generate previous due invoice.',
+                ]);
+            }
+
+            $exists = $invoiceGenerationService->invoiceExists($company->company_id, $previousDuePeriodStart, $previousDuePeriodEnd, 'previous_due');
+
+            if ($exists) {
+                return back()->withInput()->withErrors(['error' => 'Previous due invoice already exists for this period.']);
+            }
+
+            $invoiceGenerationService->generatePreviousDueInvoice($company, $invoiceDate, [
+                'due_date' => $data['due_date'] ?? null,
+                'tax_amount' => $data['tax_amount'] ?? 0,
+                'notes' => $data['notes'] ?? 'Manual previous due invoice for inactive company.',
+                'generated_by' => session('userid'),
+                'period_start' => $previousDuePeriodStart,
+                'period_end' => $previousDuePeriodEnd,
+            ]);
+
+            return redirect()->route('billing.invoices.index')->with('success', 'Previous due invoice generated successfully.');
+        }
+
         $exists = $invoiceGenerationService->invoiceExists($company->company_id, $periodStart, $periodEnd, 'monthly');
 
         if ($exists) {
@@ -516,6 +544,19 @@ class BillingController extends Controller
         ]);
 
         return redirect()->route('billing.invoices.index')->with('success', 'Invoice generated successfully.');
+    }
+
+    private function hasOutstandingMonthlyInvoices(int $companyId): bool
+    {
+        return Invoice::query()
+            ->where('company_id', $companyId)
+            ->where('status', '!=', 'void')
+            ->where('balance_amount', '>', 0)
+            ->where(function ($query) {
+                $query->whereNull('invoice_type')
+                    ->orWhere('invoice_type', 'monthly');
+            })
+            ->exists();
     }
 
     public function show($id)
