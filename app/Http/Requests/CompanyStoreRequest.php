@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class CompanyStoreRequest extends FormRequest
 {
@@ -30,19 +31,21 @@ class CompanyStoreRequest extends FormRequest
     {
         return [
             'companyname' => 'required',
-            'country' => 'required',
-            'city' => 'required',
-            'company_email' => 'required',
+            'country' => ['required', 'integer', 'exists:country,country_id'],
+            'city' => ['required', 'integer', 'exists:city,city_id'],
+            'company_email' => 'required|email',
             'company_mobile' => 'required',
             'whatsapp_number' => ['nullable', 'regex:/^92\d{10}$/'],
             'company_ptcl' => 'required',
             'company_address' => 'required',
-            'invoice_type' => 'required|in:branch,terminal',
-            'billing_cycle_day' => 'nullable|integer|min:1|max:28',
-            'invoice_prefix' => 'nullable|string|max:30',
-            'payment_due_days' => 'nullable|integer|min:1|max:90',
-            'monthly_charges_amount' => 'nullable|numeric|min:0',
-            'is_auto_invoice' => 'nullable|boolean',
+            'currency' => ['required', 'string', Rule::exists('currencies', 'name')],
+            'package' => ['required', 'integer', 'exists:packages,id'],
+            // 'invoice_type' => 'required|in:branch,terminal',
+            // 'billing_cycle_day' => 'nullable|integer|min:1|max:28',
+            // 'invoice_prefix' => 'nullable|string|max:30',
+            // 'payment_due_days' => 'nullable|integer|min:1|max:90',
+            // 'monthly_charges_amount' => 'nullable|numeric|min:0',
+            // 'is_auto_invoice' => 'nullable|boolean',
             // 'billing_rates' => 'nullable|array',
             // 'billing_rates.*.scope_type' => 'required_with:billing_rates|in:company,branch,terminal',
             // 'billing_rates.*.scope_id' => 'nullable|integer',

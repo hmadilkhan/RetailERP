@@ -11,9 +11,13 @@
         <div class="card">
             <div class="card-header">
                 <h5 class="card-header-text">Create Company</h5>
-                @if ($errors->has('error'))
+                @if ($errors->any())
                     <div class="alert alert-danger">
-                        {{ $errors->first('error') }}
+                        <ul class="m-b-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
                     </div>
                 @endif
                 <h5 class=""><a href="{{ route('company.index') }}"><i
@@ -40,7 +44,7 @@
                                 <label class="form-control-label">Country</label>
                                 <select name="country" id="country" data-placeholder="Select Country"
                                     class="form-control select2">
-                                    <option>Select Country</option>
+                                    <option value="">Select Country</option>
                                     @if ($country)
                                         @foreach ($country as $value)
                                             @if (old('country') == $value->country_id)
@@ -60,9 +64,9 @@
                         <div class="col-md-4">
                             <div class="form-group {{ $errors->has('city') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">City</label>
-                                <select disabled="disabled" name="city" id="city" data-placeholder="Select City"
+                                <select {{ old('country') ? '' : 'disabled="disabled"' }} name="city" id="city" data-placeholder="Select City"
                                     class="form-control select2">
-                                    <option>Select City</option>
+                                    <option value="">Select City</option>
                                     @if ($city)
                                         @foreach ($city as $value)
                                             @if (old('city') == $value->city_id)
@@ -128,11 +132,11 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group {{ $errors->has('country') ? 'has-danger' : '' }}">
+                            <div class="form-group {{ $errors->has('currency') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">Currency</label>
                                 <select name="currency" id="currency" data-placeholder="Select Currency"
                                     class="form-control select2">
-                                    <option>Select Currency</option>
+                                    <option value="">Select Currency</option>
                                     @if ($currencies)
                                         @foreach ($currencies as $currency)
                                             @if (old('currency') == $currency->name)
@@ -150,14 +154,14 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="form-group {{ $errors->has('country') ? 'has-danger' : '' }}">
+                            <div class="form-group {{ $errors->has('package') ? 'has-danger' : '' }}">
                                 <label class="form-control-label">Packages</label>
                                 <select name="package" id="package" data-placeholder="Select Packages"
                                     class="form-control select2">
-                                    <option>Select Packages</option>
+                                    <option value="">Select Packages</option>
                                     @if ($packages)
                                         @foreach ($packages as $package)
-                                            @if (old('package') == $package->name)
+                                            @if (old('package') == $package->id)
                                                 <option selected="selected" value="{{ $package->id }}">
                                                     {{ $package->name }}</option>
                                             @else
@@ -185,6 +189,76 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group {{ $errors->has('invoice_type') ? 'has-danger' : '' }}">
+                                <label class="form-control-label">Invoice Type</label>
+                                <select name="invoice_type" id="invoice_type" class="form-control select2">
+                                    <option value="branch" {{ old('invoice_type', 'branch') === 'branch' ? 'selected' : '' }}>Branch</option>
+                                    <option value="terminal" {{ old('invoice_type') === 'terminal' ? 'selected' : '' }}>Terminal</option>
+                                </select>
+                                @if ($errors->has('invoice_type'))
+                                    <div class="form-control-feedback">{{ $errors->first('invoice_type') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group {{ $errors->has('billing_cycle_day') ? 'has-danger' : '' }}">
+                                <label class="form-control-label">Billing Cycle Day</label>
+                                <input class="form-control" type="number" name="billing_cycle_day" min="1" max="28"
+                                    value="{{ old('billing_cycle_day', 1) }}" />
+                                @if ($errors->has('billing_cycle_day'))
+                                    <div class="form-control-feedback">{{ $errors->first('billing_cycle_day') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group {{ $errors->has('payment_due_days') ? 'has-danger' : '' }}">
+                                <label class="form-control-label">Payment Due Days</label>
+                                <input class="form-control" type="number" name="payment_due_days" min="1" max="90"
+                                    value="{{ old('payment_due_days', 15) }}" />
+                                @if ($errors->has('payment_due_days'))
+                                    <div class="form-control-feedback">{{ $errors->first('payment_due_days') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group {{ $errors->has('invoice_prefix') ? 'has-danger' : '' }}">
+                                <label class="form-control-label">Invoice Prefix</label>
+                                <input class="form-control" type="text" name="invoice_prefix" maxlength="30"
+                                    value="{{ old('invoice_prefix') }}" />
+                                @if ($errors->has('invoice_prefix'))
+                                    <div class="form-control-feedback">{{ $errors->first('invoice_prefix') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group {{ $errors->has('monthly_charges_amount') ? 'has-danger' : '' }}">
+                                <label class="form-control-label">Monthly Charges Amount</label>
+                                <input class="form-control" type="number" name="monthly_charges_amount" min="0" step="0.01"
+                                    value="{{ old('monthly_charges_amount', 0) }}" />
+                                @if ($errors->has('monthly_charges_amount'))
+                                    <div class="form-control-feedback">{{ $errors->first('monthly_charges_amount') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group {{ $errors->has('is_auto_invoice') ? 'has-danger' : '' }}">
+                                <label class="form-control-label d-block">Auto Invoice Generation</label>
+                                <label>
+                                    <input type="checkbox" name="is_auto_invoice" value="1" {{ old('is_auto_invoice', $errors->any() ? null : '1') ? 'checked' : '' }}>
+                                    Enable
+                                </label>
+                                @if ($errors->has('is_auto_invoice'))
+                                    <div class="form-control-feedback">{{ $errors->first('is_auto_invoice') }}</div>
+                                @endif
+                            </div>
+                        </div>
+                    </div> --}}
 
                     <div class="row">
                         <div class="col-md-4">

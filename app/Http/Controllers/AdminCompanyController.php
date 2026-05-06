@@ -60,6 +60,7 @@ class AdminCompanyController extends Controller
     {
         try {
             $data = $request->validated();
+           
             $data['is_auto_invoice'] = $request->has('is_auto_invoice') ? 1 : 0;
 
             // Handle file uploads
@@ -89,7 +90,7 @@ class AdminCompanyController extends Controller
             $this->branchService->createHeadOffice($companyId, $data);
             return redirect()->route('company.index')->with('success', 'Company created successfully.');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
@@ -153,7 +154,7 @@ class AdminCompanyController extends Controller
             $this->companyService->update($id, $data);
             return redirect()->route('company.index')->with('success', 'Company updated successfully.');
         } catch (\Exception $e) {
-            return back()->withErrors(['error' => $e->getMessage()]);
+            return back()->withInput()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
