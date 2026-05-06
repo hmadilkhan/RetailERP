@@ -291,6 +291,7 @@ class BillingController extends Controller
                 $log->lock_action = $properties['lock_action'] ?? null;
                 $log->locked_terminal_ids = $properties['locked_terminal_ids'] ?? [];
                 $log->already_locked_terminal_ids = $properties['already_locked_terminal_ids'] ?? [];
+                $log->refreshed_terminal_ids = $properties['refreshed_terminal_ids'] ?? [];
                 $log->skipped_terminal_ids = $properties['skipped_terminal_ids'] ?? [];
 
                 return $log;

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Facades\Sunmi;
-use App\Models\Terminal as ModelsTerminal;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Http\Request;
 use App\Terminal;
@@ -260,25 +258,6 @@ class TerminalController extends Controller
         }
     }
 
-    private function parseSunmiResponse($response)
-    {
-        if (isset($response['data']) && is_array($response['data'])) {
-            return $response['data'];
-        }
-
-        if(isset($response['http_code']) && $response['http_code'] == 200 && isset($response['raw'])) {
-            preg_match_all('/{[^{}]*(?:{[^{}]*}[^{}]*)*}/', $response['raw'], $matches);
-            if(!empty($matches[0])) {
-                $lastJson = end($matches[0]);
-                $decoded = json_decode($lastJson, true);
-                if($decoded !== null) {
-                    return $decoded;
-                }
-            }
-        }
-        return ['code' => 0];
-    }
-
     public function lockTerminal(Request $request, TerminalLockService $terminalLockService)
     {
         $result = $terminalLockService->lockTerminalById((int) $request->terminal_id);
@@ -289,45 +268,17 @@ class TerminalController extends Controller
         ], $result['status'] === 200 ? 200 : 500);
     }
 
-    public function unlockTerminal(Request $request)
+    public function unlockTerminal(Request $request, TerminalLockService $terminalLockService)
     {
-        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no")->values()->all();
-        $unlock = Sunmi::unlock([
-            'msn_list' => $terminal,
-        ]);
-        
-        $rawData = $this->parseSunmiResponse($unlock);
-        if($rawData && isset($rawData['code']) && $rawData['code'] == 1) {
-            ModelsTerminal::where("terminal_id",$request->terminal_id)->update([
-                'is_locked' => 0,
-                'lock_password' => null,
-            ]);
-            return response()->json(['status' => 200, 'message' => 'Device unlocked successfully']);
-        }
-        
-        return response()->json([
-            'status' => 500,
-            'message' => 'Failed to unlock device',
-            'response' => $rawData,
-        ]);
+        $result = $terminalLockService->unlockTerminalById((int) $request->terminal_id);
+
+        return response()->json($result, $result['status'] === 200 ? 200 : 500);
     }
 
-    public function checkTerminalStatus(Request $request)
+    public function checkTerminalStatus(Request $request, TerminalLockService $terminalLockService)
     {
-        $terminal = ModelsTerminal::where("terminal_id",$request->terminal_id)->pluck("serial_no")->values()->all();
-        $status = Sunmi::status([
-            'msn_list' => $terminal,
-        ]);
+        $result = $terminalLockService->checkTerminalStatusById((int) $request->terminal_id);
 
-        // $rawData = $this->parseSunmiResponse($status);
-        if( isset($status) && $status["http_code"] == 200 && isset($status['data']) && $status['data']['code'] == 1) {
-            return response()->json([
-                'status' => 200,
-                'message' => 'Device status fetched successfully',
-                'data' => $status,
-            ]);
-        }
-
-        return response()->json(['status' => 500, 'message' => 'Failed to fetch device status',"data" => $status] );
+        return response()->json($result, $result['status'] === 200 ? 200 : 500);
     }
 }

@@ -90,9 +90,11 @@ class EnforceBillingOverdueCommand extends Command
             $terminalLockSummary = [
                 'locked_terminal_ids' => [],
                 'already_locked_terminal_ids' => [],
+                'refreshed_terminal_ids' => [],
                 'skipped_terminal_ids' => [],
                 'locked_terminals' => [],
                 'already_locked_terminals' => [],
+                'refreshed_terminals' => [],
                 'skipped_terminals' => [],
             ];
 
@@ -112,8 +114,13 @@ class EnforceBillingOverdueCommand extends Command
                     if ($dryRun) {
                         $lockAction = 'would_lock_terminals';
                     } else {
-                        $lockResult = $terminalLockService->lockCompanyTerminals($company->company_id);
-                        $lockAction = $lockResult['success'] ? 'terminals_locked' : 'lock_failed';
+                        $lockResult = $terminalLockService->lockCompanyTerminals(
+                            $company->company_id,
+                            30,
+                            'Device is Locked. Please pay your dues to unlock the device.',
+                            true
+                        );
+                        $lockAction = $this->resolveLockAction($lockResult);
                         $terminalLockSummary = $this->buildTerminalLockSummary($lockResult);
                         $detail[] = $lockResult['message'];
                         if (!empty($lockResult['locked_terminal_ids'])) {
@@ -121,6 +128,9 @@ class EnforceBillingOverdueCommand extends Command
                         }
                         if (!empty($lockResult['already_locked_terminal_ids'])) {
                             $detail[] = 'already locked: ' . implode(',', $lockResult['already_locked_terminal_ids']);
+                        }
+                        if (!empty($lockResult['refreshed_terminal_ids'])) {
+                            $detail[] = 'refreshed: ' . implode(',', $lockResult['refreshed_terminal_ids']);
                         }
                         if (!empty($lockResult['skipped_terminal_ids'])) {
                             $detail[] = 'skipped(no serial): ' . implode(',', $lockResult['skipped_terminal_ids']);
@@ -171,9 +181,11 @@ class EnforceBillingOverdueCommand extends Command
                 'lock_status' => $lockResult['status'] ?? null,
                 'locked_terminal_ids' => $terminalLockSummary['locked_terminal_ids'],
                 'already_locked_terminal_ids' => $terminalLockSummary['already_locked_terminal_ids'],
+                'refreshed_terminal_ids' => $terminalLockSummary['refreshed_terminal_ids'],
                 'skipped_terminal_ids' => $terminalLockSummary['skipped_terminal_ids'],
                 'locked_terminals' => $terminalLockSummary['locked_terminals'],
                 'already_locked_terminals' => $terminalLockSummary['already_locked_terminals'],
+                'refreshed_terminals' => $terminalLockSummary['refreshed_terminals'],
                 'skipped_terminals' => $terminalLockSummary['skipped_terminals'],
             ]);
         }
@@ -293,9 +305,11 @@ class EnforceBillingOverdueCommand extends Command
     {
         $lockedIds = collect($lockResult['locked_terminal_ids'] ?? [])->map(fn ($id) => (int) $id)->values();
         $alreadyLockedIds = collect($lockResult['already_locked_terminal_ids'] ?? [])->map(fn ($id) => (int) $id)->values();
+        $refreshedIds = collect($lockResult['refreshed_terminal_ids'] ?? [])->map(fn ($id) => (int) $id)->values();
         $skippedIds = collect($lockResult['skipped_terminal_ids'] ?? [])->map(fn ($id) => (int) $id)->values();
         $allIds = $lockedIds
             ->merge($alreadyLockedIds)
+            ->merge($refreshedIds)
             ->merge($skippedIds)
             ->unique()
             ->values();
@@ -318,11 +332,38 @@ class EnforceBillingOverdueCommand extends Command
         return [
             'locked_terminal_ids' => $lockedIds->all(),
             'already_locked_terminal_ids' => $alreadyLockedIds->all(),
+            'refreshed_terminal_ids' => $refreshedIds->all(),
             'skipped_terminal_ids' => $skippedIds->all(),
             'locked_terminals' => $this->formatTerminalDetails($lockedIds, $terminalDetails),
             'already_locked_terminals' => $this->formatTerminalDetails($alreadyLockedIds, $terminalDetails),
+            'refreshed_terminals' => $this->formatTerminalDetails($refreshedIds, $terminalDetails),
             'skipped_terminals' => $this->formatTerminalDetails($skippedIds, $terminalDetails),
         ];
+    }
+
+    private function resolveLockAction(array $lockResult): string
+    {
+        if (!($lockResult['success'] ?? false)) {
+            return 'lock_failed';
+        }
+
+        if (!empty($lockResult['locked_terminal_ids'])) {
+            return 'terminals_locked';
+        }
+
+        if (!empty($lockResult['refreshed_terminal_ids'])) {
+            return 'terminals_refreshed';
+        }
+
+        if (!empty($lockResult['already_locked_terminal_ids']) && empty($lockResult['skipped_terminal_ids'])) {
+            return 'already_locked';
+        }
+
+        if (!empty($lockResult['skipped_terminal_ids'])) {
+            return 'no_lockable_terminals';
+        }
+
+        return 'no_terminals_locked';
     }
 
     private function formatTerminalDetails(Collection $terminalIds, Collection $terminalDetails): array

@@ -171,6 +171,9 @@
                                             @if(!empty($log->already_locked_terminal_ids))
                                                 <div class="text-muted m-t-5">Already locked: {{ implode(', ', $log->already_locked_terminal_ids) }}</div>
                                             @endif
+                                            @if(!empty($log->refreshed_terminal_ids))
+                                                <div class="text-info m-t-5">Lock refreshed: {{ implode(', ', $log->refreshed_terminal_ids) }}</div>
+                                            @endif
                                             @if(!empty($log->skipped_terminal_ids))
                                                 <div class="text-warning m-t-5">Skipped terminals: {{ implode(', ', $log->skipped_terminal_ids) }}</div>
                                             @endif

@@ -10,9 +10,9 @@ use Illuminate\Support\Str;
 
 class TerminalLockService
 {
-    public function lockTerminalById(int $terminalId, int $expireDay = 7, string $screenTip = 'Device is Locked. Please pay your dues to unlock the device.'): array
+    public function lockTerminalById(int $terminalId, int $expireDay = 60, string $screenTip = 'Device is Locked. Please pay your dues to unlock the device.'): array
     {
-        $terminal = Terminal::query()->find($terminalId, ['terminal_id', 'serial_no']);
+        $terminal = Terminal::query()->find($terminalId, ['terminal_id', 'serial_no', 'is_locked']);
 
         if (!$terminal) {
             return [
@@ -33,8 +33,117 @@ class TerminalLockService
         return $this->lockTerminals(collect([$terminal]), $expireDay, $screenTip);
     }
 
-    public function lockCompanyTerminals(int $companyId, int $expireDay = 7, string $screenTip = 'Device is Locked. Please pay your dues to unlock the device.'): array
+    public function unlockTerminalById(int $terminalId): array
     {
+        $terminal = Terminal::query()->find($terminalId, ['terminal_id', 'serial_no', 'is_locked']);
+
+        if (!$terminal) {
+            return [
+                'status' => 404,
+                'success' => false,
+                'message' => 'Terminal not found.',
+            ];
+        }
+
+        if (empty($terminal->serial_no)) {
+            return [
+                'status' => 422,
+                'success' => false,
+                'message' => 'Terminal serial number is missing.',
+            ];
+        }
+
+        try {
+            $unlock = Sunmi::unlock([
+                'msn_list' => [$terminal->serial_no],
+            ]);
+        } catch (Exception $exception) {
+            return [
+                'status' => 500,
+                'success' => false,
+                'message' => 'Failed to unlock device: ' . $exception->getMessage(),
+            ];
+        }
+
+        $rawData = $this->parseSunmiResponse($unlock);
+        if (!$rawData || !isset($rawData['code']) || (int) $rawData['code'] !== 1) {
+            return [
+                'status' => 500,
+                'success' => false,
+                'message' => 'Failed to unlock device.',
+                'response' => $rawData,
+            ];
+        }
+
+        Terminal::query()->where('terminal_id', $terminalId)->update([
+            'is_locked' => 0,
+            'lock_password' => null,
+        ]);
+
+        return [
+            'status' => 200,
+            'success' => true,
+            'message' => 'Device unlocked successfully.',
+            'response' => $rawData,
+        ];
+    }
+
+    public function checkTerminalStatusById(int $terminalId): array
+    {
+        $terminal = Terminal::query()->find($terminalId, ['terminal_id', 'serial_no']);
+
+        if (!$terminal) {
+            return [
+                'status' => 404,
+                'success' => false,
+                'message' => 'Terminal not found.',
+            ];
+        }
+
+        if (empty($terminal->serial_no)) {
+            return [
+                'status' => 422,
+                'success' => false,
+                'message' => 'Terminal serial number is missing.',
+            ];
+        }
+
+        try {
+            $status = Sunmi::status([
+                'msn_list' => [$terminal->serial_no],
+            ]);
+        } catch (Exception $exception) {
+            return [
+                'status' => 500,
+                'success' => false,
+                'message' => 'Failed to fetch device status: ' . $exception->getMessage(),
+            ];
+        }
+
+        $rawData = $this->parseSunmiResponse($status);
+        if ($rawData && isset($rawData['code']) && (int) $rawData['code'] === 1) {
+            return [
+                'status' => 200,
+                'success' => true,
+                'message' => 'Device status fetched successfully.',
+                'data' => $status,
+            ];
+        }
+
+        return [
+            'status' => 500,
+            'success' => false,
+            'message' => 'Failed to fetch device status.',
+            'data' => $status,
+        ];
+    }
+
+    public function lockCompanyTerminals(
+        int $companyId,
+        int $expireDay = 7,
+        string $screenTip = 'Device is Locked. Please pay your dues to unlock the device.',
+        bool $refreshAlreadyLocked = false
+    ): array {
         $terminals = Terminal::query()
             ->select('terminal_details.terminal_id', 'terminal_details.serial_no', 'terminal_details.is_locked')
             ->join('branch', 'branch.branch_id', '=', 'terminal_details.branch_id')
@@ -48,14 +157,15 @@ class TerminalLockService
                 'message' => 'No terminals found for this company.',
                 'locked_terminal_ids' => [],
                 'already_locked_terminal_ids' => [],
+                'refreshed_terminal_ids' => [],
                 'skipped_terminal_ids' => [],
             ];
         }
 
-        return $this->lockTerminals($terminals, $expireDay, $screenTip);
+        return $this->lockTerminals($terminals, $expireDay, $screenTip, $refreshAlreadyLocked);
     }
 
-    private function lockTerminals(Collection $terminals, int $expireDay, string $screenTip): array
+    private function lockTerminals(Collection $terminals, int $expireDay, string $screenTip, bool $refreshAlreadyLocked = false): array
     {
         $alreadyLockedIds = $terminals
             ->filter(fn ($terminal) => (int) ($terminal->is_locked ?? 0) === 1)
@@ -64,9 +174,22 @@ class TerminalLockService
             ->values()
             ->all();
 
-        $lockableTerminals = $terminals->filter(function ($terminal) {
-            return (int) ($terminal->is_locked ?? 0) !== 1 && !empty($terminal->serial_no);
+        $lockableTerminals = $terminals->filter(function ($terminal) use ($refreshAlreadyLocked) {
+            if (empty($terminal->serial_no)) {
+                return false;
+            }
+
+            return $refreshAlreadyLocked || (int) ($terminal->is_locked ?? 0) !== 1;
         })->values();
+
+        $refreshedTerminalIds = $refreshAlreadyLocked
+            ? $lockableTerminals
+                ->filter(fn ($terminal) => (int) ($terminal->is_locked ?? 0) === 1)
+                ->pluck('terminal_id')
+                ->map(fn ($id) => (int) $id)
+                ->values()
+                ->all()
+            : [];
 
         $skippedTerminalIds = $terminals
             ->filter(function ($terminal) {
@@ -84,6 +207,7 @@ class TerminalLockService
                 'message' => 'No unlocked terminals required locking.',
                 'locked_terminal_ids' => [],
                 'already_locked_terminal_ids' => $alreadyLockedIds,
+                'refreshed_terminal_ids' => [],
                 'skipped_terminal_ids' => $skippedTerminalIds,
             ];
         }
@@ -105,6 +229,7 @@ class TerminalLockService
                 'message' => 'Failed to lock device: ' . $exception->getMessage(),
                 'locked_terminal_ids' => [],
                 'already_locked_terminal_ids' => $alreadyLockedIds,
+                'refreshed_terminal_ids' => $refreshedTerminalIds,
                 'skipped_terminal_ids' => $skippedTerminalIds,
             ];
         }
@@ -117,12 +242,20 @@ class TerminalLockService
                 'message' => 'Failed to lock device.',
                 'locked_terminal_ids' => [],
                 'already_locked_terminal_ids' => $alreadyLockedIds,
+                'refreshed_terminal_ids' => $refreshedTerminalIds,
                 'skipped_terminal_ids' => $skippedTerminalIds,
                 'response' => $rawData,
             ];
         }
 
         $terminalIds = $lockableTerminals->pluck('terminal_id')->map(fn ($id) => (int) $id)->values()->all();
+        $newlyLockedTerminalIds = $lockableTerminals
+            ->filter(fn ($terminal) => (int) ($terminal->is_locked ?? 0) !== 1)
+            ->pluck('terminal_id')
+            ->map(fn ($id) => (int) $id)
+            ->values()
+            ->all();
+
         Terminal::query()->whereIn('terminal_id', $terminalIds)->update([
             'is_locked' => 1,
             'lock_password' => $lockPassword,
@@ -133,8 +266,9 @@ class TerminalLockService
             'success' => true,
             'message' => 'Device locked successfully.',
             'lock_password' => $lockPassword,
-            'locked_terminal_ids' => $terminalIds,
+            'locked_terminal_ids' => $newlyLockedTerminalIds,
             'already_locked_terminal_ids' => $alreadyLockedIds,
+            'refreshed_terminal_ids' => $refreshedTerminalIds,
             'skipped_terminal_ids' => $skippedTerminalIds,
             'response' => $rawData,
         ];
