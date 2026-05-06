@@ -169,6 +169,12 @@
                             <td class="text-right text-success">PKR {{ number_format($invoice->paid_amount, 2) }}</td>
                         </tr>
                         @endif
+                        @if(($invoice->credit_applied_amount ?? 0) > 0)
+                        <tr>
+                            <td colspan="3" class="text-right">Customer Credit Applied:</td>
+                            <td class="text-right text-info">PKR {{ number_format($invoice->credit_applied_amount, 2) }}</td>
+                        </tr>
+                        @endif
                         <tr style="background: #fff6e6;">
                             <td colspan="3" class="text-right"><strong>Current Invoice Balance:</strong></td>
                             <td class="text-right"><strong class="text-danger">PKR {{ number_format($invoice->balance_amount, 2) }}</strong></td>
@@ -274,6 +280,40 @@
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+                <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
+                    <h5 class="card-header-text text-white"><i class="icofont icofont-wallet"></i> Customer Credit</h5>
+                </div>
+                <div class="card-block" style="background: #fff;">
+                    <div class="alert alert-info">
+                        Available customer credit: <strong>PKR {{ number_format($customerCreditBalance ?? 0, 2) }}</strong>
+                    </div>
+                    <form method="post" action="{{ route('billing.invoices.credits.apply', $invoice->id) }}">
+                        @csrf
+                        <div class="form-group">
+                            <label>Application Date</label>
+                            <input type="date" class="form-control" name="application_date" value="{{ date('Y-m-d') }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Amount</label>
+                            <input type="number" class="form-control" name="amount" min="0.01" max="{{ min((float) ($customerCreditBalance ?? 0), (float) $invoice->balance_amount) }}" step="0.01" placeholder="0.00" required>
+                            <small class="text-muted">Maximum allowed: PKR {{ number_format(min((float) ($customerCreditBalance ?? 0), (float) $invoice->balance_amount), 2) }}</small>
+                        </div>
+                        <div class="form-group">
+                            <label>Reason</label>
+                            <input type="text" class="form-control" name="reason" value="Apply available customer credit" required>
+                        </div>
+                        <button type="submit" class="btn btn-info btn-block" {{ (($customerCreditBalance ?? 0) <= 0 || $invoice->balance_amount <= 0) ? 'disabled' : '' }}>
+                            <i class="icofont icofont-check"></i> Apply Customer Credit
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
         <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
             <h5 class="card-header-text text-white"><i class="icofont icofont-history"></i> Payment History</h5>
@@ -339,6 +379,40 @@
                         @empty
                         <tr>
                             <td colspan="9" class="text-center text-muted">No payments recorded yet.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+        <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
+            <h5 class="card-header-text text-white"><i class="icofont icofont-wallet"></i> Credit Applications</h5>
+        </div>
+        <div class="card-block" style="background: #fff;">
+            <div class="table-responsive" style="border-radius: 14px; overflow: hidden;">
+                <table class="table table-striped table-hover m-b-0">
+                    <thead style="background: #f3f5f7;">
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Amount</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($invoice->creditApplications as $creditApplication)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ date('M d, Y', strtotime($creditApplication->application_date)) }}</td>
+                            <td class="text-info"><strong>PKR {{ number_format($creditApplication->amount, 2) }}</strong></td>
+                            <td>{{ $creditApplication->reason }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">No customer credit applied yet.</td>
                         </tr>
                         @endforelse
                     </tbody>

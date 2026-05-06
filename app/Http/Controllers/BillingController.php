@@ -16,6 +16,7 @@ use App\Models\Terminal;
 use App\Models\UserAuthorization;
 use App\Services\InvoiceGenerationService;
 use App\Services\InvoiceSettlementService;
+use App\Services\CustomerCreditService;
 use App\Services\PaymentVoucherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -571,10 +572,12 @@ class BillingController extends Controller
             'payments.voucher',
             'payments.screenshots',
             'adjustments',
+            'creditApplications',
         ])->findOrFail($id);
         $paymentModes = OrderPayment::orderBy('payment_mode')->get(['payment_id', 'payment_mode']);
+        $customerCreditBalance = app(CustomerCreditService::class)->availableBalance($invoice->company_id);
 
-        return view('Admin.Billing.invoices.show', compact('invoice', 'paymentModes'));
+        return view('Admin.Billing.invoices.show', compact('invoice', 'paymentModes', 'customerCreditBalance'));
     }
 
     public function sendToWhatsApp($id, InvoiceGenerationService $invoiceGenerationService)
@@ -598,11 +601,16 @@ class BillingController extends Controller
 
     public function destroy($id)
     {
-        $invoice = Invoice::withCount('payments')->findOrFail($id);
+        $invoice = Invoice::withCount(['payments', 'creditApplications'])->findOrFail($id);
 
         if ($invoice->payments_count > 0) {
             return redirect()->route('billing.invoices.index')
                 ->withErrors(['error' => 'Invoice cannot be deleted because payment has already been received.']);
+        }
+
+        if ($invoice->credit_applications_count > 0) {
+            return redirect()->route('billing.invoices.index')
+                ->withErrors(['error' => 'Invoice cannot be deleted because customer credit has already been applied.']);
         }
 
         DB::transaction(function () use ($invoice) {
@@ -789,7 +797,7 @@ class BillingController extends Controller
         }
     }
 
-    public function addAdjustment(Request $request, $invoiceId)
+    public function addAdjustment(Request $request, $invoiceId, CustomerCreditService $customerCreditService)
     {
         $data = $request->validate([
             'type' => 'required|in:debit,credit',
@@ -798,8 +806,11 @@ class BillingController extends Controller
             'adjustment_date' => 'required|date',
         ]);
 
-        DB::transaction(function () use ($invoiceId, $data) {
+        DB::transaction(function () use ($invoiceId, $data, $customerCreditService) {
             $invoice = Invoice::lockForUpdate()->findOrFail($invoiceId);
+            $oldTotal = (float) $invoice->total_amount;
+            $appliedAmount = (float) $invoice->paid_amount + (float) ($invoice->credit_applied_amount ?? 0);
+            $overpaidBefore = max(0, round($appliedAmount - $oldTotal, 2));
 
             $adjustment = InvoiceAdjustment::create([
                 'company_id' => $invoice->company_id,
@@ -813,9 +824,12 @@ class BillingController extends Controller
 
             $signedAmount = $adjustment->type === 'debit' ? (float) $adjustment->amount : -(float) $adjustment->amount;
             $invoice->total_amount = (float) $invoice->total_amount + $signedAmount;
-            $invoice->balance_amount = max(0, (float) $invoice->total_amount - (float) $invoice->paid_amount);
-            $invoice->status = $invoice->balance_amount <= 0 ? 'paid' : ($invoice->paid_amount > 0 ? 'partial' : 'issued');
-            $invoice->save();
+            if ((float) $invoice->total_amount < 0) {
+                throw ValidationException::withMessages([
+                    'amount' => 'Adjustment cannot reduce invoice total below zero.',
+                ]);
+            }
+            $customerCreditService->recalculateInvoiceState($invoice);
 
             InvoiceLine::create([
                 'invoice_id' => $invoice->id,
@@ -827,9 +841,62 @@ class BillingController extends Controller
                 'line_amount' => $signedAmount,
                 'meta' => json_encode(['adjustment_id' => $adjustment->id]),
             ]);
+
+            $overpaidAfter = max(0, round($appliedAmount - (float) $invoice->total_amount, 2));
+            $overpaidDelta = round($overpaidAfter - $overpaidBefore, 2);
+
+            if ($overpaidDelta > 0) {
+                $customerCreditService->recordCredit(
+                    $invoice->company_id,
+                    $overpaidDelta,
+                    $data['adjustment_date'],
+                    'Overpayment credit from invoice ' . $invoice->invoice_no . ' after adjustment: ' . $adjustment->reason,
+                    $invoice->id,
+                    'invoice_adjustment',
+                    $adjustment->id,
+                    session('userid')
+                );
+            } elseif ($overpaidDelta < 0) {
+                $customerCreditService->recordDebit(
+                    $invoice->company_id,
+                    abs($overpaidDelta),
+                    $data['adjustment_date'],
+                    'Overpayment credit reduced by adjustment on invoice ' . $invoice->invoice_no . ': ' . $adjustment->reason,
+                    $invoice->id,
+                    'invoice_adjustment',
+                    $adjustment->id,
+                    session('userid')
+                );
+            }
         });
 
         return redirect()->route('billing.invoices.show', $invoiceId)->with('success', 'Adjustment added successfully.');
+    }
+
+    public function applyCredit(Request $request, $invoiceId, CustomerCreditService $customerCreditService)
+    {
+        $data = $request->validate([
+            'application_date' => 'required|date',
+            'amount' => 'required|numeric|min:0.01',
+            'reason' => 'required|string|max:255',
+        ]);
+
+        try {
+            $invoice = Invoice::findOrFail($invoiceId);
+            $customerCreditService->applyCreditToInvoice(
+                $invoice,
+                (float) $data['amount'],
+                $data['application_date'],
+                $data['reason'],
+                session('userid')
+            );
+        } catch (Throwable $exception) {
+            return redirect()
+                ->route('billing.invoices.show', $invoiceId)
+                ->withErrors(['error' => $exception->getMessage()]);
+        }
+
+        return redirect()->route('billing.invoices.show', $invoiceId)->with('success', 'Customer credit applied successfully.');
     }
 
     public function downloadPdf($id)
@@ -843,6 +910,7 @@ class BillingController extends Controller
     {
         $status = strtolower(trim((string) $status));
         $qualifiedPaidAmount = $table . '.paid_amount';
+        $qualifiedCreditAmount = $table . '.credit_applied_amount';
         $qualifiedBalanceAmount = $table . '.balance_amount';
 
         if ($status === 'paid') {
@@ -852,13 +920,13 @@ class BillingController extends Controller
 
         if ($status === 'partial') {
             $query->where($qualifiedBalanceAmount, '>', 0)
-                ->where($qualifiedPaidAmount, '>', 0);
+                ->whereRaw('(COALESCE(' . $qualifiedPaidAmount . ', 0) + COALESCE(' . $qualifiedCreditAmount . ', 0)) > 0');
             return;
         }
 
         if ($status === 'unpaid') {
             $query->where($qualifiedBalanceAmount, '>', 0)
-                ->where($qualifiedPaidAmount, '<=', 0);
+                ->whereRaw('(COALESCE(' . $qualifiedPaidAmount . ', 0) + COALESCE(' . $qualifiedCreditAmount . ', 0)) <= 0');
             return;
         }
 

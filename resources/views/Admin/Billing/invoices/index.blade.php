@@ -106,6 +106,7 @@
                                 <th>Period</th>
                                 <th>Total</th>
                                 <th>Paid</th>
+                                <th>Credit</th>
                                 <th>Balance</th>
                                 <th>Status</th>
                                 <th>Due Date</th>
@@ -122,6 +123,7 @@
                                     <td>{{ $invoice->period_start }} to {{ $invoice->period_end }}</td>
                                     <td>{{ number_format($invoice->total_amount, 2) }}</td>
                                     <td>{{ number_format($invoice->paid_amount, 2) }}</td>
+                                    <td>{{ number_format($invoice->credit_applied_amount ?? 0, 2) }}</td>
                                     <td>{{ number_format($invoice->balance_amount, 2) }}</td>
                                     <td>{{ ucfirst($invoice->status) }}</td>
                                     <td>{{ $invoice->due_date }}</td>
@@ -163,7 +165,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="11" class="text-center">No invoices found.</td>
+                                    <td colspan="12" class="text-center">No invoices found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

@@ -145,6 +145,12 @@
                 <td class="text-right">PKR {{ number_format($invoice->paid_amount, 2) }}</td>
             </tr>
             @endif
+            @if(($invoice->credit_applied_amount ?? 0) > 0)
+            <tr>
+                <td class="label">Customer Credit Applied:</td>
+                <td class="text-right">PKR {{ number_format($invoice->credit_applied_amount, 2) }}</td>
+            </tr>
+            @endif
             <tr class="balance">
                 <td>Current Invoice Balance:</td>
                 <td class="text-right">PKR {{ number_format($invoice->balance_amount, 2) }}</td>

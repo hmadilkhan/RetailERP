@@ -2,7 +2,9 @@
 
 namespace App\Services;
 
+use App\Models\CompanyCreditLedger;
 use App\Models\Invoice;
+use App\Models\InvoiceCreditApplication;
 use App\Models\InvoicePayment;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -11,6 +13,10 @@ use RuntimeException;
 
 class InvoiceSettlementService
 {
+    public function __construct(private CustomerCreditService $customerCreditService)
+    {
+    }
+
     public function calculateOutstandingPreviousDue(int $companyId): float
     {
         return (float) Invoice::where('company_id', $companyId)
@@ -137,6 +143,7 @@ class InvoiceSettlementService
                     }
 
                     $invoice->paid_amount = 0;
+                    $invoice->credit_applied_amount = 0;
                     $invoice->balance_amount = round((float) $invoice->total_amount, 2);
                     $invoice->status = $invoice->balance_amount <= 0 ? 'paid' : 'issued';
                 }
@@ -147,6 +154,21 @@ class InvoiceSettlementService
                     }
 
                     InvoicePayment::where('company_id', $targetCompanyId)
+                        ->whereIn('invoice_id', $invoices->pluck('id'))
+                        ->delete();
+
+                    $creditApplicationIds = InvoiceCreditApplication::where('company_id', $targetCompanyId)
+                        ->whereIn('invoice_id', $invoices->pluck('id'))
+                        ->pluck('id');
+
+                    if ($creditApplicationIds->isNotEmpty()) {
+                        CompanyCreditLedger::where('company_id', $targetCompanyId)
+                            ->where('source_type', 'invoice_credit_application')
+                            ->whereIn('source_id', $creditApplicationIds)
+                            ->delete();
+                    }
+
+                    InvoiceCreditApplication::where('company_id', $targetCompanyId)
                         ->whereIn('invoice_id', $invoices->pluck('id'))
                         ->delete();
                 }
@@ -254,10 +276,10 @@ class InvoiceSettlementService
             }
 
             $targetInvoice->paid_amount = round((float) $targetInvoice->paid_amount + $appliedAmount, 2);
-            $targetInvoice->balance_amount = round(max(0, (float) $targetInvoice->total_amount - (float) $targetInvoice->paid_amount), 2);
+            $targetInvoice->balance_amount = $this->customerCreditService->calculateBalance($targetInvoice);
             $targetInvoice->status = $targetInvoice->balance_amount <= 0
                 ? 'paid'
-                : ((float) $targetInvoice->paid_amount > 0 ? 'partial' : 'issued');
+                : (((float) $targetInvoice->paid_amount + (float) ($targetInvoice->credit_applied_amount ?? 0)) > 0 ? 'partial' : 'issued');
 
             if ($persistInvoiceState) {
                 $targetInvoice->save();

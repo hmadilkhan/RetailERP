@@ -272,6 +272,7 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::post('/billing/invoices/{id}/payments/{paymentId}/send-voucher', [BillingController::class, 'sendPaymentVoucher'])->name('billing.invoices.payments.voucher.send');
     Route::get('/billing/payment-screenshots/{id}/download', [BillingController::class, 'downloadPaymentScreenshot'])->name('billing.payment-screenshots.download');
     Route::post('/billing/invoices/{id}/adjustments', [BillingController::class, 'addAdjustment'])->name('billing.invoices.adjustments.store');
+    Route::post('/billing/invoices/{id}/credits/apply', [BillingController::class, 'applyCredit'])->name('billing.invoices.credits.apply');
 
     // invoice setup
     Route::get('/invoice-setup', [InvoiceSetupController::class, 'index'])->name('invoice-setup.index');
