@@ -105,6 +105,7 @@
                                 <th>Company</th>
                                 <th>Period</th>
                                 <th>Total</th>
+                                <th>Discount</th>
                                 <th>Paid</th>
                                 <th>Credit</th>
                                 <th>Balance</th>
@@ -122,6 +123,7 @@
                                     <td>{{ optional($invoice->company)->name }}</td>
                                     <td>{{ $invoice->period_start }} to {{ $invoice->period_end }}</td>
                                     <td>{{ number_format($invoice->total_amount, 2) }}</td>
+                                    <td>{{ number_format($invoice->discount_amount ?? 0, 2) }}</td>
                                     <td>{{ number_format($invoice->paid_amount, 2) }}</td>
                                     <td>{{ number_format($invoice->credit_applied_amount ?? 0, 2) }}</td>
                                     <td>{{ number_format($invoice->balance_amount, 2) }}</td>
@@ -165,7 +167,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="12" class="text-center">No invoices found.</td>
+                                    <td colspan="13" class="text-center">No invoices found.</td>
                                 </tr>
                             @endforelse
                         </tbody>

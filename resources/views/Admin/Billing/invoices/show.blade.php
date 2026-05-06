@@ -153,6 +153,12 @@
                             <td class="text-right">PKR {{ number_format($invoice->tax_amount, 2) }}</td>
                         </tr>
                         @endif
+                        @if(($invoice->discount_amount ?? 0) > 0)
+                        <tr>
+                            <td colspan="3" class="text-right">Discount:</td>
+                            <td class="text-right text-danger">- PKR {{ number_format($invoice->discount_amount, 2) }}</td>
+                        </tr>
+                        @endif
                         @if($invoice->previous_due > 0)
                         <tr>
                             <td colspan="3" class="text-right">Outstanding at Issue:</td>
@@ -284,6 +290,41 @@
         <div class="col-md-6">
             <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
                 <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
+                    <h5 class="card-header-text text-white"><i class="icofont icofont-sale-discount"></i> Add Discount</h5>
+                </div>
+                <div class="card-block" style="background: #fff;">
+                    <form method="post" action="{{ route('billing.invoices.discounts.store', $invoice->id) }}">
+                        @csrf
+                        <div class="form-group">
+                            <label>Discount Type</label>
+                            <select class="form-control" name="discount_type" required>
+                                <option value="percentage">Percentage (%)</option>
+                                <option value="amount">Fixed Amount</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Value</label>
+                            <input type="number" class="form-control" name="discount_value" min="0.01" step="0.01" placeholder="0.00" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Date</label>
+                            <input type="date" class="form-control" name="discount_date" value="{{ date('Y-m-d') }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Reason</label>
+                            <input type="text" class="form-control" name="reason" placeholder="Reason for discount" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-block" {{ $invoice->total_amount <= 0 ? 'disabled' : '' }}>
+                            <i class="icofont icofont-plus"></i> Add Discount
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+                <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
                     <h5 class="card-header-text text-white"><i class="icofont icofont-wallet"></i> Customer Credit</h5>
                 </div>
                 <div class="card-block" style="background: #fff;">
@@ -310,6 +351,46 @@
                         </button>
                     </form>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="border: 0; border-radius: 18px; overflow: hidden; box-shadow: 0 14px 35px rgba(30, 54, 80, 0.10);">
+        <div class="card-header" style="background: linear-gradient(135deg, #4CAF50 0%, #4CAF50 100%); color: #fff;">
+            <h5 class="card-header-text text-white"><i class="icofont icofont-sale-discount"></i> Discounts</h5>
+        </div>
+        <div class="card-block" style="background: #fff;">
+            <div class="table-responsive" style="border-radius: 14px; overflow: hidden;">
+                <table class="table table-striped table-hover m-b-0">
+                    <thead style="background: #f3f5f7;">
+                        <tr>
+                            <th>#</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Value</th>
+                            <th>Discount</th>
+                            <th>Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($invoice->discounts as $discount)
+                        <tr>
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ date('M d, Y', strtotime($discount->discount_date)) }}</td>
+                            <td>{{ $discount->discount_type === 'percentage' ? 'Percentage' : 'Fixed Amount' }}</td>
+                            <td>
+                                {{ $discount->discount_type === 'percentage' ? number_format($discount->discount_value, 2) . '%' : 'PKR ' . number_format($discount->discount_value, 2) }}
+                            </td>
+                            <td class="text-danger"><strong>PKR {{ number_format($discount->discount_amount, 2) }}</strong></td>
+                            <td>{{ $discount->reason }}</td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No discounts added yet.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

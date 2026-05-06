@@ -36,4 +36,3 @@ CREATE TABLE `invoice_credit_applications` (
     KEY `invoice_credit_applications_company_id_index` (`company_id`),
     KEY `invoice_credit_applications_application_date_index` (`application_date`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-

@@ -6,6 +6,7 @@ use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Invoice;
 use App\Models\InvoiceAdjustment;
+use App\Models\InvoiceDiscount;
 use App\Models\InvoiceLine;
 use App\Models\InvoicePayment;
 use App\Models\InvoiceSetup;
@@ -17,6 +18,7 @@ use App\Models\UserAuthorization;
 use App\Services\InvoiceGenerationService;
 use App\Services\InvoiceSettlementService;
 use App\Services\CustomerCreditService;
+use App\Services\InvoiceDiscountService;
 use App\Services\PaymentVoucherService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -572,6 +574,7 @@ class BillingController extends Controller
             'payments.voucher',
             'payments.screenshots',
             'adjustments',
+            'discounts',
             'creditApplications',
         ])->findOrFail($id);
         $paymentModes = OrderPayment::orderBy('payment_mode')->get(['payment_id', 'payment_mode']);
@@ -616,6 +619,7 @@ class BillingController extends Controller
         DB::transaction(function () use ($invoice) {
             InvoiceLine::where('invoice_id', $invoice->id)->delete();
             InvoiceAdjustment::where('invoice_id', $invoice->id)->delete();
+            InvoiceDiscount::where('invoice_id', $invoice->id)->delete();
             $invoice->delete();
         });
 
@@ -871,6 +875,29 @@ class BillingController extends Controller
         });
 
         return redirect()->route('billing.invoices.show', $invoiceId)->with('success', 'Adjustment added successfully.');
+    }
+
+    public function addDiscount(Request $request, $invoiceId, InvoiceDiscountService $invoiceDiscountService)
+    {
+        $data = $request->validate([
+            'discount_type' => 'required|in:percentage,amount',
+            'discount_value' => 'required|numeric|min:0.01',
+            'discount_date' => 'required|date',
+            'reason' => 'required|string|max:255',
+        ]);
+
+        try {
+            $invoice = Invoice::findOrFail($invoiceId);
+            $invoiceDiscountService->addDiscount($invoice, $data, session('userid'));
+        } catch (ValidationException $exception) {
+            throw $exception;
+        } catch (Throwable $exception) {
+            return redirect()
+                ->route('billing.invoices.show', $invoiceId)
+                ->withErrors(['error' => $exception->getMessage()]);
+        }
+
+        return redirect()->route('billing.invoices.show', $invoiceId)->with('success', 'Discount added successfully.');
     }
 
     public function applyCredit(Request $request, $invoiceId, CustomerCreditService $customerCreditService)

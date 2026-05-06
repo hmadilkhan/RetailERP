@@ -29,6 +29,11 @@ class Invoice extends Model
         return $this->hasMany(InvoiceAdjustment::class, 'invoice_id');
     }
 
+    public function discounts()
+    {
+        return $this->hasMany(InvoiceDiscount::class, 'invoice_id');
+    }
+
     public function creditApplications()
     {
         return $this->hasMany(InvoiceCreditApplication::class, 'invoice_id');

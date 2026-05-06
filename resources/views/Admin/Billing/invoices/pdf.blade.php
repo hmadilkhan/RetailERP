@@ -129,6 +129,12 @@
                 <td class="text-right">PKR {{ number_format($invoice->tax_amount, 2) }}</td>
             </tr>
             @endif
+            @if(($invoice->discount_amount ?? 0) > 0)
+            <tr>
+                <td class="label">Discount:</td>
+                <td class="text-right">- PKR {{ number_format($invoice->discount_amount, 2) }}</td>
+            </tr>
+            @endif
             @if($invoice->previous_due > 0)
             <tr>
                 <td class="label">Outstanding at Issue:</td>
