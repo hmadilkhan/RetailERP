@@ -38,7 +38,7 @@
                         <label>Status</label>
                         <select name="status" class="form-control">
                             <option value="">All</option>
-                            @foreach (['sent', 'skipped', 'failed'] as $status)
+                            @foreach (['sent', 'skipped', 'failed', 'processed'] as $status)
                                 <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
                                     {{ ucfirst($status) }}
                                 </option>
@@ -82,10 +82,16 @@
                                             {{ $run->period_end ? date('M d', strtotime($run->period_end)) : '-' }}
                                         </p>
                                         <div class="m-b-10">
-                                            <span class="badge badge-primary">Generated {{ $run->generated_count }}</span>
-                                            <span class="badge badge-success">Sent {{ $run->whatsapp_sent_count }}</span>
-                                            <span class="badge badge-warning">Skipped {{ $run->total_skipped_count }}</span>
-                                            <span class="badge badge-danger">Failed {{ $run->total_failed_count }}</span>
+                                            @if($run->log_name === 'billing_overdue_run')
+                                                <span class="badge badge-primary">Companies {{ $run->affected_company_count ?? 0 }}</span>
+                                                <span class="badge badge-warning">Deactivated {{ $run->deactivated_company_count ?? 0 }}</span>
+                                                <span class="badge badge-danger">Locked {{ $run->locked_company_count ?? 0 }}</span>
+                                            @else
+                                                <span class="badge badge-primary">Generated {{ $run->generated_count }}</span>
+                                                <span class="badge badge-success">Sent {{ $run->whatsapp_sent_count }}</span>
+                                                <span class="badge badge-warning">Skipped {{ $run->total_skipped_count }}</span>
+                                                <span class="badge badge-danger">Failed {{ $run->total_failed_count }}</span>
+                                            @endif
                                         </div>
                                         <a href="{{ route('billing.delivery-history', ['run_id' => $run->batch_uuid]) }}" class="btn btn-outline-success btn-sm btn-block">
                                             View Run
@@ -120,6 +126,8 @@
                                     <td>
                                         @if($log->stage === 'generation')
                                             <span class="badge badge-primary">GENERATION</span>
+                                        @elseif($log->stage === 'overdue_enforcement')
+                                            <span class="badge badge-danger">OVERDUE</span>
                                         @else
                                             <span class="badge badge-info">WHATSAPP</span>
                                         @endif
@@ -133,6 +141,8 @@
                                             <span class="badge badge-warning">SKIPPED</span>
                                         @elseif($log->status === 'failed')
                                             <span class="badge badge-danger">FAILED</span>
+                                        @elseif($log->status === 'processed')
+                                            <span class="badge badge-primary">PROCESSED</span>
                                         @else
                                             <span class="badge badge-default">{{ strtoupper($log->status) }}</span>
                                         @endif
@@ -148,7 +158,24 @@
                                         @endif
                                     </td>
                                     <td>{{ $log->trigger ?? '-' }}</td>
-                                    <td>{{ $log->reason ?? $log->description }}</td>
+                                    <td>
+                                        {{ $log->reason ?? $log->description }}
+                                        @if($log->stage === 'overdue_enforcement')
+                                            <div class="text-muted m-t-5">
+                                                Company: {{ $log->company_action ?? '-' }} |
+                                                Lock: {{ $log->lock_action ?? '-' }}
+                                            </div>
+                                            @if(!empty($log->locked_terminal_ids))
+                                                <div class="text-danger m-t-5">Locked terminals: {{ implode(', ', $log->locked_terminal_ids) }}</div>
+                                            @endif
+                                            @if(!empty($log->already_locked_terminal_ids))
+                                                <div class="text-muted m-t-5">Already locked: {{ implode(', ', $log->already_locked_terminal_ids) }}</div>
+                                            @endif
+                                            @if(!empty($log->skipped_terminal_ids))
+                                                <div class="text-warning m-t-5">Skipped terminals: {{ implode(', ', $log->skipped_terminal_ids) }}</div>
+                                            @endif
+                                        @endif
+                                    </td>
                                     <td>
                                         @if($log->invoice_id)
                                             <a href="{{ route('billing.invoices.show', $log->invoice_id) }}" class="btn btn-info btn-sm">View Invoice</a>

@@ -215,7 +215,8 @@ class BillingController extends Controller
     public function deliveryHistory(Request $request)
     {
         $generationLogNames = ['billing_invoice_generation', 'billing_previous_due_generation'];
-        $deliveryLogNames = array_merge(['billing_invoice_whatsapp'], $generationLogNames);
+        $overdueLogNames = ['billing_overdue_enforcement'];
+        $deliveryLogNames = array_merge(['billing_invoice_whatsapp'], $generationLogNames, $overdueLogNames);
 
         $logsQuery = DB::table('activity_log as al')
             ->leftJoin('invoices', function ($join) {
@@ -248,6 +249,7 @@ class BillingController extends Controller
             $logsQuery->whereIn('al.event', [
                 'whatsapp_' . $status,
                 'generation_' . $status,
+                'overdue_' . $status,
             ]);
         }
 
@@ -265,31 +267,39 @@ class BillingController extends Controller
 
         $deliveryLogs = $logsQuery->paginate(25)->appends($request->query());
         $deliveryLogs->setCollection(
-            $deliveryLogs->getCollection()->map(function ($log) use ($generationLogNames) {
+            $deliveryLogs->getCollection()->map(function ($log) use ($generationLogNames, $overdueLogNames) {
                 $properties = json_decode($log->properties ?? '{}', true) ?: [];
                 $status = str_replace('whatsapp_', '', (string) ($log->event ?? ''));
                 if ($status === (string) ($log->event ?? '')) {
                     $status = str_replace('generation_', '', (string) ($log->event ?? ''));
                 }
+                if ($status === (string) ($log->event ?? '')) {
+                    $status = str_replace('overdue_', '', (string) ($log->event ?? ''));
+                }
 
                 $log->status = $status !== '' ? $status : ($properties['status'] ?? 'unknown');
                 $log->stage = $properties['stage']
-                    ?? (in_array($log->log_name, $generationLogNames, true) ? 'generation' : 'whatsapp');
+                    ?? (in_array($log->log_name, $generationLogNames, true) ? 'generation' : (in_array($log->log_name, $overdueLogNames, true) ? 'overdue_enforcement' : 'whatsapp'));
                 $log->to = $properties['to'] ?? null;
-                $log->reason = $properties['reason'] ?? null;
+                $log->reason = $properties['reason'] ?? ($properties['detail'] ?? ($properties['lock_result_message'] ?? null));
                 $log->trigger = $properties['trigger'] ?? null;
                 $log->filename = $properties['filename'] ?? null;
                 $log->invoice_no = $log->invoice_no ?? ($properties['invoice_no'] ?? null);
                 $log->company_name = $log->company_name ?? ($properties['company_name'] ?? null);
                 $log->invoice_id = $log->invoice_id ?? ($properties['invoice_id'] ?? null);
+                $log->company_action = $properties['company_action'] ?? null;
+                $log->lock_action = $properties['lock_action'] ?? null;
+                $log->locked_terminal_ids = $properties['locked_terminal_ids'] ?? [];
+                $log->already_locked_terminal_ids = $properties['already_locked_terminal_ids'] ?? [];
+                $log->skipped_terminal_ids = $properties['skipped_terminal_ids'] ?? [];
 
                 return $log;
             })
         );
 
         $recentRuns = DB::table('activity_log')
-            ->select(['id', 'description', 'properties', 'batch_uuid', 'created_at'])
-            ->whereIn('log_name', ['billing_invoice_run', 'billing_previous_due_run'])
+            ->select(['id', 'log_name', 'description', 'properties', 'batch_uuid', 'created_at'])
+            ->whereIn('log_name', ['billing_invoice_run', 'billing_previous_due_run', 'billing_overdue_run'])
             ->orderByDesc('id')
             ->limit(8)
             ->get()
@@ -302,6 +312,7 @@ class BillingController extends Controller
 
                 return (object) [
                     'id' => $run->id,
+                    'log_name' => $run->log_name ?? null,
                     'description' => $run->description,
                     'batch_uuid' => $run->batch_uuid,
                     'created_at' => $run->created_at,
@@ -315,6 +326,9 @@ class BillingController extends Controller
                     'whatsapp_failed_count' => $whatsAppFailedCount,
                     'total_skipped_count' => $skippedCount + $whatsAppSkippedCount,
                     'total_failed_count' => $failedCount + $whatsAppFailedCount,
+                    'affected_company_count' => $properties['affected_company_count'] ?? null,
+                    'deactivated_company_count' => $properties['deactivated_company_count'] ?? null,
+                    'locked_company_count' => $properties['locked_company_count'] ?? null,
                 ];
             });
 

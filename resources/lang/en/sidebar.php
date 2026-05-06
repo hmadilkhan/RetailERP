@@ -152,5 +152,6 @@ return [
     'billing_section' => 'Billing Section',
     'invoice_setup' => 'Invoice Setup',
     'invoices' => 'Invoices',
+    'delivery_history' => 'Delivery History',
     
 ];

@@ -152,7 +152,7 @@ Whenever add new page in the backend please make sure to add the translation in 
                                         return $result->where('parent_id', $grandchild->id)->contains('page_url', $currentUrl);
                                     });
                                     return $hasActiveGrandchild;
-                                });
+                                }) || (Str::snake(strtolower($pages->page_name)) === 'billing_section' && $currentUrl == 'billing/delivery-history');
                             @endphp
                             <li class="treeview {{ $hasActiveChild ? 'active' : '' }}">
                                 <a class="bg-success">
@@ -216,6 +216,13 @@ Whenever add new page in the backend please make sure to add the translation in 
                                             @endif
                                         @endif
                                     @endforeach
+                                    @if (Str::snake(strtolower($pages->page_name)) === 'billing_section')
+                                        <li class="treeview {{ $currentUrl == 'billing/delivery-history' ? 'active' : '' }}">
+                                            <a href="{{ route('billing.delivery-history') }}">
+                                                <i class="icofont icofont-history"></i><span>{{ __('sidebar.delivery_history') }}</span>
+                                            </a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </li>
                         @endif
