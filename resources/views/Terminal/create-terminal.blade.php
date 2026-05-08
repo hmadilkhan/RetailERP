@@ -141,7 +141,7 @@
                                         data-placement="top" title="" data-original-title="Lock Device"></i>
                                     @endif
                                     @if($value->is_locked == 1)
-                                    <i class="icofont {{ $value->status_id == 1 ? 'icofont-unlocked text-success' : 'icofont-lock text-warning' }} f-18" style="cursor:pointer;"
+                                    <i class="icofont icofont-unlocked text-success f-18" style="cursor:pointer;"
                                         onclick="unlockDevice('{{ $value->terminal_id }}')" data-toggle="tooltip"
                                         data-placement="top" title="" data-original-title="Unlock Device"></i>
                                     @endif
@@ -381,6 +381,11 @@
             }
 
 
+            function showTerminalActionError(xhr, fallbackMessage) {
+                var response = xhr.responseJSON || {};
+                swal("Error", response.message || fallbackMessage, "error");
+            }
+
             function lockDevice(terminalId) {
                 $.ajax({
                     url: "{{ url('/lock-terminal') }}",
@@ -405,8 +410,11 @@
                                     }
                                 });
                         } else {
-                            swal("Error", "Unable to lock device. Please try again.", "error");
+                            swal("Error", result.message || "Unable to lock device. Please try again.", "error");
                         }
+                    },
+                    error: function(xhr) {
+                        showTerminalActionError(xhr, "Unable to lock device. Please try again.");
                     }
                 });
             }
@@ -435,8 +443,11 @@
                                     }
                                 });
                         } else {
-                            swal("Error", "Unable to unlock device. Please try again.", "error");
+                            swal("Error", result.message || "Unable to unlock device. Please try again.", "error");
                         }
+                    },
+                    error: function(xhr) {
+                        showTerminalActionError(xhr, "Unable to unlock device. Please try again.");
                     }
                 });
             }

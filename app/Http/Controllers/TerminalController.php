@@ -265,20 +265,21 @@ class TerminalController extends Controller
         return response()->json([
             'status' => $result['status'],
             'message' => $result['message'],
-        ], $result['status'] === 200 ? 200 : 500);
+            'response' => $result['response'] ?? null,
+        ], $result['status']);
     }
 
     public function unlockTerminal(Request $request, TerminalLockService $terminalLockService)
     {
         $result = $terminalLockService->unlockTerminalById((int) $request->terminal_id);
 
-        return response()->json($result, $result['status'] === 200 ? 200 : 500);
+        return response()->json($result, $result['status']);
     }
 
     public function checkTerminalStatus(Request $request, TerminalLockService $terminalLockService)
     {
         $result = $terminalLockService->checkTerminalStatusById((int) $request->terminal_id);
 
-        return response()->json($result, $result['status'] === 200 ? 200 : 500);
+        return response()->json($result, $result['status']);
     }
 }
