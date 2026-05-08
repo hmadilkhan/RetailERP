@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class TerminalLockService
 {
-    public function lockTerminalById(int $terminalId, int $expireDay = 60, string $screenTip = 'Device is Locked. Please pay your dues to unlock the device.'): array
+    public function lockTerminalById(int $terminalId, int $expireDay = 30, string $screenTip = 'Device is Locked. Please pay your dues to unlock the device.'): array
     {
         $terminal = Terminal::query()->find($terminalId, ['terminal_id', 'serial_no', 'is_locked']);
 
