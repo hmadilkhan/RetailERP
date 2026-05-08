@@ -20,6 +20,7 @@ use App\Services\InvoiceSettlementService;
 use App\Services\CustomerCreditService;
 use App\Services\InvoiceDiscountService;
 use App\Services\PaymentVoucherService;
+use App\Services\TerminalLockService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -46,7 +47,8 @@ class BillingController extends Controller
             })
             ->select(
                 'company.company_id',
-                'company.name as company_name'
+                'company.name as company_name',
+                'company.status_id as company_status_id'
             )
             ->selectRaw('COUNT(invoices.id) as total_invoices')
             ->selectRaw('COALESCE(SUM(invoices.total_amount), 0) as total_amount')
@@ -68,7 +70,7 @@ class BillingController extends Controller
             ->tap(function ($query) use ($request) {
                 $this->applyInvoiceStatusFilter($query, $request->status, 'invoices');
             })
-            ->groupBy('company.company_id', 'company.name')
+            ->groupBy('company.company_id', 'company.name', 'company.status_id')
             ->orderBy('company.name')
             ->get();
 
@@ -979,7 +981,10 @@ class BillingController extends Controller
 
     private function reactivateCompany(int $companyId): void
     {
-        Company::query()->where('company_id', $companyId)->update(['status_id' => 1]);
+        Company::query()->where('company_id', $companyId)->update([
+            'status_id' => 1,
+            'deleted_at' => null,
+        ]);
         UserAuthorization::query()->where('company_id', $companyId)->update(['status_id' => 1]);
 
         $branchIds = Branch::query()
@@ -996,6 +1001,8 @@ class BillingController extends Controller
                 'status_id' => 1,
                 'deleted_at' => null,
             ]);
+
+        app(TerminalLockService::class)->unlockCompanyTerminals($companyId);
 
         Branch::query()
             ->whereIn('branch_id', $branchIds)

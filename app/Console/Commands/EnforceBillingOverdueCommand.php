@@ -285,7 +285,10 @@ class EnforceBillingOverdueCommand extends Command
     private function deactivateCompany(int $companyId): string
     {
         DB::transaction(function () use ($companyId) {
-            Company::query()->where('company_id', $companyId)->update(['status_id' => 2]);
+            Company::query()->where('company_id', $companyId)->update([
+                'status_id' => 2,
+                'deleted_at' => now(),
+            ]);
             UserAuthorization::query()->where('company_id', $companyId)->update(['status_id' => 2]);
 
             $branchIds = Branch::query()

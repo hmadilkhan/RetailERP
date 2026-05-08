@@ -42,6 +42,7 @@
             <tr>
                 <th>#</th>
                 <th>Company Name</th>
+                <th>Company Status</th>
                 <th>Total Invoices</th>
                 <th>Total Amount</th>
                 <th>Paid Amount</th>
@@ -59,6 +60,13 @@
                 <td>
                     <div class="f-w-600 text-dark">{{ $item->company_name }}</div>
                     <small class="text-muted">Company ID: {{ $item->company_id }}</small>
+                </td>
+                <td>
+                    @if((int) ($item->company_status_id ?? 0) === 1)
+                        <span class="badge badge-success" style="padding: 8px 10px;">Active</span>
+                    @else
+                        <span class="badge badge-danger" style="padding: 8px 10px;">Inactive</span>
+                    @endif
                 </td>
                 <td><span class="badge badge-default" style="padding: 8px 10px;">{{ $item->total_invoices }}</span></td>
                 <td class="f-w-600">PKR {{ number_format($item->total_amount, 2) }}</td>
@@ -96,7 +104,7 @@
             </tr>
             @empty
             <tr>
-                <td colspan="10" class="text-center p-4">
+                <td colspan="11" class="text-center p-4">
                     <div class="text-muted">
                         <i class="icofont icofont-inbox f-28 d-block m-b-10"></i>
                         No billing data found.
@@ -107,7 +115,7 @@
         </tbody>
         <tfoot>
             <tr style="background: #f3f5f7;">
-                <th colspan="3" class="text-right">Grand Total:</th>
+                <th colspan="4" class="text-right">Grand Total:</th>
                 <th>PKR {{ number_format($summary->sum('total_amount'), 2) }}</th>
                 <th class="text-success">PKR {{ number_format($summary->sum('paid_amount'), 2) }}</th>
                 <th class="text-danger">PKR {{ number_format($summary->sum('balance_amount'), 2) }}</th>
