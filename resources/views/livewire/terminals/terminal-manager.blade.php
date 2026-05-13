@@ -47,6 +47,10 @@
         .terminal-manager-page .terminal-action-menu .dropdown-menu {
             min-width: 190px;
             padding: 6px 0;
+            z-index: 1055;
+        }
+        .terminal-manager-page .terminal-action-menu.open {
+            z-index: 1055;
         }
         .terminal-manager-page .terminal-action-menu .dropdown-item,
         .terminal-manager-page .terminal-action-menu button.dropdown-item {
@@ -65,6 +69,7 @@
         .terminal-manager-page .terminal-table-shell {
             position: relative;
             min-height: 180px;
+            overflow: visible;
         }
         .terminal-manager-page .terminal-loader {
             position: absolute;
