@@ -52,11 +52,13 @@ class TerminalManager extends Component
     public function updatedFilterCompanyId(): void
     {
         $this->filterBranchId = '';
+        $this->deviceStatuses = [];
         $this->resetPage();
     }
 
     public function updatedFilterBranchId(): void
     {
+        $this->deviceStatuses = [];
         $this->resetPage();
     }
 
@@ -67,16 +69,19 @@ class TerminalManager extends Component
 
     public function updatedStatusId(): void
     {
+        $this->deviceStatuses = [];
         $this->resetPage();
     }
 
     public function updatedLockStatus(): void
     {
+        $this->deviceStatuses = [];
         $this->resetPage();
     }
 
     public function updatedSearch(): void
     {
+        $this->deviceStatuses = [];
         $this->resetPage();
     }
 
@@ -228,6 +233,27 @@ class TerminalManager extends Component
     {
         $terminalLockService = app(TerminalLockService::class);
         $result = $terminalLockService->checkTerminalStatusById($terminalId);
+
+        $this->setDeviceStatusFromResult($terminalId, $result);
+    }
+
+    public function checkVisibleDeviceStatuses(): void
+    {
+        $terminalLockService = app(TerminalLockService::class);
+
+        $this->filteredTerminalsQuery()
+            ->forPage($this->getPage(), 15)
+            ->get()
+            ->each(function ($terminal) use ($terminalLockService) {
+                $terminalId = (int) $terminal->terminal_id;
+                $result = $terminalLockService->checkTerminalStatusById($terminalId);
+
+                $this->setDeviceStatusFromResult($terminalId, $result);
+            });
+    }
+
+    private function setDeviceStatusFromResult(int $terminalId, array $result): void
+    {
         $list = $result['data']['data']['data']['list'] ?? [];
         $device = $list[0] ?? null;
 
@@ -350,6 +376,36 @@ class TerminalManager extends Component
         $logger->event($event)->log($result['message'] ?? $event);
     }
 
+    private function filteredTerminalsQuery()
+    {
+        return $this->terminalDetailsQuery()
+            ->when($this->filterCompanyId !== '', function ($query) {
+                $query->where('branch.company_id', $this->filterCompanyId);
+            })
+            ->when($this->filterBranchId !== '', function ($query) {
+                $query->where('terminal_details.branch_id', $this->filterBranchId);
+            })
+            ->when($this->statusId !== '', function ($query) {
+                $query->where('terminal_details.status_id', $this->statusId);
+            })
+            ->when($this->lockStatus !== '', function ($query) {
+                $query->where('terminal_details.is_locked', $this->lockStatus);
+            })
+            ->when($this->search !== '', function ($query) {
+                $search = '%' . trim($this->search) . '%';
+                $query->where(function ($query) use ($search) {
+                    $query->where('terminal_details.terminal_name', 'like', $search)
+                        ->orWhere('terminal_details.mac_address', 'like', $search)
+                        ->orWhere('terminal_details.serial_no', 'like', $search)
+                        ->orWhere('terminal_details.model_no', 'like', $search);
+                });
+            })
+            ->when(!in_array((int) session('roleId'), [1, 2], true), function ($query) {
+                $query->where('terminal_details.branch_id', session('branch'));
+            })
+            ->orderByDesc('terminal_details.terminal_id');
+    }
+
     #[Title('Terminal Manager')]
     #[Layout('components.layouts.app')]
     public function render()
@@ -388,33 +444,7 @@ class TerminalManager extends Component
             ->orderBy('branch_name')
             ->get();
 
-        $terminals = $this->terminalDetailsQuery()
-            ->when($this->filterCompanyId !== '', function ($query) {
-                $query->where('branch.company_id', $this->filterCompanyId);
-            })
-            ->when($this->filterBranchId !== '', function ($query) {
-                $query->where('terminal_details.branch_id', $this->filterBranchId);
-            })
-            ->when($this->statusId !== '', function ($query) {
-                $query->where('terminal_details.status_id', $this->statusId);
-            })
-            ->when($this->lockStatus !== '', function ($query) {
-                $query->where('terminal_details.is_locked', $this->lockStatus);
-            })
-            ->when($this->search !== '', function ($query) {
-                $search = '%' . trim($this->search) . '%';
-                $query->where(function ($query) use ($search) {
-                    $query->where('terminal_details.terminal_name', 'like', $search)
-                        ->orWhere('terminal_details.mac_address', 'like', $search)
-                        ->orWhere('terminal_details.serial_no', 'like', $search)
-                        ->orWhere('terminal_details.model_no', 'like', $search);
-                });
-            })
-            ->when(!in_array((int) session('roleId'), [1, 2], true), function ($query) {
-                $query->where('terminal_details.branch_id', session('branch'));
-            })
-            ->orderByDesc('terminal_details.terminal_id')
-            ->paginate(15);
+        $terminals = $this->filteredTerminalsQuery()->paginate(15);
 
         return view('livewire.terminals.terminal-manager', [
             'companies' => $companies,

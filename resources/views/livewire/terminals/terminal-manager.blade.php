@@ -1,4 +1,4 @@
-<div class="terminal-manager-page">
+<div class="terminal-manager-page" wire:init="checkVisibleDeviceStatuses">
     <style>
         .terminal-manager-page .select2-container {
             width: 100% !important;
@@ -248,6 +248,14 @@
                 <h5 class="card-header-text">Terminal Detail</h5>
             </div>
             <div class="card-block">
+                <div class="m-b-15">
+                    <button type="button" class="btn btn-sm btn-info waves-effect waves-light" wire:click="checkVisibleDeviceStatuses" wire:loading.attr="disabled" wire:target="checkVisibleDeviceStatuses">
+                        <i class="icofont icofont-verification-check"></i>
+                        <span wire:loading.remove wire:target="checkVisibleDeviceStatuses">Check Device Statuses</span>
+                        <span wire:loading wire:target="checkVisibleDeviceStatuses">Checking...</span>
+                    </button>
+                </div>
+
                 <div class="table-responsive terminal-table-shell">
                     <div class="terminal-loader" wire:loading.flex wire:target="filterCompanyId,filterBranchId,statusId,lockStatus,search,lockTerminal,unlockTerminal,checkDeviceStatus,revealLockPassword,inactiveTerminal,reactiveTerminal,editTerminal,saveTerminal">
                         <div class="terminal-loader-box">
@@ -296,7 +304,8 @@
                                                 {{ $deviceStatus['label'] }}
                                             </span>
                                         @else
-                                            <span class="terminal-badge terminal-badge-muted">Not Checked</span>
+                                            <span class="terminal-badge terminal-badge-muted" wire:loading.remove wire:target="checkDeviceStatus({{ $terminal->terminal_id }}),checkVisibleDeviceStatuses">Not Checked</span>
+                                            <span class="terminal-badge terminal-badge-muted" wire:loading wire:target="checkDeviceStatus({{ $terminal->terminal_id }}),checkVisibleDeviceStatuses">Checking...</span>
                                         @endif
                                     </td>
                                     <td>
