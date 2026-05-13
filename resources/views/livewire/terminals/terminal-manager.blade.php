@@ -70,7 +70,7 @@
             position: absolute;
             inset: 0;
             z-index: 5;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             background: rgba(255, 255, 255, 0.78);
