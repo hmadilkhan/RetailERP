@@ -21,6 +21,7 @@ class TerminalManager extends Component
     public $filterBranchId = '';
     public $statusId = 1;
     public $lockStatus = '';
+    public $deviceStatusFilter = '';
     public $search = '';
 
     public $terminalId = null;
@@ -77,6 +78,15 @@ class TerminalManager extends Component
     {
         $this->deviceStatuses = [];
         $this->resetPage();
+    }
+
+    public function updatedDeviceStatusFilter(): void
+    {
+        $this->resetPage();
+
+        if ($this->deviceStatusFilter !== '') {
+            $this->checkVisibleDeviceStatuses();
+        }
     }
 
     public function updatedSearch(): void
@@ -445,12 +455,24 @@ class TerminalManager extends Component
             ->get();
 
         $terminals = $this->filteredTerminalsQuery()->paginate(15);
+        $terminalRows = $terminals->getCollection();
+
+        if ($this->deviceStatusFilter !== '') {
+            $terminalRows = $terminalRows
+                ->filter(function ($terminal) {
+                    $status = $this->deviceStatuses[$terminal->terminal_id]['label'] ?? null;
+
+                    return $status === $this->deviceStatusFilter;
+                })
+                ->values();
+        }
 
         return view('livewire.terminals.terminal-manager', [
             'companies' => $companies,
             'filterBranches' => $filterBranches,
             'formBranches' => $formBranches,
             'terminals' => $terminals,
+            'terminalRows' => $terminalRows,
         ]);
     }
 

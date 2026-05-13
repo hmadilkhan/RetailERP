@@ -120,7 +120,7 @@
                 @endif
 
                 <div class="row">
-                    <div class="col-lg-3 col-md-4">
+                    <div class="col-lg-2 col-md-3">
                         <div class="form-group">
                             <label class="form-control-label">Company:</label>
                             <select id="terminal-filter-company" class="form-control terminal-select2" data-property="filterCompanyId">
@@ -131,7 +131,7 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-lg-3 col-md-4">
+                    <div class="col-lg-2 col-md-3">
                         <div class="form-group">
                             <label class="form-control-label">Branch:</label>
                             <select id="terminal-filter-branch" class="form-control terminal-select2" data-property="filterBranchId" {{ $filterCompanyId === '' ? 'disabled' : '' }}>
@@ -159,6 +159,16 @@
                                 <option value="">All</option>
                                 <option value="1">Locked</option>
                                 <option value="0">Unlocked</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-4">
+                        <div class="form-group">
+                            <label class="form-control-label">Device Status:</label>
+                            <select class="form-control" wire:model.live="deviceStatusFilter">
+                                <option value="">All</option>
+                                <option value="Online">Online</option>
+                                <option value="Offline">Offline</option>
                             </select>
                         </div>
                     </div>
@@ -257,7 +267,7 @@
                 </div>
 
                 <div class="table-responsive terminal-table-shell">
-                    <div class="terminal-loader" wire:loading.flex wire:target="filterCompanyId,filterBranchId,statusId,lockStatus,search,lockTerminal,unlockTerminal,checkDeviceStatus,revealLockPassword,inactiveTerminal,reactiveTerminal,editTerminal,saveTerminal">
+                    <div class="terminal-loader" wire:loading.flex wire:target="filterCompanyId,filterBranchId,statusId,lockStatus,deviceStatusFilter,search,lockTerminal,unlockTerminal,checkDeviceStatus,revealLockPassword,inactiveTerminal,reactiveTerminal,editTerminal,saveTerminal">
                         <div class="terminal-loader-box">
                             <span class="terminal-spinner"></span>
                             <span>Loading terminals...</span>
@@ -281,7 +291,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($terminals as $terminal)
+                            @forelse ($terminalRows as $terminal)
                                 <tr wire:key="terminal-row-{{ $terminal->terminal_id }}">
                                     <td>{{ $terminal->terminal_id }}</td>
                                     <td>{{ $terminal->company_name }}</td>
