@@ -77,7 +77,6 @@ class TerminalLockService
 
         Terminal::query()->where('terminal_id', $terminalId)->update([
             'is_locked' => 0,
-            'lock_password' => null,
         ]);
 
         return [
@@ -174,7 +173,6 @@ class TerminalLockService
 
         Terminal::query()->whereIn('terminal_id', $terminalIds)->update([
             'is_locked' => 0,
-            'lock_password' => null,
         ]);
 
         return [
@@ -325,7 +323,7 @@ class TerminalLockService
             return [
                 'status' => 500,
                 'success' => false,
-                'passwd' => $lockPassword,
+                'lock_password' => $lockPassword,
                 'message' => 'Failed to lock device: ' . $exception->getMessage(),
                 'locked_terminal_ids' => [],
                 'already_locked_terminal_ids' => $alreadyLockedIds,

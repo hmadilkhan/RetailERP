@@ -92,6 +92,7 @@
                             <th>Model No</th>
                             <th>Status</th>
                             <th>Device Status</th>
+                            <th>Lock Password</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -108,6 +109,16 @@
                                 <td>{{ $value->status_name }}</td>
                                 <td id="device-status-{{ $value->terminal_id }}">
                                     <span class="badge badge-secondary">Checking...</span>
+                                </td>
+                                <td id="lock-password-cell-{{ $value->terminal_id }}">
+                                    @if(!empty($value->lock_password))
+                                        <span id="lock-password-value-{{ $value->terminal_id }}" class="badge badge-inverse">********</span>
+                                        <i class="icofont icofont-eye text-info f-18 m-l-5" style="cursor:pointer;"
+                                            onclick="revealLockPassword('{{ $value->terminal_id }}')" data-toggle="tooltip"
+                                            data-placement="top" title="" data-original-title="View Lock Password"></i>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
                                 </td>
 
                                 <td class="action-icon">
@@ -452,6 +463,31 @@
                 });
             }
 
+            function revealLockPassword(terminalId) {
+                $.ajax({
+                    url: "{{ url('/terminal-lock-password') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        terminal_id: terminalId
+                    },
+                    dataType: "json",
+                    success: function(result) {
+                        if (result.status == 200 && result.lock_password) {
+                            $('#lock-password-value-' + terminalId)
+                                .removeClass('badge-inverse')
+                                .addClass('badge-warning')
+                                .text(result.lock_password);
+                        } else {
+                            swal("Error", result.message || "Unable to reveal password.", "error");
+                        }
+                    },
+                    error: function(xhr) {
+                        showTerminalActionError(xhr, "Unable to reveal password.");
+                    }
+                });
+            }
+
             function checkDeviceStatus(terminalId) {
                 $.ajax({
                     url: "{{ url('/device-status') }}",
@@ -503,6 +539,11 @@
                             if (result) {
                                 $("#tblterminals tbody").empty();
                                 for (var count = 0; count < result.length; count++) {
+                                    var lockPasswordHtml = "<span class='text-muted'>-</span>";
+                                    if (result[count].lock_password) {
+                                        lockPasswordHtml = "<span id='lock-password-value-" + result[count].terminal_id + "' class='badge badge-inverse'>********</span>" +
+                                            "<i class='icofont icofont-eye text-info f-18 m-l-5' style='cursor:pointer;' onclick='revealLockPassword(\"" + result[count].terminal_id + "\")' data-toggle='tooltip' data-placement='top' data-original-title='View Lock Password'></i>";
+                                    }
 
                                     $("#tblterminals tbody").append(
                                         "<tr>" +
@@ -510,7 +551,11 @@
                                         "<td>" + result[count].branch_name + "</td>" +
                                         "<td>" + result[count].terminal_name + "</td>" +
                                         "<td>" + result[count].mac_address + "</td>" +
+                                        "<td>" + (result[count].serial_no || '') + "</td>" +
+                                        "<td>" + (result[count].model_no || '') + "</td>" +
                                         "<td>" + result[count].status_name + "</td>" +
+                                        "<td><span class='badge badge-secondary'>Inactive</span></td>" +
+                                        "<td>" + lockPasswordHtml + "</td>" +
                                         "<td class='action-icon'><a class='m-r-10' onclick='reactive(" +
                                         result[count].terminal_id +
                                         ")' data-toggle='tooltip' data-placement='top' data-original-title='View'><i class='icofont icofont-check-circled text-primary f-18' ></i></a></td>" +

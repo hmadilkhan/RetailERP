@@ -307,6 +307,7 @@ Route::middleware(['roleChecker'])->group(function () {
 
     //Terminals
     Route::get('/terminals', [TerminalController::class, 'view']);
+    Route::get('/terminal-manager', \App\Livewire\Terminals\TerminalManager::class)->name('terminal-manager');
     Route::post('/submitterminal', [TerminalController::class, 'store']);
     Route::put('/inactive-terminal', [TerminalController::class, 'remove']);
     Route::post('/inactive-terminals-details', [TerminalController::class, 'inactivedetails']);
@@ -322,6 +323,7 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::post('/store-printer-details', [TerminalController::class, 'storePrintDetails']);
     Route::post('/lock-terminal', [TerminalController::class, 'lockTerminal']);
     Route::post('/unlock-terminal', [TerminalController::class, 'unlockTerminal']);
+    Route::post('/terminal-lock-password', [TerminalController::class, 'revealLockPassword']);
     Route::post('/device-status', [TerminalController::class, 'checkTerminalStatus']);
 
     // BRANCHES

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Terminal;
 use App\terminal_print_details;
 use App\Traits\MediaTrait;
 use App\Services\TerminalLockService;
 use App\userDetails;
+use App\Models\Terminal as TerminalModel;
 
 class TerminalController extends Controller
 {
@@ -260,18 +262,23 @@ class TerminalController extends Controller
 
     public function lockTerminal(Request $request, TerminalLockService $terminalLockService)
     {
-        $result = $terminalLockService->lockTerminalById((int) $request->terminal_id);
+        $terminalId = (int) $request->terminal_id;
+        $result = $terminalLockService->lockTerminalById($terminalId);
+        $this->logTerminalLockActivity($terminalId, 'terminal_manual_lock', $result);
 
         return response()->json([
             'status' => $result['status'],
             'message' => $result['message'],
             'response' => $result['response'] ?? null,
+            'lock_password' => $result['lock_password'] ?? null,
         ], $result['status']);
     }
 
     public function unlockTerminal(Request $request, TerminalLockService $terminalLockService)
     {
-        $result = $terminalLockService->unlockTerminalById((int) $request->terminal_id);
+        $terminalId = (int) $request->terminal_id;
+        $result = $terminalLockService->unlockTerminalById($terminalId);
+        $this->logTerminalLockActivity($terminalId, 'terminal_manual_unlock', $result);
 
         return response()->json($result, $result['status']);
     }
@@ -281,5 +288,103 @@ class TerminalController extends Controller
         $result = $terminalLockService->checkTerminalStatusById((int) $request->terminal_id);
 
         return response()->json($result, $result['status']);
+    }
+
+    public function revealLockPassword(Request $request)
+    {
+        $terminalId = (int) $request->terminal_id;
+        $terminal = TerminalModel::query()
+            ->leftJoin('branch', 'branch.branch_id', '=', 'terminal_details.branch_id')
+            ->where('terminal_details.terminal_id', $terminalId)
+            ->select([
+                'terminal_details.terminal_id',
+                'terminal_details.terminal_name',
+                'terminal_details.serial_no',
+                'terminal_details.lock_password',
+                'terminal_details.is_locked',
+                'branch.branch_id',
+                'branch.branch_name',
+                'branch.company_id',
+            ])
+            ->first();
+
+        if (!$terminal) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Terminal not found.',
+            ], 404);
+        }
+
+        if (empty($terminal->lock_password)) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'No lock password is saved for this terminal.',
+            ], 404);
+        }
+
+        activity('terminal_lock_password')
+            ->causedBy(auth()->user())
+            ->withCompany($terminal->company_id)
+            ->withBranch($terminal->branch_id)
+            ->withProperties([
+                'terminal_id' => (int) $terminal->terminal_id,
+                'terminal_name' => $terminal->terminal_name,
+                'serial_no' => $terminal->serial_no,
+                'is_locked' => (int) ($terminal->is_locked ?? 0),
+                'revealed_by_user_id' => auth()->id(),
+                'revealed_by_username' => auth()->user()->username ?? null,
+                'ip' => $request->ip(),
+                'user_agent' => $request->userAgent(),
+            ])
+            ->event('password_revealed')
+            ->log('Terminal lock password was revealed for ' . $terminal->terminal_name);
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Password revealed.',
+            'lock_password' => $terminal->lock_password,
+        ]);
+    }
+
+    private function logTerminalLockActivity(int $terminalId, string $event, array $result): void
+    {
+        $terminal = DB::table('terminal_details')
+            ->leftJoin('branch', 'branch.branch_id', '=', 'terminal_details.branch_id')
+            ->where('terminal_details.terminal_id', $terminalId)
+            ->select([
+                'terminal_details.terminal_id',
+                'terminal_details.terminal_name',
+                'terminal_details.serial_no',
+                'terminal_details.is_locked',
+                'branch.branch_id',
+                'branch.company_id',
+            ])
+            ->first();
+
+        $logger = activity('terminal_lock')
+            ->causedBy(auth()->user())
+            ->withProperties([
+                'terminal_id' => $terminalId,
+                'terminal_name' => $terminal->terminal_name ?? null,
+                'serial_no' => $terminal->serial_no ?? null,
+                'is_locked' => $terminal ? (int) ($terminal->is_locked ?? 0) : null,
+                'status' => $result['status'] ?? null,
+                'success' => $result['success'] ?? false,
+                'message' => $result['message'] ?? null,
+                'lock_password' => $result['lock_password'] ?? null,
+                'user_id' => auth()->id(),
+                'username' => auth()->user()->username ?? null,
+            ]);
+
+        if ($terminal && $terminal->company_id) {
+            $logger->withCompany($terminal->company_id);
+        }
+
+        if ($terminal && $terminal->branch_id) {
+            $logger->withBranch($terminal->branch_id);
+        }
+
+        $logger->event($event)
+            ->log($result['message'] ?? $event);
     }
 }

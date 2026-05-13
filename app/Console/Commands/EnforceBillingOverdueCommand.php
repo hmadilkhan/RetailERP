@@ -117,8 +117,7 @@ class EnforceBillingOverdueCommand extends Command
                         $lockResult = $terminalLockService->lockCompanyTerminals(
                             $company->company_id,
                             30,
-                            'Device is Locked. Please pay your dues to unlock the device.',
-                            true
+                            'Device is Locked. Please pay your dues to unlock the device.'
                         );
                         $lockAction = $this->resolveLockAction($lockResult);
                         $terminalLockSummary = $this->buildTerminalLockSummary($lockResult);
@@ -159,6 +158,7 @@ class EnforceBillingOverdueCommand extends Command
                 'company_action' => $companyAction,
                 'lock_action' => $lockAction,
                 'detail' => implode(' | ', array_filter($detail)) ?: '-',
+                'lock_password' => $lockResult['lock_password'] ?? null,
             ];
 
             $this->logCompanyOverdueActivity($runId, $company, [
@@ -179,6 +179,7 @@ class EnforceBillingOverdueCommand extends Command
                 'error' => $exceptionMessage,
                 'lock_result_message' => $lockResult['message'] ?? null,
                 'lock_status' => $lockResult['status'] ?? null,
+                'lock_password' => $lockResult['lock_password'] ?? null,
                 'locked_terminal_ids' => $terminalLockSummary['locked_terminal_ids'],
                 'already_locked_terminal_ids' => $terminalLockSummary['already_locked_terminal_ids'],
                 'refreshed_terminal_ids' => $terminalLockSummary['refreshed_terminal_ids'],
