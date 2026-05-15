@@ -8,7 +8,7 @@
 @section('scriptcode_one')
 <style>
     .branch-page {
-        margin-top: 20px;
+        margin-top: 80px;
     }
     .branch-page .card {
         border: 1px solid #e9ecef;
