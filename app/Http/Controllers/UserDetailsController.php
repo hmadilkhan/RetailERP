@@ -26,10 +26,9 @@ class UserDetailsController extends Controller
 
     public function index(userDetails $users)
     {
-        // $getusers = $users->get_users();
-        $getusers = $users->get_users_eloquent();
-        // return $getusers;
-        return view('Users.list', compact('getusers'));
+        $search = request('search', '');
+        $getusers = $users->get_users_paginated($search);
+        return view('Users.list', compact('getusers', 'search'));
     }
 
     public function getBranchesByCompany(Request $request)

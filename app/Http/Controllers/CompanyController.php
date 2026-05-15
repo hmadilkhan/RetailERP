@@ -16,8 +16,9 @@ class CompanyController extends Controller
     } 
 
     public function show(company $company){
-    	$company = $company->get_company();
-    	return view('Company.list', compact('company'));	
+        $search = request('search', '');
+        $company = $company->get_company_paginated($search);
+        return view('Company.list', compact('company', 'search'));
     }
 
      public function index(company $company){
