@@ -153,5 +153,6 @@ return [
     'invoice_setup' => 'Invoice Setup',
     'invoices' => 'Invoices',
     'delivery_history' => 'Delivery History',
+    'terminal_manager' => 'Terminal Manager',
     
 ];
