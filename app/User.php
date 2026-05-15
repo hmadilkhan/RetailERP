@@ -65,11 +65,16 @@ class User extends Authenticatable
 
     public function canImpersonate(): bool
     {
-        return session("roleId") == 1;
+        return (int) session('roleId') === 1;
     }
+
     public function canBeImpersonated(): bool
     {
-        return session("roleId") !== 1;
+        $roleId = \DB::table('user_authorization')
+            ->where('user_id', $this->id)
+            ->value('role_id');
+
+        return (int) $roleId !== 1;
     }
 
     public function crmRole(): string

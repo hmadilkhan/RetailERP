@@ -85,12 +85,14 @@
                                             data-id="{{ $value->authorization_id }}" data-toggle="tooltip"
                                             data-placement="top" title="" data-original-title="Delete"></i>
 
-                                        {{-- @if (auth()->user()->canImpersonate() && $value->canBeImpersonated()) --}}
+                                        @if (auth()->user()->canImpersonate() && $value->canBeImpersonated())
                                             <a href="{{ route('impersonate', $value->id) }}"
-                                                class="btn btn-sm btn-primary">
-                                                Login as {{ $value->fullname }}
+                                                class="p-r-10 f-18 text-primary"
+                                                data-toggle="tooltip" data-placement="top"
+                                                title="Login as {{ $value->fullname }}">
+                                                <i class="icofont icofont-user-alt-3"></i>
                                             </a>
-                                        {{-- @endif --}}
+                                        @endif
 
                                     </td>
                                 </tr>
