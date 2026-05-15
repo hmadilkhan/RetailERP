@@ -26,9 +26,9 @@ class BranchController extends Controller
 
 	public function show(branch $branch, BranchService $branchService)
 	{
-		// $details = $branch->get_branches(session('company_id'));
-		$details = $branchService->getBranchesPaginated();
-		return view('Branch.list', compact('details'));
+		$search = request('search', '');
+		$details = $branchService->getBranchesPaginated($search);
+		return view('Branch.list', compact('details', 'search'));
 	}
 
 	public function index(branch $branch)
