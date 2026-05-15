@@ -34,7 +34,6 @@ use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\HrProductController;
-use App\Http\Controllers\ImpersonateController;
 use App\Http\Controllers\Inventory_DepartmentController;
 use App\Http\Controllers\InvoiceSetupController;
 use Illuminate\Support\Facades\Route;
@@ -137,8 +136,6 @@ Route::get('lang/{locale}', function ($locale) {
 });
 
 Route::group(['middleware' => ['auth', 'roleChecker']], function () {
-    Route::get('/impersonate/{userId}', [ImpersonateController::class, 'impersonate'])->name('impersonate');
-    Route::get('/impersonate/leave', [ImpersonateController::class, 'leave'])->name('impersonate.leave');
 
     Route::post('/quickbooks/customer', [QuickBooksController::class, 'addCustomer']);
     Route::put('/quickbooks/customer/{id}', [QuickBooksController::class, 'updateCustomer']);
