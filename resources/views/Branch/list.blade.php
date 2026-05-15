@@ -8,7 +8,7 @@
 @section('scriptcode_one')
 <style>
     .branch-page {
-        margin-top: 80px;
+        /* spacing handled by master layout */
     }
     .branch-page .card {
         border: 1px solid #e9ecef;
