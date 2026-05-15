@@ -7,6 +7,9 @@
 
 @section('scriptcode_one')
 <style>
+    .branch-page {
+        margin-top: 20px;
+    }
     .branch-page .card {
         border: 1px solid #e9ecef;
         border-radius: 10px;
@@ -31,18 +34,20 @@
     .branch-page .search-wrap {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
         flex-wrap: wrap;
+        margin-left: auto;
     }
     .branch-page .search-input {
         border: 1px solid #d1d5db;
         border-radius: 8px;
-        padding: 7px 12px 7px 34px;
-        font-size: 13px;
-        width: 220px;
+        padding: 8px 14px 8px 36px;
+        font-size: 14px;
+        width: 300px;
+        height: 38px;
         outline: none;
         transition: border-color .2s, box-shadow .2s;
-        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 10px center;
+        background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 11px center;
     }
     .branch-page .search-input:focus {
         border-color: #28a745;
