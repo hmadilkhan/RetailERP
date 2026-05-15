@@ -1,4 +1,4 @@
-<div class="terminal-manager-page" wire:init="checkVisibleDeviceStatuses">
+<div class="terminal-manager-page">
     <style>
         .terminal-manager-page .select2-container {
             width: 100% !important;
@@ -393,6 +393,31 @@
         </div>
     </section>
 
+    {{-- Lock / Unlock Result Modal --}}
+    <div class="modal fade" id="terminalLockResultModal" tabindex="-1" role="dialog" aria-labelledby="terminalLockResultModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header" id="lockResultModalHeader">
+                    <h5 class="modal-title" id="terminalLockResultModalLabel">Result</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <div id="lockResultIcon" class="m-b-10" style="font-size:38px;"></div>
+                    <p id="lockResultMessage" class="m-b-0" style="font-size:14px;font-weight:600;"></p>
+                    <div id="lockResultPasswordWrap" class="m-t-10" style="display:none;">
+                        <span class="text-muted" style="font-size:12px;">Lock Password</span><br>
+                        <span id="lockResultPassword" class="badge badge-warning" style="font-size:14px;letter-spacing:2px;"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     @script
     <script>
             const initTerminalSelect2 = function () {
@@ -429,6 +454,30 @@
 
             Livewire.hook('morph.updated', function () {
                 window.requestAnimationFrame(initTerminalSelect2);
+            });
+
+            $wire.on('show-lock-result', ({ action, success, message, password }) => {
+                document.getElementById('lockResultIcon').innerHTML = success
+                    ? '<i class="icofont icofont-check-circled text-success"></i>'
+                    : '<i class="icofont icofont-close-circled text-danger"></i>';
+
+                document.getElementById('lockResultMessage').textContent = message || '';
+
+                const header = document.getElementById('lockResultModalHeader');
+                header.className = 'modal-header ' + (success ? 'bg-success text-white' : 'bg-danger text-white');
+
+                document.getElementById('terminalLockResultModalLabel').textContent =
+                    action === 'lock' ? 'Lock Device' : 'Unlock Device';
+
+                const pwWrap = document.getElementById('lockResultPasswordWrap');
+                if (success && action === 'lock' && password) {
+                    document.getElementById('lockResultPassword').textContent = password;
+                    pwWrap.style.display = 'block';
+                } else {
+                    pwWrap.style.display = 'none';
+                }
+
+                $('#terminalLockResultModal').modal('show');
             });
     </script>
     @endscript

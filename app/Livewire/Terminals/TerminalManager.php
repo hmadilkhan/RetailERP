@@ -83,10 +83,6 @@ class TerminalManager extends Component
     public function updatedDeviceStatusFilter(): void
     {
         $this->resetPage();
-
-        if ($this->deviceStatusFilter !== '') {
-            $this->checkVisibleDeviceStatuses();
-        }
     }
 
     public function updatedSearch(): void
@@ -211,32 +207,48 @@ class TerminalManager extends Component
 
     public function inactiveTerminal(int $terminalId): void
     {
+        $terminal = $this->terminalDetailsQuery()->where('terminal_details.terminal_id', $terminalId)->first();
         Terminal::query()->where('terminal_id', $terminalId)->update(['status_id' => 2]);
-        $this->logTerminalActivity($terminalId, 'terminal_inactivated', 'Terminal marked inactive from Livewire terminal manager.');
+        $this->logTerminalActivity($terminalId, 'terminal_inactivated', 'Terminal marked inactive from Livewire terminal manager.', $terminal);
         session()->flash('terminal_message', 'Terminal inactivated successfully.');
     }
 
     public function reactiveTerminal(int $terminalId): void
     {
+        $terminal = $this->terminalDetailsQuery()->where('terminal_details.terminal_id', $terminalId)->first();
         Terminal::query()->where('terminal_id', $terminalId)->update(['status_id' => 1]);
-        $this->logTerminalActivity($terminalId, 'terminal_reactivated', 'Terminal reactivated from Livewire terminal manager.');
+        $this->logTerminalActivity($terminalId, 'terminal_reactivated', 'Terminal reactivated from Livewire terminal manager.', $terminal);
         session()->flash('terminal_message', 'Terminal reactivated successfully.');
     }
 
     public function lockTerminal(int $terminalId): void
     {
+        $terminal = $this->terminalDetailsQuery()->where('terminal_details.terminal_id', $terminalId)->first();
         $terminalLockService = app(TerminalLockService::class);
         $result = $terminalLockService->lockTerminalById($terminalId);
-        $this->logTerminalLockActivity($terminalId, 'terminal_manual_lock', $result);
-        session()->flash($result['success'] ? 'terminal_message' : 'terminal_error', $result['message']);
+        $this->logTerminalLockActivity($terminalId, 'terminal_manual_lock', $result, $terminal);
+        $this->revealedPasswords = [];
+        $this->dispatch('show-lock-result',
+            action: 'lock',
+            success: $result['success'] ?? false,
+            message: $result['message'] ?? 'Unknown response.',
+            password: $result['lock_password'] ?? null,
+        );
     }
 
     public function unlockTerminal(int $terminalId): void
     {
+        $terminal = $this->terminalDetailsQuery()->where('terminal_details.terminal_id', $terminalId)->first();
         $terminalLockService = app(TerminalLockService::class);
         $result = $terminalLockService->unlockTerminalById($terminalId);
-        $this->logTerminalLockActivity($terminalId, 'terminal_manual_unlock', $result);
-        session()->flash($result['success'] ? 'terminal_message' : 'terminal_error', $result['message']);
+        $this->logTerminalLockActivity($terminalId, 'terminal_manual_unlock', $result, $terminal);
+        $this->revealedPasswords = [];
+        $this->dispatch('show-lock-result',
+            action: 'unlock',
+            success: $result['success'] ?? false,
+            message: $result['message'] ?? 'Unknown response.',
+            password: null,
+        );
     }
 
     public function checkDeviceStatus(int $terminalId): void
@@ -250,16 +262,14 @@ class TerminalManager extends Component
     public function checkVisibleDeviceStatuses(): void
     {
         $terminalLockService = app(TerminalLockService::class);
-
-        $this->filteredTerminalsQuery()
+        $terminalIds = $this->filteredTerminalsQuery()
             ->forPage($this->getPage(), 15)
-            ->get()
-            ->each(function ($terminal) use ($terminalLockService) {
-                $terminalId = (int) $terminal->terminal_id;
-                $result = $terminalLockService->checkTerminalStatusById($terminalId);
+            ->pluck('terminal_details.terminal_id');
 
-                $this->setDeviceStatusFromResult($terminalId, $result);
-            });
+        foreach ($terminalIds as $terminalId) {
+            $result = $terminalLockService->checkTerminalStatusById((int) $terminalId);
+            $this->setDeviceStatusFromResult((int) $terminalId, $result);
+        }
     }
 
     private function setDeviceStatusFromResult(int $terminalId, array $result): void
@@ -327,9 +337,9 @@ class TerminalManager extends Component
             ]);
     }
 
-    private function logTerminalActivity(int $terminalId, string $event, string $message): void
+    private function logTerminalActivity(int $terminalId, string $event, string $message, $terminal = null): void
     {
-        $terminal = $this->terminalDetailsQuery()
+        $terminal ??= $this->terminalDetailsQuery()
             ->where('terminal_details.terminal_id', $terminalId)
             ->first();
 
@@ -343,20 +353,20 @@ class TerminalManager extends Component
                 'username' => auth()->user()->username ?? null,
             ]);
 
-        if ($terminal && $terminal->company_id) {
+        if ($terminal?->company_id) {
             $logger->withCompany($terminal->company_id);
         }
 
-        if ($terminal && $terminal->branch_id) {
+        if ($terminal?->branch_id) {
             $logger->withBranch($terminal->branch_id);
         }
 
         $logger->event($event)->log($message);
     }
 
-    private function logTerminalLockActivity(int $terminalId, string $event, array $result): void
+    private function logTerminalLockActivity(int $terminalId, string $event, array $result, $terminal = null): void
     {
-        $terminal = $this->terminalDetailsQuery()
+        $terminal ??= $this->terminalDetailsQuery()
             ->where('terminal_details.terminal_id', $terminalId)
             ->first();
 
@@ -375,11 +385,11 @@ class TerminalManager extends Component
                 'username' => auth()->user()->username ?? null,
             ]);
 
-        if ($terminal && $terminal->company_id) {
+        if ($terminal?->company_id) {
             $logger->withCompany($terminal->company_id);
         }
 
-        if ($terminal && $terminal->branch_id) {
+        if ($terminal?->branch_id) {
             $logger->withBranch($terminal->branch_id);
         }
 
@@ -457,11 +467,10 @@ class TerminalManager extends Component
         $terminals = $this->filteredTerminalsQuery()->paginate(15);
         $terminalRows = $terminals->getCollection();
 
-        if ($this->deviceStatusFilter !== '') {
+        if ($this->deviceStatusFilter !== '' && count($this->deviceStatuses) > 0) {
             $terminalRows = $terminalRows
                 ->filter(function ($terminal) {
                     $status = $this->deviceStatuses[$terminal->terminal_id]['label'] ?? null;
-
                     return $status === $this->deviceStatusFilter;
                 })
                 ->values();
