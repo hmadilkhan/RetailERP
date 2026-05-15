@@ -35,8 +35,9 @@ class AdminCompanyController extends Controller
      */
     public function index()
     {
-        $companies = $this->companyService->getAll();
-        return view('Admin.Company.list', compact('companies'));
+        $search = request('search', '');
+        $companies = $this->companyService->getPaginated($search);
+        return view('Admin.Company.list', compact('companies', 'search'));
     }
 
     /**

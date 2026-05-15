@@ -146,19 +146,27 @@ class userDetails extends Model
             ->join('accessibility_mode as e', 'e.status_id', '=', 'b.status_id')
             ->select('a.*', 'c.role as role_name', 'd.branch_name', 'e.status_name', 'b.authorization_id', 'b.isLoggedIn')
             ->where('b.status_id', 1);
-        if (session('roleId') == 2) { $query->where('b.company_id', session('company_id')); }
-        elseif (session('roleId') != 1) { $query->where('b.branch_id', session('branch')); }
+
+        if (session('roleId') == 2) {
+            $query->where('b.company_id', session('company_id'));
+        } elseif (session('roleId') != 1) {
+            $query->where('b.branch_id', session('branch'));
+        }
+
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
-                $q->where('a.fullname', 'like', "%{$search}%)
- ->orWhere('a.username', 'like', %{$search}%)
- ->orWhere('a.email', 'like', %{$search}%)
- ->orWhere('c.role', 'like', %{$search}%)
- ->orWhere('d.branch_name', 'like', %{$search}%);
- });
- }
- return $query->orderBy('a.id', 'desc')->paginate($perPage)->withQueryString();
- }
+                $q->where('a.fullname', 'like', "%{$search}%")
+                    ->orWhere('a.username', 'like', "%{$search}%")
+                    ->orWhere('a.email', 'like', "%{$search}%")
+                    ->orWhere('a.contact', 'like', "%{$search}%")
+                    ->orWhere('c.role', 'like', "%{$search}%")
+                    ->orWhere('d.branch_name', 'like', "%{$search}%")
+                    ->orWhere('e.status_name', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->orderBy('a.id', 'desc')->paginate($perPage)->withQueryString();
+    }
 
     public function user_details($userid)
     {

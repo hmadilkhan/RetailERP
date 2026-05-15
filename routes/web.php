@@ -991,6 +991,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     //Users
     Route::get('/usersDetails', [UserDetailsController::class, 'index']);
+    Route::get('/userdetails', [UserDetailsController::class, 'index']);
     Route::get('/create-user', [UserDetailsController::class, 'create']);
     Route::post('/store-user', [UserDetailsController::class, 'store']);
     Route::get('/user-edit/{id}', [UserDetailsController::class, 'edit']);
