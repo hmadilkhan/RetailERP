@@ -325,7 +325,6 @@
             else{
                 if (mode == "insert")
                 {
-                    alert($("#dinein").val());
                     $.ajax({
                         url:'{{ url("/add-job") }}',
                         type:"POST",
