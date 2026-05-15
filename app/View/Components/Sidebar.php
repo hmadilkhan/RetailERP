@@ -7,33 +7,30 @@ use Illuminate\Support\Facades\DB;
 
 class Sidebar extends Component
 {
-    /**
-     * Create a new component instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         //
     }
 
-    /**
-     * Get the view / contents that represent the component.
-     *
-     * @return \Illuminate\View\View|string
-     */
     public function render()
     {
+        $roleId = session('roleId');
+
+        // Impersonate ke waqt impersonated user ka actual role DB se lo
+        if (app('impersonate')->isImpersonating()) {
+            $roleId = DB::table('user_authorization')
+                ->where('user_id', auth()->id())
+                ->value('role_id') ?? $roleId;
+        }
+
         $checkPackage = DB::table("company")->where("company_id", session("company_id"))->whereNotNull("package_id")->get();
         if (count($checkPackage) > 0) {
-            $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? and page_id IN (SELECT page_id FROM `package_module_permissions` where package_id = ?) ORDER BY page_id;', [session("roleId"), $checkPackage[0]->package_id]);
-            // $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? and page_id IN (SELECT page_id FROM `module_permissions_details` where company_id = ?) ORDER BY page_id;', [session("roleId"), session("company_id")]);
+            $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? and page_id IN (SELECT page_id FROM `package_module_permissions` where package_id = ?) ORDER BY page_id;', [$roleId, $checkPackage[0]->package_id]);
         } else {
-            $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id', [session("roleId")]);
+            $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? ORDER BY page_id', [$roleId]);
         }
-        // $pageid = DB::select('SELECT page_id from role_settings WHERE role_id = ? and page_id IN (SELECT page_id FROM `module_permissions_details` where company_id = ?) ORDER BY page_id;',[session("roleId"),session("company_id")]);
-        $array = [];
 
+        $array = [];
         foreach ($pageid as $value) {
             array_push($array, $value->page_id);
         }

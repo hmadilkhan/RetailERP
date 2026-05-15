@@ -23,10 +23,18 @@
                         <li class="p-0">
                             <div class="dropdown-divider m-0"></div>
                         </li>
-                        <li><a href="{{ route('logout') }}"
-                                onclick="event.preventDefault();
-                                 document.getElementById('logout-form').submit();"><i
-                                    class="icon-logout"></i> {{ __('content.logout') }}</a></li>
+                        @if (app('impersonate')->isImpersonating())
+                            <li>
+                                <a href="{{ route('impersonate.leave') }}">
+                                    <i class="icofont icofont-logout"></i> Return to Admin
+                                </a>
+                            </li>
+                        @else
+                            <li><a href="{{ route('logout') }}"
+                                    onclick="event.preventDefault();
+                                     document.getElementById('logout-form').submit();"><i
+                                        class="icon-logout"></i> {{ __('content.logout') }}</a></li>
+                        @endif
                     </ul>
                 </li>
             </ul>
