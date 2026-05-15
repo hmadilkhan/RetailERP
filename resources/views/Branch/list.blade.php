@@ -157,7 +157,7 @@
 @section('content')
 <div class="branch-page">
     <section class="panels-wells">
-        <div class="card">
+        <div class="card mt-3">
             <div class="card-header">
                 <h5 class="card-header-text">
                     <i class="icofont icofont-building-alt m-r-5 text-success"></i> Branches
