@@ -5,6 +5,7 @@ return [
     'dashboard' => 'Dashboard',
     'branch_section' => 'Branch Section',
     'branch_operations' => 'Branch Operations',
+    'operations' => 'Operations',
     'branches' => 'Branches',
     'users' => 'Users',
     'received_demand' => 'Received Demand',
