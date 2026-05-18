@@ -35,7 +35,7 @@
         <div class="content-wrapper">
             <!-- Container-fluid starts -->
             <!-- Main content starts -->
-            <div class="container-fluid p-4" style="padding-top:50px;">
+            <div class="container-fluid p-4" style="padding-top:30px;">
                 <!-- start content-->
                 @yield('content')
                 <!-- end content-->
