@@ -53,7 +53,7 @@
             <div class="row metric-row">
                 <div class="col-xl-3 col-lg-6 col-md-6">
                     <div id="projectedSales" class="premium-metric metric-green">
-                        <div class="metric-icon"><i class="icofont icofont-chart-growth"></i></div>
+                        <div class="metric-icon"><i class="icofont icofont-chart-line"></i></div>
                         <span>Projected Sales</span>
                         <strong>{{ number_format($projectedSales, 2) }}</strong>
                         <small>Based on recent weekday trend</small>
