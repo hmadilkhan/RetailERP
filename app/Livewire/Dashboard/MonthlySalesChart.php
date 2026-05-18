@@ -25,29 +25,20 @@ class MonthlySalesChart extends Component
         HTML;
     }
 
-    function generateHSLColor($index, $total)
-    {
-        $hue = ($index / $total) * 360; // Spread hues evenly across 360 degrees
-        return "hsla($hue, 70%, 50%, 0.8)"; // Adjust saturation and lightness as desired
-    }
     public function render()
     {
-        // Predefined color palette for a more consistent and eye-catching look
         $colors = [
-            'rgba(54, 162, 235, 0.8)',  // Blue
-            'rgba(255, 99, 132, 0.8)',  // Red
-            'rgba(75, 192, 192, 0.8)',  // Teal
-            'rgba(255, 206, 86, 0.8)',  // Yellow
-            'rgba(153, 102, 255, 0.8)', // Purple
-            'rgba(255, 159, 64, 0.8)',  // Orange
-            'rgba(201, 203, 207, 0.8)', // Grey
-            'rgba(46, 204, 113, 0.8)',  // Green
-            'rgba(231, 76, 60, 0.8)',   // Strong Red
-            'rgba(52, 152, 219, 0.8)'   // Light Blue
+            '#4CAF50',
+            '#2196F3',
+            '#FFC107',
+            '#00BCD4',
+            '#F44336',
+            '#78909C',
         ];
+
         $sevenMonthsAgo = Carbon::now()->subMonths(8)->startOfMonth()->toDateString();
         $currentMonth = Carbon::now()->endOfMonth()->toDateString();
-        // Assuming `sales` table has `amount`, `created_at`, and `branch_id` fields
+
         $salesData = DB::table('sales_receipts')
             ->select(
                 DB::raw('DATE_FORMAT(sales_receipts.date, "%Y-%m") as month'),
@@ -63,37 +54,69 @@ class MonthlySalesChart extends Component
             ->orderBy('month')
             ->get();
 
-        // Organize the data for charting
-        $branches = DB::table("branch")->where("company_id", session("company_id"))->get(); //$salesData->pluck('branch_id')->unique()->values(); // Unique branch IDs
-        $months = $salesData->pluck('month')->unique()->values(); // Unique months in order
-        $monthNames = $salesData->pluck('month')->unique()->values()->map(function ($month) {
-            return \Carbon\Carbon::createFromFormat('Y-m', $month)->format('M-Y'); // Format as "Jun-2024"
+        $monthRange = collect(range(8, 0))->map(function ($monthsBack) {
+            return Carbon::now()->subMonths($monthsBack)->format('Y-m');
+        })->values();
+
+        $monthNames = $monthRange->map(function ($month) {
+            return Carbon::createFromFormat('Y-m', $month)->format('M-y');
         });
 
-        $totalBranches = count($branches);
-        $chartData = [];
-        $colorIndex = 0;
-        foreach ($branches as $index => $branch) {
-            $branchSales = [];
-            foreach ($months as $month) {
-                // Get total sales for this branch and month, or 0 if none
-                $salesForMonth = $salesData->firstWhere(function ($data) use ($branch, $month) {
-                    return $data->branch_id == $branch->branch_id && $data->month == $month;
-                });
-                $branchSales[] = $salesForMonth ? $salesForMonth->total_sales : 0;
-            }
-            // Counter for cycling through colors
+        $branchTotals = $salesData
+            ->groupBy('branch_id')
+            ->map(function ($rows) {
+                return [
+                    'branch_id' => $rows->first()->branch_id,
+                    'branch_name' => $rows->first()->branch_name,
+                    'total' => (float) $rows->sum('total_sales'),
+                ];
+            })
+            ->sortByDesc('total')
+            ->values();
 
-            $chartData[] = [
-                'label' => "Branch : $branch->branch_name", // You can customize this label if needed
-                'data' => $branchSales,
-                'backgroundColor' => $colors[$colorIndex % count($colors)],
-                'borderColor' => 'rgba(0, 0, 0, 0.1)',
-                'borderWidth' => 1
+        $topBranches = $branchTotals->take(5);
+        $otherBranchIds = $branchTotals->slice(5)->pluck('branch_id')->all();
+
+        $chartData = $topBranches->map(function ($branch, $index) use ($salesData, $monthRange, $colors) {
+            return [
+                'label' => $branch['branch_name'],
+                'data' => $monthRange->map(function ($month) use ($salesData, $branch) {
+                    return (float) $salesData
+                        ->where('branch_id', $branch['branch_id'])
+                        ->where('month', $month)
+                        ->sum('total_sales');
+                })->values(),
+                'backgroundColor' => $colors[$index % count($colors)],
+                'borderColor' => $colors[$index % count($colors)],
             ];
-            $colorIndex++;
+        })->values();
+
+        if (!empty($otherBranchIds)) {
+            $otherIndex = $chartData->count();
+            $chartData->push([
+                'label' => 'Other Branches',
+                'data' => $monthRange->map(function ($month) use ($salesData, $otherBranchIds) {
+                    return (float) $salesData
+                        ->whereIn('branch_id', $otherBranchIds)
+                        ->where('month', $month)
+                        ->sum('total_sales');
+                })->values(),
+                'backgroundColor' => $colors[$otherIndex % count($colors)],
+                'borderColor' => $colors[$otherIndex % count($colors)],
+            ]);
         }
 
-        return view('livewire.dashboard.monthly-sales-chart', compact('chartData', 'months', 'monthNames'));
+        $totalSales = (float) $salesData->sum('total_sales');
+        $avgSales = $monthRange->count() > 0 ? $totalSales / $monthRange->count() : 0;
+        $topBranchName = $branchTotals->first()['branch_name'] ?? 'N/A';
+
+        $summary = [
+            'totalSales' => $totalSales,
+            'avgSales' => $avgSales,
+            'topBranch' => $topBranchName,
+            'branchCount' => $branchTotals->count(),
+        ];
+
+        return view('livewire.dashboard.monthly-sales-chart', compact('chartData', 'monthNames', 'summary'));
     }
 }
