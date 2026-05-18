@@ -79,8 +79,39 @@ class dashboard extends Model
 
     public function orderStatus()
     {
-        $result = DB::select("SELECT COUNT(id) as total,(SELECT COUNT(id) FROM sales_receipts where status = 1) as pending,(SELECT COUNT(id) FROM sales_receipts where status = 2) as processing,(SELECT COUNT(id) FROM sales_receipts where status = 3) as ready,(SELECT COUNT(id) FROM sales_receipts where status = 4) as delivery,(SELECT COUNT(id) FROM sales_receipts where status = 5) as cancelled FROM sales_receipts");
-        return $result;
+        $today = date('Y-m-d');
+        $yesterday = date('Y-m-d', strtotime('-1 day'));
+
+        $openingQuery = DB::table('sales_opening');
+        if (session("roleId") == 2) {
+            $openingQuery->whereIn('user_id', DB::table('branch')->where('company_id', session('company_id'))->pluck('branch_id'));
+        } else {
+            $openingQuery->where('user_id', session('branch'));
+        }
+
+        $reportDate = (clone $openingQuery)->where('date', $today)->exists() ? $today : $yesterday;
+
+        $query = DB::table('sales_receipts as sr')
+            ->join('sales_opening as so', 'so.opening_id', '=', 'sr.opening_id')
+            ->where('so.date', $reportDate);
+
+        if (session("roleId") == 2) {
+            $query->whereIn('so.user_id', DB::table('branch')->where('company_id', session('company_id'))->pluck('branch_id'));
+        } else {
+            $query->where('so.user_id', session('branch'));
+        }
+
+        $summary = $query->selectRaw("
+            COUNT(sr.id) as total,
+            SUM(CASE WHEN sr.status = 1 THEN 1 ELSE 0 END) as pending,
+            SUM(CASE WHEN sr.status = 2 THEN 1 ELSE 0 END) as processing,
+            SUM(CASE WHEN sr.status = 3 THEN 1 ELSE 0 END) as ready,
+            SUM(CASE WHEN sr.status = 4 THEN 1 ELSE 0 END) as delivery,
+            SUM(CASE WHEN sr.status = 5 THEN 1 ELSE 0 END) as cancelled,
+            ? as report_date
+        ", [$reportDate])->first();
+
+        return [$summary];
     }
 
     public function branches($dateFrom = null, $dateTo = null)

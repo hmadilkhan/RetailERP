@@ -16,6 +16,8 @@
     $readyOrders = $orderStats ? (int) ($orderStats->ready ?? 0) : 0;
     $deliveredOrders = $orderStats ? (int) ($orderStats->delivery ?? 0) : 0;
     $cancelledOrders = $orderStats ? (int) ($orderStats->cancelled ?? 0) : 0;
+    $orderReportDate = $orderStats && !empty($orderStats->report_date) ? $orderStats->report_date : date('Y-m-d');
+    $orderReportLabel = $orderReportDate === date('Y-m-d') ? 'Today' : 'Yesterday';
     $branchSalesTotal = collect($branches ?? [])->sum('sales');
 
     $orderCards = [
@@ -34,7 +36,7 @@
                 <div>
                     <span class="hero-kicker">Retail overview</span>
                     <h1>Dashboard</h1>
-                    <p>{{ date('l, d M Y') }} · {{ ucfirst(Auth::user()->fullname ?? Auth::user()->username ?? 'User') }}</p>
+                    <p>{{ date('l, d M Y') }} - {{ ucfirst(Auth::user()->fullname ?? Auth::user()->username ?? 'User') }}</p>
                 </div>
                 <div class="hero-actions">
                     <button type="button" class="hero-btn" onclick="openReport()">
@@ -105,26 +107,33 @@
                     <div class="premium-panel order-panel">
                         <div class="panel-heading compact">
                             <div>
-                                <span class="panel-kicker">Order health</span>
+                                <span class="panel-kicker">Order health - {{ $orderReportLabel }}</span>
                                 <h3>Status Board</h3>
+                                <small class="panel-note">{{ date('d M Y', strtotime($orderReportDate)) }}</small>
                             </div>
-                            <strong>{{ number_format($totalOrders) }}</strong>
+                            <div class="order-total-badge">
+                                <span>Total</span>
+                                <strong>{{ number_format($totalOrders) }}</strong>
+                            </div>
                         </div>
 
-                        @foreach ($orderCards as $card)
-                            @php
-                                $percentage = $totalOrders > 0 ? round(($card['value'] / $totalOrders) * 100) : 0;
-                            @endphp
-                            <div class="order-status status-{{ $card['class'] }}">
-                                <div class="status-top">
-                                    <span><i class="icofont {{ $card['icon'] }}"></i>{{ $card['label'] }}</span>
-                                    <strong>{{ number_format($card['value']) }}</strong>
+                        <div class="order-status-grid">
+                            @foreach ($orderCards as $card)
+                                @php
+                                    $percentage = $totalOrders > 0 ? round(($card['value'] / $totalOrders) * 100) : 0;
+                                @endphp
+                                <div class="order-status status-{{ $card['class'] }}">
+                                    <div class="status-top">
+                                        <span><i class="icofont {{ $card['icon'] }}"></i>{{ $card['label'] }}</span>
+                                        <strong>{{ number_format($card['value']) }}</strong>
+                                    </div>
+                                    <div class="status-meta">{{ $percentage }}% of orders</div>
+                                    <div class="status-track">
+                                        <div style="width: {{ $percentage }}%"></div>
+                                    </div>
                                 </div>
-                                <div class="status-track">
-                                    <div style="width: {{ $percentage }}%"></div>
-                                </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -190,6 +199,97 @@
             <table id="tblcheques" class="d-none">
                 <tbody></tbody>
             </table>
+
+            <script type="text/javascript">
+                (function() {
+                    var terminalSalesData = [
+                        @foreach ($sales as $saleValue)
+                            {
+                                y: @json($saleValue->terminal_name),
+                                a: {{ (float) $saleValue->cash }},
+                                b: {{ (float) $saleValue->creditCard }},
+                                c: {{ (float) $saleValue->CustomerCredit }}
+                            },
+                        @endforeach
+                    ];
+
+                    var productDonutData = [
+                        @foreach ($products as $value)
+                            {
+                                label: @json($value->product_name),
+                                value: {{ (float) $value->count }}
+                            },
+                        @endforeach
+                    ];
+
+                    var yearlySalesData = [
+                        @foreach ($year as $value)
+                            {
+                                y: @json((string) $value->year),
+                                a: {{ (float) $value->amount }}
+                            },
+                        @endforeach
+                    ];
+
+                    function drawDashboardCharts() {
+                        if (typeof Morris === 'undefined') {
+                            return;
+                        }
+
+                        if (document.getElementById('bar-example1')) {
+                            Morris.Bar({
+                                element: 'bar-example1',
+                                barGap: 3,
+                                barSizeRatio: 0.38,
+                                data: terminalSalesData.length ? terminalSalesData : [{ y: 'No Sales', a: 0, b: 0, c: 0 }],
+                                xkey: 'y',
+                                ykeys: ['a', 'b', 'c'],
+                                labels: ['Cash', 'Credit Card', 'Customer Credit'],
+                                barColors: ['#4CAF50', '#2196F3', '#FFC107'],
+                                gridTextColor: '#6b7280',
+                                gridLineColor: '#eef2f6',
+                                hideHover: 'auto',
+                                resize: true
+                            });
+                        }
+
+                        if (document.getElementById('donut-example')) {
+                            Morris.Donut({
+                                element: 'donut-example',
+                                data: productDonutData.length ? productDonutData : [{ label: 'No Products', value: 1 }],
+                                colors: ['#4CAF50', '#2196F3', '#FFC107', '#F44336', '#00BCD4'],
+                                formatter: function(value) {
+                                    return value;
+                                },
+                                resize: true
+                            });
+                        }
+
+                        if (document.getElementById('line-example')) {
+                            Morris.Line({
+                                element: 'line-example',
+                                data: yearlySalesData.length ? yearlySalesData : [{ y: '{{ date('Y') }}', a: 0 }],
+                                xkey: 'y',
+                                ykeys: ['a'],
+                                labels: ['Sales'],
+                                lineColors: ['#4CAF50'],
+                                pointFillColors: ['#ffffff'],
+                                pointStrokeColors: ['#4CAF50'],
+                                gridTextColor: '#6b7280',
+                                gridLineColor: '#eef2f6',
+                                hideHover: 'auto',
+                                resize: true
+                            });
+                        }
+                    }
+
+                    if (document.readyState === 'loading') {
+                        document.addEventListener('DOMContentLoaded', drawDashboardCharts);
+                    } else {
+                        drawDashboardCharts();
+                    }
+                })();
+            </script>
         </div>
     @endif
 @endsection
@@ -245,7 +345,7 @@
             padding: 26px 28px;
             margin-bottom: 18px;
             border-radius: 8px;
-            background: linear-gradient(135deg, #12796f, #183964);
+            background: linear-gradient(135deg, #4CAF50, #2f7d32);
             background-size: cover;
             box-shadow: 0 18px 40px rgba(15, 23, 42, .14);
             color: #fff;
@@ -304,7 +404,7 @@
         .hero-btn:hover,
         .hero-btn-primary {
             background: #ffffff;
-            color: #183964;
+            color: #2f7d32;
         }
 
         .metric-row > [class*="col-"],
@@ -350,10 +450,10 @@
             background: var(--accent);
         }
 
-        .metric-green { --accent: #15a36b; }
-        .metric-blue { --accent: #276ef1; }
-        .metric-gold { --accent: #d79a19; }
-        .metric-red { --accent: #d94b55; }
+        .metric-green { --accent: #4CAF50; }
+        .metric-blue { --accent: #2196F3; }
+        .metric-gold { --accent: #FFC107; }
+        .metric-red { --accent: #F44336; }
 
         .metric-icon {
             display: flex;
@@ -367,10 +467,10 @@
             font-size: 22px;
         }
 
-        .metric-green .metric-icon { background: rgba(21, 163, 107, .12); }
-        .metric-blue .metric-icon { background: rgba(39, 110, 241, .12); }
-        .metric-gold .metric-icon { background: rgba(215, 154, 25, .14); }
-        .metric-red .metric-icon { background: rgba(217, 75, 85, .12); }
+        .metric-green .metric-icon { background: rgba(76, 175, 80, .13); }
+        .metric-blue .metric-icon { background: rgba(33, 150, 243, .12); }
+        .metric-gold .metric-icon { background: rgba(255, 193, 7, .18); }
+        .metric-red .metric-icon { background: rgba(244, 67, 54, .12); }
 
         .premium-metric span {
             display: block;
@@ -425,14 +525,29 @@
             font-size: 18px;
         }
 
+        .panel-note {
+            display: block;
+            margin-top: 4px;
+            color: #8a94a3;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
         .panel-legend {
             display: flex;
-            gap: 13px;
+            gap: 10px;
             flex-wrap: wrap;
             justify-content: flex-end;
             color: #6b7280;
             font-size: 12px;
             font-weight: 700;
+            max-width: 260px;
+        }
+
+        .panel-legend span {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
         }
 
         .legend-dot {
@@ -443,9 +558,9 @@
             border-radius: 50%;
         }
 
-        .legend-dot.cash { background: #15a36b; }
-        .legend-dot.card { background: #276ef1; }
-        .legend-dot.credit { background: #d79a19; }
+        .legend-dot.cash { background: #4CAF50; }
+        .legend-dot.card { background: #2196F3; }
+        .legend-dot.credit { background: #FFC107; }
 
         .chart-canvas {
             width: 100%;
@@ -460,8 +575,34 @@
             height: 285px;
         }
 
+        .order-total-badge {
+            min-width: 84px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            background: #edf8ee;
+            color: #2f7d32;
+            text-align: right;
+        }
+
+        .order-total-badge span {
+            display: block;
+            color: #6b7280;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .order-status-grid {
+            display: grid;
+            gap: 10px;
+        }
+
         .order-status {
-            margin-top: 16px;
+            padding: 12px;
+            border: 1px solid #edf1f5;
+            border-left: 4px solid var(--status-color);
+            border-radius: 8px;
+            background: #fbfcfd;
         }
 
         .status-top,
@@ -482,6 +623,13 @@
             margin-right: 8px;
         }
 
+        .status-meta {
+            margin-top: 5px;
+            color: #8a94a3;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
         .status-track {
             height: 8px;
             margin-top: 9px;
@@ -496,11 +644,11 @@
             background: var(--status-color);
         }
 
-        .status-pending { --status-color: #d79a19; }
-        .status-processing { --status-color: #276ef1; }
-        .status-ready { --status-color: #15a36b; }
-        .status-delivered { --status-color: #11a1a8; }
-        .status-cancelled { --status-color: #d94b55; }
+        .status-pending { --status-color: #FFC107; }
+        .status-processing { --status-color: #2196F3; }
+        .status-ready { --status-color: #4CAF50; }
+        .status-delivered { --status-color: #00BCD4; }
+        .status-cancelled { --status-color: #F44336; }
 
         .dashboard-livewire {
             margin-bottom: 18px;
@@ -544,7 +692,7 @@
         }
 
         .bg-success {
-            background-color: #15a36b !important;
+            background-color: #4CAF50 !important;
         }
 
         nav .navbar {
@@ -613,35 +761,6 @@
 
 @section('scriptcode_three')
     <script type="text/javascript">
-        var terminalSalesData = [
-            @foreach ($sales as $saleValue)
-                {
-                    y: @json($saleValue->terminal_name),
-                    a: {{ (float) $saleValue->cash }},
-                    b: {{ (float) $saleValue->creditCard }},
-                    c: {{ (float) $saleValue->CustomerCredit }}
-                },
-            @endforeach
-        ];
-
-        var productDonutData = [
-            @foreach ($products as $value)
-                {
-                    label: @json($value->product_name),
-                    value: {{ (float) $value->count }}
-                },
-            @endforeach
-        ];
-
-        var yearlySalesData = [
-            @foreach ($year as $value)
-                {
-                    y: @json((string) $value->year),
-                    a: {{ (float) $value->amount }}
-                },
-            @endforeach
-        ];
-
         <?php if (session('login_msg')) { ?>
         $(document).ready(function() {
             notify('{{ session('login_msg') }}', 'success');
@@ -650,52 +769,6 @@
         <?php } ?>
 
         $(document).ready(function() {
-            if ($('#bar-example1').length && typeof Morris !== 'undefined') {
-                Morris.Bar({
-                    element: 'bar-example1',
-                    barGap: 3,
-                    barSizeRatio: 0.38,
-                    data: terminalSalesData.length ? terminalSalesData : [{ y: 'No Sales', a: 0, b: 0, c: 0 }],
-                    xkey: 'y',
-                    ykeys: ['a', 'b', 'c'],
-                    labels: ['Cash', 'Credit Card', 'Customer Credit'],
-                    barColors: ['#15a36b', '#276ef1', '#d79a19'],
-                    gridTextColor: '#6b7280',
-                    gridLineColor: '#eef2f6',
-                    hideHover: 'auto',
-                    resize: true
-                });
-            }
-
-            if ($('#donut-example').length && typeof Morris !== 'undefined') {
-                Morris.Donut({
-                    element: 'donut-example',
-                    data: productDonutData.length ? productDonutData : [{ label: 'No Products', value: 1 }],
-                    colors: ['#276ef1', '#15a36b', '#d79a19', '#d94b55', '#11a1a8'],
-                    formatter: function(value) {
-                        return value;
-                    },
-                    resize: true
-                });
-            }
-
-            if ($('#line-example').length && typeof Morris !== 'undefined') {
-                Morris.Line({
-                    element: 'line-example',
-                    data: yearlySalesData.length ? yearlySalesData : [{ y: '{{ date('Y') }}', a: 0 }],
-                    xkey: 'y',
-                    ykeys: ['a'],
-                    labels: ['Sales'],
-                    lineColors: ['#276ef1'],
-                    pointFillColors: ['#ffffff'],
-                    pointStrokeColors: ['#276ef1'],
-                    gridTextColor: '#6b7280',
-                    gridLineColor: '#eef2f6',
-                    hideHover: 'auto',
-                    resize: true
-                });
-            }
-
             getcheques();
         });
 
