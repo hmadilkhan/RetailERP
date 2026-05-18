@@ -412,6 +412,15 @@
             margin-bottom: 18px;
         }
 
+        .dashboard-grid {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        .dashboard-grid > [class*="col-"] {
+            display: flex;
+        }
+
         .premium-metric,
         .premium-panel {
             position: relative;
@@ -498,6 +507,12 @@
 
         .premium-panel {
             padding: 22px;
+            width: 100%;
+        }
+
+        .chart-panel,
+        .order-panel {
+            min-height: 430px;
         }
 
         .panel-heading {
@@ -538,20 +553,28 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: flex-end;
-            color: #6b7280;
-            font-size: 12px;
-            font-weight: 700;
             max-width: 260px;
         }
 
         .panel-legend span {
             display: inline-flex;
             align-items: center;
+            justify-content: center;
+            min-height: 28px;
+            padding: 6px 10px;
+            border: 1px solid #eef2f6;
+            border-radius: 6px;
+            background: #fbfcfd;
+            color: #6b7280;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1;
             white-space: nowrap;
         }
 
         .legend-dot {
-            display: inline-block;
+            display: inline-flex;
+            flex: 0 0 auto;
             width: 9px;
             height: 9px;
             margin-right: 6px;
@@ -568,7 +591,7 @@
         }
 
         .chart-large {
-            height: 310px;
+            height: 322px;
         }
 
         .chart-medium {
@@ -594,11 +617,11 @@
 
         .order-status-grid {
             display: grid;
-            gap: 10px;
+            gap: 9px;
         }
 
         .order-status {
-            padding: 12px;
+            padding: 10px 12px;
             border: 1px solid #edf1f5;
             border-left: 4px solid var(--status-color);
             border-radius: 8px;
@@ -631,8 +654,8 @@
         }
 
         .status-track {
-            height: 8px;
-            margin-top: 9px;
+            height: 7px;
+            margin-top: 8px;
             border-radius: 99px;
             background: #edf1f5;
             overflow: hidden;
