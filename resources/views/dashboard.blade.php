@@ -53,7 +53,7 @@
             <div class="row metric-row">
                 <div class="col-xl-3 col-lg-6 col-md-6">
                     <div id="projectedSales" class="premium-metric metric-green">
-                        <div class="metric-icon"><i class="icofont-chart-growth"></i></div>
+                        <div class="metric-icon"><i class="icofont icofont-chart-growth"></i></div>
                         <span>Projected Sales</span>
                         <strong>{{ number_format($projectedSales, 2) }}</strong>
                         <small>Based on recent weekday trend</small>
@@ -61,7 +61,7 @@
                 </div>
                 <div class="col-xl-3 col-lg-6 col-md-6">
                     <div id="closedSales" class="premium-metric metric-blue" onclick="getdetails()">
-                        <div class="metric-icon"><i class="icofont-money-bag"></i></div>
+                        <div class="metric-icon"><i class="icofont icofont-money-bag"></i></div>
                         <span>All Closed Sales</span>
                         <strong>{{ number_format($closedSales, 2) }}</strong>
                         <small>Open terminal sales summary</small>
@@ -69,7 +69,7 @@
                 </div>
                 <div class="col-xl-3 col-lg-6 col-md-6">
                     <div class="premium-metric metric-gold">
-                        <div class="metric-icon"><i class="icofont-box"></i></div>
+                        <div class="metric-icon"><i class="icofont icofont-box"></i></div>
                         <span>Active Items</span>
                         <strong>{{ number_format($totalItems) }}</strong>
                         <small>Inventory products in scope</small>
@@ -77,7 +77,7 @@
                 </div>
                 <div class="col-xl-3 col-lg-6 col-md-6">
                     <div class="premium-metric metric-red">
-                        <div class="metric-icon"><i class="icofont-shopping-cart"></i></div>
+                        <div class="metric-icon"><i class="icofont icofont-shopping-cart"></i></div>
                         <span>Total Orders</span>
                         <strong>{{ number_format($totalOrders) }}</strong>
                         <small>Current order pipeline</small>
@@ -94,9 +94,9 @@
                                 <h3>Terminal Sales By Payment Mode</h3>
                             </div>
                             <div class="panel-legend">
-                                <span><i class="legend-dot cash"></i>Cash</span>
-                                <span><i class="legend-dot card"></i>Card</span>
-                                <span><i class="legend-dot credit"></i>Customer Credit</span>
+                                <span><i class="legend-dot cash"></i><b>Cash</b></span>
+                                <span><i class="legend-dot card"></i><b>Card</b></span>
+                                <span><i class="legend-dot credit"></i><b>Customer Credit</b></span>
                             </div>
                         </div>
                         <div id="bar-example1" class="chart-canvas chart-large"></div>
@@ -468,12 +468,24 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 42px;
-            height: 42px;
+            width: 46px;
+            height: 46px;
             margin-bottom: 16px;
-            border-radius: 8px;
+            border: 1px solid rgba(0, 0, 0, .04);
+            border-radius: 50%;
             color: var(--accent);
-            font-size: 22px;
+            font-size: 21px;
+            line-height: 1;
+            box-shadow: inset 0 0 0 6px rgba(255, 255, 255, .55);
+        }
+
+        .metric-icon i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 1em;
+            height: 1em;
+            line-height: 1;
         }
 
         .metric-green .metric-icon { background: rgba(76, 175, 80, .13); }
@@ -553,32 +565,41 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: flex-end;
-            max-width: 260px;
+            align-items: center;
+            max-width: 290px;
         }
 
         .panel-legend span {
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            gap: 7px;
             min-height: 28px;
-            padding: 6px 10px;
+            padding: 0 10px;
             border: 1px solid #eef2f6;
             border-radius: 6px;
             background: #fbfcfd;
             color: #6b7280;
             font-size: 12px;
             font-weight: 700;
-            line-height: 1;
+            line-height: 28px;
             white-space: nowrap;
         }
 
+        .panel-legend b {
+            display: inline-block;
+            font: inherit;
+            line-height: 1;
+        }
+
         .legend-dot {
-            display: inline-flex;
+            display: block;
             flex: 0 0 auto;
             width: 9px;
             height: 9px;
-            margin-right: 6px;
+            margin: 0;
             border-radius: 50%;
+            transform: translateY(0);
         }
 
         .legend-dot.cash { background: #4CAF50; }
