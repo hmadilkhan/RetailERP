@@ -68,13 +68,22 @@ class dashboard extends Model
 
     public function getYearlySales()
     {
+        $startYear = (int) date('Y') - 4;
+
         if (session("roleId") == 2) {
-            $year = DB::select("SELECT YEAR(date) AS year,SUM(total_amount)as amount FROM `sales_receipts` where branch IN (Select branch_id from branch where company_id = ?) GROUP by YEAR(date)", [session("company_id")]);
+            $year = DB::select("SELECT YEAR(date) AS year, SUM(total_amount) as amount FROM `sales_receipts` WHERE YEAR(date) >= ? AND branch IN (Select branch_id from branch where company_id = ?) GROUP BY YEAR(date)", [$startYear, session("company_id")]);
         } else {
-            $year = DB::select("SELECT YEAR(date) AS year,SUM(total_amount)as amount FROM `sales_receipts` where branch = ? GROUP by YEAR(date)", [session("branch")]);
+            $year = DB::select("SELECT YEAR(date) AS year, SUM(total_amount) as amount FROM `sales_receipts` WHERE YEAR(date) >= ? AND branch = ? GROUP BY YEAR(date)", [$startYear, session("branch")]);
         }
 
-        return $year;
+        $yearlySales = collect($year)->keyBy('year');
+
+        return collect(range($startYear, (int) date('Y')))->map(function ($year) use ($yearlySales) {
+            return (object) [
+                'year' => $year,
+                'amount' => (float) optional($yearlySales->get($year))->amount,
+            ];
+        });
     }
 
     public function orderStatus()

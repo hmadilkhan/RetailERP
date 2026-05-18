@@ -39,10 +39,6 @@
                     <p>{{ date('l, d M Y') }} - {{ ucfirst(Auth::user()->fullname ?? Auth::user()->username ?? 'User') }}</p>
                 </div>
                 <div class="hero-actions">
-                    <button type="button" class="hero-btn" onclick="openReport()">
-                        <i class="icofont-chart-line"></i>
-                        Profit & Loss
-                    </button>
                     <button type="button" class="hero-btn hero-btn-primary" onclick="getdetails()">
                         <i class="icofont-eye-alt"></i>
                         Sales Detail
@@ -156,12 +152,13 @@
                 </div>
 
                 <div class="col-xl-4 col-lg-7">
-                    <div class="premium-panel">
+                    <div class="premium-panel yearly-panel">
                         <div class="panel-heading">
                             <div>
                                 <span class="panel-kicker">Long range</span>
                                 <h3>Yearly Sales Trend</h3>
                             </div>
+                            <span class="yearly-range-badge">Last 5 Years</span>
                         </div>
                         <div id="line-example" class="chart-canvas chart-medium"></div>
                     </div>
@@ -266,19 +263,23 @@
                         }
 
                         if (document.getElementById('line-example')) {
-                            Morris.Line({
+                            Morris.Bar({
                                 element: 'line-example',
                                 data: yearlySalesData.length ? yearlySalesData : [{ y: '{{ date('Y') }}', a: 0 }],
                                 xkey: 'y',
                                 ykeys: ['a'],
                                 labels: ['Sales'],
-                                lineColors: ['#4CAF50'],
-                                pointFillColors: ['#ffffff'],
-                                pointStrokeColors: ['#4CAF50'],
+                                barColors: ['#4CAF50'],
+                                barSizeRatio: 0.42,
+                                barGap: 6,
                                 gridTextColor: '#6b7280',
                                 gridLineColor: '#eef2f6',
                                 hideHover: 'auto',
-                                resize: true
+                                resize: true,
+                                hoverCallback: function(index, options, content, row) {
+                                    return '<div class="morris-hover-row-label">' + row.y + '</div>' +
+                                        '<div class="morris-hover-point">Sales: ' + Number(row.a || 0).toLocaleString() + '</div>';
+                                }
                             });
                         }
                     }
@@ -617,6 +618,38 @@
 
         .chart-medium {
             height: 285px;
+        }
+
+        .yearly-panel {
+            background: linear-gradient(180deg, #ffffff 0%, #fbfdfb 100%);
+        }
+
+        .yearly-range-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 28px;
+            padding: 0 10px;
+            border: 1px solid rgba(76, 175, 80, .18);
+            border-radius: 6px;
+            background: rgba(76, 175, 80, .09);
+            color: #2f7d32;
+            font-size: 12px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .yearly-panel .morris-hover {
+            border: 0;
+            border-radius: 8px;
+            background: rgba(17, 24, 39, .95);
+            color: #ffffff;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, .18);
+        }
+
+        .yearly-panel .morris-hover-row-label,
+        .yearly-panel .morris-hover-point {
+            color: #ffffff !important;
         }
 
         .order-total-badge {
