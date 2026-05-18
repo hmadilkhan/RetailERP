@@ -173,6 +173,53 @@ class dashboard extends Model
         }
     }
 
+    public function dashboardPaymentSales()
+    {
+        $today = date('Y-m-d');
+        $yesterday = date('Y-m-d', strtotime('-1 day'));
+
+        $openingQuery = DB::table('sales_opening');
+        if (session("roleId") == 2) {
+            $openingQuery->whereIn('user_id', DB::table('branch')->where('company_id', session('company_id'))->pluck('branch_id'));
+        } else {
+            $openingQuery->where('user_id', session('branch'));
+        }
+
+        $reportDate = (clone $openingQuery)->where('date', $today)->exists() ? $today : $yesterday;
+
+        if (session("roleId") == 2) {
+            return DB::select("
+                SELECT
+                    a.terminal_id,
+                    a.terminal_name,
+                    COALESCE(SUM(CASE WHEN z.payment_id = 1 THEN z.total_amount ELSE 0 END), 0) as cash,
+                    COALESCE(SUM(CASE WHEN z.payment_id = 2 THEN z.total_amount ELSE 0 END), 0) as creditCard,
+                    COALESCE(SUM(CASE WHEN z.payment_id = 3 THEN z.total_amount ELSE 0 END), 0) as CustomerCredit
+                FROM terminal_details a
+                INNER JOIN sales_opening b ON b.terminal_id = a.terminal_id AND b.date = ?
+                LEFT JOIN sales_receipts z ON z.opening_id = b.opening_id AND z.status != 12
+                WHERE a.branch_id IN (SELECT branch_id FROM branch WHERE company_id = ?)
+                    AND a.status_id = 1
+                GROUP BY a.terminal_id, a.terminal_name
+            ", [$reportDate, session("company_id")]);
+        }
+
+        return DB::select("
+            SELECT
+                a.terminal_id,
+                a.terminal_name,
+                COALESCE(SUM(CASE WHEN z.payment_id = 1 THEN z.total_amount ELSE 0 END), 0) as cash,
+                COALESCE(SUM(CASE WHEN z.payment_id = 2 THEN z.total_amount ELSE 0 END), 0) as creditCard,
+                COALESCE(SUM(CASE WHEN z.payment_id = 3 THEN z.total_amount ELSE 0 END), 0) as CustomerCredit
+            FROM terminal_details a
+            INNER JOIN sales_opening b ON b.terminal_id = a.terminal_id AND b.date = ?
+            LEFT JOIN sales_receipts z ON z.opening_id = b.opening_id AND z.status != 12
+            WHERE a.branch_id = ?
+                AND a.status_id = 1
+            GROUP BY a.terminal_id, a.terminal_name
+        ", [$reportDate, session("branch")]);
+    }
+
     public function monthsales()
     {
         $result = DB::select("SELECT SUM(a.total_amount) as total,a.date,b.branch_name,a.branch FROM sales_receipts a INNER JOIN branch b on b.branch_id = a.branch where a.branch IN (Select branch_id from branch where company_id = ?) group by a.branch,MONTH(a.date) LIMIT 25", [session("company_id")]);

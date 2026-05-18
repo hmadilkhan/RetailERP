@@ -58,7 +58,7 @@ class HomeController extends Controller
         $year = $dash->getYearlySales();
         $orders = $dash->orderStatus();
         $branches = $dash->branches();
-        $sales = $dash->sales();
+        $sales = $dash->dashboardPaymentSales();
         // $monthsales = $dash->monthsales(); //This is the Previous Graph that is hide
         $totalSales = $dash->totalSales();
         // $expenseAmount = $dash->totalExpense();
