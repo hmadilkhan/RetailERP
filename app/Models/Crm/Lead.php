@@ -34,6 +34,7 @@ class Lead extends Model
         'referral_person_name',
         'product_type_id',
         'product_id',
+        'product_name',
         'inquiry_type',
         'business_type',
         'required_quantity',
@@ -124,6 +125,11 @@ class Lead extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function displayProductName(): string
+    {
+        return $this->product_name ?: ($this->product?->name ?? 'N/A');
     }
 
     public function status(): BelongsTo

@@ -109,8 +109,8 @@ class LeadDashboardReportService
             $labels[] = 'Product Type: ' . (ProductType::query()->whereKey($filters['product_type_id'])->value('name') ?? 'Unknown');
         }
 
-        if (!empty($filters['product_id'])) {
-            $labels[] = 'Product: ' . (Product::query()->whereKey($filters['product_id'])->value('name') ?? 'Unknown');
+        if (!empty($filters['product_name'])) {
+            $labels[] = 'Product: ' . trim((string) $filters['product_name']);
         }
 
         if (!empty($filters['assigned_to'])) {
@@ -131,7 +131,7 @@ class LeadDashboardReportService
             ->when(!empty($filters['date_to']), fn (Builder $query) => $query->whereDate('created_at', '<=', $filters['date_to']))
             ->when(!empty($filters['lead_source_id']), fn (Builder $query) => $query->where('lead_source_id', $filters['lead_source_id']))
             ->when(!empty($filters['product_type_id']), fn (Builder $query) => $query->where('product_type_id', $filters['product_type_id']))
-            ->when(!empty($filters['product_id']), fn (Builder $query) => $query->where('product_id', $filters['product_id']))
+            ->when(!empty($filters['product_name']), fn (Builder $query) => $this->applyProductNameFilter($query, $filters['product_name']))
             ->when(!empty($filters['assigned_to']), fn (Builder $query) => $query->where('assigned_to', $filters['assigned_to']))
             ->when(!empty($filters['status_id']), fn (Builder $query) => $query->where('status_id', $filters['status_id']));
     }
@@ -218,13 +218,28 @@ class LeadDashboardReportService
             ->leftJoin('crm_products', 'crm_products.id', '=', 'crm_leads.product_id')
             ->leftJoin('crm_product_types', 'crm_product_types.id', '=', 'crm_leads.product_type_id')
             ->selectRaw(
-                'COALESCE(crm_products.name, ?) as product_name, COALESCE(crm_product_types.name, ?) as product_type_name, COUNT(crm_leads.id) as total',
+                'COALESCE(NULLIF(crm_leads.product_name, \'\'), crm_products.name, ?) as product_name, COALESCE(crm_product_types.name, ?) as product_type_name, COUNT(crm_leads.id) as total',
                 ['Unspecified', 'Unspecified']
             )
-            ->groupBy('crm_products.name', 'crm_product_types.name')
+            ->groupByRaw('COALESCE(NULLIF(crm_leads.product_name, \'\'), crm_products.name, ?), crm_product_types.name', ['Unspecified'])
             ->orderByDesc('total')
             ->limit(10)
             ->get();
+    }
+
+    private function applyProductNameFilter(Builder $query, mixed $productName): Builder
+    {
+        $term = trim((string) $productName);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        return $query->where(function (Builder $builder) use ($term): void {
+            $builder
+                ->where('product_name', 'like', '%' . $term . '%')
+                ->orWhereHas('product', fn (Builder $productQuery) => $productQuery->where('name', 'like', '%' . $term . '%'));
+        });
     }
 
     private function statusWiseLeadSummary(Builder $baseQuery): Collection

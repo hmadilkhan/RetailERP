@@ -43,7 +43,7 @@ class LeadActivityLogger
             'email' => 'Email',
             'city' => 'City',
             'product_type_id' => 'Product type',
-            'product_id' => 'Product',
+            'product_name' => 'Product',
             'priority' => 'Priority',
             'temperature' => 'Temperature',
             'expected_deal_value' => 'Expected deal value',

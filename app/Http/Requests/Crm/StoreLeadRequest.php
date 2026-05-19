@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Crm;
 
 use App\Models\Crm\LeadStatus;
-use App\Models\Crm\Product;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -29,6 +28,7 @@ class StoreLeadRequest extends FormRequest
             'lost_reason' => $this->emptyToNull($this->input('lost_reason')),
             'assigned_to' => $this->emptyToNull($this->input('assigned_to')),
             'product_id' => $this->emptyToNull($this->input('product_id')),
+            'product_name' => $this->emptyToNull($this->input('product_name')),
             'required_quantity' => $this->emptyToNull($this->input('required_quantity')),
             'branch_count' => $this->emptyToNull($this->input('branch_count')),
             'lead_score' => $this->emptyToNull($this->input('lead_score')) ?? 0,
@@ -60,13 +60,8 @@ class StoreLeadRequest extends FormRequest
             'campaign_name' => ['nullable', 'string', 'max:255'],
             'referral_person_name' => ['nullable', 'string', 'max:255'],
             'product_type_id' => ['required', 'exists:crm_product_types,id'],
-            'product_id' => [
-                'nullable',
-                'integer',
-                Rule::exists('crm_products', 'id')->where(function ($query) {
-                    $query->where('product_type_id', $this->input('product_type_id'));
-                }),
-            ],
+            'product_id' => ['nullable', 'integer', 'exists:crm_products,id'],
+            'product_name' => ['nullable', 'string', 'max:255'],
             'inquiry_type' => ['nullable', 'string', 'max:100'],
             'business_type' => ['nullable', 'string', 'max:100'],
             'required_quantity' => ['nullable', 'integer', 'min:0'],
@@ -95,7 +90,7 @@ class StoreLeadRequest extends FormRequest
     {
         return [
             'lost_reason.required' => 'Lost reason is required when the lead status is Lost.',
-            'product_id.exists' => 'Selected product must belong to the chosen product type.',
+            'product_id.exists' => 'Selected product is invalid.',
         ];
     }
 

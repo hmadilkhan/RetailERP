@@ -97,12 +97,8 @@
             </div>
             <div class="lg:col-span-2">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-crm-mute">Product</label>
-                <select name="product_id" class="block w-full rounded-2xl border-crm-line bg-crm-soft px-4 py-3 text-sm focus:border-crm-blue focus:ring-crm-blue">
-                    <option value="">All</option>
-                    @foreach ($allProducts as $product)
-                        <option value="{{ $product->id }}" @selected(($filters['product_id'] ?? '') == $product->id)>{{ $product->name }}</option>
-                    @endforeach
-                </select>
+                <input type="text" name="product_name" value="{{ $filters['product_name'] ?? '' }}" placeholder="Filter by product"
+                    class="block w-full rounded-2xl border-crm-line bg-crm-soft px-4 py-3 text-sm focus:border-crm-blue focus:ring-crm-blue">
             </div>
             <div class="lg:col-span-2">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-crm-mute">Status</label>
@@ -240,7 +236,7 @@
                                 <td class="px-5 py-4 text-crm-text">{{ $lead->leadSource->name ?? 'N/A' }}</td>
                                 <td class="px-5 py-4">
                                     <div class="text-crm-text">{{ $lead->productType->name ?? 'N/A' }}</div>
-                                    <div class="mt-1 text-sm text-crm-mute">{{ $lead->product->name ?? 'No product selected' }}</div>
+                                    <div class="mt-1 text-sm text-crm-mute">{{ $lead->displayProductName() }}</div>
                                 </td>
                                 <td class="px-5 py-4">
                                     <x-crm.status-badge :label="$lead->status->name ?? 'Unknown'" :color="$lead->status->color ?? '#114a8f'" />

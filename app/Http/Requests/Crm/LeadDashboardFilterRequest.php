@@ -14,6 +14,7 @@ class LeadDashboardFilterRequest extends FormRequest
             'lead_source_id' => $this->emptyToNull($this->input('lead_source_id')),
             'product_type_id' => $this->emptyToNull($this->input('product_type_id')),
             'product_id' => $this->emptyToNull($this->input('product_id')),
+            'product_name' => $this->emptyToNull($this->input('product_name')),
             'assigned_to' => $this->emptyToNull($this->input('assigned_to')),
             'status_id' => $this->emptyToNull($this->input('status_id')),
         ]);
@@ -32,6 +33,7 @@ class LeadDashboardFilterRequest extends FormRequest
             'lead_source_id' => ['nullable', 'integer', 'exists:crm_lead_sources,id'],
             'product_type_id' => ['nullable', 'integer', 'exists:crm_product_types,id'],
             'product_id' => ['nullable', 'integer', 'exists:crm_products,id'],
+            'product_name' => ['nullable', 'string', 'max:255'],
             'assigned_to' => ['nullable', 'integer', 'exists:user_details,id'],
             'status_id' => ['nullable', 'integer', 'exists:crm_lead_statuses,id'],
         ];

@@ -49,7 +49,7 @@ class LeadListExport implements FromCollection, WithHeadings, WithMapping, WithS
             $lead->email,
             $lead->leadSource?->name,
             $lead->productType?->name,
-            $lead->product?->name,
+            $lead->displayProductName(),
             $lead->status?->name,
             ucfirst((string) $lead->priority),
             $lead->assignedUser?->fullname,

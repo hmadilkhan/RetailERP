@@ -210,7 +210,7 @@
                                 'Address' => $lead->address ?: 'N/A',
                                 'Website' => $lead->website ?: 'N/A',
                                 'Product Type' => $lead->productType->name ?? 'N/A',
-                                'Product' => $lead->product->name ?? 'N/A',
+                                'Product' => $lead->displayProductName(),
                                 'Inquiry Type' => $lead->inquiry_type ?: 'N/A',
                                 'Business Type' => $lead->business_type ?: 'N/A',
                                 'Required Quantity' => $lead->required_quantity ?? 'N/A',

@@ -50,7 +50,7 @@ class LeadController extends Controller
             'search',
             'lead_source_id',
             'product_type_id',
-            'product_id',
+            'product_name',
             'status_id',
             'city',
             'assigned_to',
@@ -71,7 +71,7 @@ class LeadController extends Controller
             ->search($filters['search'] ?? null)
             ->when(!empty($filters['lead_source_id']), fn ($query) => $query->where('lead_source_id', (int) $filters['lead_source_id']))
             ->when(!empty($filters['product_type_id']), fn ($query) => $query->where('product_type_id', (int) $filters['product_type_id']))
-            ->when(!empty($filters['product_id']), fn ($query) => $query->where('product_id', (int) $filters['product_id']))
+            ->when(!empty($filters['product_name']), fn ($query) => $this->applyProductNameFilter($query, $filters['product_name']))
             ->when(!empty($filters['status_id']), fn ($query) => $query->where('status_id', (int) $filters['status_id']))
             ->when(!empty($filters['city']), fn ($query) => $query->where('city', 'like', '%' . trim((string) $filters['city']) . '%'))
             ->when(!empty($filters['assigned_to']), fn ($query) => $query->where('assigned_to', (int) $filters['assigned_to']))
@@ -219,6 +219,7 @@ class LeadController extends Controller
             'city',
             'product_type_id',
             'product_id',
+            'product_name',
             'status_id',
             'priority',
             'temperature',
@@ -316,7 +317,7 @@ class LeadController extends Controller
                 $lead->email ?: 'N/A',
                 $lead->leadSource?->name ?? 'N/A',
                 $lead->productType?->name ?? 'N/A',
-                $lead->product?->name ?? 'N/A',
+                $lead->displayProductName(),
                 $lead->status?->name ?? 'N/A',
                 ucfirst((string) $lead->priority),
                 $lead->assignedUser?->fullname ?? 'Unassigned',
@@ -458,7 +459,7 @@ class LeadController extends Controller
             ->search($request->string('search')->toString())
             ->when($request->filled('lead_source_id'), fn ($query) => $query->where('lead_source_id', $request->integer('lead_source_id')))
             ->when($request->filled('product_type_id'), fn ($query) => $query->where('product_type_id', $request->integer('product_type_id')))
-            ->when($request->filled('product_id'), fn ($query) => $query->where('product_id', $request->integer('product_id')))
+            ->when($request->filled('product_name'), fn ($query) => $this->applyProductNameFilter($query, $request->input('product_name')))
             ->when($request->filled('status_id'), fn ($query) => $query->where('status_id', $request->integer('status_id')))
             ->when($request->filled('city'), fn ($query) => $query->where('city', 'like', '%' . trim((string) $request->input('city')) . '%'))
             ->when($request->filled('assigned_to'), fn ($query) => $query->where('assigned_to', $request->integer('assigned_to')))
@@ -493,8 +494,8 @@ class LeadController extends Controller
             $labels[] = 'Product Type: ' . (ProductType::query()->whereKey((int) $filters['product_type_id'])->value('name') ?? 'Unknown');
         }
 
-        if (!empty($filters['product_id'])) {
-            $labels[] = 'Product: ' . (Product::query()->whereKey((int) $filters['product_id'])->value('name') ?? 'Unknown');
+        if (!empty($filters['product_name'])) {
+            $labels[] = 'Product: ' . trim((string) $filters['product_name']);
         }
 
         if (!empty($filters['status_id'])) {
@@ -544,6 +545,21 @@ class LeadController extends Controller
             })
             ->limit(5)
             ->get();
+    }
+
+    private function applyProductNameFilter($query, mixed $productName)
+    {
+        $term = trim((string) $productName);
+
+        if ($term === '') {
+            return $query;
+        }
+
+        return $query->where(function ($builder) use ($term): void {
+            $builder
+                ->where('product_name', 'like', '%' . $term . '%')
+                ->orWhereHas('product', fn ($productQuery) => $productQuery->where('name', 'like', '%' . $term . '%'));
+        });
     }
 
     private function duplicateWarningMessage(Collection $duplicates): ?string

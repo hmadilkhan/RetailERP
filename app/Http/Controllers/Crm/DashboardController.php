@@ -37,7 +37,7 @@ class DashboardController extends Controller
             'date_to',
             'lead_source_id',
             'product_type_id',
-            'product_id',
+            'product_name',
             'assigned_to',
             'status_id',
         ]);

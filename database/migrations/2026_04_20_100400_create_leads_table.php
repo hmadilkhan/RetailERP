@@ -26,6 +26,7 @@ return new class extends Migration
             $table->string('referral_person_name')->nullable();
             $table->foreignId('product_type_id')->constrained('crm_product_types')->cascadeOnUpdate()->restrictOnDelete();
             $table->foreignId('product_id')->nullable()->constrained('crm_products')->cascadeOnUpdate()->nullOnDelete();
+            $table->string('product_name')->nullable();
             $table->string('inquiry_type')->nullable();
             $table->string('business_type')->nullable();
             $table->unsignedInteger('required_quantity')->nullable();

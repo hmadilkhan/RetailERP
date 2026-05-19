@@ -47,12 +47,8 @@
             </div>
             <div class="lg:col-span-2">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-crm-mute">Product</label>
-                <select name="product_id" class="block w-full rounded-2xl border-crm-line bg-crm-soft px-4 py-3 text-sm focus:border-crm-blue focus:ring-crm-blue">
-                    <option value="">All Products</option>
-                    @foreach ($products as $product)
-                        <option value="{{ $product->id }}" @selected(($filters['product_id'] ?? '') == $product->id)>{{ $product->name }}</option>
-                    @endforeach
-                </select>
+                <input type="text" name="product_name" value="{{ $filters['product_name'] ?? '' }}" placeholder="Filter by product"
+                    class="block w-full rounded-2xl border-crm-line bg-crm-soft px-4 py-3 text-sm focus:border-crm-blue focus:ring-crm-blue">
             </div>
             <div class="lg:col-span-2">
                 <label class="mb-2 block text-xs font-semibold uppercase tracking-[0.22em] text-crm-mute">Assigned User</label>

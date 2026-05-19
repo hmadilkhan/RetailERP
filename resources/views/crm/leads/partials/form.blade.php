@@ -132,12 +132,9 @@
                 </div>
                 <div class="xl:col-span-2">
                     <label class="{{ $labelClass }}">Product</label>
-                    <select name="product_id" id="crm-product-id" class="{{ $inputClass }}" data-selected="{{ old('product_id', $lead->product_id) }}">
-                        <option value="">Select product</option>
-                        @foreach ($products as $product)
-                            <option value="{{ $product->id }}" @selected((string) old('product_id', $lead->product_id) === (string) $product->id)>{{ $product->name }}</option>
-                        @endforeach
-                    </select>
+                    <input type="text" name="product_name" id="crm-product-name" class="{{ $inputClass }}"
+                        value="{{ old('product_name', $lead->product_name ?: ($lead->product->name ?? '')) }}"
+                        placeholder="Enter product name">
                 </div>
                 <div class="xl:col-span-2">
                     <label class="{{ $labelClass }}">Inquiry Type</label>
@@ -291,43 +288,3 @@
         </section>
     </div>
 </form>
-
-@push('crm_scripts')
-    <script>
-        (function() {
-            const productTypeSelect = document.getElementById('crm-product-type');
-            const productSelect = document.getElementById('crm-product-id');
-            const selectedProduct = productSelect ? String(productSelect.dataset.selected || '') : '';
-            const products = @json($allProducts);
-
-            if (!productTypeSelect || !productSelect) {
-                return;
-            }
-
-            const renderProducts = function(typeId) {
-                productSelect.innerHTML = '<option value="">Select product</option>';
-
-                products.filter(function(product) {
-                    return !typeId || String(product.product_type_id) === String(typeId);
-                }).forEach(function(product) {
-                    const option = document.createElement('option');
-                    option.value = product.id;
-                    option.textContent = product.name;
-
-                    if (selectedProduct && String(product.id) === selectedProduct) {
-                        option.selected = true;
-                    }
-
-                    productSelect.appendChild(option);
-                });
-            };
-
-            renderProducts(productTypeSelect.value);
-
-            productTypeSelect.addEventListener('change', function() {
-                productSelect.dataset.selected = '';
-                renderProducts(this.value);
-            });
-        })();
-    </script>
-@endpush

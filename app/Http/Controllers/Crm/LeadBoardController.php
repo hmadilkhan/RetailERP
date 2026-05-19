@@ -67,6 +67,7 @@ class LeadBoardController extends Controller
             'city',
             'product_type_id',
             'product_id',
+            'product_name',
             'priority',
             'temperature',
             'expected_deal_value',
