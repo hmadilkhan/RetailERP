@@ -128,6 +128,7 @@ class TerminalController extends Controller
 
     public function storePrintDetails(terminal $terminal, Request $request)
     {
+        
         $imageName = "";
         //        $rules = [
         //            'header' => 'required',
@@ -138,10 +139,13 @@ class TerminalController extends Controller
         //        $this->validate($request, $rules);
 
         $lan = $request->optionsRadios == "lan" ? 1 : 0;
+        $lan_wifi = $request->optionsRadios == "lan_wifi" ? 1 : 0;
         $bluetooth = $request->optionsRadios == "bluetooth" ? 1 : 0;
         $pts = $request->optionsRadios == "pts" ? 1 : 0;
         $desktop = $request->optionsRadios == "desktop" ? 1 : 0;
         $cloud = $request->optionsRadios == "cloud" ? 1 : 0;
+
+        
 
         if ($request->mode == "insert") {
 
@@ -171,6 +175,7 @@ class TerminalController extends Controller
                 $ter->header = $header;
                 $ter->footer = $footer;
                 $ter->LAN = $lan;
+                $ter->LAN_Wifi = $lan_wifi;
                 $ter->bluetooth = $bluetooth;
                 $ter->pts = $pts;
                 $ter->desktop = $desktop;
@@ -213,7 +218,8 @@ class TerminalController extends Controller
             $ter->terminal_id = $request->terminal_id;
             $ter->header = $request->header;
             $ter->footer = $request->footer;
-            $ter->LAN = $lan;
+            $ter->LAN_Wifi = $lan_wifi;
+             $ter->LAN = $lan;
             $ter->bluetooth = $bluetooth;
             $ter->pts = $pts;
             $ter->desktop = $desktop;

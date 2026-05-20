@@ -122,7 +122,8 @@ Route::get('run-curl', function () {
 // Route::get('/','HomeController@loginPage');
 Route::get('/', function () {
     if (session("branch") == "") {
-        return view('auth.login');
+        // return view('auth.login');
+        return view('auth.sabify-login');
     } else {
         return redirect("dashboard");
     }
