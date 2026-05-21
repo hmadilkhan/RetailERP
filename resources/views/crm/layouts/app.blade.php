@@ -58,7 +58,7 @@
         linear-gradient(180deg, #eef8ef 0%, #f8fafc 100%);">
 
     <div class="min-h-screen">
-        <header class="relative overflow-hidden border-b border-white/40 bg-gradient-to-br from-crm-deep via-crm-blue to-erp-accent text-white shadow-crm">
+        <header class="relative overflow-visible border-b border-white/40 bg-gradient-to-br from-crm-deep via-crm-blue to-erp-accent text-white shadow-crm">
             <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_22%)]"></div>
             <div class="relative mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
@@ -106,7 +106,7 @@
                                 </button>
 
                                 <div x-show="open" x-cloak @click.away="open = false"
-                                    class="absolute right-0 z-40 mt-3 w-[24rem] overflow-hidden rounded-[28px] border border-white/10 bg-white text-crm-text shadow-crm">
+                                    class="absolute right-0 z-50 mt-3 w-[24rem] overflow-hidden rounded-[28px] border border-white/10 bg-white text-crm-text shadow-crm">
                                     <div class="border-b border-slate-200 bg-slate-50/90 px-5 py-4">
                                         <div class="flex items-center justify-between gap-3">
                                             <div>
