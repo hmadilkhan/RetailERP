@@ -147,21 +147,21 @@
                     <label class="{{ $labelClass }}">Tax</label>
                     <input type="number" min="0" step="0.01" name="tax" x-model.number="tax" class="{{ $inputClass }}">
                 </div>
-                <div class="rounded-[28px] border border-blue-200 bg-blue-50 p-5">
-                    <div class="flex items-center justify-between text-sm text-blue-900">
+                <div class="rounded-[28px] border border-green-200 bg-green-50 p-5">
+                    <div class="flex items-center justify-between text-sm text-green-900">
                         <span>Subtotal</span>
                         <span x-text="formatAmount(subtotal())"></span>
                     </div>
-                    <div class="mt-3 flex items-center justify-between text-sm text-blue-900">
+                    <div class="mt-3 flex items-center justify-between text-sm text-green-900">
                         <span>Discount</span>
                         <span x-text="formatAmount(discount)"></span>
                     </div>
-                    <div class="mt-3 flex items-center justify-between text-sm text-blue-900">
+                    <div class="mt-3 flex items-center justify-between text-sm text-green-900">
                         <span>Tax</span>
                         <span x-text="formatAmount(tax)"></span>
                     </div>
-                    <div class="mt-4 border-t border-blue-200 pt-4">
-                        <div class="flex items-center justify-between text-base font-semibold text-blue-950">
+                    <div class="mt-4 border-t border-green-200 pt-4">
+                        <div class="flex items-center justify-between text-base font-semibold text-green-950">
                             <span>Total</span>
                             <span x-text="formatAmount(total())"></span>
                         </div>

@@ -7,7 +7,7 @@
 @php
     $priorityClasses = [
         'low' => 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
-        'medium' => 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+        'medium' => 'bg-green-50 text-green-700 ring-1 ring-green-200',
         'high' => 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
         'urgent' => 'bg-rose-50 text-rose-700 ring-1 ring-rose-200',
     ];
@@ -54,7 +54,7 @@
 
                 @if ($canCreateLead)
                     <a href="{{ route('crm.leads.create') }}"
-                        class="inline-flex items-center justify-center rounded-2xl bg-crm-blue px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-blue-900/20 transition hover:-translate-y-0.5 hover:bg-crm-deep">
+                        class="inline-flex items-center justify-center rounded-2xl bg-crm-blue px-5 py-3 text-sm font-semibold text-white shadow-lg shadow-green-900/20 transition hover:-translate-y-0.5 hover:bg-crm-deep">
                         Add Lead
                     </a>
                 @endif
@@ -239,10 +239,10 @@
                                     <div class="mt-1 text-sm text-crm-mute">{{ $lead->displayProductName() }}</div>
                                 </td>
                                 <td class="px-5 py-4">
-                                    <x-crm.status-badge :label="$lead->status->name ?? 'Unknown'" :color="$lead->status->color ?? '#114a8f'" />
+                                    <x-crm.status-badge :label="$lead->status->name ?? 'Unknown'" :color="$lead->status->color ?? '#4CAF50'" />
                                 </td>
                                 <td class="px-5 py-4">
-                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $priorityClasses[$lead->priority] ?? 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' }}">
+                                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $priorityClasses[$lead->priority] ?? 'bg-green-50 text-green-700 ring-1 ring-green-200' }}">
                                         {{ ucfirst($lead->priority) }}
                                     </span>
                                 </td>
@@ -296,7 +296,7 @@
                                                 {{ $lead->followups_count }} follow-up{{ $lead->followups_count === 1 ? '' : 's' }}
                                             </span>
                                             @if ($lead->latestFollowup)
-                                                <span class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-200">
+                                                <span class="inline-flex rounded-full bg-green-50 px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200">
                                                     Latest: {{ $lead->latestFollowup->followup_type }}
                                                 </span>
                                             @endif

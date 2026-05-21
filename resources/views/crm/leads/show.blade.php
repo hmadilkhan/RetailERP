@@ -7,20 +7,20 @@
 @php
     $priorityClasses = [
         'low' => 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200',
-        'medium' => 'bg-blue-50 text-blue-700 ring-1 ring-blue-200',
+        'medium' => 'bg-green-50 text-green-700 ring-1 ring-green-200',
         'high' => 'bg-amber-50 text-amber-700 ring-1 ring-amber-200',
         'urgent' => 'bg-rose-50 text-rose-700 ring-1 ring-rose-200',
     ];
 
     $activityTypeStyles = [
-        'lead_created' => ['badge' => 'bg-blue-50 text-blue-700 ring-blue-200', 'icon' => 'plus'],
+        'lead_created' => ['badge' => 'bg-green-50 text-green-700 ring-green-200', 'icon' => 'plus'],
         'lead_updated' => ['badge' => 'bg-slate-100 text-slate-700 ring-slate-200', 'icon' => 'edit'],
         'lead_assigned' => ['badge' => 'bg-indigo-50 text-indigo-700 ring-indigo-200', 'icon' => 'user'],
         'status_changed' => ['badge' => 'bg-cyan-50 text-cyan-700 ring-cyan-200', 'icon' => 'refresh'],
         'followup_added' => ['badge' => 'bg-amber-50 text-amber-700 ring-amber-200', 'icon' => 'phone'],
         'attachment_uploaded' => ['badge' => 'bg-emerald-50 text-emerald-700 ring-emerald-200', 'icon' => 'upload'],
         'attachment_deleted' => ['badge' => 'bg-rose-50 text-rose-700 ring-rose-200', 'icon' => 'trash'],
-        'quotation_created' => ['badge' => 'bg-blue-50 text-blue-700 ring-blue-200', 'icon' => 'plus'],
+        'quotation_created' => ['badge' => 'bg-green-50 text-green-700 ring-green-200', 'icon' => 'plus'],
         'quotation_updated' => ['badge' => 'bg-slate-100 text-slate-700 ring-slate-200', 'icon' => 'edit'],
         'quotation_status_changed' => ['badge' => 'bg-amber-50 text-amber-700 ring-amber-200', 'icon' => 'refresh'],
         'lead_marked_won' => ['badge' => 'bg-emerald-50 text-emerald-700 ring-emerald-200', 'icon' => 'check'],
@@ -30,8 +30,8 @@
 
     $fileTypeStyles = [
         'pdf' => 'bg-rose-50 text-rose-700 ring-rose-200',
-        'doc' => 'bg-blue-50 text-blue-700 ring-blue-200',
-        'docx' => 'bg-blue-50 text-blue-700 ring-blue-200',
+        'doc' => 'bg-green-50 text-green-700 ring-green-200',
+        'docx' => 'bg-green-50 text-green-700 ring-green-200',
         'xls' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
         'xlsx' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
         'default' => 'bg-slate-100 text-slate-700 ring-slate-200',
@@ -62,7 +62,7 @@
                     <p class="mt-2 text-base text-slate-200">{{ $lead->company_name ?: 'No company name available' }}</p>
                     <div class="mt-5 flex flex-wrap gap-2">
                         <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{{ $lead->status->name ?? 'Unknown' }}</span>
-                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $priorityClasses[$lead->priority] ?? 'bg-blue-50 text-blue-700' }}">
+                        <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $priorityClasses[$lead->priority] ?? 'bg-green-50 text-green-700' }}">
                             {{ ucfirst($lead->priority) }} Priority
                         </span>
                         <span class="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{{ ucfirst($lead->temperature) }} Lead</span>
@@ -162,32 +162,32 @@
     <section class="mt-6" x-data="{ tab: 'overview' }">
         <div class="flex flex-wrap gap-3">
             <button type="button" @click="tab = 'overview'"
-                :class="tab === 'overview' ? 'bg-crm-blue text-white shadow-lg shadow-blue-900/20' : 'border border-crm-line bg-white text-crm-text'"
+                :class="tab === 'overview' ? 'bg-crm-blue text-white shadow-lg shadow-green-900/20' : 'border border-crm-line bg-white text-crm-text'"
                 class="rounded-full px-5 py-2.5 text-sm font-semibold transition">
                 Overview
             </button>
             <button type="button" @click="tab = 'followups'"
-                :class="tab === 'followups' ? 'bg-crm-blue text-white shadow-lg shadow-blue-900/20' : 'border border-crm-line bg-white text-crm-text'"
+                :class="tab === 'followups' ? 'bg-crm-blue text-white shadow-lg shadow-green-900/20' : 'border border-crm-line bg-white text-crm-text'"
                 class="rounded-full px-5 py-2.5 text-sm font-semibold transition">
                 Follow-up History
             </button>
             <button type="button" @click="tab = 'notes'"
-                :class="tab === 'notes' ? 'bg-crm-blue text-white shadow-lg shadow-blue-900/20' : 'border border-crm-line bg-white text-crm-text'"
+                :class="tab === 'notes' ? 'bg-crm-blue text-white shadow-lg shadow-green-900/20' : 'border border-crm-line bg-white text-crm-text'"
                 class="rounded-full px-5 py-2.5 text-sm font-semibold transition">
                 Notes / Summary
             </button>
             <button type="button" @click="tab = 'attachments'"
-                :class="tab === 'attachments' ? 'bg-crm-blue text-white shadow-lg shadow-blue-900/20' : 'border border-crm-line bg-white text-crm-text'"
+                :class="tab === 'attachments' ? 'bg-crm-blue text-white shadow-lg shadow-green-900/20' : 'border border-crm-line bg-white text-crm-text'"
                 class="rounded-full px-5 py-2.5 text-sm font-semibold transition">
                 Attachments
             </button>
             <button type="button" @click="tab = 'quotations'"
-                :class="tab === 'quotations' ? 'bg-crm-blue text-white shadow-lg shadow-blue-900/20' : 'border border-crm-line bg-white text-crm-text'"
+                :class="tab === 'quotations' ? 'bg-crm-blue text-white shadow-lg shadow-green-900/20' : 'border border-crm-line bg-white text-crm-text'"
                 class="rounded-full px-5 py-2.5 text-sm font-semibold transition">
                 Quotations
             </button>
             <button type="button" @click="tab = 'activity'"
-                :class="tab === 'activity' ? 'bg-crm-blue text-white shadow-lg shadow-blue-900/20' : 'border border-crm-line bg-white text-crm-text'"
+                :class="tab === 'activity' ? 'bg-crm-blue text-white shadow-lg shadow-green-900/20' : 'border border-crm-line bg-white text-crm-text'"
                 class="rounded-full px-5 py-2.5 text-sm font-semibold transition">
                 Activity Timeline
             </button>
@@ -256,15 +256,15 @@
                         <h3 class="text-xl font-semibold tracking-tight text-crm-ink">Latest Follow-up</h3>
                         <p class="mt-1 text-sm text-crm-mute">Most recent activity captured against this lead.</p>
                         @if ($lead->latestFollowup)
-                            <div class="mt-5 rounded-3xl border border-blue-200 bg-blue-50 p-5">
+                            <div class="mt-5 rounded-3xl border border-green-200 bg-green-50 p-5">
                                 <div class="flex items-center justify-between gap-3">
-                                    <span class="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-200">
+                                    <span class="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200">
                                         {{ $lead->latestFollowup->followup_type }}
                                     </span>
-                                    <span class="text-sm font-medium text-blue-900">{{ $lead->latestFollowup->followup_date->format('d M Y') }}</span>
+                                    <span class="text-sm font-medium text-green-900">{{ $lead->latestFollowup->followup_date->format('d M Y') }}</span>
                                 </div>
-                                <p class="mt-4 whitespace-pre-line text-sm leading-7 text-blue-950">{{ $lead->latestFollowup->remarks }}</p>
-                                <div class="mt-4 space-y-2 text-sm text-blue-900">
+                                <p class="mt-4 whitespace-pre-line text-sm leading-7 text-green-950">{{ $lead->latestFollowup->remarks }}</p>
+                                <div class="mt-4 space-y-2 text-sm text-green-900">
                                     <div>Result: {{ $lead->latestFollowup->followup_result ?: 'Not specified' }}</div>
                                     <div>Created by: {{ $lead->latestFollowup->creator->fullname ?? 'System' }}</div>
                                     <div>Next follow-up: {{ optional($lead->latestFollowup->next_followup_date)->format('d M Y') ?: 'Not scheduled' }}</div>
@@ -424,9 +424,9 @@
 
                     <div class="mt-6 space-y-4">
                         @forelse ($lead->followups as $index => $followup)
-                            <div class="relative rounded-[28px] border p-5 {{ $index === 0 ? 'border-blue-200 bg-blue-50/70 shadow-crm-soft' : 'border-slate-200 bg-white' }}">
+                            <div class="relative rounded-[28px] border p-5 {{ $index === 0 ? 'border-green-200 bg-green-50/70 shadow-crm-soft' : 'border-slate-200 bg-white' }}">
                                 @if ($index === 0)
-                                    <span class="absolute right-4 top-4 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-blue-700 ring-1 ring-blue-200">
+                                    <span class="absolute right-4 top-4 inline-flex rounded-full bg-white px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-green-700 ring-1 ring-green-200">
                                         Latest
                                     </span>
                                 @endif
@@ -434,7 +434,7 @@
                                 <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                                     <div>
                                         <div class="flex flex-wrap items-center gap-2">
-                                            <span class="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-crm-blue ring-1 ring-blue-200">
+                                            <span class="inline-flex rounded-full bg-white px-3 py-1 text-xs font-semibold text-crm-blue ring-1 ring-green-200">
                                                 {{ $followup->followup_type }}
                                             </span>
                                             @if ($followup->next_followup_date && $followup->next_followup_date->isPast() && !$lead->isClosed())
@@ -683,7 +683,7 @@
                                 @php
                                     $quotationStatusClasses = [
                                         'draft' => 'bg-slate-100 text-slate-700 ring-slate-200',
-                                        'sent' => 'bg-blue-50 text-blue-700 ring-blue-200',
+                                        'sent' => 'bg-green-50 text-green-700 ring-green-200',
                                         'accepted' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
                                         'rejected' => 'bg-rose-50 text-rose-700 ring-rose-200',
                                         'expired' => 'bg-amber-50 text-amber-700 ring-amber-200',

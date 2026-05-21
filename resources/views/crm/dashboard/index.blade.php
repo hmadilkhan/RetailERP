@@ -101,13 +101,13 @@
             </div>
 
             <div class="mt-6 grid gap-5 lg:grid-cols-2">
-                <div class="rounded-[28px] border border-blue-200 bg-blue-50/70 p-5">
+                <div class="rounded-[28px] border border-green-200 bg-green-50/70 p-5">
                     <div class="flex items-center justify-between gap-3">
                         <div>
-                            <div class="text-sm font-semibold text-blue-900">Due Today</div>
-                            <div class="mt-1 text-xs uppercase tracking-[0.22em] text-blue-700">{{ $reminders['dueToday']->count() }} leads</div>
+                            <div class="text-sm font-semibold text-green-900">Due Today</div>
+                            <div class="mt-1 text-xs uppercase tracking-[0.22em] text-green-700">{{ $reminders['dueToday']->count() }} leads</div>
                         </div>
-                        <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-blue-200">Today</span>
+                        <span class="rounded-full bg-white px-3 py-1 text-xs font-semibold text-green-700 ring-1 ring-green-200">Today</span>
                     </div>
 
                     <div class="mt-5 space-y-3">
@@ -119,7 +119,7 @@
                                         <div class="text-sm font-semibold text-crm-ink">{{ $lead->contact_person_name }}</div>
                                         <div class="mt-1 text-xs uppercase tracking-[0.18em] text-crm-mute">{{ $lead->lead_code }}{{ $lead->company_name ? ' / ' . $lead->company_name : '' }}</div>
                                     </div>
-                                    <span class="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">{{ optional($lead->leadSource)->name ?? 'Direct' }}</span>
+                                    <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-700">{{ optional($lead->leadSource)->name ?? 'Direct' }}</span>
                                 </div>
                                 <div class="mt-3 flex flex-wrap gap-3 text-xs text-crm-mute">
                                     <span>Owner: {{ $lead->assignedUser->fullname ?? 'Unassigned' }}</span>
@@ -127,7 +127,7 @@
                                 </div>
                             </a>
                         @empty
-                            <div class="rounded-3xl border border-dashed border-blue-200 bg-white/70 px-5 py-10 text-center text-sm text-blue-800">
+                            <div class="rounded-3xl border border-dashed border-green-200 bg-white/70 px-5 py-10 text-center text-sm text-green-800">
                                 No follow-ups are due today in your current CRM scope.
                             </div>
                         @endforelse
@@ -324,9 +324,9 @@
                     <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-emerald-800">Open Pipeline</div>
                     <div class="mt-2 text-3xl font-semibold text-emerald-900">{{ number_format($reports['expectedRevenue']['open_pipeline'], 2) }}</div>
                 </div>
-                <div class="rounded-3xl border border-blue-200 bg-blue-50 p-5">
-                    <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-blue-800">Weighted Pipeline</div>
-                    <div class="mt-2 text-3xl font-semibold text-blue-900">{{ number_format($reports['expectedRevenue']['weighted_pipeline'], 2) }}</div>
+                <div class="rounded-3xl border border-green-200 bg-green-50 p-5">
+                    <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-green-800">Weighted Pipeline</div>
+                    <div class="mt-2 text-3xl font-semibold text-green-900">{{ number_format($reports['expectedRevenue']['weighted_pipeline'], 2) }}</div>
                 </div>
                 <div class="rounded-3xl border border-violet-200 bg-violet-50 p-5">
                     <div class="text-[11px] font-semibold uppercase tracking-[0.22em] text-violet-800">Won Revenue</div>
@@ -363,7 +363,7 @@
                                 @forelse ($reports['statusWise'] as $row)
                                     <tr>
                                         <td class="px-5 py-4">
-                                            <x-crm.status-badge :label="$row->name" :color="$row->color ?? '#114a8f'" />
+                                            <x-crm.status-badge :label="$row->name" :color="$row->color ?? '#4CAF50'" />
                                         </td>
                                         <td class="px-5 py-4 font-medium text-crm-ink">{{ number_format($row->total) }}</td>
                                         <td class="px-5 py-4 text-crm-text">{{ number_format((float) $row->expected_value, 2) }}</td>

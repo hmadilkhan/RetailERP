@@ -18,7 +18,7 @@
         .header h1 {
             margin: 0 0 6px;
             font-size: 20px;
-            color: #114a8f;
+            color: #4CAF50;
         }
 
         .meta {

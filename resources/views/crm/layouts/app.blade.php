@@ -18,10 +18,10 @@
                             mute: '#64748b',
                             line: '#dbe5f0',
                             soft: '#f8fbff',
-                            blue: '#114a8f',
-                            royal: '#1d6fd6',
-                            deep: '#0a2d57',
-                            glow: '#dbeafe',
+                            blue: '#4CAF50',
+                            royal: '#66BB6A',
+                            deep: '#2E7D32',
+                            glow: '#E8F5E9',
                             success: '#166534',
                             successSoft: '#dcfce7',
                             warning: '#b45309',
@@ -30,8 +30,8 @@
                             dangerSoft: '#fee2e2',
                         },
                         erp: {
-                            brand: '#114a8f',
-                            accent: '#2f80ed',
+                            brand: '#4CAF50',
+                            accent: '#81C784',
                         },
                     },
                     boxShadow: {
@@ -53,9 +53,9 @@
 
 <body class="min-h-screen bg-slate-50 text-crm-text antialiased"
     style="background-image:
-        radial-gradient(circle at top left, rgba(17, 74, 143, 0.12), transparent 28%),
-        radial-gradient(circle at top right, rgba(47, 128, 237, 0.10), transparent 24%),
-        linear-gradient(180deg, #eef4fb 0%, #f8fafc 100%);">
+        radial-gradient(circle at top left, rgba(76, 175, 80, 0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(129, 199, 132, 0.12), transparent 24%),
+        linear-gradient(180deg, #eef8ef 0%, #f8fafc 100%);">
 
     <div class="min-h-screen">
         <header class="relative overflow-hidden border-b border-white/40 bg-gradient-to-br from-crm-deep via-crm-blue to-erp-accent text-white shadow-crm">
@@ -76,17 +76,17 @@
                     </div>
 
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <nav class="flex flex-wrap gap-2 rounded-full border border-white/10 bg-white/10 p-1 backdrop-blur">
+                        <nav class="inline-flex max-w-full flex-nowrap items-center gap-1 overflow-x-auto rounded-full border border-white/10 bg-white/10 p-1 backdrop-blur">
                             <a href="{{ route('crm.dashboard') }}"
-                                class="rounded-full px-4 py-2 text-sm font-semibold transition {{ request()->routeIs('crm.dashboard') || request()->routeIs('crm.index') ? 'bg-white text-crm-deep shadow-lg' : 'text-white/85 hover:bg-white/10 hover:text-white' }}">
+                                class="shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition {{ request()->routeIs('crm.dashboard') || request()->routeIs('crm.index') ? 'bg-white text-crm-deep shadow-lg' : 'text-white/85 hover:bg-white/10 hover:text-white' }}">
                                 Dashboard
                             </a>
                             <a href="{{ route('crm.board') }}"
-                                class="rounded-full px-4 py-2 text-sm font-semibold transition {{ request()->routeIs('crm.board') ? 'bg-white text-crm-deep shadow-lg' : 'text-white/85 hover:bg-white/10 hover:text-white' }}">
+                                class="shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition {{ request()->routeIs('crm.board') ? 'bg-white text-crm-deep shadow-lg' : 'text-white/85 hover:bg-white/10 hover:text-white' }}">
                                 Pipeline
                             </a>
                             <a href="{{ route('crm.leads.index') }}"
-                                class="rounded-full px-4 py-2 text-sm font-semibold transition {{ request()->routeIs('crm.leads.*') ? 'bg-white text-crm-deep shadow-lg' : 'text-white/85 hover:bg-white/10 hover:text-white' }}">
+                                class="shrink-0 rounded-full px-4 py-2 text-sm font-semibold transition {{ request()->routeIs('crm.leads.*') ? 'bg-white text-crm-deep shadow-lg' : 'text-white/85 hover:bg-white/10 hover:text-white' }}">
                                 Leads
                             </a>
                         </nav>
@@ -135,7 +135,7 @@
                                                     'lead_assigned' => 'bg-indigo-50 text-indigo-700 ring-indigo-200',
                                                     'status_changed' => 'bg-cyan-50 text-cyan-700 ring-cyan-200',
                                                     'followup_added' => 'bg-amber-50 text-amber-700 ring-amber-200',
-                                                    'followup_due_today' => 'bg-blue-50 text-blue-700 ring-blue-200',
+                                                    'followup_due_today' => 'bg-green-50 text-green-700 ring-green-200',
                                                     'followup_overdue' => 'bg-rose-50 text-rose-700 ring-rose-200',
                                                 ];
                                             @endphp

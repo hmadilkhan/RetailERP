@@ -7,7 +7,7 @@
 @php
     $priorityClasses = [
         'low' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
-        'medium' => 'bg-blue-50 text-blue-700 ring-blue-200',
+        'medium' => 'bg-green-50 text-green-700 ring-green-200',
         'high' => 'bg-amber-50 text-amber-700 ring-amber-200',
         'urgent' => 'bg-rose-50 text-rose-700 ring-rose-200',
     ];
@@ -104,7 +104,7 @@
                 @foreach ($columns as $column)
                     @php
                         $status = $column['status'];
-                        $borderColor = $status->color ?: '#114a8f';
+                        $borderColor = $status->color ?: '#4CAF50';
                         $softColor = $borderColor . '15';
                     @endphp
                     <div class="rounded-[30px] border border-white/70 bg-white/85 p-4 shadow-crm backdrop-blur">
@@ -136,7 +136,7 @@
                                                 <h3 class="mt-2 text-sm font-semibold leading-6 text-crm-ink">{{ $lead->contact_person_name }}</h3>
                                                 <p class="text-sm text-crm-mute">{{ $lead->company_name ?: 'No company name' }}</p>
                                             </div>
-                                            <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ring-1 {{ $priorityClasses[$lead->priority] ?? 'bg-blue-50 text-blue-700 ring-blue-200' }}">
+                                            <span class="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold ring-1 {{ $priorityClasses[$lead->priority] ?? 'bg-green-50 text-green-700 ring-green-200' }}">
                                                 {{ ucfirst($lead->priority) }}
                                             </span>
                                         </div>

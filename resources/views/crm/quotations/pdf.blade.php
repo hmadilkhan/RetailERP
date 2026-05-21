@@ -14,13 +14,13 @@
 
         .header {
             margin-bottom: 22px;
-            border-bottom: 2px solid #114a8f;
+            border-bottom: 2px solid #4CAF50;
             padding-bottom: 14px;
         }
 
         .header h1 {
             margin: 0;
-            color: #114a8f;
+            color: #4CAF50;
             font-size: 24px;
         }
 
@@ -74,7 +74,7 @@
         .totals tr:last-child td {
             border-bottom: 0;
             font-weight: bold;
-            color: #0a2d57;
+            color: #2E7D32;
             background: #eff6ff;
         }
     </style>

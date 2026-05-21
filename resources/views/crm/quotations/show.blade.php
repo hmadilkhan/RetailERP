@@ -7,7 +7,7 @@
 @php
     $statusClasses = [
         'draft' => 'bg-slate-100 text-slate-700 ring-slate-200',
-        'sent' => 'bg-blue-50 text-blue-700 ring-blue-200',
+        'sent' => 'bg-green-50 text-green-700 ring-green-200',
         'accepted' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
         'rejected' => 'bg-rose-50 text-rose-700 ring-rose-200',
         'expired' => 'bg-amber-50 text-amber-700 ring-amber-200',
@@ -120,21 +120,21 @@
             <div class="rounded-[32px] border border-white/70 bg-white/90 p-6 shadow-crm">
                 <h3 class="text-xl font-semibold tracking-tight text-crm-ink">Totals Summary</h3>
                 <p class="mt-1 text-sm text-crm-mute">A professional summary card for commercial approval and printing.</p>
-                <div class="mt-6 rounded-[28px] border border-blue-200 bg-blue-50 p-5">
-                    <div class="flex items-center justify-between text-sm text-blue-900">
+                <div class="mt-6 rounded-[28px] border border-green-200 bg-green-50 p-5">
+                    <div class="flex items-center justify-between text-sm text-green-900">
                         <span>Subtotal</span>
                         <span>{{ number_format((float) $quotation->subtotal, 2) }}</span>
                     </div>
-                    <div class="mt-3 flex items-center justify-between text-sm text-blue-900">
+                    <div class="mt-3 flex items-center justify-between text-sm text-green-900">
                         <span>Discount</span>
                         <span>{{ number_format((float) $quotation->discount, 2) }}</span>
                     </div>
-                    <div class="mt-3 flex items-center justify-between text-sm text-blue-900">
+                    <div class="mt-3 flex items-center justify-between text-sm text-green-900">
                         <span>Tax</span>
                         <span>{{ number_format((float) $quotation->tax, 2) }}</span>
                     </div>
-                    <div class="mt-4 border-t border-blue-200 pt-4">
-                        <div class="flex items-center justify-between text-base font-semibold text-blue-950">
+                    <div class="mt-4 border-t border-green-200 pt-4">
+                        <div class="flex items-center justify-between text-base font-semibold text-green-950">
                             <span>Total</span>
                             <span>{{ number_format((float) $quotation->total, 2) }}</span>
                         </div>
