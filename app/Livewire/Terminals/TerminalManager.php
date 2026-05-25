@@ -427,7 +427,7 @@ class TerminalManager extends Component
     }
 
     #[Title('Terminal Manager')]
-    #[Layout('components.layouts.app')]
+    #[Layout('layouts.master-tailwind')]
     public function render()
     {
         $companies = Company::query()

@@ -39,6 +39,8 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->mapWebRoutes();
 
+        $this->mapV2Routes();
+
         //
     }
 
@@ -62,6 +64,18 @@ class RouteServiceProvider extends ServiceProvider
         Route::middleware('web')
             ->namespace($this->namespace)
             ->group(base_path('routes/hr.php'));
+    }
+
+    /**
+     * Define isolated V2 web routes.
+     *
+     * @return void
+     */
+    protected function mapV2Routes()
+    {
+        Route::middleware('web')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/v2.php'));
     }
 
     /**

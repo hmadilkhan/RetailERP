@@ -28,7 +28,7 @@ class UserDetailsController extends Controller
     {
         $search = request('search', '');
         $getusers = $users->get_users_paginated($search);
-        return view('Users.list', compact('getusers', 'search'));
+        return view('v2.users.list', compact('getusers', 'search'));
     }
 
     public function getBranchesByCompany(Request $request)
@@ -51,7 +51,7 @@ class UserDetailsController extends Controller
         // $branch = $users->getbranches();
         $branch = $branchService->getBranches();
         $company = $users->getCompany();
-        return view('Users.create', compact('country', 'city', 'role', 'branch', 'company'));
+        return view('v2.users.create', compact('country', 'city', 'role', 'branch', 'company'));
     }
 
     public function chk_user_exists(Request $request, userDetails $users)
@@ -161,7 +161,7 @@ class UserDetailsController extends Controller
         $userdetails = $users->user_details(Crypt::decrypt($request->id));
         $branch = DB::table("branch")->where("company_id", (!empty($userdetails) ? $userdetails[0]->company_id : ''))->get();
         $userBranches = DB::table("user_branches")->where("user_id", $userdetails[0]->id)->pluck("branch_id");
-        return view('Users.edit', compact('country', 'city', 'role', 'branch', 'userdetails', 'company', 'userBranches'));
+        return view('v2.users.edit', compact('country', 'city', 'role', 'branch', 'userdetails', 'company', 'userBranches'));
     }
 
     public function update(Request $request, userDetails $users)

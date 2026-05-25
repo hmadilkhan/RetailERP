@@ -1,484 +1,383 @@
-<div class="terminal-manager-page">
+<div class="terminal-manager-page space-y-6">
     <style>
-        .terminal-manager-page .select2-container {
-            width: 100% !important;
+        .terminal-manager-page details > summary::-webkit-details-marker {
+            display: none;
         }
-        .terminal-manager-page .select2-container .select2-selection--single {
-            height: 35px !important;
-            border: 1px solid #ccc;
-            border-radius: 2px;
-        }
-        .terminal-manager-page .select2-container .select2-selection--single .select2-selection__rendered {
-            line-height: 33px !important;
-            padding-left: 12px;
-            color: #555;
-        }
-        .terminal-manager-page .select2-container .select2-selection--single .select2-selection__arrow {
-            height: 33px !important;
-        }
-        .terminal-manager-page .terminal-badge {
-            display: inline-flex;
-            align-items: center;
-            min-width: 74px;
-            justify-content: center;
-            padding: 5px 9px;
-            border-radius: 12px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .terminal-manager-page .terminal-badge-active,
-        .terminal-manager-page .terminal-badge-online {
-            background: #e6f6ec;
-            color: #157347;
-        }
-        .terminal-manager-page .terminal-badge-inactive,
-        .terminal-manager-page .terminal-badge-offline {
-            background: #fdeaea;
-            color: #b02a37;
-        }
-        .terminal-manager-page .terminal-badge-unknown {
-            background: #fff4db;
-            color: #9a6700;
-        }
-        .terminal-manager-page .terminal-badge-muted {
-            background: #eef1f4;
-            color: #5c6773;
-        }
-        .terminal-manager-page .terminal-action-menu .dropdown-menu {
-            min-width: 190px;
-            padding: 6px 0;
-            z-index: 1055;
-        }
-        .terminal-manager-page .terminal-action-menu.open {
-            z-index: 1055;
-        }
-        .terminal-manager-page .terminal-action-menu .dropdown-item,
-        .terminal-manager-page .terminal-action-menu button.dropdown-item {
-            width: 100%;
-            border: 0;
-            background: transparent;
-            text-align: left;
-            padding: 7px 14px;
-            color: #333;
-            cursor: pointer;
-        }
-        .terminal-manager-page .terminal-action-menu .dropdown-item:hover,
-        .terminal-manager-page .terminal-action-menu button.dropdown-item:hover {
-            background: #f5f5f5;
-        }
+
         .terminal-manager-page .terminal-table-shell {
             position: relative;
-            min-height: 180px;
-            overflow: visible;
+            min-height: 240px;
         }
+
         .terminal-manager-page .terminal-loader {
             position: absolute;
             inset: 0;
-            z-index: 5;
+            z-index: 20;
             display: none;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.78);
-            backdrop-filter: blur(1px);
+            background: rgba(248, 250, 252, 0.78);
+            backdrop-filter: blur(2px);
         }
-        .terminal-manager-page .terminal-loader-box {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 16px;
-            border: 1px solid #e3e6ea;
-            border-radius: 6px;
-            background: #fff;
-            color: #333;
-            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.08);
-            font-weight: 600;
-        }
+
         .terminal-manager-page .terminal-spinner {
             width: 18px;
             height: 18px;
-            border: 2px solid #cfd7df;
-            border-top-color: #0d6efd;
-            border-radius: 50%;
+            border: 2px solid #d8e1ec;
+            border-top-color: #2E7D32;
+            border-radius: 999px;
             animation: terminal-spin 0.75s linear infinite;
         }
+
         @keyframes terminal-spin {
             to { transform: rotate(360deg); }
         }
     </style>
 
-    <section class="panels-wells">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-header-text">Terminal Manager</h5>
-            </div>
-            <div class="card-block">
-                @if (session()->has('terminal_message'))
-                    <div class="alert alert-success">{{ session('terminal_message') }}</div>
-                @endif
-                @if (session()->has('terminal_error'))
-                    <div class="alert alert-danger">{{ session('terminal_error') }}</div>
-                @endif
+    @php
+        $visibleCount = $terminalRows->count();
+        $activeCount = $terminalRows->where('status_id', 1)->count();
+        $lockedCount = $terminalRows->filter(fn ($terminal) => (int) ($terminal->is_locked ?? 0) === 1)->count();
+    @endphp
 
-                <div class="row">
-                    <div class="col-lg-2 col-md-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Company:</label>
-                            <select id="terminal-filter-company" class="form-control terminal-select2" data-property="filterCompanyId">
-                                <option value="">All Companies</option>
-                                @foreach ($companies as $company)
-                                    <option value="{{ $company->company_id }}" @selected((string) $filterCompanyId === (string) $company->company_id)>{{ $company->name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Branch:</label>
-                            <select id="terminal-filter-branch" class="form-control terminal-select2" data-property="filterBranchId" {{ $filterCompanyId === '' ? 'disabled' : '' }}>
-                                <option value="">{{ $filterCompanyId === '' ? 'Select company first' : 'All Branches' }}</option>
-                                @foreach ($filterBranches as $branch)
-                                    <option value="{{ $branch->branch_id }}" @selected((string) $filterBranchId === (string) $branch->branch_id)>{{ $branch->branch_name }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Status:</label>
-                            <select class="form-control" wire:model.live="statusId">
-                                <option value="">All</option>
-                                <option value="1">Active</option>
-                                <option value="2">Inactive</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Lock:</label>
-                            <select class="form-control" wire:model.live="lockStatus">
-                                <option value="">All</option>
-                                <option value="1">Locked</option>
-                                <option value="0">Unlocked</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Device Status:</label>
-                            <select class="form-control" wire:model.live="deviceStatusFilter">
-                                <option value="">All</option>
-                                <option value="Online">Online</option>
-                                <option value="Offline">Offline</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-lg-2 col-md-12">
-                        <div class="form-group">
-                            <label class="form-control-label">Search:</label>
-                            <input type="text" class="form-control" wire:model.live.debounce.300ms="search" placeholder="Terminal, MAC, serial or model">
-                        </div>
-                    </div>
-                </div>
+    @if (session()->has('terminal_message'))
+        <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm font-semibold text-emerald-800">
+            {{ session('terminal_message') }}
+        </div>
+    @endif
+
+    @if (session()->has('terminal_error'))
+        <div class="rounded-lg border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-semibold text-rose-800">
+            {{ session('terminal_error') }}
+        </div>
+    @endif
+
+    <div class="grid gap-4 md:grid-cols-3">
+        <div class="rounded-lg border border-erp-line bg-white p-5 shadow-sm">
+            <div class="text-xs font-bold uppercase tracking-[0.18em] text-erp-mute">Visible Terminals</div>
+            <div class="mt-3 text-3xl font-black text-erp-ink">{{ $visibleCount }}</div>
+            <div class="mt-1 text-sm font-medium text-erp-mute">Current filtered result</div>
+        </div>
+        <div class="rounded-lg border border-erp-line bg-white p-5 shadow-sm">
+            <div class="text-xs font-bold uppercase tracking-[0.18em] text-erp-mute">Active</div>
+            <div class="mt-3 text-3xl font-black text-emerald-700">{{ $activeCount }}</div>
+            <div class="mt-1 text-sm font-medium text-erp-mute">Available for operations</div>
+        </div>
+        <div class="rounded-lg border border-erp-line bg-white p-5 shadow-sm">
+            <div class="text-xs font-bold uppercase tracking-[0.18em] text-erp-mute">Locked</div>
+            <div class="mt-3 text-3xl font-black text-amber-700">{{ $lockedCount }}</div>
+            <div class="mt-1 text-sm font-medium text-erp-mute">Device lock status</div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-erp-line bg-white shadow-sm">
+        <div class="border-b border-erp-line px-5 py-4">
+            <h2 class="text-base font-bold text-erp-ink">Terminal Filters</h2>
+        </div>
+        <div class="grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-6">
+            <label class="block">
+                <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Company</span>
+                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="filterCompanyId">
+                    <option value="">All Companies</option>
+                    @foreach ($companies as $company)
+                        <option value="{{ $company->company_id }}">{{ $company->name }}</option>
+                    @endforeach
+                </select>
+            </label>
+
+            <label class="block">
+                <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Branch</span>
+                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp disabled:bg-slate-100 disabled:text-slate-400" wire:model.live="filterBranchId" {{ $filterCompanyId === '' ? 'disabled' : '' }}>
+                    <option value="">{{ $filterCompanyId === '' ? 'Select company first' : 'All Branches' }}</option>
+                    @foreach ($filterBranches as $branch)
+                        <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
+                    @endforeach
+                </select>
+            </label>
+
+            <label class="block">
+                <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Status</span>
+                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="statusId">
+                    <option value="">All</option>
+                    <option value="1">Active</option>
+                    <option value="2">Inactive</option>
+                </select>
+            </label>
+
+            <label class="block">
+                <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Lock</span>
+                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="lockStatus">
+                    <option value="">All</option>
+                    <option value="1">Locked</option>
+                    <option value="0">Unlocked</option>
+                </select>
+            </label>
+
+            <label class="block">
+                <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Device</span>
+                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="deviceStatusFilter">
+                    <option value="">All</option>
+                    <option value="Online">Online</option>
+                    <option value="Offline">Offline</option>
+                </select>
+            </label>
+
+            <label class="block">
+                <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Search</span>
+                <input type="text" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live.debounce.300ms="search" placeholder="Terminal, MAC, serial">
+            </label>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-erp-line bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-erp-line px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <h2 class="text-base font-bold text-erp-ink">{{ $terminalId ? 'Update Terminal' : 'Create New Terminal' }}</h2>
+                <p class="mt-1 text-sm text-erp-mute">Assign terminal details to a company branch.</p>
             </div>
+            @if ($terminalId)
+                <button type="button" class="inline-flex items-center justify-center rounded-lg border border-erp-line px-4 py-2 text-sm font-bold text-erp-text transition hover:border-erp hover:text-erp-dark" wire:click="resetTerminalForm">
+                    Cancel Edit
+                </button>
+            @endif
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-header-text">{{ $terminalId ? 'Update Terminal' : 'Create New Terminal' }}</h5>
-            </div>
-            <div class="card-block">
-                <form wire:submit.prevent="saveTerminal">
-                    <div class="row">
-                        <div class="col-lg-3 col-md-6">
-                            <div class="form-group">
-                                <label class="form-control-label">Company:</label>
-                                <select id="terminal-form-company" class="form-control terminal-select2" data-property="formCompanyId">
-                                    <option value="">Select Company</option>
-                                    @foreach ($companies as $company)
-                                        <option value="{{ $company->company_id }}" @selected((string) $formCompanyId === (string) $company->company_id)>{{ $company->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('formCompanyId') <div class="text-danger">{{ $message }}</div> @enderror
-                        </div>
-                        <div class="col-lg-3 col-md-6">
-                            <div class="form-group">
-                                <label class="form-control-label">Branch:</label>
-                                <select id="terminal-form-branch" class="form-control terminal-select2" data-property="formBranchId" {{ $formCompanyId === '' ? 'disabled' : '' }}>
-                                    <option value="">Select Branch</option>
-                                    @foreach ($formBranches as $branch)
-                                        <option value="{{ $branch->branch_id }}" @selected((string) $formBranchId === (string) $branch->branch_id)>{{ $branch->branch_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            @error('formBranchId') <div class="text-danger">{{ $message }}</div> @enderror
-                        </div>
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <label class="form-control-label">Terminal Name:</label>
-                                <input type="text" class="form-control" wire:model.defer="terminalName">
-                                @error('terminalName') <div class="text-danger">{{ $message }}</div> @enderror
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <label class="form-control-label">MAC Address:</label>
-                                <input type="text" class="form-control" wire:model.defer="macAddress">
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <label class="form-control-label">Device Serial Number:</label>
-                                <input type="text" class="form-control" wire:model.defer="serialNo">
-                            </div>
-                        </div>
-                        <div class="col-lg-2 col-md-6">
-                            <div class="form-group">
-                                <label class="form-control-label">Model No:</label>
-                                <input type="text" class="form-control" wire:model.defer="modelNo">
-                            </div>
-                        </div>
-                    </div>
+        <form wire:submit.prevent="saveTerminal" class="p-5">
+            <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
+                <label class="block xl:col-span-2">
+                    <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Company</span>
+                    <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="formCompanyId">
+                        <option value="">Select Company</option>
+                        @foreach ($companies as $company)
+                            <option value="{{ $company->company_id }}">{{ $company->name }}</option>
+                        @endforeach
+                    </select>
+                    @error('formCompanyId') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
+                </label>
 
-                    <button type="submit" class="btn btn-md btn-success waves-effect waves-light">
-                        <i class="icofont icofont-save"></i>
-                        {{ $terminalId ? 'Update Terminal' : 'Add Terminal' }}
-                    </button>
-                    @if ($terminalId)
-                        <button type="button" class="btn btn-md btn-default waves-effect m-l-10" wire:click="resetTerminalForm">
-                            Cancel Edit
-                        </button>
-                    @endif
-                </form>
+                <label class="block xl:col-span-2">
+                    <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Branch</span>
+                    <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp disabled:bg-slate-100 disabled:text-slate-400" wire:model.live="formBranchId" {{ $formCompanyId === '' ? 'disabled' : '' }}>
+                        <option value="">Select Branch</option>
+                        @foreach ($formBranches as $branch)
+                            <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
+                        @endforeach
+                    </select>
+                    @error('formBranchId') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
+                </label>
+
+                <label class="block xl:col-span-2">
+                    <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Terminal Name</span>
+                    <input type="text" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.defer="terminalName">
+                    @error('terminalName') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
+                </label>
+
+                <label class="block xl:col-span-2">
+                    <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">MAC Address</span>
+                    <input type="text" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.defer="macAddress">
+                </label>
+
+                <label class="block xl:col-span-2">
+                    <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Serial Number</span>
+                    <input type="text" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.defer="serialNo">
+                </label>
+
+                <label class="block xl:col-span-2">
+                    <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Model No</span>
+                    <input type="text" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.defer="modelNo">
+                </label>
             </div>
+
+            <div class="mt-5 flex flex-wrap gap-3">
+                <button type="submit" class="inline-flex items-center justify-center rounded-lg bg-erp px-5 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-erp-dark disabled:opacity-60" wire:loading.attr="disabled" wire:target="saveTerminal">
+                    <span wire:loading.remove wire:target="saveTerminal">{{ $terminalId ? 'Update Terminal' : 'Add Terminal' }}</span>
+                    <span wire:loading wire:target="saveTerminal">Saving...</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="rounded-lg border border-erp-line bg-white shadow-sm">
+        <div class="flex flex-col gap-3 border-b border-erp-line px-5 py-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+                <h2 class="text-base font-bold text-erp-ink">Terminal Detail</h2>
+                <p class="mt-1 text-sm text-erp-mute">Manage permissions, printing, bind status and remote device locks.</p>
+            </div>
+            <button type="button" class="inline-flex items-center justify-center rounded-lg border border-erp-line bg-white px-4 py-2 text-sm font-bold text-erp-text shadow-sm transition hover:border-erp hover:text-erp-dark disabled:opacity-60" wire:click="checkVisibleDeviceStatuses" wire:loading.attr="disabled" wire:target="checkVisibleDeviceStatuses">
+                <span wire:loading.remove wire:target="checkVisibleDeviceStatuses">Check Device Statuses</span>
+                <span wire:loading wire:target="checkVisibleDeviceStatuses">Checking...</span>
+            </button>
         </div>
 
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-header-text">Terminal Detail</h5>
-            </div>
-            <div class="card-block">
-                <div class="m-b-15">
-                    <button type="button" class="btn btn-sm btn-info waves-effect waves-light" wire:click="checkVisibleDeviceStatuses" wire:loading.attr="disabled" wire:target="checkVisibleDeviceStatuses">
-                        <i class="icofont icofont-verification-check"></i>
-                        <span wire:loading.remove wire:target="checkVisibleDeviceStatuses">Check Device Statuses</span>
-                        <span wire:loading wire:target="checkVisibleDeviceStatuses">Checking...</span>
-                    </button>
+        <div class="terminal-table-shell">
+            <div class="terminal-loader" wire:loading.flex wire:target="filterCompanyId,filterBranchId,statusId,lockStatus,deviceStatusFilter,search,lockTerminal,unlockTerminal,checkDeviceStatus,revealLockPassword,inactiveTerminal,reactiveTerminal,editTerminal,saveTerminal">
+                <div class="inline-flex items-center gap-3 rounded-lg border border-erp-line bg-white px-4 py-3 text-sm font-bold text-erp-ink shadow-panel">
+                    <span class="terminal-spinner"></span>
+                    <span>Loading terminals...</span>
                 </div>
+            </div>
 
-                <div class="table-responsive terminal-table-shell">
-                    <div class="terminal-loader" wire:loading.flex wire:target="filterCompanyId,filterBranchId,statusId,lockStatus,deviceStatusFilter,search,lockTerminal,unlockTerminal,checkDeviceStatus,revealLockPassword,inactiveTerminal,reactiveTerminal,editTerminal,saveTerminal">
-                        <div class="terminal-loader-box">
-                            <span class="terminal-spinner"></span>
-                            <span>Loading terminals...</span>
-                        </div>
-                    </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-erp-line text-left text-sm">
+                    <thead class="bg-slate-50 text-xs font-bold uppercase tracking-[0.12em] text-erp-mute">
+                        <tr>
+                            <th class="px-4 py-3">ID</th>
+                            <th class="px-4 py-3">Company</th>
+                            <th class="px-4 py-3">Branch</th>
+                            <th class="px-4 py-3">Terminal</th>
+                            <th class="px-4 py-3">MAC</th>
+                            <th class="px-4 py-3">Serial</th>
+                            <th class="px-4 py-3">Model</th>
+                            <th class="px-4 py-3">Status</th>
+                            <th class="px-4 py-3">Device</th>
+                            <th class="px-4 py-3">Password</th>
+                            <th class="px-4 py-3 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-erp-line bg-white">
+                        @forelse ($terminalRows as $terminal)
+                            <tr wire:key="terminal-row-{{ $terminal->terminal_id }}" class="hover:bg-slate-50">
+                                <td class="whitespace-nowrap px-4 py-4 font-bold text-erp-ink">#{{ $terminal->terminal_id }}</td>
+                                <td class="min-w-44 px-4 py-4 font-semibold text-erp-text">{{ $terminal->company_name }}</td>
+                                <td class="min-w-40 px-4 py-4 text-erp-mute">{{ $terminal->branch_name }}</td>
+                                <td class="min-w-44 px-4 py-4 font-bold text-erp-ink">{{ $terminal->terminal_name }}</td>
+                                <td class="whitespace-nowrap px-4 py-4 font-mono text-xs text-erp-mute">{{ $terminal->mac_address ?: '-' }}</td>
+                                <td class="whitespace-nowrap px-4 py-4 text-erp-mute">{{ $terminal->serial_no ?: '-' }}</td>
+                                <td class="whitespace-nowrap px-4 py-4 text-erp-mute">{{ $terminal->model_no ?: '-' }}</td>
+                                <td class="px-4 py-4">
+                                    @if ((int) $terminal->status_id === 1)
+                                        <span class="inline-flex min-w-20 justify-center rounded-full bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-700 ring-1 ring-emerald-200">Active</span>
+                                    @else
+                                        <span class="inline-flex min-w-20 justify-center rounded-full bg-rose-50 px-3 py-1 text-xs font-bold text-rose-700 ring-1 ring-rose-200">Inactive</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4">
+                                    @php($deviceStatus = $deviceStatuses[$terminal->terminal_id] ?? null)
+                                    @if ($deviceStatus)
+                                        <span class="inline-flex min-w-24 justify-center rounded-full px-3 py-1 text-xs font-bold ring-1 {{ $deviceStatus['label'] === 'Online' ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : ($deviceStatus['label'] === 'Offline' ? 'bg-rose-50 text-rose-700 ring-rose-200' : 'bg-amber-50 text-amber-700 ring-amber-200') }}">
+                                            {{ $deviceStatus['label'] }}
+                                        </span>
+                                    @else
+                                        <span class="inline-flex min-w-24 justify-center rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 ring-1 ring-slate-200" wire:loading.remove wire:target="checkDeviceStatus({{ $terminal->terminal_id }}),checkVisibleDeviceStatuses">Not Checked</span>
+                                        <span class="inline-flex min-w-24 justify-center rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-700 ring-1 ring-amber-200" wire:loading wire:target="checkDeviceStatus({{ $terminal->terminal_id }}),checkVisibleDeviceStatuses">Checking...</span>
+                                    @endif
+                                </td>
+                                <td class="whitespace-nowrap px-4 py-4">
+                                    @if (!empty($terminal->lock_password))
+                                        <span class="inline-flex rounded-lg {{ isset($revealedPasswords[$terminal->terminal_id]) ? 'bg-amber-50 text-amber-800 ring-amber-200' : 'bg-slate-100 text-slate-700 ring-slate-200' }} px-3 py-1 text-xs font-black tracking-[0.18em] ring-1">
+                                            {{ $revealedPasswords[$terminal->terminal_id] ?? '********' }}
+                                        </span>
+                                        <button type="button" class="ml-2 text-xs font-bold text-erp-dark hover:text-erp" wire:click="revealLockPassword({{ $terminal->terminal_id }})">
+                                            View
+                                        </button>
+                                    @else
+                                        <span class="text-erp-mute">-</span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-4 text-right align-top">
+                                    <details class="group inline-block text-left">
+                                        <summary class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text shadow-sm transition hover:border-erp hover:text-erp-dark">
+                                            Actions
+                                        </summary>
+                                        <div class="mt-2 w-56 overflow-hidden rounded-lg border border-erp-line bg-white py-2 text-sm shadow-menu">
+                                            <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-erp-text hover:bg-slate-50" wire:click="editTerminal({{ $terminal->terminal_id }})">Edit</button>
 
-                    <table class="table table-striped nowrap" width="100%" cellspacing="0">
-                        <thead>
-                            <tr>
-                                <th>Terminal id</th>
-                                <th>Company</th>
-                                <th>Branch</th>
-                                <th>Terminal Name</th>
-                                <th>MAC Address</th>
-                                <th>Serial Number</th>
-                                <th>Model No</th>
-                                <th>Status</th>
-                                <th>Device Status</th>
-                                <th>Lock Password</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse ($terminalRows as $terminal)
-                                <tr wire:key="terminal-row-{{ $terminal->terminal_id }}">
-                                    <td>{{ $terminal->terminal_id }}</td>
-                                    <td>{{ $terminal->company_name }}</td>
-                                    <td>{{ $terminal->branch_name }}</td>
-                                    <td>{{ $terminal->terminal_name }}</td>
-                                    <td>{{ $terminal->mac_address }}</td>
-                                    <td>{{ $terminal->serial_no }}</td>
-                                    <td>{{ $terminal->model_no }}</td>
-                                    <td>
-                                        @if ((int) $terminal->status_id === 1)
-                                            <span class="terminal-badge terminal-badge-active">Active</span>
-                                        @else
-                                            <span class="terminal-badge terminal-badge-inactive">Inactive</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @php($deviceStatus = $deviceStatuses[$terminal->terminal_id] ?? null)
-                                        @if ($deviceStatus)
-                                            <span class="terminal-badge {{ $deviceStatus['label'] === 'Online' ? 'terminal-badge-online' : ($deviceStatus['label'] === 'Offline' ? 'terminal-badge-offline' : 'terminal-badge-unknown') }}">
-                                                {{ $deviceStatus['label'] }}
-                                            </span>
-                                        @else
-                                            <span class="terminal-badge terminal-badge-muted" wire:loading.remove wire:target="checkDeviceStatus({{ $terminal->terminal_id }}),checkVisibleDeviceStatuses">Not Checked</span>
-                                            <span class="terminal-badge terminal-badge-muted" wire:loading wire:target="checkDeviceStatus({{ $terminal->terminal_id }}),checkVisibleDeviceStatuses">Checking...</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if (!empty($terminal->lock_password))
-                                            <span class="badge {{ isset($revealedPasswords[$terminal->terminal_id]) ? 'badge-warning' : 'badge-inverse' }}">
-                                                {{ $revealedPasswords[$terminal->terminal_id] ?? '********' }}
-                                            </span>
-                                            <button type="button" class="btn btn-link btn-sm p-0 m-l-5" wire:click="revealLockPassword({{ $terminal->terminal_id }})" title="View Lock Password">
-                                                <i class="icofont icofont-eye text-info f-18"></i>
-                                            </button>
-                                        @else
-                                            <span class="text-muted">-</span>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <div class="dropdown terminal-action-menu">
-                                            <button class="btn btn-sm btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                Actions
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-right">
-                                                <button type="button" class="dropdown-item" wire:click="editTerminal({{ $terminal->terminal_id }})">
-                                                    <i class="icofont icofont-ui-edit text-primary"></i> Edit
-                                                </button>
+                                            @if ((int) $terminal->status_id === 1)
+                                                <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-rose-700 hover:bg-rose-50" wire:click="inactiveTerminal({{ $terminal->terminal_id }})" onclick="return confirm('Inactive this terminal?')">Inactive</button>
+                                            @else
+                                                <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-emerald-700 hover:bg-emerald-50" wire:click="reactiveTerminal({{ $terminal->terminal_id }})">Reactive</button>
+                                            @endif
 
-                                                @if ((int) $terminal->status_id === 1)
-                                                    <button type="button" class="dropdown-item" wire:click="inactiveTerminal({{ $terminal->terminal_id }})" onclick="return confirm('Inactive this terminal?')">
-                                                        <i class="icofont icofont-ui-delete text-danger"></i> Inactive
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="dropdown-item" wire:click="reactiveTerminal({{ $terminal->terminal_id }})">
-                                                        <i class="icofont icofont-check-circled text-primary"></i> Reactive
-                                                    </button>
-                                                @endif
+                                            <a href="{{ url('/permission') }}/{{ $this->encrypted($terminal->terminal_id) }}" class="block px-4 py-2 font-semibold text-erp-text hover:bg-slate-50">Permission</a>
+                                            <a href="{{ url('/printing-details') }}/{{ $this->encrypted($terminal->terminal_id) }}" class="block px-4 py-2 font-semibold text-erp-text hover:bg-slate-50">Print Details</a>
+                                            <a href="{{ url('/bind-terminals') }}/{{ $this->encrypted($terminal->terminal_id) }}/{{ $this->encrypted($terminal->branch_id) }}" class="block px-4 py-2 font-semibold text-erp-text hover:bg-slate-50">Bind Terminal</a>
 
-                                                <a href="{{ url('/permission') }}/{{ $this->encrypted($terminal->terminal_id) }}" class="dropdown-item">
-                                                    <i class="icofont icofont-layout text-info"></i> Permission
-                                                </a>
-                                                <a href="{{ url('/printing-details') }}/{{ $this->encrypted($terminal->terminal_id) }}" class="dropdown-item">
-                                                    <i class="icofont icofont-print text-success"></i> Print Details
-                                                </a>
-                                                <a href="{{ url('/bind-terminals') }}/{{ $this->encrypted($terminal->terminal_id) }}/{{ $this->encrypted($terminal->branch_id) }}" class="dropdown-item">
-                                                    <i class="icofont icofont-at text-success"></i> Bind Terminal
-                                                </a>
+                                            @if ((int) ($terminal->is_locked ?? 0) === 0)
+                                                <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-amber-700 hover:bg-amber-50" wire:click="lockTerminal({{ $terminal->terminal_id }})">Lock Device</button>
+                                            @else
+                                                <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-emerald-700 hover:bg-emerald-50" wire:click="unlockTerminal({{ $terminal->terminal_id }})">Unlock Device</button>
+                                            @endif
 
-                                                @if ((int) ($terminal->is_locked ?? 0) === 0)
-                                                    <button type="button" class="dropdown-item" wire:click="lockTerminal({{ $terminal->terminal_id }})">
-                                                        <i class="icofont icofont-lock text-warning"></i> Lock Device
-                                                    </button>
-                                                @else
-                                                    <button type="button" class="dropdown-item" wire:click="unlockTerminal({{ $terminal->terminal_id }})">
-                                                        <i class="icofont icofont-unlocked text-success"></i> Unlock Device
-                                                    </button>
-                                                @endif
-
-                                                <button type="button" class="dropdown-item" wire:click="checkDeviceStatus({{ $terminal->terminal_id }})">
-                                                    <i class="icofont icofont-verification-check text-info"></i> Device Status
-                                                </button>
-                                            </div>
+                                            <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-erp-text hover:bg-slate-50" wire:click="checkDeviceStatus({{ $terminal->terminal_id }})">Device Status</button>
                                         </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="11" class="text-center text-muted">No terminals found.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="m-t-15">
-                    {{ $terminals->links() }}
-                </div>
+                                    </details>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="11" class="px-4 py-12 text-center">
+                                    <div class="mx-auto max-w-sm">
+                                        <div class="text-base font-bold text-erp-ink">No terminals found</div>
+                                        <div class="mt-1 text-sm text-erp-mute">Change filters or add a new terminal above.</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-    </section>
 
-    {{-- Lock / Unlock Result Modal --}}
-    <div class="modal fade" id="terminalLockResultModal" tabindex="-1" role="dialog" aria-labelledby="terminalLockResultModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm" role="document">
-            <div class="modal-content">
-                <div class="modal-header" id="lockResultModalHeader">
-                    <h5 class="modal-title" id="terminalLockResultModalLabel">Result</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+        <div class="border-t border-erp-line px-5 py-4">
+            {{ $terminals->links('pagination::tailwind') }}
+        </div>
+    </div>
+
+    <div id="terminalLockResultModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/60 px-4 py-6">
+        <div class="w-full max-w-sm rounded-lg bg-white shadow-menu">
+            <div id="lockResultModalHeader" class="flex items-center justify-between rounded-t-lg px-5 py-4">
+                <h3 id="terminalLockResultModalLabel" class="text-base font-bold">Result</h3>
+                <button type="button" class="rounded-lg px-2 py-1 text-xl leading-none hover:bg-white/20" onclick="window.closeTerminalLockResult()">x</button>
+            </div>
+            <div class="px-5 py-6 text-center">
+                <div id="lockResultIcon" class="mx-auto flex h-12 w-12 items-center justify-center rounded-full text-sm font-black"></div>
+                <p id="lockResultMessage" class="mt-4 text-sm font-bold text-erp-ink"></p>
+                <div id="lockResultPasswordWrap" class="mt-4 hidden">
+                    <div class="text-xs font-bold uppercase tracking-[0.18em] text-erp-mute">Lock Password</div>
+                    <div id="lockResultPassword" class="mt-2 inline-flex rounded-lg bg-amber-50 px-4 py-2 text-sm font-black tracking-[0.24em] text-amber-800 ring-1 ring-amber-200"></div>
                 </div>
-                <div class="modal-body text-center">
-                    <div id="lockResultIcon" class="m-b-10" style="font-size:38px;"></div>
-                    <p id="lockResultMessage" class="m-b-0" style="font-size:14px;font-weight:600;"></p>
-                    <div id="lockResultPasswordWrap" class="m-t-10" style="display:none;">
-                        <span class="text-muted" style="font-size:12px;">Lock Password</span><br>
-                        <span id="lockResultPassword" class="badge badge-warning" style="font-size:14px;letter-spacing:2px;"></span>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-default" data-dismiss="modal">Close</button>
-                </div>
+            </div>
+            <div class="border-t border-erp-line px-5 py-4 text-right">
+                <button type="button" class="rounded-lg border border-erp-line px-4 py-2 text-sm font-bold text-erp-text transition hover:border-erp hover:text-erp-dark" onclick="window.closeTerminalLockResult()">Close</button>
             </div>
         </div>
     </div>
 
     @script
     <script>
-            const initTerminalSelect2 = function () {
-                $('.terminal-manager-page .terminal-select2').each(function () {
-                    const $el = $(this);
-                    const property = $el.data('property');
-                    const currentValue = $wire.get(property) || '';
+        window.closeTerminalLockResult = function () {
+            const modal = document.getElementById('terminalLockResultModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        };
 
-                    if ($el.hasClass('select2-hidden-accessible')) {
-                        $el.off('change.terminal-manager');
-                        $el.select2('destroy');
-                    }
+        $wire.on('show-lock-result', ({ action, success, message, password }) => {
+            const modal = document.getElementById('terminalLockResultModal');
+            const icon = document.getElementById('lockResultIcon');
+            const header = document.getElementById('lockResultModalHeader');
+            const label = document.getElementById('terminalLockResultModalLabel');
+            const messageEl = document.getElementById('lockResultMessage');
+            const pwWrap = document.getElementById('lockResultPasswordWrap');
+            const pw = document.getElementById('lockResultPassword');
 
-                    $el.val(currentValue);
-                    $el.select2({
-                        width: '100%',
-                        dropdownAutoWidth: false
-                    });
+            icon.textContent = success ? 'OK' : 'ERR';
+            icon.className = 'mx-auto flex h-12 w-12 items-center justify-center rounded-full text-sm font-black ' + (success ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-1 ring-rose-200');
+            header.className = 'flex items-center justify-between rounded-t-lg px-5 py-4 ' + (success ? 'bg-emerald-600 text-white' : 'bg-rose-600 text-white');
+            label.textContent = action === 'lock' ? 'Lock Device' : 'Unlock Device';
+            messageEl.textContent = message || '';
 
-                    $el.on('change.terminal-manager', function () {
-                        $wire.set(property, $(this).val() || '');
-                    });
-                });
-            };
+            if (success && action === 'lock' && password) {
+                pw.textContent = password;
+                pwWrap.classList.remove('hidden');
+            } else {
+                pwWrap.classList.add('hidden');
+            }
 
-            initTerminalSelect2();
-
-            Livewire.hook('morph.updating', function () {
-                $('.terminal-manager-page .terminal-select2.select2-hidden-accessible').each(function () {
-                    $(this).off('change.terminal-manager');
-                    $(this).select2('destroy');
-                });
-            });
-
-            Livewire.hook('morph.updated', function () {
-                window.requestAnimationFrame(initTerminalSelect2);
-            });
-
-            $wire.on('show-lock-result', ({ action, success, message, password }) => {
-                document.getElementById('lockResultIcon').innerHTML = success
-                    ? '<i class="icofont icofont-check-circled text-success"></i>'
-                    : '<i class="icofont icofont-close-circled text-danger"></i>';
-
-                document.getElementById('lockResultMessage').textContent = message || '';
-
-                const header = document.getElementById('lockResultModalHeader');
-                header.className = 'modal-header ' + (success ? 'bg-success text-white' : 'bg-danger text-white');
-
-                document.getElementById('terminalLockResultModalLabel').textContent =
-                    action === 'lock' ? 'Lock Device' : 'Unlock Device';
-
-                const pwWrap = document.getElementById('lockResultPasswordWrap');
-                if (success && action === 'lock' && password) {
-                    document.getElementById('lockResultPassword').textContent = password;
-                    pwWrap.style.display = 'block';
-                } else {
-                    pwWrap.style.display = 'none';
-                }
-
-                $('#terminalLockResultModal').modal('show');
-            });
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        });
     </script>
     @endscript
 </div>

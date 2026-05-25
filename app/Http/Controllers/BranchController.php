@@ -28,7 +28,7 @@ class BranchController extends Controller
 	{
 		$search = request('search', '');
 		$details = $branchService->getBranchesPaginated($search);
-		return view('Branch.list', compact('details', 'search'));
+		return view('v2.branch.list', compact('details', 'search'));
 	}
 
 	public function index(branch $branch)
@@ -37,7 +37,7 @@ class BranchController extends Controller
 		$company = $branch->getCompany();
 		$city = $branch->getcity();
 		$reports = DB::table("reports")->where("status", 1)->get();
-		return view('Branch.create', compact('country', 'city', 'company', 'reports'));
+		return view('v2.branch.create', compact('country', 'city', 'company', 'reports'));
 	}
 
 	public function store(branch $branch, Request $request)
@@ -181,7 +181,7 @@ class BranchController extends Controller
 		$details = $branch->branch_details(session('company_id'), Crypt::decrypt($request->id));
 		$reports = DB::table("reports")->where("status", 1)->get();
 		$branchreports = DB::table("branch_reports")->where("branch_id", Crypt::decrypt($request->id))->where("status", 1)->pluck("report_id");
-		return view('Branch.edit', compact('country', 'city', 'details', 'company', 'reports', 'branchreports'));
+		return view('v2.branch.edit', compact('country', 'city', 'details', 'company', 'reports', 'branchreports'));
 	}
 
 

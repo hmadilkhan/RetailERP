@@ -37,7 +37,7 @@ class AdminCompanyController extends Controller
     {
         $search = request('search', '');
         $companies = $this->companyService->getPaginated($search);
-        return view('Admin.Company.list', compact('companies', 'search'));
+        return view('v2.company.admin-list', compact('companies', 'search'));
     }
 
     /**
@@ -48,7 +48,7 @@ class AdminCompanyController extends Controller
     public function create()
     {
         $data = $this->companyService->getFormData();
-        return view('Admin.Company.create', $data);
+        return view('v2.company.admin-create', $data);
     }
 
     /**
@@ -112,7 +112,7 @@ class AdminCompanyController extends Controller
     public function edit($id)
     {
         $data = $this->companyService->getEditFormData($id);
-        return view('Admin.Company.edit', $data);
+        return view('v2.company.admin-edit', $data);
     }
 
     /**

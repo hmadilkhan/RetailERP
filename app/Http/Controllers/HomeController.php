@@ -49,6 +49,10 @@ class HomeController extends Controller
     }
     public function index(dashboard $dash, Request $request)
     {
+        if (session('roleId') == 1) {
+            return app(\App\Http\Controllers\V2\AdminDashboardController::class)->index();
+        }
+
         // $customers = $dash->getCustomersCount();
         // $masters = $dash->getMastersCount();
         // $vendors = $dash->getVendorsCount();
