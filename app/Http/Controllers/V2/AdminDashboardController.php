@@ -11,6 +11,10 @@ class AdminDashboardController extends Controller
 {
     public function index()
     {
+        if ((int) session('roleId') !== 1) {
+            return redirect()->route('home');
+        }
+
         $cards = [
             [
                 'label' => 'Users',

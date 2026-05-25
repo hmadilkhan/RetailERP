@@ -1,4 +1,4 @@
-@extends('layouts.master-tailwind')
+@extends('layouts.master-layout')
 
 @section('title', 'Dashboard')
 @section('breadcrumtitle', 'Dashboard')

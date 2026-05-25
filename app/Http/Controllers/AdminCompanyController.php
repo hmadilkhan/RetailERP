@@ -37,7 +37,7 @@ class AdminCompanyController extends Controller
     {
         $search = request('search', '');
         $companies = $this->companyService->getPaginated($search);
-        return view('v2.company.admin-list', compact('companies', 'search'));
+        return view(session('roleId') == 1 ? 'v2.company.admin-list' : 'Admin.Company.list', compact('companies', 'search'));
     }
 
     /**
@@ -48,7 +48,7 @@ class AdminCompanyController extends Controller
     public function create()
     {
         $data = $this->companyService->getFormData();
-        return view('v2.company.admin-create', $data);
+        return view(session('roleId') == 1 ? 'v2.company.admin-create' : 'Admin.Company.create', $data);
     }
 
     /**
@@ -112,7 +112,7 @@ class AdminCompanyController extends Controller
     public function edit($id)
     {
         $data = $this->companyService->getEditFormData($id);
-        return view('v2.company.admin-edit', $data);
+        return view(session('roleId') == 1 ? 'v2.company.admin-edit' : 'Admin.Company.edit', $data);
     }
 
     /**

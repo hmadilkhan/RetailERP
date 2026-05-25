@@ -18,13 +18,13 @@ class CompanyController extends Controller
     public function show(company $company){
         $search = request('search', '');
         $company = $company->get_company_paginated($search);
-        return view('v2.company.list', compact('company', 'search'));
+        return view(session('roleId') == 1 ? 'v2.company.list' : 'Company.list', compact('company', 'search'));
     }
 
      public function index(company $company){
     	$country = $company->getcountry();
         $city = $company->getcity();
-    	return view('v2.company.create', compact('country','city'));	
+    	return view(session('roleId') == 1 ? 'v2.company.create' : 'Company.create', compact('country','city'));	
     }
 
     public function create(Request $request,company $company)

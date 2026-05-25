@@ -8,7 +8,6 @@ use App\Models\Terminal;
 use App\Services\TerminalLockService;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -427,7 +426,6 @@ class TerminalManager extends Component
     }
 
     #[Title('Terminal Manager')]
-    #[Layout('layouts.master-tailwind')]
     public function render()
     {
         $companies = Company::query()
@@ -476,13 +474,21 @@ class TerminalManager extends Component
                 ->values();
         }
 
-        return view('livewire.terminals.terminal-manager', [
+        $data = [
             'companies' => $companies,
             'filterBranches' => $filterBranches,
             'formBranches' => $formBranches,
             'terminals' => $terminals,
             'terminalRows' => $terminalRows,
-        ]);
+        ];
+
+        if ((int) session('roleId') === 1) {
+            return view('livewire.terminals.terminal-manager', $data)
+                ->layout('layouts.master-tailwind');
+        }
+
+        return view('livewire.terminals.terminal-manager-old', $data)
+            ->layout('components.layouts.app');
     }
 
     public function encrypted(int $id): string
