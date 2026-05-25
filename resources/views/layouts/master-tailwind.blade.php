@@ -283,6 +283,25 @@
                     <div class="mt-2 truncate text-sm font-semibold text-white">
                         {{ auth()->user()->fullname ?? auth()->user()->username ?? 'Admin' }}
                     </div>
+
+                    @if (app()->bound('impersonate') && app('impersonate')->isImpersonating())
+                        <a href="{{ route('impersonate.leave') }}"
+                            class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/10 px-3 py-2 text-sm font-bold text-white transition hover:bg-white/15">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+                            </svg>
+                            Return to Admin
+                        </a>
+                    @else
+                        <button type="button"
+                            onclick="event.preventDefault(); document.getElementById('tailwind-logout-form').submit();"
+                            class="mt-3 flex w-full items-center justify-center gap-2 rounded-lg border border-rose-300/20 bg-rose-500/10 px-3 py-2 text-sm font-bold text-rose-100 transition hover:bg-rose-500/20">
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h10" />
+                            </svg>
+                            Logout
+                        </button>
+                    @endif
                 </div>
             </div>
         </aside>
@@ -382,6 +401,10 @@
             </main>
         </div>
     </div>
+
+    <form id="tailwind-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
+        @csrf
+    </form>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @stack('scripts')
