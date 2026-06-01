@@ -35,9 +35,96 @@
         }
     </script>
 
+    @php
+        $tailwindLegacyAssets = request()->is('delivery/lists')
+            || request()->is('website/advertisement*')
+            || request()->is('website/slider*')
+            || request()->is('website/social-link*')
+            || request()->is('website/terminal-assign*')
+            || request()->is('website/branch-timings*')
+            || request()->is('website/theme-setting*')
+            || request()->is('website/testimonials*')
+            || request()->is('website/customer-reviews*')
+            || request()->is('website/booking-slots*');
+    @endphp
+
+    @if ($tailwindLegacyAssets)
+        @include('partials.html-libs')
+    @endif
+    @yield('css_code')
+    @yield('scriptcode_one')
     @stack('styles')
     <style>
+        @font-face {
+            font-family: 'yaro';
+            src: url('{{ asset('assets/fonts/YaroRg-Bold.woff2') }}') format('woff2'),
+                 url('{{ asset('assets/fonts/YaroRg-Bold.woff') }}') format('woff');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
+
         [x-cloak] { display: none !important; }
+        @if ($tailwindLegacyAssets)
+            .content-wrapper,
+            .container-fluid {
+                background: transparent !important;
+            }
+            .panels-wells,
+            .container-fluid {
+                padding: 0 !important;
+            }
+            .card {
+                border: 1px solid #d8e1ec !important;
+                border-radius: 0.5rem !important;
+                box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06) !important;
+                overflow: hidden;
+            }
+            .card-header {
+                background: #f8fafc !important;
+                border-bottom: 1px solid #d8e1ec !important;
+                padding: 1rem 1.25rem !important;
+            }
+            .card-header-text,
+            .card-header h4,
+            .card-header h5 {
+                color: #0f172a !important;
+                font-weight: 800 !important;
+                letter-spacing: 0 !important;
+                margin: 0 !important;
+            }
+            .card-block,
+            .card-body {
+                padding: 1.25rem !important;
+            }
+            .form-control {
+                border-color: #d8e1ec !important;
+                border-radius: 0.5rem !important;
+                box-shadow: none !important;
+            }
+            .form-control:focus {
+                border-color: #4CAF50 !important;
+                box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.12) !important;
+            }
+            .btn {
+                border-radius: 0.5rem !important;
+                font-weight: 700 !important;
+            }
+            .table thead th {
+                background: #f8fafc !important;
+                color: #64748b !important;
+                font-size: 0.75rem !important;
+                font-weight: 800 !important;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                border-bottom: 1px solid #d8e1ec !important;
+            }
+            .table tbody td {
+                color: #334155;
+                vertical-align: middle !important;
+                border-color: #edf2f7 !important;
+            }
+        @endif
     </style>
     @livewireStyles
 </head>
@@ -100,6 +187,23 @@
                 'company' => ['company/create', 'company/*/edit', 'company-edit/*'],
                 'terminal-manager' => ['permission/*', 'printing-details/*', 'bind-terminals/*/*'],
                 'terminals' => ['terminal-manager', 'permission/*', 'printing-details/*', 'bind-terminals/*/*'],
+                'roles' => ['roles'],
+                'pages' => ['pages'],
+                'modules-permissions' => ['modules-permissions'],
+                'website' => ['website/*', 'delivery/lists'],
+                'website/advertisement/lists' => ['website/advertisement/*'],
+                'website/slider/lists' => ['website/slider/*'],
+                'website/social-link/lists' => ['website/social-link/*'],
+                'delivery/lists' => ['delivery/*'],
+                'website/terminal-assign/view' => ['website/terminal-assign/*'],
+                'website/branch-timings/view' => ['website/branch-timings/*'],
+                'website/theme-setting' => ['website/theme-setting/*'],
+                'website/testimonials' => ['website/testimonials/*'],
+                'website/customer-reviews/lists' => ['website/customer-reviews/*'],
+                'invoice-setup' => ['invoice-setup/*'],
+                'billing/summary' => ['billing/summary'],
+                'billing/invoices' => ['billing/invoices/*'],
+                'billing/delivery-history' => ['billing/delivery-history'],
             ];
 
             foreach (($activeAliases[$pageUrl] ?? []) as $pattern) {
@@ -132,15 +236,22 @@
 
         <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" x-cloak
             class="fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col bg-erp-panel text-white shadow-menu transition-transform duration-300 lg:translate-x-0">
-            <div class="border-b border-white/10 px-4 py-4">
-                <a href="{{ url('/dashboard') }}" class="flex items-center gap-1 rounded-lg p-1 transition hover:bg-white/[0.04]">
-                    <span class="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden">
-                        <img src="{{ asset('images/sabify-mark.png') }}" alt="Sabify" class="h-full w-full object-contain">
+            <div class="border-b border-white/10 px-5 py-6">
+                <a href="{{ url('/dashboard') }}"
+                    class="group relative block overflow-hidden rounded-lg px-3 py-4 text-center transition hover:bg-white/[0.04]">
+                    <span class="pointer-events-none absolute inset-x-8 top-4 h-8 rounded-full bg-[#2faa4f]/18 blur-xl transition group-hover:bg-[#2faa4f]/25"></span>
+                    <span class="relative flex items-center justify-center gap-2">
+                        <span class="h-2 w-2 rounded-full bg-[#2faa4f] shadow-[0_0_16px_rgba(47,170,79,0.85)]"></span>
+                        <span class="h-px w-8 bg-gradient-to-r from-transparent to-[#2faa4f]/70"></span>
+                        <span class="text-[42px] font-bold leading-none text-[#2faa4f]"
+                            style="font-family: yaro, Arial, sans-serif; letter-spacing: 0.02em;">
+                            sabify
+                        </span>
+                        <span class="h-px w-8 bg-gradient-to-l from-transparent to-[#2faa4f]/70"></span>
+                        <span class="h-2 w-2 rounded-full bg-[#2faa4f] shadow-[0_0_16px_rgba(47,170,79,0.85)]"></span>
                     </span>
-                    <span class="min-w-0 -ml-1 pt-1">
-                        <span class="block text-2xl font-black leading-none tracking-tight text-white">Sabify</span>
-                        <span class="mt-2 block text-[10px] font-black uppercase leading-4 tracking-[0.18em] text-erp-light">Retail & Restaurant</span>
-                        <span class="block text-[10px] font-semibold uppercase tracking-[0.22em] text-slate-400">ERP Provider</span>
+                    <span class="relative mt-2 block text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">
+                        Retail ERP
                     </span>
                 </a>
             </div>
@@ -158,7 +269,8 @@
                                 $hasChildren = $children->isNotEmpty() && (int) $pages->icofont_arrow !== 0;
                                 $isActive = $sidebarIsActive($pages);
                                 $hasActiveChild = $sidebarHasActiveDescendant($pages)
-                                    || (\Illuminate\Support\Str::snake(strtolower($pages->page_name)) === 'billing_section' && $currentUrl == 'billing/delivery-history');
+                                    || (\Illuminate\Support\Str::snake(strtolower($pages->page_name)) === 'billing_section'
+                                        && (\Illuminate\Support\Str::is('billing/*', $currentUrl) || \Illuminate\Support\Str::is('invoice-setup*', $currentUrl)));
                             @endphp
 
                             @if (!$hasChildren)
@@ -347,7 +459,7 @@
                 </div>
             </header>
 
-            <main class="mx-auto max-w-[92rem] px-4 py-6 sm:px-6 lg:px-8">
+            <main class="w-full px-4 py-6 sm:px-6 lg:px-8">
                 <div class="mb-6 rounded-lg border border-erp-line bg-white px-5 py-5 shadow-sm">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                         <div class="min-w-0">
@@ -407,7 +519,11 @@
     </form>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    @if ($tailwindLegacyAssets)
+        @include('partials.js-libs')
+    @endif
     @stack('scripts')
+    @yield('scriptcode_three')
     @livewireScripts
 </body>
 

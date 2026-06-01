@@ -17,7 +17,7 @@ class sideBarController extends Controller
 
     public function index(sideBar $sideBar){
         $details = $sideBar->getdetails();
-        return view('SideBarPages.Pages', compact('details'));
+        return view(session('roleId') == 1 ? 'v2.sidebar.pages' : 'SideBarPages.Pages', compact('details'));
     }
 
     public function store(sideBar $sideBar, Request $request){
@@ -104,7 +104,7 @@ class sideBarController extends Controller
 //            ];
 //        }
 
-        return view('SideBarPages.Roles', compact('details','getroles','roledetails','roles','pages'));
+        return view(session('roleId') == 1 ? 'v2.sidebar.roles' : 'SideBarPages.Roles', compact('details','getroles','roledetails','roles','pages'));
     }
 
     public function insertRole(sideBar $sideBar, Request $request){

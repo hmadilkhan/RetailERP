@@ -39,7 +39,7 @@ class WebsiteController extends Controller
         // Execute the query
         $getRecord = $getRecord->get();
 
-        return view("websites.index", [
+        return view(session('roleId') == 1 ? "v2.website.index" : "websites.index", [
             "websites" => $getRecord,
             "mode"     => isset($request->mode) ? 1 : 0
         ]);
@@ -47,7 +47,7 @@ class WebsiteController extends Controller
 
     public function create(Request $request)
     {
-        return view("websites.create", [
+        return view(session('roleId') == 1 ? "v2.website.create" : "websites.create", [
             "companies" => Company::all()
         ]);
     }
@@ -159,7 +159,7 @@ class WebsiteController extends Controller
         }
 
 
-        return view("websites.edit", [
+        return view(session('roleId') == 1 ? "v2.website.edit" : "websites.edit", [
             "website" => $website_detail,
             // "companies" => Company::all()
         ]);

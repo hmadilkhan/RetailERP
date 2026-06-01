@@ -129,10 +129,10 @@ class BillingController extends Controller
         $selectedStatus = $request->status;
 
         if ($request->ajax()) {
-            return view('Admin.Billing.partials.summary-content', compact('summary'));
+            return view(session('roleId') == 1 ? 'v2.billing.partials.summary-content' : 'Admin.Billing.partials.summary-content', compact('summary'));
         }
 
-        return view('Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId', 'selectedStatus', 'invoiceType'));
+        return view(session('roleId') == 1 ? 'v2.billing.summary' : 'Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId', 'selectedStatus', 'invoiceType'));
     }
 
     public function index(Request $request)
@@ -211,7 +211,7 @@ class BillingController extends Controller
         $invoices = $query->orderByDesc('id')->paginate(20);
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
 
-        return view('Admin.Billing.invoices.index', compact('invoices', 'companies', 'invoiceType', 'paymentSummary'));
+        return view(session('roleId') == 1 ? 'v2.billing.invoices.index' : 'Admin.Billing.invoices.index', compact('invoices', 'companies', 'invoiceType', 'paymentSummary'));
     }
 
     public function deliveryHistory(Request $request)
@@ -337,7 +337,7 @@ class BillingController extends Controller
 
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
 
-        return view('Admin.Billing.delivery-history', compact('deliveryLogs', 'recentRuns', 'companies'));
+        return view(session('roleId') == 1 ? 'v2.billing.delivery-history' : 'Admin.Billing.delivery-history', compact('deliveryLogs', 'recentRuns', 'companies'));
     }
 
     public function create()
@@ -347,7 +347,7 @@ class BillingController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('Admin.Billing.invoices.create', compact('companies'));
+        return view(session('roleId') == 1 ? 'v2.billing.invoices.create' : 'Admin.Billing.invoices.create', compact('companies'));
     }
 
     public function invoiceGenerationTargets(Request $request)
@@ -597,7 +597,7 @@ class BillingController extends Controller
         $paymentModes = OrderPayment::orderBy('payment_mode')->get(['payment_id', 'payment_mode']);
         $customerCreditBalance = app(CustomerCreditService::class)->availableBalance($invoice->company_id);
 
-        return view('Admin.Billing.invoices.show', compact('invoice', 'paymentModes', 'customerCreditBalance'));
+        return view(session('roleId') == 1 ? 'v2.billing.invoices.show' : 'Admin.Billing.invoices.show', compact('invoice', 'paymentModes', 'customerCreditBalance'));
     }
 
     public function sendToWhatsApp($id, InvoiceGenerationService $invoiceGenerationService)

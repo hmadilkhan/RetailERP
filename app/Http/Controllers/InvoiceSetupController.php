@@ -48,16 +48,16 @@ class InvoiceSetupController extends Controller
         $invoiceSetups = $query->orderByDesc('id')->paginate(20)->withQueryString();
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
 
-        return view('Admin.InvoiceSetup.index', compact('invoiceSetups', 'companies', 'summary'));
+        return view(session('roleId') == 1 ? 'v2.billing.invoice-setup.index' : 'Admin.InvoiceSetup.index', compact('invoiceSetups', 'companies', 'summary'));
     }
 
     public function create()
     {
-        return view('Admin.InvoiceSetup.create');
+        return view(session('roleId') == 1 ? 'v2.billing.invoice-setup.create' : 'Admin.InvoiceSetup.create');
     }
 
     public function edit($id)
     {
-        return view('Admin.InvoiceSetup.edit', compact('id'));
+        return view(session('roleId') == 1 ? 'v2.billing.invoice-setup.edit' : 'Admin.InvoiceSetup.edit', compact('id'));
     }
 }

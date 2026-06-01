@@ -1,4 +1,4 @@
-@extends('layouts.master-layout')
+@extends(session('roleId') == 1 ? 'layouts.master-tailwind' : 'layouts.master-layout')
 @section('title','Edit Testimonial')
 @section('breadcrumtitle','Edit Testimonial')
 @section('navwebsite','active')

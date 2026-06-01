@@ -23,7 +23,7 @@ class settingsController extends Controller
         $companies = $settings->getcompany_name();
         $modulesdetails = $settings->getmodulesdetails();
 
-        return view('settings.modules-permissions', compact('pages','company','companies','modulesdetails'));
+        return view(session('roleId') == 1 ? 'v2.settings.modules-permissions' : 'settings.modules-permissions', compact('pages','company','companies','modulesdetails'));
     }
 
     public function store(settings $settings, Request $request){

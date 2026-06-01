@@ -46,6 +46,10 @@ class WhatsAppAccessManager extends Component
     public function mount(): void
     {
         abort_unless(session('roleId') == 1, 403);
+
+        if ((int) session('roleId') === 1) {
+            $this->paginationTheme = 'tailwind';
+        }
     }
 
     public function boot(): void
@@ -403,7 +407,7 @@ class WhatsAppAccessManager extends Component
     #[Title('WhatsApp Access Manager')]
     public function render()
     {
-        return view('livewire.whats-app-access-manager', [
+        $data = [
             'users' => $this->users,
             'accesses' => $this->accesses,
             'companies' => $this->companies,
@@ -418,7 +422,14 @@ class WhatsAppAccessManager extends Component
                 ->when($this->userHasStatusColumn, fn ($query) => $query->where('status', 1))
                 ->orderBy('mobile_number')
                 ->get(),
-        ]);
+        ];
+
+        if ((int) session('roleId') === 1) {
+            return view('livewire.v2.whats-app-access-manager', $data)
+                ->layout('layouts.master-tailwind', ['title' => 'WhatsApp Access Manager']);
+        }
+
+        return view('livewire.whats-app-access-manager', $data);
     }
 
     private function normalizeMobile(string $value): string

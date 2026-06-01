@@ -147,6 +147,6 @@ class InvoiceSetup extends Component
 
     public function render()
     {
-        return view('livewire.invoice-setup-form');
+        return view(session('roleId') == 1 ? 'livewire.v2.invoice-setup-form' : 'livewire.invoice-setup-form');
     }
 }
