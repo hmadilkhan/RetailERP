@@ -41,7 +41,6 @@
                     <input type="text" name="search" id="userSearch" value="{{ $search }}" autocomplete="off"
                         placeholder="Search users..."
                         class="h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp sm:w-80">
-                    <a href="{{ url('/create-user') }}" class="inline-flex h-10 shrink-0 items-center rounded-lg bg-erp px-4 text-sm font-bold text-white transition hover:bg-erp-dark">Create</a>
                 </form>
             </div>
 
