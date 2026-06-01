@@ -158,7 +158,16 @@
 @push('scripts')
     <script>
         let branchSearchTimer;
-        document.getElementById('branchSearch')?.addEventListener('input', function () {
+        const branchSearchInput = document.getElementById('branchSearch');
+
+        if (branchSearchInput?.value) {
+            window.requestAnimationFrame(function () {
+                branchSearchInput.focus();
+                branchSearchInput.setSelectionRange(branchSearchInput.value.length, branchSearchInput.value.length);
+            });
+        }
+
+        branchSearchInput?.addEventListener('input', function () {
             clearTimeout(branchSearchTimer);
             branchSearchTimer = setTimeout(function () {
                 document.getElementById('searchForm').submit();

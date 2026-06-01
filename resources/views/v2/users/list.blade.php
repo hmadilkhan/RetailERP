@@ -148,7 +148,16 @@
 @push('scripts')
     <script>
         let userSearchTimer;
-        document.getElementById('userSearch')?.addEventListener('input', function () {
+        const userSearchInput = document.getElementById('userSearch');
+
+        if (userSearchInput?.value) {
+            window.requestAnimationFrame(function () {
+                userSearchInput.focus();
+                userSearchInput.setSelectionRange(userSearchInput.value.length, userSearchInput.value.length);
+            });
+        }
+
+        userSearchInput?.addEventListener('input', function () {
             clearTimeout(userSearchTimer);
             userSearchTimer = setTimeout(function () {
                 document.getElementById('searchForm').submit();

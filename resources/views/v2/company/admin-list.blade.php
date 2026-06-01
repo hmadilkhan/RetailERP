@@ -124,7 +124,16 @@
 @push('scripts')
     <script>
         let companySearchTimer;
-        document.getElementById('companySearch')?.addEventListener('input', function () {
+        const companySearchInput = document.getElementById('companySearch');
+
+        if (companySearchInput?.value) {
+            window.requestAnimationFrame(function () {
+                companySearchInput.focus();
+                companySearchInput.setSelectionRange(companySearchInput.value.length, companySearchInput.value.length);
+            });
+        }
+
+        companySearchInput?.addEventListener('input', function () {
             clearTimeout(companySearchTimer);
             companySearchTimer = setTimeout(function () {
                 document.getElementById('searchForm').submit();
