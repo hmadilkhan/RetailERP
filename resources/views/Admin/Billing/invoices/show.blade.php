@@ -219,7 +219,7 @@
                         </div>
                         <div class="form-group">
                             <label>Payment Mode</label>
-                            <select class="form-control" name="payment_mode_id" id="payment_mode_id">
+                            <select class="form-control select2 billing-select2" name="payment_mode_id" id="payment_mode_id">
                                 <option value="">Select payment mode</option>
                                 @foreach($paymentModes as $paymentMode)
                                     <option value="{{ $paymentMode->payment_id }}" data-is-cash="{{ strcasecmp(trim((string) $paymentMode->payment_mode), 'cash') === 0 ? '1' : '0' }}" {{ old('payment_mode_id') == $paymentMode->payment_id ? 'selected' : '' }}>
@@ -262,7 +262,7 @@
                         @csrf
                         <div class="form-group">
                             <label>Type</label>
-                            <select class="form-control" name="type" required>
+                            <select class="form-control select2 billing-select2" name="type" required>
                                 <option value="debit">Debit (+)</option>
                                 <option value="credit">Credit (-)</option>
                             </select>
@@ -297,7 +297,7 @@
                         @csrf
                         <div class="form-group">
                             <label>Discount Type</label>
-                            <select class="form-control" name="discount_type" required>
+                            <select class="form-control select2 billing-select2" name="discount_type" required>
                                 <option value="percentage">Percentage (%)</option>
                                 <option value="amount">Fixed Amount</option>
                             </select>
@@ -546,8 +546,10 @@
 </section>
 @endsection
 
-@push('script')
+@section('scriptcode_three')
 <script>
+    $('.select2').select2({ width: '100%' });
+
     (function () {
         var paymentModeSelect = document.getElementById('payment_mode_id');
         var screenshotsInput = document.getElementById('payment_screenshots');
@@ -570,7 +572,8 @@
         }
 
         paymentModeSelect.addEventListener('change', syncScreenshotRequirement);
+        $('#payment_mode_id').on('change.select2', syncScreenshotRequirement);
         syncScreenshotRequirement();
     })();
 </script>
-@endpush
+@endsection

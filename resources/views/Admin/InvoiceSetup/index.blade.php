@@ -61,7 +61,7 @@
                     <form method="get" class="row">
                         <div class="col-md-3">
                             <label class="f-w-600">Company</label>
-                            <select name="company_id" class="form-control select2">
+                            <select name="company_id" class="form-control select2 billing-select2">
                                 <option value="">All Companies</option>
                                 @foreach ($companies as $company)
                                     <option value="{{ $company->company_id }}" {{ request('company_id') == $company->company_id ? 'selected' : '' }}>
@@ -72,7 +72,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="f-w-600">Invoice Type</label>
-                            <select name="invoice_type" class="form-control">
+                            <select name="invoice_type" class="form-control select2 billing-select2">
                                 <option value="">All Types</option>
                                 <option value="branch" {{ request('invoice_type') == 'branch' ? 'selected' : '' }}>Branch</option>
                                 <option value="terminal" {{ request('invoice_type') == 'terminal' ? 'selected' : '' }}>Terminal</option>
@@ -80,7 +80,7 @@
                         </div>
                         <div class="col-md-2">
                             <label class="f-w-600">Auto Invoice</label>
-                            <select name="is_auto_invoice" class="form-control">
+                            <select name="is_auto_invoice" class="form-control select2 billing-select2">
                                 <option value="">All</option>
                                 <option value="1" {{ request('is_auto_invoice') === '1' ? 'selected' : '' }}>Enabled</option>
                                 <option value="0" {{ request('is_auto_invoice') === '0' ? 'selected' : '' }}>Disabled</option>
@@ -170,6 +170,6 @@
 
 @section('scriptcode_three')
     <script>
-        $('.select2').select2();
+        $('.select2').select2({ width: '100%' });
     </script>
 @endsection

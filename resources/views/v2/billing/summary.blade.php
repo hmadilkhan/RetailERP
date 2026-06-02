@@ -20,11 +20,11 @@
                 </div>
 
                 <form method="GET" action="{{ route('billing.summary') }}" class="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-5">
-                    <select name="invoice_type" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="invoice_type" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Select invoice type">
                         <option value="monthly" {{ ($invoiceType ?? 'monthly') === 'monthly' ? 'selected' : '' }}>Monthly Invoices</option>
                         <option value="previous_due" {{ ($invoiceType ?? 'monthly') === 'previous_due' ? 'selected' : '' }}>Previous Due</option>
                     </select>
-                    <select name="company_id" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="company_id" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Companies">
                         <option value="">All Companies</option>
                         @foreach($companies as $company)
                             <option value="{{ $company->company_id }}" {{ (string) $selectedCompanyId === (string) $company->company_id ? 'selected' : '' }}>
@@ -32,7 +32,7 @@
                             </option>
                         @endforeach
                     </select>
-                    <select name="status" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="status" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Statuses">
                         <option value="">All Statuses</option>
                         <option value="paid" {{ $selectedStatus === 'paid' ? 'selected' : '' }}>Paid</option>
                         <option value="partial" {{ $selectedStatus === 'partial' ? 'selected' : '' }}>Partial</option>

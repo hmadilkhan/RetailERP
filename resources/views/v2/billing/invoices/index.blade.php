@@ -71,17 +71,17 @@
                     </div>
                 </div>
                 <form method="GET" action="{{ route('billing.invoices.index') }}" class="mt-4 grid gap-2 md:grid-cols-3 xl:grid-cols-6">
-                    <select name="company_id" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="company_id" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Companies">
                         <option value="">All Companies</option>
                         @foreach ($companies as $company)
                             <option value="{{ $company->company_id }}" {{ request('company_id') == $company->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
                         @endforeach
                     </select>
-                    <select name="invoice_type" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="invoice_type" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Select invoice type">
                         <option value="monthly" {{ ($invoiceType ?? 'monthly') == 'monthly' ? 'selected' : '' }}>Monthly</option>
                         <option value="previous_due" {{ ($invoiceType ?? 'monthly') == 'previous_due' ? 'selected' : '' }}>Previous Due</option>
                     </select>
-                    <select name="status" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="status" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Statuses">
                         <option value="">All Statuses</option>
                         @foreach (['draft', 'issued', 'partial', 'paid', 'overdue', 'void'] as $status)
                             <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>

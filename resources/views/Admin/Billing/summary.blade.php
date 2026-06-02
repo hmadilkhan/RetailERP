@@ -81,7 +81,7 @@
                     <div class="row align-items-end">
                         <div class="col-lg-4 col-md-12 m-b-10">
                             <label class="f-w-600">Filter by Company</label>
-                            <select name="company_id" id="billing-summary-company-filter" class="form-control select2" data-placeholder="Search company">
+                            <select name="company_id" id="billing-summary-company-filter" class="form-control select2 billing-select2" data-placeholder="Search company">
                                 <option value="">All Companies</option>
                                 @foreach($companies as $company)
                                     <option value="{{ $company->company_id }}" {{ (string) $selectedCompanyId === (string) $company->company_id ? 'selected' : '' }}>
@@ -92,7 +92,7 @@
                         </div>
                         <div class="col-lg-4 col-md-12 m-b-10">
                             <label class="f-w-600">Filter by Status</label>
-                            <select name="status" id="billing-summary-status-filter" class="form-control select2" data-placeholder="Select Status">
+                            <select name="status" id="billing-summary-status-filter" class="form-control select2 billing-select2" data-placeholder="Select Status">
                                 <option value="">All Statuses</option>
                                 <option value="paid" {{ $selectedStatus === 'paid' ? 'selected' : '' }}>Paid</option>
                                 <option value="partial" {{ $selectedStatus === 'partial' ? 'selected' : '' }}>Partial</option>

@@ -25,7 +25,7 @@
                 <form method="get" class="row">
                     <div class="col-md-3">
                         <label>Company</label>
-                        <select name="company_id" class="form-control select2">
+                        <select name="company_id" class="form-control select2 billing-select2">
                             <option value="">All</option>
                             @foreach ($companies as $company)
                                 <option value="{{ $company->company_id }}" {{ request('company_id') == $company->company_id ? 'selected' : '' }}>
@@ -36,7 +36,7 @@
                     </div>
                     <div class="col-md-2">
                         <label>Status</label>
-                        <select name="status" class="form-control">
+                        <select name="status" class="form-control select2 billing-select2">
                             <option value="">All</option>
                             @foreach (['sent', 'skipped', 'failed', 'processed'] as $status)
                                 <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
@@ -206,6 +206,6 @@
 
 @section('scriptcode_three')
     <script>
-        $('.select2').select2();
+        $('.select2').select2({ width: '100%' });
     </script>
 @endsection

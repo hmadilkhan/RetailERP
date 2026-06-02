@@ -27,7 +27,7 @@
                     @csrf
                     <div class="col-md-4">
                         <label>Company</label>
-                        <select class="form-control select2" name="company_id" required>
+                        <select class="form-control select2 billing-select2" name="company_id" required>
                             <option value="">Select Company</option>
                             @foreach ($companies as $company)
                                 <option value="{{ $company->company_id }}" {{ old('company_id') == $company->company_id ? 'selected' : '' }}>
@@ -58,7 +58,7 @@
                     </div>
                     <div class="col-md-4 m-t-10">
                         <label>Generation Mode</label>
-                        <select class="form-control" name="generation_mode" id="generation_mode">
+                        <select class="form-control select2 billing-select2" name="generation_mode" id="generation_mode">
                             <option value="auto" {{ old('generation_mode', 'auto') === 'auto' ? 'selected' : '' }}>Automatic</option>
                             <option value="manual" {{ old('generation_mode') === 'manual' ? 'selected' : '' }}>Manual</option>
                         </select>
@@ -108,7 +108,7 @@
 
 @section('scriptcode_three')
     <script>
-        $('.select2').select2();
+        $('.select2').select2({ width: '100%' });
 
         (function () {
             var $company = $('select[name="company_id"]');

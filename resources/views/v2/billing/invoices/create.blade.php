@@ -20,7 +20,7 @@
             <div class="grid gap-5 p-5 md:grid-cols-2 xl:grid-cols-3">
                 <label class="block">
                     <span class="text-sm font-bold text-erp-ink">Company</span>
-                    <select class="mt-2 h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" name="company_id" required>
+                    <select class="billing-select2 billing-select2-lg mt-2 h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" name="company_id" data-placeholder="Select Company" required>
                         <option value="">Select Company</option>
                         @foreach ($companies as $company)
                             <option value="{{ $company->company_id }}" {{ old('company_id') == $company->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
@@ -49,7 +49,7 @@
                 </label>
                 <label class="block">
                     <span class="text-sm font-bold text-erp-ink">Generation Mode</span>
-                    <select name="generation_mode" id="generation_mode" class="mt-2 h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="generation_mode" id="generation_mode" class="billing-select2 billing-select2-lg mt-2 h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Select generation mode">
                         <option value="auto" {{ old('generation_mode', 'auto') === 'auto' ? 'selected' : '' }}>Automatic</option>
                         <option value="manual" {{ old('generation_mode') === 'manual' ? 'selected' : '' }}>Manual</option>
                     </select>
@@ -189,6 +189,10 @@
 
             company?.addEventListener('change', loadManualTargets);
             generationMode?.addEventListener('change', loadManualTargets);
+            if (window.jQuery) {
+                jQuery(company).on('change.select2', loadManualTargets);
+                jQuery(generationMode).on('change.select2', loadManualTargets);
+            }
             periodStart?.addEventListener('change', loadManualTargets);
             periodEnd?.addEventListener('change', loadManualTargets);
             loadManualTargets();

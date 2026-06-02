@@ -44,18 +44,18 @@
                         <p class="mt-1 text-sm text-erp-mute">Filter company billing rules and jump to invoice history.</p>
                     </div>
                     <form method="GET" action="{{ route('invoice-setup.index') }}" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-                        <select name="company_id" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <select name="company_id" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Companies">
                             <option value="">All Companies</option>
                             @foreach ($companies as $company)
                                 <option value="{{ $company->company_id }}" {{ request('company_id') == $company->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
                             @endforeach
                         </select>
-                        <select name="invoice_type" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <select name="invoice_type" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Types">
                             <option value="">All Types</option>
                             <option value="branch" {{ request('invoice_type') == 'branch' ? 'selected' : '' }}>Branch</option>
                             <option value="terminal" {{ request('invoice_type') == 'terminal' ? 'selected' : '' }}>Terminal</option>
                         </select>
-                        <select name="is_auto_invoice" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <select name="is_auto_invoice" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Auto: All">
                             <option value="">Auto: All</option>
                             <option value="1" {{ request('is_auto_invoice') === '1' ? 'selected' : '' }}>Enabled</option>
                             <option value="0" {{ request('is_auto_invoice') === '0' ? 'selected' : '' }}>Disabled</option>

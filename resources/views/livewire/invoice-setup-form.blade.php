@@ -21,7 +21,7 @@
                         <div class="col-md-6">
                             <div class="form-group @error('company_id') has-danger @enderror">
                                 <label class="form-control-label">Company <span class="text-danger">*</span></label>
-                                <select id="company_id" class="form-control select2">
+                                <select id="company_id" class="form-control select2 billing-select2" data-placeholder="Select Company">
                                     <option value="">Select Company</option>
                                     @foreach($companies as $company)
                                     <option value="{{ $company->company_id }}" {{ $company_id == $company->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
@@ -55,7 +55,7 @@
                                         @foreach($billing_rates as $index => $rate)
                                         <tr wire:key="billing-rate-{{ $index }}">
                                             <td>
-                                                <select wire:model.live="billing_rates.{{ $index }}.scope_type" class="form-control">
+                                                <select wire:model.live="billing_rates.{{ $index }}.scope_type" class="form-control select2 billing-select2 billing-livewire-select2" data-wire-target="billing_rates.{{ $index }}.scope_type">
                                                     <option value="company">Company</option>
                                                     <option value="branch">Branch</option>
                                                     <option value="terminal">Terminal</option>
@@ -63,14 +63,14 @@
                                             </td>
                                             <td wire:key="scope-select-{{ $index }}">
                                                 @if($rate['scope_type'] == 'branch')
-                                                <select id="scope_id_{{ $index }}" class="form-control select2-scope">
+                                                <select id="scope_id_{{ $index }}" class="form-control select2-scope billing-select2" data-placeholder="Select Branch">
                                                     <option value="">Select Branch</option>
                                                     @foreach($branches as $branch)
                                                     <option value="{{ $branch->branch_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $branch->branch_id ? 'selected' : '' }}>{{ $branch->branch_name }}</option>
                                                     @endforeach
                                                 </select>
                                                 @elseif($rate['scope_type'] == 'terminal')
-                                                <select id="scope_id_{{ $index }}" class="form-control select2-scope">
+                                                <select id="scope_id_{{ $index }}" class="form-control select2-scope billing-select2" data-placeholder="Select Terminal">
                                                     <option value="">Select Terminal</option>
                                                     @foreach($terminals as $terminal)
                                                     <option value="{{ $terminal->terminal_id }}" {{ isset($rate['scope_id']) && $rate['scope_id'] == $terminal->terminal_id ? 'selected' : '' }}>{{ $terminal->terminal_id }} | {{ $terminal->terminal_name }}</option>
@@ -115,7 +115,7 @@
                         <div class="col-md-4">
                             <div class="form-group @error('invoice_type') has-danger @enderror">
                                 <label class="form-control-label">Invoice Type</label>
-                                <select wire:model="invoice_type" class="form-control">
+                                <select wire:model="invoice_type" class="form-control select2 billing-select2 billing-livewire-select2" data-wire-target="invoice_type">
                                     <option value="branch">By Branch</option>
                                     <option value="terminal">By Terminal</option>
                                 </select>
@@ -172,8 +172,8 @@
     $(document).ready(function() {
         function initSelect2() {
             // Initialize select2 only on elements that haven't been initialized yet.
-            $(".select2:not(.select2-hidden-accessible)").select2();
-            $(".select2-scope:not(.select2-hidden-accessible)").select2();
+            $(".select2:not(.select2-hidden-accessible)").select2({ width: '100%' });
+            $(".select2-scope:not(.select2-hidden-accessible)").select2({ width: '100%' });
         }
 
         initSelect2();
@@ -189,6 +189,13 @@
             // Use .val() here as well.
             var data = $(this).val();
             $wire.set('billing_rates.' + index + '.scope_id', data);
+        });
+
+        $(document).on('change', '.billing-livewire-select2', function(e) {
+            var target = $(this).data('wire-target');
+            if (target) {
+                $wire.set(target, $(this).val());
+            }
         });
 
         // After Livewire updates the DOM, run initSelect2 to initialize any new dropdowns.

@@ -41,13 +41,13 @@
                     </div>
                 </div>
                 <form method="GET" action="{{ route('billing.delivery-history') }}" class="mt-4 grid gap-2 md:grid-cols-3 xl:grid-cols-6">
-                    <select name="company_id" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="company_id" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Companies">
                         <option value="">All Companies</option>
                         @foreach ($companies as $company)
                             <option value="{{ $company->company_id }}" {{ request('company_id') == $company->company_id ? 'selected' : '' }}>{{ $company->name }}</option>
                         @endforeach
                     </select>
-                    <select name="status" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="status" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Statuses">
                         <option value="">All Statuses</option>
                         @foreach (['sent', 'skipped', 'failed', 'processed'] as $status)
                             <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>

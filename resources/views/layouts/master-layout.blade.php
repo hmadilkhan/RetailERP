@@ -10,6 +10,33 @@
     <title>@yield('title')</title>
     @include('partials.html-libs')
     @yield('css_code')
+    @if (request()->is('billing*') || request()->is('invoice-setup*'))
+        <style>
+            .billing-select2.select2-hidden-accessible + .select2-container {
+                width: 100% !important;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection--single {
+                min-height: 35px;
+                border-color: #cccccc;
+                border-radius: 2px;
+                display: flex;
+                align-items: center;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__rendered {
+                color: #555;
+                line-height: 1.5;
+                padding-left: 12px;
+                padding-right: 28px;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__arrow {
+                height: 100%;
+                right: 6px;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container.select2-container--focus .select2-selection--single {
+                border-color: #4CAF50;
+            }
+        </style>
+    @endif
     @yield('scriptcode_one')
     @livewireStyles
 </head>

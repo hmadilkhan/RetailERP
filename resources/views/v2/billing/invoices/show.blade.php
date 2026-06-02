@@ -103,7 +103,7 @@
                     @csrf
                     <input type="date" name="payment_date" value="{{ old('payment_date', date('Y-m-d')) }}" required class="h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                     <input type="number" name="amount" min="0.01" step="0.01" placeholder="Amount" value="{{ old('amount') }}" required class="h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
-                    <select name="payment_mode_id" id="payment_mode_id" class="h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select name="payment_mode_id" id="payment_mode_id" class="billing-select2 billing-select2-lg h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Select payment mode">
                         <option value="">Select payment mode</option>
                         @foreach($paymentModes as $paymentMode)
                             <option value="{{ $paymentMode->payment_id }}" data-is-cash="{{ strcasecmp(trim((string) $paymentMode->payment_mode), 'cash') === 0 ? '1' : '0' }}" {{ old('payment_mode_id') == $paymentMode->payment_id ? 'selected' : '' }}>{{ $paymentMode->payment_mode }}</option>
@@ -125,7 +125,7 @@
                     <div class="border-b border-erp-line px-5 py-4"><h2 class="text-base font-bold text-erp-ink">Add Adjustment</h2></div>
                     <form method="post" action="{{ route('billing.invoices.adjustments.store', $invoice->id) }}" class="grid gap-4 p-5">
                         @csrf
-                        <select name="type" required class="h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp"><option value="debit">Debit (+)</option><option value="credit">Credit (-)</option></select>
+                        <select name="type" required class="billing-select2 billing-select2-lg h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Select adjustment type"><option value="debit">Debit (+)</option><option value="credit">Credit (-)</option></select>
                         <input type="number" name="amount" min="0.01" step="0.01" placeholder="Amount" required class="h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                         <input type="date" name="adjustment_date" value="{{ date('Y-m-d') }}" required class="h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                         <input type="text" name="reason" placeholder="Reason for adjustment" required class="h-11 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
@@ -138,7 +138,7 @@
                     <div class="grid gap-5 p-5 lg:grid-cols-2">
                         <form method="post" action="{{ route('billing.invoices.discounts.store', $invoice->id) }}" class="grid gap-3">
                             @csrf
-                            <select name="discount_type" required class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp"><option value="percentage">Percentage (%)</option><option value="amount">Fixed Amount</option></select>
+                            <select name="discount_type" required class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Select discount type"><option value="percentage">Percentage (%)</option><option value="amount">Fixed Amount</option></select>
                             <input type="number" name="discount_value" min="0.01" step="0.01" placeholder="Value" required class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                             <input type="date" name="discount_date" value="{{ date('Y-m-d') }}" required class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                             <input type="text" name="reason" placeholder="Discount reason" required class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
@@ -211,6 +211,9 @@
                 screenshotsHelp.textContent = requiresScreenshot ? 'Non-cash payments require at least one screenshot. You can upload up to 8 images, max 5 MB each.' : 'Cash screenshots are optional. You can still upload up to 8 images, max 5 MB each.';
             }
             paymentModeSelect.addEventListener('change', syncScreenshotRequirement);
+            if (window.jQuery) {
+                jQuery(paymentModeSelect).on('change.select2', syncScreenshotRequirement);
+            }
             syncScreenshotRequirement();
         })();
     </script>

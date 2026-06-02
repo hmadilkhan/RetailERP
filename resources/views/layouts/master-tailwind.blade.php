@@ -51,6 +51,12 @@
     @if ($tailwindLegacyAssets)
         @include('partials.html-libs')
     @endif
+    @php
+        $tailwindSelect2Assets = request()->is('billing*') || request()->is('invoice-setup*');
+    @endphp
+    @if ($tailwindSelect2Assets && !$tailwindLegacyAssets)
+        <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />
+    @endif
     @yield('css_code')
     @yield('scriptcode_one')
     @stack('styles')
@@ -65,6 +71,66 @@
         }
 
         [x-cloak] { display: none !important; }
+        @if ($tailwindSelect2Assets)
+            .billing-select2.select2-hidden-accessible + .select2-container {
+                width: 100% !important;
+                min-width: 0;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection--single {
+                min-height: 2.5rem;
+                border: 1px solid #d8e1ec;
+                border-radius: 0.5rem;
+                background: #fff;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+                display: flex;
+                align-items: center;
+            }
+            .billing-select2-lg.select2-hidden-accessible + .select2-container .select2-selection--single {
+                min-height: 2.75rem;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__rendered {
+                color: #334155;
+                font-size: 0.875rem;
+                line-height: 1.25rem;
+                padding-left: 0.75rem;
+                padding-right: 2rem;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__placeholder {
+                color: #64748b;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__arrow {
+                height: 100%;
+                right: 0.45rem;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container.select2-container--focus .select2-selection--single,
+            .billing-select2.select2-hidden-accessible + .select2-container.select2-container--open .select2-selection--single {
+                border-color: #4CAF50;
+                box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
+            }
+            .select2-container--default .billing-select2-dropdown.select2-dropdown {
+                border-color: #d8e1ec;
+                border-radius: 0.5rem;
+                box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+                overflow: hidden;
+            }
+            .billing-select2-dropdown .select2-search--dropdown {
+                padding: 0.5rem;
+            }
+            .billing-select2-dropdown .select2-search__field {
+                border: 1px solid #d8e1ec !important;
+                border-radius: 0.5rem;
+                min-height: 2.25rem;
+                font-size: 0.875rem;
+                outline: none;
+            }
+            .billing-select2-dropdown .select2-results__option {
+                font-size: 0.875rem;
+                padding: 0.5rem 0.75rem;
+            }
+            .billing-select2-dropdown .select2-results__option--highlighted[aria-selected] {
+                background: #4CAF50;
+            }
+        @endif
         @if ($tailwindLegacyAssets)
             .content-wrapper,
             .container-fluid {
@@ -521,6 +587,27 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     @if ($tailwindLegacyAssets)
         @include('partials.js-libs')
+    @endif
+    @if ($tailwindSelect2Assets && !$tailwindLegacyAssets)
+        <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                if (!window.jQuery || !jQuery.fn.select2) {
+                    return;
+                }
+
+                jQuery('.billing-select2:not(.select2-hidden-accessible)').each(function () {
+                    var $select = jQuery(this);
+                    $select.select2({
+                        allowClear: !$select.prop('required') && $select.find('option[value=""]').length > 0,
+                        dropdownCssClass: 'billing-select2-dropdown',
+                        placeholder: $select.data('placeholder') || $select.find('option[value=""]').first().text() || '',
+                        width: '100%'
+                    });
+                });
+            });
+        </script>
     @endif
     @stack('scripts')
     @yield('scriptcode_three')

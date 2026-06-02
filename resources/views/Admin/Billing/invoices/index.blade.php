@@ -27,7 +27,7 @@
                 <form method="get" class="row">
                     <div class="col-md-3">
                         <label>Company</label>
-                        <select name="company_id" class="form-control select2">
+                        <select name="company_id" class="form-control select2 billing-select2">
                             <option value="">All</option>
                             @foreach ($companies as $company)
                                 <option value="{{ $company->company_id }}"
@@ -39,14 +39,14 @@
                     </div>
                     <div class="col-md-3">
                         <label>Invoice Type</label>
-                        <select name="invoice_type" class="form-control">
+                        <select name="invoice_type" class="form-control select2 billing-select2">
                             <option value="monthly" {{ ($invoiceType ?? 'monthly') == 'monthly' ? 'selected' : '' }}>Monthly</option>
                             <option value="previous_due" {{ ($invoiceType ?? 'monthly') == 'previous_due' ? 'selected' : '' }}>Previous Due</option>
                         </select>
                     </div>
                     <div class="col-md-3">
                         <label>Status</label>
-                        <select name="status" class="form-control">
+                        <select name="status" class="form-control select2 billing-select2">
                             <option value="">All</option>
                             @foreach (['draft', 'issued', 'partial', 'paid', 'overdue', 'void'] as $status)
                                 <option value="{{ $status }}" {{ request('status') == $status ? 'selected' : '' }}>
@@ -183,6 +183,6 @@
 
 @section('scriptcode_three')
     <script>
-        $('.select2').select2();
+        $('.select2').select2({ width: '100%' });
     </script>
 @endsection
