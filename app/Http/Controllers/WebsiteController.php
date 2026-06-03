@@ -1247,7 +1247,7 @@ class WebsiteController extends Controller
         //     ->select('AreaList.*', 'city.city_name')
         //     ->get();
 
-        return view("websites.delivery-area.index", [
+        return view("v2.delivery.area-list", [
             "website"            => WebsiteDetail::where(['company_id' => $companyId, 'status' => 1])->get(),
             // "branch"             => DB::table('branch')->where(['company_id'=>$companyId,'status_id'=>1])->get(),
             "city"               => DB::table('city')->where('country_id', 170)->get(),

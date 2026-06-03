@@ -29,7 +29,7 @@ class BankController extends Controller
                       ->where('company_id',session('company_id'))
                       ->where('status',1)
                       ->get();
-        return view('Accounts.view-accounts', compact('getaccounts','website'));
+        return view('v2.accounts.view-accounts', compact('getaccounts','website'));
     }
 
     public function showBanks(bank $bank)
@@ -101,7 +101,7 @@ class BankController extends Controller
     public function cash_ledger(bank $bank, Request $request)
     {
         $cashLedger = $bank->getCashDetails();
-        return view('Accounts.cash-ledger', compact('cashLedger'));
+        return view('v2.accounts.cash-ledger', compact('cashLedger'));
     }
 
     public function insert_cashLedger(bank $bank, Request $request)
@@ -321,7 +321,7 @@ class BankController extends Controller
         $details = $bank->getchequedetails();
         $status = $bank->cheque_status();
         $customer = $bank->getcustomers();
-        return view('Accounts.cheque-details', compact('details', 'status', 'customer'));
+        return view('v2.accounts.cheque-details', compact('details', 'status', 'customer'));
     }
 
     public function chequeInsert(bank $bank, request $request)
@@ -495,7 +495,7 @@ class BankController extends Controller
     public function getBanks(bank $bank, Request $request)
     {
         $banks = $bank->get_banks();
-        return view('Bank.index', compact('banks'));
+        return view('v2.banks.index', compact('banks'));
     }
 
     public function addNewBank(bank $bank, Request $request)

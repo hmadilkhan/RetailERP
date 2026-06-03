@@ -133,7 +133,7 @@
                 <div class="header-right">
                     <form method="GET" action="{{ url('/usersDetails') }}" id="searchForm">
                         <input type="text" name="search" id="userSearch" class="search-input"
-                            placeholder="Search by name, username, role..." value="{{ $search }}" autocomplete="off">
+                            placeholder="Search by name, username, branch..." value="{{ $search }}" autocomplete="off">
                     </form>
                     <a href="{{ url('/create-user') }}" class="btn btn-success btn-sm waves-effect waves-light">
                         <i class="icofont icofont-plus m-r-5"></i> Create User

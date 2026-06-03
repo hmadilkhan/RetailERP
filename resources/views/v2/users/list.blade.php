@@ -2,7 +2,7 @@
 
 @section('title', 'Users')
 @section('page_title', 'Users')
-@section('page_subtitle', 'Manage staff accounts, roles, branches, login status, and impersonation access.')
+@section('page_subtitle', 'Manage staff accounts, branches, login status, and impersonation access.')
 
 @section('content')
     <div class="space-y-6">
@@ -20,7 +20,7 @@
             <div class="rounded-lg border border-erp-line bg-white p-5 shadow-sm">
                 <div class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Search</div>
                 <div class="mt-4 text-xl font-black text-erp-ink">{{ $search !== '' ? $search : 'All users' }}</div>
-                <p class="mt-2 text-sm text-erp-mute">Name, username, role, branch, or contact</p>
+                <p class="mt-2 text-sm text-erp-mute">Name, username, branch, contact, or status</p>
             </div>
             <a href="{{ url('/create-user') }}" class="flex rounded-lg border border-erp bg-erp p-5 text-white shadow-sm transition hover:bg-erp-dark">
                 <div class="self-end">

@@ -426,7 +426,7 @@ class DeliveryController extends Controller
                         ->where('company_id',session('company_id'))
                         ->where('status',1)
                         ->get();
-        return view('Delivery.service-provider-list', compact('providers','website'));
+        return view('v2.delivery.service-provider-list', compact('providers','website'));
     }
 
     public function providerledger(delivery $delivery, request $request){

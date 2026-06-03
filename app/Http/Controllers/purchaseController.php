@@ -39,7 +39,7 @@ class purchaseController extends Controller
     public function ViewPurchase(purchase $purchase)
     {
         $po = array(); //$purchase->purchaseDetails();
-        return view('Purchase.view-purchase', compact('po'));
+        return view('v2.purchase.view-purchase', compact('po'));
     }
 
     /*

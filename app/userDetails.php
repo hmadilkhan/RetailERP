@@ -139,6 +139,8 @@ class userDetails extends Model
 
     public function get_users_paginated(string $search = '', int $perPage = 15)
     {
+        $search = trim($search);
+
         $query = User::from('user_details as a')
             ->join('user_authorization as b', 'b.user_id', '=', 'a.id')
             ->join('user_roles as c', 'c.role_id', '=', 'b.role_id')
@@ -159,7 +161,6 @@ class userDetails extends Model
                     ->orWhere('a.username', 'like', "%{$search}%")
                     ->orWhere('a.email', 'like', "%{$search}%")
                     ->orWhere('a.contact', 'like', "%{$search}%")
-                    ->orWhere('c.role', 'like', "%{$search}%")
                     ->orWhere('d.branch_name', 'like', "%{$search}%")
                     ->orWhere('e.status_name', 'like', "%{$search}%");
             });

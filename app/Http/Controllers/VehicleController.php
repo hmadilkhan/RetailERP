@@ -9,7 +9,8 @@ class VehicleController extends Controller
 {
     public function index()
 	{
-		return view("vehicles.list");
+		$vehicles = Vehicle::where("branch_id",session("branch"))->get();
+		return view("v2.vehicles.list",compact("vehicles"));
 	}
 
 	public function getVehiclesList(Request $request)

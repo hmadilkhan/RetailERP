@@ -16,7 +16,7 @@ class BankDiscountController extends Controller
     {
         $discounts = $bankDiscount->getBankDiscount();
         $banks = $bank->get_banks();
-        return view("BankDiscount.list",compact('banks','discounts'));
+        return view("v2.bank-discount.list",compact('banks','discounts'));
     }
 
     public function store(Request $request,bankDiscount $bankDiscount,bank $bank)
@@ -29,8 +29,8 @@ class BankDiscountController extends Controller
             'date'=> date('Y-m-d H:i:s')
         ];
 
-        if($bankDiscount->check_bank_discount($request->get('deptname'))){
-            return response()->json(array("state"=>1,"msg"=>'This department already exists.',"contrl"=>'deptname'));
+        if($bankDiscount->check_bank_discount($request->get('bank'))){
+            return response()->json(array("state"=>1,"msg"=>'This bank discount already exists.',"contrl"=>'bank'));
         }else {
             $result = $bankDiscount->insert_bank_discount($data);
             if($result){

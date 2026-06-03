@@ -19,7 +19,7 @@ class BusinessPoliciesController extends Controller
       public function index(businessPolicies $policy, Request $request)
     {
     	$details = $policy->get_tax_rules();
-    	return view('Business_Policy.view-tax', compact('details'));	
+    	return view('v2.business-policy.view-tax', compact('details'));	
     }
 
       public function tax_create()

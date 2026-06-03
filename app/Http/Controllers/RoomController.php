@@ -16,7 +16,7 @@ class RoomController extends Controller
                     $query->where('branch_id', session("branch"));
                 })
                 ->where('status',1)->get();
-        return view("rooms.list", compact('rooms','floors'));
+        return view("v2.rooms.list", compact('rooms','floors'));
     }
 
     public function store(Request $request)

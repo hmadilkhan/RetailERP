@@ -36,8 +36,7 @@
     </script>
 
     @php
-        $tailwindLegacyAssets = request()->is('delivery/lists')
-            || request()->is('website/advertisement*')
+        $tailwindLegacyAssets = request()->is('website/advertisement*')
             || request()->is('website/slider*')
             || request()->is('website/social-link*')
             || request()->is('website/terminal-assign*')
@@ -52,7 +51,24 @@
         @include('partials.html-libs')
     @endif
     @php
-        $tailwindSelect2Assets = request()->is('billing*') || request()->is('invoice-setup*');
+        $tailwindSelect2Assets = request()->is('billing*')
+            || request()->is('invoice-setup*')
+            || request()->is('rooms')
+            || request()->is('view-floors')
+            || request()->is('view-kitchen-departments')
+            || request()->is('view-accounts')
+            || request()->is('view-cheque')
+            || request()->is('cash-deposit')
+            || request()->is('view-bank-discount')
+            || request()->is('get-banks')
+            || request()->is('vendors')
+            || request()->is('BusinessPolicy')
+            || request()->is('view-purchases')
+            || request()->is('vendor-payment-view')
+            || request()->is('delivery/lists')
+            || request()->is('service-provider')
+            || request()->is('drivers')
+            || request()->is('vehicles');
     @endphp
     @if ($tailwindSelect2Assets && !$tailwindLegacyAssets)
         <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />
@@ -72,11 +88,14 @@
 
         [x-cloak] { display: none !important; }
         @if ($tailwindSelect2Assets)
-            .billing-select2.select2-hidden-accessible + .select2-container {
+            .billing-select2.select2-hidden-accessible + .select2-container,
+            .v2-select2.select2-hidden-accessible + .select2-container {
                 width: 100% !important;
                 min-width: 0;
             }
-            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection--single {
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection--single,
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection--single,
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection--multiple {
                 min-height: 2.5rem;
                 border: 1px solid #d8e1ec;
                 border-radius: 0.5rem;
@@ -85,49 +104,87 @@
                 display: flex;
                 align-items: center;
             }
-            .billing-select2-lg.select2-hidden-accessible + .select2-container .select2-selection--single {
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection--multiple {
+                align-items: flex-start;
+                padding: 0.25rem 0.375rem;
+            }
+            .billing-select2-lg.select2-hidden-accessible + .select2-container .select2-selection--single,
+            .v2-select2-lg.select2-hidden-accessible + .select2-container .select2-selection--single {
                 min-height: 2.75rem;
             }
-            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__rendered {
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__rendered,
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection__rendered {
                 color: #334155;
                 font-size: 0.875rem;
                 line-height: 1.25rem;
                 padding-left: 0.75rem;
                 padding-right: 2rem;
             }
-            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__placeholder {
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection--multiple .select2-selection__rendered {
+                padding: 0;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection--multiple .select2-selection__choice {
+                margin: 0;
+                border: 1px solid #d8e1ec;
+                border-radius: 0.375rem;
+                background: #f8fafc;
+                color: #334155;
+                font-size: 0.75rem;
+                font-weight: 700;
+                padding: 0.125rem 0.5rem 0.125rem 1.25rem;
+            }
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection--multiple .select2-search__field {
+                margin: 0.125rem 0;
+                min-height: 1.75rem;
+                font-size: 0.875rem;
+            }
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__placeholder,
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection__placeholder {
                 color: #64748b;
             }
-            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__arrow {
+            .billing-select2.select2-hidden-accessible + .select2-container .select2-selection__arrow,
+            .v2-select2.select2-hidden-accessible + .select2-container .select2-selection__arrow {
                 height: 100%;
                 right: 0.45rem;
             }
             .billing-select2.select2-hidden-accessible + .select2-container.select2-container--focus .select2-selection--single,
-            .billing-select2.select2-hidden-accessible + .select2-container.select2-container--open .select2-selection--single {
+            .billing-select2.select2-hidden-accessible + .select2-container.select2-container--open .select2-selection--single,
+            .v2-select2.select2-hidden-accessible + .select2-container.select2-container--focus .select2-selection--single,
+            .v2-select2.select2-hidden-accessible + .select2-container.select2-container--open .select2-selection--single,
+            .v2-select2.select2-hidden-accessible + .select2-container.select2-container--focus .select2-selection--multiple,
+            .v2-select2.select2-hidden-accessible + .select2-container.select2-container--open .select2-selection--multiple {
                 border-color: #4CAF50;
                 box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.15);
             }
-            .select2-container--default .billing-select2-dropdown.select2-dropdown {
+            .select2-container--default .billing-select2-dropdown.select2-dropdown,
+            .select2-container--default .v2-select2-dropdown.select2-dropdown {
                 border-color: #d8e1ec;
                 border-radius: 0.5rem;
                 box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
                 overflow: hidden;
             }
-            .billing-select2-dropdown .select2-search--dropdown {
+            .billing-select2-dropdown .select2-search--dropdown,
+            .v2-select2-dropdown .select2-search--dropdown {
                 padding: 0.5rem;
             }
-            .billing-select2-dropdown .select2-search__field {
+            .billing-select2-dropdown .select2-search__field,
+            .v2-select2-dropdown .select2-search__field {
                 border: 1px solid #d8e1ec !important;
                 border-radius: 0.5rem;
                 min-height: 2.25rem;
                 font-size: 0.875rem;
                 outline: none;
             }
-            .billing-select2-dropdown .select2-results__option {
+            .billing-select2-dropdown .select2-results__option,
+            .v2-select2-dropdown .select2-results__option {
                 font-size: 0.875rem;
                 padding: 0.5rem 0.75rem;
             }
-            .billing-select2-dropdown .select2-results__option--highlighted[aria-selected] {
+            .billing-select2-dropdown .select2-results__option--highlighted[aria-selected],
+            .v2-select2-dropdown .select2-results__option--highlighted[aria-selected] {
                 background: #4CAF50;
             }
         @endif
@@ -597,11 +654,12 @@
                     return;
                 }
 
-                jQuery('.billing-select2:not(.select2-hidden-accessible)').each(function () {
+                jQuery('.billing-select2:not(.select2-hidden-accessible), .v2-select2:not(.select2-hidden-accessible)').each(function () {
                     var $select = jQuery(this);
+                    var isV2Select = $select.hasClass('v2-select2');
                     $select.select2({
                         allowClear: !$select.prop('required') && $select.find('option[value=""]').length > 0,
-                        dropdownCssClass: 'billing-select2-dropdown',
+                        dropdownCssClass: isV2Select ? 'v2-select2-dropdown' : 'billing-select2-dropdown',
                         placeholder: $select.data('placeholder') || $select.find('option[value=""]').first().text() || '',
                         width: '100%'
                     });

@@ -17,7 +17,7 @@ class KitchenDepartmentController extends Controller
         $departments = $kitchenDepartment->getDepartments(session('company_id'));
         $general =  $kitchenDepartment->getgeneral();
         $details =  $kitchenDepartment->getdetails();
-        return view("Kitchen_Departments.list",compact('departments','details','general'));
+        return view("v2.kitchen-departments.list",compact('departments','details','general'));
     }
 
     public function store(Request $request,KitchenDepartment $kitchenDepartment)

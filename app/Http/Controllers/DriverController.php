@@ -11,8 +11,8 @@ class DriverController extends Controller
 {
     public function index()
 	{
-		$drivers = Driver::where("branch_id",session("branch"))->where("status",1)->get();
-		return view("drivers.list",compact("drivers"));
+		$drivers = Driver::where("branch_id",session("branch"))->get();
+		return view("v2.drivers.list",compact("drivers"));
 	}
 	
 	public function getDriversList(Request $request)

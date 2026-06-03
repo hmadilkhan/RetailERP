@@ -12,7 +12,7 @@ class FloorController extends Controller
     public function index(floor $floor)
     {
         $floors = $floor->getFloors();
-        return view("floors.list",compact('floors'));
+        return view("v2.floors.list",compact('floors'));
     }
 
     public function store(Request $request,floor $floor)

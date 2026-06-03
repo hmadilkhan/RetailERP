@@ -33,7 +33,7 @@ class VendorController extends Controller
     public function index()
     {
         $vendor = DB::select('SELECT *,(SELECT balance FROM vendor_ledger where vendor_account_id = (Select MAX(vendor_account_id) from vendor_ledger where vendor_id = a.id)) as balance FROM vendors a INNER JOIN vendor_company_details b on b.vendor_id = a.id INNER JOIN country c on c.country_id = a.country_id INNER JOIN city d on d.city_id = a.city_id where a.user_id = ? and a.status_id = 1 order by a.id desc', [session('company_id')]);
-        return view('Vendor.list', compact('vendor'));
+        return view('v2.vendors.list', compact('vendor'));
     }
     public function generatePDF()
     {
@@ -1102,7 +1102,7 @@ class VendorController extends Controller
     public function VendorPaymentView()
     {
         $vendors = Vendors::Company()->get();
-        return view('Vendor.vendor-payment', compact('vendors'));
+        return view('v2.vendor.vendor-payment', compact('vendors'));
     }
     public function getVendorPayment(Request $request)
     {
@@ -1140,7 +1140,7 @@ class VendorController extends Controller
                     });
             })
             ->where("status", 1)->orderBy("created_at", "desc")->paginate(10);
-        return view("partials.vendor-payment-orders", compact('result'));
+        return view("v2.partials.vendor-payment-orders", compact('result'));
     }
     public function updateVendorPaymentDueDate(Request $request)
     {
@@ -1219,7 +1219,7 @@ class VendorController extends Controller
         ];
         $this->validate($request, $rules);
         $history = VendorLedger::where("vendor_id", $request->id)->where("debit", ">", "0")->orderBy("created_at", "DESC")->get();
-        return view("partials.vendor_payment_history", compact('history'));
+        return view("v2.partials.vendor-payment-history", compact('history'));
     }
     public function getVendorsByProduct(Request $request, Vendor $vendor)
     {
