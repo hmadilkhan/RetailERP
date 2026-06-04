@@ -95,7 +95,7 @@
                 </div>
             </div>
 
-            <div class="row dashboard-grid">
+            <div class="row dashboard-grid dashboard-main-grid">
                 <div class="col-xl-8 col-lg-12">
                     <div class="premium-panel chart-panel">
                         <div class="panel-heading">
@@ -160,7 +160,7 @@
                 <livewire:dashboard.monthly-sales-chart />
             </div>
 
-            <div class="row dashboard-grid">
+            <div class="row dashboard-grid dashboard-secondary-grid">
                 <div class="col-xl-4 col-lg-5">
                     <div class="premium-panel">
                         <div class="panel-heading">
@@ -520,21 +520,22 @@
             margin-bottom: 0;
         }
 
-        .dashboard-grid > .col-xl-8 {
-            grid-column: span 9;
+        .dashboard-main-grid {
+            grid-template-columns: minmax(0, 3fr) minmax(320px, 1fr);
         }
 
-        .dashboard-grid > .col-xl-4 {
-            grid-column: span 3;
+        .dashboard-main-grid > [class*="col-"] {
+            grid-column: auto;
         }
 
-        .dashboard-grid > .col-lg-5,
-        .dashboard-grid > .col-lg-7,
-        .dashboard-grid > .col-lg-12 {
+        .dashboard-secondary-grid > .col-xl-4,
+        .dashboard-secondary-grid > .col-lg-5,
+        .dashboard-secondary-grid > .col-lg-7,
+        .dashboard-secondary-grid > .col-lg-12 {
             grid-column: span 4;
         }
 
-        .dashboard-grid {
+        .dashboard-secondary-grid {
             grid-template-columns: repeat(12, minmax(0, 1fr));
         }
 
@@ -978,11 +979,16 @@
                 gap: 18px;
             }
 
-            .dashboard-grid > .col-xl-8,
-            .dashboard-grid > .col-xl-4,
-            .dashboard-grid > .col-lg-5,
-            .dashboard-grid > .col-lg-7,
-            .dashboard-grid > .col-lg-12 {
+            .dashboard-main-grid,
+            .dashboard-secondary-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-main-grid > [class*="col-"],
+            .dashboard-secondary-grid > .col-xl-4,
+            .dashboard-secondary-grid > .col-lg-5,
+            .dashboard-secondary-grid > .col-lg-7,
+            .dashboard-secondary-grid > .col-lg-12 {
                 grid-column: span 1;
             }
 
