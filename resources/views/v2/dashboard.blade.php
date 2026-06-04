@@ -54,7 +54,7 @@
                         <strong>{{ number_format($totalOrders) }}</strong>
                     </div>
                     <button type="button" class="hero-btn hero-btn-primary" onclick="getdetails()">
-                        <i class="icofont-eye-alt"></i>
+                        <i class="icofont icofont-eye-alt"></i>
                         Sales Detail
                     </button>
                 </div>
@@ -127,23 +127,31 @@
                             </div>
                         </div>
 
-                        <div class="order-status-grid">
-                            @foreach ($orderCards as $card)
-                                @php
-                                    $percentage = $totalOrders > 0 ? round(($card['value'] / $totalOrders) * 100) : 0;
-                                @endphp
-                                <div class="order-status status-{{ $card['class'] }}">
-                                    <div class="status-top">
-                                        <span><i class="icofont {{ $card['icon'] }}"></i>{{ $card['label'] }}</span>
-                                        <strong>{{ number_format($card['value']) }}</strong>
+                        @if ($totalOrders > 0)
+                            <div class="order-status-grid">
+                                @foreach ($orderCards as $card)
+                                    @php
+                                        $percentage = round(($card['value'] / $totalOrders) * 100);
+                                    @endphp
+                                    <div class="order-status status-{{ $card['class'] }}">
+                                        <div class="status-top">
+                                            <span><i class="icofont {{ $card['icon'] }}"></i>{{ $card['label'] }}</span>
+                                            <strong>{{ number_format($card['value']) }}</strong>
+                                        </div>
+                                        <div class="status-meta">{{ $percentage }}% of orders</div>
+                                        <div class="status-track">
+                                            <div style="width: {{ $percentage }}%"></div>
+                                        </div>
                                     </div>
-                                    <div class="status-meta">{{ $percentage }}% of orders</div>
-                                    <div class="status-track">
-                                        <div style="width: {{ $percentage }}%"></div>
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="panel-empty-state order-empty-state">
+                                <i class="icofont icofont-shopping-cart"></i>
+                                <strong>No order activity</strong>
+                                <span>There are no orders for {{ date('d M Y', strtotime($orderReportDate)) }}.</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -242,26 +250,48 @@
                         @endforeach
                     ];
 
+                    function drawEmptyState(elementId, iconClass, title, message) {
+                        var element = document.getElementById(elementId);
+                        if (!element) {
+                            return;
+                        }
+
+                        element.classList.add('chart-empty');
+                        element.innerHTML = '<div class="panel-empty-state">' +
+                            '<i class="' + iconClass + '"></i>' +
+                            '<strong>' + title + '</strong>' +
+                            '<span>' + message + '</span>' +
+                            '</div>';
+                    }
+
                     function drawDashboardCharts() {
                         if (typeof Morris === 'undefined') {
                             return;
                         }
 
                         if (document.getElementById('bar-example1')) {
-                            Morris.Bar({
-                                element: 'bar-example1',
-                                barGap: 3,
-                                barSizeRatio: 0.38,
-                                data: terminalSalesData.length ? terminalSalesData : [{ y: 'No Sales', a: 0, b: 0, c: 0 }],
-                                xkey: 'y',
-                                ykeys: ['a', 'b', 'c'],
-                                labels: ['Cash', 'Credit Card', 'Customer Credit'],
-                                barColors: ['#4CAF50', '#2196F3', '#FFC107'],
-                                gridTextColor: '#6b7280',
-                                gridLineColor: '#eef2f6',
-                                hideHover: 'auto',
-                                resize: true
+                            var hasTerminalSales = terminalSalesData.some(function(row) {
+                                return Number(row.a || 0) > 0 || Number(row.b || 0) > 0 || Number(row.c || 0) > 0;
                             });
+
+                            if (hasTerminalSales) {
+                                Morris.Bar({
+                                    element: 'bar-example1',
+                                    barGap: 3,
+                                    barSizeRatio: 0.38,
+                                    data: terminalSalesData,
+                                    xkey: 'y',
+                                    ykeys: ['a', 'b', 'c'],
+                                    labels: ['Cash', 'Credit Card', 'Customer Credit'],
+                                    barColors: ['#4CAF50', '#2196F3', '#FFC107'],
+                                    gridTextColor: '#6b7280',
+                                    gridLineColor: '#eef2f6',
+                                    hideHover: 'auto',
+                                    resize: true
+                                });
+                            } else {
+                                drawEmptyState('bar-example1', 'icofont icofont-chart-bar-graph', 'No terminal sales', 'No cash, card, or credit sales are available for this period.');
+                            }
                         }
 
                         if (document.getElementById('donut-example')) {
@@ -705,6 +735,12 @@
             min-height: 250px;
         }
 
+        .chart-empty {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
         .chart-large {
             height: 322px;
         }
@@ -765,6 +801,48 @@
         .order-status-grid {
             display: grid;
             gap: 9px;
+        }
+
+        .panel-empty-state {
+            display: flex;
+            min-height: 250px;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 8px;
+            border: 1px dashed #d8e1ec;
+            border-radius: 8px;
+            background: #f8fafc;
+            color: #64748b;
+            text-align: center;
+        }
+
+        .panel-empty-state i {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #edf8ee;
+            color: #2f7d32;
+            font-size: 20px;
+        }
+
+        .panel-empty-state strong {
+            color: #0f172a;
+            font-size: 16px;
+            font-weight: 900;
+        }
+
+        .panel-empty-state span {
+            max-width: 290px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .order-empty-state {
+            min-height: 318px;
         }
 
         .order-status {
