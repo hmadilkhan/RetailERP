@@ -37,9 +37,6 @@
 
     @php
         $tailwindLegacyAssets = request()->is('website/advertisement*')
-            || request()->is('dashboard')
-            || request()->is('add-purchase')
-            || request()->is('edit/*')
             || request()->is('website/slider*')
             || request()->is('website/social-link*')
             || request()->is('website/terminal-assign*')
@@ -48,6 +45,9 @@
             || request()->is('website/testimonials*')
             || request()->is('website/customer-reviews*')
             || request()->is('website/booking-slots*');
+
+        $tailwindPurchaseAssets = request()->is('add-purchase') || request()->is('edit/*');
+        $tailwindDashboardAssets = request()->is('dashboard');
     @endphp
 
     @if ($tailwindLegacyAssets)
@@ -73,8 +73,20 @@
             || request()->is('drivers')
             || request()->is('vehicles');
     @endphp
-    @if ($tailwindSelect2Assets && !$tailwindLegacyAssets)
+    @if (($tailwindSelect2Assets || $tailwindPurchaseAssets) && !$tailwindLegacyAssets)
         <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />
+    @endif
+    @if ($tailwindPurchaseAssets)
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/sweetalert/css/sweetalert.css') }}">
+    @endif
+    @if ($tailwindDashboardAssets)
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
+        <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('js/raphael-min.js') }}"></script>
+        <script src="{{ asset('components/morris.js/morris.js') }}"></script>
     @endif
     @yield('css_code')
     @yield('scriptcode_one')
@@ -90,7 +102,7 @@
         }
 
         [x-cloak] { display: none !important; }
-        @if ($tailwindSelect2Assets)
+        @if ($tailwindSelect2Assets || $tailwindPurchaseAssets)
             .billing-select2.select2-hidden-accessible + .select2-container,
             .v2-select2.select2-hidden-accessible + .select2-container {
                 width: 100% !important;
@@ -648,7 +660,18 @@
     @if ($tailwindLegacyAssets)
         @include('partials.js-libs')
     @endif
-    @if ($tailwindSelect2Assets && !$tailwindLegacyAssets)
+    @if ($tailwindPurchaseAssets)
+        <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('components/tether/dist/js/tether.min.js') }}"></script>
+        <script src="{{ asset('components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/notification/js/bootstrap-growl.min.js') }}"></script>
+        <script src="{{ asset('js/notification.js') }}" type="text/javascript"></script>
+        <script src="{{ asset('assets/plugins/datepicker/js/moment-with-locales.min.js') }}"></script>
+        <script src="{{ asset('components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+        <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/sweetalert/js/sweetalert.js') }}"></script>
+    @endif
+    @if ($tailwindSelect2Assets && !$tailwindLegacyAssets && !$tailwindPurchaseAssets && !$tailwindDashboardAssets)
         <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
         <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
         <script>
@@ -667,6 +690,16 @@
                         width: '100%'
                     });
                 });
+            });
+        </script>
+    @endif
+    @if ($tailwindPurchaseAssets || $tailwindDashboardAssets)
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                document.documentElement.style.overflowY = 'auto';
+                document.body.style.overflowY = 'auto';
+                document.body.style.height = 'auto';
+                document.body.style.minHeight = '100vh';
             });
         </script>
     @endif
