@@ -101,7 +101,7 @@ class purchaseController extends Controller
         $items = $purchase->getPurchaseItems();
         $uom = $purchase->UOM();
         $lg_branchid = session('branch');
-        return view('Purchase.add-purchase', compact('branch', 'tax', 'vendors', 'products', 'items', 'lg_branchid', 'uom'));
+        return view('v2.purchase.add-purchase', compact('branch', 'tax', 'vendors', 'products', 'items', 'lg_branchid', 'uom'));
     }
 
     public function get_items(Request $request, purchase $purchase)
@@ -581,7 +581,7 @@ class purchaseController extends Controller
         $general = $purchase->getGeneral($request->id);
         $accounts = $purchase->getAccDetails($request->id);
         $purchaseID = $request->id;
-        return view('Purchase.edit', compact('general', 'branch', 'tax', 'vendors', 'products', 'items', 'lg_branchid', 'uom', 'purchaseID', 'accounts'));
+        return view('v2.purchase.edit', compact('general', 'branch', 'tax', 'vendors', 'products', 'items', 'lg_branchid', 'uom', 'purchaseID', 'accounts'));
     }
 
     /**

@@ -37,6 +37,9 @@
 
     @php
         $tailwindLegacyAssets = request()->is('website/advertisement*')
+            || request()->is('dashboard')
+            || request()->is('add-purchase')
+            || request()->is('edit/*')
             || request()->is('website/slider*')
             || request()->is('website/social-link*')
             || request()->is('website/terminal-assign*')
