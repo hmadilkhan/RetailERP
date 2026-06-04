@@ -356,15 +356,15 @@
 
         .dashboard-hero {
             display: flex;
-            align-items: center;
+            align-items: stretch;
             justify-content: space-between;
-            gap: 18px;
-            padding: 26px 28px;
-            margin-bottom: 18px;
+            gap: 24px;
+            padding: 26px;
+            margin-bottom: 24px;
             border-radius: 8px;
             background:
-                linear-gradient(135deg, rgba(18, 61, 43, .97), rgba(47, 125, 50, .95) 58%, rgba(117, 184, 67, .92)),
-                radial-gradient(circle at 88% 18%, rgba(255, 255, 255, .26), transparent 30%);
+                linear-gradient(135deg, rgba(15, 54, 39, .98), rgba(38, 116, 47, .96) 62%, rgba(99, 166, 70, .92)),
+                radial-gradient(circle at 90% 10%, rgba(255, 255, 255, .18), transparent 28%);
             background-size: cover;
             box-shadow: 0 20px 46px rgba(18, 61, 43, .18);
             color: #fff;
@@ -388,7 +388,7 @@
 
         .dashboard-hero h1 {
             margin: 0;
-            font-size: 30px;
+            font-size: 31px;
             font-weight: 800;
             letter-spacing: 0;
         }
@@ -399,25 +399,27 @@
         }
 
         .hero-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            justify-content: flex-end;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(112px, 1fr)) auto;
+            gap: 12px;
+            align-content: center;
             align-items: center;
+            min-width: 520px;
         }
 
         .hero-stat {
-            min-width: 96px;
-            padding: 9px 11px;
-            border: 1px solid rgba(255, 255, 255, .24);
+            min-height: 58px;
+            padding: 11px 12px;
+            border: 1px solid rgba(255, 255, 255, .58);
             border-radius: 8px;
-            background: rgba(255, 255, 255, .12);
-            text-align: right;
+            background: rgba(255, 255, 255, .92);
+            text-align: left;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, .12);
         }
 
         .hero-stat span {
             display: block;
-            color: rgba(255, 255, 255, .68);
+            color: #64748b;
             font-size: 10px;
             font-weight: 800;
             line-height: 1.1;
@@ -426,22 +428,25 @@
 
         .hero-stat strong {
             display: block;
-            margin-top: 3px;
-            color: #fff;
-            font-size: 16px;
+            margin-top: 5px;
+            color: #0f172a;
+            font-size: 17px;
             font-weight: 900;
             line-height: 1.1;
+            white-space: nowrap;
         }
 
         .hero-btn {
-            border: 1px solid rgba(255, 255, 255, .32);
-            background: rgba(255, 255, 255, .12);
-            color: #fff;
-            border-radius: 6px;
-            padding: 10px 14px;
-            font-weight: 700;
+            min-height: 58px;
+            border: 1px solid rgba(255, 255, 255, .72);
+            background: #ffffff;
+            color: #21662d;
+            border-radius: 8px;
+            padding: 0 18px;
+            font-weight: 800;
             cursor: pointer;
             transition: .2s ease;
+            box-shadow: 0 12px 24px rgba(15, 23, 42, .12);
         }
 
         .hero-btn i {
@@ -463,8 +468,8 @@
         .metric-row {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 20px;
-            margin-bottom: 22px;
+            gap: 22px;
+            margin-bottom: 24px;
         }
 
         .dashboard-grid {
@@ -479,6 +484,7 @@
             width: auto;
             max-width: none;
             min-width: 0;
+            flex: none;
             padding-left: 0;
             padding-right: 0;
             margin-bottom: 0;
@@ -516,8 +522,9 @@
         .premium-metric {
             display: flex;
             flex-direction: column;
-            min-height: 172px;
-            padding: 22px 22px 20px;
+            width: 100%;
+            min-height: 150px;
+            padding: 22px;
             cursor: default;
             transition: .2s ease;
             background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 100%);
@@ -590,8 +597,8 @@
 
         .premium-metric strong {
             display: block;
-            margin: 8px 0 4px;
-            font-size: 25px;
+            margin: 9px 0 5px;
+            font-size: 26px;
             font-weight: 800;
             line-height: 1.1;
             color: #111827;
@@ -873,6 +880,16 @@
                 flex-direction: column;
             }
 
+            .hero-actions {
+                width: 100%;
+                min-width: 0;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .hero-btn {
+                grid-column: 1 / -1;
+            }
+
             .metric-row {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
                 gap: 18px;
@@ -891,13 +908,6 @@
                 grid-column: span 1;
             }
 
-            .hero-actions {
-                justify-content: flex-start;
-            }
-
-            .hero-stat {
-                text-align: left;
-            }
         }
 
         @media (max-width: 790px) {
@@ -919,6 +929,14 @@
 
             .dashboard-hero h1 {
                 font-size: 25px;
+            }
+
+            .hero-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-btn {
+                width: 100%;
             }
 
             .metric-row {
