@@ -521,11 +521,11 @@
         }
 
         .dashboard-grid > .col-xl-8 {
-            grid-column: span 8;
+            grid-column: span 9;
         }
 
         .dashboard-grid > .col-xl-4 {
-            grid-column: span 4;
+            grid-column: span 3;
         }
 
         .dashboard-grid > .col-lg-5,
