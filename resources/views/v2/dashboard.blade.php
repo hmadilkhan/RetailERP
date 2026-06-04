@@ -520,11 +520,13 @@
             margin-bottom: 0;
         }
 
-        .dashboard-main-grid {
+        .dashboard-main-grid,
+        .metric-row + .dashboard-grid {
             grid-template-columns: minmax(0, 3fr) minmax(320px, 1fr);
         }
 
-        .dashboard-main-grid > [class*="col-"] {
+        .dashboard-main-grid > [class*="col-"],
+        .metric-row + .dashboard-grid > [class*="col-"] {
             grid-column: auto;
         }
 
@@ -980,11 +982,13 @@
             }
 
             .dashboard-main-grid,
+            .metric-row + .dashboard-grid,
             .dashboard-secondary-grid {
                 grid-template-columns: 1fr;
             }
 
             .dashboard-main-grid > [class*="col-"],
+            .metric-row + .dashboard-grid > [class*="col-"],
             .dashboard-secondary-grid > .col-xl-4,
             .dashboard-secondary-grid > .col-lg-5,
             .dashboard-secondary-grid > .col-lg-7,
