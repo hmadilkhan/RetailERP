@@ -7,11 +7,26 @@
 @section('navpurchase','active')
 @section('nav_addpurchase','active')
 
+@section('css_code')
+    @include('Purchase.partials.premium-style')
+@endsection
+
 @section('content')
-<section class="panels-wells">
-    <div class="card">
+<section class="panels-wells purchase-premium-page">
+    <div class="purchase-hero">
+        <div>
+            <span class="purchase-kicker">Purchase workflow</span>
+            <h2>Create Purchase Order</h2>
+            <p>Vendor, delivery, product, and account totals in one focused workspace.</p>
+        </div>
+        <div class="purchase-hero-badge">
+            <span>PO Number</span>
+            <strong id="poNumber">Draft</strong>
+        </div>
+    </div>
+    <div class="card purchase-card">
           <div class="card-header">
-                <h2 class="card-header-text">Create Purchase Orders <span id="poNumber"></span></h2>
+                <h2 class="card-header-text">Order Details</h2>
             </div>
          <div class="card-block">
 
@@ -385,7 +400,7 @@
         window.location = "{{ url('/view-purchases') }}";
       }
 
-    $(".select2").select2();
+    $(".select2").select2({ width: '100%' });
      $('#date,#rpdate,#payment,#expiry-date').bootstrapMaterialDatePicker({
             format: 'YYYY-MM-DD',
             time: false,
@@ -931,6 +946,7 @@ $('#btn_vendor_product').click(function(){
 })
 
 	$('.js-data-example-ajax').select2({
+      width: '100%',
 	  ajax: {
 		url: '{{route("search-inventory")}}',
 		dataType: 'json',

@@ -39,6 +39,18 @@
                     <p>{{ date('l, d M Y') }} - {{ ucfirst(Auth::user()->fullname ?? Auth::user()->username ?? 'User') }}</p>
                 </div>
                 <div class="hero-actions">
+                    <div class="hero-stat">
+                        <span>Projected</span>
+                        <strong>{{ number_format($projectedSales, 0) }}</strong>
+                    </div>
+                    <div class="hero-stat">
+                        <span>Closed</span>
+                        <strong>{{ number_format($closedSales, 0) }}</strong>
+                    </div>
+                    <div class="hero-stat">
+                        <span>Orders</span>
+                        <strong>{{ number_format($totalOrders) }}</strong>
+                    </div>
                     <button type="button" class="hero-btn hero-btn-primary" onclick="getdetails()">
                         <i class="icofont-eye-alt"></i>
                         Sales Detail
@@ -336,6 +348,8 @@
 
         .erp-dashboard {
             color: #17202c;
+            margin: -4px -4px 0;
+            padding: 4px;
         }
 
         .dashboard-hero {
@@ -346,9 +360,11 @@
             padding: 26px 28px;
             margin-bottom: 18px;
             border-radius: 8px;
-            background: linear-gradient(135deg, #4CAF50, #2f7d32);
+            background:
+                linear-gradient(135deg, rgba(18, 61, 43, .97), rgba(47, 125, 50, .95) 58%, rgba(117, 184, 67, .92)),
+                radial-gradient(circle at 88% 18%, rgba(255, 255, 255, .26), transparent 30%);
             background-size: cover;
-            box-shadow: 0 18px 40px rgba(15, 23, 42, .14);
+            box-shadow: 0 20px 46px rgba(18, 61, 43, .18);
             color: #fff;
         }
 
@@ -385,6 +401,34 @@
             gap: 10px;
             flex-wrap: wrap;
             justify-content: flex-end;
+            align-items: center;
+        }
+
+        .hero-stat {
+            min-width: 96px;
+            padding: 9px 11px;
+            border: 1px solid rgba(255, 255, 255, .24);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, .12);
+            text-align: right;
+        }
+
+        .hero-stat span {
+            display: block;
+            color: rgba(255, 255, 255, .68);
+            font-size: 10px;
+            font-weight: 800;
+            line-height: 1.1;
+            text-transform: uppercase;
+        }
+
+        .hero-stat strong {
+            display: block;
+            margin-top: 3px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 900;
+            line-height: 1.1;
         }
 
         .hero-btn {
@@ -430,13 +474,14 @@
             border: 1px solid #e6ebf1;
             border-radius: 8px;
             background: #fff;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, .07);
+            box-shadow: 0 14px 34px rgba(15, 23, 42, .08);
         }
 
         .premium-metric {
             padding: 20px 20px 18px;
             cursor: default;
             transition: .2s ease;
+            background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 100%);
         }
 
         #closedSales,
@@ -789,6 +834,10 @@
 
             .hero-actions {
                 justify-content: flex-start;
+            }
+
+            .hero-stat {
+                text-align: left;
             }
         }
 
