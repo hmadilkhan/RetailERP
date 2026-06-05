@@ -183,10 +183,11 @@ WHERE a.DC_id = ?', [$dcid]);
 		return $result;
 	}
 
-	public function get_stockbalance($productid)
+	public function get_stockbalance($productid, $branchid = null)
 	{
+		$branchid = $branchid ?: session('branch');
 		$result = DB::select('SELECT * from inventory_stock
-		WHERE status_id = 1 AND branch_id = ? AND product_id = ?', [session('branch'), $productid]);
+		WHERE status_id = 1 AND branch_id = ? AND product_id = ?', [$branchid, $productid]);
 		return $result;
 	}
 
@@ -303,6 +304,12 @@ WHERE a.DC_id = ?', [$dcid]);
 	public function update_trf($id, $items)
 	{
 		$result = DB::table('transfer_without_demand')->where('transfer_id', $id)->update($items);
+		return $result;
+	}
+
+	public function get_transfer_without_demand($trfid)
+	{
+		$result = DB::table('transfer_without_demand')->where('transfer_id', $trfid)->first();
 		return $result;
 	}
 

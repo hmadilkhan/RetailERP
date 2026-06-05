@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\Shopify\ErpWebhookController;
+use App\Http\Controllers\EasypaisaTestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebsiteImageController;
@@ -58,5 +59,11 @@ Route::get('optimizeimage',[WebsiteImageController::class,'Optimize_testing']);
 
 Route::post('/webhooks/order-created', [ErpWebhookController::class, 'orderCreated']);
 Route::post('/webhooks/order-updated', [ErpWebhookController::class, 'orderUpdated']);
+
+Route::prefix('staging/easypaisa')->group(function () {
+    Route::post('/otc', [EasypaisaTestController::class, 'testOtc']);
+    Route::post('/ma', [EasypaisaTestController::class, 'testMa']);
+    Route::post('/inquire', [EasypaisaTestController::class, 'inquire']);
+});
 
 

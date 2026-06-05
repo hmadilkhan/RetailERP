@@ -51,4 +51,14 @@ return [
         ],
     ],
 
+    'easypaisa' => [
+        'base_url' => env('EASYPAISA_BASE_URL'),
+        'username' => env('EASYPAISA_USERNAME'),
+        'password' => env('EASYPAISA_PASSWORD'),
+        'store_id' => env('EASYPAISA_STORE_ID'),
+        'account_num' => env('EASYPAISA_ACCOUNT_NUM'),
+        'timeout' => env('EASYPAISA_TIMEOUT', 30),
+    ],
+
+
 ];

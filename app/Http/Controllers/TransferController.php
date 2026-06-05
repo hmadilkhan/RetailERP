@@ -197,13 +197,13 @@ class TransferController extends Controller
     }
   }
 
-  public function stock_dedcution($transfer, $productid, $qty)
+  public function stock_dedcution($transfer, $productid, $qty, $branchid = null)
   {
-    $result = $transfer->get_stockbalance($productid);
+    $result = $transfer->get_stockbalance($productid, $branchid);
     $updatedstock = $qty;
     for ($i = 0; $i < sizeof($result); $i++) {
 
-      $value = $transfer->get_stockbalance($productid);
+      $value = $transfer->get_stockbalance($productid, $branchid);
       $updatedstock = ($updatedstock - $value[0]->balance);
       if ($updatedstock > 0) {
         $update = $transfer->deduction_stock($value[0]->stock_id, 0, 2);
@@ -542,7 +542,14 @@ class TransferController extends Controller
   public function insert_direct_chalan(Request $request, transfer $transfer)
   {
 
-    $exsitschk = $transfer->exsits_chk(session('branch'), $request->transferid, 'general');
+    $transferOrder = $transfer->get_transfer_without_demand($request->transferid);
+    if (! $transferOrder) {
+      return 0;
+    }
+
+    $sourceBranchId = (int) $transferOrder->branch_from;
+    $destinationBranchId = (int) $transferOrder->branch_to;
+    $exsitschk = $transfer->exsits_chk($sourceBranchId, $request->transferid, 'without_demand');
 
     if ($exsitschk == 0) {
       $trfdetails = $transfer->trf_details($request->transferid);
@@ -550,7 +557,7 @@ class TransferController extends Controller
         return 0;
       }
 
-      return DB::transaction(function () use ($request, $transfer, $trfdetails) {
+      return DB::transaction(function () use ($request, $transfer, $trfdetails, $sourceBranchId, $destinationBranchId) {
         $count = $transfer->get_count();
         $count = $count + 1;
 
@@ -559,8 +566,8 @@ class TransferController extends Controller
           'Transfer_id' => $request->transferid,
           'transfer_type' => 'without_demand',
           'date' => date('Y-m-d'),
-          'branch_from' => session('branch'),
-          'branch_to' => $request->branchto,
+          'branch_from' => $sourceBranchId,
+          'branch_to' => $destinationBranchId,
           'user_id' => session('userid'),
           'shipment_amount' => $request->shipmentamt,
         ];
@@ -581,12 +588,12 @@ class TransferController extends Controller
 
         $totalcp = 0;
         foreach ($trfdetails as $detail) {
-          $prices = $this->resolveTransferPrices((int) $detail->product_id, (int) session('branch'));
+          $prices = $this->resolveTransferPrices((int) $detail->product_id, $sourceBranchId);
           $totalcp += ($prices['cost_price'] * (float) $detail->Transfer_Qty);
         }
 
         foreach ($trfdetails as $detail) {
-          $prices = $this->resolveTransferPrices((int) $detail->product_id, (int) session('branch'));
+          $prices = $this->resolveTransferPrices((int) $detail->product_id, $sourceBranchId);
           $amount = $prices['cost_price'] * (float) $detail->Transfer_Qty;
           $percentage = $totalcp > 0 ? (($amount / $totalcp) * 100) : 0;
           $unitcp = ($percentage * (float) $request->shipmentamt) / 100;
@@ -612,7 +619,7 @@ class TransferController extends Controller
           ];
           $grn_items = $transfer->insert_GRN('purchase_rec_dc_details', $items);
 
-          $stockresult =  $this->stock_dedcution($transfer, $detail->product_id, $detail->Transfer_Qty);
+          $stockresult =  $this->stock_dedcution($transfer, $detail->product_id, $detail->Transfer_Qty, $sourceBranchId);
 
           $items = [
             'grn_id' => $grn_general,
@@ -625,7 +632,7 @@ class TransferController extends Controller
             'qty' => $detail->Transfer_Qty,
             'balance' => $detail->Transfer_Qty,
             'status_id' => 1,
-            'branch_id' => $request->branchto,
+            'branch_id' => $destinationBranchId,
             'date' => date('Y-m-d'),
           ];
           $stock = $transfer->insert_stock($items);
