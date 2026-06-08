@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Shopify\ErpWebhookController;
 use App\Http\Controllers\EasypaisaTestController;
+use App\Http\Controllers\apiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\WebsiteImageController;
@@ -21,36 +22,36 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/depart/{id}','apiController@departmentJSON');
-Route::post('/subdepart','apiController@subdepartmentJSON');
-Route::get('/products/{id}','apiController@productJSON');
-Route::get('/get-single-product/{id}','apiController@productById');
-Route::get('/department-wise-products/{id}','apiController@productJSONByDepartment');
-Route::post('/login','apiController@login');
+Route::get('/depart/{id}', [apiController::class, 'departmentJSON']);
+Route::post('/subdepart', [apiController::class, 'subdepartmentJSON']);
+Route::get('/products/{id}', [apiController::class, 'productJSON']);
+Route::get('/get-single-product/{id}', [apiController::class, 'productById']);
+Route::get('/department-wise-products/{id}', [apiController::class, 'productJSONByDepartment']);
+Route::post('/login', [apiController::class, 'login']);
 
 /******************************************** API ROUTES *************************************************************/
 
 
-Route::post('add-customer','apiController@add_customer');
-Route::get('getCustomers/{id}','apiController@getCustomers');
-Route::get('getInventory','apiController@productJSON');
-Route::get('getInventoryById/{id}','apiController@productJSONByID');
-Route::get('getInventoryByDepartment/{id}','apiController@productByDepartment');
-Route::get('getInventoryBySubdepartment/{id}','apiController@productBySubdepartment');
-Route::post('getsearch','apiController@getjsonsearch');
+Route::post('add-customer', [apiController::class, 'add_customer']);
+Route::get('getCustomers/{id}', [apiController::class, 'getCustomers']);
+Route::get('getInventory', [apiController::class, 'productJSON']);
+Route::get('getInventoryById/{id}', [apiController::class, 'productJSONByID']);
+Route::get('getInventoryByDepartment/{id}', [apiController::class, 'productByDepartment']);
+Route::get('getInventoryBySubdepartment/{id}', [apiController::class, 'productBySubdepartment']);
+Route::post('getsearch', [apiController::class, 'getjsonsearch']);
 
-Route::get('getInventoryByRelated/{id}','apiController@productByRelated');
+Route::get('getInventoryByRelated/{id}', [apiController::class, 'productByRelated']);
 
-Route::get('getmultiimage/{id}','apiController@getmultiimage');
+Route::get('getmultiimage/{id}', [apiController::class, 'getmultiimage']);
 
-Route::get('getDepartments/{id}','apiController@getDepartments');
+Route::get('getDepartments/{id}', [apiController::class, 'getDepartments']);
 //Route::post('add-sales','apiController@add_sales');
-Route::get('getCountry','apiController@getCountry');
-Route::get('getCity','apiController@getCity');
-Route::get('topcollection/{id}','apiController@topcollection');
-Route::get('newproduct/{id}','apiController@newproduct');
-Route::post('add-sales','apiController@addSales');
-Route::post('add-sales-details','apiController@addSalesDetails');
+Route::get('getCountry', [apiController::class, 'getCountry']);
+Route::get('getCity', [apiController::class, 'getCity']);
+Route::get('topcollection/{id}', [apiController::class, 'topcollection']);
+Route::get('newproduct/{id}', [apiController::class, 'newproduct']);
+Route::post('add-sales', [apiController::class, 'addSales']);
+Route::post('add-sales-details', [apiController::class, 'addSalesDetails']);
 
 Route::get('website/image/{filename}/{mode?}/{webid?}',[WebsiteImageController::class,'show_image_website']);
 Route::get('optimizeimage',[WebsiteImageController::class,'Optimize_testing']);
@@ -62,6 +63,7 @@ Route::post('/webhooks/order-updated', [ErpWebhookController::class, 'orderUpdat
 
 Route::prefix('staging/easypaisa')->group(function () {
     Route::post('/otc', [EasypaisaTestController::class, 'testOtc']);
+    Route::get('/ma', [EasypaisaTestController::class, 'maInfo']);
     Route::post('/ma', [EasypaisaTestController::class, 'testMa']);
     Route::post('/inquire', [EasypaisaTestController::class, 'inquire']);
 });

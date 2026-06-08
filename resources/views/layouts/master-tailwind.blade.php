@@ -80,6 +80,7 @@
             || request()->is('expense-report')
             || request()->is('vendor-report')
             || request()->is('customer-report')
+            || request()->is('erpreportdashboard')
             || request()->is('reports/item-sale-report')
             || request()->is('reports/consolidated-item-sale-report')
             || request()->is('vendors')
