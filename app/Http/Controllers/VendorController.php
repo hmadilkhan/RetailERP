@@ -484,7 +484,7 @@ class VendorController extends Controller
     {
         $vendors = $vendor->getVendors();
         $details = $vendor->account_payable("", "", "");
-        return view('reports.vendor', compact('details', 'vendors'));
+        return view('v2.reports.vendor', compact('details', 'vendors'));
     }
     public function vendor_report_filter(Request $request, Vendor $vendor)
     {

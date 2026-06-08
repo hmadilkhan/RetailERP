@@ -151,7 +151,7 @@ class ExpenseController extends Controller
     {
         $category = $expCat->get();
         $details = $expense->expense_report($request->category, $request->first, $request->second);
-        return view('reports.expense', compact('category'));
+        return view('v2.reports.expense', compact('category'));
     }
 
     public function expense_report_filter(Request $request, expense $expense)

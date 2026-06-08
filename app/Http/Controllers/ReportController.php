@@ -119,7 +119,7 @@ class ReportController extends Controller
         $inventory = DB::table('inventory_general')->select('id', 'item_code', 'product_name')
             ->where('company_id', Auth::user()->company_id)->get();
 
-        return view('reports.item-sale-report', compact('customer', 'paymentMode', 'mode', 'branch', 'inventory'));
+        return view('v2.reports.item-sale-report', compact('customer', 'paymentMode', 'mode', 'branch', 'inventory'));
     }
 
     public function getConsolidatedItemSaleReport(Request $request, order $order, Customer $customer)
@@ -134,7 +134,7 @@ class ReportController extends Controller
         $inventory = DB::table('inventory_general')->select('id', 'item_code', 'product_name')
             ->where('company_id', Auth::user()->company_id)->get();
 
-        return view('reports.consolidated-item-sale-report', compact('customer', 'paymentMode', 'mode', 'branch', 'inventory', 'departments'));
+        return view('v2.reports.consolidated-item-sale-report', compact('customer', 'paymentMode', 'mode', 'branch', 'inventory', 'departments'));
     }
 
     public function postConsolidatedItemSaleReport(Request $request)
@@ -152,7 +152,7 @@ class ReportController extends Controller
         $totalAmount = $total[0]->total_amount;
         $totalCountReceipts = $totalReceipts[0]->total_receipts;
         $totalAmountReceipts = $totalReceipts[0]->total_amount;
-        return view("partials.reports.consolidated-item-sale-report", compact("record", "totalQty", "totalAmount", "totalCountReceipts", "totalAmountReceipts"));
+        return view("v2.partials.reports.consolidated-item-sale-report", compact("record", "totalQty", "totalAmount", "totalCountReceipts", "totalAmountReceipts"));
     }
 
     public function postIndex(Request $request, order $order, Customer $customer)
@@ -287,7 +287,7 @@ class ReportController extends Controller
         // }   
 
 
-        return view('reports.item-sale-report', compact('customer', 'paymentMode', 'mode', 'branch', 'record', 'inventory'));
+        return view('v2.reports.item-sale-report', compact('customer', 'paymentMode', 'mode', 'branch', 'record', 'inventory'));
     }
 
     public function searchitem_sale_report(Request $request, order $order, Customer $customer)
@@ -313,7 +313,7 @@ class ReportController extends Controller
         $totalAmount = $total[0]->total_amount;
         $totalCountReceipts = $totalReceipts[0]->total_receipts;
         $totalAmountReceipts = $totalReceipts[0]->total_amount;
-        return view("partials.reports.item-sale-report", compact("record", "totalQty", "totalAmount", "totalCountReceipts", "totalAmountReceipts"));
+        return view("v2.partials.reports.item-sale-report", compact("record", "totalQty", "totalAmount", "totalCountReceipts", "totalAmountReceipts"));
     }
 
     public function getConsolidatedItemSaleReportExcelExport(Request $request, report $report)

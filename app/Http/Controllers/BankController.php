@@ -51,7 +51,7 @@ class BankController extends Controller
                       ->where('company_id',session('company_id'))
                       ->where('status',1)
                       ->get();
-        return view('Accounts.bankaccounts-details', compact('getbank', 'getbranches','website'));
+        return view('v2.accounts.bankaccounts-details', compact('getbank', 'getbranches','website'));
     }
 
     public function link_website(Request $request){
@@ -500,7 +500,7 @@ class BankController extends Controller
 
     public function addNewBank(bank $bank, Request $request)
     {
-        return view('Bank.create');
+        return view('v2.banks.create');
     }
 
     public function editBank(bank $bank, Request $request)

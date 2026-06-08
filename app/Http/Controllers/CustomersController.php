@@ -371,7 +371,7 @@ class CustomersController extends Controller
     {
         $master = $customer->getcustomers();
         $details = $customer->getCustomerReport($request->customer, $request->paymentType);
-        return view('reports.customer', compact('master', 'details'));
+        return view('v2.reports.customer', compact('master', 'details'));
     }
     public function customer_report_filter(Request $request, Customer $customer)
     {
