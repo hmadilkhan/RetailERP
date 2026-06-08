@@ -44,7 +44,18 @@
             || request()->is('website/theme-setting*')
             || request()->is('website/testimonials*')
             || request()->is('website/customer-reviews*')
-            || request()->is('website/booking-slots*');
+            || request()->is('website/booking-slots*')
+            || request()->is('create-demand')
+            || request()->is('edit-demand*')
+            || request()->is('demand-details*')
+            || request()->is('received-demandpanel*')
+            || request()->is('view-transfer*')
+            || request()->is('createdeliverychallan*')
+            || request()->is('generate-po*')
+            || request()->is('showtransferdetails*')
+            || request()->is('createGRN*')
+            || request()->is('create-transferorder')
+            || request()->is('edit_trf_details*');
 
         $tailwindPurchaseAssets = request()->is('add-purchase') || request()->is('edit/*');
         $tailwindDashboardAssets = request()->is('dashboard');

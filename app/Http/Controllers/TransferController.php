@@ -70,7 +70,7 @@ class TransferController extends Controller
   {
     $gettransfer = $transfer->get_transfer_orders($request->id);
     $demandid = $request->id;
-    return view('Received-Demands.view-transfer', compact('gettransfer', 'demandid'));
+    return view('v2.received-demands.view-transfer', compact('gettransfer', 'demandid'));
   }
 
   public function show(Request $request, transfer $transfer)
@@ -82,13 +82,13 @@ class TransferController extends Controller
   public function show_transferdetails(Request $request, transfer $transfer)
   {
     $getdetails = $transfer->tranferOrder_details($request->id);
-    return view('Received-Demands.view-transferdetails', compact('getdetails'));
+    return view('v2.received-demands.view-transferdetails', compact('getdetails'));
   }
 
   public function transferlist(transfer $transfer)
   {
     $transferlist = $transfer->get_transferlist();
-    return view('Received-Demands.transferorder-list', compact('transferlist'));
+    return view('v2.received-demands.transferorder-list', compact('transferlist'));
   }
 
   public function deliverychallan(Request $request, transfer $transfer)
@@ -97,7 +97,7 @@ class TransferController extends Controller
     $getdetails = $transfer->tranferOrder_details($request->id);
     $transferlist = $transfer->get_transferlist();
     $status = $transfer->status();
-    return view('Received-Demands.create-deliverychallan', compact('getdetails', 'status', 'transferlist'));
+    return view('v2.received-demands.create-deliverychallan', compact('getdetails', 'status', 'transferlist'));
   }
 
   public function getstock(Request $request, transfer $transfer)
@@ -223,20 +223,20 @@ class TransferController extends Controller
   {
 
     $challans = $transfer->get_challanlist();
-    return view('Received-Demands.view-deliveryChallans', compact('challans'));
+    return view('v2.received-demands.view-deliveryChallans', compact('challans'));
   }
 
   public function challandetails(request $request, transfer $transfer)
   {
     $details = $transfer->get_challan_Details($request->id);
     $challanid = $request->id;
-    return view('Received-Demands.deliverchallan-details', compact('details', 'challanid'));
+    return view('v2.received-demands.deliverchallan-details', compact('details', 'challanid'));
   }
 
   public function createGRN(request $request, transfer $transfer)
   {
     $details = $transfer->get_challan_Details($request->id);
-    return view('Received-Demands.create-GRN', compact('details'));
+    return view('v2.received-demands.create-GRN', compact('details'));
   }
 
 
@@ -322,7 +322,7 @@ class TransferController extends Controller
     $reciver = $demand->get_reciver_info();
     $details = $demand->demand_details_show($request->id);
     $podetails = $transfer->getPO($request->id);
-    return view('Received-Demands.create-po', compact('details', 'sender', 'reciver', 'podetails'));
+    return view('v2.received-demands.create-po', compact('details', 'sender', 'reciver', 'podetails'));
   }
 
 
@@ -393,7 +393,7 @@ class TransferController extends Controller
   public function gettransferorders(Request $request, transfer $transfer)
   {
     $details = $transfer->gettransferorders();
-    return view('Received-Demands.transfer-view', compact('details'));
+    return view('v2.received-demands.transfer-view', compact('details'));
   }
 
   public function removetransferorder(Request $request, transfer $transfer)
@@ -428,7 +428,7 @@ class TransferController extends Controller
 
     $addtransfer = $transfer->insert_trf('transfer_without_demand', $items);
 
-    return view('Transfer.create-transfer', compact('branches', 'headoffice', 'addtransfer'));
+    return view('v2.transfer.create-transfer', compact('branches', 'headoffice', 'addtransfer'));
   }
 
   public function trf_stock(Request $request, transfer $transfer)
@@ -518,7 +518,7 @@ class TransferController extends Controller
   public function trf_list(Request $request, transfer $transfer)
   {
     $gettransfer = $transfer->get_trf_orders_without_demand();
-    return view('Transfer.view-transferorders', compact('gettransfer'));
+    return view('v2.transfer.view-transferorders', compact('gettransfer'));
   }
 
   public function trforder_delete(Request $request, transfer $transfer)
@@ -530,7 +530,7 @@ class TransferController extends Controller
   public function get_trf_details(Request $request, transfer $transfer)
   {
     $getdetails = $transfer->get_trf_details($request->id);
-    return view('Transfer.transferorder-details', compact('getdetails'));
+    return view('v2.transfer.transferorder-details', compact('getdetails'));
   }
 
   public function qty_update_trf(Request $request, transfer $transfer)
@@ -653,7 +653,7 @@ class TransferController extends Controller
     $headoffice = $transfer->get_headoffice();
 
 
-    return view('Transfer.edit-transferorder', compact('getdetails', 'branches', 'headoffice'));
+    return view('v2.transfer.edit-transferorder', compact('getdetails', 'branches', 'headoffice'));
   }
 
 

@@ -29,7 +29,7 @@ class DemandController extends Controller
     {
         // $customer = Customer::all();
         $demands = $demand->get_demand();
-        return view('Demand.view-demand', compact('demands'));
+        return view('v2.demand.view-demand', compact('demands'));
     }
 
     public function add_demand(demand $demand)
@@ -57,7 +57,7 @@ class DemandController extends Controller
 
 
         // $customer = Customer::all();
-        return view('Demand.create-demand', compact('products', 'sender', 'reciver', 'neartofinish', 'demandinfo'));
+        return view('v2.demand.create-demand', compact('products', 'sender', 'reciver', 'neartofinish', 'demandinfo'));
     }
 
 
@@ -144,7 +144,7 @@ class DemandController extends Controller
         $sender = $demand->get_sender_info(Crypt::decrypt($request->id));
         $reciver = $demand->get_reciver_info();
         $purchaseid = $demand->get_purchase_id(Crypt::decrypt($request->id));
-        return view('Demand.demand-details', compact('details', 'sender', 'reciver', 'purchaseid'));
+        return view('v2.demand.demand-details', compact('details', 'sender', 'reciver', 'purchaseid'));
     }
 
     public function edit(Request $request, demand $demand)
@@ -155,7 +155,7 @@ class DemandController extends Controller
         $neartofinish = $demand->get_neartofinish_products();
         $products = $demand->getproducts();
 
-        return view('Demand.edit-demand', compact('sender', 'reciver', 'details', 'neartofinish', 'products'));
+        return view('v2.demand.edit-demand', compact('sender', 'reciver', 'details', 'neartofinish', 'products'));
     }
 
 

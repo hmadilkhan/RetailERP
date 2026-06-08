@@ -24,7 +24,7 @@ class ReceivedDemandController extends Controller
     {
         $demands = $recdemand->get_demandslist();
 
-        return view('Received-Demands.received-demand', compact('demands'));
+        return view('v2.received-demands.received-demand', compact('demands'));
     }
     public function show(Request $request, receiveddemand $recdemand, demand $demand)
     {
@@ -37,7 +37,7 @@ class ReceivedDemandController extends Controller
         $branches = $recdemand->branches();
 
 
-        return view('Received-Demands.received-demandpanel', compact('details', 'sender', 'reciver', 'status', 'branches'));
+        return view('v2.received-demands.received-demandpanel', compact('details', 'sender', 'reciver', 'status', 'branches'));
     }
 
     public function update_status(Request $request, receiveddemand $recdemand)
