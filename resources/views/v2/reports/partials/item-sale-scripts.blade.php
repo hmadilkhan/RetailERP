@@ -82,16 +82,23 @@
     });
 
     document.getElementById('branch').addEventListener('change', function () {
+        const terminal = document.getElementById('terminal');
+        terminal.innerHTML = '<option value="">Select Terminal</option>';
+        if (window.jQuery) jQuery(terminal).trigger('change.select2');
+
         fetch("{{ route('getTerminals') }}", {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
             body: JSON.stringify({ branch: selectedValue('branch') })
-        }).then(response => response.json()).then(function (result) {
-            const terminal = document.getElementById('terminal');
-            terminal.innerHTML = '<option value="">Select Terminal</option>';
-            if (result && result.terminal) {
+        }).then(function (response) {
+            if (!response.ok) throw new Error('Unable to load terminals.');
+            return response.json();
+        }).then(function (result) {
+            if (result && Array.isArray(result.terminal)) {
                 result.terminal.forEach(item => terminal.add(new Option(item.terminal_name, item.terminal_id)));
             }
+            if (window.jQuery) jQuery(terminal).trigger('change.select2');
+        }).catch(function () {
             if (window.jQuery) jQuery(terminal).trigger('change.select2');
         });
     });

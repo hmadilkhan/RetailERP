@@ -866,13 +866,30 @@ class ReportController extends Controller
 
     public function getTerminals(Request $request)
     {
-        if (is_array($request->branch) && $request->branch != "") {
-            return response()->json(["terminal" => Terminal::whereIn("branch_id", $request->branch)->where("status_id", 1)->select("terminal_id", "terminal_name")->get()]);
-        } elseif ($request->branch != "") {
-            return response()->json(["terminal" => Terminal::where("branch_id", $request->branch)->where("status_id", 1)->select("terminal_id", "terminal_name")->get()]);
+        $branch = $request->branch;
+
+        $terminals = Terminal::query()->where("status_id", 1);
+
+        if (is_array($branch) && !empty($branch)) {
+            if (!in_array("all", $branch)) {
+                $terminals->whereIn("branch_id", $branch);
+            } else {
+                $terminals->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+            }
+        } elseif ($branch == "all") {
+            $terminals->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+        } elseif ($branch != "") {
+            $terminals->where("branch_id", $branch);
         } else {
-            return 0;
+            return response()->json(["terminal" => []]);
         }
+
+        return response()->json([
+            "terminal" => $terminals
+                ->select("terminal_id", "terminal_name")
+                ->orderBy("terminal_name")
+                ->get()
+        ]);
     }
 
     public function pdf_attendance(report $report, Request $request)
