@@ -149,9 +149,9 @@ class ReportController extends Controller
         $totalReceipts = $this->getReceiptCount($request);
         // $totalQty = $total[0]->total_qty;
         $totalQty = $totalItems;
-        $totalAmount = $total[0]->total_amount;
-        $totalCountReceipts = $totalReceipts[0]->total_receipts;
-        $totalAmountReceipts = $totalReceipts[0]->total_amount;
+        $totalAmount = $total->sum('total_amount');
+        $totalCountReceipts = $totalReceipts[0]->total_receipts ?? 0;
+        $totalAmountReceipts = $totalReceipts[0]->total_amount ?? 0;
         return view("v2.partials.reports.consolidated-item-sale-report", compact("record", "totalQty", "totalAmount", "totalCountReceipts", "totalAmountReceipts"));
     }
 
@@ -310,9 +310,9 @@ class ReportController extends Controller
         $totalReceipts = $this->getReceiptCount($request);
         // $totalQty = $total[0]->total_qty;
         $totalQty = $totalItems;
-        $totalAmount = $total[0]->total_amount;
-        $totalCountReceipts = $totalReceipts[0]->total_receipts;
-        $totalAmountReceipts = $totalReceipts[0]->total_amount;
+        $totalAmount = $total->sum('total_amount');
+        $totalCountReceipts = $totalReceipts[0]->total_receipts ?? 0;
+        $totalAmountReceipts = $totalReceipts[0]->total_amount ?? 0;
         return view("v2.partials.reports.item-sale-report", compact("record", "totalQty", "totalAmount", "totalCountReceipts", "totalAmountReceipts"));
     }
 
@@ -460,11 +460,7 @@ class ReportController extends Controller
         // $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id",$request->terminal)->pluck("opening_id");	
         // return SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id",DB::table("terminal_details")->where("branch_id",DB::table("branch")->where("company_id",session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
 
-        if ($request->branch == "all") {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
-        } else {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
-        }
+        $openingIds = $this->getItemSaleOpeningIds($request);
 
         return OrderDetails::with("order", "inventory:id,item_code,product_name,weight_qty", "order.terminal:terminal_id,terminal_name", "order.branchrelation:branch_id,branch_name,code")
             ->whereHas('order', function ($q) use ($request, $openingIds) {
@@ -743,11 +739,7 @@ class ReportController extends Controller
 
     public function getReceiptCount(Request $request)
     {
-        if ($request->branch == "all") {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
-        } else {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
-        }
+        $openingIds = $this->getItemSaleOpeningIds($request);
         $q = OrderModel::query();
         $q->where("status", "!=", 12);
         $q->when($request->declaration == "declaration", function ($q) use ($request, $openingIds) {
@@ -794,11 +786,7 @@ class ReportController extends Controller
     public function getItemTotalQuery(Request $request)
     {
         // $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id",$request->terminal)->pluck("opening_id");	
-        if ($request->branch == "all") {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
-        } else {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->where("terminal_id", $request->terminal)->pluck("opening_id");
-        }
+        $openingIds = $this->getItemSaleOpeningIds($request);
 
         return OrderDetails::with("order", "inventory:id,item_code,product_name,weight_qty", "order.terminal:terminal_id,terminal_name", "order.branchrelation:branch_id,branch_name,code")
             ->whereHas('order', function ($q) use ($request, $openingIds) {
@@ -855,6 +843,25 @@ class ReportController extends Controller
             ->orderBy("item_code", "asc")
             ->get();
         // ->toSql();
+    }
+
+    private function getItemSaleOpeningIds(Request $request)
+    {
+        $terminalQuery = DB::table("terminal_details");
+
+        if ($request->terminal != "") {
+            $terminalQuery->where("terminal_id", $request->terminal);
+        } elseif ($request->branch == "all") {
+            $terminalQuery->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+        } elseif ($request->branch != "") {
+            $terminalQuery->where("branch_id", $request->branch);
+        } else {
+            $terminalQuery->where("branch_id", auth()->user()->branch_id);
+        }
+
+        return SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])
+            ->whereIn("terminal_id", $terminalQuery->pluck("terminal_id"))
+            ->pluck("opening_id");
     }
 
     public function getTerminals(Request $request)
