@@ -81,7 +81,7 @@
         });
     });
 
-    document.getElementById('branch').addEventListener('change', function () {
+    function loadTerminals() {
         const terminal = document.getElementById('terminal');
         terminal.innerHTML = '<option value="">Select Terminal</option>';
         if (window.jQuery) jQuery(terminal).trigger('change.select2');
@@ -101,7 +101,13 @@
         }).catch(function () {
             if (window.jQuery) jQuery(terminal).trigger('change.select2');
         });
-    });
+    }
+
+    if (window.jQuery) {
+        jQuery('#branch').on('change', loadTerminals);
+    } else {
+        document.getElementById('branch').addEventListener('change', loadTerminals);
+    }
 
     document.getElementById('btnExcel').addEventListener('click', function () {
         if (requireDateRange()) window.open(buildExportUrl("{{ $excelUrl }}"));
