@@ -3145,7 +3145,8 @@ class ReportController extends Controller
             $pdf->SetFont('Arial', 'B', 11);
             $pdf->SetTextColor(0, 0, 0);
             $pdf->Cell(190, 10, "Terminal Name: " . $terminals[0]->terminal_name, 0, 1, 'L');
-            $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, "", "","","", "", "");
+            // $details = $report->itemsale_details($request->fromdate, $request->todate, $request->terminalid, "", "","","", "", "");
+            $details = $report->sales($request->terminalid, $request->fromdate, $request->todate);
             foreach ($details as $value) {
                 $actualAmount = 0;
                 $salesTaxAmount = 0;
