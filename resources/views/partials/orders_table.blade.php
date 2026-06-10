@@ -57,8 +57,7 @@
         }
     }
 </style>
-<div class="col-md-12 mb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
-    <h5 class="mb-0">Orders</h5>
+<div class="col-md-12 mb-3 d-flex flex-wrap justify-content-end align-items-center gap-2">
     <div class="btn-group" role="group" aria-label="Bulk actions">
         <button id="void-selected-btn" class="btn btn-danger btn-sm" disabled>Mark as Void</button>
         <button id="deliver-selected-btn" class="btn btn-success btn-sm" disabled>Mark As Delivered</button>
@@ -109,7 +108,7 @@
                         <td>
                             <div class="btn-group dropend border border-black">
                                 <button type="button" class="btn btn-sm btn-default dropdown-toggle text-nowrap"
-                                    data-bs-toggle="dropdown" aria-expanded="false" style="min-width: 100px;">
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="min-width: 100px;">
                                     {{ date('d M Y', strtotime($order->date)) }}
                                 </button>
                                 <ul class="dropdown-menu px-4">
@@ -152,7 +151,7 @@
                             <!-- Large button groups (default and split) -->
                             <div class="btn-group border border-black">
                                 <button class="btn btn-default btn-sm dropdown-toggle" type="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Actions
                                 </button>
                                 <ul class="dropdown-menu px-2">

@@ -36,6 +36,8 @@
     </script>
 
     @php
+        $tailwindOrdersAssets = request()->is('orders-view*');
+
         $tailwindLegacyAssets = request()->is('website/advertisement*')
             || request()->is('website/slider*')
             || request()->is('website/social-link*')
@@ -90,10 +92,18 @@
             || request()->is('delivery/lists')
             || request()->is('service-provider')
             || request()->is('drivers')
-            || request()->is('vehicles');
+            || request()->is('vehicles')
+            || request()->is('orders-view*');
     @endphp
     @if (($tailwindSelect2Assets || $tailwindPurchaseAssets) && !$tailwindLegacyAssets)
         <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />
+    @endif
+    @if ($tailwindOrdersAssets && !$tailwindLegacyAssets)
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/themify-icons/themify-icons.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/sweetalert/css/sweetalert.css') }}">
     @endif
     @if ($tailwindPurchaseAssets)
         <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
@@ -679,6 +689,36 @@
     @if ($tailwindLegacyAssets)
         @include('partials.js-libs')
     @endif
+    @if ($tailwindOrdersAssets && !$tailwindLegacyAssets)
+        <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('components/tether/dist/js/tether.min.js') }}"></script>
+        <script src="{{ asset('components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/datepicker/js/moment-with-locales.min.js') }}"></script>
+        <script src="{{ asset('components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+        <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/sweetalert/js/sweetalert.js') }}"></script>
+        <script src="{{ asset('components/chart.js/dist/Chart.js') }}"></script>
+        <script>
+            window.bootstrap = window.bootstrap || {};
+            if (!window.bootstrap.Modal && window.jQuery && jQuery.fn.modal) {
+                window.bootstrap.Modal = function (element) {
+                    this.element = element;
+                };
+                window.bootstrap.Modal.prototype.show = function () {
+                    jQuery(this.element).modal('show');
+                };
+                window.bootstrap.Modal.prototype.hide = function () {
+                    jQuery(this.element).modal('hide');
+                };
+                window.bootstrap.Modal.getInstance = function (element) {
+                    return new window.bootstrap.Modal(element);
+                };
+                jQuery(document).on('click', '[data-bs-dismiss="modal"]', function () {
+                    jQuery(this).closest('.modal').modal('hide');
+                });
+            }
+        </script>
+    @endif
     @if ($tailwindPurchaseAssets)
         <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
         <script src="{{ asset('components/tether/dist/js/tether.min.js') }}"></script>
@@ -690,7 +730,7 @@
         <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/sweetalert/js/sweetalert.js') }}"></script>
     @endif
-    @if ($tailwindSelect2Assets && !$tailwindLegacyAssets && !$tailwindPurchaseAssets && !$tailwindDashboardAssets)
+    @if ($tailwindSelect2Assets && !$tailwindLegacyAssets && !$tailwindPurchaseAssets && !$tailwindDashboardAssets && !$tailwindOrdersAssets)
         <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
         <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
         <script>
@@ -712,10 +752,12 @@
             });
         </script>
     @endif
-    @if ($tailwindPurchaseAssets || $tailwindDashboardAssets)
+    @if ($tailwindPurchaseAssets || $tailwindDashboardAssets || $tailwindOrdersAssets)
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 document.documentElement.style.overflowY = 'auto';
+                document.documentElement.style.height = 'auto';
+                document.documentElement.style.minHeight = '100%';
                 document.body.style.overflowY = 'auto';
                 document.body.style.height = 'auto';
                 document.body.style.minHeight = '100vh';

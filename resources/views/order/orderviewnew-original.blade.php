@@ -1,8 +1,6 @@
-@extends('layouts.master-tailwind')
+@extends('layouts.master-layout')
 
 @section('title', 'Orders')
-@section('page_title', 'Orders Workspace')
-@section('page_subtitle', 'Search, filter, review, export, and manage POS and website orders from one focused screen.')
 
 @section('breadcrumtitle', 'Orders Panel')
 
@@ -10,20 +8,15 @@
 @section('navorder', 'active')
 
 @section('content')
-    <section class="orders-v2-page">
-        <div class="card orders-filter-card">
+    <section class="panels-wells">
+        <div class="card">
             <div class="card-header">
-                <div class="orders-section-heading">
-                    <div>
-                        <span class="orders-eyebrow">Advanced Filters</span>
-                        <h3>Order Search</h3>
-                    </div>
-                    <label class="orders-toggle">
-                        <input type="checkbox" id="checkbox">
-                        <span>Delivery orders</span>
-                    </label>
+                <h3 class="">Order Details</h3>
+                <hr />
+                <div class="checkbox">
+                    <label><input type="checkbox" id="checkbox"> Search Delivery Orders</label>
                 </div>
-                <div class="row orders-filter-grid">
+                <div class="row ">
                     <div id="customernumber" class="col-xl-2 col-lg-4 col-md-6 col-sm-12">
                         <div class="form-group">
                             <label class="form-control-label">Mobile No.</label>
@@ -217,27 +210,27 @@
                     </div>
                 </div>
 
-                <div class="row orders-action-row">
+                <div class="row">
 
-                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 orders-actions">
+                    <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 f-right">
                         <label class="form-control-label"></label>
                         <button type="button" onclick="clearSearchFields()"
-                            class="btn waves-effect waves-light buttons orders-action-btn orders-action-clear">
-                            <i class="icofont icofont-eraser"> </i>Clear All
+                            class="btn btn-info waves-effect waves-light m-t-25 m-r-10 f-right buttons">
+                            <i class="icofont icofont-file-pdf"> </i>Clear All
                         </button>
 
                         <button type="button" id="btnExcel"
-                            class="btn waves-effect waves-light buttons orders-action-btn orders-action-excel">
+                            class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right buttons">
                             <i class="icofont icofont-file-excel"> </i>Excel Export
                         </button>
                         @if (session('roleId') != 20 && session('roleId') != 19)
                             <button type="button" id="btnPdf"
-                                class="btn waves-effect waves-light buttons orders-action-btn orders-action-pdf">
+                                class="btn btn-danger waves-effect waves-light m-t-25 m-r-10 f-right buttons">
                                 <i class="icofont icofont-file-pdf"> </i>PDF Export
                             </button>
                         @endif
                         <button type="button" id="fetch"
-                            class="btn waves-effect waves-light buttons orders-action-btn orders-action-fetch">
+                            class="btn btn-success waves-effect waves-light m-t-25 m-r-10 f-right buttons">
                             <i class="icofont icofont-ui-check"> </i>Fetch
                         </button>
                     </div>
@@ -250,9 +243,11 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="loader" style="display:none;">
-                                <div class="orders-loading orders-loading-compact">
-                                    <div class="orders-loading-ring"></div>
-                                    <div class="orders-loading-title">Loading chart</div>
+                                <div
+                                    class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
+                                    <div class='spinner-border text-dark' role='status'>
+                                        <span class='visually-hidden'>Loading...</span>
+                                    </div>
                                 </div>
                             </div>
                             <canvas class="graph" id="chLine"></canvas>
@@ -263,9 +258,11 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="loader" style="display:none;">
-                                <div class="orders-loading orders-loading-compact">
-                                    <div class="orders-loading-ring"></div>
-                                    <div class="orders-loading-title">Loading chart</div>
+                                <div
+                                    class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
+                                    <div class='spinner-border text-dark' role='status'>
+                                        <span class='visually-hidden'>Loading...</span>
+                                    </div>
                                 </div>
                             </div>
                             <canvas class="graph" id="chBarOne"></canvas>
@@ -274,19 +271,18 @@
                 </div>
             </div>
         </div>
-        <div class="card orders-summary-card">
+        <div class="card">
             <div class="card-header p-2">
                 <div class="loader" style="display:none;">
-                    <div class="orders-loading orders-loading-inline">
-                        <div class="orders-loading-ring"></div>
-                        <div>
-                            <div class="orders-loading-title">Updating summary</div>
-                            <div class="orders-loading-copy">Refreshing order totals</div>
+                    <div
+                        class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>
+                        <div class='spinner-border text-dark' role='status'>
+                            <span class='visually-hidden'>Loading...</span>
                         </div>
                     </div>
                 </div>
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
-                    <div class="card dashboard-product orders-widget orders-widget-total">
+                    <div class="card dashboard-product">
                         <span>Total Orders</span>
                         <h2 class="dashboard-total-products" id="totalorders">0</h2>
                         <span class="label label-lg label-info fs-5" id="totalamount">Orders</span>
@@ -296,7 +292,7 @@
                     </div>
                 </div>
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
-                    <div class="card dashboard-product orders-widget orders-widget-pending">
+                    <div class="card dashboard-product">
                         <span>Pending Orders</span>
                         <h2 class="dashboard-total-products" id="pendingorders">0</h2>
                         <span class="label label-lg label-danger fs-5" id="totalpendingamount">Pending</span>
@@ -306,7 +302,7 @@
                     </div>
                 </div>
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
-                    <div class="card dashboard-product orders-widget orders-widget-processing">
+                    <div class="card dashboard-product">
                         <span>Processing Orders</span>
                         <h2 class="dashboard-total-products" id="processingorders">0</h2>
                         <span class="label label-lg label-warning fs-5" id="totalprocessingamount">Processing</span>
@@ -316,7 +312,7 @@
                     </div>
                 </div>
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
-                    <div class="card dashboard-product orders-widget orders-widget-void">
+                    <div class="card dashboard-product">
                         <span>Void Orders</span>
                         <h2 class="dashboard-total-products" id="voidorders">0</h2>
                         <span class="label label-lg label-danger fs-5" id="totalvoidamount">Void</span>
@@ -327,7 +323,7 @@
                 </div>
                 {{-- @if (session('company_id') == 102) --}}
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
-                    <div class="card dashboard-product orders-widget orders-widget-dispatch">
+                    <div class="card dashboard-product">
                         <span>Dispatch Orders</span>
                         <h2 class="dashboard-total-products" id="dispatchorders">0</h2>
                         <span class="label label-lg label-info fs-5" id="totaldispatchamount">Dispatch</span>
@@ -338,7 +334,7 @@
                 </div>
                 {{-- @else --}}
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
-                    <div class="card dashboard-product orders-widget orders-widget-return">
+                    <div class="card dashboard-product">
                         <span>Sales Return</span>
                         <h2 class="dashboard-total-products" id="salesreturnorders">0</h2>
                         <span class="label label-lg label-danger fs-5" id="totalsalesreturnamount">Sales Return</span>
@@ -349,7 +345,7 @@
                 </div>
                 {{-- @endif --}}
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
-                    <div class="card dashboard-product orders-widget orders-widget-delivered">
+                    <div class="card dashboard-product">
                         <span>Delivered Orders</span>
                         <h2 class="dashboard-total-products" id="deliveredorders">0</h2>
                         <span class="label label-lg label-success fs-5" id="totaldeliveredamount">Delivered</span>
@@ -360,7 +356,7 @@
                 </div>
 
                 <div class="col-xl-2 col-lg-4 col-md-6 col-sm-6 graph">
-                    <div class="card dashboard-product orders-widget orders-widget-tax">
+                    <div class="card dashboard-product">
                         <span id="labeltaxname">FBR/SRB Orders</span>
                         <h2 class="dashboard-total-products" id="totaltaxorders">0</h2>
                         <span class="label label-lg label-primary fs-5" id="totaltaxamount">FBR/SRB Amount</span>
@@ -383,7 +379,7 @@
 
             </div>
         </div>
-        <div class="card orders-results-card">
+        <div class="card">
             <div class="row">
                 <div class="card-block">
                     <div id="table_data" class="overflow-x-auto" style="overflow-y:hidden;">
@@ -473,7 +469,7 @@
                                 <div class="col-md-12">
                                     <label class="form-control-label">Select Branch</label>
                                     <select id="branchmodal" name="branchmodal" data-placeholder="Select Branch"
-                                        class="f-right select2">
+                                        class="f-right">
                                         @foreach ($branch as $value)
                                             <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
                                         @endforeach
@@ -601,605 +597,12 @@
         href="https://cdnjs.cloudflare.com/ajax/libs/MaterialDesign-Webfont/5.3.45/css/materialdesignicons.css"
         integrity="sha256-NAxhqDvtY0l4xn+YVa6WjAcmd94NNfttjNsDmNatFVc=" crossorigin="anonymous" />
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous">
+    </script>
     <style>
-        html,
-        body {
-            height: auto !important;
-            min-height: 100% !important;
-            overflow-y: auto !important;
-        }
-
-        body {
-            min-height: 100vh !important;
-        }
-
-        .orders-v2-page {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .orders-v2-page .card {
-            width: 100%;
-            border: 1px solid #d8e1ec !important;
-            border-radius: 8px !important;
-            background: #fff !important;
-            box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06) !important;
-        }
-
-        .orders-v2-page .card-header,
-        .orders-v2-page .card-block,
-        .orders-v2-page .card-body {
-            background: transparent !important;
-        }
-
-        .orders-filter-card .card-header {
-            padding: 1.25rem !important;
-        }
-
-        .orders-section-heading {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 1rem;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #edf2f7;
-        }
-
-        .orders-eyebrow {
-            display: block;
-            color: #64748b;
-            font-size: 0.72rem;
-            font-weight: 800;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-        }
-
-        .orders-section-heading h3 {
-            margin: 0.2rem 0 0;
-            color: #0f172a;
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: 0;
-        }
-
-        .orders-toggle {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 0;
-            padding: 0.55rem 0.75rem;
-            border: 1px solid #d8e1ec;
-            border-radius: 8px;
-            background: #f8fafc;
-            color: #334155;
-            font-size: 0.85rem;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .orders-toggle input {
-            margin: 0;
-        }
-
-        .orders-filter-grid {
-            display: grid;
-            grid-template-columns: repeat(12, minmax(0, 1fr));
-            gap: 1rem;
-            margin: 0 !important;
-        }
-
-        .orders-filter-grid > [class*="col-"] {
-            width: auto;
-            max-width: none;
-            float: none;
-            padding: 0 !important;
-            grid-column: span 3;
-        }
-
-        .orders-filter-grid .form-group,
-        .orders-filter-grid label {
-            margin-bottom: 0.35rem;
-        }
-
-        .orders-v2-page .form-control-label {
-            color: #475569;
-            font-size: 0.75rem;
-            font-weight: 800;
-            letter-spacing: 0.06em;
-            text-transform: uppercase;
-        }
-
-        .orders-v2-page .form-control,
-        .orders-v2-page select {
-            min-height: 2.5rem;
-            border-color: #d8e1ec !important;
-            border-radius: 8px !important;
-            color: #334155;
-            font-size: 0.875rem;
-        }
-
-        .orders-v2-page .form-control:focus {
-            border-color: #4CAF50 !important;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.14) !important;
-        }
-
-        .orders-v2-page .select2-container {
-            width: 100% !important;
-        }
-
-        .orders-v2-page .select2-container .select2-selection--single,
-        .orders-v2-page .select2-container .select2-selection--multiple {
-            min-height: 2.5rem;
-            border: 1px solid #d8e1ec;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            background: #fff;
-        }
-
-        .orders-v2-page .select2-container--default.select2-container--focus .select2-selection--multiple,
-        .orders-v2-page .select2-container--default.select2-container--focus .select2-selection--single {
-            border-color: #4CAF50;
-            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.14);
-        }
-
-        .orders-v2-page .select2-container--default .select2-selection--single .select2-selection__rendered {
-            width: 100%;
-            color: #334155;
-            line-height: 2.4rem;
-            padding-left: 0.75rem;
-        }
-
-        .orders-v2-page .select2-container--default .select2-selection--multiple {
-            align-items: flex-start;
-            padding: 0.25rem 0.35rem;
-        }
-
-        .orders-v2-page .select2-container--default .select2-selection--multiple .select2-selection__choice {
-            margin: 0.12rem;
-            border: 1px solid #d8e1ec;
-            border-radius: 6px;
-            background: #f8fafc;
-            color: #334155;
-            font-size: 0.75rem;
-            font-weight: 700;
-        }
-
-        .orders-v2-page .icofont-eraser {
-            cursor: pointer;
-        }
-
-        .orders-action-row {
-            margin: 1.1rem 0 0 !important;
-        }
-
-        .orders-actions {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: flex-end;
-            gap: 0.75rem;
-            padding: 0.9rem !important;
-            border: 1px solid #edf2f7;
-            border-radius: 8px;
-            background: linear-gradient(135deg, #f8fafc 0%, #ffffff 70%);
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-        }
-
-        .orders-actions .orders-action-btn {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            margin: 0 !important;
-            border-radius: 8px !important;
-            font-weight: 800 !important;
-            min-height: 2.75rem;
-            min-width: 8.75rem;
-            padding: 0.65rem 1.05rem;
-            border: 1px solid transparent !important;
-            letter-spacing: 0;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
-        }
-
-        .orders-actions .orders-action-btn i {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 1.7rem;
-            height: 1.7rem;
-            border-radius: 8px;
-            font-size: 1rem;
-            background: rgba(255, 255, 255, 0.22);
-        }
-
-        .orders-actions .orders-action-btn:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 14px 26px rgba(15, 23, 42, 0.14);
-        }
-
-        .orders-actions .orders-action-btn:disabled {
-            transform: none;
-            box-shadow: none;
-            opacity: 0.65;
-            cursor: not-allowed;
-        }
-
-        .orders-action-fetch {
-            color: #fff !important;
-            background: linear-gradient(135deg, #16a34a 0%, #4CAF50 55%, #22c55e 100%) !important;
-            box-shadow: 0 12px 24px rgba(34, 197, 94, 0.24);
-        }
-
-        .orders-action-excel {
-            color: #166534 !important;
-            border-color: #bbf7d0 !important;
-            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%) !important;
-        }
-
-        .orders-action-excel i {
-            color: #fff;
-            background: #16a34a !important;
-        }
-
-        .orders-action-pdf {
-            color: #9f1239 !important;
-            border-color: #fecdd3 !important;
-            background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%) !important;
-        }
-
-        .orders-action-pdf i {
-            color: #fff;
-            background: #e11d48 !important;
-        }
-
-        .orders-action-clear {
-            color: #475569 !important;
-            border-color: #d8e1ec !important;
-            background: #fff !important;
-        }
-
-        .orders-action-clear i {
-            color: #475569;
-            background: #f1f5f9 !important;
-        }
-
-        .orders-loading {
-            min-height: 260px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.9rem;
-            border: 1px dashed #cbd5e1;
-            border-radius: 8px;
-            background:
-                linear-gradient(135deg, rgba(76, 175, 80, 0.08), rgba(15, 23, 42, 0.02)),
-                #fff;
-            color: #334155;
-        }
-
-        .orders-loading-compact {
-            min-height: 220px;
-            flex-direction: column;
-        }
-
-        .orders-loading-inline {
-            min-height: 92px;
-            justify-content: flex-start;
-            padding: 1rem;
-        }
-
-        .orders-loading-ring {
-            width: 2.5rem;
-            height: 2.5rem;
-            border: 3px solid #d8e1ec;
-            border-top-color: #4CAF50;
-            border-radius: 999px;
-            animation: orders-spin 0.8s linear infinite;
-            flex: 0 0 auto;
-        }
-
-        .orders-loading-title {
-            color: #0f172a;
-            font-size: 0.9rem;
-            font-weight: 900;
-            letter-spacing: 0.02em;
-        }
-
-        .orders-loading-copy {
-            margin-top: 0.15rem;
-            color: #64748b;
-            font-size: 0.8rem;
-            font-weight: 600;
-        }
-
-        @keyframes orders-spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        #graphDiv .card-header {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 1rem;
-            padding: 1rem !important;
-        }
-
-        #graphDiv .col-md-6 {
-            width: auto;
-            max-width: none;
-            padding: 0 !important;
-        }
-
-        #graphDiv canvas {
-            min-height: 260px;
-        }
-
-        .orders-summary-card .card-header {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 1rem;
-            padding: 1rem !important;
-        }
-
-        .orders-summary-card .card-header > .loader {
-            grid-column: 1 / -1;
-        }
-
-        .orders-summary-card .graph {
-            width: auto;
-            max-width: none;
-            padding: 0 !important;
-        }
-
-        .orders-v2-page .dashboard-product.orders-widget {
-            position: relative;
-            min-height: 148px;
-            padding: 1.05rem;
-            border-radius: 8px !important;
-            overflow: hidden;
-            isolation: isolate;
-            border: 1px solid rgba(216, 225, 236, 0.9) !important;
-            box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08) !important;
-            transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
-        }
-
-        .orders-v2-page .dashboard-product.orders-widget:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 22px 42px rgba(15, 23, 42, 0.13) !important;
-            border-color: rgba(76, 175, 80, 0.35) !important;
-        }
-
-        .orders-widget::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            z-index: -2;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.94));
-        }
-
-        .orders-widget::after {
-            content: "";
-            position: absolute;
-            right: -2.5rem;
-            top: -2.25rem;
-            width: 7.5rem;
-            height: 7.5rem;
-            z-index: -1;
-            border-radius: 999px;
-            background: var(--orders-widget-glow, rgba(76, 175, 80, 0.13));
-        }
-
-        .orders-widget-total {
-            --orders-widget-accent: #2563eb;
-            --orders-widget-soft: #dbeafe;
-            --orders-widget-glow: rgba(37, 99, 235, 0.14);
-        }
-
-        .orders-widget-pending {
-            --orders-widget-accent: #e11d48;
-            --orders-widget-soft: #ffe4e6;
-            --orders-widget-glow: rgba(225, 29, 72, 0.13);
-        }
-
-        .orders-widget-processing {
-            --orders-widget-accent: #d97706;
-            --orders-widget-soft: #fef3c7;
-            --orders-widget-glow: rgba(217, 119, 6, 0.14);
-        }
-
-        .orders-widget-void,
-        .orders-widget-return {
-            --orders-widget-accent: #7f1d1d;
-            --orders-widget-soft: #fee2e2;
-            --orders-widget-glow: rgba(127, 29, 29, 0.12);
-        }
-
-        .orders-widget-dispatch {
-            --orders-widget-accent: #0891b2;
-            --orders-widget-soft: #cffafe;
-            --orders-widget-glow: rgba(8, 145, 178, 0.14);
-        }
-
-        .orders-widget-delivered {
-            --orders-widget-accent: #16a34a;
-            --orders-widget-soft: #dcfce7;
-            --orders-widget-glow: rgba(22, 163, 74, 0.14);
-        }
-
-        .orders-widget-tax {
-            --orders-widget-accent: #4f46e5;
-            --orders-widget-soft: #e0e7ff;
-            --orders-widget-glow: rgba(79, 70, 229, 0.14);
-        }
-
-        .orders-v2-page .dashboard-product.orders-widget span:first-child {
-            display: block;
-            max-width: calc(100% - 3.2rem);
-            color: #64748b;
-            font-size: 0.74rem;
-            font-weight: 800;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .orders-v2-page .dashboard-product.orders-widget .dashboard-total-products {
-            margin: 0.65rem 0 0.55rem;
-            color: #0f172a;
-            font-size: 2.05rem;
-            line-height: 1;
-            font-weight: 900;
-            letter-spacing: 0;
-        }
-
-        .orders-v2-page .dashboard-product.orders-widget .label {
-            display: inline-flex;
-            max-width: 100%;
-            min-height: 1.9rem;
-            align-items: center;
-            border: 1px solid rgba(15, 23, 42, 0.06);
-            border-radius: 999px;
-            background: var(--orders-widget-soft);
-            color: var(--orders-widget-accent);
-            font-size: 0.76rem !important;
-            font-weight: 900;
-            line-height: 1.1;
-            padding: 0.38rem 0.65rem;
-            white-space: normal;
-        }
-
-        .orders-v2-page .dashboard-product.orders-widget .side-box {
-            position: absolute;
-            right: 1rem;
-            top: 1rem;
-            width: 2.55rem;
-            height: 2.55rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 8px;
-            background: var(--orders-widget-soft);
-            color: var(--orders-widget-accent);
-            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.65);
-        }
-
-        .orders-v2-page .dashboard-product.orders-widget .side-box i {
-            margin: 0;
-            color: var(--orders-widget-accent) !important;
-            font-size: 1.2rem;
-        }
-
-        #table_data {
-            min-height: 260px;
-            border: 1px solid #edf2f7;
-            border-radius: 8px;
-            background: #fff;
-        }
-
-        #table_data .table {
-            margin-bottom: 0;
-        }
-
-        #table_data .table thead th {
-            position: sticky;
-            top: 0;
-            z-index: 1;
-            background: #f8fafc !important;
-            color: #64748b !important;
-            font-size: 0.72rem !important;
-            font-weight: 900 !important;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        .orders-results-card {
-            overflow: visible;
-        }
-
-        .orders-results-card .row {
-            margin: 0 !important;
-        }
-
-        .orders-results-card .card-block {
-            width: 100%;
-            padding: 1rem !important;
-            overflow: visible;
-        }
-
-        .orders-results-card #table_data {
-            overflow-y: visible !important;
-        }
-
-        .orders-results-card .table-responsive {
-            overflow-y: visible;
-        }
-
-        .orders-results-card .dropdown-menu {
-            z-index: 1080;
-            border: 1px solid #d8e1ec;
-            border-radius: 8px;
-            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
-        }
-
-        .orders-dropdown-portal {
-            display: block !important;
-            position: fixed !important;
-            z-index: 3000 !important;
-            max-height: min(420px, calc(100vh - 24px));
-            overflow-y: auto;
-            min-width: 15rem;
-        }
-
-        .orders-results-card .btn-group {
-            gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-
-        .orders-results-card .btn-group .btn {
-            border-radius: 8px !important;
-            border: 1px solid transparent !important;
-            font-size: 0.78rem;
-            font-weight: 900;
-            min-height: 2.25rem;
-            padding: 0.45rem 0.75rem;
-            box-shadow: 0 8px 18px rgba(15, 23, 42, 0.10);
-        }
-
-        .orders-results-card .btn-group .btn-danger {
-            color: #fff;
-            background: linear-gradient(135deg, #be123c, #e11d48) !important;
-        }
-
-        .orders-results-card .btn-group .btn-success {
-            color: #fff;
-            background: linear-gradient(135deg, #15803d, #22c55e) !important;
-        }
-
-        .orders-results-card .btn-group .btn:disabled {
-            box-shadow: none;
-            opacity: 0.5;
-        }
-
-        .orders-v2-page .modal-content {
-            border: 0;
-            border-radius: 8px;
-            box-shadow: 0 24px 60px rgba(15, 23, 42, 0.24);
-        }
-
-        .orders-v2-page .modal-header {
-            border-bottom: 1px solid #edf2f7;
-            background: #f8fafc;
-        }
-
-        .orders-v2-page .modal-title {
-            color: #0f172a;
-            font-weight: 800;
-        }
-
         .bg-success {
             background-color: #4CAF50 !important;
         }
@@ -1211,50 +614,6 @@
         .navbar-custom-menu {
             position: absolute;
             right: 0;
-        }
-
-        @media (max-width: 1199px) {
-            .orders-filter-grid > [class*="col-"] {
-                grid-column: span 4;
-            }
-        }
-
-        @media (max-width: 991px) {
-            .orders-filter-grid > [class*="col-"] {
-                grid-column: span 6;
-            }
-
-            #graphDiv .card-header {
-                grid-template-columns: 1fr;
-            }
-
-            .orders-summary-card .card-header {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-        }
-
-        @media (max-width: 575px) {
-            .orders-section-heading,
-            .orders-actions {
-                align-items: stretch;
-                flex-direction: column;
-            }
-
-            .orders-filter-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .orders-filter-grid > [class*="col-"] {
-                grid-column: auto;
-            }
-
-            .orders-actions .btn {
-                width: 100%;
-            }
-
-            .orders-summary-card .card-header {
-                grid-template-columns: 1fr;
-            }
         }
     </style>
 
@@ -1319,84 +678,12 @@
 
         });
 
-        function positionOrdersDropdown($toggle, $menu) {
-            var rect = $toggle[0].getBoundingClientRect();
-            var menuWidth = Math.max($menu.outerWidth(), 240);
-            var menuHeight = $menu.outerHeight();
-            var viewportWidth = window.innerWidth || document.documentElement.clientWidth;
-            var viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-            var left = Math.min(Math.max(12, rect.left), viewportWidth - menuWidth - 12);
-            var top = rect.bottom + 8;
-
-            if (top + menuHeight > viewportHeight - 12) {
-                top = Math.max(12, rect.top - menuHeight - 8);
-            }
-
-            $menu.css({
-                top: top + 'px',
-                left: left + 'px',
-                minWidth: menuWidth + 'px'
-            });
-        }
-
-        $(document).on('show.bs.dropdown', '.orders-results-card .btn-group', function() {
-            var $group = $(this);
-            var $toggle = $group.find('[data-toggle="dropdown"]').first();
-            var $menu = $group.children('.dropdown-menu').first();
-
-            if (!$menu.length || $menu.hasClass('orders-dropdown-portal')) {
-                return;
-            }
-
-            $menu.data('orders-dropdown-parent', $group);
-            $menu.data('orders-dropdown-next', $menu.next());
-            $menu.appendTo(document.body).addClass('orders-dropdown-portal');
-            positionOrdersDropdown($toggle, $menu);
-        });
-
-        $(document).on('shown.bs.dropdown', '.orders-results-card .btn-group', function() {
-            var $group = $(this);
-            var $toggle = $group.find('[data-toggle="dropdown"]').first();
-            var $menu = $('.orders-dropdown-portal').filter(function() {
-                return $(this).data('orders-dropdown-parent') && $(this).data('orders-dropdown-parent')[0] === $group[0];
-            }).first();
-
-            if ($menu.length) {
-                positionOrdersDropdown($toggle, $menu);
-            }
-        });
-
-        $(document).on('hide.bs.dropdown', '.orders-results-card .btn-group', function() {
-            var $group = $(this);
-            var $menu = $('.orders-dropdown-portal').filter(function() {
-                return $(this).data('orders-dropdown-parent') && $(this).data('orders-dropdown-parent')[0] === $group[0];
-            }).first();
-
-            if (!$menu.length) {
-                return;
-            }
-
-            var $next = $menu.data('orders-dropdown-next');
-            $menu.removeClass('orders-dropdown-portal').removeAttr('style');
-            if ($next && $next.length) {
-                $menu.insertBefore($next);
-            } else {
-                $group.append($menu);
-            }
-            $menu.removeData('orders-dropdown-parent orders-dropdown-next');
-        });
-
         function showLoader(divName) {
-            $('.orders-dropdown-portal').remove();
             $('#' + divName).empty();
             $('#' + divName).append(
-                "<div class='orders-loading'>" +
-                "<div class='orders-loading-ring'></div>" +
-                "<div>" +
-                "<div class='orders-loading-title'>Loading orders</div>" +
-                "<div class='orders-loading-copy'>Applying filters and preparing the results table</div>" +
-                "</div>" +
-                "</div>"
+                "<div class='position-relative w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center'>" +
+                "<div class='spinner-border text-dark' role='status'>" +
+                "<span class='visually-hidden'>Loading...</span></div></div>"
             )
         }
         var count = 0;
@@ -1439,9 +726,6 @@
                     $(".graph").css("display", "block");
                     $(".buttons").prop('disabled', false);
                     $('#table_data').html(data);
-                    if ($.fn.dropdown) {
-                        $('#table_data [data-toggle="dropdown"]').dropdown();
-                    }
                 },
                 error: function(XMLHttpRequest, textStatus, errorThrown) {
                     $("#table_data").empty();
