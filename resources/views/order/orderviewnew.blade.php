@@ -221,25 +221,26 @@
 
                     <div class="col-xl-12 col-lg-12 col-md-12 col-sm-12 orders-actions">
                         <label class="form-control-label"></label>
-                        <button type="button" onclick="clearSearchFields()"
-                            class="btn waves-effect waves-light buttons orders-action-btn orders-action-clear">
-                            <i class="icofont icofont-eraser"> </i>Clear All
+                         <button type="button" id="fetch"
+                            class="h-10 rounded-lg bg-erp px-4 text-sm font-bold text-white transition hover:bg-erp-dark">
+                            <i class="icofont icofont-ui-check"> </i>Fetch
                         </button>
-
+                        
                         <button type="button" id="btnExcel"
-                            class="btn waves-effect waves-light buttons orders-action-btn orders-action-excel">
+                            class="h-10 rounded-lg bg-emerald-600 px-4 text-sm font-bold text-white transition hover:bg-emerald-700">
                             <i class="icofont icofont-file-excel"> </i>Excel Export
                         </button>
                         @if (session('roleId') != 20 && session('roleId') != 19)
                             <button type="button" id="btnPdf"
-                                class="btn waves-effect waves-light buttons orders-action-btn orders-action-pdf">
+                                class="h-10 rounded-lg bg-rose-600 px-4 text-sm font-bold text-white transition hover:bg-rose-700">
                                 <i class="icofont icofont-file-pdf"> </i>PDF Export
                             </button>
                         @endif
-                        <button type="button" id="fetch"
-                            class="btn waves-effect waves-light buttons orders-action-btn orders-action-fetch">
-                            <i class="icofont icofont-ui-check"> </i>Fetch
+                        <button type="button" onclick="clearSearchFields()"
+                            class="h-10 rounded-lg bg-gray-400 px-4 text-sm font-bold text-white transition hover:bg-gray-800">
+                            <i class="icofont icofont-eraser"> </i>Clear All
                         </button>
+                       
                     </div>
                 </div>
             </div>
