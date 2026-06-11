@@ -329,6 +329,7 @@ class OrderController extends Controller
     {
         // return $request;
         $orders = $order->getNewPOSOrdersQuery($request);
+        $displayOrders = in_array($request->view_mode, ['cards', 'board']) ? $order->getNewPOSOrdersQuery($request, 'report') : $orders;
     //    return $orders;
         // return $orders;
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
@@ -342,7 +343,7 @@ class OrderController extends Controller
         // });
         // $collection = collect($totalorders);
         // return $collection->filter(fn ($item) => $item->order_status_name == "Void")->values()->all();
-        return view('partials.orders_table', compact('orders', 'totalorders', 'totaltax', 'orderTimingGraph', 'height'));
+        return view('partials.orders_table', compact('orders', 'displayOrders', 'totalorders', 'totaltax', 'orderTimingGraph', 'height'));
     }
 
 

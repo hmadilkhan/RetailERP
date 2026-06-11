@@ -248,28 +248,66 @@
         <div class="card" id="graphDiv">
             <div class="card-header p-2">
                 <div class="col-md-6 py-1">
-                    <div class="card">
+                    <div class="card orders-chart-card">
                         <div class="card-body">
+                            <div class="orders-chart-head">
+                                <div>
+                                    <span class="orders-chart-kicker">Order activity</span>
+                                    <h4>Orders by Hour</h4>
+                                    <p>Track how order volume moves across the selected time range.</p>
+                                </div>
+                                <div class="orders-chart-metrics">
+                                    <div class="orders-chart-metric">
+                                        <span>Peak Slot</span>
+                                        <strong id="ordersVolumePeak">-</strong>
+                                    </div>
+                                    <div class="orders-chart-metric">
+                                        <span>Avg / Slot</span>
+                                        <strong id="ordersVolumeAvg">-</strong>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="loader" style="display:none;">
                                 <div class="orders-loading orders-loading-compact">
                                     <div class="orders-loading-ring"></div>
                                     <div class="orders-loading-title">Loading chart</div>
                                 </div>
                             </div>
-                            <canvas class="graph" id="chLine"></canvas>
+                            <div class="orders-chart-canvas-wrap">
+                                <canvas class="graph" id="chLine"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-6 py-1">
-                    <div class="card">
+                    <div class="card orders-chart-card">
                         <div class="card-body">
+                            <div class="orders-chart-head">
+                                <div>
+                                    <span class="orders-chart-kicker">Revenue flow</span>
+                                    <h4>Sales by Hour</h4>
+                                    <p>Compare hourly order value and spot the strongest earning window.</p>
+                                </div>
+                                <div class="orders-chart-metrics">
+                                    <div class="orders-chart-metric">
+                                        <span>Total Sales</span>
+                                        <strong id="ordersRevenueTotal">-</strong>
+                                    </div>
+                                    <div class="orders-chart-metric">
+                                        <span>Best Hour</span>
+                                        <strong id="ordersRevenuePeak">-</strong>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="loader" style="display:none;">
                                 <div class="orders-loading orders-loading-compact">
                                     <div class="orders-loading-ring"></div>
                                     <div class="orders-loading-title">Loading chart</div>
                                 </div>
                             </div>
-                            <canvas class="graph" id="chBarOne"></canvas>
+                            <div class="orders-chart-canvas-wrap">
+                                <canvas class="graph" id="chBarOne"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -930,14 +968,99 @@
             padding: 1rem !important;
         }
 
+        .orders-chart-card {
+            overflow: hidden;
+        }
+
+        .orders-chart-card .card-body {
+            padding: 1rem !important;
+            background:
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.08), transparent 34%),
+                linear-gradient(180deg, #ffffff 0%, #f8fafc 100%) !important;
+        }
+
+        .orders-chart-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .orders-chart-kicker {
+            display: inline-block;
+            color: #64748b;
+            font-size: 0.68rem;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .orders-chart-head h4 {
+            margin: 0.3rem 0 0;
+            color: #0f172a;
+            font-size: 1.15rem;
+            font-weight: 900;
+        }
+
+        .orders-chart-head p {
+            margin: 0.35rem 0 0;
+            color: #64748b;
+            font-size: 0.82rem;
+            font-weight: 600;
+            line-height: 1.55;
+        }
+
+        .orders-chart-metrics {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 0.65rem;
+            min-width: min(100%, 15rem);
+        }
+
+        .orders-chart-metric {
+            padding: 0.75rem 0.85rem;
+            border: 1px solid rgba(216, 225, 236, 0.95);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+        }
+
+        .orders-chart-metric span {
+            display: block;
+            color: #64748b;
+            font-size: 0.68rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .orders-chart-metric strong {
+            display: block;
+            margin-top: 0.35rem;
+            color: #0f172a;
+            font-size: 0.98rem;
+            font-weight: 900;
+            line-height: 1.2;
+        }
+
         #graphDiv .col-md-6 {
             width: auto;
             max-width: none;
             padding: 0 !important;
         }
 
+        .orders-chart-canvas-wrap {
+            min-height: 280px;
+            padding: 0.25rem;
+            border: 1px solid rgba(216, 225, 236, 0.85);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.92);
+        }
+
         #graphDiv canvas {
             min-height: 260px;
+            width: 100% !important;
         }
 
         .orders-summary-card .card-header {
@@ -1229,6 +1352,14 @@
                 grid-template-columns: 1fr;
             }
 
+            .orders-chart-head {
+                flex-direction: column;
+            }
+
+            .orders-chart-metrics {
+                width: 100%;
+            }
+
             .orders-summary-card .card-header {
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
@@ -1251,6 +1382,10 @@
 
             .orders-actions .btn {
                 width: 100%;
+            }
+
+            .orders-chart-metrics {
+                grid-template-columns: 1fr;
             }
 
             .orders-summary-card .card-header {
@@ -1432,6 +1567,7 @@
                     type: $('#type').val(),
                     salesperson: $('#orderserviceprovider').val(),
                     category: $('#category').val(),
+                    view_mode: window.ordersCurrentView || 'table',
                     height: (count == 1 ? 100 : 200),
                 },
                 success: function(data) {
