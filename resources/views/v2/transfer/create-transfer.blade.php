@@ -1,613 +1,513 @@
 @extends('layouts.master-tailwind')
 
-@section('title', 'Transfer Order')
-
-@section('breadcrumtitle', 'Create Transfer Order')
-
-@section('navtransfer', 'active')
-@section('navcreatetrf', 'active')
+@section('title', 'Create Transfer Order')
+@section('page_title', 'Create Transfer Order')
+@section('page_subtitle', 'Move stock between branches and place the transfer order when it is ready.')
 
 @section('content')
-    <section class="panels-wells">
-
-        <div class="card">
-            <div class="card-header">
-                <h5 class="card-header-text"> Create Transfer Order |
-                </h5>
-                <span class="card-header-text">{{ $addtransfer }}</span>
-                <span class="card-header-text f-right">Draft</span>
-                <br />
-                <h5 class=""><a href="{{ url('/trf_list') }}"><i
-                            class="text-primary text-center icofont icofont-arrow-left p-r-20 f-18" data-toggle="tooltip"
-                            data-placement="top" title="" data-original-title="Back">Back to list</i></a></h5>
-
+    <div class="space-y-6" id="transferOrderPage">
+        <div class="flex flex-col gap-4 rounded-xl border border-erp-line bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+            <div>
+                <div class="flex flex-wrap items-center gap-3">
+                    <h2 class="text-xl font-bold text-erp-ink">Transfer Order #{{ $addtransfer }}</h2>
+                    <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-700">Draft</span>
+                </div>
+                <p class="mt-1 text-sm text-erp-mute">Choose branches, add products, then save or place the order.</p>
             </div>
-            <div class="card-block">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Transfer From Branch</label>
-                            <select name="branchfrm" id="branchfrm" class="form-control select2" onchange="get_products()"
-                                data-placeholder="Select Branch">
-                                <option value="">Select Branch</option>
-                                @if ($headoffice)
-                                    @foreach ($branches as $value)
-                                        <option value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
-                                    @endforeach
-                                @endif
-                            </select>
-                            <div class="form-control-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Destination To Branch</label>
-                            <select name="branchto" id="branchto" class="form-control select2"
-                                data-placeholder="Select Branch">
-                                <option value="">Select Branch</option>
-                            </select>
-                            <div class="form-control-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Transfer Order Date</label>
-                            <input class="form-control" type="text" name="trfdate" id="trfdate"
-                                placeholder="DD-MM-YYYY" />
-                            <div class="form-control-feedback"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Select Product</label>
-                            <select name="product" id="product" class="form-control select2"
-                                onchange="getstock()"data-placeholder="Select Product">
-                            </select>
-                            <div class="form-control-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <label class="form-control-label">Available Stock</label>
-                            <label class="form-control-label f-right text-info" id="stock_status"></label>
-                            <input class="form-control" type="text" disabled="disabled" name="stock" id="stock" />
-                            <div class="form-control-feedback"></div>
-                        </div>
-                    </div>
-                    <div class="col-11 col-md-4">
-                        <div class="form-group">
-                            <label class="form-control-label">Enter Transfer Quantity</label>
-                            <input class="form-control" type="number" min="1" name="qty" id="qty"
-                                value="0" />
-                            <div class="form-control-feedback">
-                                <p>Hit Enter to add products</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-1 col-md-1">
-                        <div class="form-group">
-                            <label class="form-control-label">&nbsp;</label>
-                            <button class="btn btn-primary btn-sm form-control" type="button" id="addProductBtn">
-                                <i class="icofont icofont-plus"></i>
-                            </button>
-                        </div>
-                    </div>
-
-
-                </div>
-                <hr>
-                <div class="row">
-
-                    <div class="col-md-12">
-                        <h5>Transfer Order Details</h5>
-                        <div class="form-group">
-                            <table id="trftable" class="table dt-responsive table-striped nowrap" width="100%"
-                                cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Product Image</th>
-                                        <th>Item Code</th>
-                                        <th>Product Name</th>
-                                        <th>Transfer Quantity</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-
-
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="row in">
-                    <div class="col-lg-12 col-sm-12 m-t-50">
-                        <div class="button-group ">
-                            <button type="button" id="btnFinalSubmit"
-                                class="btn btn-md btn-success waves-effect waves-light  f-right"
-                                onclick="trf_status_change(8)"> <i class="icofont icofont-plus"> </i>
-                                Submit & Placed
-                            </button>
-
-                            <button type="button" id="btndraft"
-                                class="btn btn-md btn-default waves-effect waves-light  f-right m-r-20"
-                                onclick="trf_status_change(1)"><i class="icofont icofont-save"></i> Save as Draft
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+            <a href="{{ url('/trf_list') }}" class="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-erp-line bg-white px-4 text-sm font-bold text-erp-text shadow-sm transition hover:border-erp hover:text-erp-dark">
+                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+                Back to list
+            </a>
         </div>
 
-        <div class="modal fade modal-flex" id="edit-modal" tabindex="-1" role="dialog">
-            <div class="modal-dialog modal-md" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                        <h4 class="modal-title">Change Transfer Quantity</h4>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <input type="hidden" name="itemid" id="itemid">
-                                    <label class="form-control-label">Enter Quantity:</label>
-                                    <input type="text" name="updateqty" id="updateqty" class="form-control" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" id="btn_bank" class="btn btn-primary waves-effect waves-light"
-                            onClick="updatetrf($('#itemid').val(),$('#updateqty').val())">Update</button>
-                    </div>
+        <div id="pageMessage" class="hidden rounded-lg border px-4 py-3 text-sm font-medium" role="status"></div>
+
+        <section class="rounded-xl border border-erp-line bg-white shadow-sm">
+            <div class="border-b border-erp-line px-5 py-4">
+                <h3 class="font-bold text-erp-ink">Transfer Information</h3>
+            </div>
+            <div class="grid gap-5 p-5 md:grid-cols-3">
+                <label class="block">
+                    <span class="mb-2 block text-sm font-bold text-erp-text">Transfer from branch</span>
+                    <select id="branchfrm" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <option value="">Select branch</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->branch_id }}" @selected((int) $branch->branch_id === (int) session('branch'))>{{ $branch->branch_name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+
+                <label class="block">
+                    <span class="mb-2 block text-sm font-bold text-erp-text">Destination branch</span>
+                    <select id="branchto" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <option value="">Select branch</option>
+                    </select>
+                </label>
+
+                <label class="block">
+                    <span class="mb-2 block text-sm font-bold text-erp-text">Transfer date</span>
+                    <input id="trfdate" type="date" value="{{ date('Y-m-d') }}" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                </label>
+            </div>
+        </section>
+
+        <section class="rounded-xl border border-erp-line bg-white shadow-sm">
+            <div class="border-b border-erp-line px-5 py-4">
+                <h3 class="font-bold text-erp-ink">Add Product</h3>
+            </div>
+            <div class="grid gap-5 p-5 md:grid-cols-12 md:items-end">
+                <label class="block md:col-span-5">
+                    <span class="mb-2 block text-sm font-bold text-erp-text">Product</span>
+                    <select id="product" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" disabled>
+                        <option value="">Select source branch first</option>
+                    </select>
+                </label>
+
+                <label class="block md:col-span-3">
+                    <span class="mb-2 flex items-center justify-between gap-2 text-sm font-bold text-erp-text">
+                        Available stock
+                        <span id="stockStatus" class="text-xs font-bold text-erp-mute"></span>
+                    </span>
+                    <input id="stock" type="text" value="0" readonly class="h-11 w-full rounded-lg border-erp-line bg-slate-50 text-sm text-erp-text shadow-sm">
+                </label>
+
+                <label class="block md:col-span-2">
+                    <span class="mb-2 block text-sm font-bold text-erp-text">Quantity</span>
+                    <input id="qty" type="number" min="1" step="1" value="1" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                </label>
+
+                <button type="button" id="addProductBtn" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg bg-erp px-4 text-sm font-bold text-white shadow-sm transition hover:bg-erp-dark disabled:cursor-not-allowed disabled:opacity-50 md:col-span-2" disabled>
+                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    Add item
+                </button>
+            </div>
+        </section>
+
+        <section class="overflow-hidden rounded-xl border border-erp-line bg-white shadow-sm">
+            <div class="flex flex-col gap-3 border-b border-erp-line px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                    <h3 class="font-bold text-erp-ink">Transfer Items</h3>
+                    <p id="itemCount" class="mt-1 text-xs text-erp-mute">0 items added</p>
                 </div>
+                <input id="itemFilter" type="search" placeholder="Filter items..." class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp sm:w-72">
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-erp-line text-sm">
+                    <thead class="bg-slate-50 text-left text-xs font-bold uppercase tracking-wide text-erp-mute">
+                        <tr>
+                            <th class="px-5 py-3">Product</th>
+                            <th class="px-5 py-3">Item code</th>
+                            <th class="px-5 py-3 text-right">Quantity</th>
+                            <th class="px-5 py-3 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transferItems" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div id="emptyItems" class="px-5 py-12 text-center">
+                <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-erp-mute">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 7 9 18l-5-5"/><path d="M9 7h11v11"/></svg>
+                </div>
+                <p class="mt-3 font-bold text-erp-text">No products added</p>
+                <p class="mt-1 text-sm text-erp-mute">Select a product and quantity above to start the transfer.</p>
+            </div>
+        </section>
+
+        <div class="flex flex-col-reverse gap-3 rounded-xl border border-erp-line bg-white p-5 shadow-sm sm:flex-row sm:justify-end">
+            <button type="button" id="saveDraftBtn" class="inline-flex h-11 items-center justify-center rounded-lg border border-erp-line bg-white px-5 text-sm font-bold text-erp-text transition hover:border-erp hover:text-erp-dark">Save as draft</button>
+            <button type="button" id="placeOrderBtn" class="inline-flex h-11 items-center justify-center rounded-lg bg-erp px-5 text-sm font-bold text-white shadow-sm transition hover:bg-erp-dark">Submit and place</button>
+        </div>
+    </div>
+
+    <div id="quantityModal" class="fixed inset-0 z-[80] hidden items-center justify-center bg-slate-950/50 p-4" aria-hidden="true">
+        <div class="w-full max-w-md rounded-xl bg-white shadow-2xl" role="dialog" aria-modal="true" aria-labelledby="quantityModalTitle">
+            <div class="flex items-center justify-between border-b border-erp-line px-5 py-4">
+                <h3 id="quantityModalTitle" class="font-bold text-erp-ink">Change transfer quantity</h3>
+                <button type="button" id="closeQuantityModal" class="rounded-lg p-2 text-erp-mute hover:bg-slate-100 hover:text-erp-ink" aria-label="Close">&times;</button>
+            </div>
+            <div class="p-5">
+                <input type="hidden" id="editItemId">
+                <label class="block">
+                    <span class="mb-2 block text-sm font-bold text-erp-text">Quantity</span>
+                    <input type="number" min="1" step="1" id="editQuantity" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                </label>
+            </div>
+            <div class="flex justify-end gap-3 border-t border-erp-line px-5 py-4">
+                <button type="button" id="cancelQuantityModal" class="h-10 rounded-lg border border-erp-line px-4 text-sm font-bold text-erp-text">Cancel</button>
+                <button type="button" id="updateQuantityBtn" class="h-10 rounded-lg bg-erp px-4 text-sm font-bold text-white hover:bg-erp-dark">Update</button>
             </div>
         </div>
-
-    </section>
-
+    </div>
 @endsection
 
-@section('scriptcode_three')
-    <script type="text/javascript">
-        $(".select2").select2();
-        $('#trfdate').bootstrapMaterialDatePicker({
-            format: 'DD-MM-YYYY',
-            time: false,
-            clearButton: true,
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+            const transferId = @json($addtransfer);
+            const companyId = Number(@json(session('company_id')));
+            const placeholderImage = @json(asset('storage/images/placeholder.jpg'));
+            const productImageBase = @json(asset('storage/images/products/')) + '/';
+            const urls = {
+                products: @json(url('/get_products')),
+                branches: @json(url('/get-to-branches')),
+                stock: @json(url('/trf_stock')),
+                insert: @json(url('/insert_trf')),
+                details: @json(url('/trf_details')),
+                remove: @json(url('/trf_delete')),
+                updateQuantity: @json(url('/qty_update')),
+                changeStatus: @json(url('/trf_change_status')),
+                createChallan: @json(url('/insert_direct_chalan')),
+                list: @json(url('/trf_list'))
+            };
 
-            icons: {
-                date: "icofont icofont-ui-calendar",
-                up: "icofont icofont-rounded-up",
-                down: "icofont icofont-rounded-down",
-                next: "icofont icofont-rounded-right",
-                previous: "icofont icofont-rounded-left"
+            const elements = {
+                from: document.getElementById('branchfrm'),
+                to: document.getElementById('branchto'),
+                date: document.getElementById('trfdate'),
+                product: document.getElementById('product'),
+                stock: document.getElementById('stock'),
+                stockStatus: document.getElementById('stockStatus'),
+                quantity: document.getElementById('qty'),
+                add: document.getElementById('addProductBtn'),
+                rows: document.getElementById('transferItems'),
+                empty: document.getElementById('emptyItems'),
+                count: document.getElementById('itemCount'),
+                filter: document.getElementById('itemFilter'),
+                message: document.getElementById('pageMessage'),
+                modal: document.getElementById('quantityModal'),
+                editId: document.getElementById('editItemId'),
+                editQuantity: document.getElementById('editQuantity')
+            };
+
+            let items = [];
+
+            function formBody(data) {
+                const body = new URLSearchParams(data);
+                body.set('_token', csrfToken);
+                return body;
             }
-        });
 
-        // Add product button click handler
-        $('#addProductBtn').click(function() {
-            add_product()
-            // $('#qty').trigger($.Event('keypress', { which: 13, keyCode: 13 }));
-        });
-
-        $('#trftable').DataTable({
-            displayLength: 10,
-            info: false,
-            language: {
-                search: '',
-                searchPlaceholder: 'Search Product',
-                lengthMenu: '<span></span> _MENU_'
-
-            },
-
-
-        });
-
-        $("#qty").keyup(function(event) {
-            if (event.keyCode === 13) {
-                add_product()
+            async function request(url, options = {}) {
+                const response = await fetch(url, {
+                    headers: { 'Accept': 'application/json', ...(options.headers || {}) },
+                    credentials: 'same-origin',
+                    ...options
+                });
+                if (!response.ok) throw new Error('Request failed. Please try again.');
+                const contentType = response.headers.get('content-type') || '';
+                return contentType.includes('application/json') ? response.json() : response.text();
             }
-        });
 
-        function getstock() {
-            $.ajax({
-                url: "{{ url('/trf_stock') }}",
-                type: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    productid: $('#product').val(),
-                    branchid: $('#branchfrm').val(),
-                },
-                success: function(resp) {
-                    if (resp) {
-                        if (resp[0].stock < resp[0].reminder_qty) {
-                            $('#stock_status').text('Low Stock');
-                        } else if (resp[0].stock == null || resp[0].stock == 0) {
-                            $('#stock_status').text('Out of Stock');
-                        } else {
-                            $('#stock_status').text('In Stock');
-                        }
+            function showMessage(message, type = 'error') {
+                elements.message.textContent = message;
+                elements.message.className = 'rounded-lg border px-4 py-3 text-sm font-medium ' +
+                    (type === 'success'
+                        ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+                        : 'border-rose-200 bg-rose-50 text-rose-800');
+                elements.message.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                window.setTimeout(() => elements.message.classList.add('hidden'), 5000);
+            }
 
-                        $('#stock').val(resp[0].stock);
-                    }
+            function setBusy(button, busy, label) {
+                if (!button.dataset.label) button.dataset.label = button.textContent.trim();
+                button.disabled = busy;
+                button.textContent = busy ? label : button.dataset.label;
+            }
+
+            function resetStock() {
+                elements.stock.value = '0';
+                elements.stockStatus.textContent = '';
+                elements.add.disabled = true;
+            }
+
+            async function loadSourceData() {
+                const branchId = elements.from.value;
+                elements.to.innerHTML = '<option value="">Select branch</option>';
+                elements.product.innerHTML = '<option value="">Loading products...</option>';
+                elements.product.disabled = true;
+                resetStock();
+                if (!branchId) {
+                    elements.product.innerHTML = '<option value="">Select source branch first</option>';
+                    return;
                 }
-            });
-        }
 
+                try {
+                    const [branches, products] = await Promise.all([
+                        request(urls.branches, { method: 'POST', body: formBody({ branch: branchId }) }),
+                        request(urls.products, { method: 'POST', body: formBody({ branchid: branchId }) })
+                    ]);
 
-        function get_products() {
-            getToBranches();
-            $.ajax({
-                url: "{{ url('/get_products') }}",
-                type: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    branchid: $('#branchfrm').val(),
-                },
-                success: function(resp) {
-                    if (resp) {
-                        $("#product").empty();
-                        $("#product").append("<option value=''>Select Product</option>");
-                        for (var count = 0; count < resp.length; count++) {
-                            $("#product").append(
-                                "<option value='" + resp[count].id + "'>" + resp[count].item_code + " | " +
-                                resp[count].product_name + "</option>");
-                        }
-                    }
+                    branches.forEach(branch => elements.to.add(new Option(branch.branch_name, branch.branch_id)));
+                    elements.product.innerHTML = '<option value="">Select product</option>';
+                    products.forEach(product => elements.product.add(new Option(product.item_code + ' | ' + product.product_name, product.id)));
+                    elements.product.disabled = false;
+                } catch (error) {
+                    elements.product.innerHTML = '<option value="">Unable to load products</option>';
+                    showMessage(error.message);
                 }
-            });
-        }
-
-        function getToBranches() {
-            if ($('#branchfrm').val() != "") {
-                $.ajax({
-                    url: "{{ url('/get-to-branches') }}",
-                    type: 'POST',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        branch: $('#branchfrm').val(),
-                    },
-                    success: function(resp) {
-                        if (resp) {
-                            $("#branchto").empty();
-                            $("#branchto").append("<option value=''>Select Branch</option>");
-                            for (var count = 0; count < resp.length; count++) {
-                                $("#branchto").append(
-                                    "<option value='" + resp[count].branch_id + "'>" + resp[count]
-                                    .branch_name + "</option>");
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        function add_product() {
-            let con = parseInt($('#stock').val()) < parseInt($('#qty').val());
-            if (con == true) {
-                swal({
-                    title: "Error Message",
-                    text: "Please Enter Valid Quantity!",
-                    type: "error"
-                });
-            } else if ($('#branchfrm').val() == $('#branchto').val()) {
-                swal({
-                    title: "Error Message",
-                    text: "Please Select Different Destination Branch!",
-                    type: "error"
-                });
-
-            } else {
-                $.ajax({
-                    url: "{{ url('/insert_trf') }}",
-                    type: 'POST',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        trfid: '{{ $addtransfer }}',
-                        trfdate: $('#trfdate').val(),
-                        branchfrom: $('#branchfrm').val(),
-                        branchto: $('#branchto').val(),
-                        productid: $('#product').val(),
-                        qty: $('#qty').val(),
-                    },
-                    success: function(resp) {
-                        if (resp == 1) {
-                            swal({
-                                title: "Success",
-                                text: "Item added Successfully!!",
-                                type: "success"
-                            });
-                            trf_details();
-                        } else if (resp == 0) {
-                            swal({
-                                title: "Error",
-                                text: "Item Already Exsists",
-                                type: "warning"
-                            });
-
-                        }
-                    }
-
-                });
             }
 
-        }
-
-
-        var imageUrl = "{{ asset('storage/images/placeholder.jpg') }}";
-        var GlobalUsername = '{{ strtolower(Auth::user()->username) }}';
-
-        function trf_details() {
-            $.ajax({
-                url: "{{ url('/trf_details') }}",
-                type: 'GET',
-                dataType: "json",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    trfid: '{{ $addtransfer }}',
-                },
-                success: function(result) {
-                    if (result) {
-                        $("#trftable tbody").empty();
-                        for (var count = 0; count < result.length; count++) {
-
-                            if ($.inArray({{ session('company_id') }}, [95, 102, 104]) != -1) {
-
-                                if (result[count].product_image_url != null) {
-                                    imageUrl = result[count].product_image_url;
-                                }
-                            } else {
-                                if (result[count].product_image != '') {
-                                    imageUrl = "{{ asset('storage/images/products/') }}" + result[count]
-                                        .product_image;
-                                }
-                            }
-
-                            $("#trftable tbody").append(
-                                "<tr>" +
-                                "<td class='pro-name' >" + result[count].transfer_item_id + "</td>" +
-                                "<td ><img width='42' height='42' src='" + imageUrl +
-                                "' alt='" + result[count].image + "'/></td>" +
-                                "<td>" + result[count].item_code + "</td>" +
-                                "<td>" + result[count].product_name + "</td>" +
-                                "<td>" + result[count].Transfer_Qty + "</td>" +
-                                "<td class='action-icon'><i onclick='changeqty(" + result[count]
-                                .transfer_item_id + "," + result[count].Transfer_Qty +
-                                ")' class='icofont icofont-ui-edit' data-toggle='tooltip' data-placement='top' title='' data-original-title='Edit'></i>" +
-                                " &nbsp;" + "<i onclick='trf_delete(" + result[count].transfer_item_id +
-                                ")' class='icofont icofont-ui-delete' data-toggle='tooltip' data-placement='top' title='' data-original-title='Delete'></i></td>" +
-                                "</tr>"
-                            );
-                        }
-
-                    }
-                }
-            });
-        }
-
-        function trf_delete(id) {
-            swal({
-                    title: "Are you sure?",
-                    text: "Your will not be able to recover this product!",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonClass: "btn-danger",
-                    confirmButtonText: "delete it!",
-                    cancelButtonText: "cancel plx!",
-                    closeOnConfirm: false,
-                    closeOnCancel: false
-                },
-                function(isConfirm) {
-                    if (isConfirm) {
-                        $.ajax({
-                            url: "{{ url('/trf_delete') }}",
-                            type: 'GET',
-                            data: {
-                                _token: "{{ csrf_token() }}",
-                                trfid: id,
-                            },
-                            success: function(resp) {
-                                if (resp == 1) {
-                                    swal({
-                                        title: "Deleted",
-                                        text: "Your Product has been deleted Successfully!!",
-                                        type: "success"
-                                    }, function(isConfirm) {
-                                        if (isConfirm) {
-                                            trf_details();
-                                        }
-                                    });
-                                }
-                            }
-
-                        });
-
-                    } else {
-                        swal("Cancelled", "Your Product is safe :)", "error");
-                    }
-                });
-
-        }
-
-        function trf_status_change(statusid) {
-            if (statusid == 8) {
-                shipment();
-            } else {
-
-                $.ajax({
-                    url: "{{ url('/trf_change_status') }}",
-                    type: 'PUT',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                        id: '{{ $addtransfer }}',
-                        statusid: statusid,
-                    },
-                    success: function(resp) {
-                        if (resp) {
-                            swal({
-                                title: "Success",
-                                text: "Transfer Order Successfully Created!",
-                                type: "success"
-                            }, function(isConfirm) {
-                                if (isConfirm) {
-                                    window.location = "{{ url('/trf_list') }}";
-                                }
-                            });
-                        }
-                    }
-
-                });
-            }
-        }
-
-        function finalize_transfer(statusid) {
-            $.ajax({
-                url: "{{ url('/trf_change_status') }}",
-                type: 'PUT',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    id: '{{ $addtransfer }}',
-                    statusid: statusid,
-                },
-                success: function(resp) {
-                    if (resp) {
-                        window.location = "{{ url('/trf_list') }}";
-                    } else {
-                        swal({
-                            title: "Error",
-                            text: "Delivery challan was created but transfer status could not be updated.",
-                            type: "error"
-                        });
-                    }
-                },
-                error: function() {
-                    swal({
-                        title: "Error",
-                        text: "Delivery challan was created but transfer status could not be updated.",
-                        type: "error"
+            async function loadStock() {
+                resetStock();
+                if (!elements.product.value || !elements.from.value) return;
+                try {
+                    const result = await request(urls.stock, {
+                        method: 'POST',
+                        body: formBody({ productid: elements.product.value, branchid: elements.from.value })
                     });
+                    const stock = Number(result[0]?.stock || 0);
+                    const reminder = Number(result[0]?.reminder_qty || 0);
+                    elements.stock.value = stock;
+                    elements.stockStatus.textContent = stock <= 0 ? 'Out of stock' : (stock < reminder ? 'Low stock' : 'In stock');
+                    elements.stockStatus.className = 'text-xs font-bold ' + (stock <= 0 ? 'text-rose-600' : (stock < reminder ? 'text-amber-600' : 'text-emerald-600'));
+                    elements.add.disabled = stock <= 0;
+                } catch (error) {
+                    showMessage(error.message);
                 }
-            });
-        }
-
-        function changeqty(id, qty) {
-            $("#edit-modal").modal("show");
-            $("#itemid").val(id);
-            $("#updateqty").val(qty);
-
-        }
-
-        function updatetrf(id, qty) {
-            $.ajax({
-                url: "{{ url('/qty_update') }}",
-                type: 'PUT',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    id: id,
-                    qty: qty,
-                },
-                success: function(resp) {
-                    if (resp) {
-                        swal({
-                            title: "Updated",
-                            text: "Quantity Updated Successfully!",
-                            type: "success"
-                        }, function(isConfirm) {
-                            if (isConfirm) {
-                                $("#edit-modal").modal("hide");
-                                trf_details();
-                            }
-                        });
-                    }
-                }
-
-            });
-        }
-
-        function shipment() {
-            swal({
-                    title: "Confirmation Message?",
-                    text: "Do You want to Include Shipment Charges!",
-                    type: "warning",
-                    showCancelButton: true,
-                    confirmButtonClass: "btn-info",
-                    confirmButtonText: "Yes plx!",
-                    cancelButtonText: "No Thanks!",
-                    closeOnConfirm: false,
-                    closeOnCancel: false
-                },
-                function(isConfirm) {
-                    if (isConfirm) {
-                        swal({
-                            title: "Shipment Amount!",
-                            text: "Enter Shipment Amount!:",
-                            type: "input",
-                            showCancelButton: true,
-                            closeOnConfirm: false,
-                            inputPlaceholder: "Should be greater than 0"
-                        }, function(inputValue) {
-                            if (inputValue === false) {
-                                create_dc(0);
-                            } else if (inputValue > 0) {
-                                create_dc(inputValue);
-                            } else {
-                                create_dc(0);
-                            }
-                        });
-                    } else {
-                        create_dc(0);
-                    }
-                });
-        }
-
-
-        function create_dc(shipmentamt) {
-            if ($('#branchto').val() == "") {
-                swal({
-                    title: "Error",
-                    text: "Please select destination branch first.",
-                    type: "error"
-                });
-                return;
             }
 
-            $.ajax({
-                url: "{{ url('/insert_direct_chalan') }}",
-                type: 'POST',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    transferid: '{{ $addtransfer }}',
-                    branchto: $('#branchto').val(),
-                    shipmentamt: shipmentamt,
-                },
-                success: function(resp) {
-                    if (resp) {
-                        finalize_transfer(8);
-                    } else {
-                        swal({
-                            title: "Error",
-                            text: "Delivery challan could not be created. Please verify branch and transfer items.",
-                            type: "error"
-                        });
-                    }
-                },
-                error: function() {
-                    swal({
-                        title: "Error",
-                        text: "Delivery challan could not be created.",
-                        type: "error"
-                    });
-                }
-            });
+            function productImage(item) {
+                if ([95, 102, 104].includes(companyId) && item.product_image_url) return item.product_image_url;
+                return item.product_image ? productImageBase + item.product_image : placeholderImage;
+            }
 
-        }
+            function actionButton(label, className, handler) {
+                const button = document.createElement('button');
+                button.type = 'button';
+                button.textContent = label;
+                button.className = className;
+                button.addEventListener('click', handler);
+                return button;
+            }
+
+            function renderItems() {
+                const term = elements.filter.value.trim().toLowerCase();
+                const visibleItems = items.filter(item => (item.item_code + ' ' + item.product_name).toLowerCase().includes(term));
+                elements.rows.replaceChildren();
+
+                const hasItems = items.length > 0;
+                elements.from.disabled = hasItems;
+                elements.to.disabled = hasItems;
+                elements.date.disabled = hasItems;
+
+                visibleItems.forEach(item => {
+                    const row = document.createElement('tr');
+                    row.className = 'hover:bg-slate-50';
+
+                    const productCell = document.createElement('td');
+                    productCell.className = 'px-5 py-4';
+                    const productWrap = document.createElement('div');
+                    productWrap.className = 'flex items-center gap-3';
+                    const image = document.createElement('img');
+                    image.src = productImage(item);
+                    image.alt = '';
+                    image.className = 'h-11 w-11 rounded-lg border border-erp-line object-cover';
+                    image.addEventListener('error', () => { image.src = placeholderImage; });
+                    const name = document.createElement('span');
+                    name.className = 'font-bold text-erp-text';
+                    name.textContent = item.product_name;
+                    productWrap.append(image, name);
+                    productCell.append(productWrap);
+
+                    const codeCell = document.createElement('td');
+                    codeCell.className = 'px-5 py-4 text-erp-text';
+                    codeCell.textContent = item.item_code;
+                    const qtyCell = document.createElement('td');
+                    qtyCell.className = 'px-5 py-4 text-right font-bold text-erp-ink';
+                    qtyCell.textContent = item.Transfer_Qty;
+                    const actionsCell = document.createElement('td');
+                    actionsCell.className = 'px-5 py-4 text-right';
+                    const actions = document.createElement('div');
+                    actions.className = 'inline-flex gap-2';
+                    actions.append(
+                        actionButton('Edit', 'rounded-lg border border-erp-line px-3 py-2 text-xs font-bold text-erp-text hover:border-erp hover:text-erp-dark', () => openQuantityModal(item)),
+                        actionButton('Delete', 'rounded-lg border border-rose-200 px-3 py-2 text-xs font-bold text-rose-700 hover:bg-rose-50', () => removeItem(item.transfer_item_id))
+                    );
+                    actionsCell.append(actions);
+                    row.append(productCell, codeCell, qtyCell, actionsCell);
+                    elements.rows.append(row);
+                });
+
+                elements.empty.classList.toggle('hidden', hasItems);
+                elements.count.textContent = items.length + (items.length === 1 ? ' item added' : ' items added');
+            }
+
+            async function loadItems() {
+                try {
+                    items = await request(urls.details + '?' + new URLSearchParams({ trfid: transferId }));
+                    renderItems();
+                } catch (error) {
+                    showMessage(error.message);
+                }
+            }
+
+            async function addItem() {
+                const quantity = Number(elements.quantity.value);
+                const stock = Number(elements.stock.value);
+                if (!elements.from.value || !elements.to.value || !elements.product.value || !elements.date.value) {
+                    showMessage('Select source branch, destination branch, date, and product.');
+                    return;
+                }
+                if (elements.from.value === elements.to.value) {
+                    showMessage('Source and destination branches must be different.');
+                    return;
+                }
+                if (!Number.isFinite(quantity) || quantity <= 0 || quantity > stock) {
+                    showMessage('Enter a valid quantity within the available stock.');
+                    return;
+                }
+
+                setBusy(elements.add, true, 'Adding...');
+                try {
+                    const result = await request(urls.insert, {
+                        method: 'POST',
+                        body: formBody({
+                            trfid: transferId,
+                            trfdate: elements.date.value,
+                            branchfrom: elements.from.value,
+                            branchto: elements.to.value,
+                            productid: elements.product.value,
+                            qty: quantity
+                        })
+                    });
+                    if (Number(result) !== 1) {
+                        showMessage('This product is already included in the transfer.');
+                        return;
+                    }
+                    elements.product.value = '';
+                    elements.quantity.value = '1';
+                    resetStock();
+                    await loadItems();
+                    showMessage('Product added to the transfer.', 'success');
+                } catch (error) {
+                    showMessage(error.message);
+                } finally {
+                    setBusy(elements.add, false, 'Adding...');
+                    elements.add.disabled = true;
+                }
+            }
+
+            async function removeItem(id) {
+                if (!window.confirm('Delete this product from the transfer?')) return;
+                try {
+                    const result = await request(urls.remove + '?' + new URLSearchParams({ trfid: id }));
+                    if (Number(result) !== 1) throw new Error('Product could not be deleted.');
+                    await loadItems();
+                    showMessage('Product removed from the transfer.', 'success');
+                } catch (error) {
+                    showMessage(error.message);
+                }
+            }
+
+            function openQuantityModal(item) {
+                elements.editId.value = item.transfer_item_id;
+                elements.editQuantity.value = item.Transfer_Qty;
+                elements.modal.classList.remove('hidden');
+                elements.modal.classList.add('flex');
+                elements.modal.setAttribute('aria-hidden', 'false');
+                elements.editQuantity.focus();
+            }
+
+            function closeQuantityModal() {
+                elements.modal.classList.add('hidden');
+                elements.modal.classList.remove('flex');
+                elements.modal.setAttribute('aria-hidden', 'true');
+            }
+
+            async function updateQuantity() {
+                const button = document.getElementById('updateQuantityBtn');
+                const quantity = Number(elements.editQuantity.value);
+                if (!Number.isFinite(quantity) || quantity <= 0) {
+                    showMessage('Enter a quantity greater than zero.');
+                    return;
+                }
+                setBusy(button, true, 'Updating...');
+                try {
+                    const result = await request(urls.updateQuantity, {
+                        method: 'PUT',
+                        body: formBody({ id: elements.editId.value, qty: quantity })
+                    });
+                    if (!Number(result)) throw new Error('Quantity could not be updated.');
+                    closeQuantityModal();
+                    await loadItems();
+                    showMessage('Quantity updated.', 'success');
+                } catch (error) {
+                    showMessage(error.message);
+                } finally {
+                    setBusy(button, false, 'Updating...');
+                }
+            }
+
+            async function changeStatus(statusId, allowUnchanged = false) {
+                const result = await request(urls.changeStatus, {
+                    method: 'PUT',
+                    body: formBody({ id: transferId, statusid: statusId })
+                });
+                if (!allowUnchanged && !Number(result)) throw new Error('Transfer status could not be updated.');
+            }
+
+            async function saveDraft() {
+                const button = document.getElementById('saveDraftBtn');
+                setBusy(button, true, 'Saving...');
+                try {
+                    await changeStatus(1, true);
+                    window.location.assign(urls.list);
+                } catch (error) {
+                    showMessage(error.message);
+                    setBusy(button, false, 'Saving...');
+                }
+            }
+
+            async function placeOrder() {
+                if (!items.length) {
+                    showMessage('Add at least one product before placing the transfer.');
+                    return;
+                }
+                if (!elements.to.value) {
+                    showMessage('Select a destination branch before placing the transfer.');
+                    return;
+                }
+
+                const shipmentInput = window.prompt('Shipment amount (leave blank for 0):', '0');
+                if (shipmentInput === null) return;
+                const shipmentAmount = shipmentInput.trim() === '' ? 0 : Number(shipmentInput);
+                if (!Number.isFinite(shipmentAmount) || shipmentAmount < 0) {
+                    showMessage('Shipment amount must be zero or greater.');
+                    return;
+                }
+
+                const button = document.getElementById('placeOrderBtn');
+                setBusy(button, true, 'Placing...');
+                try {
+                    const challan = await request(urls.createChallan, {
+                        method: 'POST',
+                        body: formBody({ transferid: transferId, branchto: elements.to.value, shipmentamt: shipmentAmount })
+                    });
+                    if (!Number(challan)) throw new Error('Delivery challan could not be created.');
+                    await changeStatus(8);
+                    window.location.assign(urls.list);
+                } catch (error) {
+                    showMessage(error.message);
+                    setBusy(button, false, 'Placing...');
+                }
+            }
+
+            elements.from.addEventListener('change', loadSourceData);
+            elements.product.addEventListener('change', loadStock);
+            elements.add.addEventListener('click', addItem);
+            elements.quantity.addEventListener('keydown', event => { if (event.key === 'Enter') addItem(); });
+            elements.filter.addEventListener('input', renderItems);
+            document.getElementById('saveDraftBtn').addEventListener('click', saveDraft);
+            document.getElementById('placeOrderBtn').addEventListener('click', placeOrder);
+            document.getElementById('updateQuantityBtn').addEventListener('click', updateQuantity);
+            document.getElementById('closeQuantityModal').addEventListener('click', closeQuantityModal);
+            document.getElementById('cancelQuantityModal').addEventListener('click', closeQuantityModal);
+            elements.modal.addEventListener('click', event => { if (event.target === elements.modal) closeQuantityModal(); });
+            document.addEventListener('keydown', event => { if (event.key === 'Escape') closeQuantityModal(); });
+
+            loadSourceData();
+            loadItems();
+        });
     </script>
-@endsection
+@endpush

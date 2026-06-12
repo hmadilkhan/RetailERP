@@ -56,7 +56,6 @@
             || request()->is('generate-po*')
             || request()->is('showtransferdetails*')
             || request()->is('createGRN*')
-            || request()->is('create-transferorder')
             || request()->is('edit_trf_details*');
 
         $tailwindPurchaseAssets = request()->is('add-purchase') || request()->is('edit/*');
