@@ -55,8 +55,7 @@
             || request()->is('createdeliverychallan*')
             || request()->is('generate-po*')
             || request()->is('showtransferdetails*')
-            || request()->is('createGRN*')
-            || request()->is('edit_trf_details*');
+            || request()->is('createGRN*');
 
         $tailwindPurchaseAssets = request()->is('add-purchase') || request()->is('edit/*');
         $tailwindDashboardAssets = request()->is('dashboard');
@@ -92,6 +91,8 @@
             || request()->is('service-provider')
             || request()->is('drivers')
             || request()->is('vehicles')
+            || request()->is('create-transferorder')
+            || request()->is('edit_trf_details*')
             || request()->is('orders-view*');
     @endphp
     @if (($tailwindSelect2Assets || $tailwindPurchaseAssets) && !$tailwindLegacyAssets)

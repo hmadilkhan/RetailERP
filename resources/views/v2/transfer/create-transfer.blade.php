@@ -1,7 +1,16 @@
 @extends('layouts.master-tailwind')
 
-@section('title', 'Create Transfer Order')
-@section('page_title', 'Create Transfer Order')
+@php
+    $editingTransfer = isset($getdetails) && count($getdetails) > 0;
+    $transferRecord = $editingTransfer ? $getdetails[0] : null;
+    $transferId = $editingTransfer ? $transferRecord->transfer_id : $addtransfer;
+    $sourceBranchId = $editingTransfer ? $transferRecord->branch_from : session('branch');
+    $destinationBranchId = $editingTransfer ? $transferRecord->branch_to : null;
+    $transferDate = $editingTransfer ? date('Y-m-d', strtotime($transferRecord->date)) : date('Y-m-d');
+@endphp
+
+@section('title', $editingTransfer ? 'Edit Transfer Order' : 'Create Transfer Order')
+@section('page_title', $editingTransfer ? 'Edit Transfer Order' : 'Create Transfer Order')
 @section('page_subtitle', 'Move stock between branches and place the transfer order when it is ready.')
 
 @section('content')
@@ -9,7 +18,7 @@
         <div class="flex flex-col gap-4 rounded-xl border border-erp-line bg-white p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <div class="flex flex-wrap items-center gap-3">
-                    <h2 class="text-xl font-bold text-erp-ink">Transfer Order #{{ $addtransfer }}</h2>
+                    <h2 class="text-xl font-bold text-erp-ink">Transfer Order #{{ $transferId }}</h2>
                     <span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-700">Draft</span>
                 </div>
                 <p class="mt-1 text-sm text-erp-mute">Choose branches, add products, then save or place the order.</p>
@@ -29,24 +38,24 @@
             <div class="grid gap-5 p-5 md:grid-cols-3">
                 <label class="block">
                     <span class="mb-2 block text-sm font-bold text-erp-text">Transfer from branch</span>
-                    <select id="branchfrm" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select id="branchfrm" class="v2-select2 v2-select2-lg w-full" data-placeholder="Select branch">
                         <option value="">Select branch</option>
                         @foreach ($branches as $branch)
-                            <option value="{{ $branch->branch_id }}" @selected((int) $branch->branch_id === (int) session('branch'))>{{ $branch->branch_name }}</option>
+                            <option value="{{ $branch->branch_id }}" @selected((int) $branch->branch_id === (int) $sourceBranchId)>{{ $branch->branch_name }}</option>
                         @endforeach
                     </select>
                 </label>
 
                 <label class="block">
                     <span class="mb-2 block text-sm font-bold text-erp-text">Destination branch</span>
-                    <select id="branchto" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <select id="branchto" class="v2-select2 v2-select2-lg w-full" data-placeholder="Select branch">
                         <option value="">Select branch</option>
                     </select>
                 </label>
 
                 <label class="block">
                     <span class="mb-2 block text-sm font-bold text-erp-text">Transfer date</span>
-                    <input id="trfdate" type="date" value="{{ date('Y-m-d') }}" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <input id="trfdate" type="date" value="{{ $transferDate }}" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                 </label>
             </div>
         </section>
@@ -58,7 +67,7 @@
             <div class="grid gap-5 p-5 md:grid-cols-12 md:items-end">
                 <label class="block md:col-span-5">
                     <span class="mb-2 block text-sm font-bold text-erp-text">Product</span>
-                    <select id="product" class="h-11 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" disabled>
+                    <select id="product" class="v2-select2 v2-select2-lg w-full" data-placeholder="Select product" disabled>
                         <option value="">Select source branch first</option>
                     </select>
                 </label>
@@ -144,7 +153,8 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            const transferId = @json($addtransfer);
+            const transferId = @json($transferId);
+            const initialDestinationBranchId = @json((string) ($destinationBranchId ?? ''));
             const companyId = Number(@json(session('company_id')));
             const placeholderImage = @json(asset('storage/images/placeholder.jpg'));
             const productImageBase = @json(asset('storage/images/products/')) + '/';
@@ -181,6 +191,14 @@
             };
 
             let items = [];
+            let destinationBranchToRestore = initialDestinationBranchId;
+
+            function refreshSelect(select, value) {
+                if (value !== undefined) select.value = String(value);
+                if (window.jQuery && jQuery.fn.select2) {
+                    jQuery(select).trigger('change.select2');
+                }
+            }
 
             function formBody(data) {
                 const body = new URLSearchParams(data);
@@ -226,6 +244,8 @@
                 elements.to.innerHTML = '<option value="">Select branch</option>';
                 elements.product.innerHTML = '<option value="">Loading products...</option>';
                 elements.product.disabled = true;
+                refreshSelect(elements.to, '');
+                refreshSelect(elements.product, '');
                 resetStock();
                 if (!branchId) {
                     elements.product.innerHTML = '<option value="">Select source branch first</option>';
@@ -242,8 +262,12 @@
                     elements.product.innerHTML = '<option value="">Select product</option>';
                     products.forEach(product => elements.product.add(new Option(product.item_code + ' | ' + product.product_name, product.id)));
                     elements.product.disabled = false;
+                    refreshSelect(elements.to, destinationBranchToRestore);
+                    destinationBranchToRestore = '';
+                    refreshSelect(elements.product, '');
                 } catch (error) {
                     elements.product.innerHTML = '<option value="">Unable to load products</option>';
+                    refreshSelect(elements.product, '');
                     showMessage(error.message);
                 }
             }
@@ -290,6 +314,8 @@
                 elements.from.disabled = hasItems;
                 elements.to.disabled = hasItems;
                 elements.date.disabled = hasItems;
+                refreshSelect(elements.from);
+                refreshSelect(elements.to);
 
                 visibleItems.forEach(item => {
                     const row = document.createElement('tr');
@@ -376,6 +402,7 @@
                         return;
                     }
                     elements.product.value = '';
+                    refreshSelect(elements.product, '');
                     elements.quantity.value = '1';
                     resetStock();
                     await loadItems();
@@ -493,8 +520,13 @@
                 }
             }
 
-            elements.from.addEventListener('change', loadSourceData);
-            elements.product.addEventListener('change', loadStock);
+            if (window.jQuery && jQuery.fn.select2) {
+                jQuery(elements.from).on('change.transferOrder', loadSourceData);
+                jQuery(elements.product).on('change.transferOrder', loadStock);
+            } else {
+                elements.from.addEventListener('change', loadSourceData);
+                elements.product.addEventListener('change', loadStock);
+            }
             elements.add.addEventListener('click', addItem);
             elements.quantity.addEventListener('keydown', event => { if (event.key === 'Enter') addItem(); });
             elements.filter.addEventListener('input', renderItems);

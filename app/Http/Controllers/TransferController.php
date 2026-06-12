@@ -653,7 +653,7 @@ class TransferController extends Controller
     $headoffice = $transfer->get_headoffice();
 
 
-    return view('v2.transfer.edit-transferorder', compact('getdetails', 'branches', 'headoffice'));
+    return view('v2.transfer.create-transfer', compact('getdetails', 'branches', 'headoffice'));
   }
 
 
