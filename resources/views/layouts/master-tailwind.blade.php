@@ -8,6 +8,7 @@
     <title>@yield('title', $title ?? 'Admin') | ERP</title>
 
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
     <script>
         tailwind.config = {
             theme: {
@@ -131,6 +132,70 @@
         }
 
         [x-cloak] { display: none !important; }
+        @media (min-width: 1024px) {
+            .v2-sidebar.is-collapsed {
+                width: 5rem;
+            }
+
+            .v2-sidebar.is-expanded {
+                width: 18rem;
+            }
+
+            .v2-sidebar .v2-sidebar-full {
+                max-width: 0;
+                opacity: 0;
+                overflow: hidden;
+                white-space: nowrap;
+                transition: max-width 0.2s ease, opacity 0.2s ease;
+            }
+
+            .v2-sidebar.is-expanded .v2-sidebar-full {
+                max-width: 14rem;
+                opacity: 1;
+            }
+
+            .v2-sidebar.is-collapsed .v2-brand-lines,
+            .v2-sidebar.is-collapsed .v2-sidebar-section,
+            .v2-sidebar.is-collapsed .v2-sidebar-chevron,
+            .v2-sidebar.is-collapsed ul ul {
+                display: none !important;
+            }
+
+            .v2-sidebar .v2-sidebar-compact,
+            .v2-sidebar.is-collapsed .v2-sidebar-expanded {
+                display: none !important;
+            }
+
+            .v2-sidebar.is-collapsed .v2-sidebar-compact {
+                display: flex !important;
+            }
+
+            .v2-sidebar.is-expanded .v2-sidebar-expanded {
+                display: block !important;
+            }
+
+            .v2-sidebar.is-collapsed .v2-brand-text {
+                font-size: 1.875rem;
+                line-height: 2.25rem;
+            }
+
+            .v2-sidebar.is-collapsed nav {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            .v2-sidebar.is-collapsed nav a,
+            .v2-sidebar.is-collapsed nav button {
+                justify-content: center;
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+
+            .v2-sidebar.is-collapsed .v2-sidebar-footer {
+                padding-left: 0.75rem;
+                padding-right: 0.75rem;
+            }
+        }
         @if ($tailwindSelect2Assets || $tailwindPurchaseAssets)
             .billing-select2.select2-hidden-accessible + .select2-container,
             .v2-select2.select2-hidden-accessible + .select2-container {
@@ -397,27 +462,40 @@
         });
     @endphp
 
-    <div x-data="{ sidebarOpen: false }" class="min-h-screen">
+    <div x-data="{ sidebarOpen: false, sidebarExpanded: false }" class="min-h-screen">
         <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false"
             class="fixed inset-0 z-30 bg-slate-950/50 backdrop-blur-sm lg:hidden"></div>
 
-        <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'" x-cloak
-            class="fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col bg-erp-panel text-white shadow-menu transition-transform duration-300 lg:translate-x-0">
+        <aside
+            @mouseenter="sidebarExpanded = true"
+            @mouseleave="sidebarExpanded = false"
+            :class="[
+                sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+                sidebarExpanded ? 'is-expanded lg:w-72' : 'is-collapsed lg:w-20'
+            ]"
+            x-cloak
+            class="v2-sidebar fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col bg-erp-panel text-white shadow-menu transition-all duration-300 lg:translate-x-0">
             <div class="border-b border-white/10 px-5 py-6">
                 <a href="{{ url('/dashboard') }}"
-                    class="group relative block overflow-hidden rounded-lg px-3 py-4 text-center transition hover:bg-white/[0.04]">
+                    class="v2-sidebar-compact hidden h-12 items-center justify-center rounded-lg bg-white/[0.04] text-3xl font-bold leading-none text-[#2faa4f] transition hover:bg-white/[0.08]"
+                    style="font-family: yaro, Arial, sans-serif; letter-spacing: 0.02em;"
+                    aria-label="Sabify dashboard">
+                    S
+                </a>
+                <a href="{{ url('/dashboard') }}"
+                    class="v2-sidebar-expanded group relative block overflow-hidden rounded-lg px-3 py-4 text-center transition hover:bg-white/[0.04]">
                     <span class="pointer-events-none absolute inset-x-8 top-4 h-8 rounded-full bg-[#2faa4f]/18 blur-xl transition group-hover:bg-[#2faa4f]/25"></span>
                     <span class="relative flex items-center justify-center gap-2">
-                        <span class="h-2 w-2 rounded-full bg-[#2faa4f] shadow-[0_0_16px_rgba(47,170,79,0.85)]"></span>
-                        <span class="h-px w-8 bg-gradient-to-r from-transparent to-[#2faa4f]/70"></span>
-                        <span class="text-[42px] font-bold leading-none text-[#2faa4f]"
+                        <span class="v2-brand-lines h-2 w-2 rounded-full bg-[#2faa4f] shadow-[0_0_16px_rgba(47,170,79,0.85)]"></span>
+                        <span class="v2-brand-lines h-px w-8 bg-gradient-to-r from-transparent to-[#2faa4f]/70"></span>
+                        <span class="v2-brand-text text-[42px] font-bold leading-none text-[#2faa4f]"
                             style="font-family: yaro, Arial, sans-serif; letter-spacing: 0.02em;">
                             sabify
                         </span>
-                        <span class="h-px w-8 bg-gradient-to-l from-transparent to-[#2faa4f]/70"></span>
-                        <span class="h-2 w-2 rounded-full bg-[#2faa4f] shadow-[0_0_16px_rgba(47,170,79,0.85)]"></span>
+                        <span class="v2-brand-lines h-px w-8 bg-gradient-to-l from-transparent to-[#2faa4f]/70"></span>
+                        <span class="v2-brand-lines h-2 w-2 rounded-full bg-[#2faa4f] shadow-[0_0_16px_rgba(47,170,79,0.85)]"></span>
                     </span>
-                    <span class="relative mt-2 block text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">
+                    <span class="v2-sidebar-full relative mt-2 block text-[10px] font-bold uppercase tracking-[0.24em] text-slate-400">
                         Retail ERP
                     </span>
                 </a>
@@ -427,7 +505,7 @@
                 <ul class="space-y-1">
                     @forelse ($sidebarTopPages as $pages)
                         @if ($pages->page_mode == 'Label')
-                            <li class="px-3 pb-1 pt-5 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
+                            <li class="v2-sidebar-section px-3 pb-1 pt-5 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
                                 {{ $sidebarLabel($pages) }}
                             </li>
                         @elseif ($pages->page_mode == 'Parent')
@@ -445,7 +523,7 @@
                                     <a href="{{ url('/' . $pages->page_url) }}" @click="sidebarOpen = false"
                                         class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $isActive ? 'bg-white text-erp-ink' : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                                         <i class="{{ $pages->icofont }} w-5 shrink-0 text-center {{ $isActive ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
-                                        <span class="min-w-0 flex-1 truncate">{{ $sidebarLabel($pages) }}</span>
+                                        <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($pages) }}</span>
                                     </a>
                                 </li>
                             @else
@@ -453,8 +531,8 @@
                                     <button type="button" @click="open = !open"
                                         class="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition {{ $hasActiveChild ? 'bg-white text-erp-ink' : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                                         <i class="{{ $pages->icofont }} w-5 shrink-0 text-center {{ $hasActiveChild ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
-                                        <span class="min-w-0 flex-1 truncate">{{ $sidebarLabel($pages) }}</span>
-                                        <svg :class="open ? 'rotate-180' : ''" class="h-4 w-4 shrink-0 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                        <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($pages) }}</span>
+                                        <svg :class="open ? 'rotate-180' : ''" class="v2-sidebar-chevron h-4 w-4 shrink-0 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
                                         </svg>
                                     </button>
@@ -473,7 +551,7 @@
                                                     <a href="{{ url('/' . $childs->page_url) }}" @click="sidebarOpen = false"
                                                         class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $childActive ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                         <i class="{{ $childs->icofont }} w-5 shrink-0 text-center {{ $childActive ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
-                                                        <span class="min-w-0 flex-1 truncate">{{ $sidebarLabel($childs) }}</span>
+                                                        <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($childs) }}</span>
                                                     </a>
                                                 </li>
                                             @else
@@ -481,8 +559,8 @@
                                                     <button type="button" @click="open = !open"
                                                         class="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold transition {{ $hasActiveGrandchild ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                         <i class="{{ $childs->icofont }} w-5 shrink-0 text-center {{ $hasActiveGrandchild ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
-                                                        <span class="min-w-0 flex-1 truncate">{{ $sidebarLabel($childs) }}</span>
-                                                        <svg :class="open ? 'rotate-180' : ''" class="h-4 w-4 shrink-0 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                                        <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($childs) }}</span>
+                                                        <svg :class="open ? 'rotate-180' : ''" class="v2-sidebar-chevron h-4 w-4 shrink-0 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
                                                             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
                                                         </svg>
                                                     </button>
@@ -498,7 +576,7 @@
                                                                 <a href="{{ url('/' . $grandchild->page_url) }}" @click="sidebarOpen = false"
                                                                     class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $grandchildActive || $hasActiveGreatGrandchild ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                                     <i class="{{ $grandchild->icofont }} w-5 shrink-0 text-center {{ $grandchildActive || $hasActiveGreatGrandchild ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
-                                                                    <span class="min-w-0 flex-1 truncate">{{ $sidebarLabel($grandchild) }}</span>
+                                                                    <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($grandchild) }}</span>
                                                                 </a>
 
                                                                 @if ($greatGrandchildren->isNotEmpty())
@@ -511,7 +589,7 @@
                                                                                 <a href="{{ url('/' . $grandgrandchild->page_url) }}" @click="sidebarOpen = false"
                                                                                     class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $greatGrandchildActive ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                                                     <i class="{{ $grandgrandchild->icofont }} w-5 shrink-0 text-center {{ $greatGrandchildActive ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
-                                                                                    <span class="min-w-0 flex-1 truncate">{{ $sidebarLabel($grandgrandchild) }}</span>
+                                                                                    <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($grandgrandchild) }}</span>
                                                                                 </a>
                                                                             </li>
                                                                         @endforeach
@@ -529,7 +607,7 @@
                                                 <a href="{{ route('billing.delivery-history') }}" @click="sidebarOpen = false"
                                                     class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $currentUrl == 'billing/delivery-history' ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                     <i class="icofont icofont-history w-5 shrink-0 text-center {{ $currentUrl == 'billing/delivery-history' ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
-                                                    <span class="min-w-0 flex-1 truncate">{{ __('sidebar.delivery_history') }}</span>
+                                                    <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ __('sidebar.delivery_history') }}</span>
                                                 </a>
                                             </li>
                                         @endif
@@ -542,22 +620,54 @@
                     @endforelse
 
                     @if (session('roleId') == 1)
-                        <li class="px-3 pb-1 pt-5 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
+                        <li class="v2-sidebar-section px-3 pb-1 pt-5 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
                             Admin Tools
                         </li>
                         <li>
                             <a href="{{ route('whatsapp.access.manager') }}" @click="sidebarOpen = false"
                                 class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $currentUrl == 'whatsapp-access-manager' ? 'bg-white text-erp-ink' : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                                 <i class="icofont icofont-ui-social-link w-5 shrink-0 text-center {{ $currentUrl == 'whatsapp-access-manager' ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
-                                <span class="min-w-0 flex-1 truncate">WhatsApp Access</span>
+                                <span class="v2-sidebar-full min-w-0 flex-1 truncate">WhatsApp Access</span>
                             </a>
                         </li>
                     @endif
                 </ul>
             </nav>
 
-            <div class="border-t border-white/10 p-4">
-                <div class="rounded-lg bg-white/10 p-3">
+            <div class="v2-sidebar-footer border-t border-white/10 p-4">
+                <div class="v2-sidebar-compact hidden flex-col items-center gap-3">
+                    <div class="flex h-11 w-11 items-center justify-center overflow-hidden rounded-lg bg-white/10 text-xs font-black text-white ring-1 ring-white/10"
+                        title="{{ auth()->user()->fullname ?? auth()->user()->username ?? 'Admin' }}">
+                        @if (!empty(session('image')))
+                            <img class="h-full w-full object-cover"
+                                src="{{ asset('storage/images/users/' . session('image')) }}"
+                                alt="{{ auth()->user()->fullname ?? auth()->user()->username ?? 'Admin' }}">
+                        @else
+                            {{ strtoupper(substr(auth()->user()->fullname ?? auth()->user()->username ?? 'A', 0, 2)) }}
+                        @endif
+                    </div>
+
+                    @if (app()->bound('impersonate') && app('impersonate')->isImpersonating())
+                        <a href="{{ route('impersonate.leave') }}"
+                            class="flex h-10 w-10 items-center justify-center rounded-lg border border-white/10 bg-white/10 text-white transition hover:bg-white/15"
+                            title="Switch back to your account">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+                            </svg>
+                        </a>
+                    @else
+                        <button type="button"
+                            onclick="event.preventDefault(); document.getElementById('tailwind-logout-form').submit();"
+                            class="flex h-10 w-10 items-center justify-center rounded-lg border border-rose-300/20 bg-rose-500/10 text-rose-100 transition hover:bg-rose-500/20"
+                            title="Logout">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15M12 9l-3 3m0 0 3 3m-3-3h10" />
+                            </svg>
+                        </button>
+                    @endif
+                </div>
+
+                <div class="v2-sidebar-expanded rounded-lg bg-white/10 p-3">
                     <div class="text-[11px] font-bold uppercase tracking-[0.2em] text-slate-500">Signed in</div>
                     <div class="mt-2 truncate text-sm font-semibold text-white">
                         {{ auth()->user()->fullname ?? auth()->user()->username ?? 'Admin' }}
@@ -569,7 +679,7 @@
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
                             </svg>
-                            Return to Admin
+                            Switch back to your account
                         </a>
                     @else
                         <button type="button"
@@ -585,7 +695,7 @@
             </div>
         </aside>
 
-        <div class="min-h-screen lg:pl-72">
+        <div :class="sidebarExpanded ? 'lg:pl-72' : 'lg:pl-20'" class="min-h-screen transition-all duration-300">
             <header class="sticky top-0 z-20 border-b border-erp-line bg-white/90 backdrop-blur-xl">
                 <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                     <div class="flex min-w-0 items-center gap-3">

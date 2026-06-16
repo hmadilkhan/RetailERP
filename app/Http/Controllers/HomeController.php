@@ -95,7 +95,7 @@ class HomeController extends Controller
         // $permission = $user->getPermission(1);
         $permission = [];
         // return view('Dashboard.sales', compact('branches', 'permission', 'branchesClosedSales')); // Previous Code
-        return view('Dashboard.sales-bootstrap5', compact('branches', 'permission', 'branchesClosedSales'));
+        return view('Dashboard.sales-v2', compact('branches', 'permission', 'branchesClosedSales'));
     }
 
     public function salesHead(Request $request, dashboard $dash)
@@ -130,7 +130,7 @@ class HomeController extends Controller
             $details = $dash->getDetailsByMode(Crypt::decrypt($request->id), Crypt::decrypt($request->terminal), $request->mode);
         }
 
-        return view('Dashboard.salesdetails', compact('branches', 'mode', 'details', 'names'));
+        return view('Dashboard.salesdetails-v2', compact('branches', 'mode', 'details', 'names'));
     }
 
 
@@ -175,6 +175,24 @@ class HomeController extends Controller
         }
 
         return view('Dashboard.terminal-sales-details', compact('heads', 'terminal_name', 'result'));
+    }
+
+    public function getTerminalDetailsV2(Request $request, dashboard $dash, userDetails $users)
+    {
+        $result = $users->getPermission($request->terminal);
+        $terminal_name = $users->getTerminalName($request->terminal);
+
+        if ($request->has('openingId') && !empty($request->openingId)) {
+            $heads = $dash->getheadsDetailsFromOpeningIdForClosing($request->openingId);
+        } else {
+            $heads = $dash->headsDetails($request->terminal);
+
+            if (empty($heads)) {
+                $heads = $dash->lastDayDetails($request->terminal);
+            }
+        }
+
+        return view('Dashboard.terminal-sales-details-v2', compact('heads', 'terminal_name', 'result'));
     }
 
     public function cheques_notify(dashboard $dash)

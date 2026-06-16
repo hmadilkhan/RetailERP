@@ -380,6 +380,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/heads', [HomeController::class, 'heads']);
     Route::post('/last-day-heads', [HomeController::class, 'lastDayHeads']);
     Route::post('/get-terminal-details', [HomeController::class, 'getTerminalDetails']);
+    Route::post('/get-terminal-details-v2', [HomeController::class, 'getTerminalDetailsV2']);
     Route::get('/getcheques', [HomeController::class, 'cheques_notify']);
     Route::get('/order-notify', [HomeController::class, 'getUnseenOrders'])->name('order-notify');
     Route::get('/due-date-orders', [HomeController::class, 'getDueDateOrders'])->name('due-date-orders');
