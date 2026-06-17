@@ -22,7 +22,7 @@ class StockController extends Controller
     public function index(stock $stock)
     {
         $branches = $stock->getBranches();
-        return view('stock.branchwise-stock', compact('branches'));
+        return view('v2.stock.list', compact('branches'));
     }
 
     public function getStock(Request $request, stock $stock)

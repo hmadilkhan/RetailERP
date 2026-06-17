@@ -286,7 +286,7 @@ class inventory extends Model
                     $query->where('inventory_price.retail_price', $retail_price);
                 }
                 if (!empty($ref)) {
-                    $query->whereIn('inventory_reference.product_id', $ids);
+                    $query->whereIn('invent.id', $ids);
                 }
                 if ($nonstock == true) {
                     if (session("roleId") == 2) {
@@ -310,6 +310,14 @@ class inventory extends Model
     {
         if ($status == "") {
             $status = 1;
+        }
+        $ids = [];
+        if (!empty($ref)) {
+            $ids = DB::table('inventory_reference')
+                ->whereIn('product_id', DB::table('inventory_general')->where('company_id', session('company_id'))->pluck('id'))
+                ->where('refrerence', $ref)
+                ->pluck('product_id')
+                ->toArray();
         }
         // echo "Non Stock".$nonstock;
         // return $nonstock;
@@ -344,7 +352,7 @@ class inventory extends Model
             ->leftJoin('tags as t', 't.id', '=', 'itag.tag_id')
 
 
-            ->where(function ($query) use ($code, $name, $dept, $sdept, $retail_price, $ref, $nonstock) {
+            ->where(function ($query) use ($code, $name, $dept, $sdept, $retail_price, $ref, $nonstock, $ids) {
 
                 // if ($nonstock == 0) {
                 //     $query->leftJoin("inventory_stock", 'inventory_stock.product_id', '=', 'invent.id');
@@ -379,7 +387,7 @@ class inventory extends Model
                     $query->where('inventory_price.retail_price', $retail_price);
                 }
                 if (!empty($ref)) {
-                    $query->whereIn('inventory_reference.product_id', $ids);
+                    $query->whereIn('invent.id', $ids);
                 }
                 if ($nonstock == 1) {
                     if (session("roleId") == 2) {

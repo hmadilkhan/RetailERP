@@ -132,7 +132,7 @@ class stock extends Model
             ->join("branch", 'inventory_stock.branch_id', '=', 'branch.branch_id')
             ->join("inventory_qty_reminders", 'inventory_qty_reminders.inventory_id', '=', 'inventory_general.id')
             ->join("inventory_price", 'inventory_price.product_id', '=', 'inventory_general.id')
-            ->select("inventory_general.*", "inventory_uom.name", "con.name as cname", "inventory_department.department_name", "inventory_sub_department.sub_depart_name", DB::raw('SUM(balance) as qty'), "inventory_price.retail_price as amount", "inventory_qty_reminders.reminder_qty", "branch.branch_name")
+            ->select("inventory_general.*", "inventory_uom.name", "con.name as cname", "inventory_department.department_name", "inventory_sub_department.sub_depart_name", DB::raw('SUM(balance) as qty'), "inventory_price.retail_price as amount", "inventory_qty_reminders.reminder_qty", "branch.branch_id as stock_branch_id", "branch.branch_name")
             ->where("inventory_price.status_id", 1)
             ->where("inventory_general.status", 1)
             ->when($code != "", function ($query) use ($code) {

@@ -94,7 +94,9 @@
             || request()->is('vehicles')
             || request()->is('create-transferorder')
             || request()->is('edit_trf_details*')
-            || request()->is('orders-view*');
+            || request()->is('orders-view*')
+            || request()->is('create-inventory')
+            || request()->is('edit-invent*');
     @endphp
     @if (($tailwindSelect2Assets || $tailwindPurchaseAssets) && !$tailwindLegacyAssets)
         <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />

@@ -56,7 +56,7 @@ class InventoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(inventory $inventory, Brand $brand)
+    public function index(Request $request, inventory $inventory, Brand $brand)
     {
         // return  InventoryDepartment::whereIn("department_id",ModelsInventory::whereIn("id",WebsiteProduct::where("website_id",41)->pluck("inventory_id"))->pluck("department_id"))->where('status',1)->select("code","department_id","department_name","website_department_name","slug","image","banner")->orderBy('priority','desc')->get();
         $department    = $inventory->department();
@@ -80,7 +80,16 @@ class InventoryController extends Controller
 
         //if(session("company_id") == 7 or session("company_id") ==  102 && Auth::user()->username != 'demoadmin'){ //or session("company_id") ==  102 session("company_id") == 7 or
         // if (in_array(session("company_id"), [7, 102]) && !in_array(Auth::user()->username, ['demoadmin'])) {
-        $inventories = $inventory->getInventoryForPagewiseByFilters();
+        $inventories = $inventory->getInventoryForPagewiseByFilters(
+            $request->input('code', ''),
+            $request->input('name', ''),
+            $request->input('dept', ''),
+            $request->input('sdept', ''),
+            $request->input('rp', ''),
+            $request->input('ref', ''),
+            $request->boolean('inactive') ? 2 : 1,
+            $request->boolean('nonstock') ? 1 : 0
+        )->appends($request->query());
         // if(Auth::user()->username == 'demoadmin'){
         //    return $inventories;
         // }
@@ -88,7 +97,7 @@ class InventoryController extends Controller
         // if (in_array(Auth::user()->username, ['fn1009'])) {
         //     return view('Inventory.inventory', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
         // } else {
-            return view('Inventory.listnew', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+            return view('v2.inventory.list', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
         // }
         // } else {
         //     $inventory = '';
@@ -278,7 +287,7 @@ class InventoryController extends Controller
             'weight_qty'          => $request->weight,
             'slug'                => strtolower(str_replace(' ', '-', $request->name)) . "-" . strtolower(Str::random(4)),
             'is_deal'             => (isset($request->is_deal) ? 1 : 0),
-            'short_description'   => htmlentities($request->input('$request->sdescription')),
+            'short_description'   => htmlentities($request->input('sdescription')),
             'details'             => htmlentities($request->details),
             'brand_id'            => $request->brand,
             'actual_image_size'   => isset($request->actual_image_size) ? 1 : 0,
@@ -389,9 +398,9 @@ class InventoryController extends Controller
             ];
 
             $stock_id = DB::table('purchase_rec_stock_opening')->insertGetId($fields);
-            $lastStock = $stock->getLastStock($request->product);
+            $lastStock = $stock->getLastStock($productid);
             $stk = empty($lastStock) ? 0 : $lastStock[0]->stock;
-            $stk = $stk + $request->qty;
+            $stk = $stk + $request->stock_qty;
 
             $report = [
                 'date' => date('Y-m-d H:s:i'),
@@ -1134,7 +1143,7 @@ class InventoryController extends Controller
         // 		$extras = DB::table("extra_products")->whereNull("parent")->get();
 
         // if (Auth::user()->username == 'demoadmin') {
-        return view('Inventory.create-debug', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList', 'attributes','types'));
+        return view('v2.inventory.create', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList', 'attributes','types'));
         // } else {
         //     return view('Inventory.create', compact('department', 'subdepartment', 'uom', 'branch', 'mode', 'vendors', 'totaladdons', 'websites', 'brandList', 'tagsList'));
         // }
@@ -1189,6 +1198,7 @@ class InventoryController extends Controller
 
         $inventoryTags = DB::table("inventory_tags")->where("inventory_id", $data[0]->id)->where("status",1)->pluck("tag_id");
         $inventoryVideo = DB::table("inventory_video")->where("inventory_id", $data[0]->id)->first();
+        $selectedVendors = DB::table("vendor_product")->where("product_id", $data[0]->id)->where("status", 1)->pluck("vendor_id");
         $types = InventoryType::all();
         foreach ($references as $refval) {
             $ref[] = $refval->refrerence;
@@ -1208,7 +1218,7 @@ class InventoryController extends Controller
         }
 
         // if(Auth::user()->username == 'demoadmin'){
-        return view('Inventory.edit-debug', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites','websiteType', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo','types'));
+        return view('v2.inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites','websiteType', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo','types', 'selectedVendors'));
 
         // }else{
         //  return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
@@ -1438,6 +1448,17 @@ class InventoryController extends Controller
                 "time"       => date("H:i:s"),
             ];
             DB::table("inventory_download_status")->insert($items);
+        }
+
+        DB::table('vendor_product')->where("product_id", $request->id)->update(['status' => 0]);
+        if (!empty($request->vendor)) {
+            foreach ($request->vendor as $singleVendor) {
+                DB::table('vendor_product')->insert([
+                    "vendor_id"  => $singleVendor,
+                    "product_id" => $request->id,
+                    "status"     => 1,
+                ]);
+            }
         }
 
         if (!empty($request->website) && isset($request->showProductWebsite)) {
