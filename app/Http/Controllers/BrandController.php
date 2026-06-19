@@ -25,7 +25,7 @@ class BrandController extends Controller
 
         $lists = $brand->getBrand();
 
-        return view('Inventory.brands.index',compact('lists'));
+        return view('v2.inventory.brands.index',compact('lists'));
     }
 
     public function create(){
@@ -160,7 +160,7 @@ class BrandController extends Controller
 
       $edit  = Brand::where(['id'=>$id,'company_id'=>session('company_id'),'status'=>1])->first();
 
-     return view('Inventory.brands.index',compact('lists','id','edit'));
+     return view('v2.inventory.brands.index',compact('lists','id','edit'));
     }
 
     public function update(Request $request,$id){

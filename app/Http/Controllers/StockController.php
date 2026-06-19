@@ -190,7 +190,7 @@ class StockController extends Controller
         $products = $stock->branchwise($branch->branch_id);
         $terminals = Terminal::where("branch_id", session('branch'))->get();
 
-        return view("stock.stocktransfer", [
+        return view("v2.stock.transfer", [
             "branch" => $branch->branch_name,
             "products" => $products,
             "terminals" => $terminals,

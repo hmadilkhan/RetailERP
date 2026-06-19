@@ -1619,7 +1619,7 @@ class InventoryController extends Controller
         $branches = $inventory->getBranches();
         $uom = $inventory->uom();
 
-        return view('Inventory.stockopening', compact('product', 'uom', 'branches'))->With('status', '');
+        return view('v2.inventory.stockopening', compact('product', 'uom', 'branches'))->With('status', '');
     }
 
     public function getUOMID(Request $request, inventory $inventory)
@@ -2727,13 +2727,13 @@ class InventoryController extends Controller
     public function displayInventory(Request $request, inventory $inventory)
     {
         $main = $inventory->displayInventory($request->code, $request->name, $request->depart, $request->sdepart, $request->status);
-        return view('Inventory.inventoryselection', compact('main'));
+        return view('v2.inventory.display', compact('main'));
     }
 
     public function fetch_data(Request $request, inventory $inventory)
     {
         $main = $inventory->displayInventory($request->code, $request->name, $request->depart, $request->sdepart, $request->status);
-        return view('partials.inventory_table', compact('main'))->render();
+        return view('v2.partials.inventory_table', compact('main'))->render();
     }
 
     public function changeInventoryStatus(Request $request)

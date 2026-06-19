@@ -38,7 +38,7 @@ class ServiceProviderOrderController extends Controller
 					->where("user_authorization.branch_id",session("branch"))->where("user_authorization.role_id",13)
 					->select("id","fullname")
 					->get();
-		return view('order.service-providers-orders',compact("providers","status","drivers","vehicles","loaders","checkers"));
+		return view('v2.order.service-providers-orders',compact("providers","status","drivers","vehicles","loaders","checkers"));
 	}
 	
 	public function getServiceProviderOrders(Request $request)
@@ -79,7 +79,7 @@ class ServiceProviderOrderController extends Controller
 		$providers =  ServiceProvider::Branch(session("branch"))->Active()->select(["id","provider_name"])->get();
 		$status = OrderStatus::all();
 
-		return view("partials.service-provider-orders-table",compact("data","providers","status"));
+		return view("v2.partials.service-provider-orders-table",compact("data","providers","status"));
 	}
 	
 	public function updateServiceProvider(Request $request)
@@ -170,7 +170,7 @@ class ServiceProviderOrderController extends Controller
 						->select("id","receipt_id","driver_id","loader_id","vehicle_id","checker_id","created_at",DB::raw("count('receipt_id') as orders"))
 						->groupBy("driver_id",DB::raw("TIME(created_at)"))
 						->get();	
-		return view("partials.driverAssignOrders.table",compact("driverOrders"));
+		return view("v2.partials.driver-assign-orders-table",compact("driverOrders"));
 	}
 	
 	public function getDriversItems(Request $request)
@@ -192,7 +192,7 @@ class ServiceProviderOrderController extends Controller
 							->where(DB::raw('TIME(created_at)'),date("H:i:s",strtotime($request->time)))
 							->get();
 		$orderStatus = OrderStatus::orderBy('sortBy','ASC')->get();
-		return view("partials.driverAssignOrders.detailsTable",compact("driverOrdersDetails","orderStatus"));
+		return view("v2.partials.driver-assign-orders-details-table",compact("driverOrdersDetails","orderStatus"));
 	}
 	
 	function saveNarration(Request $request)

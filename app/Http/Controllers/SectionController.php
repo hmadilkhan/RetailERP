@@ -24,7 +24,7 @@ class SectionController extends Controller
 
         $lists = Section::getSection();
 
-        return view('Invent_Department.Section.index',compact('lists'));
+        return view('v2.sections.index',compact('lists'));
     }
 
     public function create(){
@@ -74,7 +74,7 @@ class SectionController extends Controller
 
       $edit  = Section::where(['id'=>$id,'company_id'=>session('company_id')])->first();
 
-     return view('Invent_Department.Section.index',compact('lists','id','edit'));
+     return view('v2.sections.index',compact('lists','id','edit'));
     }
 
 

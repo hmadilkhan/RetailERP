@@ -28,7 +28,7 @@ class TagController extends Controller
 
         $lists = $tag->getTags();
 
-        return view('Inventory.tags.index',compact('lists'));
+        return view('v2.inventory.tags.index',compact('lists'));
     }
 
     public function create(){
@@ -104,7 +104,7 @@ class TagController extends Controller
 
       $edit  = Tag::where(['id'=>$id,'company_id'=>session('company_id'),'status'=>1])->first();
 
-     return view('Inventory.tags.index',compact('lists','id','edit'));
+     return view('v2.inventory.tags.index',compact('lists','id','edit'));
     }
 
 

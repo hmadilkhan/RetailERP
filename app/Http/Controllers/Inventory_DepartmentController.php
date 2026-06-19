@@ -55,7 +55,7 @@ class Inventory_DepartmentController extends Controller
 
         $departPriority = inventory_department::getdepartment('',['priority','department_name']);
 
-        return view('Invent_Department.lists', compact('depart', 'sdepart', 'websites', 'sections','departPriority'));
+        return view('v2.invent-department.list', compact('depart', 'sdepart', 'websites', 'sections','departPriority'));
     }
     /**
      * Show the form for creating a new resource.
@@ -69,7 +69,7 @@ class Inventory_DepartmentController extends Controller
            // return $depart;
         $sections = Section::getSection();
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
-        return view('Invent_Department.create', compact('depart', 'websites', 'sections'));
+        return view('v2.invent-department.create', compact('depart', 'websites', 'sections'));
     }
     /**
      * Store a newly created resource in storage.

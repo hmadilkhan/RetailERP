@@ -32,7 +32,7 @@ class PosProductController extends Controller
 			                                         ->select('inventory_variations.*','addon_categories.name')
 			                                         ->get();
 			                                         
-            return view('Pos_Products.pos-products', compact('getbranch','getfinishgood','details','uoms','totalvariation','inventoryVariations'));
+            return view('v2.pos-products.list', compact('getbranch','getfinishgood','details','uoms','totalvariation','inventoryVariations'));
         }
      
      public function getVariation_posproduct(Request $request){

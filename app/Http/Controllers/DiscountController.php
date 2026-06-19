@@ -24,7 +24,7 @@ class DiscountController extends Controller
             $status = 1;
         }
         $discount = $discount->index($status);
-        return view('discount.list', compact('discount', 'status'));
+        return view('v2.discount.list', compact('discount', 'status'));
     }
 
     public function create(discount $discount)

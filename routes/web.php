@@ -77,6 +77,7 @@ use App\Livewire\ProjectLogs;
 use App\Livewire\ReportBuilder;
 use App\Livewire\ReportPanel;
 use App\Livewire\StockAdjustment\ListAdjustment;
+use App\Livewire\StockAdjustment\ListAdjustmentV2;
 use App\Livewire\StockReport;
 use App\Livewire\VehicleManager;
 use App\Livewire\ViewInventory;
@@ -147,7 +148,7 @@ Route::get('/rebuild-site/{websiteId}', [DeployController::class, 'rebuild'])->n
 
 Route::get('/view-inventory', ViewInventory::class);
 Route::get('/vehicle-manager', VehicleManager::class);
-Route::get('/view-adjustments', ListAdjustment::class);
+Route::get('/view-adjustments', ListAdjustmentV2::class);
 Route::get('/stock-report', StockReport::class);
 Route::get('/customers-list', CustomerList::class);
 Route::get('/report-builder', ReportBuilder::class);

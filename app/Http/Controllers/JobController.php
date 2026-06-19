@@ -18,14 +18,14 @@ class JobController extends Controller
 			$result = $joborder->getList(1);
 		}
         
-        return view('JobOrder.view-joborders', compact('result'));
+        return view('v2.job-order.list', compact('result'));
     }
 
     public function create(Request $request,joborder $joborder)
     {
         $products = $joborder->getfinishgoods();
         $raw = $joborder->getproducts();
-        return view("JobOrder.create-joborders",compact('products','raw'));
+        return view("v2.job-order.create",compact('products','raw'));
     }
 
     public function getRaw(Request $request,joborder $joborder)
@@ -179,7 +179,7 @@ class JobController extends Controller
         $raw = $joborder->getproducts();
          $details = $joborder->getdetailsRecipy(Crypt::decrypt($request->id));
         $general = $joborder->recipy_general(Crypt::decrypt($request->id));
-        return view("JobOrder.edit-joborders",compact('products','raw','general','details'));
+        return view("v2.job-order.edit",compact('products','raw','general','details'));
     }
 
     public function RepeatJobOrder(Request $request,joborder $joborder)
@@ -254,7 +254,7 @@ class JobController extends Controller
     public function getJobDetails(Request $request,joborder $joborder)
     {
         $result = $joborder->getDetails();
-        return view("WorkOrder.list-workorder",compact("result"));
+        return view("v2.work-order.list",compact("result"));
     }
 
     public function jobCancel(Request $request,joborder $joborder)
@@ -467,7 +467,7 @@ class JobController extends Controller
     public function getdetails(Request $request,joborder $joborder)
     {
         $details = $joborder->getjoborderdetails(Crypt::decrypt($request->id));
-        return view('JobOrder.details-joborders', compact('details'));
+        return view('v2.job-order.details', compact('details'));
     }
 
 
@@ -481,7 +481,7 @@ class JobController extends Controller
     {
         $details = $joborder->workorderdetails(Crypt::decrypt($request->id));
         $sum = $joborder->workorderdetails_sum(Crypt::decrypt($request->id));
-        return view('WorkOrder.details-workorder', compact('details','sum'));
+        return view('v2.work-order.details', compact('details','sum'));
     }
 
     public function getunitofmeassure(Request $request,joborder $joborder)

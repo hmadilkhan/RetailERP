@@ -33,7 +33,7 @@ class ExpenseController extends Controller
         $tax = tax::all();
         $expense = expense::join('expense_categories', 'expense_categories.exp_cat_id', '=', 'expenses.exp_cat_id')->where('expenses.branch_id', session('branch'))->get();
 
-        return view('Expense.list')->with(['cat' => $cat, 'tax' => $tax, 'expense' => $expense,"categories" => $categories]);
+        return view('v2.expense.list')->with(['cat' => $cat, 'tax' => $tax, 'expense' => $expense,"categories" => $categories]);
     }
 
     /**
