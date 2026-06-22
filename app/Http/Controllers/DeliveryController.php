@@ -34,7 +34,7 @@ class DeliveryController extends Controller
 	public function mobilePromotion(){
 		$images = DB::table("mobile_promotion_images")->join("inventory_general","inventory_general.id","=","mobile_promotion_images.product_id")->where("mobile_promotion_images.company_id",session("company_id"))->select("mobile_promotion_images.*","inventory_general.product_name")->get();
 		$products = DB::table("inventory_general")->where("status",1)->where("company_id",session("company_id"))->select(["id","product_name"])->get();
-        return view('Promotion.mobile-promotion-images',compact('images','products'));
+        return view('v2.promotion.mobile-promotion-images',compact('images','products'));
     }
 
 	public function insertMobilePromotion(Request $request){

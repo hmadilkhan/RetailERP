@@ -44,7 +44,7 @@ class CustomersController extends Controller
     public function index(Customer $customer)
     {
         $details = $customer->getcustomers();
-        return view('customer.lists', compact('details'));
+        return view('v2.customer.lists', compact('details'));
     }
     /**
      * Show the form for creating a new resource.
@@ -55,7 +55,7 @@ class CustomersController extends Controller
     {
         $country = $customer->getcountry();
         $city = $customer->getcity();
-        return view('customer.create', compact('country', 'city'));
+        return view('v2.customer.create', compact('country', 'city'));
     }
     /**
      * Store a newly created resource in storage.
@@ -176,7 +176,7 @@ class CustomersController extends Controller
         $country = $customer->getcountry();
         $city = $customer->getcity();
         if (count($details) > 0) {
-            return view('customer.edit', compact('country', 'city', 'details', 'supplier'));
+            return view('v2.customer.edit', compact('country', 'city', 'details', 'supplier'));
         } else {
             return view("404");
         }
@@ -285,7 +285,7 @@ class CustomersController extends Controller
         $customerID = $cust[0]->id;
         $slug = $request->id;
         if ($customername) {
-            return view('customer.ledger', compact('details', 'customername', 'customerID', 'slug'));
+            return view('v2.customer.ledger', compact('details', 'customername', 'customerID', 'slug'));
         } else {
             return view("404");
         }
@@ -308,7 +308,7 @@ class CustomersController extends Controller
         if ($cust != 0) {
             $customerID = $cust[0]->id;
             $customer_name = $cust[0]->name;
-            return view('customer.discount', compact('customerID', 'customer_name'));
+            return view('v2.customer.discount', compact('customerID', 'customer_name'));
         } else {
             return view("404");
         }
@@ -419,7 +419,7 @@ class CustomersController extends Controller
         }
         $customers = $request->id;
         $customerName = $customer->getCustName($request->id);
-        return view('customer.naap', compact('customers', 'shalwar', 'pant', 'customerName'));
+        return view('v2.customer.naap', compact('customers', 'shalwar', 'pant', 'customerName'));
     }
     public function updatePantMeasurement(Request $request, Customer $customer)
     {
@@ -666,7 +666,7 @@ class CustomersController extends Controller
         $slug = $customer->getSlug($request->id);
         $customer = $request->id;
         $banks = $bank->getbankAccounts();
-        return view("customer.Createpayment", compact('customerAdvance', 'customerName', 'customer', 'receipts', 'balance', 'banks', 'slug'));
+        return view("v2.customer.Createpayment", compact('customerAdvance', 'customerName', 'customer', 'receipts', 'balance', 'banks', 'slug'));
     }
     public function make_cash_payment(Request $request, Vendor $vendor, Customer $customer, bank $bank)
     {
@@ -731,7 +731,7 @@ class CustomersController extends Controller
     public function customer_due_payment(Request $request, Customer $customer)
     {
         $data = array();
-        return view("customer.customer-due-payment-list", compact('data'));
+        return view("v2.customer.customer-due-payment-list", compact('data'));
     }
     /**
         Get Customer Due Payment
@@ -896,7 +896,7 @@ class CustomersController extends Controller
     {
         if ($request->isMethod('post') && $request->ajax()) {
             $data = $customer->getAllPaymentLogByReceiptID($request->receipt_no);
-            $returnHTML = view('customer.paymentGrid')->with('data', $data)->render();
+            $returnHTML = view('v2.customer.paymentGrid')->with('data', $data)->render();
             echo  $returnHTML;
             exit;
             return response(['status' => "true", 'html' => $returnHTML]);
@@ -907,7 +907,7 @@ class CustomersController extends Controller
         $receipts = $customer->getOrders($request->id);
         $customer = $customer->getCustId($request->id);
         if ($customer != 0) {
-            return view("customer.invoicelist", compact('receipts', 'customer'));
+            return view("v2.customer.invoicelist", compact('receipts', 'customer'));
         } else {
             return view("404");
         }
@@ -1107,7 +1107,7 @@ class CustomersController extends Controller
     public function customerList(Request $request, Customer $customer)
     {
         $main = $customer->getcustomerList();
-        return view('customer.customer-list', compact('main'));
+        return view('v2.customer.customer-list', compact('main'));
     }
     public function fetch_customer_data(Request $request, inventory $inventory)
     {

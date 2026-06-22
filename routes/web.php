@@ -42,6 +42,9 @@ use App\Http\Controllers\InventoryDealController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\EmptyDataController;
+use App\Http\Controllers\OpeningClosingController;
+use App\Http\Controllers\PfundController;
 use App\Http\Controllers\PosProductController;
 use App\Http\Controllers\PreOrderBookingController;
 use App\Http\Controllers\PrintController;
@@ -61,6 +64,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\SyncShopifyController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TerminalController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\TransferController;
 use App\Http\Controllers\UnitofmeasureController;
 use App\Http\Controllers\UserDetailsController;
@@ -169,8 +173,8 @@ Route::post('/addons/category/update', [AddonCategoryController::class, "update"
 Route::post('/addons/category/delete', [AddonCategoryController::class, "destroy"])->name('addon-category.delete');
 Route::post('/get-products-by-department', [AddonCategoryController::class, 'getProductByDepartment'])->name('get.products.by.department');
 
-Route::get('/blogin', 'TestController@login');
-Route::get('/border', 'TestController@create_order');
+Route::get('/blogin', [TestController::class, 'login']);
+Route::get('/border', [TestController::class, 'create_order']);
 
 // Admin panel //
 Route::get('/admin', [AdminController::class, "showLoginForm"])->name('admin.login');
@@ -340,7 +344,7 @@ Route::get('/send-report', [ReportController::class, 'generatedSystematicReport'
 Route::get('/test-whatsapp', [ReportController::class, 'testWhatsApp']);
 
 
-Route::get('/send-logout-notification/{id}', 'UserDetailsController@sendPushNotificationToUserDevice');
+Route::get('/send-logout-notification/{id}', [UserDetailsController::class, 'sendPushNotificationToUserDevice']);
 Route::middleware(['statusCheck'])->group(function () {
     Route::get('/dashboard', [HomeController::class, "index"])->name('home');
     Route::get('/premium-dashboard', \App\Livewire\Dashboard\PremiumDashboard::class)->name('premium.dashboard');
@@ -1087,9 +1091,9 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::put('/reactive', [SMSController::class, 'reactive']);
 
     // PFFUND
-    Route::get('/view-pf-fund', 'PfundController@index');
-    Route::post('/insert-pf-fund', 'PfundController@store');
-    Route::post('/get-pf-fund', 'PfundController@getFunds');
+    Route::get('/view-pf-fund', [PfundController::class, 'index']);
+    Route::post('/insert-pf-fund', [PfundController::class, 'store']);
+    Route::post('/get-pf-fund', [PfundController::class, 'getFunds']);
 
     // EOBI
     Route::get('/view-eobi', [EobiController::class, 'index']);
@@ -1174,8 +1178,8 @@ Route::middleware(['statusCheck'])->group(function () {
 
 
     //emptydatabase
-    Route::get('/deletedatabase', 'EmptyDataController@view');
-    Route::post('/delete_data', 'EmptyDataController@deletedatabase');
+    Route::get('/deletedatabase', [EmptyDataController::class, 'view']);
+    Route::post('/delete_data', [EmptyDataController::class, 'deletedatabase']);
 
     //Pos Produtcs
     Route::get('/posproducts', [PosProductController::class, 'show'])->name('posProducts');;
@@ -1213,7 +1217,7 @@ Route::middleware(['statusCheck'])->group(function () {
     /******************************* VEHICLES ENDS HERE **********************************/
 
     /******************************* OPENING CLOSING STARTS HERE **********************************/
-    Route::get('/opening-closing', 'OpeningClosingController@index')->name("opening.closing");
+    Route::get('/opening-closing', [OpeningClosingController::class, 'index'])->name("opening.closing");
     /******************************* OPENING CLOSING ENDS HERE **********************************/
 
     /******************************* OPEN AI LINKS START **********************************/

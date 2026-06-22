@@ -34,7 +34,7 @@ class DiscountController extends Controller
         $departments = $discount->loadDepartments();
         $discountvalue = $discount->getDiscountValue();
         $websites = $discount->getWebsitesByCompany();
-        return view("discount.create", compact('discountType', 'departments', 'discountvalue', 'websites'));
+        return view("v2.discount.create", compact('discountType', 'departments', 'discountvalue', 'websites'));
     }
 
     public function edit(Request $request, discount $discount)
@@ -51,12 +51,12 @@ class DiscountController extends Controller
             $discountCategories = $discount->getDiscountCategories($discountId);
             $usage = $discount->getDiscountUsageLimits($discountId);
             $period = $discount->getDiscountPeroid($discountId);
-            return view("discount.edit-buy", compact('discountType', 'departments', 'discountvalue', 'discountGen', 'usage', 'period', 'discountCategories', 'websites', 'selectedDays'));
+            return view("v2.discount.edit-buy", compact('discountType', 'departments', 'discountvalue', 'discountGen', 'usage', 'period', 'discountCategories', 'websites', 'selectedDays'));
         } else {
             $discountGenDetails = $discount->getDiscountGeneralDetails($discountId);
             $usage = $discount->getDiscountUsageLimits($discountId);
             $period = $discount->getDiscountPeroid($discountId);
-            return view("discount.edit", compact('discountType', 'departments', 'discountvalue', 'discountGen', 'discountGenDetails', 'usage', 'period', 'websites', 'selectedDays'));
+            return view("v2.discount.edit", compact('discountType', 'departments', 'discountvalue', 'discountGen', 'discountGenDetails', 'usage', 'period', 'websites', 'selectedDays'));
         }
     }
 

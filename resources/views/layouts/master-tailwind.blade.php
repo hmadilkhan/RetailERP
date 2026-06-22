@@ -50,6 +50,11 @@
             || request()->is('website/booking-slots*')
             || request()->is('create-demand')
             || request()->is('edit-demand*')
+            || request()->is('discount-panel*')
+            || request()->is('ledgerDetails*')
+            || request()->is('measurement*')
+            || request()->is('create-customer-payment*')
+            || request()->is('get-customer-receipts*')
             || request()->is('demand-details*')
             || request()->is('received-demandpanel*')
             || request()->is('view-transfer*')
@@ -60,6 +65,8 @@
 
         $tailwindPurchaseAssets = request()->is('add-purchase') || request()->is('edit/*');
         $tailwindDashboardAssets = request()->is('dashboard');
+        $tailwindDiscountAssets = request()->is('create-discount') || request()->is('edit-discount*');
+        $tailwindFullWidthPage = request()->is('create-discount') || request()->is('edit-discount*');
     @endphp
 
     @if ($tailwindLegacyAssets)
@@ -96,10 +103,21 @@
             || request()->is('edit_trf_details*')
             || request()->is('orders-view*')
             || request()->is('create-inventory')
-            || request()->is('edit-invent*');
+            || request()->is('edit-invent*')
+            || request()->is('customer*')
+            || request()->is('editcustomers*')
+            || request()->is('customer-due-payment')
+            || request()->is('mobile-promotion');
     @endphp
-    @if (($tailwindSelect2Assets || $tailwindPurchaseAssets) && !$tailwindLegacyAssets)
+    @if (($tailwindSelect2Assets || $tailwindPurchaseAssets || $tailwindDiscountAssets) && !$tailwindLegacyAssets)
         <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />
+    @endif
+    @if ($tailwindDiscountAssets && !$tailwindLegacyAssets)
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
+        <link rel="stylesheet" type="text/css" href="{{ asset('components/bootstrap/dist/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('components/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') }}" />
+        <link rel="stylesheet" href="{{ asset('assets/plugins/bootstrap-datepicker/css/bootstrap-datetimepicker.css') }}" />
+        <link rel="stylesheet" type="text/css" href="{{ asset('assets/plugins/sweetalert/css/sweetalert.css') }}">
     @endif
     @if ($tailwindOrdersAssets && !$tailwindLegacyAssets)
         <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
@@ -198,7 +216,7 @@
                 padding-right: 0.75rem;
             }
         }
-        @if ($tailwindSelect2Assets || $tailwindPurchaseAssets)
+        @if ($tailwindSelect2Assets || $tailwindPurchaseAssets || $tailwindDiscountAssets)
             .billing-select2.select2-hidden-accessible + .select2-container,
             .v2-select2.select2-hidden-accessible + .select2-container {
                 width: 100% !important;
@@ -299,7 +317,7 @@
                 background: #4CAF50;
             }
         @endif
-        @if ($tailwindLegacyAssets)
+        @if ($tailwindLegacyAssets || $tailwindDiscountAssets)
             .content-wrapper,
             .container-fluid {
                 background: transparent !important;
@@ -357,6 +375,571 @@
                 color: #334155;
                 vertical-align: middle !important;
                 border-color: #edf2f7 !important;
+            }
+            .f-right {
+                float: right !important;
+            }
+            .d-none {
+                display: none !important;
+            }
+            .m-t-2 {
+                margin-top: 0.5rem !important;
+            }
+            .m-t-10 {
+                margin-top: 1rem !important;
+            }
+            .m-b-10 {
+                margin-bottom: 1rem !important;
+            }
+            .m-b-20 {
+                margin-bottom: 1.25rem !important;
+            }
+            .p-t-30 {
+                padding-top: 1.5rem !important;
+            }
+            .f-24 {
+                font-size: 1.5rem !important;
+            }
+            .f-18 {
+                font-size: 1.125rem !important;
+            }
+            .m-l-1 {
+                margin-left: 0.25rem !important;
+            }
+            .pointer {
+                cursor: pointer !important;
+            }
+            .badge-lg {
+                padding: 0.45rem 0.65rem !important;
+                font-size: 0.8125rem !important;
+                line-height: 1.1 !important;
+            }
+            .badge-header3 {
+                margin-left: 0.35rem;
+                vertical-align: middle;
+            }
+        @endif
+        @if ($tailwindFullWidthPage)
+            html,
+            body {
+                overflow-x: hidden;
+            }
+            .v2-app-shell,
+            .v2-top-header,
+            .v2-main-content,
+            .v2-page-heading {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+                overflow-x: hidden !important;
+            }
+            .v2-app-shell {
+                margin-left: 0 !important;
+                transition: padding-left 0.3s ease !important;
+            }
+            .v2-top-header {
+                left: auto !important;
+                right: auto !important;
+                margin-left: 0 !important;
+            }
+            .v2-main-content {
+                margin-left: 0 !important;
+                padding-left: clamp(1rem, 2vw, 2rem) !important;
+                padding-right: clamp(1rem, 2vw, 2rem) !important;
+            }
+            @media (min-width: 1024px) {
+                .v2-app-shell.v2-shell-collapsed {
+                    padding-left: 5rem !important;
+                }
+                .v2-app-shell.v2-shell-expanded {
+                    padding-left: 18rem !important;
+                }
+            }
+            .v2-discount-page,
+            .v2-discount-page form,
+            .v2-discount-page .card,
+            .v2-discount-page .card-block,
+            .v2-discount-page .card-header {
+                width: 100% !important;
+                max-width: none !important;
+                min-width: 0;
+                box-sizing: border-box;
+            }
+            .v2-discount-page .card {
+                float: none !important;
+                clear: both;
+            }
+            .v2-discount-page .card-block::after,
+            .v2-discount-page .card::after {
+                content: "";
+                display: table;
+                clear: both;
+            }
+            .v2-discount-page [class*="col-lg-"],
+            .v2-discount-page [class*="col-md-"] {
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            .v2-discount-page .m-l-30,
+            .v2-discount-page .m-l-40 {
+                margin-left: 0 !important;
+            }
+            .v2-discount-page .select2,
+            .v2-discount-page .select2-container,
+            .v2-discount-page .form-control,
+            .v2-discount-page table {
+                max-width: 100% !important;
+            }
+            .v2-discount-page .select2-hidden-accessible + .select2-container {
+                width: 100% !important;
+                min-width: 0;
+            }
+            .v2-discount-page .form-radio {
+                display: grid;
+                gap: 0.625rem;
+            }
+            .v2-radio-list {
+                display: grid !important;
+                grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+                gap: 0.75rem;
+                width: 100%;
+            }
+            .v2-radio-row {
+                position: static !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 0.6rem !important;
+                min-height: 3rem;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0.75rem 0.85rem !important;
+                border: 1px solid #d8e1ec;
+                border-radius: 0.5rem;
+                background: #ffffff;
+                color: #0f172a;
+                font-size: 0.9rem;
+                font-weight: 700;
+                line-height: 1.35;
+                cursor: pointer;
+                transform: none !important;
+            }
+            .v2-radio-row:hover,
+            .v2-radio-row.is-selected {
+                border-color: #4CAF50;
+                background: #f3fbf4;
+                box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.10);
+            }
+            .v2-radio-row input[type="radio"] {
+                position: static !important;
+                display: inline-block !important;
+                flex: 0 0 auto;
+                width: 1rem !important;
+                height: 1rem !important;
+                min-width: 1rem !important;
+                margin: 0 !important;
+                opacity: 1 !important;
+                pointer-events: auto !important;
+                accent-color: #4CAF50;
+                transform: none !important;
+            }
+            .v2-radio-row span {
+                display: inline-block;
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+            .v2-inline-action {
+                margin-left: auto;
+                min-height: 1.8rem;
+                padding: 0.25rem 0.55rem;
+                border: 1px solid rgba(76, 175, 80, 0.28);
+                border-radius: 0.45rem;
+                background: #ffffff;
+                color: #2E7D32;
+                font-size: 0.75rem;
+                font-weight: 800;
+                line-height: 1.2;
+                white-space: nowrap;
+            }
+            .v2-discount-page .radio,
+            .v2-discount-page .rkmd-checkbox {
+                display: flex;
+                align-items: center;
+                min-height: 2rem;
+                margin: 0.25rem 0;
+                color: #334155;
+            }
+            .v2-discount-page .radio label,
+            .v2-discount-page .input-checkbox,
+            .v2-discount-page .rkmd-checkbox label {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                margin: 0;
+                cursor: pointer;
+                line-height: 1.4;
+            }
+            .v2-discount-page .radio input[type="radio"],
+            .v2-discount-page .input-checkbox input[type="checkbox"],
+            .v2-discount-page .rkmd-checkbox input[type="checkbox"] {
+                position: static !important;
+                display: inline-block !important;
+                width: 1rem;
+                height: 1rem;
+                min-width: 1rem;
+                margin: 0 !important;
+                opacity: 1 !important;
+                cursor: pointer;
+                accent-color: #4CAF50;
+            }
+            .v2-discount-page .radio .helper,
+            .v2-discount-page .rkmd-checkbox .checkbox,
+            .v2-discount-page .rkmd-checkbox .ripple {
+                display: none !important;
+            }
+            .v2-discount-page .captions,
+            .v2-discount-page .captions2 {
+                display: inline-flex;
+                align-items: center;
+                min-height: 1.5rem;
+                margin-left: 0.5rem;
+                color: #334155;
+                font-size: 0.875rem;
+                line-height: 1.4;
+            }
+            .v2-discount-page .rkmd-checkbox > .input-checkbox + .captions,
+            .v2-discount-page .rkmd-checkbox > .input-checkbox + .captions2 {
+                margin-left: 0.5rem;
+            }
+            .v2-page-heading,
+            .v2-discount-page {
+                max-width: 1280px !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
+            .v2-discount-page {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                padding-top: 0 !important;
+                padding-bottom: 2rem !important;
+            }
+            .v2-discount-page.panels-wells,
+            .v2-discount-page .panels-wells {
+                margin-top: 0 !important;
+                padding-top: 0 !important;
+            }
+            .v2-discount-grid {
+                display: grid;
+                grid-template-columns: minmax(0, 7fr) minmax(18rem, 4fr);
+                gap: 1.5rem;
+                align-items: start;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            .v2-discount-form-panel,
+            .v2-discount-form-stack,
+            .v2-discount-summary-panel {
+                min-width: 0;
+                width: 100%;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            .v2-discount-form-panel {
+                display: block;
+            }
+            .v2-discount-form-stack {
+                display: grid;
+                gap: 1rem;
+            }
+            .v2-discount-page .card {
+                margin-bottom: 0 !important;
+                border: 1px solid #d8e1ec !important;
+                border-radius: 0.625rem !important;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04) !important;
+                overflow: visible;
+            }
+            .v2-discount-page .card-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                min-height: 3.25rem;
+                padding: 0.9rem 1.125rem !important;
+            }
+            .v2-discount-page .card-header-text {
+                margin: 0 !important;
+                color: #0f172a !important;
+                font-size: 0.95rem !important;
+                font-weight: 800 !important;
+                letter-spacing: 0 !important;
+                line-height: 1.25;
+                text-transform: none;
+            }
+            .v2-discount-page .card-block {
+                padding: 1rem 1.125rem !important;
+            }
+            .v2-discount-page .form-group {
+                margin-bottom: 1rem;
+            }
+            .v2-discount-page .form-control-label {
+                display: inline-block;
+                margin-bottom: 0.35rem;
+                color: #334155;
+                font-size: 0.8125rem;
+                font-weight: 800;
+                line-height: 1.35;
+            }
+            .v2-discount-page .form-control-feedback,
+            .v2-discount-page .help-block {
+                margin-top: 0.35rem;
+                color: #64748b;
+                font-size: 0.78rem;
+                line-height: 1.35;
+            }
+            .v2-discount-page .form-control {
+                min-height: 2.45rem;
+                border-color: #d8e1ec !important;
+                border-radius: 0.5rem !important;
+                color: #0f172a;
+                font-size: 0.875rem;
+                box-shadow: none !important;
+            }
+            .v2-discount-page .form-control:focus {
+                border-color: #4CAF50 !important;
+                box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.14) !important;
+            }
+            .v2-discount-page .select2-container .select2-selection--single,
+            .v2-discount-page .select2-container .select2-selection--multiple {
+                min-height: 2.45rem;
+                border: 1px solid #d8e1ec !important;
+                border-radius: 0.5rem !important;
+                box-shadow: none !important;
+            }
+            .v2-discount-page .select2-container .select2-selection--single {
+                display: flex;
+                align-items: center;
+            }
+            .v2-discount-page .select2-container .select2-selection--single .select2-selection__rendered {
+                width: 100%;
+                padding-left: 0.75rem;
+                padding-right: 2rem;
+                color: #0f172a;
+                line-height: 2.35rem;
+            }
+            .v2-discount-page .select2-container .select2-selection--single .select2-selection__arrow {
+                height: 2.35rem;
+                right: 0.5rem;
+            }
+            .v2-discount-page .select2-container .select2-selection--multiple .select2-selection__rendered {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.35rem;
+                padding: 0.35rem 0.45rem;
+            }
+            .v2-discount-page .select2-container .select2-selection--multiple .select2-selection__choice {
+                margin: 0 !important;
+                border: 0 !important;
+                border-radius: 999px !important;
+                background: #e8f5e9 !important;
+                color: #1b5e20 !important;
+                font-size: 0.78rem;
+                font-weight: 700;
+            }
+            .v2-discount-page .radio label {
+                width: 100%;
+                min-height: 2.3rem;
+                padding: 0.5rem 0.65rem;
+                border: 1px solid #d8e1ec;
+                border-radius: 0.5rem;
+                background: #ffffff;
+            }
+            .v2-discount-page .radio label:hover,
+            .v2-discount-page .rkmd-checkbox:hover .captions,
+            .v2-discount-page .rkmd-checkbox:hover .captions2 {
+                color: #1b5e20;
+            }
+            .v2-discount-page .radio a {
+                margin-left: 0.35rem;
+                font-weight: 800;
+                cursor: pointer;
+            }
+            .v2-options-card .card-block {
+                display: grid;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 0.85rem 1rem;
+            }
+            .v2-options-card .card-block::after {
+                display: none;
+            }
+            .v2-options-card .card-block > [class*="col-"] {
+                float: none !important;
+                width: auto !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
+            .v2-options-card #divminChkBox {
+                grid-column: 1 / -1;
+                padding: 0.75rem 0.85rem;
+                border: 1px solid #d8e1ec;
+                border-radius: 0.5rem;
+                background: #f8fafc;
+            }
+            .v2-days-card .card-block {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(8.75rem, 1fr));
+                gap: 0.6rem 0.75rem;
+            }
+            .v2-days-header {
+                align-items: center !important;
+                flex-direction: row !important;
+            }
+            .v2-select-all-days {
+                justify-content: flex-end;
+                margin-left: auto !important;
+            }
+            .v2-select-all-days .input-checkbox {
+                min-height: 2rem;
+                padding: 0.35rem 0.65rem;
+                border: 1px solid #d8e1ec;
+                border-radius: 999px;
+                background: #ffffff;
+                color: #0f172a;
+                font-size: 0.8125rem;
+                font-weight: 800;
+            }
+            .v2-days-card .card-block::after {
+                display: none;
+            }
+            .v2-days-card .card-block > .rkmd-checkbox {
+                float: none !important;
+                width: auto !important;
+                max-width: none !important;
+                margin: 0 !important;
+                padding: 0.55rem 0.65rem !important;
+                border: 1px solid #d8e1ec;
+                border-radius: 0.5rem;
+                background: #ffffff;
+            }
+            .v2-discount-actions-card {
+                display: flex;
+                justify-content: flex-end;
+                border: 0 !important;
+                background: transparent !important;
+                box-shadow: none !important;
+                padding: 0.25rem 0 0 !important;
+            }
+            .v2-discount-actions-card::after {
+                display: none !important;
+            }
+            .v2-discount-actions-card .btn {
+                min-width: 8rem;
+                min-height: 2.6rem;
+            }
+            .v2-discount-summary-panel {
+                align-self: start;
+                overflow: hidden !important;
+            }
+            .v2-discount-summary-panel .card-header {
+                background: #f8fafc !important;
+            }
+            .v2-discount-summary-panel #salename {
+                min-height: 2.25rem;
+                margin: 0;
+                padding: 1rem 1.125rem 0.35rem;
+                color: #0f172a;
+                font-size: 1.25rem;
+                font-weight: 800;
+                line-height: 1.25;
+                overflow-wrap: anywhere;
+            }
+            .v2-discount-summary-panel #description {
+                display: grid;
+                gap: 0.45rem;
+                margin: 0 !important;
+                padding: 0.4rem 1.125rem 1.125rem 1.6rem !important;
+                color: #334155;
+                font-size: 0.875rem;
+                line-height: 1.45;
+            }
+            .v2-discount-page .modal-dialog {
+                width: min(760px, calc(100vw - 2rem)) !important;
+                max-width: min(760px, calc(100vw - 2rem)) !important;
+                margin: 1.5rem auto !important;
+            }
+            .v2-discount-page .modal-content {
+                border: 0 !important;
+                border-radius: 0.625rem !important;
+                overflow: hidden;
+                box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22) !important;
+            }
+            .v2-discount-page .modal-header,
+            .v2-discount-page .modal-footer {
+                border-color: #d8e1ec !important;
+            }
+            .v2-discount-page .modal-body .row {
+                display: flex;
+                gap: 0.75rem;
+                align-items: center;
+                margin-left: 0;
+                margin-right: 0;
+            }
+            .v2-discount-page .modal-body .row > [class*="col-"] {
+                float: none;
+                width: auto;
+                padding-left: 0;
+                padding-right: 0;
+            }
+            .v2-discount-page .modal-body .row > .col-md-9 {
+                flex: 1 1 auto;
+            }
+            .v2-discount-page #divProd {
+                height: auto !important;
+                max-height: 52vh;
+                margin-top: 1rem;
+                overflow: auto !important;
+                border: 1px solid #d8e1ec;
+                border-radius: 0.5rem;
+            }
+            .v2-discount-page #inventtbl {
+                margin-bottom: 0;
+            }
+            .v2-discount-page #inventtbl th,
+            .v2-discount-page #inventtbl td {
+                white-space: normal;
+            }
+            .v2-discount-page #inventtbl i {
+                cursor: pointer;
+            }
+            @media (min-width: 1024px) {
+                .v2-discount-summary-panel {
+                    position: sticky;
+                    top: 5.25rem;
+                }
+            }
+            @media (max-width: 991.98px) {
+                .v2-discount-grid {
+                    grid-template-columns: 1fr;
+                }
+                .v2-discount-summary-panel {
+                    position: static;
+                }
+                .v2-discount-page .card-header {
+                    align-items: flex-start;
+                    flex-direction: column;
+                }
+                .v2-radio-list,
+                .v2-options-card .card-block {
+                    grid-template-columns: 1fr;
+                }
+                .v2-discount-page .modal-body .row {
+                    align-items: stretch;
+                    flex-direction: column;
+                }
+                .v2-discount-page .modal-body .row > [class*="col-"],
+                .v2-discount-page .modal-body .row .btn {
+                    width: 100%;
+                }
             }
         @endif
     </style>
@@ -697,9 +1280,9 @@
             </div>
         </aside>
 
-        <div :class="sidebarExpanded ? 'lg:pl-72' : 'lg:pl-20'" class="min-h-screen transition-all duration-300">
-            <header class="sticky top-0 z-20 border-b border-erp-line bg-white/90 backdrop-blur-xl">
-                <div class="flex h-16 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+        <div :class="sidebarExpanded ? 'v2-shell-expanded lg:pl-72' : 'v2-shell-collapsed lg:pl-20'" class="v2-app-shell min-h-screen min-w-0 overflow-x-hidden transition-all duration-300">
+            <header class="v2-top-header sticky top-0 z-20 w-full min-w-0 overflow-x-hidden border-b border-erp-line bg-white/90 backdrop-blur-xl">
+                <div class="flex h-16 min-w-0 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                     <div class="flex min-w-0 items-center gap-3">
                         <button type="button" @click="sidebarOpen = true"
                             class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-erp-line bg-white text-slate-600 transition hover:border-erp hover:text-erp-dark lg:hidden"
@@ -738,8 +1321,8 @@
                 </div>
             </header>
 
-            <main class="w-full px-4 py-6 sm:px-6 lg:px-8">
-                <div class="mb-6 rounded-lg border border-erp-line bg-white px-5 py-5 shadow-sm">
+            <main class="v2-main-content w-full min-w-0 overflow-x-hidden py-6 {{ $tailwindFullWidthPage ? 'px-0' : 'px-4 sm:px-6 lg:px-8' }}">
+                <div class="v2-page-heading mb-6 border border-erp-line bg-white px-5 py-5 shadow-sm {{ $tailwindFullWidthPage ? 'rounded-none border-x-0' : 'rounded-lg' }}">
                     <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                         <div class="min-w-0">
                             <div class="flex flex-wrap items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-erp-mute">
@@ -842,6 +1425,16 @@
         <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
         <script src="{{ asset('assets/plugins/sweetalert/js/sweetalert.js') }}"></script>
     @endif
+    @if ($tailwindDiscountAssets && !$tailwindLegacyAssets)
+        <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
+        <script src="{{ asset('components/tether/dist/js/tether.min.js') }}"></script>
+        <script src="{{ asset('components/bootstrap/dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/datepicker/js/moment-with-locales.min.js') }}"></script>
+        <script src="{{ asset('components/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') }}"></script>
+        <script src="{{ asset('assets/plugins/bootstrap-datepicker/js/bootstrap-datetimepicker.min.js') }}"></script>
+        <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
+        <script src="{{ asset('assets/plugins/sweetalert/js/sweetalert.js') }}"></script>
+    @endif
     @if ($tailwindSelect2Assets && !$tailwindLegacyAssets && !$tailwindPurchaseAssets && !$tailwindDashboardAssets && !$tailwindOrdersAssets)
         <script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"></script>
         <script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"></script>
@@ -864,7 +1457,7 @@
             });
         </script>
     @endif
-    @if ($tailwindPurchaseAssets || $tailwindDashboardAssets || $tailwindOrdersAssets)
+    @if ($tailwindPurchaseAssets || $tailwindDashboardAssets || $tailwindOrdersAssets || $tailwindDiscountAssets)
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 document.documentElement.style.overflowY = 'auto';
