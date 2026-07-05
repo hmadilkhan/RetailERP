@@ -10,6 +10,7 @@
     $imageName = $product->image ?? null;
     $imageUrl = $imageName ? asset('storage/images/products/' . $imageName) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22640%22 height=%22480%22 viewBox=%220 0 640 480%22%3E%3Crect width=%22640%22 height=%22480%22 fill=%22%23f8fafc%22/%3E%3Cpath d=%22M160 328l92-98 66 70 48-52 114 122H160z%22 fill=%22%23dbe4ee%22/%3E%3Ccircle cx=%22442%22 cy=%22154%22 r=%2242%22 fill=%22%23cbd5e1%22/%3E%3Ctext x=%22320%22 y=%22420%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2228%22 fill=%22%2364758b%22%3EProduct Image%3C/text%3E%3C/svg%3E';
     $referenceValue = old('reference', $isEdit ? ($references ?? '') : '');
+    $selectedInventoryType = old('inventory_type', $isEdit ? ($product->inventory_type_id ?? '') : 1);
     $websiteIsRestaurant = ($websiteType ?? null) === 'restaurant';
 
     $field = function ($name, $fallback = '') use ($product, $price) {
@@ -144,7 +145,7 @@
                         <select id="inventory_type" name="inventory_type" data-placeholder="Select Inventory Type" class="{{ $selectClass }}">
                             <option value="">Select Inventory Type</option>
                             @foreach ($types ?? [] as $type)
-                                <option value="{{ $type->id }}" @selected($field('inventory_type') == $type->id)>{{ data_get($type, 'name', data_get($type, 'type_name', data_get($type, 'title', 'Type ' . $type->id))) }}</option>
+                                <option value="{{ $type->id }}" @selected($selectedInventoryType == $type->id)>{{ data_get($type, 'name', data_get($type, 'type_name', data_get($type, 'title', 'Type ' . $type->id))) }}</option>
                             @endforeach
                         </select>
                     </label>
