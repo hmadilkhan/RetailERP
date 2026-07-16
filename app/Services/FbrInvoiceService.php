@@ -162,7 +162,7 @@ class FbrInvoiceService
             'PaymentMode' => 1,
             'RefUSIN' => $asReturn ? $refUsin : 'NULL',
             'InvoiceType' => $invoiceType,
-            'invoiceDate' => "2025-05-30",
+            'invoiceDate' => $invoiceDate,
             'Items' => $orderDetails,
         ];
     }
@@ -172,6 +172,11 @@ class FbrInvoiceService
      */
     private function postToFbr(array $payload, int $orderId, string $token): array
     {
+        Log::info('FBR payload', [
+            'order_id' => $orderId,
+            'payload' => $payload,
+        ]);
+
         try {
             $response = Http::withToken($token)
                 ->withOptions([
@@ -188,6 +193,7 @@ class FbrInvoiceService
                 'invoice_number' => null,
                 'error_details' => [
                     'exception' => $e->getMessage(),
+                    'payload' => $payload,
                 ],
             ];
         }
@@ -203,6 +209,7 @@ class FbrInvoiceService
                 'error_details' => [
                     'http_status' => $response->status(),
                     'raw_response' => $response->body(),
+                    'payload' => $payload,
                 ],
             ];
         }
@@ -223,7 +230,13 @@ class FbrInvoiceService
             ];
         }
 
-        $message = $outPut['Message'] ?? $outPut['message'] ?? ('FBR rejected with code ' . ($code ?? 'unknown'));
+        $fbrMessage = $outPut['Message']
+            ?? $outPut['message']
+            ?? $outPut['Response']
+            ?? $outPut['response']
+            ?? null;
+
+        $message = $fbrMessage ?? ('FBR rejected with code ' . ($code ?? 'unknown'));
 
         return [
             'order_id' => $orderId,
@@ -233,9 +246,10 @@ class FbrInvoiceService
             'error_details' => [
                 'http_status' => $response->status(),
                 'fbr_code' => $code,
-                'fbr_message' => $outPut['Message'] ?? $outPut['message'] ?? null,
+                'fbr_message' => $fbrMessage,
                 'invoice_number' => $invoiceNumber,
                 'raw_response' => $outPut,
+                'payload' => $payload,
             ],
         ];
     }

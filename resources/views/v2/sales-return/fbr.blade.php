@@ -165,7 +165,14 @@
                 html += '<li>';
                 html += '<div><span class="font-semibold">#' + r.order_id + ':</span> ' + escapeHtml(r.success ? ('OK — ' + (r.invoice_number || '')) : (r.message || 'Failed')) + '</div>';
                 if (!r.success && r.error_details) {
-                    html += '<pre class="mt-2 overflow-x-auto rounded-lg bg-white/70 p-3 text-xs text-rose-900">' + escapeHtml(JSON.stringify(r.error_details, null, 2)) + '</pre>';
+                    if (r.error_details.payload) {
+                        html += '<div class="mt-2 text-xs font-bold uppercase tracking-[0.12em] text-rose-800">Request Payload</div>';
+                        html += '<pre class="mt-1 overflow-x-auto rounded-lg bg-white/70 p-3 text-xs text-rose-900">' + escapeHtml(JSON.stringify(r.error_details.payload, null, 2)) + '</pre>';
+                    }
+                    html += '<div class="mt-2 text-xs font-bold uppercase tracking-[0.12em] text-rose-800">FBR Response</div>';
+                    const responseDetails = Object.assign({}, r.error_details);
+                    delete responseDetails.payload;
+                    html += '<pre class="mt-1 overflow-x-auto rounded-lg bg-white/70 p-3 text-xs text-rose-900">' + escapeHtml(JSON.stringify(responseDetails, null, 2)) + '</pre>';
                 }
                 html += '</li>';
                 if (r.success && r.invoice_number) {
