@@ -93,11 +93,13 @@ class FbrInvoiceService
     {
         $header = DB::selectOne(
             "SELECT a.id, a.date, a.time, a.order_ref,
+                    ref.date as reference_date,
                     IFNULL(c.total_amount, 0) as total_amount,
                     IFNULL(b.discount_amount, 0) as discount_amount,
                     IFNULL(b.sales_tax_amount, 0) as sales_tax_amount,
                     a.actual_amount
              FROM sales_receipts a
+             LEFT JOIN sales_receipts ref ON ref.id = a.order_ref
              LEFT JOIN sales_account_subdetails b ON b.receipt_id = a.id
              LEFT JOIN sales_account_general c ON c.receipt_id = a.id
              WHERE a.id = ?",
@@ -139,6 +141,10 @@ class FbrInvoiceService
             ];
         }
 
+        $invoiceDate = $asReturn
+            ? ($header->reference_date ?? $header->date)
+            : $header->date;
+
         return [
             'InvoiceNumber' => '',
             'POSID' => $fbrData->pos_id,
@@ -156,6 +162,7 @@ class FbrInvoiceService
             'PaymentMode' => 1,
             'RefUSIN' => $asReturn ? $refUsin : 'NULL',
             'InvoiceType' => $invoiceType,
+            'invoiceDate' => "2025-05-30",
             'Items' => $orderDetails,
         ];
     }
@@ -165,13 +172,25 @@ class FbrInvoiceService
      */
     private function postToFbr(array $payload, int $orderId, string $token): array
     {
-        $response = Http::withToken($token)
-            ->withOptions([
-                'verify' => false,
-            ])
-            ->timeout(60)
-            ->asJson()
-            ->post(self::LIVE_URL, $payload);
+        try {
+            $response = Http::withToken($token)
+                ->withOptions([
+                    'verify' => false,
+                ])
+                ->timeout(60)
+                ->asJson()
+                ->post(self::LIVE_URL, $payload);
+        } catch (\Throwable $e) {
+            return [
+                'order_id' => $orderId,
+                'success' => false,
+                'message' => 'FBR request failed: ' . $e->getMessage(),
+                'invoice_number' => null,
+                'error_details' => [
+                    'exception' => $e->getMessage(),
+                ],
+            ];
+        }
 
         $outPut = $response->json();
 
@@ -181,6 +200,10 @@ class FbrInvoiceService
                 'success' => false,
                 'message' => 'Invalid FBR response: ' . $response->body(),
                 'invoice_number' => null,
+                'error_details' => [
+                    'http_status' => $response->status(),
+                    'raw_response' => $response->body(),
+                ],
             ];
         }
 
@@ -207,6 +230,13 @@ class FbrInvoiceService
             'success' => false,
             'message' => is_string($message) ? $message : json_encode($outPut),
             'invoice_number' => $invoiceNumber,
+            'error_details' => [
+                'http_status' => $response->status(),
+                'fbr_code' => $code,
+                'fbr_message' => $outPut['Message'] ?? $outPut['message'] ?? null,
+                'invoice_number' => $invoiceNumber,
+                'raw_response' => $outPut,
+            ],
         ];
     }
 }

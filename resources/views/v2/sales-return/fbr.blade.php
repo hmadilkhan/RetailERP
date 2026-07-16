@@ -160,9 +160,14 @@
             const data = await res.json();
             if (!res.ok) throw new Error(data.message || 'FBR send failed');
 
-            let html = '<p class="font-bold">' + data.message + '</p><ul class="mt-2 space-y-1">';
+            let html = '<p class="font-bold">' + escapeHtml(data.message) + '</p><ul class="mt-2 space-y-2">';
             (data.data || []).forEach(function (r) {
-                html += '<li>#' + r.order_id + ': ' + (r.success ? ('OK — ' + (r.invoice_number || '')) : r.message) + '</li>';
+                html += '<li>';
+                html += '<div><span class="font-semibold">#' + r.order_id + ':</span> ' + escapeHtml(r.success ? ('OK — ' + (r.invoice_number || '')) : (r.message || 'Failed')) + '</div>';
+                if (!r.success && r.error_details) {
+                    html += '<pre class="mt-2 overflow-x-auto rounded-lg bg-white/70 p-3 text-xs text-rose-900">' + escapeHtml(JSON.stringify(r.error_details, null, 2)) + '</pre>';
+                }
+                html += '</li>';
                 if (r.success && r.invoice_number) {
                     const tr = document.querySelector('tr[data-id="' + r.order_id + '"]');
                     if (tr) {
@@ -197,6 +202,15 @@
         });
         sendIds(ids);
     });
+
+    function escapeHtml(value) {
+        return String(value ?? '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#039;');
+    }
 
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-send-one');
