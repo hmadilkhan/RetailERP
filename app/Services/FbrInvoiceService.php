@@ -115,7 +115,7 @@ class FbrInvoiceService
             [$order->id]
         );
 
-        $sign = $asReturn ? -1 : 1;
+        $sign = $asReturn ? 1 : 1;
         $invoiceType = $asReturn ? 3 : 1;
         $refUsin = $asReturn ? ($header->order_ref ?? null) : null;
         $taxRate = $fbrData->tax_rate;
