@@ -225,6 +225,11 @@
                             class="h-10 rounded-lg bg-erp px-4 text-sm font-bold text-white transition hover:bg-erp-dark">
                             <i class="icofont icofont-ui-check"> </i>Fetch
                         </button>
+
+                        <a href="{{ url('sales-returns/duplicate') }}"
+                            class="inline-flex h-10 items-center rounded-lg bg-slate-800 px-4 text-sm font-bold text-white transition hover:bg-slate-900">
+                            Sales Returns
+                        </a>
                         
                         <button type="button" id="btnExcel"
                             class="h-10 rounded-lg bg-emerald-600 px-4 text-sm font-bold text-white transition hover:bg-emerald-700">

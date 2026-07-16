@@ -42,6 +42,7 @@ use App\Http\Controllers\InventoryDealController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\SalesReturnController;
 use App\Http\Controllers\EmptyDataController;
 use App\Http\Controllers\OpeningClosingController;
 use App\Http\Controllers\PfundController;
@@ -749,6 +750,14 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/make-receipt-delivered', [OrderController::class, 'makeReceiptDelivered']);
     Route::post('/get-service-Provider-by-branch', [OrderController::class, 'getServiceProviderByBranch'])->name("sp.branch");
     Route::get('/send-email', [OrderController::class, 'sendEmail']);
+
+    // SALES RETURNS (duplicate / edit / FBR)
+    Route::get('/sales-returns/duplicate', [SalesReturnController::class, 'duplicateForm'])->name('sales-returns.duplicate');
+    Route::post('/sales-returns/duplicate', [SalesReturnController::class, 'duplicate'])->name('sales-returns.duplicate.store');
+    Route::get('/sales-returns/{id}/edit', [SalesReturnController::class, 'edit'])->name('sales-returns.edit');
+    Route::post('/sales-returns/items/{detailId}/delete', [SalesReturnController::class, 'deleteItem'])->name('sales-returns.items.delete');
+    Route::get('/sales-returns/fbr', [SalesReturnController::class, 'fbrIndex'])->name('sales-returns.fbr');
+    Route::post('/sales-returns/fbr/send', [SalesReturnController::class, 'fbrSend'])->name('sales-returns.fbr.send');
 
     // SERVICE PROVIDERS ORDERS
     Route::get('/service-providers-orders', [ServiceProviderOrderController::class, 'index']);
