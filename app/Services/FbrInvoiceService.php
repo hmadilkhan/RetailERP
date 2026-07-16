@@ -105,7 +105,7 @@ class FbrInvoiceService
         );
 
         $items = DB::select(
-            "SELECT a.receipt_id, b.product_name, a.total_qty, a.total_amount,
+            "SELECT a.receipt_id,a.item_code, b.product_name, a.total_qty, a.total_amount,
                     a.item_price, a.taxamount, a.discount
              FROM sales_receipt_details a
              INNER JOIN inventory_general b ON b.id = a.item_code
@@ -124,7 +124,7 @@ class FbrInvoiceService
             $qty = (float) $product->total_qty;
             $totalProducts += $sign * $qty;
             $orderDetails[] = [
-                'ItemCode' => $key + 1,
+                'ItemCode' => $product->item_code,
                 'ItemName' => $product->product_name,
                 'Quantity' => $sign * $qty,
                 'PCTCode' => '11001010',
