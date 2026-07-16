@@ -153,7 +153,7 @@ class FbrInvoiceService
             'BuyerNTN' => '',
             'BuyerName' => '',
             'BuyerPhoneNumber' => '',
-            'TotalBillAmount' => $sign * ((float) $header->total_amount - (float) $header->discount_amount),
+            'TotalBillAmount' => $sign * ((float) $header->total_amount - (float) $header->discount_amount + (float) $header->sales_tax_amount),
             'TotalQuantity' => $totalProducts,
             'TotalSaleValue' => $sign * (float) $header->actual_amount,
             'TotalTaxCharged' => $sign * (float) $header->sales_tax_amount,
