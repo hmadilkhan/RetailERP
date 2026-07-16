@@ -40,7 +40,8 @@ class OrderRecalculateService
                 : $lineDiscountSum;
             $srb = $subAccount ? (float) ($subAccount->srb ?? 0) : 0.0;
 
-            $totalAmount = $actualAmount - $discountAmount + $salesTaxAmount + $srb;
+            // total_amount mirrors actual_amount (pre-tax sale value of remaining lines)
+            $totalAmount = $actualAmount;
 
             $order->actual_amount = $actualAmount;
             $order->total_amount = $totalAmount;
@@ -56,8 +57,8 @@ class OrderRecalculateService
             DB::table('sales_account_general')
                 ->where('receipt_id', $receiptId)
                 ->update([
-                    'total_amount' => $totalAmount,
-                    'receive_amount' => $totalAmount,
+                    'total_amount' => $actualAmount,
+                    'receive_amount' => $actualAmount,
                     'balance_amount' => 0,
                 ]);
 

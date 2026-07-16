@@ -80,6 +80,7 @@ class SalesReturnDuplicateService
             $receiptData['void_reason'] = null;
             $receiptData['isSeen'] = 0;
             $receiptData['receipt_seen'] = 0;
+            $receiptData['total_amount'] = $receiptData['actual_amount'];
 
             $newReceiptId = DB::table('sales_receipts')->insertGetId($receiptData);
 
@@ -97,6 +98,9 @@ class SalesReturnDuplicateService
                 $accountRow = $account->getAttributes();
                 unset($accountRow['account_id']);
                 $accountRow['receipt_id'] = $newReceiptId;
+                $accountRow['total_amount'] = $receiptData['actual_amount'];
+                $accountRow['receive_amount'] = $receiptData['actual_amount'];
+                $accountRow['balance_amount'] = 0;
                 DB::table('sales_account_general')->insert($accountRow);
             }
 
