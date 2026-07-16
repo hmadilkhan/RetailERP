@@ -17,6 +17,22 @@
      <h6 class=""><a href="{{ url('/service-provider') }}"><i class="text-primary text-center icofont icofont-arrow-left p-r-20 f-18" data-toggle="tooltip" data-placement="top" title="" data-original-title="Back">Back to list</i></a></h6>
    </div>
    <div class="card-block">
+    @if(session('error'))
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>Unable to save.</strong> {{ session('error') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    @endif
+    @if(session('success'))
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ session('success') }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+    @endif
     <!-- Additional charges Field -->
     <div style="display:none">
         <div class="col-lg-12">
@@ -85,7 +101,7 @@
           <label class="form-control-label">Service Provider Name:</label>
           <input type="text" name="providername" id="providername" class="form-control" value="{{old('providername')}}"/>
            @if ($errors->has('providername'))
-			<div class="form-control-feedback">Required field can not be blank.</div>
+			<div class="form-control-feedback">{{ $errors->first('providername') }}</div>
        @endif
         </div>
       </div>

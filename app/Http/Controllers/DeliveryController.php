@@ -314,11 +314,13 @@ class DeliveryController extends Controller
             $relation = $delivery->insert('user_salesprovider_relation',$relation);
 
 
-            return redirect("service-provider");
+            return redirect('service-provider')->with('success', 'Service provider added successfully.');
         }
-        else{
-            return 0;
-        }
+
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['providername' => 'A service provider with this name already exists for the selected branch.'])
+            ->with('error', 'A service provider with this name already exists for the selected branch.');
 
     }
 
