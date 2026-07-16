@@ -13,7 +13,7 @@ class SalesReturnController extends Controller
 {
     public function duplicateForm()
     {
-        return view('order.sales-return.duplicate');
+        return view('v2.sales-return.duplicate');
     }
 
     public function duplicate(Request $request, SalesReturnDuplicateService $service)
@@ -55,7 +55,7 @@ class SalesReturnController extends Controller
             ->where('status', 14)
             ->firstOrFail();
 
-        return view('order.sales-return.edit', compact('order'));
+        return view('v2.sales-return.edit', compact('order'));
     }
 
     public function deleteItem(int $detailId, OrderRecalculateService $service)
@@ -105,7 +105,7 @@ class SalesReturnController extends Controller
 
         $returns = $query->paginate(50)->appends($request->query());
 
-        return view('order.sales-return.fbr', compact('returns'));
+        return view('v2.sales-return.fbr', compact('returns'));
     }
 
     public function fbrSend(Request $request, FbrInvoiceService $service)
