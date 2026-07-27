@@ -607,7 +607,7 @@
     }
 </style>
 @php
-    $mobileBranchMap = $mobileBranchMap ?? [];
+    $mobileCustomerCountMap = $mobileCustomerCountMap ?? [];
     $boardSource = $displayOrders ?? $orders;
     $ordersList = method_exists($boardSource, 'items') ? collect($boardSource->items()) : collect($boardSource);
     $statusAccent = [
@@ -716,22 +716,15 @@
                             @if (!empty($order->mobile))
                                 @php
                                     $mobileKey = trim((string) $order->mobile);
-                                    $otherBranchCount = 0;
-                                    if (isset($mobileBranchMap[$mobileKey])) {
-                                        foreach (array_keys($mobileBranchMap[$mobileKey]) as $branchId) {
-                                            if ((int) $branchId !== (int) $order->branch) {
-                                                $otherBranchCount++;
-                                            }
-                                        }
-                                    }
+                                    $duplicateCustomerCount = (int) ($mobileCustomerCountMap[$mobileKey] ?? 0);
                                 @endphp
                                 <div class="order-mobile-wrap">
                                     <button type="button" class="order-mobile-link"
                                         data-mobile="{{ $order->mobile }}"
-                                        title="View all orders for this number in selected dates">{{ $order->mobile }}</button>
-                                    @if ($otherBranchCount > 0)
+                                        title="View all customer profiles with this mobile">{{ $order->mobile }}</button>
+                                    @if ($duplicateCustomerCount > 1)
                                         <span class="order-other-branch-badge"
-                                            title="{{ $otherBranchCount }} other branch(es) with orders in this period">{{ $otherBranchCount }}</span>
+                                            title="{{ $duplicateCustomerCount }} customer profiles with this mobile">{{ $duplicateCustomerCount }}</span>
                                     @endif
                                 </div>
                             @else
@@ -1498,4 +1491,111 @@
             window.ordersRevenueChart = null;
         }
     @endif
+</script>
+<script>
+    (function() {
+        var customersByMobileUrl = @json(url('get-mobile-orders-history'));
+        var editCustomerBase = @json(rtrim(url('editcustomers'), '/'));
+
+        function escapeCustomerModalHtml(text) {
+            if (text === null || text === undefined) {
+                return '';
+            }
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function renderCustomersInModal(customers, mobile) {
+            $('#mobileOrdersHistoryTitle').text(mobile);
+            if (!customers.length) {
+                $('#mobileOrdersHistorySub').text('No customer profiles found');
+                $('#mobile-orders-history-body').html(
+                    '<div class="mobile-orders-history-empty">No customer records found for this mobile number.</div>'
+                );
+                return;
+            }
+            $('#mobileOrdersHistorySub').text(customers.length + ' customer profile' + (customers.length === 1 ? '' : 's') + ' with this mobile');
+            var rows = customers.map(function(c) {
+                var editUrl = c.edit_url || (editCustomerBase + '/' + c.id);
+                return '<tr>' +
+                    '<td><a class="mobile-orders-history-order-link" href="' + escapeCustomerModalHtml(editUrl) +
+                    '" target="_blank" rel="noopener">#' + escapeCustomerModalHtml(c.id) + '</a></td>' +
+                    '<td>' + escapeCustomerModalHtml(c.name) + '</td>' +
+                    '<td>' + escapeCustomerModalHtml(c.branch_name) + '</td>' +
+                    '<td>' + escapeCustomerModalHtml(c.phone) + '</td>' +
+                    '<td>' + escapeCustomerModalHtml(c.nic) + '</td>' +
+                    '<td class="mobile-orders-history-address">' + escapeCustomerModalHtml(c.address) + '</td>' +
+                    '<td>' + escapeCustomerModalHtml(c.membership_card_no) + '</td>' +
+                    '<td><span class="mobile-orders-history-status is-pending">' +
+                    escapeCustomerModalHtml(c.status_name) + '</span></td>' +
+                    '</tr>';
+            }).join('');
+            $('#mobile-orders-history-body').html(
+                '<div class="mobile-orders-history-summary">' +
+                '<span>Customer # opens edit profile in a new tab</span>' +
+                '<strong>' + customers.length + ' total</strong></div>' +
+                '<div class="mobile-orders-history-table-wrap table-responsive">' +
+                '<table class="mobile-orders-history-table table">' +
+                '<thead><tr>' +
+                '<th>Customer #</th><th>Name</th><th>Branch</th><th>Phone</th><th>NIC</th><th>Address</th><th>Membership</th><th>Status</th>' +
+                '</tr></thead><tbody>' + rows + '</tbody></table></div>'
+            );
+        }
+
+        window.openCustomersByMobile = function(mobile) {
+            mobile = $.trim(mobile || '');
+            if (!mobile) {
+                return;
+            }
+            $('#mobileOrdersHistoryTitle').text(mobile);
+            $('#mobileOrdersHistorySub').text('Loading customer profiles...');
+            $('#mobile-orders-history-body').html(
+                '<div class="mobile-orders-history-loading">' +
+                '<span class="mobile-orders-history-spinner"></span>' +
+                '<span>Loading customers...</span></div>'
+            );
+            $('#mobile-orders-history-modal').modal('show');
+
+            $.ajax({
+                url: customersByMobileUrl,
+                type: 'GET',
+                dataType: 'json',
+                cache: false,
+                data: {
+                    mobile: mobile
+                },
+                success: function(response) {
+                    if (typeof response === 'string') {
+                        try {
+                            response = JSON.parse(response);
+                        } catch (e) {
+                            response = {};
+                        }
+                    }
+                    var customers = (response && response.customers) ? response.customers : [];
+                    renderCustomersInModal(customers, mobile);
+                },
+                error: function(xhr) {
+                    $('#mobileOrdersHistorySub').text('Request failed');
+                    var msg = 'Could not load customers. Please try again.';
+                    if (xhr.responseJSON && xhr.responseJSON.error) {
+                        msg = xhr.responseJSON.error;
+                    }
+                    $('#mobile-orders-history-body').html(
+                        '<div class="mobile-orders-history-empty text-danger">' + escapeCustomerModalHtml(msg) + '</div>'
+                    );
+                }
+            });
+        };
+
+        $(document).off('click.customersByMobile', '#table_data .order-mobile-link')
+            .on('click.customersByMobile', '#table_data .order-mobile-link', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                window.openCustomersByMobile($(this).attr('data-mobile'));
+            });
+    })();
 </script>

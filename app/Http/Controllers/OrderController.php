@@ -325,7 +325,7 @@ class OrderController extends Controller
         return view('order.orderviewnew', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'orders', 'serviceproviders', 'totalorders', 'statuses', 'departments'));
     }
 
-    public function getNewPOSOrders(Request $request, order $order)
+    public function getNewPOSOrders(Request $request, order $order, Customer $customer)
     {
         $orders = $order->getNewPOSOrdersQuery($request);
         $displayOrders = in_array($request->view_mode, ['cards', 'board']) ? $order->getNewPOSOrdersQuery($request, 'report') : $orders;
@@ -335,7 +335,7 @@ class OrderController extends Controller
         $orderTimingGraph = $order->orderTimingGraph($request);
         $height = $request->height != "" ? $request->height : 50;
 
-        $mobileBranchMap = [];
+        $mobileCustomerCountMap = [];
         if ($orders->isNotEmpty()) {
             $mobiles = collect($orders->items())
                 ->pluck('mobile')
@@ -344,31 +344,48 @@ class OrderController extends Controller
                 ->unique()
                 ->values()
                 ->all();
-            $mobileBranchMap = $order->getMobileBranchesInDateRange($request, $mobiles);
+            $mobileCustomerCountMap = $customer->countCustomersByMobiles($mobiles);
         }
 
-        return view('partials.orders_table', compact('orders', 'displayOrders', 'totalorders', 'totaltax', 'orderTimingGraph', 'height', 'mobileBranchMap'));
+        return view('partials.orders_table', compact('orders', 'displayOrders', 'totalorders', 'totaltax', 'orderTimingGraph', 'height', 'mobileCustomerCountMap'));
     }
 
-    public function getMobileOrdersHistory(Request $request, order $order)
+    public function getMobileOrdersHistory(Request $request, Customer $customer)
     {
         $mobile = trim((string) $request->input('mobile'));
         if ($mobile === '') {
-            return response()->json(['orders' => []]);
+            return response()->json(['customers' => [], 'mobile' => '']);
         }
 
-        $rows = $order->getOrdersByMobileInDateRange($request, $mobile);
-        $orders = $rows->map(function ($row) {
+        try {
+            $rows = $customer->getCustomersByMobile($mobile);
+        } catch (\Throwable $e) {
+            report($e);
+
+            return response()->json([
+                'customers' => [],
+                'mobile' => $mobile,
+                'error' => 'Could not load customers.',
+            ], 500);
+        }
+
+        $customers = $rows->map(function ($row) {
             return [
                 'id' => $row->id,
-                'date' => $row->date ? date('d M Y', strtotime($row->date)) : '-',
+                'name' => $row->name ?? '-',
+                'mobile' => $row->mobile ?? '-',
+                'phone' => !empty($row->phone) ? $row->phone : '-',
+                'nic' => !empty($row->nic) ? $row->nic : '-',
+                'address' => !empty($row->address) ? $row->address : '-',
                 'branch_name' => $row->branch_name ?? '-',
-                'amount' => $row->total_amount,
-                'status' => \Custom_Helper::getOrderStatus($row->order_status_name, $row->is_sale_return),
+                'status_name' => $row->status_name ?? '-',
+                'membership_card_no' => !empty($row->membership_card_no) ? $row->membership_card_no : '-',
+                'credit_limit' => $row->credit_limit ?? '-',
+                'edit_url' => url('editcustomers/' . $row->id),
             ];
         });
 
-        return response()->json(['orders' => $orders, 'mobile' => $mobile]);
+        return response()->json(['customers' => $customers, 'mobile' => $mobile]);
     }
 
 

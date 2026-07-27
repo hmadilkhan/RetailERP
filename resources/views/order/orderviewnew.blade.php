@@ -547,9 +547,9 @@
                     <div class="modal-content mobile-orders-history-shell">
                         <div class="modal-header mobile-orders-history-header">
                             <div class="mobile-orders-history-header-text">
-                                <span class="mobile-orders-history-eyebrow">Orders by mobile</span>
+                                <span class="mobile-orders-history-eyebrow">Customers with same mobile</span>
                                 <h4 class="modal-title" id="mobileOrdersHistoryTitle">—</h4>
-                                <p class="mobile-orders-history-sub" id="mobileOrdersHistorySub">Selected date range</p>
+                                <p class="mobile-orders-history-sub" id="mobileOrdersHistorySub">All customer profiles for this number</p>
                             </div>
                             <button type="button" class="close mobile-orders-history-close" data-dismiss="modal"
                                 aria-label="Close">
@@ -559,7 +559,7 @@
                         <div class="modal-body mobile-orders-history-body" id="mobile-orders-history-body">
                             <div class="mobile-orders-history-loading">
                                 <span class="mobile-orders-history-spinner"></span>
-                                <span>Loading orders...</span>
+                                <span>Loading customers...</span>
                             </div>
                         </div>
                         <div class="modal-footer mobile-orders-history-footer">
@@ -1577,6 +1577,14 @@
             white-space: nowrap;
         }
 
+        .mobile-orders-history-table .mobile-orders-history-address {
+            max-width: 12rem;
+            white-space: normal;
+            word-break: break-word;
+            font-size: 0.78rem;
+            color: #64748b !important;
+        }
+
         .mobile-orders-history-order-link {
             display: inline-flex;
             align-items: center;
@@ -2059,85 +2067,8 @@
         $(document).on('click', '#table_data .order-mobile-link', function(e) {
             e.preventDefault();
             e.stopPropagation();
-            var mobile = $(this).attr('data-mobile');
-            if (mobile) {
-                showMobileOrdersHistory(mobile);
-            }
-        });
-
-        function mobileHistoryStatusClass(status) {
-            var s = (status || '').toLowerCase();
-            if (s.indexOf('deliver') >= 0) return 'is-delivered';
-            if (s.indexOf('void') >= 0) return 'is-void';
-            if (s.indexOf('return') >= 0) return 'is-return';
-            if (s.indexOf('pending') >= 0) return 'is-pending';
-            if (s.indexOf('process') >= 0) return 'is-processing';
-            if (s.indexOf('dispatch') >= 0) return 'is-dispatch';
-            return 'is-pending';
-        }
-
-        function showMobileOrdersHistory(mobile) {
-            $('#mobileOrdersHistoryTitle').text(mobile);
-            $('#mobileOrdersHistorySub').text('Loading orders for your selected dates...');
-            $('#mobile-orders-history-body').html(
-                '<div class="mobile-orders-history-loading">' +
-                '<span class="mobile-orders-history-spinner"></span>' +
-                '<span>Loading orders...</span></div>'
-            );
-            $('#mobile-orders-history-modal').modal('show');
-
-            $.ajax({
-                url: "{{ url('get-mobile-orders-history') }}",
-                type: 'GET',
-                data: Object.assign({
-                    mobile: mobile
-                }, ordersDateFilterPayload()),
-                success: function(response) {
-                    var orders = (response && response.orders) ? response.orders : [];
-                    if (!orders.length) {
-                        $('#mobileOrdersHistorySub').text('No orders in this date range');
-                        $('#mobile-orders-history-body').html(
-                            '<div class="mobile-orders-history-empty">No orders found for this mobile in the selected date range.</div>'
-                        );
-                        return;
-                    }
-                    $('#mobileOrdersHistorySub').text(orders.length + ' order' + (orders.length === 1 ? '' : 's') + ' in selected date range');
-                    var rows = orders.map(function(o) {
-                        var statusClass = mobileHistoryStatusClass(o.status);
-                        return '<tr>' +
-                            '<td><span class="mobile-orders-history-order-link" role="button" tabindex="0" data-order-id="' +
-                            escapeOrdersHtml(o.id) + '">#' + escapeOrdersHtml(o.id) + '</span></td>' +
-                            '<td>' + escapeOrdersHtml(o.date) + '</td>' +
-                            '<td>' + escapeOrdersHtml(o.branch_name) + '</td>' +
-                            '<td class="col-amount">Rs. ' + escapeOrdersHtml(o.amount) + '</td>' +
-                            '<td><span class="mobile-orders-history-status ' + statusClass + '">' +
-                            escapeOrdersHtml(o.status) + '</span></td>' +
-                            '</tr>';
-                    }).join('');
-                    $('#mobile-orders-history-body').html(
-                        '<div class="mobile-orders-history-summary">' +
-                        '<span>Tap an order # to open full details</span>' +
-                        '<strong>' + orders.length + ' total</strong></div>' +
-                        '<div class="mobile-orders-history-table-wrap table-responsive">' +
-                        '<table class="mobile-orders-history-table table">' +
-                        '<thead><tr>' +
-                        '<th>Order #</th><th>Date</th><th>Branch</th><th>Amount</th><th>Status</th>' +
-                        '</tr></thead><tbody>' + rows + '</tbody></table></div>'
-                    );
-                },
-                error: function() {
-                    $('#mobileOrdersHistorySub').text('Request failed');
-                    $('#mobile-orders-history-body').html(
-                        '<div class="mobile-orders-history-empty text-danger">Could not load orders. Please try again.</div>'
-                    );
-                }
-            });
-        }
-
-        $(document).on('click', '#mobile-orders-history-body .mobile-orders-history-order-link', function() {
-            var id = $(this).data('order-id');
-            if (id) {
-                showOrderDetails(id);
+            if (typeof window.openCustomersByMobile === 'function') {
+                window.openCustomersByMobile($(this).attr('data-mobile'));
             }
         });
 

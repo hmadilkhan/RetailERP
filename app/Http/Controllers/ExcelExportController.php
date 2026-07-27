@@ -14,6 +14,7 @@ use App\Exports\ReceiptExport;
 use App\Exports\ItemSalesDatabaseExport;
 use App\Exports\FBRReportExport;
 use App\Exports\IsdbDatewiseExport;
+use App\Exports\MergedCustomersByMobileExport;
 use Excel;
 
 class ExcelExportController extends Controller
@@ -77,6 +78,26 @@ class ExcelExportController extends Controller
 		}
 	
 		return  Excel::download(new CustomerExport($balance,$advance), "Customer Balances.xlsx");
+	}
+
+	public function exportMergedCustomersByMobile(Customer $customer)
+	{
+		if ((int) session('company_id') !== 74) {
+			abort(403, 'This export is not available for your company.');
+		}
+
+		@ini_set('memory_limit', '512M');
+		set_time_limit(600);
+
+		try {
+			return Excel::download(
+				new MergedCustomersByMobileExport($customer, 74),
+				'customers-merged-by-mobile-' . date('Y-m-d') . '.xlsx'
+			);
+		} catch (\Throwable $e) {
+			report($e);
+			abort(500, 'Export failed: ' . $e->getMessage());
+		}
 	}
 	
 	public function ItemSalesDatabaseReportInExcel(Request $request,report $report)

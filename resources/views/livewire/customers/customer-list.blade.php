@@ -100,6 +100,15 @@
                 </a>
             </div>
             <div class="button-group f-right">
+                @if (session('company_id') == 74)
+                    <a style="color:white;" href="{{ url('export-customers-merged-by-mobile') }}"
+                        class="btn btn-md btn-primary waves-effect waves-light f-right m-r-10"
+                        data-toggle="tooltip" data-placement="bottom" title=""
+                        data-original-title="Merge duplicate mobiles and list order branches">
+                        <i class="icofont icofont-download"></i>
+                        Download All Customers
+                    </a>
+                @endif
                 <button style="color:white;" id="btnExcel"
                     class="btn btn-md btn-success waves-effect waves-light f-right"><i
                         class="icofont icofont-file-excel">

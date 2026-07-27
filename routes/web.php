@@ -208,6 +208,7 @@ Route::get('/export-vendor-ledger/{vendor?}/{first?}/{second?}', [ExcelExportCon
 Route::get('/export-expense-report/{category?}/{first?}/{second?}', [ExcelExportController::class, 'ExpenseReportExport']);
 Route::get('/export-customer-ledger/{customer?}/{first?}/{second?}', [ExcelExportController::class, 'CustomerLedgerReportExport']);
 Route::get('/export-customer-balance', [ExcelExportController::class, 'CustomerBalances']);
+Route::get('/export-customers-merged-by-mobile', [ExcelExportController::class, 'exportMergedCustomersByMobile']);
 Route::get('/export-isdb', [ExcelExportController::class, 'ItemSalesDatabaseReportInExcel']);
 Route::get('/export-fbr', [ExcelExportController::class, 'FbrReportExcel']);
 Route::get('/export-invoice/{id}', [ExcelExportController::class, 'receiptExport']);
