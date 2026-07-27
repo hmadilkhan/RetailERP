@@ -327,23 +327,48 @@ class OrderController extends Controller
 
     public function getNewPOSOrders(Request $request, order $order)
     {
-        // return $request;
         $orders = $order->getNewPOSOrdersQuery($request);
         $displayOrders = in_array($request->view_mode, ['cards', 'board']) ? $order->getNewPOSOrdersQuery($request, 'report') : $orders;
-    //    return $orders;
-        // return $orders;
+
         $totalorders = $order->getTotalAndSumofOrdersQuery($request);
         $totaltax = $order->getTotalTax($request);
         $orderTimingGraph = $order->orderTimingGraph($request);
         $height = $request->height != "" ? $request->height : 50;
-        // return $totaltax;
-        // return $totalorders;
-        // $filteredArray = Arr::where($totalorders->toArray(), function ($value, $key) {
-        // return $value->order_status_name == "Void";
-        // });
-        // $collection = collect($totalorders);
-        // return $collection->filter(fn ($item) => $item->order_status_name == "Void")->values()->all();
-        return view('partials.orders_table', compact('orders', 'displayOrders', 'totalorders', 'totaltax', 'orderTimingGraph', 'height'));
+
+        $mobileBranchMap = [];
+        if ($orders->isNotEmpty()) {
+            $mobiles = collect($orders->items())
+                ->pluck('mobile')
+                ->filter(fn ($m) => $m !== null && trim((string) $m) !== '')
+                ->map(fn ($m) => trim((string) $m))
+                ->unique()
+                ->values()
+                ->all();
+            $mobileBranchMap = $order->getMobileBranchesInDateRange($request, $mobiles);
+        }
+
+        return view('partials.orders_table', compact('orders', 'displayOrders', 'totalorders', 'totaltax', 'orderTimingGraph', 'height', 'mobileBranchMap'));
+    }
+
+    public function getMobileOrdersHistory(Request $request, order $order)
+    {
+        $mobile = trim((string) $request->input('mobile'));
+        if ($mobile === '') {
+            return response()->json(['orders' => []]);
+        }
+
+        $rows = $order->getOrdersByMobileInDateRange($request, $mobile);
+        $orders = $rows->map(function ($row) {
+            return [
+                'id' => $row->id,
+                'date' => $row->date ? date('d M Y', strtotime($row->date)) : '-',
+                'branch_name' => $row->branch_name ?? '-',
+                'amount' => $row->total_amount,
+                'status' => \Custom_Helper::getOrderStatus($row->order_status_name, $row->is_sale_return),
+            ];
+        });
+
+        return response()->json(['orders' => $orders, 'mobile' => $mobile]);
     }
 
 

@@ -540,6 +540,36 @@
                     </div>
                 </div>
             </div>
+
+            <div class="modal fade modal-flex" id="mobile-orders-history-modal" tabindex="-1" role="dialog"
+                aria-labelledby="mobileOrdersHistoryTitle">
+                <div class="modal-dialog modal-lg mobile-orders-history-dialog" role="document">
+                    <div class="modal-content mobile-orders-history-shell">
+                        <div class="modal-header mobile-orders-history-header">
+                            <div class="mobile-orders-history-header-text">
+                                <span class="mobile-orders-history-eyebrow">Orders by mobile</span>
+                                <h4 class="modal-title" id="mobileOrdersHistoryTitle">—</h4>
+                                <p class="mobile-orders-history-sub" id="mobileOrdersHistorySub">Selected date range</p>
+                            </div>
+                            <button type="button" class="close mobile-orders-history-close" data-dismiss="modal"
+                                aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body mobile-orders-history-body" id="mobile-orders-history-body">
+                            <div class="mobile-orders-history-loading">
+                                <span class="mobile-orders-history-spinner"></span>
+                                <span>Loading orders...</span>
+                            </div>
+                        </div>
+                        <div class="modal-footer mobile-orders-history-footer">
+                            <button type="button" class="btn btn-light mobile-orders-history-btn-close"
+                                data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="modal fade modal-flex in" id="void-modal" tabindex="-1" role="dialog">
                 <div class="modal-dialog modal-md" role="document">
                     <input type="hidden" name="voidId" id="voidId" class="form-control" />
@@ -1397,6 +1427,263 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        #mobile-orders-history-modal .mobile-orders-history-shell {
+            border: 1px solid #d8e1ec;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 24px 48px rgba(15, 23, 42, 0.14);
+            background: #fff;
+            color: #0f172a;
+        }
+
+        #mobile-orders-history-modal .mobile-orders-history-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 1rem;
+            padding: 1.15rem 1.35rem;
+            background: #fff !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+        }
+
+        #mobile-orders-history-modal .mobile-orders-history-header-text {
+            flex: 1;
+            min-width: 0;
+        }
+
+        #mobile-orders-history-modal .mobile-orders-history-eyebrow {
+            display: block;
+            color: #64748b !important;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        #mobile-orders-history-modal .modal-title,
+        #mobile-orders-history-modal #mobileOrdersHistoryTitle {
+            margin: 0.25rem 0 0 !important;
+            color: #0f172a !important;
+            font-size: 1.35rem !important;
+            font-weight: 800 !important;
+            letter-spacing: -0.02em;
+        }
+
+        #mobile-orders-history-modal .mobile-orders-history-sub {
+            margin: 0.35rem 0 0;
+            color: #64748b !important;
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        #mobile-orders-history-modal .mobile-orders-history-close {
+            color: #64748b !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            font-size: 1.5rem;
+            line-height: 1;
+            margin: 0;
+            padding: 0.15rem 0.25rem;
+        }
+
+        #mobile-orders-history-modal .mobile-orders-history-body {
+            padding: 0 1.35rem 1.25rem !important;
+            background: #f8fafc !important;
+            color: #0f172a !important;
+        }
+
+        #mobile-orders-history-modal .mobile-orders-history-footer {
+            padding: 0.85rem 1.35rem 1.1rem !important;
+            background: #fff !important;
+            border-top: 1px solid #e2e8f0 !important;
+        }
+
+        #mobile-orders-history-modal .mobile-orders-history-btn-close {
+            border: 1px solid #d8e1ec;
+            color: #334155 !important;
+            font-weight: 700;
+            border-radius: 8px;
+            padding: 0.45rem 1.1rem;
+        }
+
+        .mobile-orders-history-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            margin: 1rem 0 0.85rem;
+            padding: 0.65rem 0.85rem;
+            border-radius: 8px;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            color: #475569;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .mobile-orders-history-summary strong {
+            color: #0f172a;
+            font-weight: 800;
+        }
+
+        .mobile-orders-history-table-wrap {
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fff;
+            box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+        }
+
+        .mobile-orders-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.84rem;
+            color: #0f172a !important;
+            margin: 0;
+        }
+
+        .mobile-orders-history-table thead th {
+            background: #f1f5f9 !important;
+            color: #475569 !important;
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 0.08em;
+            padding: 0.7rem 0.85rem;
+            border-bottom: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .mobile-orders-history-table tbody td {
+            padding: 0.72rem 0.85rem;
+            border-bottom: 1px solid #f1f5f9;
+            vertical-align: middle;
+            color: #334155 !important;
+            background: #fff !important;
+        }
+
+        .mobile-orders-history-table tbody tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .mobile-orders-history-table tbody tr:hover td {
+            background: #f8fafc !important;
+        }
+
+        .mobile-orders-history-table .col-amount {
+            font-weight: 800;
+            color: #0f172a !important;
+            white-space: nowrap;
+        }
+
+        .mobile-orders-history-order-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: #0d9488 !important;
+            font-weight: 800;
+            cursor: pointer;
+            padding: 0.15rem 0.45rem;
+            border-radius: 6px;
+            background: rgba(13, 148, 136, 0.08);
+        }
+
+        .mobile-orders-history-order-link:hover {
+            background: rgba(13, 148, 136, 0.14);
+            text-decoration: none;
+        }
+
+        .mobile-orders-history-status {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 999px;
+            font-size: 0.72rem;
+            font-weight: 800;
+            line-height: 1.3;
+            color: #334155 !important;
+            background: #f1f5f9;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .mobile-orders-history-status.is-delivered {
+            color: #166534 !important;
+            background: #dcfce7;
+            border-color: #bbf7d0;
+        }
+
+        .mobile-orders-history-status.is-pending {
+            color: #475569 !important;
+            background: #f1f5f9;
+            border-color: #e2e8f0;
+        }
+
+        .mobile-orders-history-status.is-processing,
+        .mobile-orders-history-status.is-dispatch {
+            color: #b45309 !important;
+            background: #fef3c7;
+            border-color: #fde68a;
+        }
+
+        .mobile-orders-history-status.is-void,
+        .mobile-orders-history-status.is-return {
+            color: #b91c1c !important;
+            background: #fee2e2;
+            border-color: #fecaca;
+        }
+
+        .mobile-orders-history-empty {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: #64748b !important;
+            font-weight: 600;
+            background: #fff;
+            border: 1px dashed #cbd5e1;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+
+        .mobile-orders-history-loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.65rem;
+            padding: 2.5rem 1rem;
+            color: #64748b !important;
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .mobile-orders-history-spinner {
+            width: 1.1rem;
+            height: 1.1rem;
+            border: 2px solid #cbd5e1;
+            border-top-color: #0d9488;
+            border-radius: 50%;
+            animation: mobile-orders-history-spin 0.7s linear infinite;
+        }
+
+        @keyframes mobile-orders-history-spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 576px) {
+            #mobile-orders-history-modal .mobile-orders-history-dialog {
+                margin: 0.5rem;
+            }
+
+            #mobile-orders-history-modal .modal-title,
+            #mobile-orders-history-modal #mobileOrdersHistoryTitle {
+                font-size: 1.1rem !important;
+            }
+
+            .mobile-orders-history-table {
+                font-size: 0.78rem;
+            }
+        }
     </style>
 
 @endsection
@@ -1745,6 +2032,114 @@
         function showOrderDetails(ReceiptId) {
             window.open("{{ url('order-detail') }}/" + ReceiptId)
         }
+
+        function escapeOrdersHtml(text) {
+            if (text === null || text === undefined) {
+                return '';
+            }
+            return String(text)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function ordersDateFilterPayload() {
+            return {
+                first: $('#rpdate').val(),
+                second: $('#date').val(),
+                deli_from: $('#del_from').val(),
+                deli_to: $('#del_to').val(),
+                branch: $('#branch').val(),
+                terminal: $('#terminal').val(),
+                type: $('#type').val(),
+            };
+        }
+
+        $(document).on('click', '#table_data .order-mobile-link', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var mobile = $(this).attr('data-mobile');
+            if (mobile) {
+                showMobileOrdersHistory(mobile);
+            }
+        });
+
+        function mobileHistoryStatusClass(status) {
+            var s = (status || '').toLowerCase();
+            if (s.indexOf('deliver') >= 0) return 'is-delivered';
+            if (s.indexOf('void') >= 0) return 'is-void';
+            if (s.indexOf('return') >= 0) return 'is-return';
+            if (s.indexOf('pending') >= 0) return 'is-pending';
+            if (s.indexOf('process') >= 0) return 'is-processing';
+            if (s.indexOf('dispatch') >= 0) return 'is-dispatch';
+            return 'is-pending';
+        }
+
+        function showMobileOrdersHistory(mobile) {
+            $('#mobileOrdersHistoryTitle').text(mobile);
+            $('#mobileOrdersHistorySub').text('Loading orders for your selected dates...');
+            $('#mobile-orders-history-body').html(
+                '<div class="mobile-orders-history-loading">' +
+                '<span class="mobile-orders-history-spinner"></span>' +
+                '<span>Loading orders...</span></div>'
+            );
+            $('#mobile-orders-history-modal').modal('show');
+
+            $.ajax({
+                url: "{{ url('get-mobile-orders-history') }}",
+                type: 'GET',
+                data: Object.assign({
+                    mobile: mobile
+                }, ordersDateFilterPayload()),
+                success: function(response) {
+                    var orders = (response && response.orders) ? response.orders : [];
+                    if (!orders.length) {
+                        $('#mobileOrdersHistorySub').text('No orders in this date range');
+                        $('#mobile-orders-history-body').html(
+                            '<div class="mobile-orders-history-empty">No orders found for this mobile in the selected date range.</div>'
+                        );
+                        return;
+                    }
+                    $('#mobileOrdersHistorySub').text(orders.length + ' order' + (orders.length === 1 ? '' : 's') + ' in selected date range');
+                    var rows = orders.map(function(o) {
+                        var statusClass = mobileHistoryStatusClass(o.status);
+                        return '<tr>' +
+                            '<td><span class="mobile-orders-history-order-link" role="button" tabindex="0" data-order-id="' +
+                            escapeOrdersHtml(o.id) + '">#' + escapeOrdersHtml(o.id) + '</span></td>' +
+                            '<td>' + escapeOrdersHtml(o.date) + '</td>' +
+                            '<td>' + escapeOrdersHtml(o.branch_name) + '</td>' +
+                            '<td class="col-amount">Rs. ' + escapeOrdersHtml(o.amount) + '</td>' +
+                            '<td><span class="mobile-orders-history-status ' + statusClass + '">' +
+                            escapeOrdersHtml(o.status) + '</span></td>' +
+                            '</tr>';
+                    }).join('');
+                    $('#mobile-orders-history-body').html(
+                        '<div class="mobile-orders-history-summary">' +
+                        '<span>Tap an order # to open full details</span>' +
+                        '<strong>' + orders.length + ' total</strong></div>' +
+                        '<div class="mobile-orders-history-table-wrap table-responsive">' +
+                        '<table class="mobile-orders-history-table table">' +
+                        '<thead><tr>' +
+                        '<th>Order #</th><th>Date</th><th>Branch</th><th>Amount</th><th>Status</th>' +
+                        '</tr></thead><tbody>' + rows + '</tbody></table></div>'
+                    );
+                },
+                error: function() {
+                    $('#mobileOrdersHistorySub').text('Request failed');
+                    $('#mobile-orders-history-body').html(
+                        '<div class="mobile-orders-history-empty text-danger">Could not load orders. Please try again.</div>'
+                    );
+                }
+            });
+        }
+
+        $(document).on('click', '#mobile-orders-history-body .mobile-orders-history-order-link', function() {
+            var id = $(this).data('order-id');
+            if (id) {
+                showOrderDetails(id);
+            }
+        });
 
         async function orderSeen(ReceiptNo) {
             $.ajax({

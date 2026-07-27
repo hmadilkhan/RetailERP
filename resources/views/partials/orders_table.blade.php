@@ -75,6 +75,97 @@
         width: 100%;
     }
 
+    .order-mobile-cell {
+        position: relative;
+        min-width: 7.5rem;
+        padding: 0.35rem 0.75rem 0.2rem 0.2rem !important;
+        overflow: visible;
+        vertical-align: middle;
+    }
+
+    #order_table td.order-mobile-cell {
+        overflow: visible;
+    }
+
+    .order-mobile-wrap {
+        position: relative;
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1.25;
+        max-width: 100%;
+        --order-badge-tx: 42%;
+        --order-badge-ty: -42%;
+    }
+
+    .order-other-branch-badge {
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.2rem;
+        height: 1.2rem;
+        padding: 0 0.3rem;
+        border-radius: 999px;
+        font-size: clamp(0.5rem, 1.8vw, 0.6rem);
+        font-weight: 800;
+        line-height: 1;
+        color: #fff;
+        background: linear-gradient(135deg, #f59e0b, #ef4444);
+        box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2), 0 0 0 2px rgba(239, 68, 68, 0.25);
+        animation: order-other-branch-pulse 1.4s ease-in-out infinite;
+        cursor: default;
+        pointer-events: none;
+        transform: translate(var(--order-badge-tx), var(--order-badge-ty));
+        transform-origin: center center;
+    }
+
+    @keyframes order-other-branch-pulse {
+        0%,
+        100% {
+            opacity: 1;
+            transform: translate(var(--order-badge-tx), var(--order-badge-ty)) scale(1);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2), 0 0 0 2px rgba(239, 68, 68, 0.25);
+        }
+        50% {
+            opacity: 0.9;
+            transform: translate(var(--order-badge-tx), var(--order-badge-ty)) scale(1.06);
+            box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2), 0 0 0 4px rgba(245, 158, 11, 0.3);
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .order-other-branch-badge {
+            animation: none;
+        }
+    }
+
+    .order-mobile-link {
+        position: relative;
+        display: inline-block;
+        border: 0;
+        background: transparent;
+        padding: 0.2rem 0.45rem 0.05rem 0;
+        margin: 0;
+        font: inherit;
+        color: #0f766e;
+        font-weight: 700;
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        cursor: pointer;
+        transition: color 0.15s ease;
+        -webkit-tap-highlight-color: rgba(15, 118, 110, 0.15);
+        touch-action: manipulation;
+    }
+
+    .order-mobile-link:hover,
+    .order-mobile-link:focus {
+        color: #115e59;
+        outline: none;
+    }
+
     .table-responsive {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
@@ -85,6 +176,11 @@
         #order_table td {
             font-size: 0.875rem;
             padding: 0.4rem;
+        }
+
+        .order-mobile-cell {
+            min-width: 6.75rem;
+            padding-right: 0.65rem !important;
         }
         
         .btn-group .btn {
@@ -99,6 +195,28 @@
             font-size: 0.8rem;
             padding: 0.3rem;
         }
+
+        .order-mobile-cell {
+            min-width: 6.25rem;
+            padding-top: 0.45rem !important;
+            padding-right: 0.6rem !important;
+        }
+
+        .order-mobile-wrap {
+            --order-badge-tx: 38%;
+            --order-badge-ty: -38%;
+        }
+
+        .order-mobile-link {
+            min-height: 2rem;
+            line-height: 1.35;
+            padding-right: 0.55rem;
+        }
+
+        .order-other-branch-badge {
+            min-width: 1.05rem;
+            height: 1.05rem;
+        }
         
         .btn-group .btn {
             font-size: 0.75rem;
@@ -111,6 +229,16 @@
         #order_table td {
             font-size: 0.75rem;
             padding: 0.25rem;
+        }
+
+        .order-mobile-cell {
+            min-width: 5.5rem;
+        }
+
+        .order-other-branch-badge {
+            min-width: 1rem;
+            height: 1rem;
+            padding: 0 0.22rem;
         }
     }
 
@@ -479,6 +607,7 @@
     }
 </style>
 @php
+    $mobileBranchMap = $mobileBranchMap ?? [];
     $boardSource = $displayOrders ?? $orders;
     $ordersList = method_exists($boardSource, 'items') ? collect($boardSource->items()) : collect($boardSource);
     $statusAccent = [
@@ -583,7 +712,32 @@
                         <td>{{ $order->terminal_name }}</td>
                         <td>{{ $order->receipt_no }}</td>
                         <td>{{ $order->name }}</td>
-                        <td>{{ $order->mobile }}</td>
+                        <td class="order-mobile-cell">
+                            @if (!empty($order->mobile))
+                                @php
+                                    $mobileKey = trim((string) $order->mobile);
+                                    $otherBranchCount = 0;
+                                    if (isset($mobileBranchMap[$mobileKey])) {
+                                        foreach (array_keys($mobileBranchMap[$mobileKey]) as $branchId) {
+                                            if ((int) $branchId !== (int) $order->branch) {
+                                                $otherBranchCount++;
+                                            }
+                                        }
+                                    }
+                                @endphp
+                                <div class="order-mobile-wrap">
+                                    <button type="button" class="order-mobile-link"
+                                        data-mobile="{{ $order->mobile }}"
+                                        title="View all orders for this number in selected dates">{{ $order->mobile }}</button>
+                                    @if ($otherBranchCount > 0)
+                                        <span class="order-other-branch-badge"
+                                            title="{{ $otherBranchCount }} other branch(es) with orders in this period">{{ $otherBranchCount }}</span>
+                                    @endif
+                                </div>
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>{{ $order->order_mode }}</td>
                         <td>{{ $order->payment_mode }}</td>
                         <td><label

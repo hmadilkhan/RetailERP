@@ -745,6 +745,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/assign-sales-person', [OrderController::class, 'assignSalesPerson']);
     Route::get('/orders-view-new', [OrderController::class, 'ordersviewnew']);
     Route::get('/get-pos-orders-new', [OrderController::class, 'getNewPOSOrders']);
+    Route::get('/get-mobile-orders-history', [OrderController::class, 'getMobileOrdersHistory']);
     Route::post('/make-receipt-void', [OrderController::class, 'makeReceiptVoid']);
     Route::post('/apply-discount', [OrderController::class, 'applyDiscount']);
     Route::post('/make-receipt-delivered', [OrderController::class, 'makeReceiptDelivered']);
