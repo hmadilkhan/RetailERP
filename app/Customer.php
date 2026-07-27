@@ -930,6 +930,93 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
     }
 
     /**
+     * One Excel row per customer profile, sorted by mobile (for grouped merge styling).
+     */
+    public function yieldCustomerDetailRowsByMobileForCompanyExport(int $companyId): \Generator
+    {
+        $sql = "SELECT
+                a.id,
+                TRIM(CAST(a.mobile AS CHAR)) AS mobile_key,
+                a.name,
+                a.mobile,
+                a.nic,
+                a.address,
+                a.membership_card_no,
+                (
+                    SELECT GROUP_CONCAT(DISTINCT br.branch_name ORDER BY br.branch_name SEPARATOR ', ')
+                    FROM user_authorization ua
+                    INNER JOIN branch br ON br.branch_id = ua.branch_id
+                    WHERE ua.user_id = a.user_id AND ua.company_id = ?
+                ) AS profile_branches,
+                (
+                    SELECT GROUP_CONCAT(DISTINCT br.branch_name ORDER BY br.branch_name SEPARATOR ', ')
+                    FROM sales_receipts sr
+                    INNER JOIN branch br ON br.branch_id = sr.branch
+                    WHERE sr.customer_id = a.id AND br.company_id = ?
+                ) AS order_branches,
+                (
+                    SELECT COUNT(DISTINCT sr.id)
+                    FROM sales_receipts sr
+                    INNER JOIN branch br ON br.branch_id = sr.branch
+                    WHERE sr.customer_id = a.id AND br.company_id = ?
+                ) AS order_count
+            FROM customers a
+            WHERE EXISTS (
+                SELECT 1 FROM user_authorization c
+                WHERE c.user_id = a.user_id AND c.company_id = ?
+            )
+            ORDER BY mobile_key ASC, a.id ASC";
+
+        $bindings = [$companyId, $companyId, $companyId, $companyId];
+
+        $currentGroupKey = null;
+        $group = null;
+
+        foreach (DB::cursor($sql, $bindings) as $row) {
+            $mobileKey = trim((string) ($row->mobile_key ?? ''));
+            $groupKey = $mobileKey !== '' ? $mobileKey : 'id:' . $row->id;
+
+            if ($currentGroupKey !== null && $groupKey !== $currentGroupKey) {
+                yield from $this->yieldDetailRowsFromCustomerExportGroup($group);
+                $group = null;
+            }
+
+            $currentGroupKey = $groupKey;
+            $group = $this->accumulateMergedCustomerExportGroup($group, $row);
+        }
+
+        if ($group !== null) {
+            yield from $this->yieldDetailRowsFromCustomerExportGroup($group);
+        }
+    }
+
+    protected function yieldDetailRowsFromCustomerExportGroup(?array $group): \Generator
+    {
+        if ($group === null || empty($group['rows'])) {
+            return;
+        }
+
+        $count = $group['profile_count'];
+        $duplicateLabel = $count > 1 ? 'Yes (' . $count . ' profiles)' : 'No';
+
+        foreach ($group['rows'] as $row) {
+            yield (object) [
+                'mobile' => $group['mobile'],
+                'duplicate_label' => $duplicateLabel,
+                'profile_count' => $count,
+                'customer_id' => $row->id,
+                'name' => $row->name ?? '',
+                'nic' => $row->nic ?? '',
+                'membership_card_no' => $row->membership_card_no ?? '',
+                'address' => $row->address ?? '',
+                'order_branches' => $row->order_branches ?? '',
+                'profile_branches' => $row->profile_branches ?? '',
+                'order_count' => (int) $row->order_count,
+            ];
+        }
+    }
+
+    /**
      * Stream merged customer rows (low memory) for large Excel exports.
      */
     public function yieldMergedCustomersByMobileForCompanyExport(int $companyId): \Generator
@@ -1004,9 +1091,11 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
                 'profile_branches' => [],
                 'order_branches' => [],
                 'total_orders' => 0,
+                'rows' => [],
             ];
         }
 
+        $group['rows'][] = $row;
         $group['profile_count']++;
         $group['customer_ids'][] = $row->id;
         $group['names'][] = $row->name;

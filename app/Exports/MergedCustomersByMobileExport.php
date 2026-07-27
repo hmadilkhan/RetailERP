@@ -5,11 +5,16 @@ namespace App\Exports;
 use App\Customer;
 use Generator;
 use Maatwebsite\Excel\Concerns\FromGenerator;
+use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
 use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Events\AfterSheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 
-class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, WithMapping, WithTitle
+class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, WithMapping, WithTitle, WithEvents
 {
     protected Customer $customer;
 
@@ -23,7 +28,7 @@ class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, With
 
     public function generator(): Generator
     {
-        yield from $this->customer->yieldMergedCustomersByMobileForCompanyExport($this->companyId);
+        yield from $this->customer->yieldCustomerDetailRowsByMobileForCompanyExport($this->companyId);
     }
 
     public function title(): string
@@ -36,15 +41,14 @@ class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, With
         return [
             'Mobile',
             'Duplicate Mobile',
-            'Customer Profile Count',
-            'Customer IDs',
-            'Customer Names',
+            'Customer #',
+            'Customer Name',
             'CNIC',
             'Membership Card',
             'Address',
             'Branches (Orders via sales_receipts)',
-            'Profile Branches (user authorization)',
-            'Total Orders (company)',
+            'Profile Branches',
+            'Orders (this profile)',
         ];
     }
 
@@ -52,16 +56,100 @@ class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, With
     {
         return [
             $row->mobile,
-            $row->is_duplicate,
-            $row->profile_count,
-            $row->customer_ids,
-            $row->names,
-            $row->nics,
-            $row->memberships,
-            $row->addresses,
+            $row->duplicate_label,
+            $row->customer_id,
+            $row->name,
+            $row->nic,
+            $row->membership_card_no,
+            $row->address,
             $row->order_branches,
             $row->profile_branches,
-            $row->total_orders,
+            $row->order_count,
+        ];
+    }
+
+    public function registerEvents(): array
+    {
+        return [
+            AfterSheet::class => function (AfterSheet $event) {
+                $sheet = $event->sheet->getDelegate();
+                $highestRow = (int) $sheet->getHighestRow();
+                $lastColumn = 'J';
+
+                if ($highestRow < 1) {
+                    return;
+                }
+
+                $sheet->getStyle('A1:' . $lastColumn . '1')->applyFromArray([
+                    'font' => ['bold' => true, 'color' => ['rgb' => '0F172A']],
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'E2E8F0'],
+                    ],
+                    'alignment' => [
+                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                        'vertical' => Alignment::VERTICAL_CENTER,
+                    ],
+                ]);
+
+                if ($highestRow >= 2) {
+                    $sheet->getStyle('A2:' . $lastColumn . $highestRow)->applyFromArray([
+                        'borders' => [
+                            'allBorders' => [
+                                'borderStyle' => Border::BORDER_THIN,
+                                'color' => ['rgb' => 'CBD5E1'],
+                            ],
+                        ],
+                        'alignment' => [
+                            'vertical' => Alignment::VERTICAL_TOP,
+                            'wrapText' => true,
+                        ],
+                    ]);
+
+                    $groupStart = 2;
+                    $previousMobile = null;
+
+                    for ($row = 2; $row <= $highestRow + 1; $row++) {
+                        $currentMobile = $row <= $highestRow
+                            ? (string) $sheet->getCell('A' . $row)->getCalculatedValue()
+                            : null;
+
+                        if ($previousMobile !== null && ($row > $highestRow || $currentMobile !== $previousMobile)) {
+                            $groupEnd = $row - 1;
+                            if ($groupEnd > $groupStart) {
+                                $sheet->mergeCells('A' . $groupStart . ':A' . $groupEnd);
+                                $sheet->mergeCells('B' . $groupStart . ':B' . $groupEnd);
+                                $sheet->getStyle('A' . $groupStart . ':B' . $groupEnd)->applyFromArray([
+                                    'alignment' => [
+                                        'horizontal' => Alignment::HORIZONTAL_CENTER,
+                                        'vertical' => Alignment::VERTICAL_CENTER,
+                                    ],
+                                    'fill' => [
+                                        'fillType' => Fill::FILL_SOLID,
+                                        'startColor' => ['rgb' => 'F8FAFC'],
+                                    ],
+                                ]);
+                            }
+                            $groupStart = $row;
+                        }
+
+                        if ($row <= $highestRow) {
+                            $previousMobile = $currentMobile;
+                        }
+                    }
+                }
+
+                $sheet->getColumnDimension('A')->setWidth(16);
+                $sheet->getColumnDimension('B')->setWidth(18);
+                $sheet->getColumnDimension('C')->setWidth(12);
+                $sheet->getColumnDimension('D')->setWidth(22);
+                $sheet->getColumnDimension('E')->setWidth(16);
+                $sheet->getColumnDimension('F')->setWidth(16);
+                $sheet->getColumnDimension('G')->setWidth(28);
+                $sheet->getColumnDimension('H')->setWidth(32);
+                $sheet->getColumnDimension('I')->setWidth(24);
+                $sheet->getColumnDimension('J')->setWidth(14);
+            },
         ];
     }
 }
