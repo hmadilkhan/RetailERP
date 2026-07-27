@@ -86,8 +86,8 @@ class ExcelExportController extends Controller
 			abort(403, 'This export is not available for your company.');
 		}
 
-		@ini_set('memory_limit', '512M');
-		set_time_limit(600);
+		@ini_set('memory_limit', '1024M');
+		set_time_limit(900);
 
 		try {
 			return Excel::download(

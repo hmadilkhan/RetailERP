@@ -998,7 +998,9 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
             return;
         }
 
-        $count = $group['profile_count'];
+        $count = count(array_unique(array_map(function ($r) {
+            return $r->id;
+        }, $group['rows'])));
         $duplicateLabel = $count > 1 ? 'Yes (' . $count . ' profiles)' : 'No';
 
         foreach ($group['rows'] as $row) {
@@ -1098,25 +1100,38 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
         }
 
         $group['rows'][] = $row;
-        $group['profile_count']++;
-        $group['customer_ids'][] = $row->id;
-        $group['names'][] = $row->name;
-        if (!empty($row->nic)) {
-            $group['nics'][] = $row->nic;
+
+        if (!in_array($row->id, $group['customer_ids'], true)) {
+            $group['customer_ids'][] = $row->id;
+            $group['profile_count']++;
+            $group['names'][] = $row->name;
+            if (!empty($row->nic)) {
+                $group['nics'][] = $row->nic;
+            }
+            if (!empty($row->membership_card_no)) {
+                $group['memberships'][] = $row->membership_card_no;
+            }
+            if (!empty($row->address)) {
+                $group['addresses'][] = $row->address;
+            }
         }
-        if (!empty($row->membership_card_no)) {
-            $group['memberships'][] = $row->membership_card_no;
+
+        if (isset($row->orders_at_branch)) {
+            $group['total_orders'] += (int) $row->orders_at_branch;
+        } else {
+            $group['total_orders'] += (int) ($row->order_count ?? 0);
         }
-        if (!empty($row->address)) {
-            $group['addresses'][] = $row->address;
-        }
-        $group['total_orders'] += (int) $row->order_count;
 
         foreach (array_filter(array_map('trim', explode(',', $row->profile_branches ?? ''))) as $branchName) {
             $group['profile_branches'][$branchName] = true;
         }
-        foreach (array_filter(array_map('trim', explode(',', $row->order_branches ?? ''))) as $branchName) {
-            $group['order_branches'][$branchName] = true;
+
+        if (!empty($row->order_branch)) {
+            $group['order_branches'][$row->order_branch] = true;
+        } elseif (!empty($row->order_branches)) {
+            foreach (array_filter(array_map('trim', explode(',', $row->order_branches))) as $branchName) {
+                $group['order_branches'][$branchName] = true;
+            }
         }
 
         return $group;

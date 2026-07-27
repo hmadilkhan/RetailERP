@@ -106,68 +106,61 @@ class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, With
                         ],
                     ]);
 
-                    $groupStart = 2;
-                    $previousMobile = null;
+                    // Skip heavy cell merges on very large exports (avoids timeout / memory).
+                    if ($highestRow <= 25000) {
+                        $groupStart = 2;
+                        $previousMobile = null;
 
-                    for ($row = 2; $row <= $highestRow + 1; $row++) {
-                        $currentMobile = $row <= $highestRow
-                            ? (string) $sheet->getCell('A' . $row)->getCalculatedValue()
-                            : null;
+                        for ($row = 2; $row <= $highestRow + 1; $row++) {
+                            $currentMobile = $row <= $highestRow
+                                ? (string) $sheet->getCell('A' . $row)->getCalculatedValue()
+                                : null;
 
-                        if ($previousMobile !== null && ($row > $highestRow || $currentMobile !== $previousMobile)) {
-                            $groupEnd = $row - 1;
-                            if ($groupEnd > $groupStart) {
-                                $sheet->mergeCells('A' . $groupStart . ':A' . $groupEnd);
-                                $sheet->mergeCells('B' . $groupStart . ':B' . $groupEnd);
-                                $sheet->getStyle('A' . $groupStart . ':B' . $groupEnd)->applyFromArray([
-                                    'alignment' => [
-                                        'horizontal' => Alignment::HORIZONTAL_CENTER,
-                                        'vertical' => Alignment::VERTICAL_CENTER,
-                                    ],
-                                    'fill' => [
-                                        'fillType' => Fill::FILL_SOLID,
-                                        'startColor' => ['rgb' => 'F8FAFC'],
-                                    ],
-                                ]);
-                            }
-                            $groupStart = $row;
-                        }
-
-                        if ($row <= $highestRow) {
-                            $previousMobile = $currentMobile;
-                        }
-                    }
-
-                    $customerStart = 2;
-                    $previousCustomerId = null;
-
-                    for ($row = 2; $row <= $highestRow + 1; $row++) {
-                        $currentCustomerId = $row <= $highestRow
-                            ? (string) $sheet->getCell('C' . $row)->getCalculatedValue()
-                            : null;
-
-                        if ($previousCustomerId !== null && ($row > $highestRow || $currentCustomerId !== $previousCustomerId)) {
-                            $customerEnd = $row - 1;
-                            if ($customerEnd > $customerStart) {
-                                foreach (['C', 'D', 'E', 'F', 'G', 'I'] as $col) {
-                                    $sheet->mergeCells($col . $customerStart . ':' . $col . $customerEnd);
+                            if ($previousMobile !== null && ($row > $highestRow || $currentMobile !== $previousMobile)) {
+                                $groupEnd = $row - 1;
+                                if ($groupEnd > $groupStart) {
+                                    $sheet->mergeCells('A' . $groupStart . ':A' . $groupEnd);
+                                    $sheet->mergeCells('B' . $groupStart . ':B' . $groupEnd);
+                                    $sheet->getStyle('A' . $groupStart . ':B' . $groupEnd)->applyFromArray([
+                                        'alignment' => [
+                                            'horizontal' => Alignment::HORIZONTAL_CENTER,
+                                            'vertical' => Alignment::VERTICAL_CENTER,
+                                        ],
+                                        'fill' => [
+                                            'fillType' => Fill::FILL_SOLID,
+                                            'startColor' => ['rgb' => 'F8FAFC'],
+                                        ],
+                                    ]);
                                 }
-                                $sheet->getStyle('C' . $customerStart . ':G' . $customerEnd)->applyFromArray([
-                                    'alignment' => [
-                                        'vertical' => Alignment::VERTICAL_CENTER,
-                                    ],
-                                ]);
-                                $sheet->getStyle('I' . $customerStart . ':I' . $customerEnd)->applyFromArray([
-                                    'alignment' => [
-                                        'vertical' => Alignment::VERTICAL_CENTER,
-                                    ],
-                                ]);
+                                $groupStart = $row;
                             }
-                            $customerStart = $row;
+
+                            if ($row <= $highestRow) {
+                                $previousMobile = $currentMobile;
+                            }
                         }
 
-                        if ($row <= $highestRow) {
-                            $previousCustomerId = $currentCustomerId;
+                        $customerStart = 2;
+                        $previousCustomerId = null;
+
+                        for ($row = 2; $row <= $highestRow + 1; $row++) {
+                            $currentCustomerId = $row <= $highestRow
+                                ? (string) $sheet->getCell('C' . $row)->getCalculatedValue()
+                                : null;
+
+                            if ($previousCustomerId !== null && ($row > $highestRow || $currentCustomerId !== $previousCustomerId)) {
+                                $customerEnd = $row - 1;
+                                if ($customerEnd > $customerStart) {
+                                    foreach (['C', 'D', 'E', 'F', 'G', 'I'] as $col) {
+                                        $sheet->mergeCells($col . $customerStart . ':' . $col . $customerEnd);
+                                    }
+                                }
+                                $customerStart = $row;
+                            }
+
+                            if ($row <= $highestRow) {
+                                $previousCustomerId = $currentCustomerId;
+                            }
                         }
                     }
                 }
