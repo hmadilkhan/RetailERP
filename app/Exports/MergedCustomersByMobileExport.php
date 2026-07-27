@@ -46,9 +46,9 @@ class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, With
             'CNIC',
             'Membership Card',
             'Address',
-            'Branches (Orders via sales_receipts)',
+            'Branch (Orders via sales_receipts)',
             'Profile Branches',
-            'Orders (this profile)',
+            'Orders (this branch)',
         ];
     }
 
@@ -62,9 +62,9 @@ class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, With
             $row->nic,
             $row->membership_card_no,
             $row->address,
-            $row->order_branches,
+            $row->order_branch,
             $row->profile_branches,
-            $row->order_count,
+            $row->orders_at_branch,
         ];
     }
 
@@ -137,6 +137,39 @@ class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, With
                             $previousMobile = $currentMobile;
                         }
                     }
+
+                    $customerStart = 2;
+                    $previousCustomerId = null;
+
+                    for ($row = 2; $row <= $highestRow + 1; $row++) {
+                        $currentCustomerId = $row <= $highestRow
+                            ? (string) $sheet->getCell('C' . $row)->getCalculatedValue()
+                            : null;
+
+                        if ($previousCustomerId !== null && ($row > $highestRow || $currentCustomerId !== $previousCustomerId)) {
+                            $customerEnd = $row - 1;
+                            if ($customerEnd > $customerStart) {
+                                foreach (['C', 'D', 'E', 'F', 'G', 'I'] as $col) {
+                                    $sheet->mergeCells($col . $customerStart . ':' . $col . $customerEnd);
+                                }
+                                $sheet->getStyle('C' . $customerStart . ':G' . $customerEnd)->applyFromArray([
+                                    'alignment' => [
+                                        'vertical' => Alignment::VERTICAL_CENTER,
+                                    ],
+                                ]);
+                                $sheet->getStyle('I' . $customerStart . ':I' . $customerEnd)->applyFromArray([
+                                    'alignment' => [
+                                        'vertical' => Alignment::VERTICAL_CENTER,
+                                    ],
+                                ]);
+                            }
+                            $customerStart = $row;
+                        }
+
+                        if ($row <= $highestRow) {
+                            $previousCustomerId = $currentCustomerId;
+                        }
+                    }
                 }
 
                 $sheet->getColumnDimension('A')->setWidth(16);
@@ -146,7 +179,7 @@ class MergedCustomersByMobileExport implements FromGenerator, WithHeadings, With
                 $sheet->getColumnDimension('E')->setWidth(16);
                 $sheet->getColumnDimension('F')->setWidth(16);
                 $sheet->getColumnDimension('G')->setWidth(28);
-                $sheet->getColumnDimension('H')->setWidth(32);
+                $sheet->getColumnDimension('H')->setWidth(28);
                 $sheet->getColumnDimension('I')->setWidth(24);
                 $sheet->getColumnDimension('J')->setWidth(14);
             },

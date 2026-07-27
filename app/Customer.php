@@ -943,31 +943,33 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
                 a.address,
                 a.membership_card_no,
                 (
-                    SELECT GROUP_CONCAT(DISTINCT br.branch_name ORDER BY br.branch_name SEPARATOR ', ')
+                    SELECT GROUP_CONCAT(DISTINCT br2.branch_name ORDER BY br2.branch_name SEPARATOR ', ')
                     FROM user_authorization ua
-                    INNER JOIN branch br ON br.branch_id = ua.branch_id
+                    INNER JOIN branch br2 ON br2.branch_id = ua.branch_id
                     WHERE ua.user_id = a.user_id AND ua.company_id = ?
                 ) AS profile_branches,
-                (
-                    SELECT GROUP_CONCAT(DISTINCT br.branch_name ORDER BY br.branch_name SEPARATOR ', ')
-                    FROM sales_receipts sr
-                    INNER JOIN branch br ON br.branch_id = sr.branch
-                    WHERE sr.customer_id = a.id AND br.company_id = ?
-                ) AS order_branches,
-                (
-                    SELECT COUNT(DISTINCT sr.id)
-                    FROM sales_receipts sr
-                    INNER JOIN branch br ON br.branch_id = sr.branch
-                    WHERE sr.customer_id = a.id AND br.company_id = ?
-                ) AS order_count
+                br.branch_name AS order_branch,
+                COUNT(sr.id) AS orders_at_branch
             FROM customers a
+            LEFT JOIN sales_receipts sr ON sr.customer_id = a.id
+            LEFT JOIN branch br ON br.branch_id = sr.branch AND br.company_id = ?
             WHERE EXISTS (
                 SELECT 1 FROM user_authorization c
                 WHERE c.user_id = a.user_id AND c.company_id = ?
             )
-            ORDER BY mobile_key ASC, a.id ASC";
+            GROUP BY
+                a.id,
+                TRIM(CAST(a.mobile AS CHAR)),
+                a.name,
+                a.mobile,
+                a.nic,
+                a.address,
+                a.membership_card_no,
+                a.user_id,
+                br.branch_name
+            ORDER BY mobile_key ASC, a.id ASC, order_branch ASC";
 
-        $bindings = [$companyId, $companyId, $companyId, $companyId];
+        $bindings = [$companyId, $companyId, $companyId];
 
         $currentGroupKey = null;
         $group = null;
@@ -1009,9 +1011,9 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
                 'nic' => $row->nic ?? '',
                 'membership_card_no' => $row->membership_card_no ?? '',
                 'address' => $row->address ?? '',
-                'order_branches' => $row->order_branches ?? '',
+                'order_branch' => !empty($row->order_branch) ? $row->order_branch : '-',
                 'profile_branches' => $row->profile_branches ?? '',
-                'order_count' => (int) $row->order_count,
+                'orders_at_branch' => (int) ($row->orders_at_branch ?? 0),
             ];
         }
     }
