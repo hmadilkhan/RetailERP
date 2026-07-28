@@ -235,6 +235,12 @@
                             class="h-10 rounded-lg bg-emerald-600 px-4 text-sm font-bold text-white transition hover:bg-emerald-700">
                             <i class="icofont icofont-file-excel"> </i>Excel Export
                         </button>
+                        @if (session('company_id') == 74)
+                            <button type="button" id="btnExcelCustomer"
+                                class="h-10 rounded-lg bg-teal-600 px-4 text-sm font-bold text-white transition hover:bg-teal-700">
+                                <i class="icofont icofont-file-excel"> </i>Excel Export Customer
+                            </button>
+                        @endif
                         @if (session('roleId') != 20 && session('roleId') != 19)
                             <button type="button" id="btnPdf"
                                 class="h-10 rounded-lg bg-rose-600 px-4 text-sm font-bold text-white transition hover:bg-rose-700">
@@ -2350,6 +2356,22 @@
                 $("#alert_fromdate").text('Please select the date');
             } else {
                 window.open("{{ url('reports/excel-export-orders-report') }}" + "?fromdate=" + $("#rpdate").val() +
+                    "&todate=" + $("#date").val() + "&branch=" + $("#branch").val() + "&terminal=" + $(
+                        "#terminal").val() + "&customer=" + $("#customer").val() + "&paymentmode=" + $(
+                        "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")
+                    .val() + "&status=" + $("#orderstatus").val() + "&receipt=" + $("#receipt").val() +
+                    "&machineOrderNo=" + $("#machine_order_no").val() + "&order_no=" + $("#order_no").val() +
+                    "&report=excel&salesperson=" + $('#orderserviceprovider').val() + "&department=" + $("#department").val() + "&category=" + $(
+                        '#category').val());
+            }
+        })
+
+        $("#btnExcelCustomer").click(function() {
+            if ($('input[name="fromdate"]').val() == '' && $('input[name="todate"]').val() == '') {
+                $('input[name="fromdate"]').focus();
+                $("#alert_fromdate").text('Please select the date');
+            } else {
+                window.open("{{ url('reports/excel-export-orders-report-customers') }}" + "?fromdate=" + $("#rpdate").val() +
                     "&todate=" + $("#date").val() + "&branch=" + $("#branch").val() + "&terminal=" + $(
                         "#terminal").val() + "&customer=" + $("#customer").val() + "&paymentmode=" + $(
                         "#paymentmode").val() + "&ordermode=" + $("#ordermode").val() + "&type=" + $("#type")

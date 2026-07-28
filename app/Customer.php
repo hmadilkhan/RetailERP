@@ -914,6 +914,73 @@ WHERE cust_id = a.id  AND receipt_no != 0 ) as balance, a.id, a.image,d.branch_n
         return collect($rows);
     }
 
+    /**
+     * @return array<string, \Illuminate\Support\Collection<int, object>>
+     */
+    public function getCustomersGroupedByMobiles(array $mobiles): array
+    {
+        $mobiles = array_values(array_filter(array_unique(array_map(function ($m) {
+            return trim((string) $m);
+        }, $mobiles))));
+
+        if (empty($mobiles)) {
+            return [];
+        }
+
+        $companyId = session('company_id');
+        if (empty($companyId)) {
+            return [];
+        }
+
+        $placeholders = implode(',', array_fill(0, count($mobiles), '?'));
+        $scopeSql = $this->customersInCompanyScopeSql();
+
+        $rows = DB::select(
+            "SELECT
+                TRIM(CAST(a.mobile AS CHAR)) AS mobile_key,
+                a.id,
+                a.name,
+                a.mobile,
+                a.phone,
+                a.nic,
+                a.address,
+                a.membership_card_no,
+                (
+                    SELECT br.branch_name
+                    FROM user_authorization ua
+                    INNER JOIN branch br ON br.branch_id = ua.branch_id
+                    WHERE ua.user_id = a.user_id AND ua.company_id = ?
+                    ORDER BY ua.branch_id
+                    LIMIT 1
+                ) AS branch_name,
+                (
+                    SELECT b.status_name
+                    FROM accessibility_mode b
+                    WHERE b.status_id = a.status_id
+                    LIMIT 1
+                ) AS status_name
+            FROM customers a
+            WHERE TRIM(CAST(a.mobile AS CHAR)) IN ({$placeholders})
+            AND {$scopeSql}
+            ORDER BY mobile_key ASC, a.id ASC",
+            array_merge([$companyId], $mobiles, [$companyId, $companyId])
+        );
+
+        $grouped = [];
+        foreach ($rows as $row) {
+            $key = trim((string) ($row->mobile_key ?? ''));
+            if ($key === '') {
+                continue;
+            }
+            if (! isset($grouped[$key])) {
+                $grouped[$key] = collect();
+            }
+            $grouped[$key]->push($row);
+        }
+
+        return $grouped;
+    }
+
     protected function customersInCompanyScopeSql(): string
     {
         return '(

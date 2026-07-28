@@ -1076,6 +1076,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('reports/consolidated-excel-export-item-sale-report', [ReportController::class, 'getConsolidatedItemSaleReportExcelExport'])->name('excelExportItemSales');
     Route::get('reports/pdf-export-item-sale-report', [ReportController::class, 'getItemSaleReportPdfExport'])->name('pdfExportItemSales');
     Route::get('reports/excel-export-orders-report', [ReportController::class, 'getOrdersReportExcelExport'])->name('excelExportOrders');
+    Route::get('reports/excel-export-orders-report-customers', [ReportController::class, 'getOrdersReportExcelExportCustomers'])->name('excelExportOrdersCustomers');
     Route::get('reports/excel-export-orders-receivables', [ReportController::class, 'getOrderRecievingExport'])->name('excelExportOrdersReceivables');
     Route::get('reports/excel-export-customer-sales', [ReportController::class, 'getCustomerSalesExport'])->name('excelExportOrdersReceivables');
     Route::get('reports/excel-export-sales-declartion/{from}/{to}/{branch}/{terminal?}', [ReportController::class, 'getSalesDeclarationExport'])->name('excelExportSalesDeclaration');

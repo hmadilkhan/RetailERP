@@ -37,6 +37,7 @@ use App\Exports\ConsolidatedIsdbDatewiseExport;
 use App\Exports\CustomerSalesExport;
 use App\Exports\OrderReceivingReportExport;
 use App\Exports\OrderReportExport;
+use App\Exports\OrderReportCompany74Export;
 use App\Exports\SalesDeclarationExport;
 use App\Exports\StockReportExcelExport;
 use App\Exports\StockReportExport;
@@ -544,6 +545,47 @@ class ReportController extends Controller
     public function getOrdersReportExcelExport(Request $request, report $report, order $order)
     {
         return $this->ConsolidatedOrderReport($request, "normal", $order);
+    }
+
+    public function getOrdersReportExcelExportCustomers(Request $request, order $order, Customer $customer)
+    {
+        if ((int) session('company_id') !== 74) {
+            abort(403, 'This export is not available for your company.');
+        }
+
+        return $this->exportOrdersReportCompany74($request, $order, $customer);
+    }
+
+    protected function exportOrdersReportCompany74(Request $request, order $order, Customer $customer)
+    {
+        if ($request->branch == 'all') {
+            $branch = Branch::with('company:company_id,name')->where('company_id', session('company_id'))->get();
+        } else {
+            $branch = Branch::with('company:company_id,name')->where('branch_id', $request->branch)->get();
+        }
+
+        $record = $this->getOrdersQuery($request);
+
+        $mobiles = $record
+            ->map(function ($orderRow) {
+                return trim((string) (optional($orderRow->customer)->mobile ?? ''));
+            })
+            ->filter(fn ($m) => $m !== '')
+            ->unique()
+            ->values()
+            ->all();
+
+        $customersByMobile = $customer->getCustomersGroupedByMobiles($mobiles);
+
+        $datearray = [
+            'from' => $request->fromdate,
+            'to' => $request->todate,
+        ];
+
+        return Excel::download(
+            new OrderReportCompany74Export($record, $branch, $datearray, $customersByMobile),
+            'Orders Report.xlsx'
+        );
     }
 
 
