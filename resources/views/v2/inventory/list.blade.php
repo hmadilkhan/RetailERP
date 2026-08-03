@@ -61,7 +61,7 @@
                         <input type="checkbox" name="update" value="1" class="rounded border-erp-line text-erp focus:ring-erp">
                         Update retail price
                     </label>
-                    <button type="submit" class="h-10 rounded-lg border border-erp bg-erp px-5 text-sm font-bold text-white transition hover:bg-erp-dark">Import</button>
+                    <button type="submit" name="submit" value="Import" class="h-10 rounded-lg border border-erp bg-erp px-5 text-sm font-bold text-white transition hover:bg-erp-dark">Import</button>
                 </form>
             </div>
         </section>
