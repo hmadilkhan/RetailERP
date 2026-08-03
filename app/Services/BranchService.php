@@ -26,7 +26,7 @@ class BranchService
         return $branches;
     }
 
-    public function getBranchesPaginated(string $search = '', int $perPage = 15)
+    public function getBranchesPaginated(string $search = '', int $perPage = 15, $companyId = null)
     {
         $query = Branch::with(['terminals', 'city'])->where('status_id', 1);
 
@@ -36,6 +36,10 @@ class BranchService
             $query->where('company_id', session('company_id'));
         } else {
             $query->where('branch_id', session('branch'));
+        }
+
+        if ($companyId !== null && $companyId !== '') {
+            $query->where('company_id', $companyId);
         }
 
         if ($search !== '') {

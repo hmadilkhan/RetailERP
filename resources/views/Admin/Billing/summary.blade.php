@@ -79,7 +79,7 @@
             <form method="GET" action="{{ route('billing.summary') }}" id="billing-summary-filter-form" class="card m-b-20" style="border: 0; border-radius: 16px; box-shadow: 0 10px 30px rgba(30, 54, 80, 0.08);">
                 <div class="card-block">
                     <div class="row align-items-end">
-                        <div class="col-lg-4 col-md-12 m-b-10">
+                        <div class="col-lg-3 col-md-6 m-b-10">
                             <label class="f-w-600">Filter by Company</label>
                             <select name="company_id" id="billing-summary-company-filter" class="form-control select2 billing-select2" data-placeholder="Search company">
                                 <option value="">All Companies</option>
@@ -90,7 +90,15 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-lg-4 col-md-12 m-b-10">
+                        <div class="col-lg-3 col-md-6 m-b-10">
+                            <label class="f-w-600">Company Status</label>
+                            <select name="company_status" id="billing-summary-company-status-filter" class="form-control select2 billing-select2" data-placeholder="All Company Status">
+                                <option value="">All Company Status</option>
+                                <option value="1" {{ ($selectedCompanyStatus ?? '') === '1' ? 'selected' : '' }}>Active</option>
+                                <option value="2" {{ ($selectedCompanyStatus ?? '') === '2' ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                        </div>
+                        <div class="col-lg-3 col-md-6 m-b-10">
                             <label class="f-w-600">Filter by Status</label>
                             <select name="status" id="billing-summary-status-filter" class="form-control select2 billing-select2" data-placeholder="Select Status">
                                 <option value="">All Statuses</option>
@@ -99,7 +107,7 @@
                                 <option value="unpaid" {{ $selectedStatus === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
                             </select>
                         </div>
-                        <div class="col-lg-4 col-md-12 m-b-10">
+                        <div class="col-lg-3 col-md-6 m-b-10">
                             <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap; padding-top: 25px;">
                                 <button type="submit" class="btn btn-primary">
                                 <i class="icofont icofont-search"></i> Apply Filter
@@ -137,12 +145,13 @@
         var $ = window.jQuery;
         var form = document.getElementById('billing-summary-filter-form');
         var companyFilter = document.getElementById('billing-summary-company-filter');
+        var companyStatusFilter = document.getElementById('billing-summary-company-status-filter');
         var statusFilter = document.getElementById('billing-summary-status-filter');
         var content = document.getElementById('billing-summary-content');
         var loader = document.getElementById('billing-summary-loader');
         var resetButton = document.getElementById('billing-summary-reset');
 
-        if (!form || !companyFilter || !statusFilter || !content || !loader || !$) {
+        if (!form || !companyFilter || !companyStatusFilter || !statusFilter || !content || !loader || !$) {
             return;
         }
 
@@ -155,6 +164,12 @@
                 width: '100%',
                 allowClear: true,
                 placeholder: $(companyFilter).data('placeholder') || 'Select company'
+            });
+
+            $(companyStatusFilter).select2({
+                width: '100%',
+                allowClear: true,
+                placeholder: $(companyStatusFilter).data('placeholder') || 'All Company Status'
             });
 
             $(statusFilter).select2({
@@ -191,27 +206,26 @@
                 });
         }
 
+        function refreshFromFilters() {
+            var url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
+            updateSummary(url);
+        }
+
         $(form).on('submit', function (event) {
             event.preventDefault();
-            var url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
-            updateSummary(url);
+            refreshFromFilters();
         });
 
-        $(companyFilter).on('change', function () {
-            var url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
-            updateSummary(url);
-        });
-
-        statusFilter.addEventListener('change', function () {
-            var url = form.action + '?' + new URLSearchParams(new FormData(form)).toString();
-            updateSummary(url);
-        });
+        $(companyFilter).on('change', refreshFromFilters);
+        $(companyStatusFilter).on('change', refreshFromFilters);
+        $(statusFilter).on('change', refreshFromFilters);
 
         if (resetButton) {
             resetButton.addEventListener('click', function (event) {
                 event.preventDefault();
                 $(companyFilter).val('').trigger('change.select2');
-                statusFilter.value = '';
+                $(companyStatusFilter).val('').trigger('change.select2');
+                $(statusFilter).val('').trigger('change.select2');
                 updateSummary(form.action);
             });
         }

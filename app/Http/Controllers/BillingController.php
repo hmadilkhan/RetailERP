@@ -67,6 +67,13 @@ class BillingController extends Controller
             ->when(!empty($request->company_id), function ($query) use ($request) {
                 $query->where('invoices.company_id', $request->company_id);
             })
+            ->when(in_array((string) $request->company_status, ['1', '2'], true), function ($query) use ($request) {
+                if ((string) $request->company_status === '1') {
+                    $query->where('company.status_id', 1);
+                } else {
+                    $query->where('company.status_id', '!=', 1);
+                }
+            })
             ->tap(function ($query) use ($request) {
                 $this->applyInvoiceStatusFilter($query, $request->status, 'invoices');
             })
@@ -75,24 +82,32 @@ class BillingController extends Controller
             ->get();
 
         $invoicePeriodsByCompany = DB::table('invoices')
+            ->join('company', 'invoices.company_id', '=', 'company.company_id')
             ->select(
-                'company_id',
-                'period_start',
-                'period_end',
-                'total_amount',
-                'balance_amount'
+                'invoices.company_id',
+                'invoices.period_start',
+                'invoices.period_end',
+                'invoices.total_amount',
+                'invoices.balance_amount'
             )
-            ->where('status', '!=', 'void')
+            ->where('invoices.status', '!=', 'void')
             ->where(function ($query) use ($invoiceType) {
                 if ($invoiceType === 'monthly') {
-                    $query->whereNull('invoice_type')
-                        ->orWhere('invoice_type', 'monthly');
+                    $query->whereNull('invoices.invoice_type')
+                        ->orWhere('invoices.invoice_type', 'monthly');
                 } else {
-                    $query->where('invoice_type', $invoiceType);
+                    $query->where('invoices.invoice_type', $invoiceType);
                 }
             })
             ->when(!empty($request->company_id), function ($query) use ($request) {
-                $query->where('company_id', $request->company_id);
+                $query->where('invoices.company_id', $request->company_id);
+            })
+            ->when(in_array((string) $request->company_status, ['1', '2'], true), function ($query) use ($request) {
+                if ((string) $request->company_status === '1') {
+                    $query->where('company.status_id', 1);
+                } else {
+                    $query->where('company.status_id', '!=', 1);
+                }
             })
             ->tap(function ($query) use ($request) {
                 $this->applyInvoiceStatusFilter($query, $request->status, 'invoices');
@@ -127,12 +142,15 @@ class BillingController extends Controller
         $companies = Company::select('company_id', 'name')->orderBy('name')->get();
         $selectedCompanyId = $request->company_id;
         $selectedStatus = $request->status;
+        $selectedCompanyStatus = in_array((string) $request->company_status, ['1', '2'], true)
+            ? (string) $request->company_status
+            : '';
 
         if ($request->ajax()) {
             return view(session('roleId') == 1 ? 'v2.billing.partials.summary-content' : 'Admin.Billing.partials.summary-content', compact('summary'));
         }
 
-        return view(session('roleId') == 1 ? 'v2.billing.summary' : 'Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId', 'selectedStatus', 'invoiceType'));
+        return view(session('roleId') == 1 ? 'v2.billing.summary' : 'Admin.Billing.summary', compact('summary', 'companies', 'selectedCompanyId', 'selectedStatus', 'selectedCompanyStatus', 'invoiceType'));
     }
 
     public function index(Request $request)

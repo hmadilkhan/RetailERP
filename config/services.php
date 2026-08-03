@@ -48,6 +48,7 @@ return [
             'fbr_report' => env('WHATSAPP_TEMPLATE_FBR_REPORT', 'fbr_report_delivery'),
             'sales_report' => env('WHATSAPP_TEMPLATE_SALES_REPORT', 'sales_report_delivery'),
             'billing_invoice' => env('WHATSAPP_TEMPLATE_BILLING_INVOICE', 'report'),
+            'company_deactivation' => env('WHATSAPP_TEMPLATE_COMPANY_DEACTIVATION', 'company_account_deactivation'),
         ],
     ],
 

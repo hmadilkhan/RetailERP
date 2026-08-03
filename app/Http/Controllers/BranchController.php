@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\branch;
 use App\Models\Branch as ModelsBranch;
+use App\Models\Company;
 use App\Services\BranchService;
 use App\Traits\ActivityLoggerTrait;
 use App\Traits\MediaTrait;
@@ -27,8 +28,23 @@ class BranchController extends Controller
 	public function show(branch $branch, BranchService $branchService)
 	{
 		$search = request('search', '');
-		$details = $branchService->getBranchesPaginated($search);
-		return view(session('roleId') == 1 ? 'v2.branch.list' : 'Branch.list', compact('details', 'search'));
+		$companyId = request('company_id', '');
+		$details = $branchService->getBranchesPaginated($search, 15, $companyId);
+		$companies = session('roleId') == 1
+			? Company::select('company_id', 'name')->orderBy('name')->get()
+			: collect();
+
+		if (request()->ajax()) {
+			return response()->json([
+				'rows' => view('v2.branch.partials.rows', compact('details', 'search'))->render(),
+				'pagination' => view('v2.branch.partials.pagination', compact('details'))->render(),
+				'total' => $details->total(),
+				'visible' => $details->count(),
+				'searchLabel' => $search !== '' ? $search : 'All branches',
+			]);
+		}
+
+		return view(session('roleId') == 1 ? 'v2.branch.list' : 'Branch.list', compact('details', 'search', 'companies', 'companyId'));
 	}
 
 	public function index(branch $branch)

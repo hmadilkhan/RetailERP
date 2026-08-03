@@ -11,7 +11,7 @@
                 <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
                     <div>
                         <h2 class="text-base font-bold text-erp-ink">Summary Filters</h2>
-                        <p class="mt-1 text-sm text-erp-mute">Filter company billing by invoice type, company, and payment status.</p>
+                        <p class="mt-1 text-sm text-erp-mute">Filter company billing by invoice type, company, company status, and payment status.</p>
                     </div>
                     <div class="flex flex-wrap gap-2">
                         <a href="{{ route('billing.invoices.index') }}" class="inline-flex h-10 items-center rounded-lg bg-erp px-4 text-sm font-bold text-white transition hover:bg-erp-dark">View Invoices</a>
@@ -19,7 +19,7 @@
                     </div>
                 </div>
 
-                <form method="GET" action="{{ route('billing.summary') }}" class="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-5">
+                <form method="GET" action="{{ route('billing.summary') }}" class="mt-4 grid gap-2 md:grid-cols-2 xl:grid-cols-6">
                     <select name="invoice_type" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Select invoice type">
                         <option value="monthly" {{ ($invoiceType ?? 'monthly') === 'monthly' ? 'selected' : '' }}>Monthly Invoices</option>
                         <option value="previous_due" {{ ($invoiceType ?? 'monthly') === 'previous_due' ? 'selected' : '' }}>Previous Due</option>
@@ -31,6 +31,11 @@
                                 {{ $company->name }}
                             </option>
                         @endforeach
+                    </select>
+                    <select name="company_status" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Company Status">
+                        <option value="">All Company Status</option>
+                        <option value="1" {{ ($selectedCompanyStatus ?? '') === '1' ? 'selected' : '' }}>Active</option>
+                        <option value="2" {{ ($selectedCompanyStatus ?? '') === '2' ? 'selected' : '' }}>Inactive</option>
                     </select>
                     <select name="status" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Statuses">
                         <option value="">All Statuses</option>
