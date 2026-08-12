@@ -30,7 +30,7 @@
             <select name="branch" id="branch" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                 <option value="">Select Branch</option>
                 @foreach (($branch ?? []) as $value)
-                    <option value="{{ $value->branch_id }}" {{ $isEdit && $value->branch_name == data_get($user, 'branch_name') ? 'selected' : '' }}>{{ $value->branch_name }}</option>
+                    <option value="{{ $value->branch_id }}" {{ $isEdit && $value->branch_id == data_get($user, 'branch_id') ? 'selected' : '' }}>{{ $value->branch_name }}</option>
                 @endforeach
             </select>
             @error('branch')<p class="mt-1 text-xs text-rose-600">Required field can not be blank.</p>@enderror

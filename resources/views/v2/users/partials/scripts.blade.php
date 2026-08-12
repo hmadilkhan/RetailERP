@@ -13,12 +13,14 @@
     });
 
     companySelect?.addEventListener('change', function () {
-        loadBranches(isManagerRole() ? multiBranchSelect : branchSelect);
+        loadBranches(isManagerRole() ? multiBranchSelect : branchSelect, []);
     });
 
     roleSelect?.addEventListener('change', function () {
+        // Options replace hone se pehle current selection yaad rakhein
+        const keepBranchIds = selectedBranchIds();
         updateBranchMode();
-        loadBranches(isManagerRole() ? multiBranchSelect : branchSelect);
+        loadBranches(isManagerRole() ? multiBranchSelect : branchSelect, keepBranchIds);
     });
 
     updateBranchMode();
@@ -100,10 +102,23 @@
         }
     }
 
-    function loadBranches(target) {
+    function selectedBranchIds() {
+        const ids = [];
+        if (branchSelect?.value) {
+            ids.push(branchSelect.value);
+        }
+        if (multiBranchSelect) {
+            Array.from(multiBranchSelect.selectedOptions).forEach(option => ids.push(option.value));
+        }
+        return ids.filter(Boolean);
+    }
+
+    function loadBranches(target, keepBranchIds) {
         if (!companySelect?.value || !target) {
             return;
         }
+
+        const keep = keepBranchIds ?? selectedBranchIds();
 
         fetch("{{ url('/get-branches-by-company') }}", {
             method: 'POST',
@@ -118,6 +133,14 @@
                 target.innerHTML = target.multiple ? '' : '<option value="">Select Branch</option>';
                 branches.forEach(function (branch) {
                     target.insertAdjacentHTML('beforeend', `<option value="${branch.branch_id}">${branch.branch_name}</option>`);
+                });
+
+                // Pehle se selected branch dobara select karein warna khali post ho kar 0 lag jata hai
+                keep.forEach(function (id) {
+                    const option = target.querySelector(`option[value="${id}"]`);
+                    if (option) {
+                        option.selected = true;
+                    }
                 });
             });
     }

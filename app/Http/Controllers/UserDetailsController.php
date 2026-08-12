@@ -170,11 +170,30 @@ class UserDetailsController extends Controller
             'fullname' => 'required',
             'username' => 'required',
             'password' => 'required',
+            'company' => 'required',
+            'role' => 'required',
         ];
         $this->validate($request, $rules);
         $userModel  = User::findOrFail($request->id);
-        // This condition is for checking Regional Manager 
-        $branch = ($request->role == 16 || $request->role == 18 ?  $request->branches[0] : $request->branch);
+
+        $currentAuth = DB::table('user_authorization')->where('authorization_id', $request->authid)->first();
+
+        // This condition is for checking Regional Manager
+        $isManagerRole = in_array((int) $request->role, [16, 18]);
+        $selectedBranches = array_filter((array) $request->branches);
+        $branch = $isManagerRole ? reset($selectedBranches) : $request->branch;
+
+        // Branch select disabled/reset ho jaye to purana branch hi rakhein, 0 kabhi na likhein
+        if (empty($branch)) {
+            $branch = $currentAuth->branch_id ?? null;
+        }
+
+        if (empty($branch)) {
+            return redirect()->back()->withInput()->withErrors([
+                'branch' => 'Please select a branch for this user.',
+            ]);
+        }
+
         if (!empty($request->vdimg)) {
             $request->validate([
                 'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:1024',
@@ -218,25 +237,26 @@ class UserDetailsController extends Controller
 
         $items = [
             'user_id' => $request->id,
-            'company_id' => $request->company,
+            'company_id' => $request->company ?: ($currentAuth->company_id ?? null),
             'branch_id' => $branch,
-            'role_id' => $request->role,
+            'role_id' => $request->role ?: ($currentAuth->role_id ?? null),
             'status_id' => 1,
         ];
         $result = $users->update_user_authorization($request->authid, $items);
         // This condition is for checking Regional Manager
-        DB::table("user_branches")->where("user_id", $request->id)->delete();
-        if (in_array($request->role, [16, 18])) {
-            $count = count($request->branches);
-            if ($count > 0) {
-                for ($i = 0; $i < $count; $i++) {
-                    $items = [
+        if ($isManagerRole) {
+            // Sirf tab replace karein jab form se branches actually aayi hon
+            if (!empty($selectedBranches)) {
+                DB::table("user_branches")->where("user_id", $request->id)->delete();
+                foreach ($selectedBranches as $branchId) {
+                    $users->insert_user('user_branches', [
                         'user_id' => $request->id,
-                        'branch_id' => $request->branches[$i],
-                    ];
-                    $result = $users->insert_user('user_branches', $items);
+                        'branch_id' => $branchId,
+                    ]);
                 }
             }
+        } else {
+            DB::table("user_branches")->where("user_id", $request->id)->delete();
         }
         // Logging The Update Event
         $properties = [
