@@ -153,6 +153,24 @@
         }
 
         [x-cloak] { display: none !important; }
+
+        /*
+         * Legacy theme ka assets/js/menu.min.js (partials.js-libs) window load/resize par
+         * <body> par "fixed" aur "container" class lagata hai. Purani theme mein ye sirf
+         * layout markers the, lekin Tailwind mein ye utilities hain (position:fixed /
+         * max-width), jis se poora page freeze ho jata hai aur scroll ruk jata hai.
+         */
+        body.fixed {
+            position: static !important;
+        }
+        body.container {
+            width: auto !important;
+            max-width: none !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
         @media (min-width: 1024px) {
             .v2-sidebar.is-collapsed {
                 width: 5rem;
