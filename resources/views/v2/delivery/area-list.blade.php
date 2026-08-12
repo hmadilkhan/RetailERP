@@ -181,6 +181,8 @@
                 if (window.jQuery) jQuery('#branch').trigger('change.select2');
             }).catch(function () {
                 branch.innerHTML = '<option value="">Select Branch</option>';
+                branch.disabled = false;
+                if (window.jQuery) jQuery('#branch').trigger('change.select2');
                 setDeliveryStatus('Unable to load branches.', false);
             });
         });
