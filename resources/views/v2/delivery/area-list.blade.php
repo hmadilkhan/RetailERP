@@ -159,31 +159,35 @@
             status.className = 'border-t border-erp-line px-5 py-3 text-sm font-semibold ' + (success ? 'text-emerald-700' : 'text-rose-700');
         }
 
-        document.getElementById('website').addEventListener('change', function () {
-            const branch = document.getElementById('branch');
-            branch.disabled = true;
-            branch.innerHTML = '<option value="">Loading...</option>';
-            if (window.jQuery) jQuery('#branch').trigger('change.select2');
+        function refreshSelect2($select) {
+            if (window.jQuery && jQuery.fn.select2 && $select.hasClass('select2-hidden-accessible')) {
+                $select.trigger('change.select2');
+            }
+        }
 
-            fetch("{{ route('getWebsiteBranches') }}", {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
-                body: JSON.stringify({ websiteId: this.value })
-            }).then(response => response.json()).then(function (result) {
-                branch.innerHTML = '<option value="">Select Branch</option>';
-                result.forEach(function (item) {
-                    const option = document.createElement('option');
-                    option.value = item.branch_id;
-                    option.textContent = item.branch_name;
-                    branch.appendChild(option);
-                });
-                branch.disabled = false;
-                if (window.jQuery) jQuery('#branch').trigger('change.select2');
-            }).catch(function () {
-                branch.innerHTML = '<option value="">Select Branch</option>';
-                branch.disabled = false;
-                if (window.jQuery) jQuery('#branch').trigger('change.select2');
-                setDeliveryStatus('Unable to load branches.', false);
+        jQuery('#website').on('change', function () {
+            const $branch = jQuery('#branch');
+            $branch.prop('disabled', true).empty().append(jQuery('<option>').val('').text('Loading...'));
+            refreshSelect2($branch);
+
+            jQuery.ajax({
+                url: "{{ route('getWebsiteBranches') }}",
+                type: 'POST',
+                data: { _token: "{{ csrf_token() }}", websiteId: jQuery(this).val() },
+                success: function (result) {
+                    $branch.empty().append(jQuery('<option>').val('').text('Select Branch'));
+                    jQuery.each(result || [], function (_, item) {
+                        $branch.append(jQuery('<option>').val(item.branch_id).text(item.branch_name));
+                    });
+                    $branch.prop('disabled', false);
+                    refreshSelect2($branch);
+                },
+                error: function () {
+                    $branch.empty().append(jQuery('<option>').val('').text('Select Branch'));
+                    $branch.prop('disabled', false);
+                    refreshSelect2($branch);
+                    setDeliveryStatus('Unable to load branches.', false);
+                }
             });
         });
 
