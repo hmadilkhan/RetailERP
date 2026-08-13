@@ -79,13 +79,7 @@
                     <input type="text" name="estimate_day" id="estimate_day" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                 </label>
                 <div class="md:col-span-3">
-                    <div class="flex items-center justify-between gap-3 text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">
-                        <span>City</span>
-                        <label for="on_off_btn" class="inline-flex cursor-pointer items-center gap-2 normal-case tracking-normal">
-                            Use Area Names
-                            <input type="checkbox" name="on_off_btn" id="on_off_btn" value="1" class="rounded border-erp-line text-erp focus:ring-erp">
-                        </label>
-                    </div>
+                    <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">City</span>
                     <select name="city[]" id="city" data-placeholder="Select City" class="v2-select2 mt-2 min-h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" multiple>
                         @foreach($cityCollection as $val)
                             <option value="{{ $val->city_id }}">{{ $val->city_name }}</option>
@@ -216,34 +210,14 @@
             }
         }
 
-        function initCitySelect2($city) {
-            $city.select2({
-                allowClear: true,
-                dropdownCssClass: 'v2-select2-dropdown',
-                placeholder: $city.data('placeholder') || 'Select City',
-                width: '100%'
-            });
-        }
-
-        function setCityAreaMode(useAreas) {
-            const $city = jQuery('#city');
+        function toggleAreaBoxByCity() {
+            const cityVal = jQuery('#city').val();
+            const hasCity = Array.isArray(cityVal) ? cityVal.length > 0 : !!cityVal;
             const areaBox = document.getElementById('areaBox');
 
-            if ($city.hasClass('select2-hidden-accessible')) {
-                $city.select2('destroy');
-            }
+            areaBox.classList.toggle('hidden', !hasCity);
 
-            if (useAreas) {
-                $city.attr('name', 'city').removeAttr('multiple').val('');
-                areaBox.classList.remove('hidden');
-            } else {
-                $city.attr({ name: 'city[]', multiple: 'multiple' }).val(null);
-                areaBox.classList.add('hidden');
-            }
-
-            initCitySelect2($city);
-
-            if (jQuery.fn.tagsinput) {
+            if (!hasCity && jQuery.fn.tagsinput) {
                 jQuery('#areas').tagsinput('removeAll');
             }
         }
@@ -252,6 +226,9 @@
             if (jQuery.fn.tagsinput) {
                 jQuery('#areas').tagsinput({ maxTags: 40 });
             }
+
+            jQuery('#city').on('change', toggleAreaBoxByCity);
+            toggleAreaBoxByCity();
         });
 
         jQuery('#website').on('change', function () {
@@ -280,13 +257,21 @@
             });
         });
 
-        document.getElementById('on_off_btn').addEventListener('change', function () {
-            setCityAreaMode(this.checked);
-        });
-
         document.getElementById('btn_create').addEventListener('click', function () {
             const form = document.getElementById('deliveryAreasForm');
-            fetch(form.action, { method: 'POST', body: new FormData(form) })
+            const data = new FormData(form);
+            const areas = (jQuery('#areas').val() || '').toString().trim();
+
+            if (areas) {
+                const cityVal = jQuery('#city').val();
+                const cityId = Array.isArray(cityVal) ? cityVal[0] : cityVal;
+                data.delete('city[]');
+                data.set('city', cityId || '');
+                data.set('on_off_btn', '1');
+                data.set('areas', areas);
+            }
+
+            fetch(form.action, { method: 'POST', body: data })
                 .then(function (response) {
                     if (response.ok || response.redirected) {
                         window.location = "{{ route('deliveryAreasList') }}";
