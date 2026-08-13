@@ -78,19 +78,25 @@
                     <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Estimated Days</span>
                     <input type="text" name="estimate_day" id="estimate_day" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                 </label>
-                <label class="block md:col-span-3">
-                    <span class="flex items-center justify-between gap-3 text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Use Area Names <input type="checkbox" name="on_off_btn" id="on_off_btn" class="rounded border-erp-line text-erp focus:ring-erp"></span>
+                <div class="md:col-span-3">
+                    <div class="flex items-center justify-between gap-3 text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">
+                        <span>City</span>
+                        <label for="on_off_btn" class="inline-flex cursor-pointer items-center gap-2 normal-case tracking-normal">
+                            Use Area Names
+                            <input type="checkbox" name="on_off_btn" id="on_off_btn" value="1" class="rounded border-erp-line text-erp focus:ring-erp">
+                        </label>
+                    </div>
                     <select name="city[]" id="city" data-placeholder="Select City" class="v2-select2 mt-2 min-h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" multiple>
                         @foreach($cityCollection as $val)
                             <option value="{{ $val->city_id }}">{{ $val->city_name }}</option>
                         @endforeach
                     </select>
-                </label>
-                <label class="hidden block md:col-span-6" id="areaBox">
+                </div>
+                <div class="hidden md:col-span-6" id="areaBox">
                     <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Area Names</span>
-                    <input type="text" name="areas" id="areas" placeholder="Comma separated area names" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
-                </label>
-                <div class="flex items-end md:col-span-6">
+                    <input type="text" name="areas" id="areas" placeholder="Type area name and press Enter or comma" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                </div>
+                <div class="flex items-end md:col-span-6" id="createBtnWrap">
                     <button type="button" id="btn_create" class="h-10 rounded-lg bg-erp px-5 text-sm font-bold text-white transition hover:bg-erp-dark">Create</button>
                 </div>
             </form>
@@ -151,7 +157,52 @@
     </div>
 @endsection
 
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('components/bootstrap-tagsinput/dist/bootstrap-tagsinput.css') }}" />
+    <style>
+        #areaBox .bootstrap-tagsinput {
+            display: block;
+            width: 100%;
+            min-height: 2.5rem;
+            margin-top: 0.5rem;
+            padding: 0.35rem 0.5rem;
+            border: 1px solid #d8e1ec;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            background: #fff;
+            line-height: 1.4;
+        }
+        #areaBox .bootstrap-tagsinput input {
+            width: auto !important;
+            max-width: 100%;
+            margin: 2px 0;
+            font-size: 0.875rem;
+        }
+        #areaBox .bootstrap-tagsinput .tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            margin: 2px 4px 2px 0;
+            padding: 0.15rem 0.45rem;
+            border-radius: 0.375rem;
+            background: #ecfdf5;
+            color: #047857;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+        #areaBox .bootstrap-tagsinput .tag [data-role="remove"] {
+            margin-left: 0.15rem;
+            cursor: pointer;
+        }
+        #areaBox .bootstrap-tagsinput .tag [data-role="remove"]:after {
+            content: "×";
+            padding: 0 2px;
+        }
+    </style>
+@endpush
+
 @push('scripts')
+    <script src="{{ asset('components/bootstrap-tagsinput/dist/bootstrap-tagsinput.js') }}"></script>
     <script>
         function setDeliveryStatus(message, success = true) {
             const status = document.getElementById('deliveryStatus');
@@ -164,6 +215,44 @@
                 $select.trigger('change.select2');
             }
         }
+
+        function initCitySelect2($city) {
+            $city.select2({
+                allowClear: true,
+                dropdownCssClass: 'v2-select2-dropdown',
+                placeholder: $city.data('placeholder') || 'Select City',
+                width: '100%'
+            });
+        }
+
+        function setCityAreaMode(useAreas) {
+            const $city = jQuery('#city');
+            const areaBox = document.getElementById('areaBox');
+
+            if ($city.hasClass('select2-hidden-accessible')) {
+                $city.select2('destroy');
+            }
+
+            if (useAreas) {
+                $city.attr('name', 'city').removeAttr('multiple').val('');
+                areaBox.classList.remove('hidden');
+            } else {
+                $city.attr({ name: 'city[]', multiple: 'multiple' }).val(null);
+                areaBox.classList.add('hidden');
+            }
+
+            initCitySelect2($city);
+
+            if (jQuery.fn.tagsinput) {
+                jQuery('#areas').tagsinput('removeAll');
+            }
+        }
+
+        jQuery(function () {
+            if (jQuery.fn.tagsinput) {
+                jQuery('#areas').tagsinput({ maxTags: 40 });
+            }
+        });
 
         jQuery('#website').on('change', function () {
             const $branch = jQuery('#branch');
@@ -192,7 +281,7 @@
         });
 
         document.getElementById('on_off_btn').addEventListener('change', function () {
-            document.getElementById('areaBox').classList.toggle('hidden', !this.checked);
+            setCityAreaMode(this.checked);
         });
 
         document.getElementById('btn_create').addEventListener('click', function () {
