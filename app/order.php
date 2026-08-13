@@ -1282,7 +1282,7 @@ class order extends Model
 
 	public function getRiders()
 	{
-		return DB::table("service_provider_details")->where("branch_id", session("branch"))->where("categor_id", 1)->where("status_id", 1)->get();
+		return DB::table("service_provider_details")->where("branch_id", session("branch"))->where("categor_id", 4)->where("status_id", 1)->get();
 	}
 
 	public function getDepartments()
