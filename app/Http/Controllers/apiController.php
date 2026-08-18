@@ -83,7 +83,7 @@ class apiController extends Controller
     INNER JOIN inventory_department b on b.department_id = a.department_id
     INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
     INNER JOIN inventory_uom d on d.uom_id = a.uom_id
-    INNER JOIN company e on e.company_id = a.company_id where a.company_id = ? and a.status = 1 and a.product_mode IN(2, 3)', [$request->branch_id, $request->id]);
+    INNER JOIN company e on e.company_id = a.company_id where a.company_id = ? and a.status = 1 ', [$request->branch_id, $request->id]);
         return response()->json($product);
     }
 
