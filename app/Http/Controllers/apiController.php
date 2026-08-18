@@ -75,6 +75,18 @@ class apiController extends Controller
         return json_encode($product);
     }
 	
+	public function productJSONByBranch(Request $request)
+    {
+        $product = DB::select('
+        SELECT a.id,a.item_code,a.product_name,a.slug,a.short_description, a.product_description,a.details,b.department_name,c.sub_depart_name,d.name as uom,CONCAT("https://retail.sabsoft.com.pk/assets/images/products/" ,a.image) as image,e.name as companyName,f.*,IFNULL((SELECT SUM(balance) from inventory_stock where product_id = a.id and branch_id = ? ),0) as qty FROM inventory_general a
+    INNER JOIN inventory_price f on f.product_id = a.id and f.status_id = 1
+    INNER JOIN inventory_department b on b.department_id = a.department_id
+    INNER JOIN inventory_sub_department c on c.sub_department_id = a.sub_department_id
+    INNER JOIN inventory_uom d on d.uom_id = a.uom_id
+    INNER JOIN company e on e.company_id = a.company_id where a.company_id = ? and a.status = 1 and a.product_mode IN(2, 3)', [$request->branch_id, $request->id]);
+        return json_encode($product);
+    }
+
 	public function productJSONByDepartment(Request $request)
     {
         $product = DB::select('

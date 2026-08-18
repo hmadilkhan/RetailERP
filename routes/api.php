@@ -27,6 +27,7 @@ Route::post('/subdepart', [apiController::class, 'subdepartmentJSON']);
 Route::get('/products/{id}', [apiController::class, 'productJSON']);
 Route::get('/get-single-product/{id}', [apiController::class, 'productById']);
 Route::get('/department-wise-products/{id}', [apiController::class, 'productJSONByDepartment']);
+Route::get('/branch-wise-products/{id}/{branch_id}', [apiController::class, 'productJSONByBranch']);
 Route::post('/login', [apiController::class, 'login']);
 
 /******************************************** API ROUTES *************************************************************/
