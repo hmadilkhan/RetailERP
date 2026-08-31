@@ -48,6 +48,13 @@
                                 <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span>
                             @enderror
                         </label>
+                        <label class="block sm:col-span-2">
+                            <span class="{{ $labelClass }}">Description</span>
+                            <textarea name="description" rows="4" placeholder="Department description" class="{{ $textareaClass }}">{{ old('description') }}</textarea>
+                            @error('description')
+                                <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span>
+                            @enderror
+                        </label>
                     </div>
                 </section>
 

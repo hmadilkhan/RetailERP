@@ -1,0 +1,1038 @@
+<title>Sabify Capability Catalog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Barlow:500,600,700|IBM+Plex+Mono:400,500,600|Source+Serif+Pro:400,600&display=swap">
+
+<style>
+  :root {
+    --ground:      #F6F7F5;
+    --surface:     #FFFFFF;
+    --surface-alt: #EFF2F0;
+    --ink:         #141B1A;
+    --muted:       #5D6C69;
+    --faint:       #8A9895;
+    --rule:        #DDE3E0;
+    --rule-strong: #C3CDC9;
+    --accent:      #0E6B62;
+    --accent-soft: #E2EFEC;
+    --brass:       #8A6212;
+    --brass-soft:  #F3EBD9;
+
+    --f-display: "Barlow", "Helvetica Neue", Arial, sans-serif;
+    --f-body:    "Source Serif Pro", Georgia, "Times New Roman", serif;
+    --f-mono:    "IBM Plex Mono", ui-monospace, "SFMono-Regular", Consolas, monospace;
+
+    --step--1: 0.812rem;
+    --step-0:  1rem;
+    --step-1:  1.19rem;
+    --step-2:  1.48rem;
+    --step-3:  1.95rem;
+    --step-4:  2.75rem;
+    --step-5:  3.9rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0F1513;
+      --surface:     #151D1B;
+      --surface-alt: #1B2523;
+      --ink:         #E4EBE8;
+      --muted:       #9AACA8;
+      --faint:       #71827E;
+      --rule:        #26302E;
+      --rule-strong: #35413E;
+      --accent:      #4CC4B3;
+      --accent-soft: #14302C;
+      --brass:       #C9A24E;
+      --brass-soft:  #2A2418;
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --ground:      #0F1513;
+    --surface:     #151D1B;
+    --surface-alt: #1B2523;
+    --ink:         #E4EBE8;
+    --muted:       #9AACA8;
+    --faint:       #71827E;
+    --rule:        #26302E;
+    --rule-strong: #35413E;
+    --accent:      #4CC4B3;
+    --accent-soft: #14302C;
+    --brass:       #C9A24E;
+    --brass-soft:  #2A2418;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: var(--step-0);
+    line-height: 1.6;
+    margin: 0;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--f-display);
+    text-wrap: balance;
+    margin: 0;
+    line-height: 1.15;
+  }
+
+  a { color: var(--accent); }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  .shell {
+    max-width: 1240px;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 4vw, 3rem);
+  }
+
+  /* ---------- Masthead ---------- */
+
+  .masthead {
+    padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(2rem, 4vw, 3rem);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: var(--step--1);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 2.25rem;
+    height: 2px;
+    background: var(--accent);
+    flex: none;
+  }
+
+  .masthead h1 {
+    font-size: var(--step-5);
+    font-weight: 700;
+    letter-spacing: -0.028em;
+    max-width: 16ch;
+  }
+
+  .masthead .lede {
+    margin: 1.5rem 0 0;
+    font-size: var(--step-1);
+    color: var(--muted);
+    max-width: 62ch;
+  }
+
+  .meta-line {
+    margin-top: 2rem;
+    font-family: var(--f-mono);
+    font-size: var(--step--1);
+    color: var(--faint);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+
+  .meta-line span { white-space: nowrap; }
+
+  /* ---------- Scale band ---------- */
+
+  .scale { border-bottom: 1px solid var(--rule); }
+
+  .scale-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 2rem 1.5rem;
+    padding: 1.9rem 0 2rem;
+  }
+
+  .scale-num {
+    font-family: var(--f-display);
+    font-size: var(--step-3);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+    display: block;
+    line-height: 1;
+  }
+
+  .scale-label {
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faint);
+    margin-top: 0.6rem;
+    display: block;
+  }
+
+  /* ---------- Body layout ---------- */
+
+  .body-grid {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    padding: clamp(2.5rem, 5vw, 4rem) 0 5rem;
+    align-items: start;
+  }
+
+  @media (max-width: 900px) {
+    .body-grid { grid-template-columns: minmax(0, 1fr); }
+    .index { position: static; }
+  }
+
+  .index {
+    position: sticky;
+    top: 1.5rem;
+    font-family: var(--f-mono);
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .index-title {
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--faint);
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--rule-strong);
+    margin-bottom: 0.75rem;
+  }
+
+  .index ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .index a {
+    color: var(--muted);
+    text-decoration: none;
+    display: flex;
+    gap: 0.6rem;
+    padding: 0.32rem 0.4rem 0.32rem 0;
+    border-radius: 2px;
+  }
+
+  .index a:hover { color: var(--accent); }
+
+  .index a .n {
+    color: var(--faint);
+    font-variant-numeric: tabular-nums;
+    flex: none;
+  }
+
+  .main {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(2.5rem, 4vw, 3.5rem);
+    min-width: 0;
+  }
+
+  /* ---------- Module ---------- */
+
+  .module {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 3px;
+    padding: clamp(1.5rem, 3vw, 2.25rem);
+    scroll-margin-top: 1.5rem;
+  }
+
+  .module-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .module-head h2 {
+    font-size: var(--step-2);
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .module-head h2 .n {
+    font-family: var(--f-mono);
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.08em;
+    display: block;
+    margin-bottom: 0.45rem;
+  }
+
+  .count {
+    font-family: var(--f-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brass);
+    background: var(--brass-soft);
+    border-radius: 100px;
+    padding: 0.3rem 0.7rem;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .purpose {
+    margin: 1rem 0 0;
+    color: var(--muted);
+    max-width: 68ch;
+  }
+
+  .features {
+    list-style: none;
+    margin: 1.6rem 0 0;
+    padding: 0;
+    columns: 2;
+    column-gap: 2.5rem;
+  }
+
+  @media (max-width: 640px) {
+    .features { columns: 1; }
+  }
+
+  .features li {
+    break-inside: avoid;
+    padding: 0.34rem 0 0.34rem 1.15rem;
+    position: relative;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
+
+  .features li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.82em;
+    width: 5px;
+    height: 5px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .features li b {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .note {
+    margin-top: 1.5rem;
+    padding: 0.9rem 1.1rem;
+    background: var(--accent-soft);
+    border-radius: 3px;
+    font-size: 0.9rem;
+    color: var(--ink);
+  }
+
+  .note strong {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: block;
+    margin-bottom: 0.3rem;
+  }
+
+  /* ---------- Stack table ---------- */
+
+  .stack-wrap { overflow-x: auto; margin-top: 1.6rem; }
+
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-size: 0.9rem;
+    min-width: 460px;
+  }
+
+  th, td {
+    text-align: left;
+    padding: 0.65rem 1rem 0.65rem 0;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+
+  th {
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faint);
+    font-weight: 500;
+    border-bottom: 1px solid var(--rule-strong);
+  }
+
+  td:first-child {
+    font-family: var(--f-display);
+    font-weight: 600;
+    white-space: nowrap;
+    padding-right: 2rem;
+  }
+
+  td:last-child { color: var(--muted); }
+
+  /* ---------- Footer ---------- */
+
+  .colophon {
+    border-top: 1px solid var(--rule);
+    font-family: var(--f-mono);
+    font-size: var(--step--1);
+    color: var(--faint);
+  }
+
+  .colophon .shell {
+    padding-top: 2.5rem;
+    padding-bottom: 4rem;
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem 2rem;
+    flex-wrap: wrap;
+  }
+</style>
+
+<header class="masthead">
+  <div class="shell">
+    <p class="eyebrow">Capability Catalog &middot; Retail ERP Platform</p>
+    <h1>Everything Sabify does.</h1>
+    <p class="lede">A complete, module-by-module account of the platform &mdash; from the point of sale
+      through inventory, procurement, payroll, storefront and financial close. Nineteen modules, built
+      as one system on a single database.</p>
+    <p class="meta-line">
+      <span>Laravel 11 &middot; PHP 8</span>
+      <span>Multi-company, multi-branch</span>
+      <span>Web &middot; POS &middot; Mobile API</span>
+    </p>
+  </div>
+</header>
+
+<section class="scale" aria-label="Platform at a glance">
+  <div class="shell">
+   <div class="scale-grid">
+    <div class="scale-item"><span class="scale-num">19</span><span class="scale-label">Modules</span></div>
+    <div class="scale-item"><span class="scale-num">1,185</span><span class="scale-label">Endpoints</span></div>
+    <div class="scale-item"><span class="scale-num">615</span><span class="scale-label">Screens</span></div>
+    <div class="scale-item"><span class="scale-num">40+</span><span class="scale-label">Reports</span></div>
+    <div class="scale-item"><span class="scale-num">9</span><span class="scale-label">Integrations</span></div>
+   </div>
+  </div>
+</section>
+
+<div class="shell">
+  <div class="body-grid">
+
+    <nav class="index" aria-label="Module index">
+      <div class="index-title">Modules</div>
+      <ol>
+        <li><a href="#m1"><span class="n">01</span> Company &amp; Branch</a></li>
+        <li><a href="#m2"><span class="n">02</span> Users &amp; Access</a></li>
+        <li><a href="#m3"><span class="n">03</span> Product Catalog</a></li>
+        <li><a href="#m4"><span class="n">04</span> Stock Control</a></li>
+        <li><a href="#m5"><span class="n">05</span> Purchasing</a></li>
+        <li><a href="#m6"><span class="n">06</span> Demand Planning</a></li>
+        <li><a href="#m7"><span class="n">07</span> Point of Sale</a></li>
+        <li><a href="#m8"><span class="n">08</span> Orders &amp; Delivery</a></li>
+        <li><a href="#m9"><span class="n">09</span> Customers</a></li>
+        <li><a href="#m10"><span class="n">10</span> CRM &amp; Leads</a></li>
+        <li><a href="#m11"><span class="n">11</span> Production Jobs</a></li>
+        <li><a href="#m12"><span class="n">12</span> Finance</a></li>
+        <li><a href="#m13"><span class="n">13</span> HR &amp; Payroll</a></li>
+        <li><a href="#m14"><span class="n">14</span> Restaurant Ops</a></li>
+        <li><a href="#m15"><span class="n">15</span> Promotions</a></li>
+        <li><a href="#m16"><span class="n">16</span> Online Store</a></li>
+        <li><a href="#m17"><span class="n">17</span> Reporting</a></li>
+        <li><a href="#m18"><span class="n">18</span> AI Assistance</a></li>
+        <li><a href="#m19"><span class="n">19</span> Integrations</a></li>
+      </ol>
+    </nav>
+
+    <main class="main">
+
+      <!-- 01 -->
+      <article class="module" id="m1">
+        <div class="module-head">
+          <h2><span class="n">MODULE 01</span>Company &amp; Branch Management</h2>
+          <span class="count">14 features</span>
+        </div>
+        <p class="purpose">Run several companies and any number of branches from one installation, each
+          with its own stock, staff, pricing and books &mdash; while head office keeps a consolidated view.</p>
+        <ul class="features">
+          <li><b>Multi-company setup</b> with isolated data per company</li>
+          <li><b>Unlimited branches</b> under each company</li>
+          <li>Branch creation, editing and deactivation</li>
+          <li>Branch-wise opening and closing timings</li>
+          <li>Per-branch email recipients for automated reports</li>
+          <li>Head-office <b>admin panel</b> above all companies</li>
+          <li>Company subscription <b>billing rates</b> and credit ledger</li>
+          <li>Invoice setup and automated platform invoicing</li>
+          <li>Billing summary and delivery history</li>
+          <li>Branch switching without re-login</li>
+          <li><b>User impersonation</b> for support and troubleshooting</li>
+          <li>Company-level business policies</li>
+          <li>Branch performance comparison</li>
+          <li>Consolidated head-office reporting</li>
+        </ul>
+      </article>
+
+      <!-- 02 -->
+      <article class="module" id="m2">
+        <div class="module-head">
+          <h2><span class="n">MODULE 02</span>Users, Roles &amp; Access Control</h2>
+          <span class="count">13 features</span>
+        </div>
+        <p class="purpose">Decide exactly who sees what. Permissions are set per role, per screen and per
+          branch, and every change is recorded.</p>
+        <ul class="features">
+          <li>User accounts with profile and contact details</li>
+          <li><b>Role management</b> with unlimited custom roles</li>
+          <li><b>Screen-level permissions</b> &mdash; view, add, edit, delete</li>
+          <li>Menu builder: add, rename, reorder or hide any page</li>
+          <li>Branch-wise access restriction per user</li>
+          <li>Separate HR permission set for payroll staff</li>
+          <li>Module enable/disable per company</li>
+          <li><b>Activity log</b> of every record change with user and timestamp</li>
+          <li>Login, logout and session management</li>
+          <li>Forced logout notification to a signed-in user</li>
+          <li>Password reset and email verification</li>
+          <li>Terminal lock with supervisor password</li>
+          <li>Separate super-admin login for the platform owner</li>
+        </ul>
+      </article>
+
+      <!-- 03 -->
+      <article class="module" id="m3">
+        <div class="module-head">
+          <h2><span class="n">MODULE 03</span>Product Catalog &amp; Inventory Master</h2>
+          <span class="count">22 features</span>
+        </div>
+        <p class="purpose">One catalog serves the POS, the storefront, purchasing and production &mdash;
+          with variants, bundles, recipes and add-ons all defined in the same place.</p>
+        <ul class="features">
+          <li>Product master with codes, images and full descriptions</li>
+          <li><b>Departments, sub-departments</b> and sections</li>
+          <li>Brands and free-form tags</li>
+          <li><b>Units of measure</b> with per-product conversion</li>
+          <li><b>Product variations</b> &mdash; size, colour, and custom attributes</li>
+          <li>Variation products with priority ordering</li>
+          <li><b>Deals and bundles</b> made of multiple items</li>
+          <li>Add-ons and add-on categories (toppings, extras)</li>
+          <li>Dedicated POS product list, separate from full catalog</li>
+          <li><b>Recipes</b> mapping finished goods to raw materials</li>
+          <li>Ideal usage standards for consumption control</li>
+          <li><b>Barcode and QR generation</b> with label printing</li>
+          <li>Multiple images per product, plus a mobile-specific image</li>
+          <li>Automatic image compression and CDN delivery</li>
+          <li><b>Bulk product upload</b> via Excel</li>
+          <li>Downloadable sample import template</li>
+          <li>Duplicate-product generator for fast catalog build-out</li>
+          <li>Bulk update of department, tax and unit</li>
+          <li>Retail price export to CSV</li>
+          <li>Active / inactive product status</li>
+          <li>Non-stock (service) item support</li>
+          <li>Search by name, code or department</li>
+        </ul>
+      </article>
+
+      <!-- 04 -->
+      <article class="module" id="m4">
+        <div class="module-head">
+          <h2><span class="n">MODULE 04</span>Stock Control &amp; Transfers</h2>
+          <span class="count">15 features</span>
+        </div>
+        <p class="purpose">Live quantities per branch, with a documented paper trail behind every
+          movement &mdash; opening, adjustment, transfer and consumption.</p>
+        <ul class="features">
+          <li><b>Real-time stock levels</b> for every branch</li>
+          <li>Opening stock upload from Excel</li>
+          <li><b>Stock adjustments</b> with reason and approval</li>
+          <li>Printable stock adjustment voucher</li>
+          <li>Daily stock snapshot for day-end reconciliation</li>
+          <li>Physical inventory count sheet</li>
+          <li>Terminal-wise stock allocation</li>
+          <li><b>Branch-to-branch stock transfer</b></li>
+          <li>Transfer orders with a raise, approve and receive workflow</li>
+          <li>Transfer status tracking and item-level editing</li>
+          <li>Direct transfer report</li>
+          <li>Raw material usage tracking</li>
+          <li>Automatic daily usage generation</li>
+          <li>Stock reports in PDF and Excel</li>
+          <li>Stock filtering by branch, department and item</li>
+        </ul>
+      </article>
+
+      <!-- 05 -->
+      <article class="module" id="m5">
+        <div class="module-head">
+          <h2><span class="n">MODULE 05</span>Purchasing &amp; Vendors</h2>
+          <span class="count">17 features</span>
+        </div>
+        <p class="purpose">The full procure-to-pay cycle: raise the order, receive the goods, book the
+          bill, and settle the vendor &mdash; with the ledger updating at every step.</p>
+        <ul class="features">
+          <li><b>Purchase orders</b> with draft and final submission</li>
+          <li>PO approval and status workflow</li>
+          <li><b>Goods Received Notes (GRN)</b> against purchase orders</li>
+          <li>GRN adjustments for short or excess delivery</li>
+          <li>Automatic stock update on receipt</li>
+          <li><b>Vendor master</b> with contact and payment terms</li>
+          <li>Vendor product catalog with agreed rates</li>
+          <li>Assign products to multiple vendors for rate comparison</li>
+          <li>Create vendor products directly from a purchase order</li>
+          <li><b>Vendor ledger</b> with running balance</li>
+          <li>Vendor payments and advance payments</li>
+          <li>Payment due-date tracking and payables ageing</li>
+          <li><b>Cheque management</b> with clearance tracking</li>
+          <li>Payment vouchers and vendor receipts</li>
+          <li>Purchase returns</li>
+          <li>Vendor ledger export to PDF and Excel</li>
+          <li>Purchase and vendor performance reports</li>
+        </ul>
+      </article>
+
+      <!-- 06 -->
+      <article class="module" id="m6">
+        <div class="module-head">
+          <h2><span class="n">MODULE 06</span>Demand Planning &amp; Distribution</h2>
+          <span class="count">9 features</span>
+        </div>
+        <p class="purpose">Branches raise what they need, the central store fulfils it. Designed for
+          commissary and hub-and-spoke operations.</p>
+        <ul class="features">
+          <li><b>Branch demand requests</b> raised against the central store</li>
+          <li>Received-demands queue at head office</li>
+          <li>Approve, part-fulfil or reject each line</li>
+          <li>Convert approved demand into a purchase order</li>
+          <li>Receive stock from master store</li>
+          <li>Demand status tracking end to end</li>
+          <li>Demand order report</li>
+          <li>Workload report per production centre</li>
+          <li>Bulk demand clean-up tools</li>
+        </ul>
+      </article>
+
+      <!-- 07 -->
+      <article class="module" id="m7">
+        <div class="module-head">
+          <h2><span class="n">MODULE 07</span>Point of Sale &amp; Terminals</h2>
+          <span class="count">16 features</span>
+        </div>
+        <p class="purpose">Counter operations from open to close: ring the sale, take the payment,
+          print the receipt, and declare the drawer at day-end.</p>
+        <ul class="features">
+          <li><b>Multiple POS terminals</b> per branch</li>
+          <li>Terminal registration and device binding</li>
+          <li><b>Terminal lock / unlock</b> with supervisor override</li>
+          <li>Day open and day close with cash declaration</li>
+          <li>Sales invoice creation and reprinting</li>
+          <li><b>Thermal receipt printing</b>, including Sunmi cloud printers</li>
+          <li>Per-terminal printer and print-format setup</li>
+          <li>Kitchen and department printer routing</li>
+          <li>Multiple payment methods per invoice</li>
+          <li>Split and part payments</li>
+          <li><b>Sales returns</b> with stock restoration</li>
+          <li>Line-level and invoice-level discounts</li>
+          <li>Sales person assignment for commission tracking</li>
+          <li>Order modes &mdash; dine-in, takeaway, delivery</li>
+          <li>Cash in / cash out from the drawer</li>
+          <li><b>Sales declaration</b> with variance against system totals</li>
+        </ul>
+      </article>
+
+      <!-- 08 -->
+      <article class="module" id="m8">
+        <div class="module-head">
+          <h2><span class="n">MODULE 08</span>Orders, Delivery &amp; Fleet</h2>
+          <span class="count">18 features</span>
+        </div>
+        <p class="purpose">Everything after the order is placed &mdash; who prepares it, who carries it,
+          what it cost to deliver, and when it actually arrived.</p>
+        <ul class="features">
+          <li>Central order panel across all channels</li>
+          <li><b>Order status workflow</b> with a full change log</li>
+          <li>Move an order to a different branch</li>
+          <li>Sub-orders and order line editing</li>
+          <li><b>Pre-order booking</b> for future dates</li>
+          <li>Web order queue from the online store</li>
+          <li>Delivery challan generation and updating</li>
+          <li>Delivery charges and delivery notes</li>
+          <li><b>Rider / driver management</b></li>
+          <li>Vehicle register with brands and documents</li>
+          <li>Vehicle manager dashboard</li>
+          <li><b>Third-party service providers</b> for outsourced delivery</li>
+          <li>Assign orders to riders or service providers</li>
+          <li>Service provider ledger and settlement</li>
+          <li>Rider-wise assigned order sheets</li>
+          <li>Booking delivery report</li>
+          <li>Order timing summary &mdash; prep and delivery duration</li>
+          <li>Amount receivable against delivered orders</li>
+        </ul>
+      </article>
+
+      <!-- 09 -->
+      <article class="module" id="m9">
+        <div class="module-head">
+          <h2><span class="n">MODULE 09</span>Customers &amp; Receivables</h2>
+          <span class="count">14 features</span>
+        </div>
+        <p class="purpose">A single customer record carries addresses, credit limit, ledger and
+          entitlements &mdash; used identically at the counter and online.</p>
+        <ul class="features">
+          <li>Customer master with full contact history</li>
+          <li><b>Multiple delivery addresses</b> per customer</li>
+          <li>Customer accounts and <b>running ledger</b></li>
+          <li>Credit limit control and credit approval</li>
+          <li>Payment receipts against invoices</li>
+          <li><b>Customer ageing</b> by 30 / 60 / 90 days</li>
+          <li>Due-date tracking and follow-up list</li>
+          <li>Customer-specific discount schemes</li>
+          <li><b>Customer wallet</b> with top-up and spend</li>
+          <li>Wallet-linked discounts</li>
+          <li>Bank-card based discounts</li>
+          <li>Customer balance and ledger export to Excel</li>
+          <li>Merge duplicate customers by mobile number</li>
+          <li>Customer sales and profitability reports</li>
+        </ul>
+      </article>
+
+      <!-- 10 -->
+      <article class="module" id="m10">
+        <div class="module-head">
+          <h2><span class="n">MODULE 10</span>CRM &amp; Lead Pipeline</h2>
+          <span class="count">12 features</span>
+        </div>
+        <p class="purpose">A sales pipeline attached to the same customer base &mdash; a converted lead
+          becomes a live customer without re-keying anything.</p>
+        <ul class="features">
+          <li><b>Lead capture</b> with source and value</li>
+          <li><b>Kanban lead board</b> with drag-and-drop stages</li>
+          <li>Lead assignment to sales staff</li>
+          <li>Bulk assignment across a team</li>
+          <li><b>Follow-up scheduling</b> with reminders</li>
+          <li>Call and meeting logging</li>
+          <li><b>Quotation builder</b> against a lead</li>
+          <li>Quotation PDF for the prospect</li>
+          <li>File attachments with preview and download</li>
+          <li><b>Convert lead to customer</b> in one action</li>
+          <li>CRM dashboard with pipeline value and win rate</li>
+          <li>Lead export to Excel and PDF</li>
+        </ul>
+      </article>
+
+      <!-- 11 -->
+      <article class="module" id="m11">
+        <div class="module-head">
+          <h2><span class="n">MODULE 11</span>Production &amp; Job Orders</h2>
+          <span class="count">11 features</span>
+        </div>
+        <p class="purpose">For businesses that make or process goods &mdash; kitchens, workshops,
+          laundries and bottling. Consumption is booked against the recipe automatically.</p>
+        <ul class="features">
+          <li><b>Job orders</b> with items, quantities and target dates</li>
+          <li>Repeat a previous job order in one click</li>
+          <li><b>Work orders</b> with costing detail</li>
+          <li>Recipe-driven raw material consumption</li>
+          <li>Recipe limits and yield control</li>
+          <li>Send items to workshop and track return</li>
+          <li><b>Per-piece labour rates</b> by process type</li>
+          <li>Production cost calculation, live and provisional</li>
+          <li>Returnable container tracking &mdash; empty and damaged</li>
+          <li>Job order detail sheets and PDF</li>
+          <li>Factory operation report</li>
+        </ul>
+      </article>
+
+      <!-- 12 -->
+      <article class="module" id="m12">
+        <div class="module-head">
+          <h2><span class="n">MODULE 12</span>Finance &amp; Accounts</h2>
+          <span class="count">17 features</span>
+        </div>
+        <p class="purpose">Books that close. Every sale, purchase, payment and expense posts to an
+          account, and the statements are produced from that ledger.</p>
+        <ul class="features">
+          <li><b>Chart of accounts</b> with account groups</li>
+          <li>Multiple bank accounts per branch</li>
+          <li><b>Cash and bank ledgers</b> with running balance</li>
+          <li>Cash deposits and withdrawals</li>
+          <li>Cash in / cash out register</li>
+          <li>Bank ledger PDF and cash ledger PDF</li>
+          <li>Editable narrations on ledger entries</li>
+          <li><b>Expense entry</b> with category and branch</li>
+          <li>Expense categories and budgets</li>
+          <li>Expense vouchers, cash vouchers and payment vouchers</li>
+          <li><b>Tax master</b> with per-product tax assignment</li>
+          <li><b>Profit &amp; Loss</b> &mdash; standard and detailed</li>
+          <li>Balances summary across accounts</li>
+          <li>Payables and receivables position</li>
+          <li>Cheque register with clearance status</li>
+          <li>Debit and credit manual entries</li>
+          <li><b>QuickBooks synchronisation</b></li>
+        </ul>
+      </article>
+
+      <!-- 13 -->
+      <article class="module" id="m13">
+        <div class="module-head">
+          <h2><span class="n">MODULE 13</span>Human Resources &amp; Payroll</h2>
+          <span class="count">28 features</span>
+        </div>
+        <p class="purpose">A complete payroll department: hire to final settlement, with attendance,
+          statutory deductions and payslips generated from one dataset.</p>
+        <ul class="features">
+          <li>Employee master with documents and qualifications</li>
+          <li>Hiring, transfer, resignation and termination</li>
+          <li>Inactive and rehire employee records</li>
+          <li><b>Departments and designations</b></li>
+          <li>Shift definition with grace time</li>
+          <li><b>Attendance</b> &mdash; device upload or manual marking</li>
+          <li>Daily attendance edit and approval</li>
+          <li>Check-in / check-out notifications</li>
+          <li>Absent marking and absentee reports</li>
+          <li>Weekend and <b>public holiday</b> calendar</li>
+          <li>Company events calendar</li>
+          <li><b>Leave management</b> with leave heads</li>
+          <li>Leave balance tracking and approval</li>
+          <li><b>Loans</b> with instalment scheduling</li>
+          <li>Loan deduction from salary and loan vouchers</li>
+          <li><b>Advance salary</b> requests and recovery</li>
+          <li>Bonuses and annual increments</li>
+          <li>Promotions with effective dating</li>
+          <li>Allowances &mdash; standard and special</li>
+          <li><b>Overtime</b> by duration or fixed amount</li>
+          <li><b>Income tax slabs</b> with per-employee application</li>
+          <li><b>EOBI</b> registration and contributions</li>
+          <li><b>Provident fund</b> management</li>
+          <li>Employee security deposits</li>
+          <li>Employee ledger and final settlement</li>
+          <li><b>Salary sheet generation</b> and payslip PDF</li>
+          <li>Attendance sheets and reports in PDF</li>
+          <li>Branch-wise, department-wise and employee-wise views</li>
+        </ul>
+      </article>
+
+      <!-- 14 -->
+      <article class="module" id="m14">
+        <div class="module-head">
+          <h2><span class="n">MODULE 14</span>Restaurant &amp; Service Operations</h2>
+          <span class="count">8 features</span>
+        </div>
+        <p class="purpose">Floor-based operations for restaurants, salons and clinics &mdash; tables,
+          rooms, appointments and kitchen routing.</p>
+        <ul class="features">
+          <li><b>Floor plan</b> setup with multiple floors</li>
+          <li>Rooms and tables with capacity</li>
+          <li><b>Kitchen departments</b> for order routing</li>
+          <li>Kitchen printer assignment per department</li>
+          <li>Kitchen order tickets printed by station</li>
+          <li><b>Service booking calendar</b> with staff view</li>
+          <li>Bookable time slots with capacity limits</li>
+          <li>Dine-in, takeaway and delivery order modes</li>
+        </ul>
+      </article>
+
+      <!-- 15 -->
+      <article class="module" id="m15">
+        <div class="module-head">
+          <h2><span class="n">MODULE 15</span>Promotions &amp; Discounts</h2>
+          <span class="count">9 features</span>
+        </div>
+        <p class="purpose">Campaign tools that apply automatically at the counter and online, with every
+          discount recorded against the user who gave it.</p>
+        <ul class="features">
+          <li><b>Discount schemes</b> by percentage or fixed amount</li>
+          <li>Discounts scoped to product, category or customer</li>
+          <li>Time-bound promotional campaigns</li>
+          <li>Promo codes</li>
+          <li><b>Bank / card partner discounts</b></li>
+          <li>Wallet-linked discount offers</li>
+          <li>Discount approval panel</li>
+          <li><b>Discount audit log</b> &mdash; who approved what, and when</li>
+          <li>Business policy rules governing discount limits</li>
+        </ul>
+      </article>
+
+      <!-- 16 -->
+      <article class="module" id="m16">
+        <div class="module-head">
+          <h2><span class="n">MODULE 16</span>Online Store &amp; Website</h2>
+          <span class="count">16 features</span>
+        </div>
+        <p class="purpose">A customer-facing storefront driven by the same catalog and stock, managed
+          entirely from inside the ERP &mdash; no separate admin.</p>
+        <ul class="features">
+          <li><b>Theme settings</b> &mdash; colours, logo and branding</li>
+          <li>Homepage sliders and banners</li>
+          <li>Advertisement blocks</li>
+          <li>Customer testimonials</li>
+          <li>Social media links</li>
+          <li><b>Publish or unpublish products</b> to the storefront</li>
+          <li>Connect departments to online categories</li>
+          <li>SEO-friendly product URLs</li>
+          <li><b>Delivery areas by city</b> with per-area charges</li>
+          <li>Branch trading hours shown to customers</li>
+          <li>Automatic open / closed status per branch</li>
+          <li>Online booking slots</li>
+          <li>Assign a POS terminal to receive web orders</li>
+          <li>Website order queue feeding the ERP</li>
+          <li>Website items summary report</li>
+          <li>One-click site rebuild after changes</li>
+        </ul>
+      </article>
+
+      <!-- 17 -->
+      <article class="module" id="m17">
+        <div class="module-head">
+          <h2><span class="n">MODULE 17</span>Reporting &amp; Business Intelligence</h2>
+          <span class="count">40+ reports</span>
+        </div>
+        <p class="purpose">Over forty built-in reports plus a self-service builder. Every report filters
+          by date, branch, department and terminal, and exports to PDF or Excel.</p>
+        <ul class="features">
+          <li><b>ERP report dashboard</b> &mdash; single entry point</li>
+          <li>Premium sales dashboard with live KPIs</li>
+          <li><b>Custom report builder</b> with saved filters</li>
+          <li>Item sale report</li>
+          <li>Consolidated item sale report</li>
+          <li>Item sale database extract</li>
+          <li>Sales invoices report</li>
+          <li>Customer sales report</li>
+          <li>Sales person report</li>
+          <li>Sales return report</li>
+          <li>Sales declaration report</li>
+          <li>Invoice details report</li>
+          <li>Stock report and stock adjustment report</li>
+          <li>Inventory details and general details</li>
+          <li>Physical inventory sheet</li>
+          <li>Raw material usage report</li>
+          <li>Transfer and direct transfer reports</li>
+          <li>Purchase report and vendor report</li>
+          <li>Vendor ledger report</li>
+          <li>Demand order report</li>
+          <li>Customer ledger and <b>customer ageing</b></li>
+          <li>Orders amount receivable</li>
+          <li>Orders timing summary</li>
+          <li>Booking order and booking delivery reports</li>
+          <li>Expense sheet and expense by category</li>
+          <li>Cash in / out report and balances</li>
+          <li><b>Profit &amp; Loss</b> &mdash; standard and detailed</li>
+          <li><b>FBR tax report</b> and export</li>
+          <li>Website items summary</li>
+          <li>Attendance, salary and loan reports</li>
+          <li>Factory operation and workload reports</li>
+          <li>Terminal-wise and branch-wise breakdowns</li>
+        </ul>
+        <div class="note">
+          <strong>Delivery options</strong>
+          Every report exports to PDF and Excel, prints on A4 or thermal stock, and can be emailed
+          automatically to branch or head-office recipients on a schedule.
+        </div>
+      </article>
+
+      <!-- 18 -->
+      <article class="module" id="m18">
+        <div class="module-head">
+          <h2><span class="n">MODULE 18</span>AI Assistance &amp; Forecasting</h2>
+          <span class="count">7 features</span>
+        </div>
+        <p class="purpose">Ask the system questions in plain language and get answers from your own live
+          data &mdash; with a query guard that keeps access read-only and permission-aware.</p>
+        <ul class="features">
+          <li><b>Sales forecasting</b> from historical trends</li>
+          <li>Forecast chat &mdash; ask about future demand conversationally</li>
+          <li><b>Plain-language querying</b> of your live business data</li>
+          <li>Query guard restricting AI access to safe, read-only reads</li>
+          <li>In-app AI support assistant</li>
+          <li>AI-generated product imagery and descriptions</li>
+          <li>Demand suggestions to guide purchasing</li>
+        </ul>
+      </article>
+
+      <!-- 19 -->
+      <article class="module" id="m19">
+        <div class="module-head">
+          <h2><span class="n">MODULE 19</span>Integrations &amp; Communications</h2>
+          <span class="count">14 features</span>
+        </div>
+        <p class="purpose">The ERP is the hub. Sales channels, accounting, tax authority, payments and
+          messaging all connect to the same records.</p>
+        <ul class="features">
+          <li><b>Shopify</b> two-way product and order sync</li>
+          <li>Live order webhooks from Shopify</li>
+          <li><b>QuickBooks</b> accounting synchronisation</li>
+          <li><b>FBR digital invoicing</b> and tax reporting</li>
+          <li><b>Easypaisa</b> payment collection</li>
+          <li>bSecure checkout integration</li>
+          <li><b>WhatsApp messaging</b> with per-user access control</li>
+          <li><b>SMS gateway</b> for order and payment alerts</li>
+          <li>Automated email &mdash; declarations, reports and alerts</li>
+          <li>In-app team chat</li>
+          <li>Browser and push notifications</li>
+          <li><b>REST API</b> for mobile and third-party apps</li>
+          <li>SOAP web service endpoint for legacy systems</li>
+          <li>Sunmi cloud printing for remote receipts</li>
+        </ul>
+      </article>
+
+      <!-- Platform -->
+      <article class="module" id="platform">
+        <div class="module-head">
+          <h2><span class="n">FOUNDATION</span>Platform &amp; Technology</h2>
+          <span class="count">Stack</span>
+        </div>
+        <p class="purpose">Built on a current, long-supported stack that runs on standard hosting and
+          scales from a single shop to a multi-company group.</p>
+        <div class="stack-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Layer</th><th scope="col">Technology</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Framework</td><td>Laravel 11 on PHP 8</td></tr>
+              <tr><td>Database</td><td>MySQL, single shared schema with company and branch scoping</td></tr>
+              <tr><td>Interface</td><td>Livewire 3 with live-updating panels, Bootstrap responsive layout</td></tr>
+              <tr><td>Documents</td><td>mPDF, DomPDF, FPDF and TCPDF for invoices, vouchers and reports</td></tr>
+              <tr><td>Spreadsheets</td><td>Maatwebsite Excel for every import and export</td></tr>
+              <tr><td>Printing</td><td>Thermal receipt printers, kitchen stations and Sunmi cloud devices</td></tr>
+              <tr><td>Codes</td><td>Barcode and QR generation with label layouts</td></tr>
+              <tr><td>Images</td><td>Automatic optimisation with Cloudinary delivery</td></tr>
+              <tr><td>Audit</td><td>Activity log across all business records</td></tr>
+              <tr><td>AI</td><td>OpenAI for forecasting, querying and content</td></tr>
+              <tr><td>Access</td><td>Role-based permissions, branch scoping, secure impersonation</td></tr>
+              <tr><td>Background</td><td>Queued jobs for sync, email and report generation</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+
+    </main>
+  </div>
+</div>
+
+<footer class="colophon">
+  <div class="shell">
+    <span>Sabify Retail ERP &mdash; Capability Catalog</span>
+    <span>19 modules &middot; 1,185 endpoints &middot; 615 screens</span>
+  </div>
+</footer>

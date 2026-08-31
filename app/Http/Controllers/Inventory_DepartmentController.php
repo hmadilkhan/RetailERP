@@ -176,6 +176,7 @@ class Inventory_DepartmentController extends Controller
                 'company_id'               => session('company_id'),
                 'code'                     => $request->get('department_code'),
                 'department_name'          => $request->get('department_name'),
+                'description'              => $request->get('description'),
                 'website_department_name'  => (empty($request->website_department_name) ?  $request->get('department_name') : $request->website_department_name),
                 'date'                     => date('Y-m-d'),
                 'time'                     => date('H:i:s'),
@@ -553,6 +554,7 @@ class Inventory_DepartmentController extends Controller
         $items = [
             'code'                     => $request->editcode,
             'department_name'          => $request->departname,
+            'description'              => $request->description,
             'website_department_name'  => (empty($request->webdeptname) ?  $request->departname : $request->webdeptname),
             'slug'                     => preg_replace("/[\s_]/", "-", strtolower($request->departname)),
             'website_mode'             => (isset($request->showWebsite) ? 1 : 0),

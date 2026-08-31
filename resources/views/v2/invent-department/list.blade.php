@@ -80,6 +80,7 @@
                                     'priority' => $d->priority,
                                     'metaTitle' => $d->meta_title,
                                     'metaDescription' => $d->meta_description,
+                                    'description' => $d->description,
                                     'sections' => $sectionIds,
                                 ];
                             @endphp
@@ -184,6 +185,11 @@
                         <span id="editDeptName_alert" class="mt-1 block text-xs font-semibold text-rose-600"></span>
                     </label>
                 </div>
+
+                <label class="block">
+                    <span class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Description</span>
+                    <textarea id="editDescription" rows="3" placeholder="Department description" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp"></textarea>
+                </label>
 
                 <label class="inline-flex items-center gap-2 text-sm font-bold text-erp-text">
                     <input type="checkbox" id="editShowWebsite" class="rounded border-erp-line text-erp focus:ring-erp">
@@ -405,6 +411,7 @@
             document.getElementById('editDeptCode').value = dept.code ?? '';
             document.getElementById('editDeptName').value = dept.name ?? '';
             document.getElementById('editDeptName_alert').textContent = '';
+            document.getElementById('editDescription').value = dept.description ?? '';
             document.getElementById('editWebDeptName').value = dept.webName ?? '';
             document.getElementById('editPriority').value = dept.priority ?? '';
             document.getElementById('editMetaTitle').value = dept.metaTitle ?? '';
@@ -449,6 +456,7 @@
             formData.append('departid', document.getElementById('editDeptId').value);
             formData.append('editcode', document.getElementById('editDeptCode').value);
             formData.append('departname', name);
+            formData.append('description', document.getElementById('editDescription').value);
             formData.append('priority', document.getElementById('editPriority').value);
 
             if (document.getElementById('editShowWebsite').checked) {
