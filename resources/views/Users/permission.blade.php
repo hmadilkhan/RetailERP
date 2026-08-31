@@ -48,6 +48,18 @@
 						<div class="form-group row">
 							<div class="col-md-10 has-success">
 								<label class="custom-control custom-checkbox">
+									<input type="checkbox" name="manual_close" class="custom-control-input" {{(count($result) != 0 ? (($result[0]->manual_close ?? 0) == 1 ? 'checked' : ''): '')}}>
+									<span class="custom-control-indicator"></span>
+									<span class="custom-control-description f-18">Manual Close Terminal</span>
+								</label>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-4 m-b-5">
+						<div class="form-group row">
+							<div class="col-md-10 has-success">
+								<label class="custom-control custom-checkbox">
 									<input type="checkbox" name="cashSales" class="custom-control-input" {{(count($result) != 0 ? ($result[0]->cash_sale == 1 ? 'checked' : ''): '')}}>
 									<span class="custom-control-indicator"></span>
 									<span class="custom-control-description f-18">Cash Sales</span>

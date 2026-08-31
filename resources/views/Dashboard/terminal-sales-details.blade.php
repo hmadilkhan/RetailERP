@@ -50,7 +50,7 @@ $totalDeductions = ($heads[0]->SalesReturn ?? 0) + ($heads[0]->Discount ?? 0) + 
                 <i class="mdi mdi-cart"></i> Item Sales
             </button>
             @if (isset($heads[0]->closingBal) && $heads[0]->closingBal == 0)
-            @if (isset($result[0]->ob) && $result[0]->ob == 0)
+            @if (isset($result[0]) && ($result[0]->manual_close ?? 0) == 1)
             <button class="btn-action btn-close"
                 onclick="closedTerminal('{{ Crypt::encrypt(isset($heads[0]->opening_id) ? $heads[0]->opening_id : '') }}','{{ Crypt::encrypt(isset($heads[0]->terminal_id) ? $heads[0]->terminal_id : '') }}')">
                 <i class="mdi mdi-lock"></i> Close Terminal

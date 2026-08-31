@@ -147,6 +147,7 @@ class TerminalManager extends Component
                 'terminal_id' => $terminalId,
                 'ob' => 1,
                 'cb' => 1,
+                'manual_close' => 0,
                 'cash_sale' => 1,
                 'card_sale' => 1,
                 'customer_credit_sale' => 1,

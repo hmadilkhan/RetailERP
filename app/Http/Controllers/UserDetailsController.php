@@ -326,6 +326,7 @@ class UserDetailsController extends Controller
             'terminal_id' => $request->terminalId,
             'ob' => ($request->ob == "on" ? 1 : 0),
             'cb' => ($request->cb == "on" ? 1 : 0),
+            'manual_close' => ($request->manual_close == "on" ? 1 : 0),
             'cash_sale' => ($request->cashSales == "on" ? 1 : 0),
             'card_sale' => ($request->cardSales == "on" ? 1 : 0),
             'customer_credit_sale' => ($request->customerCredtSales == "on" ? 1 : 0),

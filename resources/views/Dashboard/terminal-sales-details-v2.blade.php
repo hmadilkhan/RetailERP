@@ -56,7 +56,7 @@
                     Item Sales
                 </button>
                 @if (($head->closingBal ?? 0) == 0)
-                    @if (isset($result[0]->ob) && $result[0]->ob == 0)
+                    @if (isset($result[0]) && ($result[0]->manual_close ?? 0) == 1)
                         <button type="button" class="inline-flex h-10 items-center rounded-lg bg-red-600 px-4 text-sm font-bold text-white transition hover:bg-red-700"
                             onclick="closedTerminal('{{ Crypt::encrypt($head->opening_id ?? '') }}','{{ Crypt::encrypt($head->terminal_id ?? '') }}')">
                             Close Terminal

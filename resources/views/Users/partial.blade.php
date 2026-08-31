@@ -14,7 +14,7 @@ $closingBalance = round($heads[0]->closingBal);
       <span class="tag tag-success f-left f-24 m-20" style="margin-left:20px;cursor:pointer;" onclick="cashDetails('{{Crypt::encrypt(isset($heads[0]->opening_id)?$heads[0]->opening_id:'')}}','{{Crypt::encrypt(isset($heads[0]->terminal_id)?$heads[0]->terminal_id:'')}}','isdb')">Item Sales</span>
       <span id="status" class="tag tag-{{(isset($heads[0]->status) && $heads[0]->status == 2 ? 'danger' : 'success')}} f-right m-20 f-24"> {{(isset($heads[0]->status) && $heads[0]->status == 2 ? 'CLOSED' : 'ACTIVE')}}</span>
 			@if(isset($heads[0]->closingBal) && $heads[0]->closingBal == 0)
-				@if(isset($result[0]->ob) && $result[0]->ob == 0)
+				@if(isset($result[0]) && ($result[0]->manual_close ?? 0) == 1)
 					<span class="tag tag-danger f-24 m-20" style="cursor:pointer" onclick="closedTerminal('{{Crypt::encrypt(isset($heads[0]->opening_id)?$heads[0]->opening_id:'')}}','{{Crypt::encrypt(isset($heads[0]->terminal_id)?$heads[0]->terminal_id:'')}}')">Close Terminal</span>
 				@endif
 			@else

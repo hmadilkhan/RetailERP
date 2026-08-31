@@ -35,7 +35,7 @@ $closingBalance = round($heads[0]->closingBal);
             </div>
             <div class="col-xl-4 col-md-4 col-sm-12 text-center">
                 @if (isset($heads[0]->closingBal) && $heads[0]->closingBal == 0)
-                    @if (isset($result[0]->ob) && $result[0]->ob == 0)
+                    @if (isset($result[0]) && ($result[0]->manual_close ?? 0) == 1)
                         <span class="tag tag-danger f-24 " style="cursor:pointer"
                             onclick="closedTerminal('{{ Crypt::encrypt(isset($heads[0]->opening_id) ? $heads[0]->opening_id : '') }}','{{ Crypt::encrypt(isset($heads[0]->terminal_id) ? $heads[0]->terminal_id : '') }}')">Close
                             Terminal</span>
