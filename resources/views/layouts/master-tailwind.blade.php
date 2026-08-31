@@ -9,6 +9,8 @@
 
     <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/icon/icofont/css/icofont.css') }}">
+    {{-- Material Icons ligature font: used by bootstrap-material-datetimepicker for the calendar prev/next arrows --}}
+    <link rel="stylesheet" type="text/css" href="{{ asset('assets/icone91f.css?family=Material+Icons') }}">
     <script>
         tailwind.config = {
             theme: {

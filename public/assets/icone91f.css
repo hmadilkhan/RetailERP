@@ -18,3 +18,13 @@
   word-wrap: normal;
   direction: ltr;
 }
+
+/* Ensure the ligature names (chevron_left, chevron_right, clear ...) render as glyphs
+   and never leak as raw text if the feature is disabled. */
+.material-icons {
+  -webkit-font-feature-settings: 'liga';
+  -moz-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  font-variant-ligatures: common-ligatures discretionary-ligatures;
+  text-rendering: optimizeLegibility;
+}
