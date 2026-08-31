@@ -157,6 +157,27 @@
         [x-cloak] { display: none !important; }
 
         /*
+         * Kuch V2 pages legacy bootstrap.min.css load karte hain, jo
+         * `a { color:#0275d8 }` aur `a:hover { color:#014c8c; text-decoration:underline }`
+         * set kar deti hai -- is se har link neela aur hover par underlined ho jata hai.
+         * Yahan Tailwind preflight ka behaviour wapas laate hain. Ye rules bootstrap ke
+         * <link> ke baad hain isliye us par jeette hain, aur Tailwind CDN apni stylesheet
+         * head ke aakhir me inject karta hai isliye text-* / hover:* utilities in par
+         * jeetti hain -- yani explicit link colors pehle jaise hi chalte rahenge.
+         */
+        a {
+            color: inherit;
+            text-decoration: inherit;
+        }
+
+        a:hover,
+        a:focus,
+        a:active {
+            color: inherit;
+            text-decoration: inherit;
+        }
+
+        /*
          * Legacy theme ka assets/js/menu.min.js (partials.js-libs) window load/resize par
          * <body> par "fixed" aur "container" class lagata hai. Purani theme mein ye sirf
          * layout markers the, lekin Tailwind mein ye utilities hain (position:fixed /
