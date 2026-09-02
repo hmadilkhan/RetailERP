@@ -360,6 +360,43 @@
                         </div>
                     </div>
                 @endif
+                @if (!empty($orders->serviceProvider))
+                    <div class="mt-5 mt-lg-0">
+                        <div class="card border shadow-none">
+                            <div class="card-header bg-transparent border-bottom py-3 px-4">
+                                <h5 class="font-size-16 mb-0">Service Provider Detail</h5>
+                            </div>
+                            <div class="card-body p-4 pt-2">
+
+                                <div class="table-responsive">
+                                    <table class="table mb-0">
+                                        <tbody>
+                                            <tr>
+                                                <td>Name :</td>
+                                                <td class="text-end">
+                                                    {{ !empty($orders->serviceProvider->name) ? $orders->serviceProvider->name : '-' }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Contact Number :</td>
+                                                <td class="text-end">
+                                                    {{ !empty($orders->serviceProvider->contact) ? $orders->serviceProvider->contact : '-' }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Title :</td>
+                                                <td class="text-end fw-bold">
+                                                    {{ !empty($orders->serviceProvider->title) ? $orders->serviceProvider->title : '-' }}
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- end table-responsive -->
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 <div class="mt-5 mt-lg-0">
                     <div class="card border shadow-none">
                         <div class="card-header bg-transparent border-bottom py-3 px-4">

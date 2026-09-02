@@ -56,6 +56,11 @@ class salesReceiptResource extends JsonResource
 				->select('service_provider_details.provider_name', 'service_provider_details.contact')
 				->where('service_provider_orders.receipt_id', $this->id)
 				->get()),
+			"serviceProvider"           => !empty($this->wallet_provider_name) ? [
+				"name"    => $this->wallet_person,
+				"contact" => $this->wallet_contact,
+				"title"   => $this->wallet_provider_name,
+			] : null,
 			"customer"                  => new CustomerResource(DB::table('customers')->join('customer_addresses', 'customer_addresses.customer_id', 'customers.id')->where(['customers.id' => $this->customer_id, 'customer_addresses.id' => $this->cust_location_id])->select('customers.name', 'customers.mobile', 'customer_addresses.address', 'customer_addresses.landmark')->first()),
 			"products"                  => ProductResource::customCollection(DB::table('inventory_general')
 				->join('sales_receipt_details', 'sales_receipt_details.item_code', 'inventory_general.id')

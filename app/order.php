@@ -747,7 +747,7 @@ class order extends Model
 
 
 
-		$result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.time,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount,f.payment_mode,a.isSeen,a.fbrInvNumber,h.address,h.landmark,a.delivery_area_name,i.delivery_charges_amount as delivery_charges,a.delivery_type from sales_receipts a
+		$result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.time,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount,f.payment_mode,a.isSeen,a.fbrInvNumber,h.address,h.landmark,a.delivery_area_name,i.delivery_charges_amount as delivery_charges,a.delivery_type,j.provider_name as service_provider_name from sales_receipts a
 							INNER JOIN sales_order_mode b on b.order_mode_id = a.order_mode_id
 							INNER JOIN customers c on c.id = a.customer_id
 							INNER JOIN sales_order_status d on d.order_status_id = a.status
@@ -756,6 +756,7 @@ class order extends Model
 							INNER JOIN sales_payment f on f.payment_id = a.payment_id
 							LEFT JOIN customer_addresses h on h.id = a.cust_location_id
 							INNER JOIN sales_account_subdetails i on i.receipt_id = a.id
+							LEFT JOIN service_provider_details j on j.id = a.wallet_id
                             where  a.web = 1 ' . $filter . '  order by a.id DESC');
 		return $result;
 	}
@@ -874,7 +875,7 @@ class order extends Model
 
 
 
-		$result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.time,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount, f.payment_mode,a.fbrInvNumber,a.isSeen,c_add.address,c_add.landmark,a.delivery_area_name,a.delivery_charges,a.delivery_type from sales_receipts a
+		$result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.time,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount, f.payment_mode,a.fbrInvNumber,a.isSeen,c_add.address,c_add.landmark,a.delivery_area_name,a.delivery_charges,a.delivery_type,j.provider_name as service_provider_name from sales_receipts a
 							INNER JOIN sales_order_mode b on b.order_mode_id = a.order_mode_id
 							INNER JOIN customers c on c.id = a.customer_id
 							INNER JOIN customer_addresses c_add on c_add.id = a.cust_location_id
@@ -882,6 +883,7 @@ class order extends Model
 							INNER JOIN branch g on g.branch_id = a.branch
 							INNER JOIN sales_account_general e on e.receipt_id = a.id
 							INNER JOIN sales_payment f on f.payment_id = a.payment_id
+							LEFT JOIN service_provider_details j on j.id = a.wallet_id
                             where  a.web = 1 ' . $filter . '  order by a.id DESC');
 		return $result;
 	}
@@ -948,6 +950,7 @@ class order extends Model
 			->leftJoin('booking_slots as deliveryslots', 'deliveryslots.id', 'sales_receipts.delivery_slot')
 			->leftJoin('sales_receipts_services', 'sales_receipts_services.sales_receipt_id', 'sales_receipts.id')
 			->leftJoin('sales_receipt_service_types', 'sales_receipt_service_types.id', 'sales_receipts_services.service_type_id')
+			->leftJoin('service_provider_details as wallet', 'wallet.id', 'sales_receipts.wallet_id')
 			->select(
 				'sales_receipts.*',
 				'pickupslots.start_time as pickup_start_time',
@@ -965,7 +968,10 @@ class order extends Model
 				'sales_account_subdetails.delivery_charges',
 				'branch.branch_name',
 				'company.name as company_name',
-				'sales_receipt_service_types.name as service_type_name'
+				'sales_receipt_service_types.name as service_type_name',
+				'wallet.provider_name as wallet_provider_name',
+				'wallet.person as wallet_person',
+				'wallet.contact as wallet_contact'
 			)
 			->whereRaw('sales_receipts.url_orderid = "' . $id . '" ' . $filter)
 			->get();

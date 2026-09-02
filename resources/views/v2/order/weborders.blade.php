@@ -76,6 +76,7 @@
                             <th class="px-5 py-3">Date</th>
                             <th class="px-5 py-3">Time</th>
                             <th class="px-5 py-3">Payment Method</th>
+                            <th class="px-5 py-3">Service Provider</th>
                             <th class="px-5 py-3">Branch</th>
                             <th class="px-5 py-3">Customer</th>
                             <th class="px-5 py-3">Contact</th>
@@ -91,6 +92,7 @@
                                 <td class="px-5 py-3 text-erp-text">{{ $value->date }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ date('h:i a', strtotime($value->time)) }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->payment_mode }}</td>
+                                <td class="px-5 py-3 text-erp-text">{{ !empty($value->service_provider_name) ? $value->service_provider_name : '-' }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->branch }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->name }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->mobile }}</td>
@@ -110,7 +112,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="9" class="px-5 py-6 text-center text-sm text-erp-mute">No orders found.</td></tr>
+                            <tr><td colspan="11" class="px-5 py-6 text-center text-sm text-erp-mute">No orders found.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -287,6 +289,8 @@
                             <td class="px-5 py-3 font-semibold text-erp-ink">${order.url_orderid}</td>
                             <td class="px-5 py-3 text-erp-text">${order.date}</td>
                             <td class="px-5 py-3 text-erp-text">${formatTimeToAMPM(order.time)}</td>
+                            <td class="px-5 py-3 text-erp-text">${order.payment_mode || '-'}</td>
+                            <td class="px-5 py-3 text-erp-text">${order.service_provider_name || '-'}</td>
                             <td class="px-5 py-3 text-erp-text">${order.branch}</td>
                             <td class="px-5 py-3 text-erp-text">${order.name}</td>
                             <td class="px-5 py-3 text-erp-text">${order.mobile}</td>
