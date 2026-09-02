@@ -364,7 +364,7 @@
                     <div class="mt-5 mt-lg-0">
                         <div class="card border shadow-none">
                             <div class="card-header bg-transparent border-bottom py-3 px-4">
-                                <h5 class="font-size-16 mb-0">Service Provider Detail</h5>
+                                <h5 class="font-size-16 mb-0">Wallet Detail</h5>
                             </div>
                             <div class="card-body p-4 pt-2">
 
@@ -374,6 +374,12 @@
                                             <tr>
                                                 <td>Name :</td>
                                                 <td class="text-end">
+                                                     {{ !empty($orders->serviceProvider->title) ? $orders->serviceProvider->title : '-' }}
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>Account Title :</td>
+                                                <td class="text-end fw-bold">
                                                     {{ !empty($orders->serviceProvider->name) ? $orders->serviceProvider->name : '-' }}
                                                 </td>
                                             </tr>
@@ -381,12 +387,6 @@
                                                 <td>Contact Number :</td>
                                                 <td class="text-end">
                                                     {{ !empty($orders->serviceProvider->contact) ? $orders->serviceProvider->contact : '-' }}
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td>Title :</td>
-                                                <td class="text-end fw-bold">
-                                                    {{ !empty($orders->serviceProvider->title) ? $orders->serviceProvider->title : '-' }}
                                                 </td>
                                             </tr>
                                         </tbody>
