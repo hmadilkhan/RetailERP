@@ -130,21 +130,20 @@
                                 <td class="px-5 py-4 font-bold text-erp-ink">{{ $parent->website_name }}</td>
                                 <td class="px-5 py-4 text-erp-text">{{ $parent->branch_name }}</td>
                                 <td class="px-5 py-4">
-                                    <div class="flex max-w-3xl flex-wrap items-center gap-1.5">
+                                    <div class="flex max-w-3xl flex-wrap gap-1.5">
                                         @forelse($locations as $area)
                                             <span data-area-badge="{{ $area->id }}" class="rounded-md px-2 py-1 text-xs font-bold ring-1 {{ $area->status == 1 ? 'bg-sky-50 text-sky-700 ring-sky-200' : 'bg-slate-100 text-slate-600 ring-slate-200' }}">{{ ($area->is_city == 1 ? $area->city_name : $area->name) }} - Rs.{{ $area->charge }}</span>
                                         @empty
                                             <span class="text-erp-mute">No locations</span>
                                         @endforelse
-
-                                        @if($locations->count())
-                                            <button type="button" onclick="openAreaChargeModal(@js($parent->branch_id), @js($parent->branch_name))" class="rounded-md border border-dashed border-erp-line px-2 py-1 text-xs font-bold text-erp-dark transition hover:border-erp hover:bg-emerald-50">Edit Charges</button>
-                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-5 py-4"><span class="rounded-md px-2 py-1 text-xs font-bold ring-1 {{ $parent->status == 1 ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : 'bg-slate-100 text-slate-600 ring-slate-200' }}">{{ $parent->status == 1 ? 'Live' : 'Inactive' }}</span></td>
                                 <td class="px-5 py-4">
-                                    <div class="flex justify-end gap-2">
+                                    <div class="flex flex-wrap justify-end gap-2">
+                                        @if($locations->count())
+                                            <button type="button" onclick="openAreaChargeModal(@js($parent->branch_id), @js($parent->branch_name))" class="rounded-lg border border-erp-line px-3 py-2 text-xs font-bold text-erp-dark transition hover:border-erp hover:bg-emerald-50">Edit Charges</button>
+                                        @endif
                                         <button type="button" onclick="toggleDeliveryStatus(@js($parent->branch_id), @js($parent->status == 1 ? 0 : 1))" class="rounded-lg border border-erp-line px-3 py-2 text-xs font-bold text-erp-text transition hover:border-erp hover:text-erp-dark">{{ $parent->status == 1 ? 'Disable' : 'Live' }}</button>
                                         <button type="button" onclick="deleteDeliveryArea(@js($parent->branch_id), @js($parent->branch_name))" class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-bold text-rose-700 transition hover:bg-rose-100">Delete</button>
                                     </div>
