@@ -117,18 +117,29 @@
                         </tr>
                     </thead>
                     <tbody id="deliveryRows" class="divide-y divide-slate-100">
+                        @php($areaMap = [])
                         @forelse($deliveryCollection as $parent)
                             @php($locations = $areaCollection->where('website_id', $parent->website_id))
+                            @php($areaMap[$parent->branch_id] = $locations->map(fn($a) => [
+                                'id' => $a->id,
+                                'name' => $a->is_city == 1 ? $a->city_name : $a->name,
+                                'is_city' => (int) $a->is_city,
+                                'charge' => $a->charge,
+                            ])->values())
                             <tr class="hover:bg-slate-50">
                                 <td class="px-5 py-4 font-bold text-erp-ink">{{ $parent->website_name }}</td>
                                 <td class="px-5 py-4 text-erp-text">{{ $parent->branch_name }}</td>
                                 <td class="px-5 py-4">
-                                    <div class="flex max-w-3xl flex-wrap gap-1.5">
+                                    <div class="flex max-w-3xl flex-wrap items-center gap-1.5">
                                         @forelse($locations as $area)
-                                            <span class="rounded-md px-2 py-1 text-xs font-bold ring-1 {{ $area->status == 1 ? 'bg-sky-50 text-sky-700 ring-sky-200' : 'bg-slate-100 text-slate-600 ring-slate-200' }}">{{ ($area->is_city == 1 ? $area->city_name : $area->name) }} - Rs.{{ $area->charge }}</span>
+                                            <span data-area-badge="{{ $area->id }}" class="rounded-md px-2 py-1 text-xs font-bold ring-1 {{ $area->status == 1 ? 'bg-sky-50 text-sky-700 ring-sky-200' : 'bg-slate-100 text-slate-600 ring-slate-200' }}">{{ ($area->is_city == 1 ? $area->city_name : $area->name) }} - Rs.{{ $area->charge }}</span>
                                         @empty
                                             <span class="text-erp-mute">No locations</span>
                                         @endforelse
+
+                                        @if($locations->count())
+                                            <button type="button" onclick="openAreaChargeModal(@js($parent->branch_id), @js($parent->branch_name))" class="rounded-md border border-dashed border-erp-line px-2 py-1 text-xs font-bold text-erp-dark transition hover:border-erp hover:bg-emerald-50">Edit Charges</button>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="px-5 py-4"><span class="rounded-md px-2 py-1 text-xs font-bold ring-1 {{ $parent->status == 1 ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : 'bg-slate-100 text-slate-600 ring-slate-200' }}">{{ $parent->status == 1 ? 'Live' : 'Inactive' }}</span></td>
@@ -148,6 +159,34 @@
                 </table>
             </div>
         </section>
+    </div>
+
+    <div id="areaChargeModal" class="fixed inset-0 z-50 hidden items-start justify-center overflow-y-auto bg-slate-950/60 px-4 py-10" onclick="if (event.target === this) closeAreaChargeModal()">
+        <div class="w-full max-w-3xl rounded-lg bg-white shadow-menu">
+            <div class="flex items-center justify-between border-b border-erp-line px-5 py-4">
+                <div>
+                    <h3 class="text-base font-bold text-erp-ink">Edit Delivery Charges</h3>
+                    <p class="mt-1 text-sm text-erp-mute" id="areaChargeSubtitle">Update charge for each location.</p>
+                </div>
+                <button type="button" onclick="closeAreaChargeModal()" class="rounded-lg px-2 py-1 text-xl leading-none text-erp-mute transition hover:bg-slate-100">&times;</button>
+            </div>
+            <div class="max-h-[60vh] overflow-y-auto">
+                <table class="min-w-full divide-y divide-slate-100 text-sm">
+                    <thead class="bg-slate-50 text-xs uppercase tracking-[0.14em] text-erp-mute">
+                        <tr>
+                            <th class="px-5 py-3 text-left font-bold">Location</th>
+                            <th class="px-5 py-3 text-left font-bold">Delivery Charge</th>
+                            <th class="px-5 py-3 text-right font-bold">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="areaChargeRows" class="divide-y divide-slate-100"></tbody>
+                </table>
+            </div>
+            <div class="flex items-center justify-between gap-3 border-t border-erp-line px-5 py-4">
+                <span id="areaChargeStatus" class="text-sm font-semibold text-erp-mute"></span>
+                <button type="button" onclick="closeAreaChargeModal()" class="rounded-lg border border-erp-line px-4 py-2 text-sm font-bold text-erp-text transition hover:border-erp hover:text-erp-dark">Close</button>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -303,6 +342,141 @@
             fetch("{{ url('delivery') }}/" + branchId + "/destroy", { method: 'POST', body: data })
                 .then(() => window.location = "{{ route('deliveryAreasList') }}")
                 .catch(() => setDeliveryStatus('Unable to delete delivery area.', false));
+        }
+
+        const deliveryAreaRows = @js($areaMap ?? []);
+
+        function setAreaChargeStatus(message, success = true) {
+            const status = document.getElementById('areaChargeStatus');
+            status.textContent = message;
+            status.className = 'text-sm font-semibold ' + (message === '' ? 'text-erp-mute' : (success ? 'text-emerald-700' : 'text-rose-700'));
+        }
+
+        function openAreaChargeModal(branchId, branchName) {
+            const rows = deliveryAreaRows[branchId] || [];
+            const tbody = document.getElementById('areaChargeRows');
+
+            document.getElementById('areaChargeSubtitle').textContent = branchName + ' - update location name and delivery charge.';
+            setAreaChargeStatus('');
+            tbody.innerHTML = '';
+
+            rows.forEach(function (area) {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50';
+
+                const nameCell = document.createElement('td');
+                nameCell.className = 'px-5 py-3 align-middle';
+                if (area.is_city === 1) {
+                    nameCell.innerHTML = '<span class="font-bold text-erp-ink"></span><span class="ml-2 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">City</span>';
+                    nameCell.querySelector('span').textContent = area.name;
+                } else {
+                    const nameInput = document.createElement('input');
+                    nameInput.type = 'text';
+                    nameInput.value = area.name || '';
+                    nameInput.id = 'area_name_md_' + area.id;
+                    nameInput.className = 'h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp';
+                    nameCell.appendChild(nameInput);
+                }
+
+                const chargeCell = document.createElement('td');
+                chargeCell.className = 'px-5 py-3 align-middle';
+                const chargeInput = document.createElement('input');
+                chargeInput.type = 'number';
+                chargeInput.min = '0';
+                chargeInput.step = '0.01';
+                chargeInput.value = area.charge;
+                chargeInput.id = 'area_charge_md_' + area.id;
+                chargeInput.className = 'h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp sm:w-40';
+                chargeCell.appendChild(chargeInput);
+
+                const actionCell = document.createElement('td');
+                actionCell.className = 'px-5 py-3 text-right align-middle';
+                const saveBtn = document.createElement('button');
+                saveBtn.type = 'button';
+                saveBtn.textContent = 'Update';
+                saveBtn.className = 'rounded-lg bg-erp px-4 py-2 text-xs font-bold text-white transition hover:bg-erp-dark';
+                saveBtn.addEventListener('click', () => updateAreaDetail(area.id, area.is_city, saveBtn));
+                actionCell.appendChild(saveBtn);
+
+                tr.append(nameCell, chargeCell, actionCell);
+                tbody.appendChild(tr);
+            });
+
+            const modal = document.getElementById('areaChargeModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeAreaChargeModal() {
+            const modal = document.getElementById('areaChargeModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function updateAreaDetail(areaId, isCity, button) {
+            const nameInput = document.getElementById('area_name_md_' + areaId);
+            const chargeInput = document.getElementById('area_charge_md_' + areaId);
+            const charge = (chargeInput.value || '').trim();
+
+            if (charge === '' || isNaN(charge)) {
+                chargeInput.focus();
+                setAreaChargeStatus('Delivery charge is required.', false);
+                return;
+            }
+
+            if (isCity !== 1 && !(nameInput.value || '').trim()) {
+                nameInput.focus();
+                setAreaChargeStatus('Area name is required.', false);
+                return;
+            }
+
+            const data = new FormData();
+            data.append('_token', "{{ csrf_token() }}");
+            data.append('id', areaId);
+            data.append('charge', charge);
+            data.append('mode', isCity === 1 ? 1 : '');
+            data.append('area', isCity === 1 ? '' : nameInput.value.trim());
+
+            button.disabled = true;
+            button.classList.add('opacity-60');
+
+            fetch("{{ route('deliveryAreaNameUpdate') }}", {
+                method: 'POST',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                body: data
+            })
+                .then(response => response.json())
+                .then(function (result) {
+                    if (result.status === 200) {
+                        const label = (isCity === 1 ? getCityLabel(areaId) : nameInput.value.trim()) + ' - Rs.' + charge;
+                        document.querySelectorAll('[data-area-badge="' + areaId + '"]').forEach(badge => badge.textContent = label);
+                        syncAreaCache(areaId, isCity === 1 ? null : nameInput.value.trim(), charge);
+                        setAreaChargeStatus('Updated successfully.');
+                    } else {
+                        setAreaChargeStatus(result.msg || 'Unable to update delivery charge.', false);
+                    }
+                })
+                .catch(() => setAreaChargeStatus('Unable to update delivery charge.', false))
+                .finally(function () {
+                    button.disabled = false;
+                    button.classList.remove('opacity-60');
+                });
+        }
+
+        function getCityLabel(areaId) {
+            let label = '';
+            Object.values(deliveryAreaRows).forEach(rows => rows.forEach(function (area) {
+                if (area.id === areaId) label = area.name;
+            }));
+            return label;
+        }
+
+        function syncAreaCache(areaId, name, charge) {
+            Object.values(deliveryAreaRows).forEach(rows => rows.forEach(function (area) {
+                if (area.id !== areaId) return;
+                if (name !== null) area.name = name;
+                area.charge = charge;
+            }));
         }
 
         document.getElementById('deliveryFilter').addEventListener('input', function () {
