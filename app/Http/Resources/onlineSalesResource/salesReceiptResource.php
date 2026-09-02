@@ -22,6 +22,7 @@ class salesReceiptResource extends JsonResource
 		return [
 			"id"                        => $this->id,
 			"receipt_no"                => $this->receipt_no,
+			"payment"                	=> $this->payment_mode,
 			"order_statusId"            => $this->status,
 			"order_estimate_time"       => $this->order_estimate_time,
 			"company_name"              => str_replace(' ', '', strtolower($this->company_name)),

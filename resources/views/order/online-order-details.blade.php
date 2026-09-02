@@ -272,6 +272,10 @@
                                             <td class="text-end">{{ $orders->receipt_no }}</td>
                                         </tr>
                                         <tr>
+                                            <td>Payment Method :</td>
+                                            <td class="text-end">{{ $orders->payment }}</td>
+                                        </tr>
+                                        <tr>
                                             <td>Service Type :</td>
                                             <td class="text-end fw-bold">
                                                 {{ $order->service ?? 'N/A' }}</td>
