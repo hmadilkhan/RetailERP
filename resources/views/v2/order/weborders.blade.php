@@ -75,6 +75,7 @@
                             <th class="px-5 py-3">Order#</th>
                             <th class="px-5 py-3">Date</th>
                             <th class="px-5 py-3">Time</th>
+                            <th class="px-5 py-3">Payment Method</th>
                             <th class="px-5 py-3">Branch</th>
                             <th class="px-5 py-3">Customer</th>
                             <th class="px-5 py-3">Contact</th>
@@ -89,6 +90,7 @@
                                 <td class="px-5 py-3 font-semibold text-erp-ink">{{ $value->url_orderid }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->date }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ date('h:i a', strtotime($value->time)) }}</td>
+                                <td class="px-5 py-3 text-erp-text">{{ $value->payment_mode }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->branch }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->name }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->mobile }}</td>
