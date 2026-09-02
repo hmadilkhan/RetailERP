@@ -76,7 +76,7 @@
                             <th class="px-5 py-3">Date</th>
                             <th class="px-5 py-3">Time</th>
                             <th class="px-5 py-3">Payment Method</th>
-                            <th class="px-5 py-3">Service Provider</th>
+                            <th class="px-5 py-3">Wallet</th>
                             <th class="px-5 py-3">Branch</th>
                             <th class="px-5 py-3">Customer</th>
                             <th class="px-5 py-3">Contact</th>
