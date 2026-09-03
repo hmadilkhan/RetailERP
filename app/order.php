@@ -965,7 +965,7 @@ class order extends Model
 				'sales_account_subdetails.discount_amount',
 				'sales_account_subdetails.discount_percentage',
 				'sales_account_subdetails.sales_tax_amount',
-				'sales_account_subdetails.delivery_charges',
+				'sales_account_subdetails.delivery_charges_amount',
 				'branch.branch_name',
 				'company.name as company_name',
 				'sales_receipt_service_types.name as service_type_name',
