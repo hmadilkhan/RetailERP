@@ -28,7 +28,7 @@ class WebsiteScheduleCommand extends Command
     {
         $currentTime = date("H:i");
         $branchIds = DB::table("website_branches_schedule")->where("opening_time", $currentTime)->pluck("branch_id");
-
+        
         DB::table("website_branches")
             ->whereIn("branch_id", $branchIds)->where('status', 1)
             ->update([
@@ -53,7 +53,7 @@ class WebsiteScheduleCommand extends Command
         }
 
         $branchIds = DB::table("website_branches_schedule")->where("closing_time", $currentTime)->pluck("branch_id");
-
+          
         $websiteIds = DB::table("website_branches")
             ->whereIn("branch_id", $branchIds)
             ->where('status', 1)
