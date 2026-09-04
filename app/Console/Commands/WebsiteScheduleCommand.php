@@ -33,7 +33,13 @@ class WebsiteScheduleCommand extends Command
         $yesterday = $now->copy()->subDay()->format("D");
 
         $openBranchIds = $this->branchesOpeningAt($currentTime, $today);
-        $closeBranchIds = $this->branchesClosingAt($currentTime, $today, $yesterday);
+
+        // A branch with back-to-back shifts (13:00-15:00 then 15:00-18:00)
+        // closes and opens on the same minute. The next shift wins, so it must
+        // not be closed at all.
+        $closeBranchIds = $this->branchesClosingAt($currentTime, $today, $yesterday)
+            ->diff($openBranchIds)
+            ->values();
 
         if ($openBranchIds->isEmpty() && $closeBranchIds->isEmpty()) {
             return self::SUCCESS;

@@ -1107,7 +1107,7 @@ class WebsiteController extends Controller
 
         $socialFullNameArray = ['fb' => 'FaceBook', 'youtube' => 'Youtube', 'insta' => 'Instagram', 'linkedin' => 'Linkedin', 'twite' => 'Twitter', 'tiktok' => 'TikTok', 'snapchat' => 'Snapchat', 'pinterest' => 'Pinterest'];
 
-        return view("websites.social-link.index", [
+        return view("v2.website.social-link.index", [
             "websites"       => WebsiteDetail::where('company_id', $companyId)->get(),
             "lists"          => DB::table('website_social_connects as sociaLinks')
                 ->join('website_details', 'website_details.id', 'sociaLinks.website_id')
@@ -1609,9 +1609,14 @@ class WebsiteController extends Controller
         //                      ->get();
         // }
         // return $this->getAllTerminalAssign();
-        return view("websites.terminal-assign.index", [
+        return view("v2.website.terminal-assign.index", [
             "websites" => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
             // "terminalAssign" => (!empty($terminalAssign) != "" ? $terminalAssign[0] : []),
+            "branches" => DB::table("branch")
+                ->where("company_id", Auth::user()->company_id)
+                ->where("status_id", 1)
+                ->orderBy("branch_name")
+                ->get(),
             "terminalAssigns" => $this->getAllTerminalAssign(),
         ]);
     }
@@ -1630,7 +1635,7 @@ class WebsiteController extends Controller
         ]);
 
         if (DB::table('website_branches')->where(['website_id' => $request->website, 'branch_id' => $request->branch, 'terminal_id' => $request->terminal, 'status' => 1])->count() > 0) {
-            return redirect()->route('terminalAssignList')->withInput($request->input())->withErrors('terminal', 'This terminal already taken');
+            return redirect()->route('terminalAssignList')->withInput($request->input())->withErrors(['terminal' => 'This terminal is already assigned to that website and branch.']);
         }
 
         // if ($request->id == "") {
@@ -1729,55 +1734,81 @@ class WebsiteController extends Controller
 
     public function viewBranchTiming(Request $request, branch $branch)
     {
-        return view("websites.branch-timing.index", [
+        return view("v2.website.branch-timing.index", [
             "websites" => WebsiteDetail::where('company_id', Auth::user()->company_id)->get(),
             "days" => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
         ]);
     }
 
+    /**
+     * Saves the whole weekly sheet for one branch.
+     *
+     * A day can carry more than one shift (13:00-15:00 and 20:00-00:00, say),
+     * so the form posts one entry per shift rather than one per day. Anything
+     * the form no longer carries is removed, which is how a shift is deleted
+     * and how a day becomes closed.
+     */
     public function storeBranchTiming(Request $request)
     {
+        $branchId = $request->branch_id;
 
-        // UPDATE THE RECORD
-        if ($request->mode == "update") {
-            for ($i = 0; $i < count($request->id); $i++) {
-                DB::table("website_branches_schedule")
-                    ->where("id", $request->id[$i])
-                    ->update([
-                        "opening_time" => date("H:i", strtotime($request->starttime[$i])),
-                        "closing_time" => date("H:i", strtotime($request->endtime[$i])),
-                    ]);
+        if (empty($branchId)) {
+            return redirect()->route("branchTimingList")->with("error", "Branch is required.");
+        }
+
+        $days   = $request->dayname ?? [];
+        $ids    = $request->id ?? [];
+        $starts = $request->starttime ?? [];
+        $ends   = $request->endtime ?? [];
+
+        $keptIds = [];
+
+        for ($i = 0; $i < count($days); $i++) {
+            $id    = $ids[$i] ?? null;
+            $start = trim((string) ($starts[$i] ?? ''));
+            $end   = trim((string) ($ends[$i] ?? ''));
+
+            // A shift with a blank time is not a shift; leaving it out of
+            // $keptIds is what deletes it below.
+            if ($start === '' || $end === '') {
+                continue;
             }
-        } else {
-            if (count($request->dayname) > 0) {
-                for ($i = 0; $i < count($request->dayname); $i++) {
-                    DB::table("website_branches_schedule")
-                        ->insert([
-                            "branch_id"    => $request->branch_id,
-                            "day"          => $request->dayname[$i],
-                            "opening_time" => date("H:i", strtotime($request->starttime[$i])),
-                            "closing_time" => date("H:i", strtotime($request->endtime[$i])),
-                        ]);
-                }
+
+            $times = [
+                "opening_time" => date("H:i", strtotime($start)),
+                "closing_time" => date("H:i", strtotime($end)),
+            ];
+
+            if (!empty($id)) {
+                DB::table("website_branches_schedule")->where("id", $id)->update($times);
+                $keptIds[] = $id;
+            } else {
+                $keptIds[] = DB::table("website_branches_schedule")->insertGetId($times + [
+                    "branch_id" => $branchId,
+                    "day"       => $days[$i],
+                    "status"    => 1,
+                ]);
             }
         }
-        return redirect()->route("branchTimingList");
-        // foreach ($request->dayname as $key => $value) {
-        //  echo substr($value, 0, 3);
-        // }
 
-        // foreach ($request->starttime as $key => $value) {
-        //  echo date("H:i:s",strtotime( $value));
-        // }
+        DB::table("website_branches_schedule")
+            ->where("branch_id", $branchId)
+            ->whereNotIn("id", $keptIds)
+            ->delete();
+
+        return redirect()->route("branchTimingList")->with("success", "Branch timings saved successfully.");
     }
 
     public function getBranchTiming(Request $request)
     {
-        return view("websites.branch-timing.branch-table", [
+        return view("v2.website.branch-timing.branch-table", [
             "days" => ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
             "websiteId" => $request->websiteId,
             "branchId"  => $request->branchId,
-            "timings"   => DB::table("website_branches_schedule")->where("branch_id", $request->branchId)->get(),
+            "timings"   => DB::table("website_branches_schedule")
+                ->where("branch_id", $request->branchId)
+                ->orderBy("opening_time")
+                ->get(),
         ]);
     }
 
@@ -1814,7 +1845,7 @@ class WebsiteController extends Controller
         }
 
         return view(
-            'websites.setting.index',
+            'v2.website.theme-setting.index',
             [
                 "websiteLists" => WebsiteDetail::where('company_id', $companyId)->get(),
                 "GetWebsite"   => $GetWebsite,
