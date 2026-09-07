@@ -289,7 +289,7 @@ class WebsiteController extends Controller
 
         $companyId = session('company_id');
 
-        return view("websites.sliders.index", [
+        return view(session('roleId') == 1 ? "v2.website.sliders.index" : "websites.sliders.index", [
             "websites"          => WebsiteDetail::where('company_id', $companyId)->get(),
             "departments"       => InventoryDepartment::where('company_id', $companyId)->get(),
             "websiteSlider"     => DB::table('website_sliders')
@@ -322,6 +322,7 @@ class WebsiteController extends Controller
                     'website_sliders.type as slider_type',
                     'website_sliders.invent_department_name',
                     'website_sliders.prod_id',
+                    'inventory_general.product_name as prod_name',
                     'inventory_general.department_id as prod_dept_id',
                     'inventory_general.sub_department_id as prod_subdept_id',
                     'website_sliders.department_slider',
@@ -628,7 +629,7 @@ class WebsiteController extends Controller
 
         $get = DB::table('website_sliders')
             ->where('id', '=', $request->id)
-            ->where('department_slider', '=', $request->deaprtment_slider)
+            ->where('department_slider', '=', $request->department_slider)
             ->first();
 
         if ($Slide != '') {
