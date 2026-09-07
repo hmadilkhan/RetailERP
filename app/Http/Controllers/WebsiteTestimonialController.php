@@ -24,21 +24,27 @@ class WebsiteTestimonialController extends Controller
     {
         $data = [];
 
+        $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
+
         if(isset($request->id)){
             $data['websiteId']=$request->id;
             $data["testimonials"] = Testimonial::where('website_id',$request->id)
                                                 ->orderBy('id','DESC')
                                                 ->get();
+        } else {
+            // Unfiltered view lists every review of the company, so the page is useful
+            // before a website is picked; the filter then narrows it down.
+            $data["testimonials"] = Testimonial::whereIn('website_id',$data["websites"]->pluck('id'))
+                                                ->orderBy('id','DESC')
+                                                ->get();
         }
 
-        $data["websites"] = WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get();
-
-        return view("websites.testimonial.index",$data);
+        return view("v2.website.testimonials.index",$data);
     }
 
     public function create(Request $request)
     {
-        return view("websites.testimonial.create", [
+        return view("v2.website.testimonials.create", [
             "websites" => WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get()
         ]);
     }
@@ -112,7 +118,7 @@ class WebsiteTestimonialController extends Controller
         }
 
 
-        return view("websites.testimonial.edit", [
+        return view("v2.website.testimonials.edit", [
             "testimonial" => $testimonial,
             "websites"    => WebsiteDetail::where('company_id',session('company_id'))->where('status',1)->get()
         ]);

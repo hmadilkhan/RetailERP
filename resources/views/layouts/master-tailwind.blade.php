@@ -41,10 +41,7 @@
     @php
         $tailwindOrdersAssets = request()->is('orders-view*');
 
-        $tailwindLegacyAssets = request()->is('website/advertisement*')
-            || request()->is('website/testimonials*')
-            || request()->is('website/customer-reviews*')
-            || request()->is('website/booking-slots*')
+        $tailwindLegacyAssets = request()->is('website/booking-slots*')
             || request()->is('create-demand')
             || request()->is('edit-demand*')
             || request()->is('discount-panel*')
@@ -98,6 +95,9 @@
             || request()->is('website/theme-setting*')
             || request()->is('website/social-link*')
             || request()->is('website/slider*')
+            || request()->is('website/advertisement*')
+            || request()->is('website/testimonials*')
+            || request()->is('website/customer-reviews*')
             || request()->is('service-provider')
             || request()->is('drivers')
             || request()->is('vehicles')

@@ -871,13 +871,13 @@ class WebsiteController extends Controller
     {
         $companyId = session('company_id');
 
-        return view("websites.advertisements.index", [
+        return view("v2.website.advertisements.index", [
             "websites"          => WebsiteDetail::where('company_id', $companyId)->get(),
             "departments"       => InventoryDepartment::where('company_id', $companyId)->get(),
             "websiteSlider"     => DB::table('website_advertisement_notifications as advertisement')
                 ->join('website_details', 'website_details.id', 'advertisement.website_id')
                 ->leftJoin('inventory_general', 'inventory_general.id', 'advertisement.prod_id')
-                ->select('advertisement.*', 'website_details.name', 'inventory_general.department_id as prod_depart', 'inventory_general.sub_department_id as prod_sb_depart')
+                ->select('advertisement.*', 'website_details.name', 'inventory_general.product_name as prod_name', 'inventory_general.department_id as prod_depart', 'inventory_general.sub_department_id as prod_sb_depart')
                 ->where('website_details.company_id', $companyId)
                 ->get(),
             // DB::table('website_advertisement_notifications as advertisement')
@@ -994,7 +994,7 @@ class WebsiteController extends Controller
         if ($Slide != '') {
 
             $rules = [
-                'image_md'   => 'required|mimes:jpg,jpeg,png|dimensions:width=1520,height=460|max:1024'
+                'image_md'   => 'required|mimes:jpg,jpeg,png|dimensions:width=576,height=576|max:1024'
             ];
 
             $this->validate($request, $rules);
@@ -1013,8 +1013,8 @@ class WebsiteController extends Controller
                 return redirect()->route('AdvertisementLists');
             }
 
-            if (\File::exists('storage/images/website/advertisement/' . session('company_id') . '/' . $request->webId . '/' . $get->image)) {
-                \File::delete('storage/images/website/advertisement/' . session('company_id') . '/' . $request->webId . '/' . $get->image);
+            if (\File::exists('storage/images/website/advertisements/' . session('company_id') . '/' . $request->webId . '/' . $get->image)) {
+                \File::delete('storage/images/website/advertisements/' . session('company_id') . '/' . $request->webId . '/' . $get->image);
             }
             $columnArray['image'] = $imageName;
         }
@@ -2006,30 +2006,36 @@ class WebsiteController extends Controller
     public function getCustomer_reviews(Request $request)
     {
         $data = [];
+        $companyId = session('company_id');
+
         if (isset($request->id)) {
             $data["websiteId"] = $request->id;
-            $data["reviews"] = DB::table('website_customer_reviews')
-                ->join('website_details', 'website_details.id', 'website_customer_reviews.website_id')
-                ->where('website_customer_reviews.website_id', $request->id)
-                ->where('website_customer_reviews.status', '!=', 99)
-                ->where('website_details.status', '=', 1)
-                ->where('website_details.company_id', session('company_id'))
-                ->select('website_customer_reviews.*')
-                ->orderBy('website_customer_reviews.id', 'DESC')
-                ->get();
-            $data["images"] = DB::table('website_customer_review_images')
-                ->join('website_customer_reviews', 'website_customer_reviews.id', 'website_customer_review_images.review_id')
-                ->join('website_details', 'website_details.id', 'website_customer_reviews.website_id')
-                ->where('website_customer_reviews.website_id', $request->id)
-                ->where('website_customer_reviews.status', '!=', 99)
-                ->where('website_details.status', '=', 1)
-                ->where('website_details.company_id', session('company_id'))
-                ->select('website_customer_review_images.*')
-                ->get();
         }
 
-        $data["websites"] = WebsiteDetail::where('company_id', session('company_id'))->where('status', 1)->get();
-        return view('websites.customer-review.index', $data);
+        // Without a website filter the page lists every review of the company, so it is
+        // useful straight away; picking a website then narrows it down.
+        $data["reviews"] = DB::table('website_customer_reviews')
+            ->join('website_details', 'website_details.id', 'website_customer_reviews.website_id')
+            ->when(isset($request->id), fn($query) => $query->where('website_customer_reviews.website_id', $request->id))
+            ->where('website_customer_reviews.status', '!=', 99)
+            ->where('website_details.status', '=', 1)
+            ->where('website_details.company_id', $companyId)
+            ->select('website_customer_reviews.*')
+            ->orderBy('website_customer_reviews.id', 'DESC')
+            ->get();
+
+        $data["images"] = DB::table('website_customer_review_images')
+            ->join('website_customer_reviews', 'website_customer_reviews.id', 'website_customer_review_images.review_id')
+            ->join('website_details', 'website_details.id', 'website_customer_reviews.website_id')
+            ->when(isset($request->id), fn($query) => $query->where('website_customer_reviews.website_id', $request->id))
+            ->where('website_customer_reviews.status', '!=', 99)
+            ->where('website_details.status', '=', 1)
+            ->where('website_details.company_id', $companyId)
+            ->select('website_customer_review_images.*')
+            ->get();
+
+        $data["websites"] = WebsiteDetail::where('company_id', $companyId)->where('status', 1)->get();
+        return view('v2.website.customer-reviews.index', $data);
     }
 
     // public function Customer_review_approved(Request $request){
