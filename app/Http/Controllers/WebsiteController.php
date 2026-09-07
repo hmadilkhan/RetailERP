@@ -289,7 +289,7 @@ class WebsiteController extends Controller
 
         $companyId = session('company_id');
 
-        return view(session('roleId') == 1 ? "v2.website.sliders.index" : "websites.sliders.index", [
+        return view("v2.website.sliders.index", [
             "websites"          => WebsiteDetail::where('company_id', $companyId)->get(),
             "departments"       => InventoryDepartment::where('company_id', $companyId)->get(),
             "websiteSlider"     => DB::table('website_sliders')
