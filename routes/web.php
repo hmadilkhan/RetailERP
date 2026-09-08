@@ -42,6 +42,7 @@ use App\Http\Controllers\InventoryDealController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\WebsiteOrderRedirectController;
 use App\Http\Controllers\SalesReturnController;
 use App\Http\Controllers\EmptyDataController;
 use App\Http\Controllers\OpeningClosingController;
@@ -142,7 +143,7 @@ Route::get('lang/{locale}', function ($locale) {
     return redirect()->back();
 });
 
-Route::get('/sales/website-order-redirect/{id?}', [OrderController::class, 'redirectToWebsiteOrder'])->name('redirectToWebsiteOrder');
+Route::get('/sales/website-order-redirect/{id?}', [WebsiteOrderRedirectController::class, 'redirectToWebsiteOrder'])->name('redirectToWebsiteOrder');
 
 Route::group(['middleware' => ['auth', 'roleChecker']], function () {
 
