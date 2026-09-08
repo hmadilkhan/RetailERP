@@ -513,7 +513,7 @@ class OrderController extends Controller
             return redirect('web-orders-view');
         }
 
-        $url = rtrim($orderModel->website->url, '/') . '/orders/' . $orderModel->url_orderid . '/' . ($orderModel->customer->id ?? '');
+        $url = rtrim($orderModel->website->url, '/') . '/order-status/' .  ($orderModel->customer->id ?? ''). '/' .$orderModel->url_orderid ;
 
         return redirect()->away($url);
     }
