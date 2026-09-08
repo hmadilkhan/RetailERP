@@ -2453,7 +2453,7 @@ class InventoryController extends Controller
 
 
         $headers = array(
-            "Content-type"        => "text/csv",
+            "Content-type"        => "text/csv; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=$fileName",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
@@ -2464,6 +2464,8 @@ class InventoryController extends Controller
 
         $callback = function () use ($tasks, $columns) {
             $file = fopen('php://output', 'w');
+            // UTF-8 BOM so Excel opens Urdu/Arabic text correctly instead of mojibake
+            fwrite($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
             fputcsv($file, $columns);
 
             foreach ($tasks as $task) {
@@ -2488,7 +2490,7 @@ class InventoryController extends Controller
         $tasks = $inventory->getInventoryListForRetailPriceUpdate(session("company_id"));
 
         $headers = array(
-            "Content-type"        => "text/csv",
+            "Content-type"        => "text/csv; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=$fileName",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
@@ -2499,6 +2501,8 @@ class InventoryController extends Controller
 
         $callback = function () use ($tasks, $columns) {
             $file = fopen('php://output', 'w');
+            // UTF-8 BOM so Excel opens Urdu/Arabic text correctly instead of mojibake
+            fwrite($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
             fputcsv($file, $columns);
 
             foreach ($tasks as $task) {
@@ -2529,7 +2533,7 @@ class InventoryController extends Controller
         $tasks = $inventory->getInventoryListForRetailPriceUpdate(session("company_id"));
 
         $headers = array(
-            "Content-type"        => "text/csv",
+            "Content-type"        => "text/csv; charset=UTF-8",
             "Content-Disposition" => "attachment; filename=$fileName",
             "Pragma"              => "no-cache",
             "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
@@ -2540,6 +2544,8 @@ class InventoryController extends Controller
 
         $callback = function () use ($tasks, $columns) {
             $file = fopen('php://output', 'w');
+            // UTF-8 BOM so Excel opens Urdu/Arabic text correctly instead of mojibake
+            fwrite($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
             fputcsv($file, $columns);
 
             for ($i = 0; $i < 2; $i++) {
