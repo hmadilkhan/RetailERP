@@ -142,6 +142,8 @@ Route::get('lang/{locale}', function ($locale) {
     return redirect()->back();
 });
 
+Route::get('/sales/website-order-redirect/{id?}', [OrderController::class, 'redirectToWebsiteOrder'])->name('redirectToWebsiteOrder');
+
 Route::group(['middleware' => ['auth', 'roleChecker']], function () {
 
     Route::post('/quickbooks/customer', [QuickBooksController::class, 'addCustomer']);
@@ -716,7 +718,7 @@ Route::middleware(['statusCheck'])->group(function () {
     // Route::get('/sales/inline-order-details/{receipt}', [OrderController::class, 'inline_receiptDetails']);
     Route::get('/sales/website-orders-list', [OrderController::class, 'websiteOrders']);
     Route::get('/sales/website-order-detail/{id?}', [OrderController::class, 'websiteOrderDetail'])->name('getWebsiteSaleReceiptDetails');
-    Route::get('/sales/website-order-redirect/{id?}', [OrderController::class, 'redirectToWebsiteOrder'])->name('redirectToWebsiteOrder');
+    
     Route::get('/sales/change-order-status-from-website/{id}/{status}/{ordercode?}', [OrderController::class, 'statusUpdate_websiteOrder']);
     Route::post('/sales/change-website-order-status', [OrderController::class, 'statusUpdate_websiteOrder']);
     Route::post('/sales/check-website-order', [OrderController::class, 'checkwebsiteOrders'])->name('checkwebsiteOrders');
