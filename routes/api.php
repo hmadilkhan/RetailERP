@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\ScaleInventoryController;
 use App\Http\Controllers\Api\Shopify\ErpWebhookController;
 use App\Http\Controllers\EasypaisaTestController;
 use App\Http\Controllers\apiController;
@@ -53,6 +54,9 @@ Route::get('topcollection/{id}', [apiController::class, 'topcollection']);
 Route::get('newproduct/{id}', [apiController::class, 'newproduct']);
 Route::post('add-sales', [apiController::class, 'addSales']);
 Route::post('add-sales-details', [apiController::class, 'addSalesDetails']);
+
+// Weighing scale inventory feed (company wise)
+Route::get('scale/inventory/{company_id?}', [ScaleInventoryController::class, 'index']);
 
 Route::get('website/image/{filename}/{mode?}/{webid?}',[WebsiteImageController::class,'show_image_website']);
 Route::get('optimizeimage',[WebsiteImageController::class,'Optimize_testing']);
