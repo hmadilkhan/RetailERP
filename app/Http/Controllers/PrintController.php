@@ -1029,6 +1029,13 @@ class PrintController extends Controller
         $branch = $vendor->getBranch($general[0]->branchId);
         $details = $order->orderItemsForPrint($general[0]->receiptID);
         $balance = $customer->getcustomersForReceipt($general[0]->customerId, $company[0]->company_id, $general[0]->branchId);
+        $departments = DB::table("sales_receipt_details as srd")
+            ->join("inventory_general as ig", "ig.id", "=", "srd.item_code")
+            ->join("inventory_department as inv_dept", "inv_dept.department_id", "=", "ig.department_id")
+            ->where("srd.receipt_id", $general[0]->receiptID)
+            ->distinct()
+            ->pluck("inv_dept.department_name")
+            ->implode(", ");
 
         // Configure MPDF
         $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
@@ -1111,6 +1118,10 @@ class PrintController extends Controller
                 <tr>
                     <td style="padding:4px; font-weight:bold;">Delivery Date</td>
                     <td style="padding:4px; text-align:right;">' . (!empty($general[0]->delivery_date) ? date("d-m-Y", strtotime($general[0]->delivery_date)) : "N/A") . '</td>
+                </tr>
+                <tr>
+                    <td style="padding:4px; font-weight:bold;">Department</td>
+                    <td style="padding:4px; text-align:right;">' . (!empty($departments) ? $departments : "N/A") . '</td>
                 </tr>
             </tbody>
         </table>
