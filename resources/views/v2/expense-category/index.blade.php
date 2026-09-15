@@ -112,7 +112,6 @@
                     } else if (r.state == 2) {
                         alert("Category '" + category + "' already exists!");
                     } else {
-                        alert("Category '" + category + "' added successfully!");
                         window.location = "{{ route('exp_category.index') }}";
                     }
                 })

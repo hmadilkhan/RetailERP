@@ -290,7 +290,6 @@
                     } else if (r.state == 2) {
                         alert("Category '" + category + "' already exists!");
                     } else {
-                        alert("Category '" + category + "' added successfully!");
                         load_categories();
                         document.getElementById('expCatName').value = '';
                         closeModal('expense-cat-modal');
