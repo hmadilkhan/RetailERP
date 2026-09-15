@@ -164,8 +164,8 @@
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex min-w-[17rem] items-center gap-3">
-                                        <a href="{{ $imageUrl }}" target="_blank" class="relative shrink-0">
-                                            <img class="h-11 w-11 rounded-lg object-cover ring-1 ring-slate-200" src="{{ $imageUrl }}" alt="{{ $item->product_name }}">
+                                        <a id="thumb-link-{{ $item->id }}" href="{{ $imageUrl }}" target="_blank" class="relative shrink-0">
+                                            <img id="thumb-{{ $item->id }}" class="h-11 w-11 rounded-lg object-cover ring-1 ring-slate-200" src="{{ $imageUrl }}" alt="{{ $item->product_name }}">
                                             <span class="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-white {{ ($item->stock ?? 0) > 0 ? 'bg-emerald-500' : 'bg-rose-500' }}"></span>
                                         </a>
                                         <div class="min-w-0">
@@ -231,7 +231,7 @@
                                             <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="unlinkWebsite('{{ $item->id }}', '{{ $item->website_id }}')">Unlink Website</button>
                                         @endif
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="openUnlinkTags('{{ $item->id }}')">Unlink Tags</button>
-                                        <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="generateImages(['{{ $item->id }}'], @js($item->product_name))">Generate Image</button>
+                                        <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="generateSingleImage('{{ $item->id }}', this)">Generate Image</button>
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="cloneProduct('{{ $item->id }}', @js($item->product_name))">Clone Product</button>
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="syncShopify('{{ $item->id }}')">Sync Shopify</button>
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-rose-700 hover:bg-rose-50" onclick="deleteProduct('{{ $item->id }}')">Inactive</button>
@@ -299,6 +299,7 @@
                     <div id="imageProgressBar" class="h-full w-0 rounded-full bg-violet-500 transition-[width]"></div>
                 </div>
             </div>
+            <div id="imageProgressStatus" class="text-sm text-erp-mute">Starting...</div>
             <div id="imageProgressLog" class="max-h-40 space-y-1 overflow-y-auto text-xs text-rose-700"></div>
         </div>
         <div class="flex justify-end gap-2 border-t border-erp-line px-5 py-4">
@@ -442,9 +443,66 @@
          * QUEUE_CONNECTION is sync, so a 1500-product run has to be driven from here to stay
          * inside PHP's execution limit and to give the user live progress they can stop.
          */
-        const IMAGE_CHUNK = 2;
+        /*
+         * Images are generated from the browser rather than on a queue: QUEUE_CONNECTION is
+         * sync, so a long run has to be driven from here to stay inside PHP's execution limit
+         * and to give the user live progress they can stop.
+         *
+         * OpenAI throttles image generation per minute on lower usage tiers, so this runs one
+         * at a time and treats a 429 as "slow down", not as a failure: the product goes back on
+         * the queue and the gap between requests grows until the account keeps up. Out-of-credit
+         * errors come back with retry=false and are recorded as real failures straight away.
+         */
+        const IMAGE_CHUNK = 1;
         const SECONDS_PER_IMAGE = 14;
+        const MAX_ATTEMPTS = 5;
+        const THROTTLE_MIN_MS = 20000;
+        const THROTTLE_MAX_MS = 90000;
         let imageRun = null;
+
+        /*
+         * One product generates inline: no modal, only its own button goes dead while the
+         * request is out, and the row thumbnail is swapped in when it lands.
+         */
+        function generateSingleImage(id, button) {
+            if (button.disabled) return;
+
+            const original = button.textContent;
+            button.disabled = true;
+            button.textContent = 'Generating...';
+            button.classList.add('opacity-60', 'cursor-not-allowed');
+
+            post("{{ route('inventory.generate-images') }}", { ids: [id] })
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(payload => {
+                    const result = (payload.results || [])[0];
+                    if (!result || !result.ok) {
+                        throw new Error(result && result.msg ? result.msg : 'Generation failed.');
+                    }
+
+                    const thumb = document.getElementById('thumb-' + id);
+                    const link = document.getElementById('thumb-link-' + id);
+                    // cache buster, the file name changes but browsers still hold the old row image
+                    if (thumb) thumb.src = result.image + '?t=' + Date.now();
+                    if (link) link.href = result.image;
+
+                    button.textContent = 'Image Generated';
+                    setTimeout(() => releaseImageButton(button, original), 2500);
+                })
+                .catch(error => {
+                    alert('Could not generate image: ' + error.message);
+                    releaseImageButton(button, original);
+                });
+        }
+
+        function releaseImageButton(button, original) {
+            button.disabled = false;
+            button.textContent = original;
+            button.classList.remove('opacity-60', 'cursor-not-allowed');
+        }
 
         function generateImages(ids, label) {
             if (!ids.length) {
@@ -458,12 +516,21 @@
 
             const minutes = Math.max(1, Math.round((ids.length * SECONDS_PER_IMAGE) / 60));
             const what = label ? '"' + label + '"' : ids.length + (ids.length > 1 ? ' products' : ' product');
-            if (!confirm('Generate images for ' + what + '?\n\nEstimated time: about ' + minutes + (minutes > 1 ? ' minutes' : ' minute') + '. Existing images on these products will be replaced.')) {
+            if (!confirm('Generate images for ' + what + '?\n\nEstimated time: about ' + minutes + (minutes > 1 ? ' minutes' : ' minute') + ', longer if the API throttles. Existing images on these products will be replaced.')) {
                 return;
             }
 
-            imageRun = { ids, index: 0, done: 0, failed: 0, finished: false, cancelled: false };
-            document.getElementById('imageProgressTotal').textContent = ids.length;
+            imageRun = {
+                queue: ids.map(id => ({ id, attempts: 0 })),
+                total: ids.length,
+                done: 0,
+                failed: 0,
+                waitMs: 0,
+                finished: false,
+                cancelled: false,
+            };
+
+            document.getElementById('imageProgressTotal').textContent = imageRun.total;
             document.getElementById('imageProgressDone').textContent = '0';
             document.getElementById('imageProgressFailed').textContent = '0';
             document.getElementById('imageProgressBar').style.width = '0%';
@@ -477,38 +544,73 @@
         }
 
         function nextImageChunk() {
-            if (!imageRun || imageRun.cancelled || imageRun.index >= imageRun.ids.length) {
+            if (!imageRun || imageRun.cancelled || !imageRun.queue.length) {
                 return finishImageRun();
             }
 
-            const chunk = imageRun.ids.slice(imageRun.index, imageRun.index + IMAGE_CHUNK);
-            imageRun.index += chunk.length;
+            const chunk = imageRun.queue.splice(0, IMAGE_CHUNK);
+            setImageStatus('Generating ' + chunk.map(entry => entry.id).join(', ') + '...');
 
-            post("{{ route('inventory.generate-images') }}", { ids: chunk })
+            post("{{ route('inventory.generate-images') }}", { ids: chunk.map(entry => entry.id) })
                 .then(res => {
                     if (!res.ok) throw new Error('HTTP ' + res.status);
                     return res.json();
                 })
                 .then(payload => {
+                    let throttled = false;
+
                     (payload.results || []).forEach(result => {
+                        const entry = chunk.find(item => String(item.id) === String(result.id)) || { id: result.id, attempts: 0 };
+
                         if (result.ok) {
                             imageRun.done++;
+                        } else if (result.retry && entry.attempts + 1 < MAX_ATTEMPTS) {
+                            throttled = true;
+                            entry.attempts++;
+                            imageRun.queue.push(entry);
                         } else {
                             imageRun.failed++;
                             logImageFailure(result.id, result.msg);
                         }
                     });
+
+                    // back off hard on a throttle, then ease off again while requests keep landing
+                    imageRun.waitMs = throttled
+                        ? Math.min(THROTTLE_MAX_MS, Math.max(THROTTLE_MIN_MS, imageRun.waitMs * 2))
+                        : Math.floor(imageRun.waitMs / 2);
+
                     updateImageProgress();
-                    nextImageChunk();
+                    scheduleNextImageChunk(throttled);
                 })
                 .catch(error => {
-                    chunk.forEach(id => {
+                    chunk.forEach(entry => {
                         imageRun.failed++;
-                        logImageFailure(id, error.message);
+                        logImageFailure(entry.id, error.message);
                     });
                     updateImageProgress();
-                    nextImageChunk();
+                    scheduleNextImageChunk(false);
                 });
+        }
+
+        function scheduleNextImageChunk(throttled) {
+            if (!imageRun || imageRun.cancelled || !imageRun.queue.length) {
+                return finishImageRun();
+            }
+
+            if (imageRun.waitMs > 0) {
+                const seconds = Math.ceil(imageRun.waitMs / 1000);
+                setImageStatus(throttled
+                    ? 'Rate limited by OpenAI, waiting ' + seconds + 's before retrying...'
+                    : 'Pacing requests, waiting ' + seconds + 's...');
+                setTimeout(nextImageChunk, imageRun.waitMs);
+                return;
+            }
+
+            nextImageChunk();
+        }
+
+        function setImageStatus(text) {
+            document.getElementById('imageProgressStatus').textContent = text;
         }
 
         function logImageFailure(id, message) {
@@ -521,12 +623,16 @@
             const handled = imageRun.done + imageRun.failed;
             document.getElementById('imageProgressDone').textContent = imageRun.done;
             document.getElementById('imageProgressFailed').textContent = imageRun.failed;
-            document.getElementById('imageProgressBar').style.width = Math.round((handled / imageRun.ids.length) * 100) + '%';
+            document.getElementById('imageProgressBar').style.width = Math.round((handled / imageRun.total) * 100) + '%';
         }
 
         function finishImageRun() {
-            if (!imageRun) return;
+            if (!imageRun || imageRun.finished) return;
             imageRun.finished = true;
+            const skipped = imageRun.total - imageRun.done - imageRun.failed;
+            setImageStatus(imageRun.cancelled
+                ? 'Stopped. ' + imageRun.done + ' generated, ' + skipped + ' not started.'
+                : 'Finished. ' + imageRun.done + ' generated, ' + imageRun.failed + ' failed.');
             document.getElementById('imageProgressStop').classList.add('hidden');
             document.getElementById('imageProgressClose').classList.remove('hidden');
         }

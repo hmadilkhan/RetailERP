@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\ProductImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use OpenAI\Exceptions\RateLimitException;
 
 class ProductImageController extends Controller
 {
@@ -62,11 +63,27 @@ class ProductImageController extends Controller
                 $results[] = [
                     'id' => $id,
                     'ok' => false,
+                    'retry' => $this->isThrottled($e),
                     'msg' => $e->getMessage(),
                 ];
             }
         }
 
         return response()->json(['state' => 1, 'results' => $results]);
+    }
+
+    /**
+     * A 429 can mean "you are going too fast" or "you are out of credit", and only the
+     * first is worth retrying. Both arrive as a rate limit error, so read the message.
+     */
+    protected function isThrottled(\Throwable $e): bool
+    {
+        $message = strtolower($e->getMessage());
+
+        if (str_contains($message, 'quota') || str_contains($message, 'credit') || str_contains($message, 'billing')) {
+            return false;
+        }
+
+        return $e instanceof RateLimitException || str_contains($message, 'rate limit');
     }
 }
