@@ -98,7 +98,10 @@
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
                 body: JSON.stringify({ category, platform_type: platformType })
             })
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
                 .then(r => {
                     if (r.state == 1) {
                         if (r.contrl) {
@@ -112,7 +115,8 @@
                         alert("Category '" + category + "' added successfully!");
                         window.location = "{{ route('exp_category.index') }}";
                     }
-                });
+                })
+                .catch(() => alert('Could not save the category. Please try again.'));
         }
 
         document.getElementById('btn_save').addEventListener('click', saveCategory);

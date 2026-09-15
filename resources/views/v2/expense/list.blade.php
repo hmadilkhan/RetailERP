@@ -277,9 +277,12 @@
             fetch("{{ route('exp_category.store') }}", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
-                body: JSON.stringify({ category })
+                body: JSON.stringify({ category, platform_type: 0 })
             })
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
                 .then(r => {
                     if (r.state == 1) {
                         if (r.contrl) document.getElementById(r.contrl + '_alert').textContent = r.msg;
@@ -292,7 +295,8 @@
                         document.getElementById('expCatName').value = '';
                         closeModal('expense-cat-modal');
                     }
-                });
+                })
+                .catch(() => alert('Could not save the category. Please try again.'));
         }
 
         document.getElementById('amount')?.addEventListener('change', function () {

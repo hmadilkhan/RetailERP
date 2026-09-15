@@ -44,7 +44,7 @@ class ExpenseCategoryController extends Controller
         $data = [
             'branch_id' => session('branch'),
             'expense_category' => $request->get('category'),
-            'platform_type' => $request->get('platform_type'),
+            'platform_type' => (int) $request->get('platform_type', 0),
         ];
 
         if ($expense_category->check($request->get('category'))) {
