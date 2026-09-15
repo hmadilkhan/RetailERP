@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class OpenAIController extends Controller
@@ -54,23 +53,4 @@ class OpenAIController extends Controller
         return $response;
     }
 
-    function generateProductImage(Request $request)
-    {
-        $imagePrompt = "Create a minimalist product ad image for " . $request->name;
-
-        // Step 2: Generate image using DALL·E 3
-        $imageResponse = Http::withToken(env('OPENAI_API_KEY'))->post('https://api.openai.com/v1/images/generations', [
-            'model' => 'dall-e-3',
-            'prompt' => $imagePrompt . " with text overlay: '" . $request->name . "'",
-            'size' => '100x100',
-            'n' => 1,
-            'response_format' => 'url',
-        ]);
-
-        $imageUrl = $imageResponse['data'][0]['url'] ?? null;
-
-        return response()->json([
-            'image_url' => $imageUrl,
-        ]);
-    }
 }

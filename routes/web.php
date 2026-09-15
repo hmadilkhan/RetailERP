@@ -30,6 +30,7 @@ use App\Http\Controllers\EmployeeSecurityDepositController;
 use App\Http\Controllers\EobiController;
 use App\Http\Controllers\ExcelExportController;
 use App\Http\Controllers\ExpenseCategoryController;
+use App\Http\Controllers\ProductImageController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\FloorController;
 use App\Http\Controllers\HomeController;
@@ -612,6 +613,10 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/inventory/product-attribute-insert', [InventoryController::class, 'insertProduct_attribute'])->name('insertProduct_attribute');
     Route::post('/inventory/product-attribute-update', [InventoryController::class, 'setProductAttribute_update'])->name('setProductAttribute_update');
     Route::post('/inventory/update-product-tags', [InventoryController::class, 'updateProductTags'])->name('updateProductTags');
+
+    // AI product image generation //
+    Route::get('/inventory/missing-image-ids', [ProductImageController::class, 'missing'])->name('inventory.missing-image-ids');
+    Route::post('/inventory/generate-images', [ProductImageController::class, 'generate'])->name('inventory.generate-images');
     Route::post('/product-unlink-from-website', [InventoryController::class, 'unLink_websiteProduct'])->name('website_product_unlink');
     Route::post('/all-product-unlink-from-website', [InventoryController::class, 'allWebsiteProduct_unlink'])->name('all_product_unlink_website');
     Route::get('/get-pos-orders', [OrderController::class, 'getPOSOrders']);
@@ -1238,7 +1243,6 @@ Route::middleware(['statusCheck'])->group(function () {
 
     /******************************* OPEN AI LINKS START **********************************/
     Route::get('/generate-story-stream', [App\Http\Controllers\OpenAIController::class, 'generateStory']);
-    Route::get('/generate-image-stream', [App\Http\Controllers\OpenAIController::class, 'generateProductImage']);
     /******************************* OPEN AI LINKS END **********************************/
 });
 

@@ -84,6 +84,7 @@
                                 Non-stock
                             </label>
                             <a href="{{ route('invent-list') }}" class="inline-flex h-10 items-center rounded-lg border border-erp-line px-4 text-sm font-bold text-erp-text transition hover:border-erp hover:text-erp-dark">Clear</a>
+                            <button type="button" id="generateAllImages" class="inline-flex h-10 items-center rounded-lg border border-violet-200 bg-violet-50 px-4 text-sm font-bold text-violet-700 transition hover:bg-violet-100">Generate Missing Images</button>
                             <button type="button" id="bulkMenuButton" class="hidden h-10 rounded-lg border border-erp bg-erp px-4 text-sm font-bold text-white transition hover:bg-erp-dark">Bulk Actions</button>
                         </div>
                     </div>
@@ -126,6 +127,7 @@
                     <button type="button" data-bulk="uom" class="bulk-action rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text hover:border-erp">UOM</button>
                     <button type="button" data-bulk="tax" class="bulk-action rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text hover:border-erp">Tax</button>
                     <button type="button" data-bulk="price" class="bulk-action rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text hover:border-erp">Price</button>
+                    <button type="button" data-bulk="images" class="bulk-action rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 hover:bg-violet-100">Generate Images</button>
                     <button type="button" data-bulk="sunmi" class="bulk-action rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700 hover:bg-sky-100">Sunmi ESL</button>
                     <button type="button" data-bulk="activate" class="bulk-action rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100">Activate</button>
                     @if (session('roleId') == 2)
@@ -229,6 +231,7 @@
                                             <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="unlinkWebsite('{{ $item->id }}', '{{ $item->website_id }}')">Unlink Website</button>
                                         @endif
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="openUnlinkTags('{{ $item->id }}')">Unlink Tags</button>
+                                        <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="generateImages(['{{ $item->id }}'], @js($item->product_name))">Generate Image</button>
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="cloneProduct('{{ $item->id }}', @js($item->product_name))">Clone Product</button>
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="syncShopify('{{ $item->id }}')">Sync Shopify</button>
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-rose-700 hover:bg-rose-50" onclick="deleteProduct('{{ $item->id }}')">Inactive</button>
@@ -278,6 +281,29 @@
         <div class="flex justify-end gap-2 border-t border-erp-line px-5 py-4">
             <button type="button" class="rounded-lg border border-erp-line px-4 py-2 text-sm font-bold text-erp-text" onclick="closeModal()">Cancel</button>
             <button type="button" id="modalSave" class="rounded-lg border border-erp bg-erp px-4 py-2 text-sm font-bold text-white">Save</button>
+        </div>
+    </div>
+
+    <div id="imageProgressModal" class="fixed left-1/2 top-1/2 z-50 hidden w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border border-erp-line bg-white shadow-menu">
+        <div class="border-b border-erp-line px-5 py-4">
+            <h3 class="text-base font-bold text-erp-ink">Generating Product Images</h3>
+            <p class="mt-1 text-sm text-erp-mute">Keep this tab open until it finishes.</p>
+        </div>
+        <div class="space-y-4 px-5 py-4">
+            <div>
+                <div class="flex items-center justify-between text-sm font-bold text-erp-ink">
+                    <span><span id="imageProgressDone">0</span> of <span id="imageProgressTotal">0</span> done</span>
+                    <span class="text-rose-600"><span id="imageProgressFailed">0</span> failed</span>
+                </div>
+                <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div id="imageProgressBar" class="h-full w-0 rounded-full bg-violet-500 transition-[width]"></div>
+                </div>
+            </div>
+            <div id="imageProgressLog" class="max-h-40 space-y-1 overflow-y-auto text-xs text-rose-700"></div>
+        </div>
+        <div class="flex justify-end gap-2 border-t border-erp-line px-5 py-4">
+            <button type="button" id="imageProgressStop" class="rounded-lg border border-erp-line px-4 py-2 text-sm font-bold text-erp-text" onclick="stopImageGeneration()">Stop</button>
+            <button type="button" id="imageProgressClose" class="hidden rounded-lg border border-erp bg-erp px-4 py-2 text-sm font-bold text-white" onclick="closeImageProgress()">Close</button>
         </div>
     </div>
 @endsection
@@ -403,12 +429,136 @@
             if (action === 'uom') return selectBulk('Change UOM', uoms, 'uom_id', 'name', value => post("{{ url('update_product_uom') }}", { inventid: ids, uomId: value }));
             if (action === 'tax') return taxBulk();
             if (action === 'price') return priceBulk(ids);
+            if (action === 'images') return generateImages(ids, null);
             if (action === 'sunmi') return sunmiCloud(ids);
             if (action === 'activate') return confirmPost('Activate selected products?', "{{ url('/multiple-active-invent') }}", { inventid: ids });
             if (action === 'inactive') return confirmPost('Mark selected products inactive?', "{{ url('/all_invent_remove') }}", { inventid: ids, statusid: 2 });
             if (action === 'delete') return confirmPost('Delete selected products permanently?', "{{ url('/all_invent_delete') }}", { inventid: ids });
             if (action === 'unlinkWebsite') return confirmPost('Unlink website for selected products?', "{{ route('all_product_unlink_website') }}", { product_id: ids });
         }
+
+        /*
+         * Images are generated a couple at a time from the browser rather than on a queue:
+         * QUEUE_CONNECTION is sync, so a 1500-product run has to be driven from here to stay
+         * inside PHP's execution limit and to give the user live progress they can stop.
+         */
+        const IMAGE_CHUNK = 2;
+        const SECONDS_PER_IMAGE = 14;
+        let imageRun = null;
+
+        function generateImages(ids, label) {
+            if (!ids.length) {
+                alert('Select at least one product.');
+                return;
+            }
+            if (imageRun && !imageRun.finished) {
+                alert('An image run is already in progress.');
+                return;
+            }
+
+            const minutes = Math.max(1, Math.round((ids.length * SECONDS_PER_IMAGE) / 60));
+            const what = label ? '"' + label + '"' : ids.length + (ids.length > 1 ? ' products' : ' product');
+            if (!confirm('Generate images for ' + what + '?\n\nEstimated time: about ' + minutes + (minutes > 1 ? ' minutes' : ' minute') + '. Existing images on these products will be replaced.')) {
+                return;
+            }
+
+            imageRun = { ids, index: 0, done: 0, failed: 0, finished: false, cancelled: false };
+            document.getElementById('imageProgressTotal').textContent = ids.length;
+            document.getElementById('imageProgressDone').textContent = '0';
+            document.getElementById('imageProgressFailed').textContent = '0';
+            document.getElementById('imageProgressBar').style.width = '0%';
+            document.getElementById('imageProgressLog').innerHTML = '';
+            document.getElementById('imageProgressStop').classList.remove('hidden');
+            document.getElementById('imageProgressClose').classList.add('hidden');
+            document.getElementById('modalBackdrop').classList.remove('hidden');
+            document.getElementById('imageProgressModal').classList.remove('hidden');
+
+            nextImageChunk();
+        }
+
+        function nextImageChunk() {
+            if (!imageRun || imageRun.cancelled || imageRun.index >= imageRun.ids.length) {
+                return finishImageRun();
+            }
+
+            const chunk = imageRun.ids.slice(imageRun.index, imageRun.index + IMAGE_CHUNK);
+            imageRun.index += chunk.length;
+
+            post("{{ route('inventory.generate-images') }}", { ids: chunk })
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(payload => {
+                    (payload.results || []).forEach(result => {
+                        if (result.ok) {
+                            imageRun.done++;
+                        } else {
+                            imageRun.failed++;
+                            logImageFailure(result.id, result.msg);
+                        }
+                    });
+                    updateImageProgress();
+                    nextImageChunk();
+                })
+                .catch(error => {
+                    chunk.forEach(id => {
+                        imageRun.failed++;
+                        logImageFailure(id, error.message);
+                    });
+                    updateImageProgress();
+                    nextImageChunk();
+                });
+        }
+
+        function logImageFailure(id, message) {
+            const line = document.createElement('div');
+            line.textContent = 'Product ' + id + ': ' + (message || 'failed');
+            document.getElementById('imageProgressLog').appendChild(line);
+        }
+
+        function updateImageProgress() {
+            const handled = imageRun.done + imageRun.failed;
+            document.getElementById('imageProgressDone').textContent = imageRun.done;
+            document.getElementById('imageProgressFailed').textContent = imageRun.failed;
+            document.getElementById('imageProgressBar').style.width = Math.round((handled / imageRun.ids.length) * 100) + '%';
+        }
+
+        function finishImageRun() {
+            if (!imageRun) return;
+            imageRun.finished = true;
+            document.getElementById('imageProgressStop').classList.add('hidden');
+            document.getElementById('imageProgressClose').classList.remove('hidden');
+        }
+
+        function stopImageGeneration() {
+            if (imageRun) imageRun.cancelled = true;
+            finishImageRun();
+        }
+
+        function closeImageProgress() {
+            document.getElementById('imageProgressModal').classList.add('hidden');
+            document.getElementById('modalBackdrop').classList.add('hidden');
+            if (imageRun && imageRun.done > 0) window.location.reload();
+        }
+
+        document.getElementById('generateAllImages').addEventListener('click', function () {
+            this.disabled = true;
+            fetch("{{ route('inventory.missing-image-ids') }}", { headers: { 'Accept': 'application/json' } })
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.json();
+                })
+                .then(payload => {
+                    if (!payload.total) {
+                        alert('Every active product already has an image.');
+                        return;
+                    }
+                    generateImages(payload.ids.map(String), null);
+                })
+                .catch(() => alert('Could not load the list of products missing images.'))
+                .finally(() => { this.disabled = false; });
+        });
 
         function selectBulk(title, rows, valueKey, labelKey, submitter) {
             openModal(title, `<select id="modalValue" class="w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp"><option value="">Select</option>${optionList(rows, valueKey, labelKey)}</select>`, () => {
