@@ -221,7 +221,8 @@
                                         <a href="{{ url('edit-invent/' . $item->slug) }}" target="_blank" class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700 transition hover:bg-amber-100">Edit</a>
                                         <button type="button" class="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-erp-text transition hover:border-erp" data-action-menu="{{ $item->id }}">More</button>
                                     </div>
-                                    <div id="menu-{{ $item->id }}" class="action-menu mt-2 hidden min-w-[14rem] rounded-lg border border-erp-line bg-white p-2 text-left shadow-menu">
+                                    {{-- fixed, not in flow: in the cell it stretched the row and took the whole column width --}}
+                                    <div id="menu-{{ $item->id }}" class="action-menu fixed z-50 hidden max-h-[70vh] w-56 overflow-y-auto rounded-lg border border-erp-line bg-white p-1.5 text-left shadow-menu">
                                         <a href="{{ url('/inventory/' . $item->id . '/deal-products') }}" class="block rounded-md px-3 py-2 text-xs font-bold text-erp-text hover:bg-slate-50">{{ $item->is_deal == 1 ? 'View Deal' : 'Create Deal' }}</a>
                                         <a href="{{ url('/inventory/' . $item->id . '/variable-products') }}" class="block rounded-md px-3 py-2 text-xs font-bold text-erp-text hover:bg-slate-50">{{ $item->pos_product_count != 0 ? 'View variable products' : 'Create variable products' }}</a>
                                         <a href="{{ url('/inventory/' . $item->id . '/variable-products' . (($item->addon_product ?? 0) != 0 ? '/?#addonTab' : '')) }}" class="block rounded-md px-3 py-2 text-xs font-bold text-erp-text hover:bg-slate-50">{{ ($item->addon_product ?? 0) != 0 ? 'View addon products' : 'Create addon products' }}</a>
@@ -367,14 +368,71 @@
         });
         document.getElementById('bulkMenuButton').addEventListener('click', () => document.getElementById('bulkPanel').classList.toggle('hidden'));
 
+        /*
+         * The row menus are position:fixed so they overlay the page instead of stretching the
+         * row, which also keeps them clear of the table's overflow-x-auto wrapper. That means
+         * their coordinates have to be set by hand every time one opens, and they have to be
+         * closed again on anything that moves the button under them.
+         */
+        const MENU_GAP = 4;
+
+        function closeActionMenus(except) {
+            document.querySelectorAll('.action-menu').forEach(menu => {
+                if (menu !== except) menu.classList.add('hidden');
+            });
+        }
+
+        function placeActionMenu(menu, button) {
+            const anchor = button.getBoundingClientRect();
+
+            // measure before placing, a hidden element has no size
+            menu.classList.remove('hidden');
+            const width = menu.offsetWidth;
+            const height = menu.offsetHeight;
+
+            // right-aligned to the button, but never off either edge of the viewport
+            let left = anchor.right - width;
+            left = Math.min(Math.max(MENU_GAP, left), window.innerWidth - width - MENU_GAP);
+
+            // below the button, flipped above it when there is no room down there
+            let top = anchor.bottom + MENU_GAP;
+            if (top + height > window.innerHeight - MENU_GAP) {
+                const above = anchor.top - height - MENU_GAP;
+                top = above >= MENU_GAP ? above : Math.max(MENU_GAP, window.innerHeight - height - MENU_GAP);
+            }
+
+            menu.style.left = left + 'px';
+            menu.style.top = top + 'px';
+        }
+
         document.querySelectorAll('[data-action-menu]').forEach(button => {
-            button.addEventListener('click', function () {
-                document.querySelectorAll('.action-menu').forEach(menu => {
-                    if (menu.id !== 'menu-' + this.dataset.actionMenu) menu.classList.add('hidden');
-                });
-                document.getElementById('menu-' + this.dataset.actionMenu).classList.toggle('hidden');
+            button.addEventListener('click', function (event) {
+                event.stopPropagation();
+                const menu = document.getElementById('menu-' + this.dataset.actionMenu);
+                const wasOpen = !menu.classList.contains('hidden');
+
+                closeActionMenus();
+                if (!wasOpen) placeActionMenu(menu, this);
             });
         });
+
+        // menu item clicks are left alone: "Generate Image" reports its progress on itself
+        document.addEventListener('click', function (event) {
+            if (!(event.target instanceof Element) || !event.target.closest('.action-menu')) {
+                closeActionMenus();
+            }
+        });
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape') closeActionMenus();
+        });
+
+        // a fixed menu would otherwise hang in place while the page moves under it, but the
+        // menu is scrollable itself, so scrolling inside one must not close it
+        window.addEventListener('resize', () => closeActionMenus());
+        window.addEventListener('scroll', function (event) {
+            if (event.target instanceof Element && event.target.closest('.action-menu')) return;
+            closeActionMenus();
+        }, true);
 
         document.querySelectorAll('.status-toggle').forEach(toggle => {
             toggle.addEventListener('change', function () {
