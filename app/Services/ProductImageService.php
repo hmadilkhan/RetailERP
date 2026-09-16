@@ -95,7 +95,7 @@ class ProductImageService
      */
     protected function describe($product): array
     {
-        $fallback = ['subject' => (string) $product->product_name, 'packaged' => false];
+        $fallback = ['subject' => (string) $product->product_name, 'packaged' => false, 'served' => false];
 
         $context = collect([
             'Product name: ' . $product->product_name,
@@ -116,17 +116,38 @@ class ProductImageService
                         'role' => 'system',
                         'content' => 'You brief a photographer on retail products from a Pakistani shop catalogue '
                             . '(names are often Urdu or transliterated). Reply with JSON only: '
-                            . '{"subject": "<short English noun phrase, max 15 words>", "packaged": <true|false>}. '
+                            . '{"subject": "<short English noun phrase, max 15 words>", "packaged": <true|false>, '
+                            . '"served": <true|false>}. '
+                            . "\n"
+                            . 'The "subject" briefs a photographer who cannot read Urdu, so it must be plain English '
+                            . 'describing what the thing physically looks like. Never hand the product name back '
+                            . 'verbatim and never leave an Urdu or transliterated word in it: translate every such '
+                            . 'word, using the terms listed below or your own knowledge. '
                             . "\n"
                             . 'The product name is the truth about what the item is. The department is only a shelf '
                             . 'section and is often broader than the item, so use it to disambiguate, never to override '
                             . 'the name: "Pineapple" in an "ICE CREAM SHAKES" department is still a fresh pineapple, not '
                             . 'a milkshake. Never invent preparation, flavouring or packaging the name does not state. '
                             . "\n"
+                            . 'What the name DOES state, however, must be shown. When the name itself carries a '
+                            . 'prepared or ready-to-serve form (chai, tea, coffee, qahwa, lassi, shake, juice, '
+                            . 'sharbat, soup, biryani, karahi, sandwich, burger, roll, cake), that prepared item is '
+                            . 'the product, and the other words in the name are its flavouring or ingredient, not '
+                            . 'the product: "Gur Chai" is a served cup of tea brewed with jaggery, never a block of '
+                            . 'jaggery; "Badam Milk" is almond-flavoured milk, not almonds; "Pineapple Shake" is a '
+                            . 'milkshake, not a pineapple. Show such items served and ready to drink or eat, in the '
+                            . 'cup, glass, plate or bowl they are served in. '
+                            . "\n"
                             . 'Set "packaged" true only when the item is genuinely sold sealed in a sack, bag, box, '
                             . 'bottle, tin or carton (flour, sugar, rice, lentils, oil, biscuits). Set it false for '
                             . 'anything sold loose or bare: fresh fruit and vegetables, meat, bakery items, prepared '
                             . 'food and drinks, garments, footwear, electronics, hardware, crockery. '
+                            . "\n"
+                            . 'Set "served" true only when the item is sold ready to drink or eat and so has to be '
+                            . 'shown in a cup, glass, plate or bowl: chai and other hot drinks, shakes, juices, lassi, '
+                            . 'soups, cooked dishes and rice. Set it false for anything sold as goods to take away, '
+                            . 'including bread and bakery items, raw meat, and loose tea leaves. Never set both '
+                            . '"served" and "packaged" true. '
                             . "\n"
                             . 'No brand names in the subject. Include size or weight when the name states it. '
                             . "\n"
@@ -134,7 +155,9 @@ class ProductImageService
                             . 'stone-ground, so "aata chaki" is stone-ground wheat flour, not a mill; daal = lentils '
                             . '(masoor = red, chana = split chickpea, maash = white urad, malka masoor = whole red); '
                             . 'gandum = wheat; chawal = rice; sela = parboiled; cheeni = sugar; tel/tail = cooking oil; '
-                            . 'ghee = clarified butter; namak = salt; doodh = milk.',
+                            . 'ghee = clarified butter; namak = salt; doodh = milk; gur = jaggery (raw cane sugar, '
+                            . 'sold as a solid block); chai = tea as a brewed drink; qahwa = green tea; doodh patti = '
+                            . 'strong milk tea; lassi = yoghurt drink; sharbat = sweet cordial drink.',
                     ],
                     ['role' => 'user', 'content' => $context],
                 ],
@@ -149,9 +172,13 @@ class ProductImageService
             return $fallback;
         }
 
+        $served = (bool) ($parsed['served'] ?? false);
+
         return [
             'subject'  => (string) $parsed['subject'],
-            'packaged' => (bool) ($parsed['packaged'] ?? false),
+            // a served drink is never also a sealed pack, and the framings contradict each other
+            'packaged' => $served ? false : (bool) ($parsed['packaged'] ?? false),
+            'served'   => $served,
         ];
     }
 
@@ -161,12 +188,20 @@ class ProductImageService
 
         // Pale goods vanish on a white ground, and a sealed sack of anything looks like every
         // other sack, so packaged items get a light grey ground and a sample of the contents.
-        // Everything else is shot bare, or the model wraps fruit and shirts in packaging.
-        $framing = $described['packaged']
-            ? 'Show the closed pack with a small neat pile of the actual contents placed to one side in '
+        // A served drink or dish needs its cup or plate, and "bare product" would strip that
+        // away and leave loose tea leaves. Everything else is shot bare, or the model wraps
+        // fruit and shirts in packaging.
+        if ($described['served']) {
+            $framing = 'Show the item already prepared and served, ready to drink or eat, in the plain '
+                . 'cup, mug, glass, plate or bowl it is normally served in. No packaging, no wrapper, and '
+                . 'no raw ingredients beside it. ';
+        } elseif ($described['packaged']) {
+            $framing = 'Show the closed pack with a small neat pile of the actual contents placed to one side in '
                 . 'front of it, fully visible and never hidden behind the pack. Use a plain natural kraft '
-                . 'or woven sack in a tone that contrasts with both the background and the contents. '
-            : 'Show the bare product itself with no packaging, no wrapper, no box and no bag of any kind. ';
+                . 'or woven sack in a tone that contrasts with both the background and the contents. ';
+        } else {
+            $framing = 'Show the bare product itself with no packaging, no wrapper, no box and no bag of any kind. ';
+        }
 
         return 'Professional e-commerce product photograph of: ' . $described['subject'] . '. '
             . $framing
