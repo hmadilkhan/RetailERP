@@ -284,27 +284,24 @@
         </div>
     </div>
 
-    <div id="imageProgressModal" class="fixed left-1/2 top-1/2 z-50 hidden w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded-lg border border-erp-line bg-white shadow-menu">
-        <div class="border-b border-erp-line px-5 py-4">
-            <h3 class="text-base font-bold text-erp-ink">Generating Product Images</h3>
-            <p class="mt-1 text-sm text-erp-mute">Keep this tab open until it finishes.</p>
-        </div>
-        <div class="space-y-4 px-5 py-4">
-            <div>
-                <div class="flex items-center justify-between text-sm font-bold text-erp-ink">
-                    <span><span id="imageProgressDone">0</span> of <span id="imageProgressTotal">0</span> done</span>
-                    <span class="text-rose-600"><span id="imageProgressFailed">0</span> failed</span>
-                </div>
-                <div class="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
-                    <div id="imageProgressBar" class="h-full w-0 rounded-full bg-violet-500 transition-[width]"></div>
-                </div>
+    <div id="imageProgressCard" class="fixed bottom-4 right-4 z-50 hidden w-[calc(100%-2rem)] max-w-xs rounded-lg border border-erp-line bg-white shadow-menu">
+        <div class="flex items-start justify-between gap-2 border-b border-erp-line px-4 py-3">
+            <div class="min-w-0">
+                <h3 class="text-sm font-bold text-erp-ink">Generating Product Images</h3>
+                <p id="imageProgressStatus" class="mt-0.5 text-xs text-erp-mute">Starting...</p>
             </div>
-            <div id="imageProgressStatus" class="text-sm text-erp-mute">Starting...</div>
-            <div id="imageProgressLog" class="max-h-40 space-y-1 overflow-y-auto text-xs text-rose-700"></div>
+            <button type="button" id="imageProgressClose" class="hidden shrink-0 px-1 text-lg leading-none text-erp-mute hover:text-erp-ink" onclick="closeImageProgress()">&times;</button>
         </div>
-        <div class="flex justify-end gap-2 border-t border-erp-line px-5 py-4">
-            <button type="button" id="imageProgressStop" class="rounded-lg border border-erp-line px-4 py-2 text-sm font-bold text-erp-text" onclick="stopImageGeneration()">Stop</button>
-            <button type="button" id="imageProgressClose" class="hidden rounded-lg border border-erp bg-erp px-4 py-2 text-sm font-bold text-white" onclick="closeImageProgress()">Close</button>
+        <div class="space-y-2 px-4 py-3">
+            <div class="flex items-center justify-between text-xs font-bold text-erp-ink">
+                <span><span id="imageProgressDone">0</span> of <span id="imageProgressTotal">0</span> done</span>
+                <span class="text-rose-600"><span id="imageProgressFailed">0</span> failed</span>
+            </div>
+            <div class="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                <div id="imageProgressBar" class="h-full w-0 rounded-full bg-violet-500 transition-[width]"></div>
+            </div>
+            <div id="imageProgressLog" class="max-h-24 space-y-0.5 overflow-y-auto text-[11px] text-rose-700"></div>
+            <button type="button" id="imageProgressStop" class="w-full rounded-lg border border-erp-line px-3 py-1.5 text-xs font-bold text-erp-text transition hover:border-erp" onclick="stopImageGeneration()">Stop</button>
         </div>
     </div>
 @endsection
@@ -483,11 +480,7 @@
                         throw new Error(result && result.msg ? result.msg : 'Generation failed.');
                     }
 
-                    const thumb = document.getElementById('thumb-' + id);
-                    const link = document.getElementById('thumb-link-' + id);
-                    // cache buster, the file name changes but browsers still hold the old row image
-                    if (thumb) thumb.src = result.image + '?t=' + Date.now();
-                    if (link) link.href = result.image;
+                    applyGeneratedImage(id, result.image);
 
                     button.textContent = 'Image Generated';
                     setTimeout(() => releaseImageButton(button, original), 2500);
@@ -496,6 +489,15 @@
                     alert('Could not generate image: ' + error.message);
                     releaseImageButton(button, original);
                 });
+        }
+
+        // cache buster, the file name changes but browsers still hold the old row image
+        function applyGeneratedImage(id, url) {
+            if (!url) return;
+            const thumb = document.getElementById('thumb-' + id);
+            const link = document.getElementById('thumb-link-' + id);
+            if (thumb) thumb.src = url + '?t=' + Date.now();
+            if (link) link.href = url;
         }
 
         function releaseImageButton(button, original) {
@@ -520,6 +522,11 @@
                 return;
             }
 
+            // a long run is worth a desktop ping, the tab will not be in front when it ends
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission();
+            }
+
             imageRun = {
                 queue: ids.map(id => ({ id, attempts: 0 })),
                 total: ids.length,
@@ -537,10 +544,33 @@
             document.getElementById('imageProgressLog').innerHTML = '';
             document.getElementById('imageProgressStop').classList.remove('hidden');
             document.getElementById('imageProgressClose').classList.add('hidden');
-            document.getElementById('modalBackdrop').classList.remove('hidden');
-            document.getElementById('imageProgressModal').classList.remove('hidden');
+            document.getElementById('imageProgressCard').classList.remove('hidden');
+            setImageButtonsBusy(true);
 
             nextImageChunk();
+        }
+
+        /*
+         * The run owns every control that could start a second one, and reports its progress
+         * on the buttons themselves so it stays visible even if the card is closed.
+         */
+        function setImageButtonsBusy(busy) {
+            const label = busy ? 'Generating ' + (imageRun.done + imageRun.failed) + '/' + imageRun.total + '...' : null;
+
+            const all = document.getElementById('generateAllImages');
+            if (all) {
+                all.disabled = busy;
+                all.textContent = label || 'Generate Missing Images';
+                all.classList.toggle('opacity-60', busy);
+                all.classList.toggle('cursor-not-allowed', busy);
+            }
+
+            document.querySelectorAll('[data-bulk="images"]').forEach(button => {
+                button.disabled = busy;
+                button.textContent = label || 'Generate Images';
+                button.classList.toggle('opacity-60', busy);
+                button.classList.toggle('cursor-not-allowed', busy);
+            });
         }
 
         function nextImageChunk() {
@@ -564,6 +594,7 @@
 
                         if (result.ok) {
                             imageRun.done++;
+                            applyGeneratedImage(result.id, result.image);
                         } else if (result.retry && entry.attempts + 1 < MAX_ATTEMPTS) {
                             throttled = true;
                             entry.attempts++;
@@ -624,17 +655,39 @@
             document.getElementById('imageProgressDone').textContent = imageRun.done;
             document.getElementById('imageProgressFailed').textContent = imageRun.failed;
             document.getElementById('imageProgressBar').style.width = Math.round((handled / imageRun.total) * 100) + '%';
+            setImageButtonsBusy(true);
         }
 
         function finishImageRun() {
             if (!imageRun || imageRun.finished) return;
             imageRun.finished = true;
+
             const skipped = imageRun.total - imageRun.done - imageRun.failed;
-            setImageStatus(imageRun.cancelled
+            const summary = imageRun.cancelled
                 ? 'Stopped. ' + imageRun.done + ' generated, ' + skipped + ' not started.'
-                : 'Finished. ' + imageRun.done + ' generated, ' + imageRun.failed + ' failed.');
+                : 'Finished. ' + imageRun.done + ' generated, ' + imageRun.failed + ' failed.';
+
+            setImageStatus(summary);
             document.getElementById('imageProgressStop').classList.add('hidden');
             document.getElementById('imageProgressClose').classList.remove('hidden');
+            setImageButtonsBusy(false);
+            notifyImageRunFinished(summary);
+        }
+
+        function notifyImageRunFinished(summary) {
+            try {
+                if ('Notification' in window && Notification.permission === 'granted') {
+                    new Notification('Product images', { body: summary });
+                    return;
+                }
+            } catch (error) {
+                // notifications are a nicety, the card already carries the result
+            }
+
+            // no permission: make sure the tab title carries the news until it is read
+            const original = document.title;
+            document.title = 'Images done - ' + original;
+            window.addEventListener('focus', () => { document.title = original; }, { once: true });
         }
 
         function stopImageGeneration() {
@@ -643,10 +696,16 @@
         }
 
         function closeImageProgress() {
-            document.getElementById('imageProgressModal').classList.add('hidden');
-            document.getElementById('modalBackdrop').classList.add('hidden');
-            if (imageRun && imageRun.done > 0) window.location.reload();
+            document.getElementById('imageProgressCard').classList.add('hidden');
         }
+
+        // the run lives in this tab only, so leaving mid-way throws away the rest of the queue
+        window.addEventListener('beforeunload', function (event) {
+            if (imageRun && !imageRun.finished) {
+                event.preventDefault();
+                event.returnValue = '';
+            }
+        });
 
         document.getElementById('generateAllImages').addEventListener('click', function () {
             this.disabled = true;

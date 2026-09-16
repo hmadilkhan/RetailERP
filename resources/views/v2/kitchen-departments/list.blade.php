@@ -220,10 +220,15 @@
         function updateDepartName() {
             const data = new FormData();
             data.append('_token', "{{ csrf_token() }}");
+            data.append('_method', 'PUT');
             data.append('departid', document.getElementById('departid').value);
             data.append('departname', document.getElementById('department').value);
 
-            fetch("{{ url('/update-depart') }}", { method: 'PUT', body: data })
+            fetch("{{ url('/update-depart') }}", {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': "{{ csrf_token() }}" },
+                body: data
+            })
                 .then(response => response.text())
                 .then(function (response) {
                     if (response.trim() !== '0') {
