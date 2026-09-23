@@ -46,7 +46,7 @@
                 <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                     <label class="block">
                         <span class="{{ $labelClass }}">Select Product</span>
-                        <select name="finishgood" id="finishgood" class="{{ $inputClass }}">
+                        <select name="finishgood" id="finishgood" data-placeholder="Select Product" class="v2-select2 {{ $inputClass }}">
                             <option value="">Select Product</option>
                             @if($getfinishgood)
                                 @foreach($getfinishgood as $value)
@@ -69,7 +69,7 @@
 
                     <label class="block">
                         <span class="{{ $labelClass }}">Select Unit Of Measure</span>
-                        <select name="uom" id="uom" class="{{ $inputClass }}">
+                        <select name="uom" id="uom" data-placeholder="Select Unit Of Measure" class="v2-select2 {{ $inputClass }}">
                             <option value="">Select Unit Of Measure</option>
                             @if($uoms)
                                 @foreach($uoms as $uom)
@@ -264,7 +264,7 @@
 
                 <label class="block">
                     <span class="{{ $labelClass }}">Select Unit Of Measure</span>
-                    <select name="uommodal" id="uommodal" class="{{ $inputClass }}">
+                    <select name="uommodal" id="uommodal" data-placeholder="Select Unit Of Measure" class="v2-select2 {{ $inputClass }}">
                         <option value="">Select Unit Of Measure</option>
                         @if($uoms)
                             @foreach($uoms as $uom)
@@ -331,7 +331,7 @@
 
                 <label class="block">
                     <span class="{{ $labelClass }}">Select Variations Of The Product (If Any)</span>
-                    <select class="{{ $inputClass }}" id="variations" name="variations">
+                    <select data-placeholder="Select Variations" class="v2-select2 {{ $inputClass }}" id="variations" name="variations">
                         <option value="">Select Variations</option>
                         @if($totalvariation)
                             @foreach($totalvariation as $variation)
@@ -552,13 +552,19 @@
 
         document.getElementById('update-pos-product').addEventListener('submit', function (event) {
             event.preventDefault();
+            const formData = new FormData(this);
+            formData.append('_method', 'PUT');
             fetch("{{ url('/update-posproducts') }}", {
-                method: 'PUT',
-                body: new FormData(this),
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': csrfToken },
+                body: formData,
             })
-                .then(res => res.text())
+                .then(res => {
+                    if (!res.ok) throw new Error('HTTP ' + res.status);
+                    return res.text();
+                })
                 .then(resp => {
-                    if (resp != 2) {
+                    if (resp.trim() != 2) {
                         alert('Updated Successfully!');
                         window.location = "{{ url('/posproducts') }}";
                     } else {
