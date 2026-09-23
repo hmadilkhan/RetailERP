@@ -204,15 +204,27 @@
                                     <div class="text-xs text-erp-mute">GST {{ number_format((float) ($item->tax_rate ?? 0), 2) }}%</div>
                                 </td>
                                 <td class="px-4 py-3">
-                                    <div class="flex flex-wrap gap-1">
-                                        <label class="inline-flex cursor-pointer items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-erp-text ring-1 ring-slate-200">
-                                            <input type="checkbox" class="status-toggle rounded border-erp-line text-erp focus:ring-erp" data-id="{{ $item->id }}" data-column="pos" {{ ($item->isPos ?? 0) == 1 ? 'checked' : '' }}> POS
+                                    <div class="flex items-center gap-3">
+                                        <label class="flex cursor-pointer flex-col items-center gap-1" title="Show on POS">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-erp-mute">POS</span>
+                                            <span class="relative inline-flex">
+                                                <input type="checkbox" class="status-toggle peer sr-only" data-id="{{ $item->id }}" data-column="pos" {{ ($item->isPos ?? 0) == 1 ? 'checked' : '' }}>
+                                                <span class="block h-5 w-9 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-erp after:absolute after:left-[2px] after:top-[2px] after:block after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:after:translate-x-4"></span>
+                                            </span>
                                         </label>
-                                        <label class="inline-flex cursor-pointer items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-erp-text ring-1 ring-slate-200">
-                                            <input type="checkbox" class="status-toggle rounded border-erp-line text-erp focus:ring-erp" data-id="{{ $item->id }}" data-column="online" {{ ($item->isOnline ?? 0) == 1 ? 'checked' : '' }}> Online
+                                        <label class="flex cursor-pointer flex-col items-center gap-1" title="Show online">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-erp-mute">Online</span>
+                                            <span class="relative inline-flex">
+                                                <input type="checkbox" class="status-toggle peer sr-only" data-id="{{ $item->id }}" data-column="online" {{ ($item->isOnline ?? 0) == 1 ? 'checked' : '' }}>
+                                                <span class="block h-5 w-9 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-erp after:absolute after:left-[2px] after:top-[2px] after:block after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:after:translate-x-4"></span>
+                                            </span>
                                         </label>
-                                        <label class="inline-flex cursor-pointer items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-erp-text ring-1 ring-slate-200">
-                                            <input type="checkbox" class="status-toggle rounded border-erp-line text-erp focus:ring-erp" data-id="{{ $item->id }}" data-column="hide" {{ ($item->isHide ?? 0) == 1 ? 'checked' : '' }}> Hidden
+                                        <label class="flex cursor-pointer flex-col items-center gap-1" title="Hide item">
+                                            <span class="text-[10px] font-bold uppercase tracking-wider text-erp-mute">Hidden</span>
+                                            <span class="relative inline-flex">
+                                                <input type="checkbox" class="status-toggle peer sr-only" data-id="{{ $item->id }}" data-column="hide" {{ ($item->isHide ?? 0) == 1 ? 'checked' : '' }}>
+                                                <span class="block h-5 w-9 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-rose-500 after:absolute after:left-[2px] after:top-[2px] after:block after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:after:translate-x-4"></span>
+                                            </span>
                                         </label>
                                     </div>
                                 </td>
