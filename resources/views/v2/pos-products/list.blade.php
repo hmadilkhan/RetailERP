@@ -186,6 +186,9 @@
                             <th class="px-5 py-3">Variations</th>
                             <th class="px-5 py-3">Retail Price</th>
                             <th class="px-5 py-3">Status</th>
+                            <th class="px-5 py-3 text-center">POS</th>
+                            <th class="px-5 py-3 text-center">Online</th>
+                            <th class="px-5 py-3 text-center">Hide</th>
                             <th class="px-5 py-3 text-right">Action</th>
                         </tr>
                     </thead>
@@ -207,6 +210,24 @@
                                 <td class="px-5 py-3">
                                     <span class="rounded-full px-2.5 py-1 text-xs font-bold {{ $value->status_name === 'Active' ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">{{ $value->status_name }}</span>
                                 </td>
+                                <td class="px-5 py-3 text-center">
+                                    <label class="relative inline-flex cursor-pointer items-center" title="Show on POS">
+                                        <input type="checkbox" class="peer sr-only" {{ $value->isPos == 1 ? 'checked' : '' }} onchange="toggleFlag({{ $value->pos_item_id }}, 'pos', this)">
+                                        <span class="block h-6 w-11 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-erp peer-focus-visible:ring-2 peer-focus-visible:ring-erp/40 after:absolute after:left-[3px] after:top-[3px] after:block after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:after:translate-x-5"></span>
+                                    </label>
+                                </td>
+                                <td class="px-5 py-3 text-center">
+                                    <label class="relative inline-flex cursor-pointer items-center" title="Show online">
+                                        <input type="checkbox" class="peer sr-only" {{ $value->isOnline == 1 ? 'checked' : '' }} onchange="toggleFlag({{ $value->pos_item_id }}, 'online', this)">
+                                        <span class="block h-6 w-11 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-erp peer-focus-visible:ring-2 peer-focus-visible:ring-erp/40 after:absolute after:left-[3px] after:top-[3px] after:block after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:after:translate-x-5"></span>
+                                    </label>
+                                </td>
+                                <td class="px-5 py-3 text-center">
+                                    <label class="relative inline-flex cursor-pointer items-center" title="Hide item">
+                                        <input type="checkbox" class="peer sr-only" {{ $value->isHide == 1 ? 'checked' : '' }} onchange="toggleFlag({{ $value->pos_item_id }}, 'hide', this)">
+                                        <span class="block h-6 w-11 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-rose-500 peer-focus-visible:ring-2 peer-focus-visible:ring-rose-300 after:absolute after:left-[3px] after:top-[3px] after:block after:h-[18px] after:w-[18px] after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:after:translate-x-5"></span>
+                                    </label>
+                                </td>
                                 <td class="px-5 py-3 text-right">
                                     <div class="flex justify-end gap-3">
                                         <button type="button" title="Add Variation" onclick="createVariation({{ $value->pos_item_id }})" class="text-erp-dark hover:text-erp">+ Variation</button>
@@ -216,7 +237,7 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="8" class="px-5 py-6 text-center text-sm text-erp-mute">No POS products yet.</td></tr>
+                            <tr><td colspan="11" class="px-5 py-6 text-center text-sm text-erp-mute">No POS products yet.</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -595,6 +616,17 @@
             input.value = code;
             input.focus();
         });
+
+        /* ---------- Realtime flag toggles (POS / Online / Hide) ---------- */
+        function toggleFlag(id, column, el) {
+            fetch("{{ url('/change-inventory-status') }}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
+                body: JSON.stringify({ id: id, table: 'pos', columnname: column, value: el.checked ? 1 : 0 })
+            }).then(res => {
+                if (!res.ok) { el.checked = !el.checked; alert('Could not update. Please try again.'); }
+            }).catch(() => { el.checked = !el.checked; alert('Could not update. Please try again.'); });
+        }
 
         /* ---------- Price calculations ---------- */
         function wireTaxCalc(apId, rateId, amountId, rpId) {
