@@ -110,7 +110,8 @@
             || request()->is('editcustomers*')
             || request()->is('customer-due-payment')
             || request()->is('mobile-promotion')
-            || request()->is('branches');
+            || request()->is('branches')
+            || request()->is('inventory-list');
     @endphp
     @if (($tailwindSelect2Assets || $tailwindPurchaseAssets || $tailwindDiscountAssets) && !$tailwindLegacyAssets)
         <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />

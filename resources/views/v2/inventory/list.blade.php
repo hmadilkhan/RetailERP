@@ -93,16 +93,16 @@
                         <input type="text" name="code" value="{{ request('code') }}" placeholder="Item code" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                         <input type="text" name="name" value="{{ request('name') }}" placeholder="Product name" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                         <input type="text" name="rp" value="{{ request('rp') }}" placeholder="Retail price" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
-                        <select name="dept" id="deptFilter" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <select name="dept" id="deptFilter" data-placeholder="All departments" class="v2-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                             <option value="">All departments</option>
                             @foreach ($department as $depart)
                                 <option value="{{ $depart->department_id }}" {{ (string) request('dept') === (string) $depart->department_id ? 'selected' : '' }}>{{ $depart->department_name }}</option>
                             @endforeach
                         </select>
-                        <select name="sdept" id="subDeptFilter" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <select name="sdept" id="subDeptFilter" data-placeholder="All sub-departments" class="v2-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                             <option value="">All sub-departments</option>
                         </select>
-                        <select name="ref" class="h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <select name="ref" data-placeholder="All references" class="v2-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                             <option value="">All references</option>
                             @foreach ($references as $reference)
                                 <option value="{{ $reference->refrerence }}" {{ request('ref') === $reference->refrerence ? 'selected' : '' }}>{{ $reference->refrerence }}</option>
@@ -454,11 +454,14 @@
 
         function loadSubDepartments(id, targetId, selectedValue = '') {
             const target = document.getElementById(targetId);
+            const refreshSelect2 = () => { if (window.jQuery) jQuery(target).trigger('change'); };
             target.innerHTML = '<option value="">All sub-departments</option>';
+            refreshSelect2();
             if (!id) return;
             post("{{ url('get_sub_departments') }}", { id }).then(r => r.json()).then(rows => {
                 if (!Array.isArray(rows)) return;
                 target.innerHTML = '<option value="">All sub-departments</option>' + optionList(rows, 'sub_department_id', 'sub_depart_name', selectedValue);
+                refreshSelect2();
             });
         }
         @if (request('dept'))
