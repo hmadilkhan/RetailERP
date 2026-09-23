@@ -61,7 +61,14 @@
 
                     <label class="block">
                         <span class="{{ $labelClass }}">Item Code</span>
-                        <input type="text" name="code" id="code" value="{{ old('code') }}" class="{{ $inputClass }}">
+                        <div class="relative mt-2">
+                            <input type="text" name="code" id="code" value="{{ old('code') }}" class="h-10 w-full rounded-lg border-erp-line pr-11 text-sm shadow-sm focus:border-erp focus:ring-erp">
+                            <button type="button" id="genItemCode" title="Auto-generate item code" class="absolute right-1.5 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md bg-erp text-white shadow-sm transition hover:bg-erp-dark active:scale-95">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                </svg>
+                            </button>
+                        </div>
                         @if ($errors->has('code'))
                             <span class="mt-1 block text-xs font-semibold text-rose-600">Required field can not be blank.</span>
                         @endif
@@ -572,6 +579,21 @@
                     }
                 })
                 .catch(() => alert('Unable to update POS product.'));
+        });
+
+        /* ---------- Auto-generate item code ---------- */
+        document.getElementById('genItemCode').addEventListener('click', async function () {
+            const input = document.getElementById('code');
+            let code = '';
+            for (let i = 0; i < 5; i++) {
+                code = 'POS-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 4).toUpperCase();
+                try {
+                    const res = await fetch("{{ url('/verifycode') }}?code=" + encodeURIComponent(code));
+                    if ((await res.text()).trim() === '0') break;
+                } catch (e) { break; }
+            }
+            input.value = code;
+            input.focus();
         });
 
         /* ---------- Price calculations ---------- */
