@@ -190,10 +190,10 @@
                                 <td class="px-4 py-3 text-right">
                                     <div class="text-base font-black text-erp-ink">{{ number_format((float) $item->retail_price, 2) }}</div>
                                     <div class="text-xs font-semibold text-erp-mute">Retail</div>
-                                    <div class="mt-1 grid grid-cols-2 gap-x-2 gap-y-0.5 text-xs text-erp-mute">
-                                        <span>Act {{ number_format((float) $item->actual_price, 2) }}</span>
-                                        <span>Wh {{ number_format((float) $item->wholesale_price, 2) }}</span>
-                                        <span class="col-span-2">On {{ number_format((float) $item->online_price, 2) }}</span>
+                                    <div class="mt-1 space-y-0.5 text-xs text-erp-mute">
+                                        <div>Act <span class="font-semibold text-erp-text">{{ number_format((float) $item->actual_price, 2) }}</span></div>
+                                        <div>Wh <span class="font-semibold text-erp-text">{{ number_format((float) $item->wholesale_price, 2) }}</span></div>
+                                        <div>On <span class="font-semibold text-erp-text">{{ number_format((float) $item->online_price, 2) }}</span></div>
                                     </div>
                                 </td>
                                 <td class="px-4 py-3 text-right">
