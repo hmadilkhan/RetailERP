@@ -254,7 +254,7 @@ class custom_helper
 
     /**
      * Stock balance primary UOM me hota hai (secondary sale qty / weight_qty kar ke kam hoti hai).
-     * Isay "2 Carton 6 Packets" ki tarah dono units me todta hai.
+     * Isay "2 Packet = 50 Unit" ki tarah dono units me dikhata hai (secondary = qty x weight_qty).
      */
     public static function formatUomQty($qty, $conversion, $primaryUom, $secondaryUom = null)
     {
@@ -268,11 +268,6 @@ class custom_helper
             return trim($trim($qty) . ' ' . $primaryUom);
         }
 
-        $sign = $qty < 0 ? '-' : '';
-        $totalSecondary = round(abs($qty) * $conversion, 2);
-        $whole = floor(($totalSecondary + 0.0001) / $conversion);
-        $remaining = max(0, round($totalSecondary - ($whole * $conversion), 2));
-
-        return $sign . $trim($whole) . ' ' . $primaryUom . ' ' . $trim($remaining) . ' ' . $secondaryUom;
+        return $trim($qty) . ' ' . $primaryUom . ' = ' . $trim($qty * $conversion) . ' ' . $secondaryUom;
     }
 }

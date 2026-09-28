@@ -180,7 +180,7 @@
             return parsed.toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits });
         }
 
-        // Stock primary UOM me hota hai; "2 Carton 6 Packets" ki tarah dono units me todo
+        // Stock primary UOM me hota hai; "2 Packet = 50 Unit" ki tarah dono units me dikhao
         function uomBreakdown(qty, conversion, primaryUom, secondaryUom) {
             qty = Number(qty || 0);
             conversion = Number(conversion || 0);
@@ -190,10 +190,7 @@
                 return '';
             }
 
-            const totalSecondary = Math.round(Math.abs(qty) * conversion * 100) / 100;
-            const whole = Math.floor((totalSecondary + 0.0001) / conversion);
-            const remaining = Math.max(0, Math.round((totalSecondary - whole * conversion) * 100) / 100);
-            return (qty < 0 ? '-' : '') + trim(whole) + ' ' + primaryUom + ' ' + trim(remaining) + ' ' + secondaryUom;
+            return trim(qty) + ' ' + primaryUom + ' = ' + trim(qty * conversion) + ' ' + secondaryUom;
         }
 
         function itemStatus(row) {
