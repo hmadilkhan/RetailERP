@@ -193,12 +193,7 @@
             const totalSecondary = Math.round(Math.abs(qty) * conversion * 100) / 100;
             const whole = Math.floor((totalSecondary + 0.0001) / conversion);
             const remaining = Math.max(0, Math.round((totalSecondary - whole * conversion) * 100) / 100);
-            const parts = [];
-
-            if (whole > 0) parts.push(trim(whole) + ' ' + primaryUom);
-            if (remaining > 0) parts.push(trim(remaining) + ' ' + secondaryUom);
-
-            return parts.length ? (qty < 0 ? '-' : '') + parts.join(' ') : '0 ' + primaryUom;
+            return (qty < 0 ? '-' : '') + trim(whole) + ' ' + primaryUom + ' ' + trim(remaining) + ' ' + secondaryUom;
         }
 
         function itemStatus(row) {

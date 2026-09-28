@@ -273,14 +273,6 @@ class custom_helper
         $whole = floor(($totalSecondary + 0.0001) / $conversion);
         $remaining = max(0, round($totalSecondary - ($whole * $conversion), 2));
 
-        $parts = [];
-        if ($whole > 0) {
-            $parts[] = $trim($whole) . ' ' . $primaryUom;
-        }
-        if ($remaining > 0) {
-            $parts[] = $trim($remaining) . ' ' . $secondaryUom;
-        }
-
-        return empty($parts) ? '0 ' . $primaryUom : $sign . implode(' ', $parts);
+        return $sign . $trim($whole) . ' ' . $primaryUom . ' ' . $trim($remaining) . ' ' . $secondaryUom;
     }
 }
