@@ -270,4 +270,15 @@ class custom_helper
 
         return $trim($qty) . ' ' . $primaryUom . ' = ' . $trim($qty * $conversion) . ' ' . $secondaryUom;
     }
+
+    // "1 Packet = 25 Unit" - conversion samjhane ke liye
+    public static function uomRateLabel($conversion, $primaryUom, $secondaryUom = null)
+    {
+        $conversion = (float) $conversion;
+        if ($conversion <= 1 || empty($secondaryUom) || $primaryUom == $secondaryUom) {
+            return '';
+        }
+
+        return '1 ' . $primaryUom . ' = ' . rtrim(rtrim(number_format($conversion, 2, '.', ''), '0'), '.') . ' ' . $secondaryUom;
+    }
 }
