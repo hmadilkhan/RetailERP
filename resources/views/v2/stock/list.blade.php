@@ -265,7 +265,7 @@
                         <td class="px-5 py-4 text-right font-bold text-erp-ink">${numberValue(row.amount)}</td>
                         <td class="px-5 py-4 text-right">
                             <div class="font-black text-erp-ink">${numberValue(row.qty)}</div>
-                            <div class="mt-1 text-xs text-erp-mute">${escapeHtml(row.name || '')}${breakdown ? ` (1 ${escapeHtml(row.name)} = ${escapeHtml(String(Number(Number(row.weight_qty).toFixed(2))))} ${escapeHtml(row.cname)})` : ''}</div>
+                            <div class="mt-1 text-xs text-erp-mute">${escapeHtml(row.name || '')}${breakdown ? ` (${escapeHtml(String(Number(Number(row.weight_qty).toFixed(2))))} ${escapeHtml(row.cname)})` : ''}</div>
                             ${breakdown ? `<div class="mt-1 text-xs font-semibold text-erp-text">${escapeHtml(breakdown)}</div>` : ''}
                         </td>
                         <td class="px-5 py-4 text-erp-text">${numberValue(conversionQty)}${conversionUnit}</td>
