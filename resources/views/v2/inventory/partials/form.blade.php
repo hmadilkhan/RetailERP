@@ -7,6 +7,7 @@
     $selectedBrand = old('brand', $product->brand_id ?? collect($inventoryBrand ?? [])->first());
     $selectedWebsite = old('website', $selectedWebsites->first());
     $websiteEnabled = old('showProductWebsite') || $selectedWebsites->isNotEmpty();
+    $dealEnabled = old('is_deal', $product->is_deal ?? 0) == 1;
     $imageName = $product->image ?? null;
     $imageUrl = $imageName ? asset('storage/images/products/' . $imageName) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22640%22 height=%22480%22 viewBox=%220 0 640 480%22%3E%3Crect width=%22640%22 height=%22480%22 fill=%22%23f8fafc%22/%3E%3Cpath d=%22M160 328l92-98 66 70 48-52 114 122H160z%22 fill=%22%23dbe4ee%22/%3E%3Ccircle cx=%22442%22 cy=%22154%22 r=%2242%22 fill=%22%23cbd5e1%22/%3E%3Ctext x=%22320%22 y=%22420%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2228%22 fill=%22%2364758b%22%3EProduct Image%3C/text%3E%3C/svg%3E';
     $referenceValue = old('reference', $isEdit ? ($references ?? '') : '');
@@ -290,6 +291,10 @@
                                 <option value="{{ $vendor->id }}" @selected(collect(old('vendor', $selectedVendors->all()))->contains($vendor->id))>{{ $vendor->vendor_name ?? $vendor->name }}</option>
                             @endforeach
                         </select>
+                    </label>
+                    <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-erp-line px-4 py-3 text-sm font-bold text-erp-text">
+                        <input type="checkbox" id="is_deal" name="is_deal" value="1" class="rounded border-erp-line text-erp focus:ring-erp" {{ $dealEnabled ? 'checked' : '' }}>
+                        Product is Deal
                     </label>
                     <label class="flex cursor-pointer items-center gap-3 rounded-lg border border-erp-line px-4 py-3 text-sm font-bold text-erp-text">
                         <input type="checkbox" id="showProductWebsite" name="showProductWebsite" class="rounded border-erp-line text-erp focus:ring-erp" {{ $websiteEnabled ? 'checked' : '' }}>

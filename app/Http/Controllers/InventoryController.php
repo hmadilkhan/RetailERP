@@ -1290,6 +1290,7 @@ class InventoryController extends Controller
             'created_at'           => date('Y-m-d H:s:i'),
             'updated_at'           => date('Y-m-d H:s:i'),
             'weight_qty'           => $request->weight,
+            'is_deal'              => (isset($request->is_deal) ? 1 : 0),
             'short_description'    => htmlentities($request->input('sdescription')),
             'details'              => htmlentities($request->details),
             'brand_id'             => $request->brand,
