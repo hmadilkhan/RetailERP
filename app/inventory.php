@@ -322,8 +322,15 @@ class inventory extends Model
         // echo "Non Stock".$nonstock;
         // return $nonstock;
         // return DB::table("inventory_stock")->where("branch_id",session('branch'))->pluck("product_id");
+        // Stock alag subquery se, taake tags/website/pos joins ki wajah se SUM double na ho
+        $stockBranches = session("roleId") == 2
+            ? DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id")->map(fn ($id) => (int) $id)->implode(',')
+            : (int) session('branch');
+        $stockBranches = $stockBranches === '' ? '0' : $stockBranches;
+
         $query = DB::table('inventory_general as invent')
             ->join('inventory_uom as u', 'u.uom_id', '=', 'invent.uom_id')
+            ->leftJoin('inventory_uom as cu', 'cu.uom_id', '=', 'invent.cuom')
             ->leftJoin('inventory_department as dept', 'dept.department_id', '=', 'invent.department_id')
             ->leftJoin('inventory_sub_department as sdept', 'sdept.sub_department_id', '=', 'invent.sub_department_id')
             ->join('inventory_product_mode', 'inventory_product_mode.product_mode_id', '=', 'invent.product_mode')
@@ -397,7 +404,7 @@ class inventory extends Model
                     }
                 }
             })
-            ->select('invent.*', 'u.name', 'dept.department_name', 'sdept.sub_depart_name', 'inventory_product_mode.product_name as category', 'inventory_price.*', 'invent.image as product_image', 'invent.url as product_image_url', DB::raw('SUM(inventory_stock.balance) As stock'), 'website_details.id as website_id', 'website_details.name as website_name', DB::raw('COUNT(pos_products_gen_details.product_id) as pos_product_count'), DB::raw('COUNT(inventory_addons.product_id) as addon_product'), DB::raw("GROUP_CONCAT(DISTINCT t.name ORDER BY t.name ASC SEPARATOR ', ') as tags"))
+            ->select('invent.*', 'u.name', 'cu.name as cuom_name', 'dept.department_name', 'sdept.sub_depart_name', 'inventory_product_mode.product_name as category', 'inventory_price.*', 'invent.image as product_image', 'invent.url as product_image_url', DB::raw('(SELECT SUM(s.balance) FROM inventory_stock s WHERE s.product_id = invent.id AND s.branch_id IN (' . $stockBranches . ')) As stock'), 'website_details.id as website_id', 'website_details.name as website_name', DB::raw('COUNT(pos_products_gen_details.product_id) as pos_product_count'), DB::raw('COUNT(inventory_addons.product_id) as addon_product'), DB::raw("GROUP_CONCAT(DISTINCT t.name ORDER BY t.name ASC SEPARATOR ', ') as tags"))
             ->where('invent.company_id', session('company_id'))
             // ->where('website_products.status',1)
             // ,'website_details.id as website_id','website_details.name as website_name'

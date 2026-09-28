@@ -72,7 +72,11 @@
                                         <td>{{ $value->stock_id }}</td>
                                         <td>{{ date('M d, Y', strtotime($value->date)) }}</td>
                                         <td>{{ $value->totalQty }}</td>
-                                        <td>{{ $value->qty }}</td>
+                                        <td>{{ $value->qty }}
+                                            @if ($uomInfo && (float) $uomInfo->weight_qty > 1 && !empty($uomInfo->cuom_name) && $uomInfo->cuom_name != $uomInfo->uom_name)
+                                                <br /><small class="text-muted">{{ \App\Helpers\custom_helper::formatUomQty($value->qty, $uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name) }}</small>
+                                            @endif
+                                        </td>
                                         <td>{{ $value->cost_price }}</td>
                                         <!-- Actaually there was a total_amount field from purchase order so i changed it to get cost from stock table -->
                                         <td>{{ $value->retail_price }}</td>

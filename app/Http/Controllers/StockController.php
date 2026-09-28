@@ -38,8 +38,14 @@ class StockController extends Controller
         $pricelogs = $stock->getCostPriceLogs($request->id);
         $product_id = $request->id;
         $conversion_unit = DB::table("inventory_general")->where("id", $request->id)->get("weight_qty");
+        $uomInfo = DB::table("inventory_general as g")
+            ->leftJoin("inventory_uom as u", "u.uom_id", "=", "g.uom_id")
+            ->leftJoin("inventory_uom as cu", "cu.uom_id", "=", "g.cuom")
+            ->where("g.id", $request->id)
+            ->select("g.weight_qty", "u.name as uom_name", "cu.name as cuom_name")
+            ->first();
 
-        return view('stock.stockDetails', compact('stocks', 'purchase', 'transfer', 'details', 'product', 'report', 'product_id', "conversion_unit", "pricelogs"));
+        return view('stock.stockDetails', compact('stocks', 'purchase', 'transfer', 'details', 'product', 'report', 'product_id', "conversion_unit", "pricelogs", "uomInfo"));
     }
 
 

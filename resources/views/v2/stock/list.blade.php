@@ -180,6 +180,27 @@
             return parsed.toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits });
         }
 
+        // Stock primary UOM me hota hai; "2 Carton 6 Packets" ki tarah dono units me todo
+        function uomBreakdown(qty, conversion, primaryUom, secondaryUom) {
+            qty = Number(qty || 0);
+            conversion = Number(conversion || 0);
+            const trim = value => String(Number(value.toFixed(2)));
+
+            if (conversion <= 1 || !secondaryUom || primaryUom === secondaryUom) {
+                return '';
+            }
+
+            const totalSecondary = Math.round(Math.abs(qty) * conversion * 100) / 100;
+            const whole = Math.floor((totalSecondary + 0.0001) / conversion);
+            const remaining = Math.max(0, Math.round((totalSecondary - whole * conversion) * 100) / 100);
+            const parts = [];
+
+            if (whole > 0) parts.push(trim(whole) + ' ' + primaryUom);
+            if (remaining > 0) parts.push(trim(remaining) + ' ' + secondaryUom);
+
+            return parts.length ? (qty < 0 ? '-' : '') + parts.join(' ') : '0 ' + primaryUom;
+        }
+
         function itemStatus(row) {
             const qty = Number(row.qty || 0);
             const reminder = Number(row.reminder_qty || 0);
@@ -222,6 +243,7 @@
                 const status = itemStatus(row);
                 const conversionQty = Number(row.qty || 0) * Number(row.weight_qty || 0);
                 const conversionUnit = row.cname ? ' ' + escapeHtml(row.cname) : '';
+                const breakdown = uomBreakdown(row.qty, row.weight_qty, row.name, row.cname);
                 const rowBranchId = row.stock_branch_id || selectedBranchId;
                 const detailUrl = "{{ url('/stock-details') }}/" + encodeURIComponent(row.id) + "/" + encodeURIComponent(rowBranchId);
 
@@ -252,6 +274,7 @@
                         <td class="px-5 py-4 text-right">
                             <div class="font-black text-erp-ink">${numberValue(row.qty)}</div>
                             <div class="mt-1 text-xs text-erp-mute">${escapeHtml(row.name || '')}</div>
+                            ${breakdown ? `<div class="mt-1 text-xs font-semibold text-erp-text">${escapeHtml(breakdown)}</div>` : ''}
                         </td>
                         <td class="px-5 py-4 text-erp-text">${numberValue(conversionQty)}${conversionUnit}</td>
                         <td class="px-5 py-4">

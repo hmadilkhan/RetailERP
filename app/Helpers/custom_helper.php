@@ -251,4 +251,36 @@ class custom_helper
 
         return $imageUrl;
     }
+
+    /**
+     * Stock balance primary UOM me hota hai (secondary sale qty / weight_qty kar ke kam hoti hai).
+     * Isay "2 Carton 6 Packets" ki tarah dono units me todta hai.
+     */
+    public static function formatUomQty($qty, $conversion, $primaryUom, $secondaryUom = null)
+    {
+        $qty = (float) $qty;
+        $conversion = (float) $conversion;
+        $trim = function ($value) {
+            return rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
+        };
+
+        if ($conversion <= 1 || empty($secondaryUom) || $primaryUom == $secondaryUom) {
+            return trim($trim($qty) . ' ' . $primaryUom);
+        }
+
+        $sign = $qty < 0 ? '-' : '';
+        $totalSecondary = round(abs($qty) * $conversion, 2);
+        $whole = floor(($totalSecondary + 0.0001) / $conversion);
+        $remaining = max(0, round($totalSecondary - ($whole * $conversion), 2));
+
+        $parts = [];
+        if ($whole > 0) {
+            $parts[] = $trim($whole) . ' ' . $primaryUom;
+        }
+        if ($remaining > 0) {
+            $parts[] = $trim($remaining) . ' ' . $secondaryUom;
+        }
+
+        return empty($parts) ? '0 ' . $primaryUom : $sign . implode(' ', $parts);
+    }
 }

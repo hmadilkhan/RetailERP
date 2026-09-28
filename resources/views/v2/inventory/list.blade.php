@@ -201,6 +201,9 @@
                                         {{ number_format((float) ($item->stock ?? 0), 2) }}
                                     </div>
                                     <div class="mt-1 text-xs text-erp-mute">{{ $item->name ?? '-' }}</div>
+                                    @if ((float) ($item->weight_qty ?? 0) > 1 && !empty($item->cuom_name) && $item->cuom_name != $item->name)
+                                        <div class="text-xs font-semibold text-erp-text">{{ \App\Helpers\custom_helper::formatUomQty($item->stock ?? 0, $item->weight_qty, $item->name, $item->cuom_name) }}</div>
+                                    @endif
                                     <div class="text-xs text-erp-mute">GST {{ number_format((float) ($item->tax_rate ?? 0), 2) }}%</div>
                                 </td>
                                 <td class="px-4 py-3">
