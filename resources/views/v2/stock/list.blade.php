@@ -180,7 +180,7 @@
             return parsed.toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits });
         }
 
-        // Stock primary UOM me hota hai; "2 Packet = 50 Unit" ki tarah dono units me dikhao
+        // Stock primary UOM me hota hai; "2 Packet / 50 Unit" ki tarah dono units me dikhao
         function uomBreakdown(qty, conversion, primaryUom, secondaryUom) {
             qty = Number(qty || 0);
             conversion = Number(conversion || 0);
@@ -190,7 +190,7 @@
                 return '';
             }
 
-            return trim(qty) + ' ' + primaryUom + ' = ' + trim(qty * conversion) + ' ' + secondaryUom;
+            return trim(qty) + ' ' + primaryUom + ' / ' + trim(qty * conversion) + ' ' + secondaryUom;
         }
 
         function itemStatus(row) {
@@ -265,9 +265,8 @@
                         <td class="px-5 py-4 text-right font-bold text-erp-ink">${numberValue(row.amount)}</td>
                         <td class="px-5 py-4 text-right">
                             <div class="font-black text-erp-ink">${numberValue(row.qty)}</div>
-                            <div class="mt-1 text-xs text-erp-mute">${escapeHtml(row.name || '')}</div>
+                            <div class="mt-1 text-xs text-erp-mute">${escapeHtml(row.name || '')}${breakdown ? ` (1 ${escapeHtml(row.name)} = ${escapeHtml(String(Number(Number(row.weight_qty).toFixed(2))))} ${escapeHtml(row.cname)})` : ''}</div>
                             ${breakdown ? `<div class="mt-1 text-xs font-semibold text-erp-text">${escapeHtml(breakdown)}</div>` : ''}
-                            ${breakdown ? `<div class="text-[11px] text-erp-mute">1 ${escapeHtml(row.name)} = ${escapeHtml(String(Number(Number(row.weight_qty).toFixed(2))))} ${escapeHtml(row.cname)}</div>` : ''}
                         </td>
                         <td class="px-5 py-4 text-erp-text">${numberValue(conversionQty)}${conversionUnit}</td>
                         <td class="px-5 py-4">

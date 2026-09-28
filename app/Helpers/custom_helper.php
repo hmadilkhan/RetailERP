@@ -254,7 +254,7 @@ class custom_helper
 
     /**
      * Stock balance primary UOM me hota hai (secondary sale qty / weight_qty kar ke kam hoti hai).
-     * Isay "2 Packet = 50 Unit" ki tarah dono units me dikhata hai (secondary = qty x weight_qty).
+     * Isay "2 Packet / 50 Unit" ki tarah dono units me dikhata hai (secondary = qty x weight_qty).
      */
     public static function formatUomQty($qty, $conversion, $primaryUom, $secondaryUom = null)
     {
@@ -268,7 +268,7 @@ class custom_helper
             return trim($trim($qty) . ' ' . $primaryUom);
         }
 
-        return $trim($qty) . ' ' . $primaryUom . ' = ' . $trim($qty * $conversion) . ' ' . $secondaryUom;
+        return $trim($qty) . ' ' . $primaryUom . ' / ' . $trim($qty * $conversion) . ' ' . $secondaryUom;
     }
 
     // "1 Packet = 25 Unit" - conversion samjhane ke liye
