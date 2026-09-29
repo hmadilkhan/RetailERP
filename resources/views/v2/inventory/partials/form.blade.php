@@ -186,6 +186,19 @@
                         </select>
                     </label>
                     <label class="block">
+                        <span class="{{ $labelClass }}">Weight | Qty 2</span>
+                        <input type="number" step="0.01" min="0" name="weight2" id="weight2" value="{{ old('weight2', $product->weight_qty2 ?? '') }}" class="{{ $inputClass }}" placeholder="1 Conversion UOM = ? 3rd UOM">
+                    </label>
+                    <label class="block">
+                        <span class="{{ $labelClass }}">3rd UOM (Optional)</span>
+                        <select id="cuom2" name="cuom2" data-placeholder="Select 3rd UOM" class="{{ $selectClass }}">
+                            <option value="">None</option>
+                            @foreach ($uom ?? [] as $val)
+                                <option value="{{ $val->uom_id }}" @selected(old('cuom2', $product->cuom2 ?? '') == $val->uom_id)>{{ $val->name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <label class="block">
                         <span class="{{ $labelClass }}">Qty Reminder <span class="text-rose-600">*</span></span>
                         <input type="number" min="0" name="reminder" id="reminder" value="{{ $field('reminder') }}" required class="{{ $inputClass }}" placeholder="0">
                     </label>

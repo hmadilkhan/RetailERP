@@ -254,31 +254,51 @@ class custom_helper
 
     /**
      * Stock balance primary UOM me hota hai (secondary sale qty / weight_qty kar ke kam hoti hai).
-     * Isay "2 Packet / 50 Unit" ki tarah dono units me dikhata hai (secondary = qty x weight_qty).
+     * Isay "2 Carton / 48 Packet / 480 Unit" ki tarah dikhata hai:
+     * secondary = qty x weight_qty, 3rd = secondary x weight_qty2 (3rd level sirf display ke liye).
      */
-    public static function formatUomQty($qty, $conversion, $primaryUom, $secondaryUom = null)
+    public static function formatUomQty($qty, $conversion, $primaryUom, $secondaryUom = null, $conversion2 = null, $thirdUom = null)
     {
         $qty = (float) $qty;
         $conversion = (float) $conversion;
-        $trim = function ($value) {
-            return rtrim(rtrim(number_format($value, 2, '.', ''), '0'), '.');
-        };
 
-        if ($conversion <= 1 || empty($secondaryUom) || $primaryUom == $secondaryUom) {
-            return trim($trim($qty) . ' ' . $primaryUom);
+        if (!self::hasUomLevel($conversion, $primaryUom, $secondaryUom)) {
+            return trim(self::trimQty($qty) . ' ' . $primaryUom);
         }
 
-        return $trim($qty) . ' ' . $primaryUom . ' / ' . $trim($qty * $conversion) . ' ' . $secondaryUom;
+        $secondaryQty = $qty * $conversion;
+        $text = self::trimQty($qty) . ' ' . $primaryUom . ' / ' . self::trimQty($secondaryQty) . ' ' . $secondaryUom;
+
+        if (self::hasUomLevel($conversion2, $secondaryUom, $thirdUom)) {
+            $text .= ' / ' . self::trimQty($secondaryQty * (float) $conversion2) . ' ' . $thirdUom;
+        }
+
+        return $text;
     }
 
-    // "25 Unit" - 1 primary unit me kitne secondary, UOM naam ke saath bracket me dikhane ke liye
-    public static function uomRateLabel($conversion, $primaryUom, $secondaryUom = null)
+    // "24 Packet" ya "24 Packet · 240 Unit" - 1 primary unit me kitne, UOM naam ke saath bracket me dikhane ke liye
+    public static function uomRateLabel($conversion, $primaryUom, $secondaryUom = null, $conversion2 = null, $thirdUom = null)
     {
-        $conversion = (float) $conversion;
-        if ($conversion <= 1 || empty($secondaryUom) || $primaryUom == $secondaryUom) {
+        if (!self::hasUomLevel($conversion, $primaryUom, $secondaryUom)) {
             return '';
         }
 
-        return rtrim(rtrim(number_format($conversion, 2, '.', ''), '0'), '.') . ' ' . $secondaryUom;
+        $text = self::trimQty($conversion) . ' ' . $secondaryUom;
+
+        if (self::hasUomLevel($conversion2, $secondaryUom, $thirdUom)) {
+            $text .= ' · ' . self::trimQty((float) $conversion * (float) $conversion2) . ' ' . $thirdUom;
+        }
+
+        return $text;
+    }
+
+    private static function hasUomLevel($conversion, $fromUom, $toUom)
+    {
+        return (float) $conversion > 1 && !empty($toUom) && $fromUom != $toUom;
+    }
+
+    private static function trimQty($value)
+    {
+        return rtrim(rtrim(number_format((float) $value, 2, '.', ''), '0'), '.');
     }
 }

@@ -74,8 +74,8 @@
                                         <td>{{ $value->totalQty }}</td>
                                         <td>{{ $value->qty }}
                                             @if ($uomInfo && (float) $uomInfo->weight_qty > 1 && !empty($uomInfo->cuom_name) && $uomInfo->cuom_name != $uomInfo->uom_name)
-                                                <br /><small class="text-muted">{{ $uomInfo->uom_name }} ({{ \App\Helpers\custom_helper::uomRateLabel($uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name) }})</small>
-                                                <br /><small><b>{{ \App\Helpers\custom_helper::formatUomQty($value->qty, $uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name) }}</b></small>
+                                                <br /><small class="text-muted">{{ $uomInfo->uom_name }} ({{ \App\Helpers\custom_helper::uomRateLabel($uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name, $uomInfo->weight_qty2, $uomInfo->cuom2_name) }})</small>
+                                                <br /><small><b>{{ \App\Helpers\custom_helper::formatUomQty($value->qty, $uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name, $uomInfo->weight_qty2, $uomInfo->cuom2_name) }}</b></small>
                                             @endif
                                         </td>
                                         <td>{{ $value->cost_price }}</td>

@@ -180,17 +180,34 @@
             return parsed.toLocaleString(undefined, { minimumFractionDigits: digits, maximumFractionDigits: digits });
         }
 
-        // Stock primary UOM me hota hai; "2 Packet / 50 Unit" ki tarah dono units me dikhao
-        function uomBreakdown(qty, conversion, primaryUom, secondaryUom) {
-            qty = Number(qty || 0);
-            conversion = Number(conversion || 0);
-            const trim = value => String(Number(value.toFixed(2)));
+        // Stock primary UOM me hota hai; "2 Carton / 48 Packet / 480 Unit" ki tarah dikhao (3rd level sirf display)
+        const trimQty = value => String(Number(Number(value || 0).toFixed(2)));
+        const hasUomLevel = (conversion, fromUom, toUom) => Number(conversion || 0) > 1 && !!toUom && fromUom !== toUom;
 
-            if (conversion <= 1 || !secondaryUom || primaryUom === secondaryUom) {
+        function uomBreakdown(row) {
+            if (!hasUomLevel(row.weight_qty, row.name, row.cname)) {
                 return '';
             }
 
-            return trim(qty) + ' ' + primaryUom + ' / ' + trim(qty * conversion) + ' ' + secondaryUom;
+            const qty = Number(row.qty || 0);
+            const secondaryQty = qty * Number(row.weight_qty);
+            let text = trimQty(qty) + ' ' + row.name + ' / ' + trimQty(secondaryQty) + ' ' + row.cname;
+
+            if (hasUomLevel(row.weight_qty2, row.cname, row.cname2)) {
+                text += ' / ' + trimQty(secondaryQty * Number(row.weight_qty2)) + ' ' + row.cname2;
+            }
+
+            return text;
+        }
+
+        function uomRate(row) {
+            let text = trimQty(row.weight_qty) + ' ' + row.cname;
+
+            if (hasUomLevel(row.weight_qty2, row.cname, row.cname2)) {
+                text += ' · ' + trimQty(Number(row.weight_qty) * Number(row.weight_qty2)) + ' ' + row.cname2;
+            }
+
+            return text;
         }
 
         function itemStatus(row) {
@@ -235,7 +252,7 @@
                 const status = itemStatus(row);
                 const conversionQty = Number(row.qty || 0) * Number(row.weight_qty || 0);
                 const conversionUnit = row.cname ? ' ' + escapeHtml(row.cname) : '';
-                const breakdown = uomBreakdown(row.qty, row.weight_qty, row.name, row.cname);
+                const breakdown = uomBreakdown(row);
                 const rowBranchId = row.stock_branch_id || selectedBranchId;
                 const detailUrl = "{{ url('/stock-details') }}/" + encodeURIComponent(row.id) + "/" + encodeURIComponent(rowBranchId);
 
@@ -265,7 +282,7 @@
                         <td class="px-5 py-4 text-right font-bold text-erp-ink">${numberValue(row.amount)}</td>
                         <td class="px-5 py-4 text-right">
                             <div class="font-black text-erp-ink">${numberValue(row.qty)}</div>
-                            <div class="mt-1 text-xs text-erp-mute">${escapeHtml(row.name || '')}${breakdown ? ` (${escapeHtml(String(Number(Number(row.weight_qty).toFixed(2))))} ${escapeHtml(row.cname)})` : ''}</div>
+                            <div class="mt-1 text-xs text-erp-mute">${escapeHtml(row.name || '')}${breakdown ? ` (${escapeHtml(uomRate(row))})` : ''}</div>
                             ${breakdown ? `<div class="mt-1 text-xs font-semibold text-erp-text">${escapeHtml(breakdown)}</div>` : ''}
                         </td>
                         <td class="px-5 py-4 text-erp-text">${numberValue(conversionQty)}${conversionUnit}</td>
