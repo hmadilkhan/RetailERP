@@ -112,6 +112,7 @@
             || request()->is('mobile-promotion')
             || request()->is('branches')
             || request()->is('inventory-list')
+            || request()->is('stockadjustment')
             || request()->is('posproducts');
     @endphp
     @if (($tailwindSelect2Assets || $tailwindPurchaseAssets || $tailwindDiscountAssets) && !$tailwindLegacyAssets)

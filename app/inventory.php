@@ -928,9 +928,10 @@ class inventory extends Model
         return $result;
     }
 
-    public function getgrns($productid)
+    public function getgrns($productid, $branch)
     {
-        $result = DB::select('SELECT a.stock_id, a.grn_id, b.product_name, a.balance,DATE(a.date) as date,TIME(a.date) as time FROM inventory_stock a INNER JOIN inventory_general b ON b.id = a.product_id  WHERE a.product_id = ? AND a.grn_id IN (SELECT grn_id FROM inventory_stock WHERE product_id = ? AND status_id = 1)', [$productid, $productid]);
+        // Sirf isi branch ke active lots jin me balance bacha ho, purane se naye (FIFO)
+        $result = DB::select('SELECT a.stock_id, a.grn_id, b.product_name, a.balance,DATE(a.date) as date,TIME(a.date) as time FROM inventory_stock a INNER JOIN inventory_general b ON b.id = a.product_id WHERE a.product_id = ? AND a.branch_id = ? AND a.status_id = 1 AND a.balance > 0 ORDER BY a.stock_id', [$productid, $branch]);
         return $result;
     }
 

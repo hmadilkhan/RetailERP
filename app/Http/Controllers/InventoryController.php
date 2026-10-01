@@ -2245,78 +2245,90 @@ class InventoryController extends Controller
     public function stockadjustment_show(inventory $inventory, request $request, stock $stock)
     {
         $branches = $stock->getBranches();
-        return view('Inventory.stockadjustment', compact('branches'));
+        return view('v2.inventory.stockadjustment', compact('branches'));
     }
 
     public function getstock_value(inventory $inventory, request $request)
     {
         $branch = ((session('roleId') == 17 or session('roleId') == 2) ? $request->branch : session('branch'));
         $stock = $inventory->getstock_value($request->productid, $branch);
+
+        // Product ki teeno UOM aur conversions, taake page kisi bhi UOM me qty le sake
+        $uom = DB::table('inventory_general as g')
+            ->leftJoin('inventory_uom as u', 'u.uom_id', '=', 'g.uom_id')
+            ->leftJoin('inventory_uom as cu', 'cu.uom_id', '=', 'g.cuom')
+            ->leftJoin('inventory_uom as cu2', 'cu2.uom_id', '=', 'g.cuom2')
+            ->where('g.id', $request->productid)
+            ->select('g.weight_qty', 'g.weight_qty2', 'u.name as uom_name', 'cu.name as cuom_name', 'cu2.name as cuom2_name')
+            ->first();
+        if (!empty($stock) && $uom) {
+            foreach ((array) $uom as $key => $value) {
+                $stock[0]->$key = $value;
+            }
+        }
         return $stock;
     }
 
     public function getgrns(inventory $inventory, request $request)
     {
-        $stock = $inventory->getgrns($request->productid);
+        $branch = ((session('roleId') == 17 or session('roleId') == 2) ? $request->branch : session('branch'));
+        $stock = $inventory->getgrns($request->productid, $branch);
         return $stock;
     }
 
 
     public function update_stockadjustment(inventory $inventory, request $request, stock $stockApp)
     {
+        $quantity = abs((float) $request->qty);
+        $stockIds = array_filter((array) $request->stockid);
 
-        $quantity = $request->qty * (-1);
-        $newbal = 0;
-        $stockid = 0;
-        $productid = 0;
-        foreach ($request->stockid as $value) {
-            if ($quantity < 0) {
-                $quantity = $quantity * (-1);
-            }
-            $stockid = $value;
-            $balance = $inventory->getbalance($value);
-            if ($balance[0]->balance > $quantity) {
-                $newbal = $balance[0]->balance - $quantity;
-
-                $items = [
-                    'balance' => $newbal,
-                ];
-                //update the new balance in inventory stock
-                $updatebalance = $inventory->update_balance_stock($value, $items);
-                $productid = $balance[0]->product_id;
-                $this->stockreport($stockApp, $balance[0]->product_id, $value, $request->qty, $balance[0]->cost_price, $balance[0]->retail_price, $request->narration);
-                // return 1;
-            } elseif ($balance[0]->balance == $quantity) {
-                $newbal = $balance[0]->balance - $quantity;
-
-                $items = [
-                    'balance' => $newbal,
-                    'status_id' => 2,
-                ];
-                //update the new balance in inventory stock
-                $productid = $balance[0]->product_id;
-                $updatebalance = $inventory->update_balance_stock($value, $items);
-                $this->stockreport($stockApp, $balance[0]->product_id, $value, $request->qty, $balance[0]->cost_price, $balance[0]->retail_price, $request->narration);
-                // return 1;
-            } else {
-                // $quantity = $balance[0]->balance;
-                $quantity = $balance[0]->balance - $quantity;
-                $items = [
-                    'balance' => 0,
-                    'status_id' => 2,
-                ];
-                //update the new balance in inventory stock
-                $productid = $balance[0]->product_id;
-                $updatebalance = $inventory->update_balance_stock($value, $items);
-                $this->stockreport($stockApp, $balance[0]->product_id, $value, $balance[0]->balance, $balance[0]->cost_price, $balance[0]->retail_price, $request->narration);
-            }
+        if ($quantity <= 0 || empty($stockIds)) {
+            return response()->json(['message' => 'Please enter a quantity and select at least one GRN lot.'], 422);
         }
-        // return $productid;
+
+        // Chune hue active lots, purane se naye (FIFO)
+        $lots = DB::table('inventory_stock')
+            ->whereIn('stock_id', $stockIds)
+            ->where('status_id', 1)
+            ->where('balance', '>', 0)
+            ->orderBy('stock_id')
+            ->get();
+
+        if ($lots->isEmpty() || $lots->pluck('product_id')->unique()->count() > 1 || $lots->pluck('branch_id')->unique()->count() > 1) {
+            return response()->json(['message' => 'Selected GRN lots are not valid. Please reload and select again.'], 422);
+        }
+
+        $available = (float) $lots->sum('balance');
+        if ($quantity - $available > 0.0001) {
+            return response()->json(['message' => 'Selected lots have only ' . (float) $available . ' in stock. Select more lots or reduce the quantity.'], 422);
+        }
+
+        $productid = $lots->first()->product_id;
+        $branchId = $lots->first()->branch_id;
+
+        DB::transaction(function () use ($lots, $quantity, $productid, $inventory, $stockApp, $request) {
+            $remaining = $quantity;
+            foreach ($lots as $lot) {
+                if ($remaining <= 0.0001) {
+                    break;
+                }
+
+                // Har lot se sirf utna kaato jitna baqi hai
+                $deduct = min($remaining, (float) $lot->balance);
+                $newbal = (float) $lot->balance - $deduct;
+                $items = $newbal > 0.0001 ? ['balance' => $newbal] : ['balance' => 0, 'status_id' => 2];
+
+                $inventory->update_balance_stock($lot->stock_id, $items);
+                $this->stockreport($stockApp, $productid, $lot->stock_id, -$deduct, $lot->cost_price, $lot->retail_price, $request->narration, $lot->branch_id);
+                $remaining -= $deduct;
+            }
+        });
+
         $inventory = DB::table("inventory_general")->where("id", $productid)->get();
-        $terminals = DB::table("terminal_details")->where("branch_id", session("branch"))->where("status_id", 1)->get();
+        $terminals = DB::table("terminal_details")->where("branch_id", $branchId)->where("status_id", 1)->get();
         foreach ($terminals as $value) {
             $items = [
-                "branchId" => ((session('roleId') == 17 or session('roleId') == 12) ? $request->branch : session('branch')),
+                "branchId" => $branchId,
                 "terminalId" => $value->terminal_id,
                 "productId" => $productid,
                 "status" => 1,
@@ -2328,18 +2340,20 @@ class InventoryController extends Controller
         $this->sendPushNotification($inventory[0]->item_code, $inventory[0]->product_name, "update");
         return 1;
     }
-    function stockreport(stock $stockApp, $productid, $stockid, $qty, $cp, $rp, $narration)
+
+    // $qty signed hai: minus = stock hata, reports isay stock me jodti hain
+    function stockreport(stock $stockApp, $productid, $stockid, $qty, $cp, $rp, $narration, $branchId = null)
     {
         $lastStock = $stockApp->getLastStock($productid);
         $stk = empty($lastStock) ? 0 : $lastStock[0]->stock;
-        $stk = $stk - $qty;
+        $stk = $stk + $qty;
 
         //after that stock report table main insert
         $report = [
             'date' => date('Y-m-d H:s:i'),
             'product_id' => $productid,
             'foreign_id' => $stockid,
-            'branch_id' => session('branch'),
+            'branch_id' => $branchId ?? session('branch'),
             'qty' => $qty,
             'stock' => $stk,
             'cost' => $cp,
