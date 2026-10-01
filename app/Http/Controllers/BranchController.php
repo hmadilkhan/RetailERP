@@ -232,6 +232,9 @@ class BranchController extends Controller
 			'code' => $request->br_code,
 			'record_daily_stock' => $request->record_daily_stock,
 		];
+		if ($request->has('allow_negative_stock')) {
+			$items['allow_negative_stock'] = $request->allow_negative_stock == 1 ? 1 : 0;
+		}
 		$branch = ModelsBranch::where('branch_id', $request->br_id)->update($items);
 		// $branch = $branch->branch_update($request->br_id, $items);
 

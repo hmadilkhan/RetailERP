@@ -135,6 +135,16 @@
                                 <span class="form-control-feedback text-danger" id="record_daily_stock_message"></span>
                             </div>
                         </div>
+                        <div class="col-lg-3 col-md-3">
+                            <div class="form-group">
+                                <label class="form-control-label">Allow Negative Stock ?</label>
+                                <select name="allow_negative_stock" id="allow_negative_stock"
+                                    data-placeholder="Allow Negative Stock" class="form-control select2">
+                                    <option {{ ($details[0]->allow_negative_stock ?? 0) == 0 ? 'selected' : '' }} value="0">No</option>
+                                    <option {{ ($details[0]->allow_negative_stock ?? 0) == 1 ? 'selected' : '' }} value="1">Yes</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-3 col-md-3">

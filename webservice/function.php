@@ -421,6 +421,8 @@ function invent_stock_detection($branchId, $itemCode, $totalQty, $status)
                 $updatedstock = $totalQty;
             }
 
+            $shortfall = 0; // negative stock: kitni qty stock khatam hone ke baad bachi
+
             for ($s = 0; $s < sizeof($result); $s++) {
 
                 $value = $GLOBALS['crud']->runQuery("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id  IN(1,3)");
@@ -428,27 +430,73 @@ function invent_stock_detection($branchId, $itemCode, $totalQty, $status)
                 // return  $updatedstock;
 
                 if ($updatedstock > 0) {
+                    $shortfall = $updatedstock;
                     $columns = "balance = 0,status_id = 2";
                     $update = $GLOBALS['crud']->modify_mode($columns, 'inventory_stock', "stock_id = " . $value[0]["stock_id"] . " ");
                 } else if ($updatedstock < 0) {
                     $updatedstock = $updatedstock * (-1);
+                    $shortfall = 0;
                     $columns = "balance = " . $updatedstock . ",status_id = 1";
 //                    echo  $updatedstock;
                     $update = $GLOBALS['crud']->modify_mode($columns, 'inventory_stock', "stock_id = " . $value[0]["stock_id"] . " ");
                     break;
                 } else if ($updatedstock == 0) {
+                    $shortfall = 0;
                     $columns = "balance = 0,status_id = 2";
                     $update = $GLOBALS['crud']->modify_mode($columns, 'inventory_stock', "stock_id = " . $value[0]["stock_id"] . " ");
                     break;
                 }
             }
+
+            // Saare lots khatam ho gaye aur qty bach gayi -> permission ho to negative me daal do
+            if ($shortfall > 0.0001 && allow_negative_stock($branchId)) {
+                negative_stock_entry($branchId, $itemCode, $shortfall);
+            }
             return 1;
         } else {
+            // Koi active lot nahi (stock pehle hi 0) -> permission ho to poori qty negative me
+            if (allow_negative_stock($branchId)) {
+                $negativeQty = $totalQty;
+                if ($status == "Open") {
+                    $weightQty = $GLOBALS['crud']->runQuery("SELECT weight_qty FROM `inventory_general` where id = '$itemCode'");
+                    $negativeQty = (!empty($weightQty) && $weightQty[0]["weight_qty"] > 0) ? $totalQty / $weightQty[0]["weight_qty"] : $totalQty;
+                }
+                if ($negativeQty > 0 && negative_stock_entry($branchId, $itemCode, $negativeQty)) {
+                    return 1;
+                }
+            }
             return 0;
         }
     } else {
         return 0;
     }
+}
+
+// Branch pe negative stock ki permission (branch.allow_negative_stock = 1)
+function allow_negative_stock($branchId)
+{
+    $branch = $GLOBALS['crud']->runQuery("SELECT allow_negative_stock FROM branch WHERE branch_id = " . (int) $branchId);
+    return !empty($branch) && (int) $branch[0]["allow_negative_stock"] === 1;
+}
+
+// Bachi hui qty ko minus balance me likho. Negative row status_id = 2 rehti hai taake
+// normal lot-wise deduction usay na uthaye; SUM(balance) me minus stock nazar aata hai.
+function negative_stock_entry($branchId, $itemCode, $qty)
+{
+    $branchId = (int) $branchId;
+    $itemCode = (int) $itemCode;
+
+    $row = $GLOBALS['crud']->runQuery("SELECT stock_id, balance FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and balance < 0 ORDER BY stock_id DESC LIMIT 1");
+    if (empty($row)) {
+        $row = $GLOBALS['crud']->runQuery("SELECT stock_id, balance FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId ORDER BY stock_id DESC LIMIT 1");
+    }
+    if (empty($row)) {
+        return 0; // is branch me is product ka kabhi stock aaya hi nahi
+    }
+
+    $newBalance = $row[0]["balance"] - $qty;
+    $GLOBALS['crud']->modify_mode("balance = " . $newBalance . ",status_id = 2", 'inventory_stock', "stock_id = " . $row[0]["stock_id"] . " ");
+    return 1;
 }
 
 // get customer //

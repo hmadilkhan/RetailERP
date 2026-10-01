@@ -88,6 +88,14 @@
                     </select>
                 </div>
 
+                <div class="lg:col-span-3">
+                    <label class="text-sm font-bold text-erp-ink" for="allow_negative_stock">Allow Negative Stock?</label>
+                    <select name="allow_negative_stock" id="allow_negative_stock" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <option {{ ($details[0]->allow_negative_stock ?? 0) == 0 ? 'selected' : '' }} value="0">No</option>
+                        <option {{ ($details[0]->allow_negative_stock ?? 0) == 1 ? 'selected' : '' }} value="1">Yes</option>
+                    </select>
+                </div>
+
                 <div class="lg:col-span-4">
                     <label class="text-sm font-bold text-erp-ink" for="report">Reports</label>
                     <select multiple name="reportlist[]" id="report" class="mt-2 min-h-32 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
