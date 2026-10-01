@@ -45,9 +45,9 @@
 
                     <div class="block">
                         <label for="qty" class="{{ $labelClass }}">Adjustment Qty</label>
-                        <div class="flex gap-2">
-                            <input type="number" step="any" name="qty" id="qty" class="{{ $inputClass }} min-w-0 flex-1" placeholder="e.g. 5 or -2">
-                            <select id="qtyUom" class="{{ $inputClass }} hidden w-32 shrink-0" aria-label="Unit of measure"></select>
+                        <div class="mt-2 flex gap-2">
+                            <input type="number" step="any" name="qty" id="qty" class="h-10 min-w-0 flex-1 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" placeholder="e.g. 5 or -2">
+                            <select id="qtyUom" class="hidden h-10 w-36 shrink-0 rounded-lg border-erp-line bg-slate-50 text-sm font-semibold text-erp-text shadow-sm focus:border-erp focus:ring-erp" aria-label="Unit of measure"></select>
                         </div>
                         <span id="qtyConversion" class="mt-1 block text-xs text-erp-mute">Positive adds stock, negative removes it.</span>
                     </div>
@@ -418,7 +418,15 @@
                 }
             });
             $('#qty').on('change', qtychanger);
-            $('#qty').on('input', updateConversion);
+            $('#qty').on('input', function () {
+                updateConversion();
+                const qty = parseFloat($(this).val());
+                const removing = qty < 0;
+                // Sign badla (plus <-> minus) to foran sahi button/section dikhao
+                if (!isNaN(qty) && qty !== 0 && removing !== !$('#dvgrn').hasClass('hidden') && $('#product').val()) {
+                    qtychanger();
+                }
+            });
             $('#qtyUom').on('change', function () {
                 updateConversion();
                 fillCostForUom();
