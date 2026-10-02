@@ -12,10 +12,38 @@
             animation: tp-spin 0.75s linear infinite;
         }
         @keyframes tp-spin { to { transform: rotate(360deg); } }
+        .terminal-permissions-page .select2-container--disabled .select2-selection--single {
+            background: #f8fafc !important;
+            cursor: not-allowed;
+        }
+        .terminal-permissions-page .select2-container--disabled .select2-selection__rendered {
+            color: #94a3b8 !important;
+        }
     </style>
 
+    <script>
+        window.tpSelect2 = window.tpSelect2 || function (el, wire, property) {
+            var push = function (value) { wire.set(property, value || ''); };
+
+            if (!window.jQuery || !jQuery.fn.select2) {
+                el.addEventListener('change', function () { push(el.value); });
+                return;
+            }
+
+            var $select = jQuery(el);
+            if (!$select.hasClass('select2-hidden-accessible')) {
+                $select.select2({
+                    width: '100%',
+                    dropdownCssClass: 'v2-select2-dropdown',
+                    placeholder: $select.find('option[value=""]').first().text(),
+                    allowClear: true, // the empty option is the placeholder, so clearing is the only way back to it
+                });
+            }
+            $select.off('change.tp').on('change.tp', function () { push($select.val()); });
+        };
+    </script>
+
     @php
-        $selectClass = 'mt-2 h-11 w-full rounded-lg border-erp-line bg-white text-sm font-medium text-erp-ink shadow-sm focus:border-erp focus:ring-erp disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-400';
         $labelClass = 'text-[11px] font-bold uppercase tracking-[0.16em] text-erp-mute';
         $selectedCompany = $companies->firstWhere('company_id', (int) $companyId);
         $selectedBranch = $branches->firstWhere('branch_id', (int) $branchId);
@@ -47,35 +75,42 @@
             </div>
         </div>
         <div class="grid gap-4 p-5 md:grid-cols-3">
-            <label class="block">
+            {{-- Select2 owns these DOM nodes (wire:ignore); wire:key re-creates a select when the options it depends on change. --}}
+            <div class="block">
                 <span class="{{ $labelClass }}">Company</span>
-                <select class="{{ $selectClass }}" wire:model.live="companyId">
-                    <option value="">Select company</option>
-                    @foreach ($companies as $company)
-                        <option value="{{ $company->company_id }}">{{ $company->name }}</option>
-                    @endforeach
-                </select>
-            </label>
+                <div class="mt-2" wire:ignore wire:key="tp-company-select">
+                    <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tpSelect2($el, $wire, 'companyId')">
+                        <option value="">Select company</option>
+                        @foreach ($companies as $company)
+                            <option value="{{ $company->company_id }}" @selected((string) $company->company_id === (string) $companyId)>{{ $company->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
 
-            <label class="block">
+            <div class="block">
                 <span class="{{ $labelClass }}">Branch</span>
-                <select class="{{ $selectClass }}" wire:model.live="branchId" @disabled($companyId === '')>
-                    <option value="">{{ $companyId === '' ? 'Select company first' : 'Select branch' }}</option>
-                    @foreach ($branches as $branch)
-                        <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
-                    @endforeach
-                </select>
-            </label>
+                <div class="mt-2" wire:ignore wire:key="tp-branch-select-{{ $companyId }}-{{ $branchId }}">
+                    <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tpSelect2($el, $wire, 'branchId')" @disabled($companyId === '')>
+                        <option value="">{{ $companyId === '' ? 'Select company first' : 'Select branch' }}</option>
+                        @foreach ($branches as $branch)
+                            <option value="{{ $branch->branch_id }}" @selected((string) $branch->branch_id === (string) $branchId)>{{ $branch->branch_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
 
-            <label class="block">
+            <div class="block">
                 <span class="{{ $labelClass }}">Terminal</span>
-                <select class="{{ $selectClass }}" wire:model.live="terminalId" @disabled($branchId === '')>
-                    <option value="">{{ $branchId === '' ? 'Select branch first' : 'All terminals' }}</option>
-                    @foreach ($branchTerminals as $terminal)
-                        <option value="{{ $terminal->terminal_id }}">{{ $terminal->terminal_name }}{{ (int) $terminal->status_id !== 1 ? ' (Inactive)' : '' }}</option>
-                    @endforeach
-                </select>
-            </label>
+                <div class="mt-2" wire:ignore wire:key="tp-terminal-select-{{ $branchId }}-{{ $terminalId }}">
+                    <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tpSelect2($el, $wire, 'terminalId')" @disabled($branchId === '')>
+                        <option value="">{{ $branchId === '' ? 'Select branch first' : 'All terminals' }}</option>
+                        @foreach ($branchTerminals as $terminal)
+                            <option value="{{ $terminal->terminal_id }}" @selected((string) $terminal->terminal_id === (string) $terminalId)>{{ $terminal->terminal_name }}{{ (int) $terminal->status_id !== 1 ? ' (Inactive)' : '' }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
 
