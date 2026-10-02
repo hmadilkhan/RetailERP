@@ -237,6 +237,10 @@ class BranchController extends Controller
 		}
 		$branch = ModelsBranch::where('branch_id', $request->br_id)->update($items);
 		// $branch = $branch->branch_update($request->br_id, $items);
+		if (array_key_exists('allow_negative_stock', $items)) {
+			// Mirror onto every terminal's POS permission in this branch
+			app(BranchService::class)->syncNegativeStock((int) $request->br_id, $items['allow_negative_stock'] === 1);
+		}
 
 		if (!empty($request->reportlist) && count($request->reportlist) > 0) {
 			DB::table("branch_reports")->where("branch_id", $request->br_id)->delete();

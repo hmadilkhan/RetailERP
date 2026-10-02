@@ -5,6 +5,7 @@ namespace App\Livewire\Terminals;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Terminal;
+use App\Services\BranchService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Url;
@@ -78,6 +79,7 @@ class TerminalPermissions extends Component
         ]],
         'inventory' => ['title' => 'Inventory', 'hint' => 'Stock effects of sales and receiving from the terminal.', 'fields' => [
             'stock_deduction' => ['Stock Deduction', 'toggle'],
+            'allow_negative_stock' => ['Allow Negative Stock (whole branch)', 'toggle'],
             'create_inventory' => ['Create Inventory', 'toggle'],
             'closing_raw_inventory' => ['Closing Raw Inventory', 'toggle'],
             'label_printing' => ['Label Printing', 'toggle'],
@@ -235,6 +237,9 @@ class TerminalPermissions extends Component
             };
         }
 
+        // The branch is the source of truth (the POS webservice reads branch.allow_negative_stock).
+        $this->perms['allow_negative_stock'] = (int) DB::table('branch')->where('branch_id', $terminal->branch_id)->value('allow_negative_stock') === 1;
+
         $this->openTerminalId = $terminalId;
         $this->resetValidation();
     }
@@ -294,7 +299,19 @@ class TerminalPermissions extends Component
             $this->hasRecord = true;
         }
 
-        session()->flash('permission_message', 'Permissions saved for ' . (Terminal::find($this->openTerminalId)->terminal_name ?? 'terminal') . '.');
+        $terminal = Terminal::find($this->openTerminalId);
+        $message = 'Permissions saved for ' . ($terminal->terminal_name ?? 'terminal') . '.';
+
+        // Negative stock is branch-wide: push it to the branch and every sibling terminal.
+        if ($terminal) {
+            $branchAllows = (int) DB::table('branch')->where('branch_id', $terminal->branch_id)->value('allow_negative_stock') === 1;
+            if ($branchAllows !== (bool) $item['allow_negative_stock']) {
+                $message .= ' Negative stock ' . ($item['allow_negative_stock'] ? 'enabled' : 'disabled') . ' for the whole branch.';
+            }
+            app(BranchService::class)->syncNegativeStock((int) $terminal->branch_id, (bool) $item['allow_negative_stock']);
+        }
+
+        session()->flash('permission_message', $message);
     }
 
     public static function fields(): array

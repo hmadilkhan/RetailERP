@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Branch;
+use Illuminate\Support\Facades\DB;
 
 class BranchService
 {
@@ -14,7 +15,24 @@ class BranchService
         //
     }
 
-    public function getBranches()  
+    /**
+     * Negative stock is a branch-wide setting mirrored on every terminal's POS permissions.
+     * Whichever side changes it (branch edit or terminal permission), both stay in sync.
+     */
+    public function syncNegativeStock(int $branchId, bool $allowed): void
+    {
+        $value = $allowed ? 1 : 0;
+
+        DB::transaction(function () use ($branchId, $value) {
+            Branch::where('branch_id', $branchId)->update(['allow_negative_stock' => $value]);
+
+            DB::table('users_sales_permission')
+                ->whereIn('terminal_id', DB::table('terminal_details')->where('branch_id', $branchId)->select('terminal_id'))
+                ->update(['allow_negative_stock' => $value]);
+        });
+    }
+
+    public function getBranches()
     {
         $branches = [];
         if (session("roleId") == 2 || session("roleId") == 17) {
