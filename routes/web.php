@@ -318,6 +318,7 @@ Route::middleware(['roleChecker'])->group(function () {
     //Terminals
     Route::get('/terminals', [TerminalController::class, 'view']);
     Route::get('/terminal-manager', \App\Livewire\Terminals\TerminalManager::class)->name('terminal-manager');
+    Route::get('/terminal-permissions', \App\Livewire\Terminals\TerminalPermissions::class)->name('terminal-permissions');
     Route::post('/submitterminal', [TerminalController::class, 'store']);
     Route::put('/inactive-terminal', [TerminalController::class, 'remove']);
     Route::post('/inactive-terminals-details', [TerminalController::class, 'inactivedetails']);

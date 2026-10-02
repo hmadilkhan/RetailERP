@@ -128,3 +128,4 @@ Ye bugs client ko **ghalat financial numbers** de rahe hain. Feature gap nahi, r
 | Date | Phase | Kya hua | Files |
 |---|---|---|---|
 | 2026-09-21 | — | Baseline audit + plan likha gaya. Abhi tak koi code change nahi. | `CLAUDE.md` (naya) |
+| 2026-10-02 | — (plan se bahar) | Terminal Permissions V2 page (Operations me, sirf roleId 1): Company → Branch → Terminal dropdowns, inline accordion editor for `users_sales_permission`. Legacy `/permission/{id}` untouched. | `app/Livewire/Terminals/TerminalPermissions.php`, `resources/views/livewire/terminals/terminal-permissions.blade.php`, `routes/web.php`, `resources/lang/en/sidebar.php`, `database/migrations/2026_10_02_100000_add_terminal_permissions_menu_page.php` |

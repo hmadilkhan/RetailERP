@@ -155,5 +155,6 @@ return [
     'invoices' => 'Invoices',
     'delivery_history' => 'Delivery History',
     'terminal_manager' => 'Terminal Manager',
+    'terminal_permissions' => 'Terminal Permissions',
     
 ];
