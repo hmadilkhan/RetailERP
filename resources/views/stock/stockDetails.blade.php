@@ -73,9 +73,10 @@
                                         <td>{{ date('M d, Y', strtotime($value->date)) }}</td>
                                         <td>{{ $value->totalQty }}</td>
                                         <td>{{ $value->qty }}
-                                            @if ($uomInfo && (float) $uomInfo->weight_qty > 1 && !empty($uomInfo->cuom_name) && $uomInfo->cuom_name != $uomInfo->uom_name)
-                                                <br /><small class="text-muted">{{ $uomInfo->uom_name }} ({{ \App\Helpers\custom_helper::uomRateLabel($uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name, $uomInfo->weight_qty2, $uomInfo->cuom2_name) }})</small>
-                                                <br /><small><b>{{ \App\Helpers\custom_helper::formatUomQty($value->qty, $uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name, $uomInfo->weight_qty2, $uomInfo->cuom2_name) }}</b></small>
+                                            @php $uomRate = $uomInfo ? \App\Helpers\custom_helper::uomRateLabel($uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name, $uomInfo->weight_qty2, $uomInfo->cuom2_name, $uomInfo->pack_qty, $uomInfo->pack_uom_name) : ''; @endphp
+                                            @if ($uomRate)
+                                                <br /><small class="text-muted">{{ $uomInfo->uom_name }} ({{ $uomRate }})</small>
+                                                <br /><small><b>{{ \App\Helpers\custom_helper::formatUomQty($value->qty, $uomInfo->weight_qty, $uomInfo->uom_name, $uomInfo->cuom_name, $uomInfo->weight_qty2, $uomInfo->cuom2_name, $uomInfo->pack_qty, $uomInfo->pack_uom_name) }}</b></small>
                                             @endif
                                         </td>
                                         <td>{{ $value->cost_price }}</td>

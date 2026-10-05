@@ -184,7 +184,27 @@
         const trimQty = value => String(Number(Number(value || 0).toFixed(2)));
         const hasUomLevel = (conversion, fromUom, toUom) => Number(conversion || 0) > 1 && !!toUom && fromUom !== toUom;
 
+        // Packing UOM: stock primary (Pcs) me, "2 Carton + 500 Pcs" dikhao
+        const hasPackUom = row => hasUomLevel(row.pack_qty, row.name, row.pack_uom_name);
+
+        function packBreakdown(row) {
+            const qty = Number(row.qty || 0);
+            const packQty = Number(row.pack_qty);
+            const abs = Math.abs(qty);
+            const packs = Math.floor(Number((abs / packQty).toFixed(6)));
+            const loose = Number((abs - packs * packQty).toFixed(2));
+            const parts = [];
+            if (packs > 0) parts.push(packs + ' ' + row.pack_uom_name);
+            if (loose > 0 || !parts.length) parts.push(trimQty(loose) + ' ' + row.name);
+            const text = parts.join(' + ');
+            return qty < 0 ? (parts.length > 1 ? '-(' + text + ')' : '-' + text) : text;
+        }
+
         function uomBreakdown(row) {
+            if (hasPackUom(row)) {
+                return packBreakdown(row);
+            }
+
             if (!hasUomLevel(row.weight_qty, row.name, row.cname)) {
                 return '';
             }
@@ -201,6 +221,10 @@
         }
 
         function uomRate(row) {
+            if (hasPackUom(row)) {
+                return '1 ' + row.pack_uom_name + ' = ' + trimQty(row.pack_qty) + ' ' + row.name;
+            }
+
             let text = trimQty(row.weight_qty) + ' ' + row.cname;
 
             if (hasUomLevel(row.weight_qty2, row.cname, row.cname2)) {

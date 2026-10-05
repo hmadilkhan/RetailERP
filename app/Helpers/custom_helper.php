@@ -257,10 +257,16 @@ class custom_helper
      * Isay "2 Carton / 48 Packet / 480 Unit" ki tarah dikhata hai:
      * secondary = qty x weight_qty, 3rd = secondary x weight_qty2 (3rd level sirf display ke liye).
      */
-    public static function formatUomQty($qty, $conversion, $primaryUom, $secondaryUom = null, $conversion2 = null, $thirdUom = null)
+    public static function formatUomQty($qty, $conversion, $primaryUom, $secondaryUom = null, $conversion2 = null, $thirdUom = null, $packQty = null, $packUom = null)
     {
         $qty = (float) $qty;
         $conversion = (float) $conversion;
+
+        // Packing UOM set ho (stock Pcs me, Carton sirf display): "2500 Pcs (2 Carton + 500 Pcs)"
+        if (self::hasPackUom($packQty, $primaryUom, $packUom)) {
+            $text = trim(self::trimQty($qty) . ' ' . $primaryUom);
+            return abs($qty) < (float) $packQty ? $text : $text . ' (' . self::packBreakdown($qty, $packQty, $primaryUom, $packUom) . ')';
+        }
 
         if (!self::hasUomLevel($conversion, $primaryUom, $secondaryUom)) {
             return trim(self::trimQty($qty) . ' ' . $primaryUom);
@@ -277,8 +283,13 @@ class custom_helper
     }
 
     // "24 Packet" ya "24 Packet · 240 Unit" - 1 primary unit me kitne, UOM naam ke saath bracket me dikhane ke liye
-    public static function uomRateLabel($conversion, $primaryUom, $secondaryUom = null, $conversion2 = null, $thirdUom = null)
+    public static function uomRateLabel($conversion, $primaryUom, $secondaryUom = null, $conversion2 = null, $thirdUom = null, $packQty = null, $packUom = null)
     {
+        // Packing UOM: "1 Carton = 1000 Pcs"
+        if (self::hasPackUom($packQty, $primaryUom, $packUom)) {
+            return '1 ' . $packUom . ' = ' . self::trimQty($packQty) . ' ' . $primaryUom;
+        }
+
         if (!self::hasUomLevel($conversion, $primaryUom, $secondaryUom)) {
             return '';
         }
@@ -290,6 +301,33 @@ class custom_helper
         }
 
         return $text;
+    }
+
+    // "2 Carton + 500 Pcs", negative: "-(1 Carton + 250 Pcs)"
+    public static function packBreakdown($qty, $packQty, $primaryUom, $packUom)
+    {
+        $qty = (float) $qty;
+        $packQty = (float) $packQty;
+        $sign = $qty < 0 ? '-' : '';
+        $abs = abs($qty);
+        $packs = floor(round($abs / $packQty, 6));
+        $loose = round($abs - ($packs * $packQty), 2);
+
+        $parts = [];
+        if ($packs > 0) {
+            $parts[] = self::trimQty($packs) . ' ' . $packUom;
+        }
+        if ($loose > 0 || empty($parts)) {
+            $parts[] = self::trimQty($loose) . ' ' . $primaryUom;
+        }
+        $text = implode(' + ', $parts);
+
+        return $sign && count($parts) > 1 ? '-(' . $text . ')' : $sign . $text;
+    }
+
+    public static function hasPackUom($packQty, $primaryUom, $packUom)
+    {
+        return (float) $packQty > 1 && !empty($packUom) && $packUom != $primaryUom;
     }
 
     private static function hasUomLevel($conversion, $fromUom, $toUom)

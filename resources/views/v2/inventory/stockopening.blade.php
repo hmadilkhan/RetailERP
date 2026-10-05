@@ -88,14 +88,19 @@
 
                     <label class="block">
                         <span class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Stock Qty</span>
-                        <input type="text" name="qty" id="qty" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <div class="mt-2 flex gap-2">
+                            <input type="text" name="qty" id="qty" class="h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                            {{-- Packing UOM wale product pe: Carton me qty, submit pe primary me convert (name nahi, post nahi hota) --}}
+                            <select id="qtyUnit" class="hidden h-10 w-32 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp"></select>
+                        </div>
+                        <span id="packHint" class="mt-1 block text-xs font-semibold text-erp-text"></span>
                         @if ($errors->has('qty'))
                             <span class="mt-1 block text-xs font-semibold text-rose-600">Required field can not be blank.</span>
                         @endif
                     </label>
 
                     <label class="block">
-                        <span class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Item Cost Price</span>
+                        <span id="cpLabel" class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Item Cost Price</span>
                         <input type="text" name="cp" id="cp" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
                         @if ($errors->has('cp'))
                             <span class="mt-1 block text-xs font-semibold text-rose-600">Required field can not be blank.</span>
@@ -117,6 +122,65 @@
 
 @push('scripts')
     <script>
+        // Packing UOM: stock primary (Pcs) me save hota hai; Carton chuna to qty x pack_qty, cost / pack_qty
+        let pack = null;
+        const qtyUnit = document.getElementById('qtyUnit');
+        const trimQty = value => String(Number(Number(value || 0).toFixed(4)));
+        const isPackSelected = () => pack && qtyUnit.value === 'pack';
+
+        function setPack(row) {
+            pack = row && Number(row.pack_qty) > 1 && row.pack_uom_name
+                ? { qty: Number(row.pack_qty), name: row.pack_uom_name, primary: row.uom_name || 'Unit' }
+                : null;
+            qtyUnit.innerHTML = pack
+                ? '<option value="primary"></option><option value="pack"></option>'
+                : '';
+            if (pack) {
+                qtyUnit.options[0].textContent = pack.primary;
+                qtyUnit.options[1].textContent = pack.name;
+            }
+            qtyUnit.classList.toggle('hidden', !pack);
+            updatePackHint();
+        }
+
+        function updatePackHint() {
+            const hint = document.getElementById('packHint');
+            document.getElementById('cpLabel').textContent = isPackSelected() ? 'Cost per ' + pack.name : 'Item Cost Price';
+            if (!pack) {
+                hint.textContent = '';
+                return;
+            }
+            const rate = '1 ' + pack.name + ' = ' + trimQty(pack.qty) + ' ' + pack.primary;
+            const qty = parseFloat(document.getElementById('qty').value);
+            const cp = parseFloat(document.getElementById('cp').value);
+            if (!isPackSelected() || isNaN(qty)) {
+                hint.textContent = rate;
+                return;
+            }
+            hint.textContent = '= ' + trimQty(qty * pack.qty) + ' ' + pack.primary
+                + (isNaN(cp) ? '' : ' @ ' + trimQty(cp / pack.qty)) + ' (' + rate + ')';
+        }
+
+        qtyUnit.addEventListener('change', updatePackHint);
+        document.getElementById('qty').addEventListener('input', updatePackHint);
+        document.getElementById('cp').addEventListener('input', updatePackHint);
+
+        document.getElementById('qty').closest('form').addEventListener('submit', function () {
+            if (!isPackSelected()) {
+                return;
+            }
+            const qtyEl = document.getElementById('qty');
+            const cpEl = document.getElementById('cp');
+            const qty = parseFloat(qtyEl.value);
+            const cp = parseFloat(cpEl.value);
+            if (!isNaN(qty)) {
+                qtyEl.value = trimQty(qty * pack.qty);
+            }
+            if (!isNaN(cp)) {
+                cpEl.value = trimQty(cp / pack.qty);
+            }
+        });
+
         document.getElementById('product').addEventListener('change', function () {
             const formData = new FormData();
             formData.append('_token', '{{ csrf_token() }}');
@@ -131,6 +195,7 @@
                     if (resp && resp[0] && resp[0].uom_id) {
                         document.getElementById('uom').value = resp[0].uom_id;
                     }
+                    setPack(resp && resp[0]);
                 });
         });
     </script>

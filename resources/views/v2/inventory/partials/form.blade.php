@@ -199,6 +199,19 @@
                         </select>
                     </label>
                     <label class="block">
+                        <span class="{{ $labelClass }}">Packing UOM (Optional)</span>
+                        <select id="pack_uom" name="pack_uom" data-placeholder="Select Packing UOM" class="{{ $selectClass }}">
+                            <option value="">None</option>
+                            @foreach ($uom ?? [] as $val)
+                                <option value="{{ $val->uom_id }}" @selected(old('pack_uom', $product->pack_uom ?? '') == $val->uom_id)>{{ $val->name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Packing Qty</span>
+                        <input type="number" step="0.01" min="0" name="pack_qty" id="pack_qty" value="{{ old('pack_qty', $product->pack_qty ?? '') }}" class="{{ $inputClass }}" placeholder="1 Packing UOM = ? Unit Measure">
+                    </label>
+                    <label class="block">
                         <span class="{{ $labelClass }}">Qty Reminder <span class="text-rose-600">*</span></span>
                         <input type="number" min="0" name="reminder" id="reminder" value="{{ $field('reminder') }}" required class="{{ $inputClass }}" placeholder="0">
                     </label>

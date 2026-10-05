@@ -96,10 +96,11 @@
                    <tr>
                      <td style="display: none;"><label>{{$value->item_code}}</label></td>
                      <td style="display: none;"><label>{{$value->unit}}</label></td>
-                     <td><label>{{$value->item_code.' - '.$value->product_name }}</label></td>
+                     {{-- yahan item_code = product id (purchase_item_details), asal code "code" alias me hai --}}
+                     <td><label>{{$value->code.' - '.$value->product_name }}</label></td>
                      <td><label>{{$value->price }}</label></td>
                      <td><label>{{$qty }}</label></td>
-                     <td><input class="form-control" id="rec{{$value->item_code}}" onchange="checkQty('{{$qty }}','{{$qty }}',this.id)" type="text" value="{{$qty}}" name="" {{ $qty == 0 ? 'disbaled="disabled"' : "" }} /></td>
+                     <td><input class="form-control" id="rec{{$value->item_code}}" onchange="checkQty('{{$qty }}','{{$qty }}',this.id)" type="text" value="{{$qty}}" name="" {{ $qty == 0 ? 'disbaled="disabled"' : "" }} />@include('Purchase.partials.pack-unit-select')</td>
                      <td style="display: none;"><input class="form-control" id="rp" value="{{($value->retail == '' ? 0 : $value->retail) }}"   type="text" name="" {{ $qty == 0 ? 'disbaled="disabled"' : "" }} /></td>
                      <td style="display: none;"><input class="form-control" id="wh" value="{{($value->wholesale == '' ? 0 : $value->wholesale) }}" type="text" name="" {{ $qty == 0 ? 'disbaled="disabled"' : "" }}  /></td>
                      <td style="display: none;"><input class="form-control" id="dis" value="0" type="text" name="" {{ $qty == 0 ? 'disbaled="disabled"' : "" }} /></td>
@@ -115,7 +116,7 @@
                      <td><label>{{$value->item_code.' - '.$value->product_name }}</label></td>
                      <td><label>{{$value->price }}</label></td>
                      <td><label>{{$value->quantity }}</label></td>
-                     <td><input class="form-control" id="rec{{$value->item_code}}" onchange="checkQty('{{$value->quantity }}','{{$value->quantity }}',this.id)" value="{{$value->quantity }}"  type="text" name=""  /></td>
+                     <td><input class="form-control" id="rec{{$value->item_code}}" onchange="checkQty('{{$value->quantity }}','{{$value->quantity }}',this.id)" value="{{$value->quantity }}"  type="text" name=""  />@include('Purchase.partials.pack-unit-select')</td>
                      <td style="display: none;"><input class="form-control" id="rp"  value="{{($value->retail == '' ? 0 : $value->retail) }}"  type="text"  name=""/></td>
                      <td style="display: none;"><input class="form-control" id="wh"  value="{{($value->wholesale == '' ? 0 : $value->wholesale) }}" type="text" name=""  /></td>
                      <td style="display: none;"><input class="form-control" id="dis" value="0" type="text"  name=""/></td>
@@ -132,7 +133,7 @@
                      <td><label>{{$value->item_code.' - '.$value->product_name }}</label></td>
                      <td><label>{{$value->price }}</label></td>
                      <td><label>{{$value->quantity }}</label></td>
-                     <td><input class="form-control" id="rec{{$value->item_code}}" onchange="checkQty('{{$value->quantity }}','{{$value->quantity }}',this.id)" value="{{$value->quantity }}"  type="text" name=""  /></td>
+                     <td><input class="form-control" id="rec{{$value->item_code}}" onchange="checkQty('{{$value->quantity }}','{{$value->quantity }}',this.id)" value="{{$value->quantity }}"  type="text" name=""  />@include('Purchase.partials.pack-unit-select')</td>
                      <td style="display: none;"><input class="form-control" id="rp"  value="{{($value->retail == '' ? 0 : $value->retail) }}"  type="text"  name=""/></td>
                      <td style="display: none;"><input class="form-control" id="wh"  value="{{($value->wholesale == '' ? 0 : $value->wholesale) }}" type="text" name=""  /></td>
                      <td style="display: none;"><input class="form-control" id="dis" value="0" type="text"  name=""/></td>
@@ -185,13 +186,48 @@
 
     var grn = "";
 
+  // Packing UOM (Carton): rec input chuni hui unit me hai; check aur GRN hamesha primary (Pcs) me
+  function packUnitFor(id){
+    return $('select.pack-unit[data-rec="'+id+'"]');
+  }
+
+  function recPrimaryQty(id){
+    var $unit = packUnitFor(id);
+    if($unit.length && $unit.val() == 'pack'){
+      return parseFloat($('#'+id).val()) * parseFloat($unit.data('pack'));
+    }
+    return parseInt($('#'+id).val());
+  }
+
+  $(document).on('change', 'select.pack-unit', function(){
+    var $rec = $('#'+$(this).data('rec'));
+    var pack = parseFloat($(this).data('pack'));
+    var value = parseFloat($rec.val());
+    if(!isNaN(value)){
+      var converted = $(this).val() == 'pack' ? value / pack : value * pack;
+      $rec.val(Number(converted.toFixed(4)));
+    }
+  });
+
   function checkQty(qty,rec,id){
 
-    if(parseInt($('#'+id).val()) > qty){
+    if(recPrimaryQty(id) > qty){
        swal_alert("Alert!","Cannot receive more than the Required Qty","error",false);
+      packUnitFor(id).val('primary');
       $('#'+id).focus();
       $('#'+id).val(qty);
       }
+  }
+
+  // Submit se pehle Carton wali rows primary (Pcs) me - neeche rows position se padhi jati hain
+  function normalizePackRows(){
+    $('select.pack-unit').each(function(){
+      if($(this).val() == 'pack'){
+        var id = $(this).data('rec');
+        $('#'+id).val(Number(recPrimaryQty(id).toFixed(4)));
+        $(this).val('primary');
+      }
+    });
   }
 
   function edit(rec,qty){
@@ -219,6 +255,7 @@
             }
           });
 
+      normalizePackRows();
       $("#item_table tbody tr ").each(function(k){
           myVal = [];
           $(this).find("input,label").each(function(i){

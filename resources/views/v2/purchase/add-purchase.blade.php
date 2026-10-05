@@ -214,7 +214,7 @@
                  <!-- price select box -->
                 <div class="col-lg-2  col-sm-12">
                     <div class="form-group">
-                         <label>Unit Price</label>
+                         <label id="priceLabel">Unit Price</label>
                            <input type="text" onkeypress="return isNumberOrDecimalKey(event)"  placeholder="0" name="price" id="price" class="form-control" onkeyup="price_change()" />
                         <span class="help-block"></span>
                     </div>       
@@ -248,6 +248,8 @@
                     <div class="form-group">
                          <label>Quantity</label>
                            <input type="text" onkeypress="return isNumberKey(event)" placeholder="0" name="qty" id="qty" class="form-control" onkeyup="qty_change()"  />
+                           <select id="qtyUnit" class="form-control" style="display:none;margin-top:4px"></select>
+                           <small id="packHint" class="text-muted"></small>
                         <span class="help-block"></span>
                     </div>
                 </div> 
@@ -396,6 +398,7 @@
 
 
 @section('scriptcode_three')
+<script src="{{ asset('js/pack-uom.js') }}"></script>
 <script type="text/javascript">
       function defaultPage()
       {
@@ -488,7 +491,7 @@
                                         $.ajax({
                                             url : "{{url('/purchases')}}",
                                             type : "POST",
-                                            data : {_token : "{{csrf_token()}}",vendor:$('#vendor').val(),branch:$('#branch').val(),tax:$('#tax').val(),date:$('#date').val(),ref:$('#ref').val(),rpdate:$('#rpdate').val(),comments:$('#comments').val(),product:$('#product').val(),unit:$('#uom').val(),tax_per_item_id:$('#tax').val(),tax_per_item_value:$('#tax-per-item').val(),discount_per_item:$('#discount-per-item').val(),batch_no:$('#batch-no').val(),expiry_date:$('#expiry-date').val(),discount_by:$("#discount_by").val(),quantity:$('#qty').val(),price:$('#price').val(),total_amount:$('#amount').val(),ID:$('#id').val(),payment:$('#payment').val()},
+                                            data : packPurchaseItem({_token : "{{csrf_token()}}",vendor:$('#vendor').val(),branch:$('#branch').val(),tax:$('#tax').val(),date:$('#date').val(),ref:$('#ref').val(),rpdate:$('#rpdate').val(),comments:$('#comments').val(),product:$('#product').val(),unit:$('#uom').val(),tax_per_item_id:$('#tax').val(),tax_per_item_value:$('#tax-per-item').val(),discount_per_item:$('#discount-per-item').val(),batch_no:$('#batch-no').val(),expiry_date:$('#expiry-date').val(),discount_by:$("#discount_by").val(),quantity:$('#qty').val(),price:$('#price').val(),total_amount:$('#amount').val(),ID:$('#id').val(),payment:$('#payment').val()}),
                                             success : function(result){
                                                 if(result == 1){
                                                     swal_alert("Alert!","Item Already Exists ","error",false);
@@ -514,7 +517,7 @@
                         $.ajax({
                             url : "{{url('/purchases')}}",
                             type : "POST",
-                            data : {_token : "{{csrf_token()}}",tax_per_item_value:$('#tax-per-item').val(),vendor:$('#vendor').val(),branch:$('#branch').val(),tax:$('#tax').val(),date:$('#date').val(),ref:$('#ref').val(),rpdate:$('#rpdate').val(),comments:$('#comments').val(),product:$('#product').val(),unit:$('#uom').val(),quantity:$('#qty').val(),price:$('#price').val(),batch_no:$('#batch-no').val(),expiry_date:$('#expiry-date').val(),discount_by:$("#discount_by").val(),discount_per_item:$('#discount-per-item').val(),total_amount:$('#amount').val(),ID:$('#id').val(),payment:$('#payment').val()},
+                            data : packPurchaseItem({_token : "{{csrf_token()}}",tax_per_item_value:$('#tax-per-item').val(),vendor:$('#vendor').val(),branch:$('#branch').val(),tax:$('#tax').val(),date:$('#date').val(),ref:$('#ref').val(),rpdate:$('#rpdate').val(),comments:$('#comments').val(),product:$('#product').val(),unit:$('#uom').val(),quantity:$('#qty').val(),price:$('#price').val(),batch_no:$('#batch-no').val(),expiry_date:$('#expiry-date').val(),discount_by:$("#discount_by").val(),discount_per_item:$('#discount-per-item').val(),total_amount:$('#amount').val(),ID:$('#id').val(),payment:$('#payment').val()}),
                             success : function(result){
                                 if(result == 1){
                                     swal_alert("Alert!","Item Already Exists ","error",false);
@@ -536,7 +539,7 @@
                     $.ajax({
                         url : "{{url('/updateitems')}}",
                         type : "POST",
-                        data : {_token : "{{csrf_token()}}",product:$('#product').val(),unit:$('#uom').val(),quantity:$('#qty').val(),price:$('#price').val(),batch_no:$('#batch-no').val(),expiry_date:$('#expiry-date').val(),discount_by:$("#discount_by").val(),tax_per_item_id:$('#tax').val(),tax_per_item_value:$('#tax-per-item').val(),discount_per_item:$('#discount-per-item').val(),total_amount:$('#amount').val(),ID:$('#edit_id').val()},
+                        data : packPurchaseItem({_token : "{{csrf_token()}}",product:$('#product').val(),unit:$('#uom').val(),quantity:$('#qty').val(),price:$('#price').val(),batch_no:$('#batch-no').val(),expiry_date:$('#expiry-date').val(),discount_by:$("#discount_by").val(),tax_per_item_id:$('#tax').val(),tax_per_item_value:$('#tax-per-item').val(),discount_per_item:$('#discount-per-item').val(),total_amount:$('#amount').val(),ID:$('#edit_id').val()}),
                         success : function(result){
                             mode = "insert";
                             var getid = $('#id').val();
@@ -998,6 +1001,8 @@ function isNumberOrDecimalKey(evt)
           return true;
        }
 $("#product").change(function(e){
+	PackUom.bind($('#qtyUnit'), null);
+	updatePackHint();
 	if(e.target.value != ""){
 		$.ajax({
 			url : "{{url('/get-uom-id')}}",
@@ -1007,11 +1012,41 @@ $("#product").change(function(e){
 				console.log(result)
 				if(result){
 					$("#uom").val(result[0].uom_id).change();
+					PackUom.bind($('#qtyUnit'), result[0]);
+					updatePackHint();
 				}
-				
+
 			}
 		});
 	}
 })
+
+// Packing UOM: Carton chuna ho to item primary (Pcs) me post hota hai - qty x pack, per-unit values / pack.
+// Percentage discount rate hai, wo divide nahi hota.
+function packPurchaseItem(data){
+	var pack = PackUom.active($('#qtyUnit'));
+	if(!pack){
+		return data;
+	}
+	data.quantity = PackUom.toPrimaryQty(data.quantity, pack);
+	data.price = PackUom.toPrimaryRate(data.price, pack);
+	data.tax_per_item_value = PackUom.toPrimaryRate(data.tax_per_item_value, pack);
+	data.total_amount = PackUom.toPrimaryRate(data.total_amount, pack);
+	if($("#discount_by").val() != 1){
+		data.discount_per_item = PackUom.toPrimaryRate(data.discount_per_item, pack);
+	}
+	return data;
+}
+
+function updatePackHint(){
+	var pack = $('#qtyUnit').data('pack');
+	var isPack = !!PackUom.active($('#qtyUnit'));
+	$('#priceLabel').text(isPack ? 'Price per ' + pack.name : 'Unit Price');
+	$('#packHint').text(PackUom.hint(pack, isPack, $('#qty').val(), $('#amount').val()));
+}
+
+$(document).on('keyup change', '#qty, #price, #discount-per-item, #qtyUnit', function(){
+	setTimeout(updatePackHint, 0);
+});
 </script>
 @endsection

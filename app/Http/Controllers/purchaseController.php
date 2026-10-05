@@ -452,7 +452,9 @@ class purchaseController extends Controller
         $itemReceived = $purchase->getReceived($request->id);
         $accounts = $purchase->getAccDetails($request->id);
         $po_id = $request->id;
-        return view('Purchase.receive-po', compact('receive', 'general', 'itemReceived', 'po_id', 'accounts'));
+        // Packing UOM (Carton) ke naam - GRN pe Carton me receive karne ke liye
+        $packUomNames = DB::table('inventory_uom')->pluck('name', 'uom_id');
+        return view('Purchase.receive-po', compact('receive', 'general', 'itemReceived', 'po_id', 'accounts', 'packUomNames'));
     }
 
     public function createGRN(Request $request, purchase $purchase)

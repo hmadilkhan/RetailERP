@@ -42,8 +42,9 @@ class StockController extends Controller
             ->leftJoin("inventory_uom as u", "u.uom_id", "=", "g.uom_id")
             ->leftJoin("inventory_uom as cu", "cu.uom_id", "=", "g.cuom")
             ->leftJoin("inventory_uom as cu2", "cu2.uom_id", "=", "g.cuom2")
+            ->leftJoin("inventory_uom as pu", "pu.uom_id", "=", "g.pack_uom")
             ->where("g.id", $request->id)
-            ->select("g.weight_qty", "g.weight_qty2", "u.name as uom_name", "cu.name as cuom_name", "cu2.name as cuom2_name")
+            ->select("g.weight_qty", "g.weight_qty2", "u.name as uom_name", "cu.name as cuom_name", "cu2.name as cuom2_name", "g.pack_qty", "pu.name as pack_uom_name")
             ->first();
 
         return view('stock.stockDetails', compact('stocks', 'purchase', 'transfer', 'details', 'product', 'report', 'product_id', "conversion_unit", "pricelogs", "uomInfo"));

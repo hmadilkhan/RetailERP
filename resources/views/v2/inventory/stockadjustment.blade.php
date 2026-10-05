@@ -193,6 +193,10 @@
                         uomLevels.push({ name: row.cuom2_name, factor: Number(row.weight_qty) * Number(row.weight_qty2) });
                     }
                 }
+                // Packing UOM (Carton): stock primary (Pcs) me, 1 Carton = pack_qty primary
+                if (hasUomLevel(row.pack_qty, row.uom_name, row.pack_uom_name)) {
+                    uomLevels.push({ name: row.pack_uom_name, factor: 1 / Number(row.pack_qty), packQty: Number(row.pack_qty) });
+                }
 
                 $('#qtyUom').html(uomLevels.map((level, index) => '<option value="' + index + '">' + escapeHtml(level.name) + '</option>').join(''))
                     .toggleClass('hidden', uomLevels.length < 2);
@@ -205,14 +209,30 @@
             // User ne jo qty chuni hui UOM me daali, wo primary me
             function primaryQty() {
                 const raw = parseFloat($('#qty').val());
-                return isNaN(raw) ? NaN : raw / selectedUom().factor;
+                const uom = selectedUom();
+                if (isNaN(raw)) {
+                    return NaN;
+                }
+                return uom.packQty ? raw * uom.packQty : raw / uom.factor;
+            }
+
+            // "2 Carton + 500 Pcs"
+            function packBreakdown(stock, level) {
+                const abs = Math.abs(stock);
+                const packs = Math.floor(Number((abs / level.packQty).toFixed(6)));
+                const loose = Number((abs - packs * level.packQty).toFixed(2));
+                const parts = [];
+                if (packs > 0) parts.push(packs + ' ' + level.name);
+                if (loose > 0 || !parts.length) parts.push(trimQty(loose) + ' ' + uomLevels[0].name);
+                const text = parts.join(' + ');
+                return stock < 0 ? (parts.length > 1 ? '-(' + text + ')' : '-' + text) : text;
             }
 
             function stockBreakdown(stock) {
                 if (uomLevels.length < 2) {
                     return '';
                 }
-                return uomLevels.map(level => trimQty(stock * level.factor) + ' ' + level.name).join(' / ');
+                return uomLevels.map(level => level.packQty ? packBreakdown(stock, level) : trimQty(stock * level.factor) + ' ' + level.name).join(' / ');
             }
 
             function updateConversion() {
@@ -226,7 +246,9 @@
                     $('#qtyConversion').text('Positive adds stock, negative removes it.');
                     return;
                 }
-                const rate = '1 ' + primary + ' = ' + trimQty(uom.factor) + ' ' + uom.name;
+                const rate = uom.packQty
+                    ? '1 ' + uom.name + ' = ' + trimQty(uom.packQty) + ' ' + primary
+                    : '1 ' + primary + ' = ' + trimQty(uom.factor) + ' ' + uom.name;
                 if (isNaN(qty)) {
                     $('#qtyConversion').text(rate);
                     return;

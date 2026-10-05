@@ -214,6 +214,10 @@ class InventoryController extends Controller
 
         $this->validate($request, $rules);
 
+        if ($packError = $this->packUomError($request)) {
+            return back()->withErrors(['pack_qty' => $packError])->withInput();
+        }
+
         // if (!empty($request->website)) {
         //     $result =  WebsiteDetail::where('company_id', session('company_id'))->where('id', $request->website)->first();
         //     if (isset($result->type) && $result->type == 'restaurant') {
@@ -275,6 +279,8 @@ class InventoryController extends Controller
             'cuom'                => $request->cuom,
             'cuom2'               => $request->filled('cuom2') ? $request->cuom2 : null,
             'weight_qty2'         => $request->filled('weight2') ? $request->weight2 : null,
+            'pack_uom'            => $request->filled('pack_uom') ? $request->pack_uom : null,
+            'pack_qty'            => $request->filled('pack_qty') ? $request->pack_qty : null,
             'product_mode'        => $request->product_mode,
             'priority'            => $request->priority,
             'item_code'           => $request->code,
@@ -604,6 +610,8 @@ class InventoryController extends Controller
             'cuom'                => $inventory_record->cuom,
             'cuom2'               => $inventory_record->cuom2 ?? null,
             'weight_qty2'         => $inventory_record->weight_qty2 ?? null,
+            'pack_uom'            => $inventory_record->pack_uom ?? null,
+            'pack_qty'            => $inventory_record->pack_qty ?? null,
             'product_mode'        => $inventory_record->product_mode,
             'priority'            => $inventory_record->priority,
             'item_code'           => $item_code,
@@ -1277,6 +1285,10 @@ class InventoryController extends Controller
                 return response()->json(['error' => 'Slug already exists with another product.'], 422);
             }
         }
+
+        if ($packError = $this->packUomError($request)) {
+            return response()->json(['error' => $packError], 422);
+        }
         
         $fields = [
             'company_id'           => session('company_id'),
@@ -1311,6 +1323,12 @@ class InventoryController extends Controller
         // Add slug if provided
         if (!empty($request->slug)) {
             $fields['slug'] = $request->slug;
+        }
+
+        // Packing sirf tab update ho jab form ne field bheja ho (purane edit form pe value na mite)
+        if ($request->has('pack_uom')) {
+            $fields['pack_uom'] = $request->filled('pack_uom') ? $request->pack_uom : null;
+            $fields['pack_qty'] = $request->filled('pack_qty') ? $request->pack_qty : null;
         }
 
         if (!empty($request->get('galleryImage'))) {
@@ -2248,6 +2266,25 @@ class InventoryController extends Controller
         return view('v2.inventory.stockadjustment', compact('branches'));
     }
 
+    // Packing UOM (stock Unit Measure me, Carton sirf entry/display) aur purana conversion (weight_qty > 1) ek product pe saath nahi chal sakte
+    private function packUomError(Request $request)
+    {
+        if (!$request->filled('pack_uom') && !$request->filled('pack_qty')) {
+            return null;
+        }
+        if (!$request->filled('pack_uom') || (float) $request->pack_qty <= 1) {
+            return 'Packing UOM ke saath Packing Qty 1 se zyada honi chahiye.';
+        }
+        if ($request->pack_uom == $request->uom) {
+            return 'Packing UOM aur Unit Measure same nahi ho sakte.';
+        }
+        if ((float) $request->weight > 1 && $request->cuom != $request->uom) {
+            return 'Packing UOM tab hi lag sakta hai jab Weight | Qty conversion 1 ho (stock Unit Measure me rehta hai).';
+        }
+
+        return null;
+    }
+
     public function getstock_value(inventory $inventory, request $request)
     {
         $branch = ((session('roleId') == 17 or session('roleId') == 2) ? $request->branch : session('branch'));
@@ -2258,8 +2295,9 @@ class InventoryController extends Controller
             ->leftJoin('inventory_uom as u', 'u.uom_id', '=', 'g.uom_id')
             ->leftJoin('inventory_uom as cu', 'cu.uom_id', '=', 'g.cuom')
             ->leftJoin('inventory_uom as cu2', 'cu2.uom_id', '=', 'g.cuom2')
+            ->leftJoin('inventory_uom as pu', 'pu.uom_id', '=', 'g.pack_uom')
             ->where('g.id', $request->productid)
-            ->select('g.weight_qty', 'g.weight_qty2', 'u.name as uom_name', 'cu.name as cuom_name', 'cu2.name as cuom2_name')
+            ->select('g.weight_qty', 'g.weight_qty2', 'u.name as uom_name', 'cu.name as cuom_name', 'cu2.name as cuom2_name', 'g.pack_qty', 'pu.name as pack_uom_name')
             ->first();
         if (!empty($stock) && $uom) {
             foreach ((array) $uom as $key => $value) {

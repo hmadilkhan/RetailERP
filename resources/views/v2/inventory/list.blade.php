@@ -200,10 +200,10 @@
                                     <div class="inline-flex min-w-[5rem] justify-center rounded-md {{ ($item->stock ?? 0) > 0 ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-rose-200' }} px-2.5 py-1.5 font-black ring-1">
                                         {{ number_format((float) ($item->stock ?? 0), 2) }}
                                     </div>
-                                    @php $uomRate = \App\Helpers\custom_helper::uomRateLabel($item->weight_qty ?? 0, $item->name ?? '', $item->cuom_name ?? null, $item->weight_qty2 ?? null, $item->cuom2_name ?? null); @endphp
+                                    @php $uomRate = \App\Helpers\custom_helper::uomRateLabel($item->weight_qty ?? 0, $item->name ?? '', $item->cuom_name ?? null, $item->weight_qty2 ?? null, $item->cuom2_name ?? null, $item->pack_qty ?? null, $item->pack_uom_name ?? null); @endphp
                                     <div class="mt-1 text-xs text-erp-mute">{{ $item->name ?? '-' }}@if ($uomRate) ({{ $uomRate }})@endif</div>
                                     @if ($uomRate)
-                                        <div class="text-xs font-semibold text-erp-text">{{ \App\Helpers\custom_helper::formatUomQty($item->stock ?? 0, $item->weight_qty, $item->name, $item->cuom_name, $item->weight_qty2 ?? null, $item->cuom2_name ?? null) }}</div>
+                                        <div class="text-xs font-semibold text-erp-text">{{ \App\Helpers\custom_helper::formatUomQty($item->stock ?? 0, $item->weight_qty, $item->name, $item->cuom_name, $item->weight_qty2 ?? null, $item->cuom2_name ?? null, $item->pack_qty ?? null, $item->pack_uom_name ?? null) }}</div>
                                     @endif
                                     <div class="text-xs text-erp-mute">GST {{ number_format((float) ($item->tax_rate ?? 0), 2) }}%</div>
                                 </td>
