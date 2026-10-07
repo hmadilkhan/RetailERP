@@ -40,6 +40,25 @@
                         </label>
                     </div>
 
+                    <div class="grid gap-4 sm:grid-cols-3">
+                        <label class="block">
+                            <span class="{{ $labelClass }}">Paid From</span>
+                            <select id="payment_mode" class="{{ $inputClass }}">
+                                <option value="cash">Cash</option>
+                                <option value="bank">Bank</option>
+                            </select>
+                        </label>
+                        <label class="block hidden" id="bank_account_wrap">
+                            <span class="{{ $labelClass }}">Bank Account</span>
+                            <select id="bank_account_id" class="{{ $inputClass }}">
+                                <option value="">Select Bank Account</option>
+                                @foreach ($bankAccounts as $account)
+                                    <option value="{{ $account->bank_account_id }}">{{ $account->bank_name ?? '' }} - {{ $account->account_title }} ({{ $account->account_no }})</option>
+                                @endforeach
+                            </select>
+                        </label>
+                    </div>
+
                     <div class="grid gap-4 sm:grid-cols-[1fr_auto]">
                         <label class="block">
                             <span class="{{ $labelClass }}">Narration</span>
@@ -302,7 +321,15 @@
             document.getElementById('hidd_amt').value = parseFloat(this.value);
         });
 
+        function toggleBankAccount() {
+            const isBank = document.getElementById('payment_mode').value === 'bank';
+            document.getElementById('bank_account_wrap').classList.toggle('hidden', !isBank);
+        }
+
         @if ($canCreate)
+            document.getElementById('payment_mode').addEventListener('change', toggleBankAccount);
+            document.getElementById('btn_clear').addEventListener('click', () => setTimeout(toggleBankAccount));
+
             document.getElementById('btn_save').addEventListener('click', function () {
                 const expCat = document.getElementById('exp_cat').value;
                 const details = document.getElementById('details').value;
@@ -317,6 +344,14 @@
                     return;
                 }
 
+                const paymentMode = document.getElementById('payment_mode').value;
+                const bankAccountId = document.getElementById('bank_account_id').value;
+                if (paymentMode === 'bank' && !bankAccountId) {
+                    document.getElementById('bank_account_id').focus();
+                    alert('Please select a bank account.');
+                    return;
+                }
+
                 const hiddId = document.getElementById('hidd_id').value;
                 const payload = {
                     hidd_id: hiddId,
@@ -325,6 +360,8 @@
                     amount,
                     expensedate: document.getElementById('expensedate').value,
                     hidd_amt: document.getElementById('hidd_amt').value,
+                    payment_mode: paymentMode,
+                    bank_account_id: paymentMode === 'bank' ? bankAccountId : '',
                 };
 
                 fetch(hiddId == '0' ? "{{ route('expense.store') }}" : "{{ route('updatexp') }}", {

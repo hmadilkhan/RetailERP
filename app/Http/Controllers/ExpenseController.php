@@ -11,6 +11,7 @@ use PDF;
 use Terbilang;
 use App\bank;
 use App\pdfClass;
+use App\Services\ExpensePaymentService;
 use Illuminate\Support\Facades\Storage;
 
 class ExpenseController extends Controller
@@ -32,8 +33,9 @@ class ExpenseController extends Controller
         $categories = expense_category::getAllCategories();
         $tax = tax::all();
         $expense = expense::join('expense_categories', 'expense_categories.exp_cat_id', '=', 'expenses.exp_cat_id')->where('expenses.branch_id', session('branch'))->get();
+        $bankAccounts = (new bank)->getbankAccounts();
 
-        return view('v2.expense.list')->with(['cat' => $cat, 'tax' => $tax, 'expense' => $expense,"categories" => $categories]);
+        return view('v2.expense.list')->with(['cat' => $cat, 'tax' => $tax, 'expense' => $expense,"categories" => $categories, 'bankAccounts' => $bankAccounts]);
     }
 
     /**
@@ -49,8 +51,13 @@ class ExpenseController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, bank $bank)
+    public function store(Request $request, ExpensePaymentService $payments)
     {
+        $payment = $this->paymentFields($request);
+        if (is_string($payment)) {
+            return response()->json(array("state" => 0, "msg" => $payment));
+        }
+
         $expense = new expense([
             'branch_id' => session('branch'),
             'exp_cat_id' => $request->get('exp_cat'),
@@ -61,13 +68,42 @@ class ExpenseController extends Controller
             'net_amount' => $request->get('amount'),
             'date' => $request->get('expensedate'),
             'platform_type' => session('company_id') == 7 ? 1 : 0, //  1 for web platform and 0 for All
-        ]);
+        ] + $payment);
 
-        if ($expense->save()) {
+        try {
+            DB::transaction(function () use ($expense, $payments) {
+                $expense->save();
+                $payments->post($expense->getKey());
+            });
             return response()->json(array("state" => 1, "msg" => 'Expense details is saved.'));
-        } else {
+        } catch (\Exception $e) {
             return response()->json(array("state" => 0, "msg" => 'Not saved :('));
         }
+    }
+
+    // payment_mode (cash/bank) + bank account validate karo; ghalat ho to error message (string) return hota hai
+    private function paymentFields(Request $request)
+    {
+        $mode = $request->get('payment_mode');
+        if ($mode === null || $mode === '') {
+            return [];
+        }
+        if (!in_array($mode, ['cash', 'bank'])) {
+            return 'Invalid payment mode.';
+        }
+        if ($mode === 'cash') {
+            return ['payment_mode' => 'cash', 'bank_account_id' => null];
+        }
+
+        $accountId = $request->get('bank_account_id');
+        $valid = DB::table('bank_account_generaldetails')
+            ->where('bank_account_id', $accountId)
+            ->where('branch_id_company', session('branch'))
+            ->exists();
+        if (!$valid) {
+            return 'Please select a bank account.';
+        }
+        return ['payment_mode' => 'bank', 'bank_account_id' => $accountId];
     }
 
 
@@ -106,9 +142,21 @@ class ExpenseController extends Controller
 
 
 
-    public function modify(Request $request, bank $bank)
+    public function modify(Request $request, ExpensePaymentService $payments)
     {
-        $expense = DB::table('expenses')->where('exp_id', $request->get('hidd_id'))->update(['branch_id' => session('branch'), 'exp_cat_id' => $request->get('exp_cat'), 'expense_details' => $request->get('details'), 'tax_amount' => $request->get('hidd_amt'), 'amount' => $request->get('amount'), 'net_amount' => $request->get('amount'), 'date' => $request->get('expensedate')]);
+        $payment = $this->paymentFields($request);
+        if (is_string($payment)) {
+            return response()->json(array("state" => 0, "msg" => $payment));
+        }
+
+        $id = $request->get('hidd_id');
+        $expense = DB::transaction(function () use ($request, $payments, $payment, $id) {
+            // purani posting ulti karo, phir naye amount/mode se dobara post karo
+            $payments->reverse($id, 'edit');
+            $updated = DB::table('expenses')->where('exp_id', $id)->update(['branch_id' => session('branch'), 'exp_cat_id' => $request->get('exp_cat'), 'expense_details' => $request->get('details'), 'tax_amount' => $request->get('hidd_amt'), 'amount' => $request->get('amount'), 'net_amount' => $request->get('amount'), 'date' => $request->get('expensedate')] + $payment);
+            $payments->post($id);
+            return $updated;
+        });
         if ($expense) {
             return response()->json(array("state" => 1, "msg" => 'Save Changes.'));
         } else {
@@ -117,10 +165,13 @@ class ExpenseController extends Controller
     }
 
 
-    public function deleteExpense(Request $request)
+    public function deleteExpense(Request $request, ExpensePaymentService $payments)
     {
         try {
-            expense::where("exp_id", $request->id)->delete();
+            DB::transaction(function () use ($request, $payments) {
+                $payments->reverse($request->id, 'delete');
+                expense::where("exp_id", $request->id)->delete();
+            });
             return response()->json(["status" => 200]);
         } catch (\Exception $e) {
             return response()->json(["status" => 500, "message" => "Error: " . $e->getMessage()]);

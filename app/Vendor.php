@@ -164,31 +164,6 @@ class Vendor extends Model
     return $result;
    }
 
-   public function profitandloss($first,$second)
-   {
-    $result = DB::select('SELECT (Select SUM(total_amount) from sales_receipts where date between ? and ? and branch = ? ) as Total,(SELECT SUM(a.discount_amount) FROM sales_account_subdetails a INNER JOIN sales_receipts b on b.id = a.receipt_id where b.date between ? and ? and b.branch = ?) as Discount,IFNULL((SELECT SUM(amount) FROM sales_return where Date(timestamp) between ? and ? ),0) as salesreturn',[$first,$second,session("branch"),$first,$second,session("branch"),$first,$second]);
-    return $result;
-   }
-  
-   public function profitandlossexpense($first,$second)
-   {
-     $result = DB::select('SELECT a.exp_id,b.expense_category,a.expense_details,SUM(a.net_amount) as balance FROM expenses a INNER JOIN expense_categories b on b.exp_cat_id = a.exp_cat_id where Date(a.created_at) between ? and ? GROUP BY date(a.created_at)',[$first,$second]);
-        return $result;
-    }
-
-    public function cogs($first,$second)
-    {
-     $result = DB::select('SELECT SUM(a.amount) as amount FROM master_assign_details a INNER JOIN master_assign b on b.assign_id = a.assign_id where date between ? and ?',[$first,$second]);
-     return $result;
-    }
-
-
-    public function masterAmount($first,$second)
-    {
-       $result = DB::select('SELECT SUM(debit) as debit FROM master_account where debit <> 0 and DATE(created_at) between ? and ?',[$first,$second]);
-        return $result;
-    }
-
     public function citycheck($city,$country)
     {
         $result = DB::select('SELECT Count(*) as count FROM `city` where city_name = ? and country_id = ?',[$city,$country]);

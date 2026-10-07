@@ -84,19 +84,31 @@ class report extends Model
         return $result;
     }
 
+    // P&L filters: "all" = company ki saari branches, khali = session branch. Ids int me cast — SQL me seedha lagte hain.
+    private function branchIds($branch)
+    {
+        if ($branch === "all") {
+            $ids = DB::table('branch')->where('company_id', session('company_id'))->pluck('branch_id')->all();
+        } else {
+            $ids = [$branch != "" ? $branch : session('branch')];
+        }
+        return implode(',', array_map('intval', $ids ?: [0]));
+    }
+
+
 
 
     public  function salaries($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT a.date, b.emp_name, a.net_salary FROM salary_details a INNER JOIN employee_details b ON b.empid = a.emp_id WHERE a.date BETWEEN ? AND ? AND a.emp_id IN (SELECT emp_id FROM employee_details a INNER JOIN employee_shift_details b ON a.empid = b.emp_id WHERE b.branch_id = ?)', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT a.date, b.emp_name, a.net_salary FROM salary_details a INNER JOIN employee_details b ON b.empid = a.emp_id WHERE a.date BETWEEN ? AND ? AND a.emp_id IN (SELECT emp_id FROM employee_details a INNER JOIN employee_shift_details b ON a.empid = b.emp_id WHERE b.branch_id IN (' . $branch . '))', [$fromdate, $todate]);
         return $result;
     }
 
     public  function sales_recipts($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT a.id, a.date, (c.total_amount + f.discount_amount) AS total_amount, e.name, d.payment_mode  FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_account_general c ON c.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id INNER JOIN sales_account_subdetails f ON f.receipt_id = a.id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?)) and a.status = 4 group by a.id', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT a.id, a.date, (c.total_amount + f.discount_amount) AS total_amount, e.name, d.payment_mode  FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_account_general c ON c.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id INNER JOIN sales_account_subdetails f ON f.receipt_id = a.id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . '))) and a.status = 4 group by a.id', [$fromdate, $todate]);
         return $result;
     }
 
@@ -114,15 +126,15 @@ class report extends Model
 
     public  function expenses_details($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT a.date, a.exp_id, a.expense_details, b.expense_category, a.net_amount,a.platform_type FROM expenses a INNER JOIN expense_categories b ON b.exp_cat_id = a.exp_cat_id WHERE a.date BETWEEN ? AND ? AND a.branch_id = ?', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT a.date, a.exp_id, a.expense_details, b.expense_category, a.net_amount,a.platform_type FROM expenses a INNER JOIN expense_categories b ON b.exp_cat_id = a.exp_cat_id WHERE a.date BETWEEN ? AND ? AND a.branch_id IN (' . $branch . ')', [$fromdate, $todate]);
         return $result;
     }
 
     public  function pruchase_orders($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT a.po_no, a.order_date, c.vendor_name, d.name, b.net_amount FROM purchase_general_details a INNER JOIN purchase_account_details b ON b.purchase_id = a.purchase_id INNER JOIN vendors c ON c.id = a.vendor_id INNER JOIN purchase_status d ON d.po_status_id = a.status_id WHERE a.date BETWEEN ? AND ? AND a.branch_id = ?', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT a.po_no, a.order_date, c.vendor_name, d.name, b.net_amount FROM purchase_general_details a INNER JOIN purchase_account_details b ON b.purchase_id = a.purchase_id INNER JOIN vendors c ON c.id = a.vendor_id INNER JOIN purchase_status d ON d.po_status_id = a.status_id WHERE a.date BETWEEN ? AND ? AND a.branch_id IN (' . $branch . ')', [$fromdate, $todate]);
         return $result;
     }
 
@@ -140,26 +152,27 @@ class report extends Model
 
     public  function discounts($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT a.receipt_id, b.date, c.name, a.discount_amount, d.payment_mode FROM sales_account_subdetails a INNER JOIN sales_receipts b ON b.id = a.receipt_id and b.status = 4 INNER JOIN customers c on c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE b.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT a.receipt_id, b.date, c.name, a.discount_amount, d.payment_mode FROM sales_account_subdetails a INNER JOIN sales_receipts b ON b.id = a.receipt_id and b.status = 4 INNER JOIN customers c on c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE b.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . ')))', [$fromdate, $todate]);
         return $result;
     }
 
     public  function sales_return($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
+        $branch = $this->branchIds($branch);
         /* I have removed Joins here because in open Sales Return 
         there will be no receipt no so thats why if we join it will not pick the data correctly
         */
         // $result = DB::select('SELECT a.receipt_id, a.timestamp, c.name, a.amount, d.payment_mode FROM sales_return a INNER JOIN sales_receipts b ON b.id = a.receipt_id and b.status = 4 INNER JOIN customers c ON c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
-        $result = DB::select('SELECT a.receipt_id, a.timestamp, c.name, a.amount, d.payment_mode FROM sales_return a LEFT JOIN sales_receipts b ON b.id = a.receipt_id and b.status = 4 LEFT JOIN customers c ON c.id = b.customer_id LEFT JOIN sales_payment d ON d.payment_id = b.payment_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
+        $result = DB::select('SELECT a.receipt_id, a.timestamp, c.name, a.amount, d.payment_mode FROM sales_return a LEFT JOIN sales_receipts b ON b.id = a.receipt_id and b.status = 4 LEFT JOIN customers c ON c.id = b.customer_id LEFT JOIN sales_payment d ON d.payment_id = b.payment_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . ')))', [$fromdate, $todate]);
         return $result;
     }
 
-    public  function COGS($fromdate, $todate)
+    public  function COGS($fromdate, $todate, $branch = "")
     {
+        $branch = $this->branchIds($branch);
         // Total cost has been changes to item price
-        $result = DB::select('SELECT a.id, a.date, SUM(b.total_cost) as total_cost, e.name, d.payment_mode FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?)) and a.status = 4 group by a.id', [$fromdate, $todate, session("branch")]);
+        $result = DB::select('SELECT a.id, a.date, SUM(b.total_cost) as total_cost, e.name, d.payment_mode FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . '))) and a.status = 4 group by a.id', [$fromdate, $todate]);
         return $result;
     }
 
@@ -168,64 +181,64 @@ class report extends Model
 
     public  function total_sales($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
+        $branch = $this->branchIds($branch);
         //INNER JOIN sales_account_subdetails c ON c.receipt_id = a.id
-        $result = DB::select("SELECT SUM(a.total_amount ) AS sales FROM sales_receipts a     WHERE a.status = 4 and a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))", [$fromdate, $todate, $branch]);
+        $result = DB::select("SELECT SUM(a.total_amount ) AS sales FROM sales_receipts a     WHERE a.status = 4 and a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (" . $branch . ")))", [$fromdate, $todate]);
         return $result;
     }
     public  function total_void_sales($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
+        $branch = $this->branchIds($branch);
         //INNER JOIN sales_account_subdetails c ON c.receipt_id = a.id
-        $result = DB::select("SELECT SUM(a.total_amount ) AS sales FROM sales_receipts a     WHERE a.status = 12 and a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))", [$fromdate, $todate, $branch]);
+        $result = DB::select("SELECT SUM(a.total_amount ) AS sales FROM sales_receipts a     WHERE a.status = 12 and a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (" . $branch . ")))", [$fromdate, $todate]);
         return $result;
     }
 
 
     public  function expenses($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT b.expense_category, IFNULL(SUM(a.net_amount),0) AS expenseamt FROM expenses a INNER JOIN expense_categories b ON b.exp_cat_id = a.exp_cat_id WHERE a.date BETWEEN ? AND ? AND a.branch_id = ? GROUP BY b.exp_cat_id', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT b.expense_category, IFNULL(SUM(a.net_amount),0) AS expenseamt FROM expenses a INNER JOIN expense_categories b ON b.exp_cat_id = a.exp_cat_id WHERE a.date BETWEEN ? AND ? AND a.branch_id IN (' . $branch . ') GROUP BY b.exp_cat_id', [$fromdate, $todate]);
         return $result;
     }
 
     public  function pruchase_amount($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT COUNT(a.purchase_id) AS counts, SUM(b.net_amount) AS purchase_amount FROM purchase_general_details a INNER JOIN purchase_account_details b ON b.purchase_id = a.purchase_id WHERE a.date BETWEEN ? AND ? AND a.branch_id = ?', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT COUNT(a.purchase_id) AS counts, SUM(b.net_amount) AS purchase_amount FROM purchase_general_details a INNER JOIN purchase_account_details b ON b.purchase_id = a.purchase_id WHERE a.date BETWEEN ? AND ? AND a.branch_id IN (' . $branch . ')', [$fromdate, $todate]);
         return $result;
     }
 
     public  function total_salaries($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT IFNULL(SUM(a.net_salary),0) AS salaries FROM salary_details a INNER JOIN employee_details b ON b.empid = a.emp_id WHERE a.date BETWEEN ? AND ? AND a.emp_id IN (SELECT emp_id FROM employee_details a INNER JOIN employee_shift_details b ON a.empid = b.emp_id WHERE b.branch_id = ?)', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT IFNULL(SUM(a.net_salary),0) AS salaries FROM salary_details a INNER JOIN employee_details b ON b.empid = a.emp_id WHERE a.date BETWEEN ? AND ? AND a.emp_id IN (SELECT emp_id FROM employee_details a INNER JOIN employee_shift_details b ON a.empid = b.emp_id WHERE b.branch_id IN (' . $branch . '))', [$fromdate, $todate]);
         return $result;
     }
 
     public  function total_discounts($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT IFNULL(SUM(a.discount_amount),0) AS discounts FROM sales_account_subdetails a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN customers c on c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE b.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT IFNULL(SUM(a.discount_amount),0) AS discounts FROM sales_account_subdetails a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN customers c on c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE b.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . ')))', [$fromdate, $todate]);
         return $result;
     }
 
     public  function total_sales_return($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
+        $branch = $this->branchIds($branch);
         /* 
         I have removed Joins here because in open Sales Return 
         there will be no receipt no so thats why if we join it will not pick the data correctly
         */
         // $result = DB::select('SELECT IFNULL(SUM(a.amount),0) AS salesreturn FROM sales_return a INNER JOIN sales_receipts b ON b.id = a.receipt_id INNER JOIN customers c ON c.id = b.customer_id INNER JOIN sales_payment d ON d.payment_id = b.payment_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
-        $result = DB::select('SELECT IFNULL(SUM(a.amount),0) AS salesreturn FROM sales_return a  WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))', [$fromdate, $todate, $branch]);
+        $result = DB::select('SELECT IFNULL(SUM(a.amount),0) AS salesreturn FROM sales_return a  WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . ')))', [$fromdate, $todate]);
         return $result;
     }
 
     public  function total_COGS($fromdate, $todate, $branch)
     {
-        $branch = ($branch != "" ? $branch : session('branch'));
-        $result = DB::select('SELECT IFNULL(SUM(b.total_cost),0) AS cost FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?)) and a.status = 4', [$fromdate, $todate, $branch]);
+        $branch = $this->branchIds($branch);
+        $result = DB::select('SELECT IFNULL(SUM(b.total_cost),0) AS cost FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . '))) and a.status = 4', [$fromdate, $todate]);
         // $result = DB::select('SELECT IFNULL(SUM(b.item_price * b.total_qty),0) AS cost FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))',[$fromdate,$todate,session("branch")]);
         return $result;
     }

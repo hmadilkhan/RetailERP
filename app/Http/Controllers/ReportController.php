@@ -1681,7 +1681,7 @@ class ReportController extends Controller
 
         $salaries = $report->salaries($request->fromdate, $request->todate, $request->branch);
 
-        $cogs = $report->COGS($request->fromdate, $request->todate);
+        $cogs = $report->COGS($request->fromdate, $request->todate, $request->branch);
 
 
 

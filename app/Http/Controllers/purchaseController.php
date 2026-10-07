@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Crabbly\Fpdf\Fpdf;
 use App\pdfClass;
+use App\Services\PurchaseLedgerService;
 
 class purchaseController extends Controller
 {
@@ -563,6 +564,8 @@ class purchaseController extends Controller
         } else {
             $update = $purchase->changeStatus($request->po, 3);
         }
+        // GRN ke baad: jo maal nahi aaya us ki value vendor ledger se nikalo (Phase 0.4)
+        app(PurchaseLedgerService::class)->sync((int) $request->po, 'GRN');
     }
 
     /**
@@ -654,6 +657,8 @@ class purchaseController extends Controller
         } else {
             $update = $purchase->changeStatus($request->po, 5);
         }
+        // wapas gaye maal ki value vendor payable se kam karo
+        app(PurchaseLedgerService::class)->sync((int) $request->po, 'Return');
     }
 
     public function UpdateAccounts(Request $request, purchase $purchase)
@@ -717,6 +722,8 @@ class purchaseController extends Controller
     public function updatePOStatus(Request $request, purchase $purchase)
     {
         $result = $purchase->updatePOStatus($request->id);
+        // cancel: jo maal nahi aaya wo ab nahi aayega
+        app(PurchaseLedgerService::class)->sync((int) $request->id, 'Cancel');
         if ($result == 1) {
             return redirect('/view-purchases');
         } else {
@@ -752,6 +759,7 @@ class purchaseController extends Controller
     public function DeletePurchaseOrder(Request $request, purchase $purchase)
     {
         $result = $purchase->deletePO($request->id);
+        app(PurchaseLedgerService::class)->sync((int) $request->id, 'Delete');
         return $result;
     }
 

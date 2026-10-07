@@ -738,110 +738,14 @@ class VendorController extends Controller
     // {
     // echo "<p align='center' style='color:blue'>".numberTowords("$num")."</p>";
     // }
-    public function profitLoss(Request $request, Vendor $vendor)
+    // Legacy P&L (hardcoded company, tailoring COGS) retired - redirect to the standard report
+    public function profitLoss(Request $request)
     {
-        $totalBalance = 0;
-        $totalRevenue = 0;
-        $totalCogs = 0;
-        $gross = 0;
-        $net = 0;
-        $result = $vendor->profitandloss($request->first, $request->second);
-        $expense = $vendor->profitandlossexpense($request->first, $request->second);
-        $cogs = $vendor->cogs($request->first, $request->second);
-        $master = $vendor->masterAmount($request->first, $request->second);
-        $pdf = app('Fpdf');
-        $pdf->AddPage();
-        #HEADERS STARTS FROM HERE
-        $pdf->SetFont('Arial', 'B', 16);
-        $pdf->Image(asset('storage/images/company/' . $company[0]->logo), 10, 10, -200);
-        $pdf->SetFont('Arial', 'BU', 18);
-        $pdf->MultiCell(0, 10, 'TAYYEB JAMAL', 0, 'C');
-        $pdf->Cell(2, 2, '', 0, 1);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 3, 'PROFIT AND LOSS REPORT', 0, 1, 'C'); //Here is center title
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(10, 10, '', 0, 1);
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(0, 5, 'Tayyeb Jamal', 0, 1, 'L');
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(0, 4, 'Hamid Hussain Farooqi Rd, P.E.C.H.S Block 2,', 0, 0, 'L');
-        $pdf->Cell(0, 4, 'From : ' . date("F d Y", strtotime($request->first)), 0, 1, 'R');
-        $pdf->Cell(0, 5, 'Karachi, Karachi City, Sindh', 0, 0, 'L');
-        $pdf->Cell(0, 5, 'To : ' . date("F d Y", strtotime($request->second)), 0, 1, 'R');
-        $pdf->Cell(0, 4, '021-34513353', 0, 0, 'L');
-        $pdf->Cell(0, 4, '', 0, 1, 'R');
-        $pdf->Cell(190, 8, '', '', 1); //SPACE
-        //REVENUE START HERE
-        $totalRevenue = $result[0]->Total - $result[0]->Discount + $result[0]->salesreturn;
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->setFillColor(230, 230, 230);
-        $pdf->Cell(190, 8, 'REVENUE', 0, 1, 'L', 1);
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(70, 8, 'REVENUE - All Products ', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', 0, 0, 'L');
-        $pdf->Cell(40, 8, number_format($result[0]->Total, 2), 0, 1, 'R');
-        $pdf->Cell(70, 8, 'Sales Discount - All Products', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', 0, 0, 'L');
-        $pdf->Cell(50, 8, '', 0, 0, 'L');
-        $pdf->Cell(30, 8, number_format($result[0]->Discount, 2), 0, 1, 'R');
-        $pdf->Cell(70, 8, 'Sales Return and Allowances - All Products ', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', '', 0, 'L');
-        $pdf->Cell(50, 8, '', '', 0, 'L');
-        $pdf->Cell(30, 8, number_format($result[0]->salesreturn, 2), 'B', 1, 'R');
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(95, 8, 'Total Revenue', 0, 0, 'L');
-        $pdf->Cell(95, 8, number_format($totalRevenue, 2), 0, 1, 'R');
-        //REVENUE END HERE
-        $pdf->Cell(190, 8, '', '', 1); //SPACE
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->setFillColor(230, 230, 230);
-        $pdf->Cell(190, 8, 'COST OF GOOD SALES', 0, 1, 'L', 1);
-        $pdf->SetFont('Arial', '', 10);
-        $pdf->Cell(70, 8, 'Cost of Good Sold - All Products', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', 0, 0, 'L');
-        $pdf->Cell(40, 8, number_format($cogs[0]->amount, 2), 0, 1, 'R');
-        $pdf->Cell(70, 8, 'Master Payment ', 0, 0, 'L');
-        $pdf->Cell(40, 8, '', '', 0, 'L');
-        $pdf->Cell(50, 8, '', '', 0, 'L');
-        $pdf->Cell(30, 8, number_format($master[0]->debit, 2), 'B', 1, 'R');
-        $totalCogs = $cogs[0]->amount + $master[0]->debit;
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(95, 8, 'Total CoGS', 0, 0, 'L');
-        $pdf->Cell(95, 8, number_format($totalCogs, 2), 0, 1, 'R');
-        $pdf->Cell(190, 8, '', '', 1); //SPACE
-        $gross = $totalRevenue - $totalCogs;
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(95, 10, "GROSS PROFIT", 0, 0, 'L', 1); //your cell
-        $pdf->Cell(95, 10, "Rs. " . number_format($gross, 2), 0, 1, 'R', 1); //your cell
-        $pdf->Cell(190, 8, '', '', 1); //SPACE
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->setFillColor(230, 230, 230);
-        $pdf->SetTextColor(0, 0, 0); // Set Text Color
-        $pdf->Cell(190, 8, 'EXPENSES', 0, 1, 'L', 1);
-        $pdf->SetFont('Arial', '', 10);
-        $expenseSum = 0;
-        foreach ($expense as $key => $value) {
-            # code...
-            $expenseSum = $expenseSum + $value->balance;
-            $pdf->Cell(70, 8, $value->expense_category, 0, 0, 'L');
-            $pdf->Cell(40, 8, '', 0, 0, 'L');
-            $pdf->Cell(40, 8, '', 0, 0, 'L');
-            $pdf->Cell(40, 8, number_format($value->balance, 2), 0, 1, 'R');
-        }
-        $pdf->SetFont('Arial', 'B', 12);
-        $pdf->Cell(70, 8, 'Total Expenses', 0, 0, 'L');
-        $pdf->Cell(120, 8, number_format($expenseSum, 2), 'T', 1, 'R');
-        $net = $gross - $expenseSum;
-        $pdf->Cell(190, 8, '', '', 1); //SPACE
-        $pdf->setFillColor(0, 0, 0);
-        $pdf->SetTextColor(255, 255, 255);
-        $pdf->Cell(95, 10, "NET PROFIT", 0, 0, 'L', 1); //your cell
-        $pdf->Cell(95, 10, "Rs. " . number_format($net, 2), 0, 1, 'R', 1); //your cell
-        //save file
-        $pdf->Output('Vendor Payable.pdf', 'I');
+        return redirect()->to(url('profitLossStandardReport') . '?' . http_build_query([
+            'fromdate' => $request->first,
+            'todate' => $request->second,
+            'branch' => session('branch'),
+        ]));
     }
     public function profitPanel(Request $request, Vendor $vendor)
     {
