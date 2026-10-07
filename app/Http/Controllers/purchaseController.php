@@ -919,7 +919,7 @@ class purchaseController extends Controller
                 $pdf->Cell(35, 7, number_format($totalAmount, 2), 0, 1, 'R', 1);
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(5, 2, '', 0, 0, 'L', 1);
-                $pdf->Cell(185, 2, $value->product_description, 0, 1, 'L', 1);
+                $pdf->Cell(185, 2, strlen((string) $value->product_description) !== mb_strlen((string) $value->product_description) ? '' : $value->product_description, 0, 1, 'L', 1); // FPDF Arial Urdu nahi chhap sakta
             }
         } else {
             foreach ($items as $value) {
@@ -935,7 +935,7 @@ class purchaseController extends Controller
                 $pdf->Cell(35, 7, number_format($totalAmount, 2), 0, 1, 'R', 1);
                 $pdf->SetFont('Arial', '', 8);
                 $pdf->Cell(5, 2, '', 0, 0, 'L', 1);
-                $pdf->Cell(185, 2, $value->product_description, 0, 1, 'L', 1);
+                $pdf->Cell(185, 2, strlen((string) $value->product_description) !== mb_strlen((string) $value->product_description) ? '' : $value->product_description, 0, 1, 'L', 1); // FPDF Arial Urdu nahi chhap sakta
             }
         }
 
