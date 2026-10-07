@@ -12,6 +12,7 @@ class InvoiceSetup extends Model
 
     protected $casts = [
         'is_auto_invoice' => 'boolean',
+        'auto_deactivate' => 'boolean',
         'monthly_charges_amount' => 'decimal:2',
     ];
 

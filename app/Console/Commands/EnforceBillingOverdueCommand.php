@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Branch;
 use App\Models\Company;
 use App\Models\Invoice;
+use App\Models\InvoiceSetup;
 use App\Models\Terminal;
 use App\Models\UserAuthorization;
 use App\Services\TerminalLockService;
@@ -64,6 +65,21 @@ class EnforceBillingOverdueCommand extends Command
             ->sortByDesc('billing_time_due')
             ->values();
 
+        // Invoice Setup "Auto Deactivate = No" -> never deactivate or lock, however large the due
+        $exemptCompanyIds = InvoiceSetup::query()
+            ->where('auto_deactivate', 0)
+            ->pluck('company_id')
+            ->map(fn ($id) => (int) $id)
+            ->all();
+        $exemptCompanies = $companies->filter(fn ($row) => in_array($row->company_id, $exemptCompanyIds, true));
+        $companies = $companies->reject(fn ($row) => in_array($row->company_id, $exemptCompanyIds, true))->values();
+
+        if ($exemptCompanies->isNotEmpty()) {
+            $this->line('Skipped (auto deactivate OFF): ' . $exemptCompanies->map(
+                fn ($row) => $row->company_id . ' (' . number_format($row->billing_time_due, 1) . ' months)'
+            )->implode(', '));
+        }
+
         if ($companies->isEmpty()) {
             $this->info('No companies crossed the billing overdue thresholds.');
             $this->logOverdueRunActivity($runId, [
@@ -74,6 +90,7 @@ class EnforceBillingOverdueCommand extends Command
                 'reference_date' => $today->toDateString(),
                 'deactivate_threshold_months' => $deactivateThresholdMonths,
                 'lock_threshold_months' => $lockThresholdMonths,
+                'skipped_auto_deactivate_off' => $exemptCompanies->pluck('company_id')->values()->all(),
                 'affected_company_count' => 0,
                 'message' => 'No companies crossed the billing overdue thresholds.',
             ]);
@@ -260,6 +277,7 @@ class EnforceBillingOverdueCommand extends Command
             'reference_date' => $today->toDateString(),
             'deactivate_threshold_months' => $deactivateThresholdMonths,
             'lock_threshold_months' => $lockThresholdMonths,
+            'skipped_auto_deactivate_off' => $exemptCompanies->pluck('company_id')->values()->all(),
             'affected_company_count' => count($rows),
             'deactivated_company_count' => collect($rows)->whereIn('company_action', ['company_deactivated', 'would_deactivate'])->count(),
             'locked_company_count' => collect($rows)->whereIn('lock_action', ['terminals_locked', 'would_lock_terminals'])->count(),

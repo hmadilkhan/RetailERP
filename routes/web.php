@@ -289,6 +289,7 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/invoice-setup', [InvoiceSetupController::class, 'index'])->name('invoice-setup.index');
     Route::get('/invoice-setup/create', [InvoiceSetupController::class, 'create'])->name('invoice-setup.create');
     Route::get('/invoice-setup/{id}/edit', [InvoiceSetupController::class, 'edit'])->name('invoice-setup.edit');
+    Route::post('/invoice-setup/{id}/auto-deactivate', [InvoiceSetupController::class, 'toggleAutoDeactivate'])->name('invoice-setup.auto-deactivate');
 
     // admin branch//
     Route::get('/view-branch', [AdminBranchController::class, 'index']);

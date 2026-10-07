@@ -138,6 +138,14 @@
                                 </span>
                             </td>
                             <td class="text-nowrap">
+                                <form method="POST" action="{{ route('invoice-setup.auto-deactivate', $setup->id) }}" style="display:inline;"
+                                    onsubmit="return confirm('{{ $setup->auto_deactivate ? 'Turn OFF auto deactivation? This company will never be deactivated or locked for unpaid bills.' : 'Turn ON auto deactivation? This company will be deactivated / locked when it crosses the overdue threshold.' }}')">
+                                    @csrf
+                                    <input type="hidden" name="auto_deactivate" value="{{ $setup->auto_deactivate ? 0 : 1 }}">
+                                    <button type="submit" class="btn btn-sm btn-{{ $setup->auto_deactivate ? 'success' : 'default' }} m-r-5" title="Auto deactivate on overdue bills">
+                                        <i class="icofont icofont-{{ $setup->auto_deactivate ? 'toggle-on' : 'toggle-off' }}"></i> Auto Deactivate: {{ $setup->auto_deactivate ? 'Yes' : 'No' }}
+                                    </button>
+                                </form>
                                 <a href="{{ route('billing.invoices.index', ['company_id' => $setup->company_id]) }}" class="btn btn-sm btn-info m-r-5">
                                     <i class="icofont icofont-eye"></i> View
                                 </a>

@@ -100,7 +100,20 @@
                                     <span class="rounded-md px-2 py-1 text-xs font-bold ring-1 {{ $setup->is_auto_invoice ? 'bg-emerald-50 text-emerald-700 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-rose-200' }}">{{ $setup->is_auto_invoice ? 'Enabled' : 'Disabled' }}</span>
                                 </td>
                                 <td class="px-5 py-4">
-                                    <div class="flex justify-end gap-2">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <form method="POST" action="{{ route('invoice-setup.auto-deactivate', $setup->id) }}"
+                                            onsubmit="return confirm('{{ $setup->auto_deactivate ? 'Turn OFF auto deactivation? This company will never be deactivated or locked for unpaid bills.' : 'Turn ON auto deactivation? This company will be deactivated / locked when it crosses the overdue threshold.' }}')">
+                                            @csrf
+                                            <input type="hidden" name="auto_deactivate" value="{{ $setup->auto_deactivate ? 0 : 1 }}">
+                                            <button type="submit" title="Auto deactivate on overdue bills"
+                                                class="inline-flex items-center gap-2 rounded-lg border px-2 py-1.5 text-xs font-bold transition {{ $setup->auto_deactivate ? 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100' }}">
+                                                <span>Auto Deactivate</span>
+                                                <span class="relative inline-flex h-4 w-7 items-center rounded-full {{ $setup->auto_deactivate ? 'bg-emerald-500' : 'bg-slate-300' }}">
+                                                    <span class="inline-block h-3 w-3 rounded-full bg-white shadow transition {{ $setup->auto_deactivate ? 'translate-x-3.5' : 'translate-x-0.5' }}"></span>
+                                                </span>
+                                                <span>{{ $setup->auto_deactivate ? 'Yes' : 'No' }}</span>
+                                            </button>
+                                        </form>
                                         <a href="{{ route('billing.invoices.index', ['company_id' => $setup->company_id]) }}" class="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700 transition hover:bg-sky-100">Invoices</a>
                                         <a href="{{ route('invoice-setup.edit', $setup->id) }}" class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700 transition hover:bg-amber-100">Edit</a>
                                     </div>

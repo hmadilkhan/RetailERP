@@ -60,4 +60,17 @@ class InvoiceSetupController extends Controller
     {
         return view(session('roleId') == 1 ? 'v2.billing.invoice-setup.edit' : 'Admin.InvoiceSetup.edit', compact('id'));
     }
+
+    public function toggleAutoDeactivate(Request $request, $id)
+    {
+        $request->validate(['auto_deactivate' => 'required|in:0,1']);
+
+        $setup = InvoiceSetup::with('company')->findOrFail($id);
+        $setup->update(['auto_deactivate' => (int) $request->auto_deactivate]);
+
+        return back()->with(
+            'success',
+            ($setup->company->name ?? 'Company') . ': auto deactivation ' . ($setup->auto_deactivate ? 'ON' : 'OFF') . '.'
+        );
+    }
 }
