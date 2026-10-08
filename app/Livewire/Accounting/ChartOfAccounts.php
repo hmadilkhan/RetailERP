@@ -4,6 +4,7 @@ namespace App\Livewire\Accounting;
 
 use App\Models\Accounting\AccountingSetting;
 use App\Models\Accounting\ChartOfAccount;
+use App\Models\Accounting\JournalEntryLine;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -124,7 +125,10 @@ class ChartOfAccounts extends Component
             session()->flash('coa_error', 'System accounts and groups with accounts under them cannot be deleted.');
             return;
         }
-        // TODO (1.2): journal lines wale account ko bhi delete na hone do
+        if (JournalEntryLine::where('account_id', $account->id)->exists()) {
+            session()->flash('coa_error', 'This account has journal entries — deactivate it instead.');
+            return;
+        }
         $account->delete();
         session()->flash('coa_message', 'Account deleted.');
     }

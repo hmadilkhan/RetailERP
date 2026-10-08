@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class Sidebar extends Component
 {
-    const ACCOUNTING_PAGES = ['chart-of-accounts', 'fiscal-years'];
+    const ACCOUNTING_PAGES = ['chart-of-accounts', 'fiscal-years', 'journal-entries', 'general-ledger'];
 
     public function __construct()
     {

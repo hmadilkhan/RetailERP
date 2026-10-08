@@ -159,5 +159,7 @@ return [
     'accounting_setup' => 'Accounting Setup',
     'chart_of_accounts' => 'Chart of Accounts',
     'fiscal_years' => 'Fiscal Years',
+    'journal_entries' => 'Journal Entries',
+    'general_ledger' => 'General Ledger',
     
 ];

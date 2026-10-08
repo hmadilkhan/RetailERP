@@ -149,4 +149,6 @@ return [
     'accounting_setup' => 'إعداد المحاسبة',
     'chart_of_accounts' => 'دليل الحسابات',
     'fiscal_years' => 'السنوات المالية',
+    'journal_entries' => 'قيود اليومية',
+    'general_ledger' => 'دفتر الأستاذ العام',
 ];

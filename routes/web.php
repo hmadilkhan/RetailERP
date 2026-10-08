@@ -325,6 +325,8 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/accounting-setup', \App\Livewire\Accounting\AccountingSetup::class)->name('accounting-setup');
     Route::get('/chart-of-accounts', \App\Livewire\Accounting\ChartOfAccounts::class)->name('chart-of-accounts');
     Route::get('/fiscal-years', \App\Livewire\Accounting\FiscalYears::class)->name('fiscal-years');
+    Route::get('/journal-entries', \App\Livewire\Accounting\JournalEntries::class)->name('journal-entries');
+    Route::get('/general-ledger', \App\Livewire\Accounting\GeneralLedger::class)->name('general-ledger');
     Route::post('/submitterminal', [TerminalController::class, 'store']);
     Route::put('/inactive-terminal', [TerminalController::class, 'remove']);
     Route::post('/inactive-terminals-details', [TerminalController::class, 'inactivedetails']);
