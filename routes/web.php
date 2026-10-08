@@ -321,12 +321,8 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/terminal-manager', \App\Livewire\Terminals\TerminalManager::class)->name('terminal-manager');
     Route::get('/terminal-permissions', \App\Livewire\Terminals\TerminalPermissions::class)->name('terminal-permissions');
 
-    //Accounting (Phase 1.1)
+    //Accounting (Phase 1.1) — sirf super admin; company wale accounting pages statusCheck group me (Bank Account ke paas)
     Route::get('/accounting-setup', \App\Livewire\Accounting\AccountingSetup::class)->name('accounting-setup');
-    Route::get('/chart-of-accounts', \App\Livewire\Accounting\ChartOfAccounts::class)->name('chart-of-accounts');
-    Route::get('/fiscal-years', \App\Livewire\Accounting\FiscalYears::class)->name('fiscal-years');
-    Route::get('/journal-entries', \App\Livewire\Accounting\JournalEntries::class)->name('journal-entries');
-    Route::get('/general-ledger', \App\Livewire\Accounting\GeneralLedger::class)->name('general-ledger');
     Route::post('/submitterminal', [TerminalController::class, 'store']);
     Route::put('/inactive-terminal', [TerminalController::class, 'remove']);
     Route::post('/inactive-terminals-details', [TerminalController::class, 'inactivedetails']);
@@ -1005,6 +1001,11 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/bank-link-to-website', [BankController::class, 'link_website'])->name('bankLinkToWebsite');
     Route::post('/bank-unlink-to-website', [BankController::class, 'unlink_website'])->name('bankUnLinkToWebsite');
     Route::get('/view-accounts', [BankController::class, 'show']);
+    //Accounting (Phase 1.1 / 1.2) — company pages; access AccountingSetting::isEnabled se
+    Route::get('/chart-of-accounts', \App\Livewire\Accounting\ChartOfAccounts::class)->name('chart-of-accounts')->middleware('auth');
+    Route::get('/fiscal-years', \App\Livewire\Accounting\FiscalYears::class)->name('fiscal-years')->middleware('auth');
+    Route::get('/journal-entries', \App\Livewire\Accounting\JournalEntries::class)->name('journal-entries')->middleware('auth');
+    Route::get('/general-ledger', \App\Livewire\Accounting\GeneralLedger::class)->name('general-ledger')->middleware('auth');
     Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
     Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);
     Route::post('/cashLedgerDeposit', [BankController::class, 'insert_cashLedger']);
