@@ -320,6 +320,11 @@ Route::middleware(['roleChecker'])->group(function () {
     Route::get('/terminals', [TerminalController::class, 'view']);
     Route::get('/terminal-manager', \App\Livewire\Terminals\TerminalManager::class)->name('terminal-manager');
     Route::get('/terminal-permissions', \App\Livewire\Terminals\TerminalPermissions::class)->name('terminal-permissions');
+
+    //Accounting (Phase 1.1)
+    Route::get('/accounting-setup', \App\Livewire\Accounting\AccountingSetup::class)->name('accounting-setup');
+    Route::get('/chart-of-accounts', \App\Livewire\Accounting\ChartOfAccounts::class)->name('chart-of-accounts');
+    Route::get('/fiscal-years', \App\Livewire\Accounting\FiscalYears::class)->name('fiscal-years');
     Route::post('/submitterminal', [TerminalController::class, 'store']);
     Route::put('/inactive-terminal', [TerminalController::class, 'remove']);
     Route::post('/inactive-terminals-details', [TerminalController::class, 'inactivedetails']);

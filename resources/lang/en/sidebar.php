@@ -156,5 +156,8 @@ return [
     'delivery_history' => 'Delivery History',
     'terminal_manager' => 'Terminal Manager',
     'terminal_permissions' => 'Terminal Permissions',
+    'accounting_setup' => 'Accounting Setup',
+    'chart_of_accounts' => 'Chart of Accounts',
+    'fiscal_years' => 'Fiscal Years',
     
 ];

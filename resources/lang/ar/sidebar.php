@@ -146,4 +146,7 @@ return [
     'stock_report' => 'تقرير المخزون',
     'pre_order_booking' => 'حجز الطلب المسبق',
     'booking_slots' => 'فترات الحجز',
+    'accounting_setup' => 'إعداد المحاسبة',
+    'chart_of_accounts' => 'دليل الحسابات',
+    'fiscal_years' => 'السنوات المالية',
 ];

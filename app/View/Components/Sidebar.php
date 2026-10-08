@@ -2,11 +2,14 @@
 
 namespace App\View\Components;
 
+use App\Models\Accounting\AccountingSetting;
 use Illuminate\View\Component;
 use Illuminate\Support\Facades\DB;
 
 class Sidebar extends Component
 {
+    const ACCOUNTING_PAGES = ['chart-of-accounts', 'fiscal-years'];
+
     public function __construct()
     {
         //
@@ -36,6 +39,11 @@ class Sidebar extends Component
         }
 
         $result = DB::table('pages_details')->whereIN('id', $array)->get();
+
+        // Accounting (Phase 1.1) company-wise module hai — off ho to us ke pages menu me na dikhao
+        if (!AccountingSetting::isEnabled(session('company_id'))) {
+            $result = $result->reject(fn ($page) => in_array($page->page_url, self::ACCOUNTING_PAGES))->values();
+        }
 
         return view('components.sidebar', compact('result'));
     }
