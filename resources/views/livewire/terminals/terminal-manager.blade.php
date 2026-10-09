@@ -48,6 +48,7 @@
                 return {
                     open: false,
                     placed: false,
+                    menuEl: null,
                     top: 0,
                     left: 0,
                     toggle() {
@@ -57,16 +58,23 @@
                         }
 
                         this.placed = false;
+                        this.top = 0;
+                        this.left = 0;
                         this.open = true;
                         this.$nextTick(() => {
                             var rect = this.$refs.button.getBoundingClientRect();
-                            var menu = this.$refs.menu;
+                            var menu = this.menuEl;
+                            // Guard against a transformed ancestor (position: fixed would be relative to it, not the viewport):
+                            // measure where top/left 0 actually lands and offset from there.
+                            var origin = menu.getBoundingClientRect();
                             var gap = 6;
                             var below = rect.bottom + gap;
                             var above = rect.top - gap - menu.offsetHeight;
+                            var top = (below + menu.offsetHeight > window.innerHeight && above > 0) ? above : below;
+                            var left = Math.min(Math.max(8, rect.right - menu.offsetWidth), window.innerWidth - menu.offsetWidth - 8);
 
-                            this.top = (below + menu.offsetHeight > window.innerHeight && above > 0) ? above : below;
-                            this.left = Math.max(8, rect.right - menu.offsetWidth);
+                            this.top = top - origin.top;
+                            this.left = left - origin.left;
                             this.placed = true;
                         });
                     },
@@ -350,12 +358,13 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-right align-top">
-                                    {{-- position: fixed so the menu floats over the table (not clipped by overflow-x-auto, row height unchanged); opens upward near the viewport bottom. --}}
+                                    {{-- Menu is teleported to <body> with position: fixed, so it floats over the table (not clipped by overflow, row height unchanged); opens upward near the viewport bottom. --}}
                                     <div class="inline-block text-left" x-data="terminalActionsMenu" @click.outside="open = false" @keydown.escape.window="open = false" @scroll.window.capture="open = false" @resize.window="open = false">
                                         <button type="button" x-ref="button" @click="toggle()" class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text shadow-sm transition hover:border-erp hover:text-erp-dark">
                                             Actions
                                         </button>
-                                        <div x-ref="menu" x-show="open" x-cloak @click="open = false" :style="`top: ${top}px; left: ${left}px`" :class="placed ? '' : 'invisible'" class="fixed z-50 w-56 overflow-hidden rounded-lg border border-erp-line bg-white py-2 text-sm shadow-menu">
+                                        <template x-teleport="body">
+                                        <div x-init="menuEl = $el" x-show="open" style="display: none" @click="open = false" :style="`top: ${top}px; left: ${left}px`" :class="placed ? '' : 'invisible'" class="fixed z-50 w-56 overflow-hidden rounded-lg border border-erp-line bg-white py-2 text-left text-sm shadow-menu">
                                             <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-erp-text hover:bg-slate-50" wire:click="editTerminal({{ $terminal->terminal_id }})">Edit</button>
 
                                             @if ((int) $terminal->status_id === 1)
@@ -376,6 +385,7 @@
 
                                             <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-erp-text hover:bg-slate-50" wire:click="checkDeviceStatus({{ $terminal->terminal_id }})">Device Status</button>
                                         </div>
+                                        </template>
                                     </div>
                                 </td>
                             </tr>
