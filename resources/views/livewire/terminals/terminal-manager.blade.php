@@ -32,7 +32,37 @@
         @keyframes terminal-spin {
             to { transform: rotate(360deg); }
         }
+        .terminal-manager-page .select2-container--disabled .select2-selection--single {
+            background: #f8fafc !important;
+            cursor: not-allowed;
+        }
+
+        .terminal-manager-page .select2-container--disabled .select2-selection__rendered {
+            color: #94a3b8 !important;
+        }
     </style>
+
+    <script>
+        window.tmSelect2 = window.tmSelect2 || function (el, wire, property) {
+            var push = function (value) { wire.set(property, value || ''); };
+
+            if (!window.jQuery || !jQuery.fn.select2) {
+                el.addEventListener('change', function () { push(el.value); });
+                return;
+            }
+
+            var $select = jQuery(el);
+            if (!$select.hasClass('select2-hidden-accessible')) {
+                $select.select2({
+                    width: '100%',
+                    dropdownCssClass: 'v2-select2-dropdown',
+                    placeholder: $select.find('option[value=""]').first().text(),
+                    allowClear: true, // the empty option is the placeholder, so clearing is the only way back to it
+                });
+            }
+            $select.off('change.tm').on('change.tm', function () { push($select.val()); });
+        };
+    </script>
 
     @php
         $visibleCount = $terminalRows->count();
@@ -75,52 +105,62 @@
             <h2 class="text-base font-bold text-erp-ink">Terminal Filters</h2>
         </div>
         <div class="grid gap-4 p-5 sm:grid-cols-2 xl:grid-cols-6">
-            <label class="block">
+            <div class="block">
                 <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Company</span>
-                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="filterCompanyId">
-                    <option value="">All Companies</option>
-                    @foreach ($companies as $company)
-                        <option value="{{ $company->company_id }}">{{ $company->name }}</option>
-                    @endforeach
-                </select>
-            </label>
+                <div class="mt-2" wire:ignore wire:key="tm-filter-company-{{ $filterCompanyId }}">
+                    <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tmSelect2($el, $wire, 'filterCompanyId')">
+                        <option value="">All Companies</option>
+                        @foreach ($companies as $company)
+                            <option value="{{ $company->company_id }}" @selected((string) $company->company_id === (string) $filterCompanyId)>{{ $company->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
 
-            <label class="block">
+            <div class="block">
                 <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Branch</span>
-                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp disabled:bg-slate-100 disabled:text-slate-400" wire:model.live="filterBranchId" {{ $filterCompanyId === '' ? 'disabled' : '' }}>
-                    <option value="">{{ $filterCompanyId === '' ? 'Select company first' : 'All Branches' }}</option>
-                    @foreach ($filterBranches as $branch)
-                        <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
-                    @endforeach
-                </select>
-            </label>
+                <div class="mt-2" wire:ignore wire:key="tm-filter-branch-{{ $filterCompanyId }}-{{ $filterBranchId }}">
+                    <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tmSelect2($el, $wire, 'filterBranchId')" @disabled($filterCompanyId === '')>
+                        <option value="">{{ $filterCompanyId === '' ? 'Select company first' : 'All Branches' }}</option>
+                        @foreach ($filterBranches as $branch)
+                            <option value="{{ $branch->branch_id }}" @selected((string) $branch->branch_id === (string) $filterBranchId)>{{ $branch->branch_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
 
-            <label class="block">
+            <div class="block">
                 <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Status</span>
-                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="statusId">
-                    <option value="">All</option>
-                    <option value="1">Active</option>
-                    <option value="2">Inactive</option>
-                </select>
-            </label>
+                <div class="mt-2" wire:ignore wire:key="tm-filter-status-{{ $statusId }}">
+                    <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tmSelect2($el, $wire, 'statusId')">
+                        <option value="">All</option>
+                        <option value="1" @selected('1' === (string) $statusId)>Active</option>
+                        <option value="2" @selected('2' === (string) $statusId)>Inactive</option>
+                    </select>
+                </div>
+            </div>
 
-            <label class="block">
+            <div class="block">
                 <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Lock</span>
-                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="lockStatus">
-                    <option value="">All</option>
-                    <option value="1">Locked</option>
-                    <option value="0">Unlocked</option>
-                </select>
-            </label>
+                <div class="mt-2" wire:ignore wire:key="tm-filter-lock-{{ $lockStatus }}">
+                    <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tmSelect2($el, $wire, 'lockStatus')">
+                        <option value="">All</option>
+                        <option value="1" @selected('1' === (string) $lockStatus)>Locked</option>
+                        <option value="0" @selected('0' === (string) $lockStatus)>Unlocked</option>
+                    </select>
+                </div>
+            </div>
 
-            <label class="block">
+            <div class="block">
                 <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Device</span>
-                <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="deviceStatusFilter">
-                    <option value="">All</option>
-                    <option value="Online">Online</option>
-                    <option value="Offline">Offline</option>
-                </select>
-            </label>
+                <div class="mt-2" wire:ignore wire:key="tm-filter-device-{{ $deviceStatusFilter }}">
+                    <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tmSelect2($el, $wire, 'deviceStatusFilter')">
+                        <option value="">All</option>
+                        <option value="Online" @selected('Online' === (string) $deviceStatusFilter)>Online</option>
+                        <option value="Offline" @selected('Offline' === (string) $deviceStatusFilter)>Offline</option>
+                    </select>
+                </div>
+            </div>
 
             <label class="block">
                 <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Search</span>
@@ -144,27 +184,31 @@
 
         <form wire:submit.prevent="saveTerminal" class="p-5">
             <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-6">
-                <label class="block xl:col-span-2">
+                <div class="block xl:col-span-2">
                     <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Company</span>
-                    <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" wire:model.live="formCompanyId">
-                        <option value="">Select Company</option>
-                        @foreach ($companies as $company)
-                            <option value="{{ $company->company_id }}">{{ $company->name }}</option>
-                        @endforeach
-                    </select>
+                    <div class="mt-2" wire:ignore wire:key="tm-form-company-{{ $formCompanyId }}">
+                        <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tmSelect2($el, $wire, 'formCompanyId')">
+                            <option value="">Select Company</option>
+                            @foreach ($companies as $company)
+                                <option value="{{ $company->company_id }}" @selected((string) $company->company_id === (string) $formCompanyId)>{{ $company->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     @error('formCompanyId') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
-                </label>
+                </div>
 
-                <label class="block xl:col-span-2">
+                <div class="block xl:col-span-2">
                     <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Branch</span>
-                    <select class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp disabled:bg-slate-100 disabled:text-slate-400" wire:model.live="formBranchId" {{ $formCompanyId === '' ? 'disabled' : '' }}>
-                        <option value="">Select Branch</option>
-                        @foreach ($formBranches as $branch)
-                            <option value="{{ $branch->branch_id }}">{{ $branch->branch_name }}</option>
-                        @endforeach
-                    </select>
+                    <div class="mt-2" wire:ignore wire:key="tm-form-branch-{{ $formCompanyId }}-{{ $formBranchId }}">
+                        <select class="v2-select2 v2-select2-lg w-full" x-data x-init="tmSelect2($el, $wire, 'formBranchId')" @disabled($formCompanyId === '')>
+                            <option value="">Select Branch</option>
+                            @foreach ($formBranches as $branch)
+                                <option value="{{ $branch->branch_id }}" @selected((string) $branch->branch_id === (string) $formBranchId)>{{ $branch->branch_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                     @error('formBranchId') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
-                </label>
+                </div>
 
                 <label class="block xl:col-span-2">
                     <span class="text-xs font-bold uppercase tracking-[0.16em] text-erp-mute">Terminal Name</span>
@@ -319,7 +363,7 @@
         </div>
 
         <div class="border-t border-erp-line px-5 py-4">
-            {{ $terminals->links('pagination::tailwind') }}
+            {{ $terminals->links('livewire::tailwind') }}
         </div>
     </div>
 

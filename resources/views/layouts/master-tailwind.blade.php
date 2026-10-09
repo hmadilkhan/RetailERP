@@ -114,7 +114,8 @@
             || request()->is('inventory-list')
             || request()->is('stockadjustment')
             || request()->is('posproducts')
-            || request()->is('terminal-permissions');
+            || request()->is('terminal-permissions')
+            || request()->is('terminal-manager');
     @endphp
     @if (($tailwindSelect2Assets || $tailwindPurchaseAssets || $tailwindDiscountAssets) && !$tailwindLegacyAssets)
         <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />

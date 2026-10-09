@@ -325,7 +325,7 @@
                 </div>
 
                 <div class="m-t-15">
-                    {{ $terminals->links('pagination::bootstrap-4') }}
+                    {{ $terminals->links('livewire::bootstrap') }}
                 </div>
             </div>
         </div>
