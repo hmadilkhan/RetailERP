@@ -1,7 +1,7 @@
 <div class="terminal-manager-page space-y-6">
     <style>
-        .terminal-manager-page details > summary::-webkit-details-marker {
-            display: none;
+        .terminal-manager-page [x-cloak] {
+            display: none !important;
         }
 
         .terminal-manager-page .terminal-table-shell {
@@ -43,6 +43,37 @@
     </style>
 
     <script>
+        document.addEventListener('alpine:init', function () {
+            Alpine.data('terminalActionsMenu', function () {
+                return {
+                    open: false,
+                    placed: false,
+                    top: 0,
+                    left: 0,
+                    toggle() {
+                        if (this.open) {
+                            this.open = false;
+                            return;
+                        }
+
+                        this.placed = false;
+                        this.open = true;
+                        this.$nextTick(() => {
+                            var rect = this.$refs.button.getBoundingClientRect();
+                            var menu = this.$refs.menu;
+                            var gap = 6;
+                            var below = rect.bottom + gap;
+                            var above = rect.top - gap - menu.offsetHeight;
+
+                            this.top = (below + menu.offsetHeight > window.innerHeight && above > 0) ? above : below;
+                            this.left = Math.max(8, rect.right - menu.offsetWidth);
+                            this.placed = true;
+                        });
+                    },
+                };
+            });
+        });
+
         window.tmSelect2 = window.tmSelect2 || function (el, wire, property) {
             var push = function (value) { wire.set(property, value || ''); };
 
@@ -319,11 +350,12 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-4 text-right align-top">
-                                    <details class="group inline-block text-left">
-                                        <summary class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text shadow-sm transition hover:border-erp hover:text-erp-dark">
+                                    {{-- position: fixed so the menu floats over the table (not clipped by overflow-x-auto, row height unchanged); opens upward near the viewport bottom. --}}
+                                    <div class="inline-block text-left" x-data="terminalActionsMenu" @click.outside="open = false" @keydown.escape.window="open = false" @scroll.window.capture="open = false" @resize.window="open = false">
+                                        <button type="button" x-ref="button" @click="toggle()" class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text shadow-sm transition hover:border-erp hover:text-erp-dark">
                                             Actions
-                                        </summary>
-                                        <div class="mt-2 w-56 overflow-hidden rounded-lg border border-erp-line bg-white py-2 text-sm shadow-menu">
+                                        </button>
+                                        <div x-ref="menu" x-show="open" x-cloak @click="open = false" :style="`top: ${top}px; left: ${left}px`" :class="placed ? '' : 'invisible'" class="fixed z-50 w-56 overflow-hidden rounded-lg border border-erp-line bg-white py-2 text-sm shadow-menu">
                                             <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-erp-text hover:bg-slate-50" wire:click="editTerminal({{ $terminal->terminal_id }})">Edit</button>
 
                                             @if ((int) $terminal->status_id === 1)
@@ -344,7 +376,7 @@
 
                                             <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-erp-text hover:bg-slate-50" wire:click="checkDeviceStatus({{ $terminal->terminal_id }})">Device Status</button>
                                         </div>
-                                    </details>
+                                    </div>
                                 </td>
                             </tr>
                         @empty
