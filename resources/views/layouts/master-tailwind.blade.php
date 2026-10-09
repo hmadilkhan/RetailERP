@@ -1427,7 +1427,7 @@
         @csrf
     </form>
 
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {{-- Alpine comes bundled with @livewireScripts (always loaded below); a second CDN copy runs x-init without $wire and breaks Alpine.data registration. --}}
     @if ($tailwindLegacyAssets)
         @include('partials.js-libs')
     @endif

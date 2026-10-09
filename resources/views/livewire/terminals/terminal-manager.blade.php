@@ -116,7 +116,20 @@
                     allowClear: true, // the empty option is the placeholder, so clearing is the only way back to it
                 });
             }
-            $select.off('change.tm').on('change.tm', function () { push($select.val()); });
+            // Livewire may replace this select (wire:key) right after the change; an open dropdown would be left orphaned on the page.
+            // So close it before syncing, and stop select2 from re-opening it after the clear (x) button.
+            $select.off('.tm')
+                .on('select2:unselecting.tm', function () { $select.data('tm-unselecting', true); })
+                .on('select2:opening.tm', function (e) {
+                    if ($select.data('tm-unselecting')) {
+                        $select.removeData('tm-unselecting');
+                        e.preventDefault();
+                    }
+                })
+                .on('change.tm', function () {
+                    $select.select2('close');
+                    push($select.val());
+                });
         };
     </script>
 
