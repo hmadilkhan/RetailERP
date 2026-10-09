@@ -15,6 +15,7 @@ class AccountingSetup extends Component
 {
     public $companyId = '';
     public $startMonth = 7;
+    public $postingStartDate = '';
 
     public function mount(): void
     {
@@ -24,7 +25,9 @@ class AccountingSetup extends Component
     public function updatedCompanyId(): void
     {
         $this->resetErrorBag();
-        $this->startMonth = (int) (AccountingSetting::where('company_id', $this->companyId)->value('fiscal_year_start_month') ?: 7);
+        $setting = AccountingSetting::where('company_id', $this->companyId)->first();
+        $this->startMonth = (int) ($setting->fiscal_year_start_month ?? 7);
+        $this->postingStartDate = $setting && $setting->posting_start_date ? $setting->posting_start_date->toDateString() : '';
     }
 
     public function enable(AccountingSetupService $setup): void
@@ -44,6 +47,26 @@ class AccountingSetup extends Component
         abort_unless((int) session('roleId') === 1, 403);
         $setup->disable((int) $this->companyId);
         session()->flash('accounting_message', 'Accounting menu turned off for this company. Data is kept.');
+    }
+
+    /** Automatic posting (Phase 1.3) kis tareekh se. Khali = band. Purana data 1.6 (backfill) me aata hai. */
+    public function savePostingStart(): void
+    {
+        abort_unless((int) session('roleId') === 1, 403);
+        $this->validate([
+            'companyId' => 'required|integer',
+            'postingStartDate' => 'nullable|date',
+        ], [], ['postingStartDate' => 'posting start date']);
+
+        $setting = AccountingSetting::where('company_id', $this->companyId)->where('enabled', true)->first();
+        if (!$setting) {
+            $this->addError('postingStartDate', 'Enable accounting for this company first.');
+            return;
+        }
+        $setting->update(['posting_start_date' => $this->postingStartDate ?: null]);
+        session()->flash('accounting_message', $this->postingStartDate
+            ? 'Automatic posting starts from ' . $this->postingStartDate . '. Entries appear within 15 minutes.'
+            : 'Automatic posting turned off.');
     }
 
     #[Title('Accounting Setup')]

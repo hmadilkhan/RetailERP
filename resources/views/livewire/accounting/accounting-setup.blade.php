@@ -60,6 +60,20 @@
             </div>
         </div>
 
+        @if ($selected && $isOn)
+            <div class="grid gap-4 border-t border-erp-line p-5 md:grid-cols-3">
+                <label class="block">
+                    <span class="{{ $labelClass }}">Automatic Posting From</span>
+                    <input type="date" wire:model="postingStartDate" class="{{ $inputClass }}">
+                    @error('postingStartDate') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
+                </label>
+                <div class="flex items-end">
+                    <button type="button" wire:click="savePostingStart" class="h-10 rounded-lg border border-erp-line bg-white px-5 text-sm font-bold text-erp-text transition hover:bg-slate-50">Save</button>
+                </div>
+                <p class="self-end text-xs text-erp-mute">Sales, expenses, purchases and payments from this date are posted to the General Ledger every 15 minutes. Leave empty to turn off.</p>
+            </div>
+        @endif
+
         @if ($selected)
             <div class="grid gap-4 border-t border-erp-line p-5 sm:grid-cols-3">
                 <div>

@@ -1006,6 +1006,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/fiscal-years', \App\Livewire\Accounting\FiscalYears::class)->name('fiscal-years')->middleware('auth');
     Route::get('/journal-entries', \App\Livewire\Accounting\JournalEntries::class)->name('journal-entries')->middleware('auth');
     Route::get('/general-ledger', \App\Livewire\Accounting\GeneralLedger::class)->name('general-ledger')->middleware('auth');
+    Route::get('/posting-rules', \App\Livewire\Accounting\PostingRules::class)->name('posting-rules')->middleware('auth');
     Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
     Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);
     Route::post('/cashLedgerDeposit', [BankController::class, 'insert_cashLedger']);

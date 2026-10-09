@@ -42,6 +42,8 @@ class AccountingSetupService
         ['2140', 'Salaries Payable', 'Liability', '2100', false, 'salaries_payable'],
         ['2150', 'Customer Advances', 'Liability', '2100', false, 'customer_advance'],
         ['2160', 'Accrued Expenses', 'Liability', '2100', false, null],
+        // automatic posting me source ke amounts ka farq (rounding / kharab data) yahan aata hai — warning ke saath
+        ['2190', 'Suspense / Rounding', 'Liability', '2100', false, 'suspense'],
         ['2200', 'Long-term Liabilities', 'Liability', '2000', true, null],
         ['2210', 'Loans Payable', 'Liability', '2200', false, 'loans_payable'],
 

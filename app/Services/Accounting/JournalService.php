@@ -53,7 +53,9 @@ class JournalService
                     'source_id' => $header['source_id'] ?? null,
                     'status' => 'draft',
                     'created_by' => $userId,
-                ]);
+                ]
+                    // sirf automatic posting bhejti hai — manual JV posting migration se pehle bhi chale
+                    + array_filter(['source_ref' => $header['source_ref'] ?? null, 'source_hash' => $header['source_hash'] ?? null], fn ($v) => $v !== null));
             }
 
             $this->insertLines($entry, $clean);
@@ -115,6 +117,7 @@ class JournalService
                 'narration' => 'Reversal of ' . $entry->entry_no . ($reason ? ' — ' . $reason : ''),
                 'source_type' => $entry->source_type,
                 'source_id' => $entry->source_id,
+                'source_ref' => $entry->source_ref ?? null,
             ], $lines, $userId);
 
             $reversal->update(['reversal_of_id' => $entry->id]);

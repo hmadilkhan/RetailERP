@@ -12,6 +12,8 @@ class AccountingSetting extends Model
     protected $casts = [
         'enabled' => 'boolean',
         'enabled_at' => 'datetime',
+        'posting_start_date' => 'date',
+        'last_posted_at' => 'datetime',
     ];
 
     public static function isEnabled($companyId): bool
