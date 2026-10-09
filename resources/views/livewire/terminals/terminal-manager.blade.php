@@ -46,6 +46,7 @@
         document.addEventListener('alpine:init', function () {
             Alpine.data('terminalActionsMenu', function () {
                 return {
+                    uid: Math.random().toString(36).slice(2),
                     open: false,
                     placed: false,
                     menuEl: null,
@@ -57,26 +58,42 @@
                             return;
                         }
 
+                        // Only one menu at a time (same as POS orders list): tell the others to close.
+                        window.dispatchEvent(new CustomEvent('tm-actions-open', { detail: this.uid }));
+
                         this.placed = false;
                         this.top = 0;
                         this.left = 0;
                         this.open = true;
-                        this.$nextTick(() => {
-                            var rect = this.$refs.button.getBoundingClientRect();
-                            var menu = this.menuEl;
-                            // Guard against a transformed ancestor (position: fixed would be relative to it, not the viewport):
-                            // measure where top/left 0 actually lands and offset from there.
-                            var origin = menu.getBoundingClientRect();
-                            var gap = 6;
-                            var below = rect.bottom + gap;
-                            var above = rect.top - gap - menu.offsetHeight;
-                            var top = (below + menu.offsetHeight > window.innerHeight && above > 0) ? above : below;
-                            var left = Math.min(Math.max(8, rect.right - menu.offsetWidth), window.innerWidth - menu.offsetWidth - 8);
+                        this.$nextTick(() => requestAnimationFrame(() => this.place()));
+                    },
+                    place() {
+                        if (!this.open || !this.menuEl) {
+                            return;
+                        }
 
-                            this.top = top - origin.top;
-                            this.left = left - origin.left;
-                            this.placed = true;
-                        });
+                        var menu = this.menuEl;
+                        // x-show may not have un-hidden the menu yet; a hidden menu measures 0 wide and lands off-screen.
+                        menu.style.display = 'block';
+
+                        var rect = this.$refs.button.getBoundingClientRect();
+                        // Guard against a transformed ancestor (position: fixed would be relative to it, not the viewport):
+                        // measure where top/left 0 actually lands and offset from there.
+                        var origin = menu.getBoundingClientRect();
+                        var width = menu.offsetWidth || 224;
+                        var height = menu.offsetHeight;
+                        var gap = 6;
+                        var edge = 12;
+                        var viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+                        var viewportHeight = window.innerHeight;
+                        var below = rect.bottom + gap;
+                        var above = rect.top - gap - height;
+                        var top = (below + height > viewportHeight - edge && above > edge) ? above : below;
+                        var left = Math.min(Math.max(edge, rect.right - width), viewportWidth - width - edge);
+
+                        this.top = top - origin.top;
+                        this.left = left - origin.left;
+                        this.placed = true;
                     },
                 };
             });
@@ -359,12 +376,12 @@
                                 </td>
                                 <td class="px-4 py-4 text-right align-top">
                                     {{-- Menu is teleported to <body> with position: fixed, so it floats over the table (not clipped by overflow, row height unchanged); opens upward near the viewport bottom. --}}
-                                    <div class="inline-block text-left" x-data="terminalActionsMenu" @click.outside="open = false" @keydown.escape.window="open = false" @scroll.window.capture="open = false" @resize.window="open = false">
+                                    <div class="inline-block text-left" x-data="terminalActionsMenu" @tm-actions-open.window="if ($event.detail !== uid) open = false" @click.outside="open = false" @keydown.escape.window="open = false" @scroll.window.capture="open = false" @resize.window="open = false">
                                         <button type="button" x-ref="button" @click="toggle()" class="inline-flex cursor-pointer items-center justify-center rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text shadow-sm transition hover:border-erp hover:text-erp-dark">
                                             Actions
                                         </button>
                                         <template x-teleport="body">
-                                        <div x-init="menuEl = $el" x-show="open" style="display: none" @click="open = false" :style="`top: ${top}px; left: ${left}px`" :class="placed ? '' : 'invisible'" class="fixed z-50 w-56 overflow-hidden rounded-lg border border-erp-line bg-white py-2 text-left text-sm shadow-menu">
+                                        <div x-init="menuEl = $el" x-show="open" style="display: none" @click="open = false" :style="{ top: top + 'px', left: left + 'px' }" :class="placed ? '' : 'invisible'" class="fixed z-50 w-56 overflow-hidden rounded-lg border border-erp-line bg-white py-2 text-left text-sm shadow-menu">
                                             <button type="button" class="block w-full px-4 py-2 text-left font-semibold text-erp-text hover:bg-slate-50" wire:click="editTerminal({{ $terminal->terminal_id }})">Edit</button>
 
                                             @if ((int) $terminal->status_id === 1)
