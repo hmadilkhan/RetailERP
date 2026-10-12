@@ -6,6 +6,7 @@ use App\Models\Accounting\AccountingSetting;
 use App\Models\Accounting\ChartOfAccount;
 use App\Models\Accounting\JournalEntry;
 use App\Services\Accounting\JournalService;
+use App\Services\Accounting\OpeningBalanceSuggester;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -22,6 +23,8 @@ class OpeningBalances extends Component
     public $entryDate = '';
     public array $amounts = []; // account_id => ['debit' => '', 'credit' => '']
     public $search = '';
+    public array $notes = [];     // account_id => "amount kahan se aaya" (Fill from system)
+    public array $warnings = [];
 
     public function mount(): void
     {
@@ -41,6 +44,23 @@ class OpeningBalances extends Component
             $start = AccountingSetting::where('company_id', session('company_id'))->value('posting_start_date');
             $this->entryDate = $start ? \Carbon\Carbon::parse($start)->subDay()->toDateString() : now()->toDateString();
         }
+    }
+
+    /** Purane ledgers se opening date ka hisaab form me bharo — save nahi hota, user dekh kar Save & Post kare. */
+    public function fillFromSystem(OpeningBalanceSuggester $suggester): void
+    {
+        $this->validate(['entryDate' => 'required|date'], [], ['entryDate' => 'date']);
+        $result = $suggester->suggest((int) session('company_id'), $this->entryDate);
+
+        foreach ($result['amounts'] as $accountId => $amount) {
+            $this->amounts[$accountId] = [
+                'debit' => $amount > 0 ? number_format($amount, 2, '.', '') : '',
+                'credit' => $amount < 0 ? number_format(-$amount, 2, '.', '') : '',
+            ];
+        }
+        $this->notes = $result['notes'];
+        $this->warnings = $result['warnings'];
+        session()->flash('ob_message', 'Filled ' . count($result['amounts']) . ' accounts from the system for ' . $this->entryDate . '. Nothing is saved yet — check the numbers, then Save & Post.');
     }
 
     public function save(JournalService $journal): void
@@ -118,6 +138,9 @@ class OpeningBalances extends Component
             'current' => $this->current(),
             'totalDebit' => $dr,
             'totalCredit' => $cr,
+            'postingStart' => AccountingSetting::where('company_id', $companyId)->value('posting_start_date'),
+            'laterEntries' => JournalEntry::where('company_id', $companyId)->where('status', 'posted')
+                ->where('source_type', '!=', self::SOURCE)->where('entry_date', '<=', $this->entryDate ?: now()->toDateString())->count(),
         ])->layout('layouts.master-tailwind');
     }
 
