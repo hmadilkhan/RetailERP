@@ -164,5 +164,6 @@ return [
     'posting_rules' => 'Posting Rules',
     'financial_statements' => 'Financial Statements',
     'opening_balances' => 'Opening Balances',
+    'inventory_valuation' => 'Inventory Valuation',
     
 ];

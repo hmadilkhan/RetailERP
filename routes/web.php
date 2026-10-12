@@ -1009,6 +1009,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/posting-rules', \App\Livewire\Accounting\PostingRules::class)->name('posting-rules')->middleware('auth');
     Route::get('/financial-statements', \App\Livewire\Accounting\FinancialStatements::class)->name('financial-statements')->middleware('auth');
     Route::get('/opening-balances', \App\Livewire\Accounting\OpeningBalances::class)->name('opening-balances')->middleware('auth');
+    Route::get('/inventory-valuation', \App\Livewire\Accounting\InventoryValuation::class)->name('inventory-valuation')->middleware('auth');
     Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
     Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);
     Route::post('/cashLedgerDeposit', [BankController::class, 'insert_cashLedger']);

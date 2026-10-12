@@ -154,4 +154,5 @@ return [
     'posting_rules' => 'قواعد الترحيل',
     'financial_statements' => 'القوائم المالية',
     'opening_balances' => 'الأرصدة الافتتاحية',
+    'inventory_valuation' => 'تقييم المخزون',
 ];

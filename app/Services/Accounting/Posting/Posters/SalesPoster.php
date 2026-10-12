@@ -6,6 +6,7 @@ use App\Services\Accounting\Posting\AccountResolver;
 use App\Services\Accounting\Posting\Poster;
 use App\Services\Accounting\Posting\PostingDocument;
 use App\Services\Accounting\Posting\SourceQuery;
+use App\Services\Accounting\ValuationService;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\DB;
  *   Cr Sales                                                              = gross − inclusive tax
  *   Cr Output Tax                                                         = sales_tax + srb
  *   Cr Other Income                                                       = service charge + delivery
- *   Dr COGS / Cr Inventory                                                = Σ sales_receipt_details.total_cost
+ *   Dr COGS / Cr Inventory                                                = ValuationService (moving average) — POS total_cost nahi
  * Returns (web status 14 + POS sales_return) isi din ki entry me ulte.
  *
  * POS rows external webservice likhta hai (model events nahi chalte) — isliye roz ka total padh kar sync hota hai;
@@ -26,6 +27,10 @@ use Illuminate\Support\Facades\DB;
  */
 class SalesPoster implements Poster
 {
+    public function __construct(private ValuationService $valuation)
+    {
+    }
+
     /** sales_payment.payment_id → system account. account_mappings (payment_mode) se badla ja sakta hai. */
     const PAYMENT_ACCOUNTS = [
         1 => 'cash',                 // Cash
@@ -97,18 +102,10 @@ class SalesPoster implements Poster
             $d->credit('other_income', $row->charges, 'Service / delivery charges');
         }
 
-        // COGS — sale pe Dr COGS / Cr Inventory, web return pe ulta
-        $cogs = DB::select("
-            SELECT r.branch, r.date, r.status, SUM(d.total_cost + 0) AS cost
-            FROM sales_receipts r
-            JOIN sales_receipt_details d ON d.receipt_id = r.id
-            WHERE r.branch IN ({$branches}) AND r.date BETWEEN ? AND ?
-              AND ((r.status = 4 AND r.void_receipt = 0) OR (r.status = 14 AND r.is_sale_return = 1))
-            GROUP BY r.branch, r.date, r.status", [$from, $to]);
-
-        foreach ($cogs as $row) {
-            $cost = (float) $row->cost * ((int) $row->status === 14 ? -1 : 1);
-            $doc($row->branch, $row->date)->debit('cogs', $cost)->credit('inventory', $cost);
+        // COGS — Phase 1.4 valuation (company + product moving average); web return ka COGS minus me aata hai
+        foreach ($this->valuation->cogsByBranchDate($companyId, $from, $to) as $key => $cost) {
+            [$branch, $date] = explode(':', $key, 2);
+            $doc($branch, $date)->debit('cogs', $cost)->credit('inventory', $cost);
         }
 
         // POS sales_return (purana tareeqa, refund cash me; cost record nahi hoti)

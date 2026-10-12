@@ -5,6 +5,7 @@ namespace App\Services\Accounting\Posting;
 use App\Models\Accounting\AccountingSetting;
 use App\Models\Accounting\JournalEntry;
 use App\Services\Accounting\JournalService;
+use App\Services\Accounting\ValuationService;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 use Throwable;
@@ -40,7 +41,7 @@ class PostingService
     /** Is se kam farq suspense me chupchap jata hai; zyada ho to warning. */
     const WARN_IMBALANCE = 10;
 
-    public function __construct(private JournalService $journal)
+    public function __construct(private JournalService $journal, private ValuationService $valuation)
     {
     }
 
@@ -69,8 +70,23 @@ class PostingService
         }
 
         $accounts = new AccountResolver($companyId);
-        foreach ($this->posters() as $poster) {
-            if ($only && !in_array($poster->sourceType(), $only, true)) {
+        $posters = array_filter($this->posters(), fn ($p) => !$only || in_array($p->sourceType(), $only, true));
+        $skip = [];
+        if (in_array('pos_sales', array_map(fn ($p) => $p->sourceType(), $posters), true)) {
+            // Phase 1.4: POS sales ka COGS valuation se — pehle average cost dobara banao (start date se)
+            try {
+                $this->valuation->refresh($companyId, $start, $to);
+                $this->clearError($companyId, 'valuation', '*');
+            } catch (Throwable $e) {
+                // purane total_cost pe wapas nahi jate (warna har run entries badalti) — is run me POS sales chhodo
+                $this->recordError($companyId, 'valuation', '*', 'error', 'Inventory valuation failed, POS sales not posted this run: ' . $e->getMessage());
+                $stats['errors']++;
+                $skip[] = 'pos_sales';
+            }
+        }
+
+        foreach ($posters as $poster) {
+            if (in_array($poster->sourceType(), $skip, true)) {
                 continue;
             }
             $this->syncPoster($poster, $companyId, $from, $to, $accounts, $stats);
@@ -87,6 +103,9 @@ class PostingService
     public function preview(int $companyId, string $from, string $to, ?array $only = null): array
     {
         $accounts = new AccountResolver($companyId, true);
+        if (!$only || in_array('pos_sales', $only, true)) {
+            $this->valuation->compute($companyId, $from, $to); // sirf memory me — SalesPoster ka COGS
+        }
         $out = [];
         foreach ($this->posters() as $poster) {
             if ($only && !in_array($poster->sourceType(), $only, true)) {
