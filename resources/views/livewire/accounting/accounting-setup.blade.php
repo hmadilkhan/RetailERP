@@ -74,6 +74,64 @@
             </div>
         @endif
 
+        @if ($selected && $isOn)
+            <div class="border-t border-erp-line p-5">
+                <div class="flex flex-col gap-1">
+                    <div class="text-sm font-bold text-erp-ink">Post Older Data (Backfill)</div>
+                    <p class="text-sm text-erp-mute">Moves the posting start back to a cut-off date and posts every sale, expense, purchase and payment since then. Fiscal years are created as needed. An opening balance entry dated on or after the cut-off is reversed (otherwise it would count twice) &mdash; enter opening balances for the day before the cut-off instead. Safe to run again: only differences are posted.</p>
+                </div>
+                <div class="mt-3 flex flex-wrap items-end gap-3">
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Cut-off Date</span>
+                        <input type="date" wire:model="backfillFrom" class="{{ $inputClass }}">
+                    </label>
+                    <button type="button" wire:click="previewBackfill" wire:loading.attr="disabled" class="h-10 rounded-lg border border-erp-line bg-white px-5 text-sm font-bold text-erp-text transition hover:bg-slate-50 disabled:opacity-60">
+                        <span wire:loading.remove wire:target="previewBackfill">Preview</span><span wire:loading wire:target="previewBackfill">Reading history&hellip;</span>
+                    </button>
+                    @if ($backfillPlan)
+                        <button type="button" wire:click="runBackfill" wire:loading.attr="disabled" wire:confirm="Post all history from {{ $backfillFrom }}? This can take a few minutes."
+                                class="h-10 rounded-lg border border-erp bg-erp px-5 text-sm font-bold text-white transition hover:bg-erp-dark disabled:opacity-60">
+                            <span wire:loading.remove wire:target="runBackfill">Run Backfill</span><span wire:loading wire:target="runBackfill">Posting&hellip;</span>
+                        </button>
+                    @endif
+                </div>
+                @error('backfill') <div class="mt-2 text-sm font-semibold text-rose-600">{{ $message }}</div> @enderror
+                @error('backfillFrom') <div class="mt-2 text-sm font-semibold text-rose-600">{{ $message }}</div> @enderror
+
+                @if ($backfillPlan)
+                    <div class="mt-4 grid gap-3 rounded-lg border border-erp-line bg-slate-50/60 p-4 text-sm text-erp-text md:grid-cols-2">
+                        <div><span class="{{ $labelClass }}">Earliest data</span> <span class="ml-1 font-bold">{{ $backfillPlan['earliest'] ?? '-' }}</span></div>
+                        <div><span class="{{ $labelClass }}">Posting start</span> <span class="ml-1 font-bold">{{ $backfillPlan['current_start'] ?? 'off' }}</span> &rarr; <span class="font-bold">{{ $backfillPlan['cutoff'] }}</span></div>
+                        <div><span class="{{ $labelClass }}">Fiscal years to create</span> <span class="ml-1 font-bold">{{ implode(', ', $backfillPlan['years_to_create']) ?: 'none' }}</span></div>
+                        <div><span class="{{ $labelClass }}">Opening entries to reverse</span> <span class="ml-1 font-bold {{ $backfillPlan['conflicting_openings'] ? 'text-amber-700' : '' }}">{{ implode(', ', $backfillPlan['conflicting_openings']) ?: 'none' }}</span></div>
+                    </div>
+                    <table class="mt-3 min-w-full text-sm">
+                        <thead class="text-left"><tr>
+                            <th class="py-2 {{ $labelClass }}">Source</th><th class="py-2 text-right {{ $labelClass }}">Entries</th>
+                            <th class="py-2 text-right {{ $labelClass }}">Total Debit</th><th class="py-2 text-right {{ $labelClass }}">With difference</th>
+                        </tr></thead>
+                        <tbody class="divide-y divide-erp-line">
+                            @forelse ($backfillPlan['sources'] as $type => $s)
+                                <tr><td class="py-1.5 text-erp-text">{{ str_replace('_', ' ', $type) }}</td><td class="py-1.5 text-right">{{ number_format($s['documents']) }}</td>
+                                    <td class="py-1.5 text-right">{{ number_format($s['debits'], 2) }}</td><td class="py-1.5 text-right {{ $s['unbalanced'] ? 'text-amber-700 font-bold' : 'text-erp-mute' }}">{{ $s['unbalanced'] ?: '' }}</td></tr>
+                            @empty
+                                <tr><td colspan="4" class="py-3 text-erp-mute">Nothing to post in this range.</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                @endif
+
+                @if ($backfillResult)
+                    <div class="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-4 text-sm text-emerald-800">
+                        <div class="font-bold">Backfill finished.</div>
+                        <div>Fiscal years created: {{ implode(', ', $backfillResult['years_created']) ?: 'none' }}</div>
+                        <div>{{ collect($backfillResult['stats'])->map(fn ($n, $k) => $k . ' ' . $n)->implode(' / ') }}</div>
+                        <div class="mt-1 text-xs">Errors and warnings are listed on the company Posting Rules page.</div>
+                    </div>
+                @endif
+            </div>
+        @endif
+
         @if ($selected)
             <div class="grid gap-4 border-t border-erp-line p-5 sm:grid-cols-3">
                 <div>

@@ -172,6 +172,32 @@ class AccountingSetupService
         return $year;
     }
 
+    /** Pehle fiscal year se pichla saal banao (purana data backfill ke liye). */
+    public function createPreviousFiscalYear(int $companyId): FiscalYear
+    {
+        return DB::transaction(function () use ($companyId) {
+            $first = FiscalYear::where('company_id', $companyId)->orderBy('start_date')->lockForUpdate()->first();
+            if (!$first) {
+                return $this->createNextFiscalYear($companyId);
+            }
+            return $this->createFiscalYear($companyId, Carbon::parse($first->start_date)->subYear());
+        });
+    }
+
+    /** $date tak peeche ke saare fiscal years bana do. @return FiscalYear[] jo bane */
+    public function ensureFiscalYearsFrom(int $companyId, string $date): array
+    {
+        $created = [];
+        for ($i = 0; $i < 50; $i++) {
+            $first = FiscalYear::where('company_id', $companyId)->orderBy('start_date')->first();
+            if ($first && Carbon::parse($first->start_date)->toDateString() <= $date) {
+                break;
+            }
+            $created[] = $this->createPreviousFiscalYear($companyId);
+        }
+        return $created;
+    }
+
     /** Aakhri fiscal year ke baad wala saal banao. */
     public function createNextFiscalYear(int $companyId): FiscalYear
     {

@@ -23,8 +23,12 @@
                 <h2 class="text-base font-bold text-erp-ink">Fiscal Years</h2>
                 <p class="mt-0.5 text-sm text-erp-mute">Only open periods accept entries. Close a month when its books are final, lock it when it must never change. Closing the year moves profit / loss to Retained Earnings.</p>
             </div>
+            <div class="flex shrink-0 gap-2">
+            <button type="button" wire:click="createPreviousYear" wire:confirm="Create the fiscal year before the earliest one? Only needed to post older data."
+                    class="h-10 rounded-lg border border-erp-line bg-white px-4 text-sm font-bold text-erp-text transition hover:bg-slate-50">+ Previous Year</button>
             <button type="button" wire:click="createNextYear" wire:confirm="Create the next fiscal year?"
                     class="h-10 rounded-lg border border-erp bg-erp px-4 text-sm font-bold text-white transition hover:bg-erp-dark">+ Next Fiscal Year</button>
+            </div>
         </div>
 
         @if ($years->isEmpty())

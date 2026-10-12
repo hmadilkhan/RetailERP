@@ -33,6 +33,13 @@ class FiscalYears extends Component
         session()->flash('fy_message', $year->name . ' created with 12 periods.');
     }
 
+    public function createPreviousYear(AccountingSetupService $setup): void
+    {
+        $year = $setup->createPreviousFiscalYear((int) session('company_id'));
+        $this->openYearId = $year->id;
+        session()->flash('fy_message', $year->name . ' created with 12 periods (for entering older data).');
+    }
+
     /** close / reopen / lock / unlock (unlock sirf super admin) */
     public function changePeriod($periodId, string $action, PeriodCloseService $close): void
     {

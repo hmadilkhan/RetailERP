@@ -7,6 +7,8 @@ use App\Models\Accounting\ChartOfAccount;
 use App\Models\Accounting\FiscalYear;
 use App\Models\Company;
 use App\Services\Accounting\AccountingSetupService;
+use App\Services\Accounting\BackfillService;
+use Throwable;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
@@ -16,6 +18,9 @@ class AccountingSetup extends Component
     public $companyId = '';
     public $startMonth = 7;
     public $postingStartDate = '';
+    public $backfillFrom = '';
+    public ?array $backfillPlan = null;
+    public ?array $backfillResult = null;
 
     public function mount(): void
     {
@@ -28,6 +33,8 @@ class AccountingSetup extends Component
         $setting = AccountingSetting::where('company_id', $this->companyId)->first();
         $this->startMonth = (int) ($setting->fiscal_year_start_month ?? 7);
         $this->postingStartDate = $setting && $setting->posting_start_date ? $setting->posting_start_date->toDateString() : '';
+        $this->backfillPlan = $this->backfillResult = null;
+        $this->backfillFrom = '';
     }
 
     public function enable(AccountingSetupService $setup): void
@@ -67,6 +74,38 @@ class AccountingSetup extends Component
         session()->flash('accounting_message', $this->postingStartDate
             ? 'Automatic posting starts from ' . $this->postingStartDate . '. Entries appear within 15 minutes.'
             : 'Automatic posting turned off.');
+    }
+
+    /** Phase 1.6: kya hoga — kuch save nahi */
+    public function previewBackfill(BackfillService $backfill): void
+    {
+        abort_unless((int) session('roleId') === 1, 403);
+        $this->backfillResult = null;
+        try {
+            $this->backfillFrom = $this->backfillFrom ?: (string) $backfill->suggestedCutoff((int) $this->companyId);
+            if (!$this->backfillFrom) {
+                $this->addError('backfill', 'No sales, expenses or vendor data found for this company.');
+                return;
+            }
+            $this->backfillPlan = $backfill->plan((int) $this->companyId, $this->backfillFrom);
+        } catch (Throwable $e) {
+            $this->addError('backfill', $e->getMessage());
+        }
+    }
+
+    public function runBackfill(BackfillService $backfill): void
+    {
+        abort_unless((int) session('roleId') === 1, 403);
+        $this->validate(['backfillFrom' => 'required|date'], [], ['backfillFrom' => 'cut-off date']);
+        try {
+            @set_time_limit(0);
+            $this->backfillResult = $backfill->run((int) $this->companyId, $this->backfillFrom, session('userid'));
+            $this->backfillPlan = null;
+            $this->postingStartDate = $this->backfillFrom;
+            session()->flash('accounting_message', 'History posted from ' . $this->backfillFrom . '.');
+        } catch (Throwable $e) {
+            $this->addError('backfill', $e->getMessage());
+        }
     }
 
     #[Title('Accounting Setup')]
