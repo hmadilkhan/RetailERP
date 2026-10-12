@@ -184,6 +184,8 @@ class PostingService
             }
 
             if ($active && $active->source_hash === $hash) {
+                // sahi post hai — pichle run ka error (e.g. cron + Post Now ek saath chale) saaf; warning (farq) rehne do
+                DB::table('posting_errors')->where(['company_id' => $companyId, 'source_type' => $type, 'source_ref' => $doc->ref, 'level' => 'error'])->delete();
                 $stats['unchanged']++;
                 return;
             }
