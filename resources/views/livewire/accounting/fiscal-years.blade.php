@@ -8,6 +8,10 @@
         ];
     @endphp
 
+    @error('fy')
+        <div class="rounded-lg border border-rose-200 bg-rose-50 px-5 py-3 text-sm font-semibold text-rose-700">{{ $message }}</div>
+    @enderror
+
     @if (session()->has('fy_message'))
         <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800"
              x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 3000)" x-transition.opacity>{{ session('fy_message') }}</div>
@@ -17,7 +21,7 @@
         <div class="flex flex-col gap-3 border-b border-erp-line px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-base font-bold text-erp-ink">Fiscal Years</h2>
-                <p class="mt-0.5 text-sm text-erp-mute">Each year has 12 monthly periods. Closing and locking periods comes with financial statements.</p>
+                <p class="mt-0.5 text-sm text-erp-mute">Only open periods accept entries. Close a month when its books are final, lock it when it must never change. Closing the year moves profit / loss to Retained Earnings.</p>
             </div>
             <button type="button" wire:click="createNextYear" wire:confirm="Create the next fiscal year?"
                     class="h-10 rounded-lg border border-erp bg-erp px-4 text-sm font-bold text-white transition hover:bg-erp-dark">+ Next Fiscal Year</button>
@@ -45,6 +49,14 @@
                         </button>
 
                         @if ($isOpen)
+                            <div class="flex flex-wrap items-center justify-between gap-2 bg-slate-50/60 px-5 pb-3 text-xs">
+                                <span class="text-erp-mute">Automatic posting into a closed or locked period shows up on Posting Rules → Needs Attention.</span>
+                                @if ($year->status === 'open')
+                                    <button type="button" wire:click="closeYear({{ $year->id }})" wire:confirm="Close {{ $year->name }}? All periods are closed and the year's profit / loss is moved to Retained Earnings." class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 font-bold text-rose-700 hover:bg-rose-100">Close Fiscal Year</button>
+                                @elseif ($isSuperAdmin)
+                                    <button type="button" wire:click="reopenYear({{ $year->id }})" wire:confirm="Reopen {{ $year->name }}? The closing entry will be reversed." class="rounded-lg border border-erp-line bg-white px-3 py-1.5 font-bold text-erp-text hover:bg-slate-50">Reopen Fiscal Year</button>
+                                @endif
+                            </div>
                             <div class="grid gap-2 bg-slate-50/60 px-5 pb-5 sm:grid-cols-3 lg:grid-cols-4">
                                 @foreach ($year->periods as $period)
                                     @php $isNow = $period->start_date->toDateString() <= $today && $period->end_date->toDateString() >= $today; @endphp
@@ -54,6 +66,18 @@
                                             <span class="rounded-full px-2 py-0.5 text-[10px] font-bold {{ $statusColors[$period->status] ?? '' }}">{{ ucfirst($period->status) }}</span>
                                         </div>
                                         <div class="mt-1 text-sm font-bold text-erp-ink">{{ $period->start_date->format('F Y') }}</div>
+                                        @if ($year->status === 'open')
+                                            <div class="mt-2 flex gap-3 text-xs font-bold">
+                                                @if ($period->status === 'open')
+                                                    <button type="button" wire:click="changePeriod({{ $period->id }}, 'close')" wire:confirm="Close {{ $period->start_date->format('F Y') }}? No new entries can be posted to it." class="text-amber-700 hover:underline">Close</button>
+                                                @elseif ($period->status === 'closed')
+                                                    <button type="button" wire:click="changePeriod({{ $period->id }}, 'reopen')" class="text-emerald-700 hover:underline">Reopen</button>
+                                                    <button type="button" wire:click="changePeriod({{ $period->id }}, 'lock')" wire:confirm="Lock {{ $period->start_date->format('F Y') }}? Only the administrator can unlock it." class="text-rose-700 hover:underline">Lock</button>
+                                                @elseif ($period->status === 'locked' && $isSuperAdmin)
+                                                    <button type="button" wire:click="changePeriod({{ $period->id }}, 'unlock')" class="text-erp-mute hover:underline">Unlock</button>
+                                                @endif
+                                            </div>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>

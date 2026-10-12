@@ -152,4 +152,6 @@ return [
     'journal_entries' => 'قيود اليومية',
     'general_ledger' => 'دفتر الأستاذ العام',
     'posting_rules' => 'قواعد الترحيل',
+    'financial_statements' => 'القوائم المالية',
+    'opening_balances' => 'الأرصدة الافتتاحية',
 ];

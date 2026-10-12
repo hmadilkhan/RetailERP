@@ -162,5 +162,7 @@ return [
     'journal_entries' => 'Journal Entries',
     'general_ledger' => 'General Ledger',
     'posting_rules' => 'Posting Rules',
+    'financial_statements' => 'Financial Statements',
+    'opening_balances' => 'Opening Balances',
     
 ];

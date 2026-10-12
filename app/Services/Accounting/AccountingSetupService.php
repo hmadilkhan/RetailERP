@@ -28,6 +28,9 @@ class AccountingSetupService
         ['1140', 'Inventory', 'Asset', '1100', false, 'inventory'],
         ['1150', 'Advances to Vendors', 'Asset', '1100', false, 'vendor_advance'],
         ['1160', 'Input Tax (GST)', 'Asset', '1100', false, 'input_tax'],
+        ['1170', 'Employee Advances & Loans', 'Asset', '1100', false, 'employee_advances'],
+        // branch transfer: bhejne wali branch Cr Inventory / Dr yahan, lene wali Dr Inventory / Cr yahan — company pe 0
+        ['1180', 'Inter-branch Clearing', 'Asset', '1100', false, 'inter_branch'],
         ['1200', 'Fixed Assets', 'Asset', '1000', true, null],
         ['1210', 'Furniture & Fixtures', 'Asset', '1200', false, null],
         ['1220', 'Equipment & Computers', 'Asset', '1200', false, null],
@@ -44,6 +47,8 @@ class AccountingSetupService
         ['2160', 'Accrued Expenses', 'Liability', '2100', false, null],
         // automatic posting me source ke amounts ka farq (rounding / kharab data) yahan aata hai — warning ke saath
         ['2190', 'Suspense / Rounding', 'Liability', '2100', false, 'suspense'],
+        // manual cash / bank / vendor adjustments jin ka doosra account source me nahi — accountant JV se reclassify kare
+        ['2195', 'Adjustments Clearing', 'Liability', '2100', false, 'adjustments_clearing'],
         ['2200', 'Long-term Liabilities', 'Liability', '2000', true, null],
         ['2210', 'Loans Payable', 'Liability', '2200', false, 'loans_payable'],
 

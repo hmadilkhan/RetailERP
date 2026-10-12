@@ -30,6 +30,11 @@ class PostingService
         Posters\VendorPaymentPoster::class,
         Posters\StockOpeningPoster::class,
         Posters\StockAdjustmentPoster::class,
+        Posters\TransferPoster::class,
+        Posters\PayrollPoster::class,
+        Posters\CashBookPoster::class,
+        Posters\BankBookPoster::class,
+        Posters\VendorAdjustmentPoster::class,
     ];
 
     /** Is se kam farq suspense me chupchap jata hai; zyada ho to warning. */
@@ -111,6 +116,11 @@ class PostingService
             $documents = $poster->documents($companyId, $from, $to, $accounts);
             foreach ($documents as $doc) {
                 if ($doc->date < $from || $doc->date > $to) {
+                    continue;
+                }
+                if (isset($seen[$doc->ref])) {
+                    // poster ne ek ref do baar diya (source join ki ghalti) — dobara post nahi, warning
+                    $this->recordError($companyId, $type, $doc->ref, 'warning', 'Source returned this record twice; only the first was posted.');
                     continue;
                 }
                 $seen[$doc->ref] = true;
