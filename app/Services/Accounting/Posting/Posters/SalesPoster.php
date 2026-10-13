@@ -67,23 +67,31 @@ class SalesPoster implements Poster
         // branch IN (...) + date → sales_receipts ka (branch, date, status) index lagta hai
         $branches = implode(',', SourceQuery::branchIds($companyId));
 
-        // sales (status 4) aur web returns (status 14) — dono same columns
+        // sales (status 4) aur web returns (status 14) — dono same columns.
+        // actual_amount (gross) 2023 se pehle webservice likhta hi nahi tha (NULL) → net + discount − tax − charges
+        // (inclusive / exclusive dono me Sales ka credit yahi banta hai). Subdetails ki kuch receipts pe 2 rows → sirf aakhri.
         $rows = DB::select("
-            SELECT r.branch, r.date, r.payment_id, r.status,
-                SUM(r.actual_amount + 0) AS gross,
-                SUM(r.total_amount + 0) AS net,
-                SUM(COALESCE(s.discount_amount, 0)) AS discount,
-                SUM(COALESCE(s.sales_tax_amount, 0) + COALESCE(s.srb + 0, 0)) AS tax,
-                SUM(COALESCE(s.service_tax_amount, 0) + COALESCE(s.delivery_charges_amount, 0)) AS charges,
-                SUM(CASE WHEN (COALESCE(s.sales_tax_amount, 0) + COALESCE(s.srb + 0, 0)) > 0
-                          AND ABS((r.total_amount + 0) - ((r.actual_amount + 0) - COALESCE(s.discount_amount, 0)
-                                  + COALESCE(s.service_tax_amount, 0) + COALESCE(s.delivery_charges_amount, 0))) < 1
-                         THEN COALESCE(s.sales_tax_amount, 0) + COALESCE(s.srb + 0, 0) ELSE 0 END) AS inclusive_tax
-            FROM sales_receipts r
-            LEFT JOIN sales_account_subdetails s ON s.receipt_id = r.id
-            WHERE r.branch IN ({$branches}) AND r.date BETWEEN ? AND ?
-              AND ((r.status = 4 AND r.void_receipt = 0) OR (r.status = 14 AND r.is_sale_return = 1))
-            GROUP BY r.branch, r.date, r.payment_id, r.status", [$from, $to]);
+            SELECT branch, date, payment_id, status,
+                SUM(gross) AS gross, SUM(net) AS net, SUM(discount) AS discount, SUM(tax) AS tax, SUM(charges) AS charges,
+                SUM(CASE WHEN tax > 0 AND ABS(net - (gross - discount + charges)) < 1 THEN tax ELSE 0 END) AS inclusive_tax
+            FROM (
+                SELECT x.*, CASE WHEN COALESCE(x.recorded_gross, 0) > 0 THEN x.recorded_gross
+                                 ELSE x.net + x.discount - x.tax - x.charges END AS gross
+                FROM (
+                    SELECT r.branch, r.date, r.payment_id, r.status,
+                        r.actual_amount + 0 AS recorded_gross,
+                        r.total_amount + 0 AS net,
+                        COALESCE(s.discount_amount, 0) AS discount,
+                        COALESCE(s.sales_tax_amount, 0) + COALESCE(s.srb + 0, 0) AS tax,
+                        COALESCE(s.service_tax_amount, 0) + COALESCE(s.delivery_charges_amount, 0) AS charges
+                    FROM sales_receipts r
+                    LEFT JOIN sales_account_subdetails s
+                        ON s.id = (SELECT MAX(s2.id) FROM sales_account_subdetails s2 WHERE s2.receipt_id = r.id)
+                    WHERE r.branch IN ({$branches}) AND r.date BETWEEN ? AND ?
+                      AND ((r.status = 4 AND r.void_receipt = 0) OR (r.status = 14 AND r.is_sale_return = 1))
+                ) x
+            ) y
+            GROUP BY branch, date, payment_id, status", [$from, $to]);
 
         foreach ($rows as $row) {
             $d = $doc($row->branch, $row->date);
