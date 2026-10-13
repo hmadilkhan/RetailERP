@@ -326,7 +326,7 @@ class ValuationService
             SELECT r.branch, r.date, COALESCE(r.time, '00:00:00') AS time, r.status, d.item_code, d.total_qty
             FROM sales_receipts r
             JOIN sales_receipt_details d ON d.receipt_id = r.id
-            WHERE r.branch IN ({$in}) AND r.date BETWEEN ? AND ?
+            WHERE r.branch IN ({$in}) AND r.date BETWEEN ? AND ? AND r.date LIKE '____-__-__'
               AND ((r.status = 4 AND r.void_receipt = 0) OR (r.status = 14 AND r.is_sale_return = 1))", [$start, $to]);
 
         $out = [];

@@ -70,6 +70,7 @@ class SalesPoster implements Poster
         // sales (status 4) aur web returns (status 14) — dono same columns.
         // actual_amount (gross) 2023 se pehle webservice likhta hi nahi tha (NULL) → net + discount − tax − charges
         // (inclusive / exclusive dono me Sales ka credit yahi banta hai). Subdetails ki kuch receipts pe 2 rows → sirf aakhri.
+        // date varchar hai — '20221007' jaisi kharab row (poore DB me 1, junk) chhod do, warna 1970 ki entry banti.
         $rows = DB::select("
             SELECT branch, date, payment_id, status,
                 SUM(gross) AS gross, SUM(net) AS net, SUM(discount) AS discount, SUM(tax) AS tax, SUM(charges) AS charges,
@@ -87,7 +88,7 @@ class SalesPoster implements Poster
                     FROM sales_receipts r
                     LEFT JOIN sales_account_subdetails s
                         ON s.id = (SELECT MAX(s2.id) FROM sales_account_subdetails s2 WHERE s2.receipt_id = r.id)
-                    WHERE r.branch IN ({$branches}) AND r.date BETWEEN ? AND ?
+                    WHERE r.branch IN ({$branches}) AND r.date BETWEEN ? AND ? AND r.date LIKE '____-__-__'
                       AND ((r.status = 4 AND r.void_receipt = 0) OR (r.status = 14 AND r.is_sale_return = 1))
                 ) x
             ) y
