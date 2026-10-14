@@ -13,6 +13,7 @@ class AccountingSetting extends Model
         'enabled' => 'boolean',
         'enabled_at' => 'datetime',
         'posting_start_date' => 'date',
+        'customer_ledger_reversed' => 'boolean',
         'last_posted_at' => 'datetime',
     ];
 

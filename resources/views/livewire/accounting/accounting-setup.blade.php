@@ -72,6 +72,20 @@
                 </div>
                 <p class="self-end text-xs text-erp-mute">Sales, expenses, purchases and payments from this date are posted to the General Ledger every 15 minutes. Leave empty to turn off.</p>
             </div>
+            <div class="grid gap-4 border-t border-erp-line p-5 md:grid-cols-3">
+                <label class="flex items-start gap-3">
+                    <input type="checkbox" wire:model="customerLedgerReversed" class="mt-1 h-4 w-4 rounded border-erp-line">
+                    <span>
+                        <span class="{{ $labelClass }}">Customer ledger: Credit increases balance</span>
+                        <span class="mt-1 block text-xs text-erp-mute">Tick only if this company enters bills in the <b>Credit</b> box and payments in the <b>Debit</b> box of the customer manual adjustment (the customer ledger screen shows those columns swapped). Applies to customer opening balances and manual adjustments.</span>
+                        @error('customerLedgerReversed') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
+                    </span>
+                </label>
+                <div class="flex items-end">
+                    <button type="button" wire:click="saveCustomerLedgerSign" class="h-10 rounded-lg border border-erp-line bg-white px-5 text-sm font-bold text-erp-text transition hover:bg-slate-50">Save</button>
+                </div>
+                <p class="self-end text-xs text-erp-mute">After changing this, run Backfill again so older customer entries are reposted with the new sign.</p>
+            </div>
         @endif
 
         @if ($selected && $isOn)

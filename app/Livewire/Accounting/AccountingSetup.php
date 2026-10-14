@@ -18,6 +18,7 @@ class AccountingSetup extends Component
     public $companyId = '';
     public $startMonth = 7;
     public $postingStartDate = '';
+    public bool $customerLedgerReversed = false;
     public $backfillFrom = '';
     public ?array $backfillPlan = null;
     public ?array $backfillResult = null;
@@ -33,6 +34,7 @@ class AccountingSetup extends Component
         $setting = AccountingSetting::where('company_id', $this->companyId)->first();
         $this->startMonth = (int) ($setting->fiscal_year_start_month ?? 7);
         $this->postingStartDate = $setting && $setting->posting_start_date ? $setting->posting_start_date->toDateString() : '';
+        $this->customerLedgerReversed = (bool) ($setting->customer_ledger_reversed ?? false);
         $this->backfillPlan = $this->backfillResult = null;
         $this->backfillFrom = '';
     }
@@ -74,6 +76,25 @@ class AccountingSetup extends Component
         session()->flash('accounting_message', $this->postingStartDate
             ? 'Automatic posting starts from ' . $this->postingStartDate . '. Entries appear within 15 minutes.'
             : 'Automatic posting turned off.');
+    }
+
+    /**
+     * Customer ledger (customer_account) ka sign: kuch companies ledger screen ki ulti headings ke hisaab se
+     * bill credit me aur wasooli debit me likhti hain. Badalne ke baad purani entries Backfill dobara chalane se theek hoti hain.
+     */
+    public function saveCustomerLedgerSign(): void
+    {
+        abort_unless((int) session('roleId') === 1, 403);
+        $setting = AccountingSetting::where('company_id', $this->companyId)->where('enabled', true)->first();
+        if (!$setting) {
+            return;
+        }
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('accounting_settings', 'customer_ledger_reversed')) {
+            $this->addError('customerLedgerReversed', 'Run the migration first (customer_ledger_reversed column is missing).');
+            return;
+        }
+        $setting->update(['customer_ledger_reversed' => $this->customerLedgerReversed]);
+        session()->flash('accounting_message', 'Customer ledger sign saved. Run Backfill again to repost older customer adjustments.');
     }
 
     /** Phase 1.6: kya hoga — kuch save nahi */
