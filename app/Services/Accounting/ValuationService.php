@@ -21,7 +21,12 @@ use Illuminate\Support\Facades\DB;
  *   Guard    : cost > retail price × MAX_COST_TO_RETAIL ignore (bekaar data), placeholder qty (99,999+) ignore
  * Ek din me pehle IN phir OUT. Cost pata na ho to line "unvalued" (COGS 0) ginti hoti hai — Inventory Valuation screen pe.
  * Deals: aam product ki tarah — apni cost na ho to khud unvalued (inventory_general.is_deal bharosemand nahi: Wild ka
- * 'Shirt Cotton' is_deal = 1 hai magar 500 cost ke lots hain). Recipe wastage aur weight_qty (secondary unit) abhi nahi ginte.
+ * 'Shirt Cotton' is_deal = 1 hai magar 500 cost ke lots hain). Web deal ke components alag rows (mode 'deal-product',
+ * parent_item_code) me aayein to parent line chhod kar components ginte hain.
+ * weight_qty (1 primary = weight_qty secondary): recipe usage_qty secondary me hota hai → ÷ weight_qty. Sale qty almost
+ * hamesha primary me (2025-26: company 74 ki 34,088 me 178 lines secondary rate pe) — line ka rate × weight_qty ≈ retail ho
+ * (aur rate ≈ retail na ho) tab hi ÷ weight_qty.
+ * Wastage: alag record nahi hota (recipy_general.wastage hamesha 0) — wastage negative stock adjustment se aata hai (OUT).
  */
 class ValuationService
 {
@@ -323,11 +328,14 @@ class ValuationService
         $recipes = $this->recipes($in);
 
         $rows = DB::select("
-            SELECT r.branch, r.date, COALESCE(r.time, '00:00:00') AS time, r.status, d.item_code, d.total_qty
+            SELECT r.branch, r.date, COALESCE(r.time, '00:00:00') AS time, r.status, d.item_code, d.total_qty, (d.item_price + 0) AS rate
             FROM sales_receipts r
             JOIN sales_receipt_details d ON d.receipt_id = r.id
             WHERE r.branch IN ({$in}) AND r.date BETWEEN ? AND ? AND r.date LIKE '____-__-__'
-              AND ((r.status = 4 AND r.void_receipt = 0) OR (r.status = 14 AND r.is_sale_return = 1))", [$start, $to]);
+              AND ((r.status = 4 AND r.void_receipt = 0) OR (r.status = 14 AND r.is_sale_return = 1))
+              AND NOT EXISTS (SELECT 1 FROM sales_receipt_details c WHERE c.receipt_id = d.receipt_id
+                              AND c.parent_item_code = d.receipt_detail_id AND c.mode = 'deal-product')", [$start, $to]);
+        $weights = $this->weights($companyId);
 
         $out = [];
         foreach ($rows as $r) {
@@ -335,6 +343,12 @@ class ValuationService
             $qty = (float) $r->total_qty;
             if ($qty <= 0 || !$product) {
                 continue;
+            }
+            $w = $weights[$product] ?? 1.0;
+            $retail = $this->retail[$product] ?? 0;
+            if ($w > 1 && $retail > 0 && $r->rate > 0
+                && abs($r->rate * $w - $retail) <= 0.02 * $retail && abs($r->rate - $retail) > 0.02 * $retail) {
+                $qty /= $w; // secondary unit (e.g. gram) me bika — stock primary me
             }
             $components = $recipes[$product][(int) $r->branch] ?? $recipes[$product][0] ?? [[$product, 1.0, 0.0]];
 
@@ -348,17 +362,30 @@ class ValuationService
         return $out;
     }
 
-    /** product => [branch => [[ingredient, usage per unit, fallback unit cost]]] (0 = koi bhi branch) */
+    /** product => weight_qty (sirf > 1) */
+    private function weights(int $companyId): array
+    {
+        return DB::table('inventory_general')->where('company_id', $companyId)->whereRaw('(weight_qty + 0) > 1')
+            ->pluck('weight_qty', 'id')->map(fn ($w) => (float) $w)->all();
+    }
+
+    /**
+     * product => [branch => [[ingredient, usage per unit (primary), fallback unit cost (primary)]]] (0 = koi bhi branch).
+     * usage_qty ingredient ki secondary unit me (recipe form: cost = lot cost / weight_qty × usage) → ÷ weight_qty.
+     */
     private function recipes(string $in): array
     {
         $rows = DB::select("
-            SELECT g.product_id, g.branch_id, d.item_id, (d.usage_qty + 0) AS usage_qty, (d.cost + 0) AS cost
+            SELECT g.product_id, g.branch_id, d.item_id, (d.usage_qty + 0) AS usage_qty, (d.cost + 0) AS cost,
+                   CASE WHEN (i.weight_qty + 0) > 1 THEN (i.weight_qty + 0) ELSE 1 END AS w
             FROM recipy_general g JOIN recipy_details d ON d.recipy_id = g.recipy_id
+            LEFT JOIN inventory_general i ON i.id = d.item_id
             WHERE g.status_id = 1 AND g.branch_id IN ({$in}) AND (d.usage_qty + 0) > 0");
 
         $out = [];
         foreach ($rows as $r) {
-            $line = [(int) $r->item_id, (float) $r->usage_qty, $r->usage_qty > 0 ? $r->cost / $r->usage_qty : 0.0];
+            $usage = $r->usage_qty / $r->w;
+            $line = [(int) $r->item_id, (float) $usage, $usage > 0 ? $r->cost / $usage : 0.0];
             $out[(int) $r->product_id][(int) $r->branch_id][] = $line;
             $out[(int) $r->product_id][0] ??= [];
             if (count($out[(int) $r->product_id][0]) < count($out[(int) $r->product_id][(int) $r->branch_id])) {
