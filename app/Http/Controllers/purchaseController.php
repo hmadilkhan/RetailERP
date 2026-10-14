@@ -499,6 +499,9 @@ class purchaseController extends Controller
             'date' => date('Y-m-d H:s:i'),
 
         ];
+        // Phase 2.2: PO line ka batch / expiry lot tak (FEFO + Expiry Report)
+        $poLine = DB::table('purchase_item_details')->where('p_item_details_id', $request->item_details_id)->first(['batch_no', 'expiry_date']);
+        $stock += \Custom_Helper::lotExpiryFields($poLine->batch_no ?? null, $poLine->expiry_date ?? null);
 
 
 

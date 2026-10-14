@@ -5,6 +5,7 @@
 @section('page_subtitle', 'Review available inventory by branch, department, item code, product name, and stock health.')
 
 @section('content')
+    @include('partials.expiry-alert')
     @php
         $selectedBranchId = session('branch');
         $selectedBranch = collect($branches ?? [])->firstWhere('branch_id', $selectedBranchId) ?? collect($branches ?? [])->first();

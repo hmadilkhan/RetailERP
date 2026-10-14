@@ -107,6 +107,16 @@
                         @endif
                     </label>
 
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Batch No <span class="normal-case tracking-normal">(optional)</span></span>
+                        <input type="text" name="batch_no" maxlength="100" value="{{ old('batch_no') }}" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    </label>
+
+                    <label class="block">
+                        <span class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Expiry Date <span class="normal-case tracking-normal">(optional)</span></span>
+                        <input type="date" name="expiry_date" value="{{ old('expiry_date') }}" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    </label>
+
                     <input type="hidden" name="rp" id="rp" value="0">
                     <input type="hidden" name="wp" id="wp" value="0">
                     <input type="hidden" name="dp" id="dp" value="0">

@@ -235,7 +235,7 @@ class StockController extends Controller
     {
         if (!empty($branchId) && $branchId > 0 && !empty($itemCode) && $itemCode > 0) {
 
-            $result = DB::select('SELECT * FROM inventory_stock WHERE product_id = ? and branch_id = ? and status_id IN(1,3)', [$itemCode, $branchId]);
+            $result = DB::select('SELECT * FROM inventory_stock WHERE product_id = ? and branch_id = ? and status_id IN(1,3)' . \Custom_Helper::lotOrder(), [$itemCode, $branchId]);
             $updatedstock = 0;
 
             if (!empty($result)) {
@@ -249,7 +249,7 @@ class StockController extends Controller
                 }
 
                 for ($s = 0; $s < sizeof($result); $s++) {
-                    $value = DB::select("SELECT * FROM inventory_stock WHERE product_id = ? and branch_id = ? and status_id  IN(1,3)", [$itemCode, $branchId]);
+                    $value = DB::select("SELECT * FROM inventory_stock WHERE product_id = ? and branch_id = ? and status_id  IN(1,3)" . \Custom_Helper::lotOrder(), [$itemCode, $branchId]);
                     $updatedstock = ($updatedstock - $value[0]->balance);
 
                     if ($updatedstock > 0) {

@@ -407,7 +407,7 @@ function invent_stock_detection($branchId, $itemCode, $totalQty, $status)
 
         // $colum = "($receipt,$item_code,'$total_qty','$total_amount')";
 
-        $result = $GLOBALS['crud']->runQuery("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id IN(1,3) ");
+        $result = $GLOBALS['crud']->runQuery("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id IN(1,3) " . lot_order());
 
         $updatedstock = 0;
 
@@ -425,7 +425,7 @@ function invent_stock_detection($branchId, $itemCode, $totalQty, $status)
 
             for ($s = 0; $s < sizeof($result); $s++) {
 
-                $value = $GLOBALS['crud']->runQuery("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id  IN(1,3)");
+                $value = $GLOBALS['crud']->runQuery("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id  IN(1,3)" . lot_order());
                 $updatedstock = ($updatedstock - $value[0]["balance"]);
                 // return  $updatedstock;
 
@@ -470,6 +470,18 @@ function invent_stock_detection($branchId, $itemCode, $totalQty, $status)
     } else {
         return 0;
     }
+}
+
+// Lot deduction ki tarteeb (Phase 2.2): FEFO — expiry pehle wala lot pehle, bina expiry ke baad me, purane pehle.
+// expiry_date column na ho (migration se pehle) to sirf stock_id — pehle bhi bina ORDER BY yahi tarteeb aati thi.
+function lot_order()
+{
+    static $order = null;
+    if ($order === null) {
+        $col = $GLOBALS['crud']->runQuery("SHOW COLUMNS FROM inventory_stock LIKE 'expiry_date'");
+        $order = !empty($col) ? " ORDER BY (expiry_date IS NULL), expiry_date, stock_id" : " ORDER BY stock_id";
+    }
+    return $order;
 }
 
 // Branch pe negative stock ki permission (branch.allow_negative_stock = 1)

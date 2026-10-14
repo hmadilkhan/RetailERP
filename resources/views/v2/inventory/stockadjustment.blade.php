@@ -74,6 +74,16 @@
                         <input type="number" step="any" name="amount" id="amount" class="{{ $inputClass }}" placeholder="0.00">
                     </label>
 
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Batch No <span class="normal-case tracking-normal">(added stock, optional)</span></span>
+                        <input type="text" id="batch_no" maxlength="100" class="{{ $inputClass }}">
+                    </label>
+
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Expiry Date <span class="normal-case tracking-normal">(added stock, optional)</span></span>
+                        <input type="date" id="expiry_date" class="{{ $inputClass }}">
+                    </label>
+
                     <label class="block sm:col-span-2">
                         <span class="{{ $labelClass }}">Reason</span>
                         <textarea name="reason" id="reason" rows="3" class="mt-2 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" placeholder="e.g. Damaged in transit, found during stock count"></textarea>
@@ -463,7 +473,9 @@
                     cp: $('#hiddenamount').val(),
                     amount: Number(primaryCost.toFixed(4)),
                     narration: $('#reason').val(),
-                    branch: $('#branch').val()
+                    branch: $('#branch').val(),
+                    batch_no: $('#batch_no').val(),
+                    expiry_date: $('#expiry_date').val()
                 }).done(onSaved).fail(onFailed);
             }
 

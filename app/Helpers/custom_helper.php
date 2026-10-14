@@ -7,6 +7,42 @@ use URL,File;
 
 class custom_helper
 {
+    private static ?bool $lotExpiry = null;
+
+    /** inventory_stock me batch / expiry columns hain? (Phase 2.2 migration se pehle deploy pe purana behaviour) */
+    public static function hasLotExpiry(): bool
+    {
+        return self::$lotExpiry ??= \Illuminate\Support\Facades\Schema::hasColumn('inventory_stock', 'expiry_date');
+    }
+
+    /**
+     * Lot-wise stock deduction ki tarteeb: FEFO — jis lot ki expiry pehle, wo pehle; bina expiry ke lots baad me,
+     * purane pehle (stock_id). Column na ho to sirf stock_id (pehle bhi bina ORDER BY yahi tarteeb aati thi).
+     */
+    public static function lotOrder(string $alias = ''): string
+    {
+        $p = $alias ? $alias . '.' : '';
+        return self::hasLotExpiry()
+            ? " ORDER BY ({$p}expiry_date IS NULL), {$p}expiry_date, {$p}stock_id"
+            : " ORDER BY {$p}stock_id";
+    }
+
+    /** naye lot ke liye batch / expiry fields — sirf jab column ho aur value di gayi ho */
+    public static function lotExpiryFields($batchNo, $expiryDate): array
+    {
+        if (!self::hasLotExpiry()) {
+            return [];
+        }
+        $fields = [];
+        if (trim((string) $batchNo) !== '') {
+            $fields['batch_no'] = mb_substr(trim((string) $batchNo), 0, 100);
+        }
+        $date = trim((string) $expiryDate);
+        if ($date !== '' && $date !== '0000-00-00' && strtotime($date)) {
+            $fields['expiry_date'] = date('Y-m-d', strtotime($date));
+        }
+        return $fields;
+    }
 
     public static function getComissionSalesTotalAmount($commision, $from, $to, $provider_id)
     {

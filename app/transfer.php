@@ -187,7 +187,7 @@ WHERE a.DC_id = ?', [$dcid]);
 	{
 		$branchid = $branchid ?: session('branch');
 		$result = DB::select('SELECT * from inventory_stock
-		WHERE status_id = 1 AND branch_id = ? AND product_id = ?', [$branchid, $productid]);
+		WHERE status_id = 1 AND branch_id = ? AND product_id = ?' . \Custom_Helper::lotOrder(), [$branchid, $productid]);
 		return $result;
 	}
 

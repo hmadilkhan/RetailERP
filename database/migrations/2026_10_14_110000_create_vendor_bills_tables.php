@@ -53,6 +53,8 @@ return new class extends Migration
                 $table->decimal('tax_amount', 18, 2)->default(0);
                 $table->decimal('amount', 18, 2)->default(0);         // qty × unit price − discount (tax ke baghair)
                 $table->decimal('landed_cost', 18, 4)->default(0);    // per unit: (amount + charges ka hissa) / qty
+                $table->string('batch_no', 100)->nullable();          // Phase 2.2 — lot tak jata hai
+                $table->date('expiry_date')->nullable();
                 $table->unsignedBigInteger('stock_id')->nullable();   // inventory_stock lot
                 $table->timestamps();
             });

@@ -14,6 +14,7 @@ return [
     'view_transfer_order' => 'عرض أمر التحويل',
     'view_delivery_challan' => 'عرض مذكرة التسليم',
     'stock_details' => 'تفاصيل المخزون',
+    'expiry_report' => 'تقرير انتهاء الصلاحية',
     'pos_sales_receipts' => 'إيصالات مبيعات نقاط البيع',
     'accounts_section' => 'قسم الحسابات',
     'accounts_operations' => 'عمليات الحسابات',

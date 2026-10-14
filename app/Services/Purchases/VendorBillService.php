@@ -101,7 +101,7 @@ class VendorBillService
                     'status_id' => 1,
                     'branch_id' => $bill->branch_id,
                     'date' => $bill->bill_date->toDateString(),
-                ]);
+                ] + \Custom_Helper::lotExpiryFields($line->batch_no, $line->expiry_date));
                 $line->update(['stock_id' => $stockId]);
                 $this->stockReport((int) $line->product_id, $stockId, (int) $bill->branch_id, (float) $line->qty, (float) $line->landed_cost,
                     $prices->retail_price ?? '0.00', self::STOCK_IN . $label, '1', $when);
@@ -360,6 +360,7 @@ class VendorBillService
             if ($amount < 0) {
                 throw new RuntimeException('Discount cannot be more than the line amount.');
             }
+            $lot = \Custom_Helper::lotExpiryFields($row['batch_no'] ?? null, $row['expiry_date'] ?? null);
             $lines[] = [
                 'product_id' => $product,
                 'qty' => $qty,
@@ -368,6 +369,8 @@ class VendorBillService
                 'tax_rate' => $rate,
                 'tax_amount' => round($amount * $rate / 100, 2),
                 'amount' => $amount,
+                'batch_no' => $lot['batch_no'] ?? null,
+                'expiry_date' => $lot['expiry_date'] ?? null,
             ];
         }
 

@@ -115,7 +115,7 @@ class GenerateDailyUsageCommand extends Command
                 return 0;
             }
 
-            $result = DB::select("SELECT * FROM inventory_stock WHERE product_id = ? and branch_id = ? and status_id IN(1,3)", [$itemCode, $branchId]);
+            $result = DB::select("SELECT * FROM inventory_stock WHERE product_id = ? and branch_id = ? and status_id IN(1,3)" . \Custom_Helper::lotOrder(), [$itemCode, $branchId]);
 
             if (empty($result)) {
                 return 0;
@@ -135,7 +135,7 @@ class GenerateDailyUsageCommand extends Command
             }
 
             for ($s = 0; $s < count($result); $s++) {
-                $value = DB::select("SELECT * FROM inventory_stock WHERE product_id = ? and branch_id = ? and status_id IN(1,3) LIMIT 1", [$itemCode, $branchId]);
+                $value = DB::select("SELECT * FROM inventory_stock WHERE product_id = ? and branch_id = ? and status_id IN(1,3)" . \Custom_Helper::lotOrder() . " LIMIT 1", [$itemCode, $branchId]);
                 
                 if (empty($value)) {
                     break;

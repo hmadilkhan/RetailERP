@@ -419,13 +419,13 @@ class joborder extends Model
 
     public function invent_stock_detection($branchId,$itemCode,$totalQty){
 
-        $result = DB::select("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id = 1");
+        $result = DB::select("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id = 1" . \Custom_Helper::lotOrder());
         if(!empty($result)){
             $updatedstock = $totalQty;
 
             for($s=0;$s < sizeof($result); $s++) {
 
-                $value = DB::select("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id = 1");
+                $value = DB::select("SELECT * FROM inventory_stock WHERE product_id = $itemCode and branch_id = $branchId and status_id = 1" . \Custom_Helper::lotOrder());
                 $updatedstock = ($updatedstock - $value[0]->balance);
 
                 if ($updatedstock > 0) {

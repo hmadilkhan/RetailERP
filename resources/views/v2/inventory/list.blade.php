@@ -5,6 +5,7 @@
 @section('page_subtitle', 'Manage products, prices, stock visibility, website links, vendors, tags, barcodes, and catalogue exports.')
 
 @section('content')
+    @include('partials.expiry-alert')
     @php
         $query = request()->query();
         $selectedIds = [];

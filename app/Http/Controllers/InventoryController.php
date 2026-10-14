@@ -1699,7 +1699,7 @@ class InventoryController extends Controller
                 'balance' => $request->qty,
                 'status_id' => 1,
                 'branch_id' =>  $request->branch,
-            ];
+            ] + \Custom_Helper::lotExpiryFields($request->batch_no, $request->expiry_date); // Phase 2.2
 
             $stock_id = DB::table('purchase_rec_stock_opening')->insertGetId($fields);
             $lastStock = $stock->getLastStock($request->product);
@@ -2488,7 +2488,7 @@ class InventoryController extends Controller
             'balance' => $request->qty,
             'status_id' => 1,
             'branch_id' => $branchId,
-        ];
+        ] + \Custom_Helper::lotExpiryFields($request->batch_no, $request->expiry_date); // Phase 2.2
         // return $items;
         //        //insert stock table
         $stockadd = $inventory->insertgeneral('inventory_stock', $items);

@@ -91,6 +91,8 @@
                                 <th class="w-32 py-2 pr-3">Unit Price</th>
                                 <th class="w-28 py-2 pr-3">Discount (Rs)</th>
                                 <th class="w-36 py-2 pr-3">Tax</th>
+                                <th class="w-32 py-2 pr-3">Batch</th>
+                                <th class="w-36 py-2 pr-3">Expiry</th>
                                 <th class="w-32 py-2 pr-3 text-right">Amount</th>
                                 <th class="w-10"></th>
                             </tr>
@@ -114,13 +116,15 @@
                                             @endforeach
                                         </select>
                                     </td>
+                                    <td class="py-2 pr-3"><input type="text" maxlength="100" wire:model="lines.{{ $i }}.batch_no" class="{{ $cellInput }}"></td>
+                                    <td class="py-2 pr-3"><input type="date" wire:model="lines.{{ $i }}.expiry_date" class="{{ $cellInput }}"></td>
                                     <td class="py-2 pr-3 text-right tabular-nums">{{ $money($lineAmount + $lineTax) }}</td>
                                     <td class="py-2 text-right">
                                         <button type="button" wire:click="removeLine({{ $i }})" class="text-rose-600 hover:text-rose-800" title="Remove">&times;</button>
                                     </td>
                                 </tr>
                             @empty
-                                <tr><td colspan="7" class="py-6 text-center text-sm text-erp-mute">Search above and add the items on the vendor's bill.</td></tr>
+                                <tr><td colspan="9" class="py-6 text-center text-sm text-erp-mute">Search above and add the items on the vendor's bill.</td></tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -299,7 +303,12 @@
                     <tbody>
                         @foreach ($viewing->lines as $line)
                             <tr class="border-b border-erp-line">
-                                <td class="py-2 pr-3">{{ $line->product_id ? ($productNames[$line->product_id] ?? '#' . $line->product_id) : $line->description }}</td>
+                                <td class="py-2 pr-3">
+                                    {{ $line->product_id ? ($productNames[$line->product_id] ?? '#' . $line->product_id) : $line->description }}
+                                    @if ($line->batch_no || $line->expiry_date)
+                                        <span class="block text-xs text-erp-mute">@if ($line->batch_no)Batch {{ $line->batch_no }}@endif @if ($line->expiry_date)· Exp {{ \Illuminate\Support\Carbon::parse($line->expiry_date)->format('d M Y') }}@endif</span>
+                                    @endif
+                                </td>
                                 <td class="py-2 pr-3 text-right tabular-nums">{{ $qty($line->qty) }}</td>
                                 <td class="py-2 pr-3 text-right tabular-nums">{{ $money($line->unit_price) }}</td>
                                 <td class="py-2 pr-3 text-right tabular-nums">{{ $money($line->discount) }}</td>

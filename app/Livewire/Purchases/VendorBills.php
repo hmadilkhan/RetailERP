@@ -95,6 +95,8 @@ class VendorBills extends Component
                 'unit_price' => (string) (float) $line->unit_price,
                 'discount' => (float) $line->discount ? (string) (float) $line->discount : '',
                 'tax_rate' => (float) $line->tax_rate ? (string) (float) $line->tax_rate : '',
+                'batch_no' => (string) $line->batch_no,
+                'expiry_date' => $line->expiry_date ? substr((string) $line->expiry_date, 0, 10) : '',
             ];
         }
         $this->showForm = true;
@@ -123,6 +125,8 @@ class VendorBills extends Component
             'unit_price' => $cost ? (string) (float) $cost : '',
             'discount' => '',
             'tax_rate' => '',
+            'batch_no' => '',
+            'expiry_date' => '',
         ];
         $this->productSearch = '';
     }
