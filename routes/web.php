@@ -547,6 +547,8 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::post('/DeletePO', [purchaseController::class, 'DeletePurchaseOrder']);
     // Route::get('/exportPDF', 'purchaseController::class,exportpDF');
     Route::get('/purchasereport/{id}', [purchaseController::class, 'purchasereport']);
+    // Phase 2.1: Vendor Bills (purchase invoice, debit / credit note, payment)
+    Route::get('/vendor-bills', \App\Livewire\Purchases\VendorBills::class)->name('vendor-bills')->middleware('auth');
 
 
 

@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  *   manual adjustment screen — debit (payable kam)             → Dr Accounts Payable / Cr Adjustments Clearing
  *   manual adjustment screen — credit (payable zyada)          → Dr Adjustments Clearing / Cr Accounts Payable
  * Chhodi jati hain: vendor_payment_details wali rows (VendorPaymentPoster), "PO receipt adjustment" (GRN / return
- * GL me pehle se GrnPoster / PurchaseReturnPoster se aate hain).
+ * GL me pehle se GrnPoster / PurchaseReturnPoster se aate hain), "Vendor Bill / Debit Note / Credit Note …" (VendorBillPoster).
  * Tareekh: opening balance created_at DB default (UTC); manual adjustment created_at PHP likhta hai (user ki date, Pakistan).
  */
 class VendorAdjustmentPoster implements Poster
@@ -39,6 +39,8 @@ class VendorAdjustmentPoster implements Poster
             JOIN vendors v ON v.id = vl.vendor_id
             WHERE v.user_id = ? AND (vl.po_no = 0 OR vl.po_no IS NULL)
               AND COALESCE(vl.narration, '') NOT LIKE 'PO receipt adjustment%'
+              AND COALESCE(vl.narration, '') NOT LIKE 'Vendor Bill %' AND COALESCE(vl.narration, '') NOT LIKE 'Debit Note %'
+              AND COALESCE(vl.narration, '') NOT LIKE 'Credit Note %'
               AND NOT EXISTS (SELECT 1 FROM vendor_payment_details vpd WHERE vpd.account_id = vl.vendor_account_id)
               AND {$dateSql} BETWEEN ? AND ?", [$companyId, $from, $to]);
 

@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
  *   izafa (adjustment_mode '1')  → Dr Inventory,             Cr Inventory Gain / Loss
  * Source: inventory_stock_report_table narration '(Stock Adjustment)%'. Sign adjustment_mode se (purani rows me qty
  * positive bhi hai). Cost = lot ki cost_price (foreign_id = stock_id), warna report ki cost.
+ * Vendor Bill / Debit Note ke stock rows ("(Stock Adjustment) Vendor Bill …" / "… Debit Note …") yahan NAHI — VendorBillPoster.
  * POS void restock ('Stock Return', sale price pe) yahan NAHI — void sale SalesPoster me pehle se shamil hi nahi hoti.
  * Note: kuch users naya maal positive adjustment se daalte hain — wo yahan "gain" ban kar aata hai.
  */
@@ -41,6 +42,7 @@ class StockAdjustmentPoster implements Poster
             FROM inventory_stock_report_table r
             LEFT JOIN inventory_stock s ON s.stock_id = r.foreign_id
             WHERE r.stock_report_id >= ? AND r.narration LIKE '(Stock Adjustment)%'
+              AND r.narration NOT LIKE '(Stock Adjustment) Vendor Bill %' AND r.narration NOT LIKE '(Stock Adjustment) Debit Note %'
               AND r.branch_id IN ({$branches}) AND DATE(r.date) BETWEEN ? AND ?
             GROUP BY r.branch_id, DATE(r.date)", [$floor, $from, $to]);
 

@@ -31,6 +31,7 @@ return [
     'vendor' => 'Vendor',
     'tax_rules' => 'Tax Rules',
     'purchase_order' => 'Purchase Order',
+    'vendor_bills' => 'Vendor Bills',
     'inventory' => 'Inventory',
     'inventory_details' => 'Inventory Details',
     'inventory_department' => 'Inventory Department',

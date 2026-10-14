@@ -37,6 +37,7 @@ class PostingService
         Posters\BankBookPoster::class,
         Posters\VendorAdjustmentPoster::class,
         Posters\CustomerAdjustmentPoster::class,
+        Posters\VendorBillPoster::class,
     ];
 
     /** Is se kam farq suspense me chupchap jata hai; zyada ho to warning. */

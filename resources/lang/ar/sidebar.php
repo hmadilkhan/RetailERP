@@ -30,6 +30,7 @@ return [
     'vendor' => 'المورد',
     'tax_rules' => 'قواعد الضرائب',
     'purchase_order' => 'أمر الشراء',
+    'vendor_bills' => 'فواتير الموردين',
     'inventory' => 'المخزون',
     'inventory_details' => 'تفاصيل المخزون',
     'inventory_department' => 'قسم المخزون',

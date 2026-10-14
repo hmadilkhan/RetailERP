@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Services\Accounting\Posting\Posters;
+
+use App\Services\Accounting\Posting\AccountResolver;
+use App\Services\Accounting\Posting\Poster;
+use App\Services\Accounting\Posting\PostingDocument;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\DB;
+
+/**
+ * Phase 2.1 vendor_bills (posted) — har document ki entry (ref id):
+ *   Vendor Bill  : Dr Inventory (subtotal − discount + other charges), Dr Input Tax / Cr Accounts Payable
+ *   Debit Note   : Dr Accounts Payable / Cr Inventory (amount), Cr Input Tax          (maal wapas)
+ *   Credit Note  : Dr Accounts Payable / Cr Purchase Discounts & Rebates             (vendor ka rebate)
+ * Cancel (status cancelled) → document gayab → engine purani entry reverse karta hai.
+ * Stock report rows ("(Stock Adjustment) Vendor Bill / Debit Note …") StockAdjustmentPoster nahi uthata, aur
+ * vendor_ledger ki "Vendor Bill / Debit Note / Credit Note …" rows VendorAdjustmentPoster nahi — warna double.
+ * Payment VendorPaymentPoster se (vendor_payment_details link).
+ */
+class VendorBillPoster implements Poster
+{
+    public function sourceType(): string
+    {
+        return 'vendor_bill';
+    }
+
+    public function label(): string
+    {
+        return 'Vendor Bills & Notes';
+    }
+
+    public function documents(int $companyId, string $from, string $to, AccountResolver $accounts): iterable
+    {
+        try {
+            $rows = DB::table('vendor_bills as b')->join('vendors as v', 'v.id', '=', 'b.vendor_id')
+                ->leftJoin('vendor_bills as a', 'a.id', '=', 'b.against_bill_id')
+                ->where('b.company_id', $companyId)->where('b.status', 'posted')
+                ->whereBetween('b.bill_date', [$from, $to])
+                ->get(['b.id', 'b.type', 'b.doc_no', 'b.vendor_ref', 'b.bill_date', 'b.branch_id', 'b.subtotal', 'b.discount',
+                    'b.tax_amount', 'b.other_charges', 'b.total', 'v.vendor_name', 'a.doc_no as against_doc']);
+        } catch (QueryException $e) {
+            return []; // migration se pehle deploy — table hi nahi (to koi purani entry bhi nahi)
+        }
+
+        foreach ($rows as $row) {
+            $date = substr((string) $row->bill_date, 0, 10);
+            $goods = round((float) $row->subtotal - (float) $row->discount, 2);
+            $narration = match ($row->type) {
+                'debit_note' => 'Debit Note ' . $row->doc_no . ' — ' . $row->vendor_name . ' (against ' . $row->against_doc . ')',
+                'credit_note' => 'Credit Note ' . $row->doc_no . ' — ' . $row->vendor_name . ' (against ' . $row->against_doc . ')',
+                default => 'Vendor Bill ' . $row->doc_no . ' — ' . $row->vendor_name . ($row->vendor_ref ? ' (Bill# ' . $row->vendor_ref . ')' : ''),
+            };
+            $doc = new PostingDocument((string) $row->id, $date, $row->branch_id ? (int) $row->branch_id : null, $narration, (int) $row->id);
+
+            if ($row->type === 'bill') {
+                $doc->debit('inventory', $goods + (float) $row->other_charges)
+                    ->debit('input_tax', $row->tax_amount)
+                    ->credit('accounts_payable', $row->total);
+            } elseif ($row->type === 'debit_note') {
+                $doc->debit('accounts_payable', $row->total)
+                    ->credit('inventory', $goods)
+                    ->credit('input_tax', $row->tax_amount);
+            } else {
+                $doc->debit('accounts_payable', $row->total)->credit('purchase_discounts', $row->total);
+            }
+            yield $doc;
+        }
+    }
+}

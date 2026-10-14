@@ -67,6 +67,8 @@ class AccountingSetupService
         ['5000', 'Cost of Sales', 'Expense', null, true, null],
         ['5100', 'Cost of Goods Sold', 'Expense', '5000', false, 'cogs'],
         ['5200', 'Inventory Gain / Loss', 'Expense', '5000', false, 'inventory_adjustment'],
+        // vendor ka credit note (rebate / qeemat ki kami, maal nahi) — Cost of Sales kam karta hai
+        ['5300', 'Purchase Discounts & Rebates', 'Expense', '5000', false, 'purchase_discounts'],
 
         ['6000', 'Operating Expenses', 'Expense', null, true, null],
         ['6100', 'Salaries & Wages', 'Expense', '6000', false, 'salary_expense'],
