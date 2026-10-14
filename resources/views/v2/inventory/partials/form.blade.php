@@ -522,12 +522,17 @@
                 });
             });
 
+            // 2 decimals (fields step 0.01), whole number nahi
+            function round2(value) {
+                return Math.round((value + Number.EPSILON) * 100) / 100;
+            }
+
             function calculateTaxFromRate() {
                 var ap = parseFloat($('#ap').val()) || 0;
                 var rate = parseFloat($('#taxrate').val()) || 0;
-                var taxAmount = ap * (rate / 100);
-                $('#taxamount').val(Math.round(taxAmount));
-                $('#rp').val(Math.round(ap + taxAmount));
+                var taxAmount = round2(ap * (rate / 100));
+                $('#taxamount').val(taxAmount);
+                $('#rp').val(round2(ap + taxAmount));
             }
 
             $('#ap, #taxrate').on('change input', calculateTaxFromRate);
@@ -535,7 +540,7 @@
                 var ap = parseFloat($('#ap').val()) || 0;
                 var taxAmount = parseFloat($('#taxamount').val()) || 0;
                 $('#taxrate').val(ap ? ((taxAmount / ap) * 100).toFixed(2) : 0);
-                $('#rp').val(Math.round(ap + taxAmount));
+                $('#rp').val(round2(ap + taxAmount));
             });
 
             $('#showProductWebsite').on('change', function () {
