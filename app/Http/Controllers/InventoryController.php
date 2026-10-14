@@ -2262,8 +2262,22 @@ class InventoryController extends Controller
 
     public function stockadjustment_show(inventory $inventory, request $request, stock $stock)
     {
-        $branches = $stock->getBranches();
-        return view('v2.inventory.stockadjustment', compact('branches'));
+        // Band branch me adjustment nahi (getBranches reports me bhi chalta hai, isliye filter sirf yahan)
+        $branches = $stock->getBranches()->where('status_id', 1)->values();
+        $departments = $inventory->department();
+        return view('v2.inventory.stockadjustment', compact('branches', 'departments'));
+    }
+
+    // Stock Adjustment: department chunne pe uske active sub-departments (sirf apni company ke)
+    public function stockAdjustmentSubDepartments(Request $request)
+    {
+        return DB::table('inventory_sub_department as s')
+            ->join('inventory_department as d', 'd.department_id', '=', 's.department_id')
+            ->where('d.company_id', session('company_id'))
+            ->where('s.department_id', (int) $request->department)
+            ->where('s.status', 1)
+            ->orderBy('s.sub_depart_name')
+            ->get(['s.sub_department_id', 's.sub_depart_name']);
     }
 
     // Packing UOM (stock Unit Measure me, Carton sirf entry/display) aur purana conversion (weight_qty > 1) ek product pe saath nahi chal sakte
@@ -2420,6 +2434,19 @@ class InventoryController extends Controller
 
     function creategrnadjustmnet(Request $request, inventory $inventory, Purchase $purchase, stock $stock)
     {
+        // Ek hi branch: lot, stock report aur POS sync teeno me (pehle report row session branch me ja rahi thi)
+        $canSelectBranch = session('roleId') == 17 || session('roleId') == 2;
+        $branchId = ($canSelectBranch && !empty($request->branch)) ? $request->branch : session('branch');
+
+        $branchActive = DB::table('branch')
+            ->where('branch_id', $branchId)
+            ->where('company_id', session('company_id'))
+            ->where('status_id', 1)
+            ->exists();
+        if (!$branchActive) {
+            return response()->json(['message' => 'Selected branch is inactive. Please reload the page and select an active branch.'], 422);
+        }
+
         //grn ban rahi ha
         $grn = $purchase->getGrn();
         $grn = $grn + 1;
@@ -2460,7 +2487,7 @@ class InventoryController extends Controller
             'qty' => $request->qty,
             'balance' => $request->qty,
             'status_id' => 1,
-            'branch_id' => ((session('roleId') == 17 or session('roleId') == 2) ? $request->branch : session('branch')),
+            'branch_id' => $branchId,
         ];
         // return $items;
         //        //insert stock table
@@ -2476,7 +2503,7 @@ class InventoryController extends Controller
             'date' => date('Y-m-d H:s:i'),
             'product_id' => $request->productid,
             'foreign_id' => $stockadd,
-            'branch_id' => ((session('roleId') == 17 or session('roleId') == 12) ? $request->branch : session('branch')),
+            'branch_id' => $branchId,
             'qty' => $request->qty,
             'stock' => $stk,
             'cost' => $request->amount,
@@ -2488,10 +2515,10 @@ class InventoryController extends Controller
         $result = $inventory->insertgeneral('inventory_stock_report_table', $items);
         $inventory = DB::table("inventory_general")->where("id", $request->productid)->get();
 
-        $terminals = DB::table("terminal_details")->where("branch_id", session("branch"))->where("status_id", 1)->get();
+        $terminals = DB::table("terminal_details")->where("branch_id", $branchId)->where("status_id", 1)->get();
         foreach ($terminals as $value) {
             $items = [
-                "branchId" => session("branch"),
+                "branchId" => $branchId,
                 "terminalId" => $value->terminal_id,
                 "productId" => $request->productid,
                 "status" => 1,
@@ -2991,7 +3018,7 @@ class InventoryController extends Controller
     public function get_product_names(Request $request, inventory $inventory)
     {
 
-        $result = $inventory->searchProductByNameAndItemCode($request->q);
+        $result = $inventory->searchProductByNameAndItemCode($request->q, $request->department, $request->sub_department);
 
         if ($result) {
             return response()->json(array('items' => $result));

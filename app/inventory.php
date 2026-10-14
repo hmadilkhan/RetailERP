@@ -15,12 +15,19 @@ class inventory extends Model
     //     return $this->hasMany("App\InventoryDealGeneral","inventory_deal_id","id");
     // }
 
-    public function searchProductByNameAndItemCode($search)
+    // $departmentId / $subDepartmentId optional — sirf Stock Adjustment bhejta hai, baaki screens pe pehle jaisa
+    public function searchProductByNameAndItemCode($search, $departmentId = null, $subDepartmentId = null)
     {
         $query = DB::table('inventory_general as invent')
             ->where("company_id", session("company_id"))
             ->where("status", 1)
             ->select("invent.product_name", "invent.id", "invent.item_code");
+        if (!empty($departmentId)) {
+            $query->where('invent.department_id', (int) $departmentId);
+        }
+        if (!empty($subDepartmentId)) {
+            $query->where('invent.sub_department_id', (int) $subDepartmentId);
+        }
         if (is_numeric($search)) {
             $query->where('invent.item_code', 'like', '%' . $search . '%');
         } else {

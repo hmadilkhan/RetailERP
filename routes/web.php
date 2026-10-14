@@ -596,6 +596,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/get-inactive-inventory-by-search', [InventoryController::class, 'getInactiveInventoryBySearch']);
     Route::get('/get-inventory-by-subdepartment', [InventoryController::class, 'getproducts']);
     Route::get('/stockadjustment', [InventoryController::class, 'stockadjustment_show']);
+    Route::get('/stockadjustment/sub-departments', [InventoryController::class, 'stockAdjustmentSubDepartments']);
     Route::get('/getstock_value', [InventoryController::class, 'getstock_value']);
     Route::get('/getgrns', [InventoryController::class, 'getgrns']);
     Route::post('/updatestockadjustment', [InventoryController::class, 'update_stockadjustment']);

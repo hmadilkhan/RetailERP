@@ -37,6 +37,23 @@
                         </label>
                     @endif
 
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Department</span>
+                        <select id="department" data-placeholder="All Departments" class="v2-select2 {{ $inputClass }}">
+                            <option value="">All Departments</option>
+                            @foreach ($departments as $department)
+                                <option value="{{ $department->department_id }}">{{ $department->department_name }}</option>
+                            @endforeach
+                        </select>
+                    </label>
+
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Sub Department</span>
+                        <select id="subDepartment" data-placeholder="All Sub Departments" class="v2-select2 {{ $inputClass }}" disabled>
+                            <option value="">All Sub Departments</option>
+                        </select>
+                    </label>
+
                     <label class="block {{ $canSelectBranch ? '' : 'sm:col-span-2' }}">
                         <span class="{{ $labelClass }}">Product</span>
                         <select id="product" class="v2-select2 {{ $inputClass }}"></select>
@@ -151,23 +168,69 @@
                 return canSelectBranch && !$('#branch').val();
             }
 
-            $('#product').select2({
-                ajax: {
-                    url: '{{ route('search-inventory') }}',
-                    dataType: 'json',
-                    processResults: function (data) {
-                        return {
-                            results: $.map(data.items, function (item) {
-                                return { text: item.product_name + ' | ' + item.item_code, id: item.id };
-                            })
-                        };
+            // Department / sub-department chuna ho to product list bina type kiye khul jaye
+            function initProductSelect() {
+                if ($('#product').hasClass('select2-hidden-accessible')) {
+                    $('#product').select2('destroy');
+                }
+                const filtered = !!$('#department').val();
+                $('#product').select2({
+                    ajax: {
+                        url: '{{ route('search-inventory') }}',
+                        dataType: 'json',
+                        delay: 250,
+                        data: function (params) {
+                            return {
+                                q: params.term || '',
+                                department: $('#department').val() || '',
+                                sub_department: $('#subDepartment').val() || ''
+                            };
+                        },
+                        processResults: function (data) {
+                            return {
+                                results: $.map((data && data.items) || [], function (item) {
+                                    return { text: item.product_name + ' | ' + item.item_code, id: item.id };
+                                })
+                            };
+                        }
+                    },
+                    placeholder: filtered ? 'Select a product' : 'Search for a product',
+                    minimumInputLength: filtered ? 0 : 1,
+                    dropdownCssClass: 'v2-select2-dropdown',
+                    width: '100%'
+                });
+            }
+            initProductSelect();
+
+            function resetProduct() {
+                $('#product').val(null).trigger('change.select2');
+                uomLevels = [];
+                $('#qtyUom').empty().addClass('hidden');
+                $('#hiddenamount').val(0);
+                $('#stock').val('');
+                $('#stockText').text('—');
+                $('#stockBreakdown').text('');
+                $('#stockHint').text('Select a product to see its current stock.');
+                resetGrns();
+            }
+
+            function loadSubDepartments(departmentId) {
+                const $sub = $('#subDepartment');
+                $sub.html('<option value="">All Sub Departments</option>').val('').prop('disabled', true).trigger('change.select2');
+                if (!departmentId) {
+                    return;
+                }
+                $.get('{{ url('/stockadjustment/sub-departments') }}', { department: departmentId }, function (rows) {
+                    // Jawab aane tak department badal gaya ho to purana jawab chhod do
+                    if (String($('#department').val()) !== String(departmentId)) {
+                        return;
                     }
-                },
-                placeholder: 'Search for a product',
-                minimumInputLength: 1,
-                dropdownCssClass: 'v2-select2-dropdown',
-                width: '100%'
-            });
+                    (rows || []).forEach(function (row) {
+                        $sub.append($('<option>').val(row.sub_department_id).text(row.sub_depart_name));
+                    });
+                    $sub.prop('disabled', false).trigger('change.select2');
+                });
+            }
 
             function resetGrns() {
                 selectedStockIds = [];
@@ -438,6 +501,16 @@
                 if ($('#product').val() && parseFloat($('#qty').val()) < 0) {
                     getgrns($('#product').val());
                 }
+            });
+            $('#department').on('change', function () {
+                clearNotify();
+                loadSubDepartments($(this).val());
+                resetProduct();
+                initProductSelect();
+            });
+            $('#subDepartment').on('change', function () {
+                clearNotify();
+                resetProduct();
             });
             $('#qty').on('change', qtychanger);
             $('#qty').on('input', function () {
