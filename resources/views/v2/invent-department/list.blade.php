@@ -127,7 +127,7 @@
                                 </td>
                                 <td class="px-5 py-4">
                                     <div class="flex flex-wrap justify-end gap-2">
-                                        <button type="button" onclick='openManageSubDepartmentsModal({{ $d->department_id }}, @js($d->department_name), @js($d->code))'
+                                        <button type="button" onclick="openManageSubDepartmentsModal({{ $d->department_id }}, @js($d->department_name), @js($d->code))"
                                             class="rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700 transition hover:bg-sky-100">
                                             Sub-Depts
                                         </button>
@@ -135,7 +135,7 @@
                                             class="rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 transition hover:bg-emerald-100">
                                             Add Sub-Dept
                                         </button>
-                                        <button type="button" onclick='openEditDepartmentModal(@json($departmentPayload))'
+                                        <button type="button" onclick="openEditDepartmentModal(@js($departmentPayload))"
                                             class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700 transition hover:bg-amber-100">
                                             Edit
                                         </button>
