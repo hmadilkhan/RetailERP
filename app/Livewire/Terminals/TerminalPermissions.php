@@ -116,6 +116,7 @@ class TerminalPermissions extends Component
             'receipt_2' => ['Receipt 2', 'toggle'],
             'receipt_3' => ['Receipt 3', 'toggle'],
             'receipt_4' => ['Receipt 4', 'toggle'],
+            'receipt_round_amount' => ['Round Receipt Amount', 'toggle'],
         ]],
         'reports' => ['title' => 'Reports', 'hint' => 'End-of-day reports and their print copies.', 'fields' => [
             'print_declaration_report' => ['Declaration Report Copies', 'count'],
@@ -163,6 +164,9 @@ class TerminalPermissions extends Component
             'discount_amount' => ['Max Discount Amount', 'count'],
         ]],
     ];
+
+    /** Toggles that start ON for a terminal with no users_sales_permission row (mirrors the column default). */
+    public const DEFAULT_ON = ['receipt_round_amount'];
 
     public function mount(): void
     {
@@ -229,7 +233,7 @@ class TerminalPermissions extends Component
         $this->perms = [];
 
         foreach (self::fields() as $column => [$label, $type]) {
-            $value = $row->{$column} ?? null;
+            $value = $row ? ($row->{$column} ?? null) : (in_array($column, self::DEFAULT_ON, true) ? 1 : null);
             $this->perms[$column] = match ($type) {
                 'toggle' => (int) $value === 1,
                 'count' => (int) ($value ?? 0),
