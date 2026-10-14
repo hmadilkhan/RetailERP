@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Services\Accounting\ReportCostService;
 use Illuminate\Support\Facades\DB;
 use PhpParser\Node\Expr\FuncCall;
 
@@ -171,6 +172,12 @@ class report extends Model
     public  function COGS($fromdate, $todate, $branch = "")
     {
         $branch = $this->branchIds($branch);
+        // accounting on ho to moving-average COGS din-wise (Phase 1.4) — receipt-wise cost POS ki ghalat total_cost thi
+        $days = ReportCostService::cogsByDate((int) session('company_id'), explode(',', $branch), $fromdate, $todate);
+        if ($days !== null) {
+            return array_map(fn ($d) => (object) ['id' => '', 'date' => $d['date'], 'total_cost' => $d['cogs'],
+                'name' => 'Moving average cost', 'payment_mode' => ''], $days);
+        }
         // Total cost has been changes to item price
         $result = DB::select('SELECT a.id, a.date, SUM(b.total_cost) as total_cost, e.name, d.payment_mode FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . '))) and a.status = 4 group by a.id', [$fromdate, $todate]);
         return $result;
@@ -238,6 +245,10 @@ class report extends Model
     public  function total_COGS($fromdate, $todate, $branch)
     {
         $branch = $this->branchIds($branch);
+        $cost = ReportCostService::cogsTotal((int) session('company_id'), explode(',', $branch), $fromdate, $todate);
+        if ($cost !== null) {
+            return [(object) ['cost' => $cost]];
+        }
         $result = DB::select('SELECT IFNULL(SUM(b.total_cost),0) AS cost FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id IN (' . $branch . '))) and a.status = 4', [$fromdate, $todate]);
         // $result = DB::select('SELECT IFNULL(SUM(b.item_price * b.total_qty),0) AS cost FROM sales_receipts a INNER JOIN sales_receipt_details b ON b.receipt_id = a.id INNER JOIN sales_payment d ON d.payment_id = a.payment_id INNER JOIN customers e ON e.id = a.customer_id WHERE a.opening_id IN (SELECT opening_id FROM sales_opening WHERE date BETWEEN ? AND ? AND terminal_id IN (SELECT terminal_id FROM terminal_details WHERE branch_id = ?))',[$fromdate,$todate,session("branch")]);
         return $result;
@@ -258,6 +269,13 @@ class report extends Model
             $filter .= " and c.branch_id = " . $branch;
         }
         $result = DB::select('SELECT a.id, a.product_name, a.item_code, SUM(c.qty) AS totalqty, SUM(c.balance) AS qty, b.name AS um, (SELECT AVG(e.cost_price) from inventory_stock e WHERE e.product_id = a.id AND e.status_id = 1) AS cost, d.retail_price, c.cost_price,a.image  FROM inventory_general a INNER JOIN inventory_uom b ON b.uom_id = a.uom_id INNER JOIN inventory_stock c ON c.product_id = a.id AND c.status_id = 1 INNER JOIN inventory_price d ON d.product_id = a.id AND d.status_id = 1 WHERE a.status = 1 AND a.company_id = ?  ' . $filter . ' GROUP BY a.id', [session("company_id")]);
+        // accounting on ho to moving-average cost (jis product ki pata hai), warna lots ka seedha average
+        $avg = ReportCostService::averageCosts((int) session('company_id'));
+        foreach ($result as $row) {
+            if (isset($avg[$row->id])) {
+                $row->cost = $avg[$row->id];
+            }
+        }
         return $result;
     }
 
@@ -327,6 +345,10 @@ class report extends Model
     public  function  current_stock_asset($productid)
     {
         $result = DB::select('SELECT IFNULL(SUM(a.balance),0) AS stock, IFNULL(AVG(a.cost_price),0) AS cp FROM inventory_stock a WHERE a.status_id = 1 AND a.product_id = ?', [$productid]);
+        $avg = ReportCostService::averageCosts((int) session('company_id'));
+        if (isset($avg[$productid])) {
+            $result[0]->cp = $avg[$productid];
+        }
         return $result;
     }
 
@@ -808,12 +830,19 @@ class report extends Model
 
     public function getAllItemUsage($from, $to)
     {
-        return DB::select("SELECT b.product_name,c.name as uom,SUM(a.usage_qty) as usageQty,SUM(a.total_qty) as totalQty,SUM(a.total_usage) as totalUsage,(SELECT AVG(cost_price) FROM `inventory_stock` where product_id = b.id) as cost,SUM(a.previous_stock) as previous_stock,SUM(a.current_stock) as current_stock,SUM(d.wastage) as wastage,SUM(d.stock) as closing_stock FROM daily_recipe_usage a 
+        $avg = ReportCostService::averageCosts((int) session('company_id'));
+        $rows = DB::select("SELECT b.id as item_id,b.product_name,c.name as uom,SUM(a.usage_qty) as usageQty,SUM(a.total_qty) as totalQty,SUM(a.total_usage) as totalUsage,(SELECT AVG(cost_price) FROM `inventory_stock` where product_id = b.id) as cost,SUM(a.previous_stock) as previous_stock,SUM(a.current_stock) as current_stock,SUM(d.wastage) as wastage,SUM(d.stock) as closing_stock FROM daily_recipe_usage a 
 		INNER JOIN inventory_general b on b.id = a.item_id 
 		INNER JOIN inventory_uom c on c.uom_id = b.uom_id 
 		LEFT JOIN physical_stock_taking d on d.inventory_id = a.item_id and d.entry_date between ? and ?
-		where a.original_date between ? and ?
-		group by a.item_id;", [$from, $to, $from, $to]);
+		where a.original_date between ? and ? and b.company_id = ?
+		group by a.item_id;", [$from, $to, $from, $to, session('company_id')]);
+        foreach ($rows as $row) {
+            if (isset($avg[$row->item_id])) {
+                $row->cost = $avg[$row->item_id];
+            }
+        }
+        return $rows;
     }
 
     public function getWebsiteItemSummaryQuery($from, $to)
