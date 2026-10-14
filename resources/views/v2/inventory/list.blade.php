@@ -464,9 +464,13 @@
             });
         });
 
-        document.getElementById('deptFilter').addEventListener('change', function () {
-            loadSubDepartments(this.value, 'subDeptFilter');
-        });
+        // select2 apna change jQuery se trigger karta hai — native addEventListener tak nahi pohanchta
+        const onDeptFilterChange = function () { loadSubDepartments(this.value, 'subDeptFilter'); };
+        if (window.jQuery) {
+            jQuery('#deptFilter').on('change', onDeptFilterChange);
+        } else {
+            document.getElementById('deptFilter').addEventListener('change', onDeptFilterChange);
+        }
 
         function loadSubDepartments(id, targetId, selectedValue = '') {
             const target = document.getElementById(targetId);

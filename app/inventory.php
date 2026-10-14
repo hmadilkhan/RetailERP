@@ -348,43 +348,16 @@ class inventory extends Model
                 $join->on('website_products.inventory_id', '=', 'invent.id')
                     ->where('website_products.status', '=', 1);
             })
-            ->leftJoin('pos_products_gen_details', function ($join) {
-                $join->on('pos_products_gen_details.product_id', '=', 'invent.id')
-                    ->where('pos_products_gen_details.status_id', '=', 1)
-                    ->groupBy('pos_products_gen_details.product_id');
-            })
-            ->leftJoin('inventory_addons', function ($join) {
-                $join->on('inventory_addons.product_id', '=', 'invent.id')
-                    ->where('inventory_addons.status', '=', 1)
-                    ->where('inventory_addons.inventory_addon_type', '=', 'general-inventory')
-                    ->groupBy('inventory_addons.product_id');
-            })
             ->leftJoin("website_details", 'website_details.id', 'website_products.website_id')
-            ->leftJoin("inventory_stock", 'inventory_stock.product_id', '=', 'invent.id')
-            ->leftJoin('inventory_tags as itag', function ($join) {
-                $join->on('itag.inventory_id', '=', 'invent.id')
-                    ->where('itag.status', '=', 1);
-            })
-            ->leftJoin('tags as t', 't.id', '=', 'itag.tag_id')
 
+            // Stock lots / POS variations / addons / tags pehle join hote the — har product ki rows
+            // lots × variations × addons × tags guna ho jati thin (company 120: 26s per query).
+            // Ab sab per-product subquery / EXISTS se.
+            ->where(function ($query) use ($code, $name, $dept, $sdept, $retail_price, $ref, $nonstock, $ids, $stockBranches) {
 
-            ->where(function ($query) use ($code, $name, $dept, $sdept, $retail_price, $ref, $nonstock, $ids) {
-
-                // if ($nonstock == 0) {
-                //     $query->leftJoin("inventory_stock", 'inventory_stock.product_id', '=', 'invent.id');
-                //     $query->where('inventory_stock.branch_id', session('branch'));
-                //     $query->select('invent.*', 'u.name', 'dept.department_name', 'sdept.sub_depart_name', 'inventory_product_mode.product_name as category', 'inventory_price.*', 'invent.image as product_image', 'invent.url as product_image_url', DB::raw('SUM(inventory_stock.balance) As stock'));
-                // }
-                if ($nonstock == 1) {
-                    $query->select('invent.*', 'u.name', 'dept.department_name', 'sdept.sub_depart_name', 'inventory_product_mode.product_name as category', 'inventory_price.*', 'invent.image as product_image', 'invent.url as product_image_url');
-                }
                 if ($nonstock == 0) {
-                    $query->leftJoin("inventory_stock", 'inventory_stock.product_id', '=', 'invent.id');
-                    if (session("roleId") == 2) {
-                        $query->whereIn('inventory_stock.branch_id', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
-                    } else {
-                        $query->where('inventory_stock.branch_id', session('branch'));
-                    }
+                    // Sirf wo products jin ka in branches me koi lot hai (pehle wala inner-join filter)
+                    $query->whereRaw('EXISTS (SELECT 1 FROM inventory_stock s2 WHERE s2.product_id = invent.id AND s2.branch_id IN (' . $stockBranches . '))');
                 }
 
                 if (!empty($code)) {
@@ -406,14 +379,17 @@ class inventory extends Model
                     $query->whereIn('invent.id', $ids);
                 }
                 if ($nonstock == 1) {
-                    if (session("roleId") == 2) {
-                        $query->whereNotIn("invent.id", DB::table("inventory_stock")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("product_id"));
-                    } else {
-                        $query->whereNotIn("invent.id", DB::table("inventory_stock")->where("branch_id", session('branch'))->pluck("product_id"));
-                    }
+                    $query->whereRaw('NOT EXISTS (SELECT 1 FROM inventory_stock s2 WHERE s2.product_id = invent.id AND s2.branch_id IN (' . $stockBranches . '))');
                 }
             })
-            ->select('invent.*', 'u.name', 'cu.name as cuom_name', 'cu2.name as cuom2_name', 'pu.name as pack_uom_name', 'dept.department_name', 'sdept.sub_depart_name', 'inventory_product_mode.product_name as category', 'inventory_price.*', 'invent.image as product_image', 'invent.url as product_image_url', DB::raw('(SELECT SUM(s.balance) FROM inventory_stock s WHERE s.product_id = invent.id AND s.branch_id IN (' . $stockBranches . ')) As stock'), 'website_details.id as website_id', 'website_details.name as website_name', DB::raw('COUNT(pos_products_gen_details.product_id) as pos_product_count'), DB::raw('COUNT(inventory_addons.product_id) as addon_product'), DB::raw("GROUP_CONCAT(DISTINCT t.name ORDER BY t.name ASC SEPARATOR ', ') as tags"))
+            ->select(
+                'invent.*', 'u.name', 'cu.name as cuom_name', 'cu2.name as cuom2_name', 'pu.name as pack_uom_name', 'dept.department_name', 'sdept.sub_depart_name', 'inventory_product_mode.product_name as category', 'inventory_price.*', 'invent.image as product_image', 'invent.url as product_image_url',
+                DB::raw('(SELECT SUM(s.balance) FROM inventory_stock s WHERE s.product_id = invent.id AND s.branch_id IN (' . $stockBranches . ')) As stock'),
+                'website_details.id as website_id', 'website_details.name as website_name',
+                DB::raw('(SELECT COUNT(*) FROM pos_products_gen_details p WHERE p.product_id = invent.id AND p.status_id = 1) as pos_product_count'),
+                DB::raw("(SELECT COUNT(*) FROM inventory_addons a WHERE a.product_id = invent.id AND a.status = 1 AND a.inventory_addon_type = 'general-inventory') as addon_product"),
+                DB::raw("(SELECT GROUP_CONCAT(DISTINCT t.name ORDER BY t.name ASC SEPARATOR ', ') FROM inventory_tags itag JOIN tags t ON t.id = itag.tag_id WHERE itag.inventory_id = invent.id AND itag.status = 1) as tags")
+            )
             ->where('invent.company_id', session('company_id'))
             // ->where('website_products.status',1)
             // ,'website_details.id as website_id','website_details.name as website_name'
