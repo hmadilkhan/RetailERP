@@ -34,6 +34,7 @@ return [
     'tax_rules' => 'قواعد الضرائب',
     'purchase_order' => 'أمر الشراء',
     'vendor_bills' => 'فواتير الموردين',
+    'vendor_scorecard' => 'تقييم الموردين',
     'inventory' => 'المخزون',
     'inventory_details' => 'تفاصيل المخزون',
     'inventory_department' => 'قسم المخزون',

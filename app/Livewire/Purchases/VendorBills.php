@@ -48,6 +48,11 @@ class VendorBills extends Component
     public $noteDate = '';
     public $noteAmount = '';
     public $noteNarration = '';
+    // landed cost (Phase 2.5)
+    public $lcAmount = '';
+    public $lcMethod = 'value';
+    public $lcVendor = '';
+    public $lcRef = '';
 
     public function mount(): void
     {
@@ -238,6 +243,9 @@ class VendorBills extends Component
         $this->closeAction();
         $this->action = $action;
         $this->noteDate = date('Y-m-d');
+        if ($action === 'landed' && $this->viewId) {
+            $this->lcVendor = (string) $this->bill($this->viewId)->vendor_id;
+        }
         if ($action === 'pay' && $this->viewId) {
             $this->payAmount = (string) round($this->bill($this->viewId)->open_amount);
         }
@@ -248,6 +256,8 @@ class VendorBills extends Component
         $this->resetErrorBag();
         $this->action = '';
         $this->payAmount = $this->payBank = $this->payRef = $this->noteAmount = $this->noteNarration = '';
+        $this->lcAmount = $this->lcVendor = $this->lcRef = '';
+        $this->lcMethod = 'value';
         $this->payMode = 'cash';
         $this->returnQty = [];
     }
@@ -266,6 +276,16 @@ class VendorBills extends Component
         $this->validate(['noteDate' => 'required|date'], [], ['noteDate' => 'date']);
         $this->run(fn () => $service->debitNote((int) session('company_id'), (int) $this->viewId, $this->returnQty, $this->noteDate,
             $this->noteNarration, session('userid')), 'Debit note posted — stock returned and vendor balance reduced.');
+    }
+
+    public function saveLandedCost(): void
+    {
+        $service = app(VendorBillService::class);
+        $this->validate(['noteDate' => 'required|date', 'lcAmount' => 'required|numeric|min:0.01', 'lcVendor' => 'required|integer', 'lcMethod' => 'required|in:value,qty'],
+            [], ['noteDate' => 'date', 'lcAmount' => 'amount', 'lcVendor' => 'paid to', 'lcMethod' => 'spread by']);
+        $this->run(fn () => $service->landedCost((int) session('company_id'), (int) $this->viewId, (float) $this->lcAmount, $this->lcMethod,
+            (int) $this->lcVendor, $this->noteDate, $this->lcRef, $this->noteNarration, session('userid')),
+            'Landed cost added — item costs updated and the amount is payable to the selected vendor.');
     }
 
     public function saveCreditNote(): void
@@ -322,7 +342,7 @@ class VendorBills extends Component
                 && app(ApprovalService::class)->pendingFor('vendor_bill', $viewing->id),
             'productNames' => $productNames,
             'returned' => $viewing && $viewing->type === 'bill' ? $service->returnedQty($viewing->id) : [],
-            'payments' => $viewing && $viewing->type === 'bill' ? $this->payments($viewing) : collect(),
+            'payments' => $viewing && in_array($viewing->type, VendorBill::PAYABLE, true) ? $this->payments($viewing) : collect(),
             'vendors' => DB::table('vendors')->where('user_id', $companyId)->where('status_id', 1)->orderBy('vendor_name')->get(['id', 'vendor_name']),
             'branches' => DB::table('branch')->where('company_id', $companyId)->where('status_id', 1)->orderBy('branch_name')->get(['branch_id', 'branch_name']),
             'branchNames' => DB::table('branch')->where('company_id', $companyId)->pluck('branch_name', 'branch_id'),

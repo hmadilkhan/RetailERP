@@ -163,7 +163,7 @@
 
     @elseif ($viewing)
         {{-- ===================== Bill / note detail ===================== --}}
-        @php $isBill = $viewing->type === 'bill'; @endphp
+        @php $isBill = $viewing->type === 'bill'; $payable = in_array($viewing->type, \App\Models\VendorBill::PAYABLE, true); @endphp
         <div class="rounded-lg border border-erp-line bg-white shadow-sm">
             <div class="flex flex-wrap items-start justify-between gap-3 border-b border-erp-line px-5 py-4">
                 <div>
@@ -192,14 +192,58 @@
                             <button type="button" wire:click="openAction('credit')" class="{{ $btn }}">Credit Note</button>
                         @endif
                         <button type="button" wire:click="openAction('debit')" class="{{ $btn }}">Return Goods (Debit Note)</button>
+                        <button type="button" wire:click="openAction('landed')" class="{{ $btn }}">Add Landed Cost</button>
                         @if ((float) $viewing->paid == 0)
                             <button type="button" wire:click="cancelBill({{ $viewing->id }})" wire:confirm="Cancel this bill? Its stock will be removed and the vendor balance reversed. Only possible if none of the stock has been sold." class="{{ $btn }} text-rose-700">Cancel Bill</button>
                         @endif
+                    @elseif ($viewing->type === 'landed_cost' && $viewing->status === 'posted' && $viewing->open_amount >= 1)
+                        <button type="button" wire:click="openAction('pay')" class="{{ $btnPrimary }}">Pay</button>
                     @endif
                 </div>
             </div>
 
-            @if ($action === 'pay')
+            @if ($action === 'landed')
+                <div class="grid gap-4 border-b border-erp-line bg-slate-50 p-5 md:grid-cols-6">
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Amount</span>
+                        <input type="number" step="any" min="0" wire:model="lcAmount" class="{{ $inputClass }}">
+                        @error('lcAmount') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
+                    </label>
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Spread by</span>
+                        <select wire:model="lcMethod" class="{{ $inputClass }}">
+                            <option value="value">Item value</option>
+                            <option value="qty">Quantity</option>
+                        </select>
+                    </label>
+                    <label class="block md:col-span-2">
+                        <span class="{{ $labelClass }}">Paid to (transporter / agent)</span>
+                        <select wire:model="lcVendor" class="{{ $inputClass }}">
+                            @foreach ($vendors as $vendor)
+                                <option value="{{ $vendor->id }}">{{ $vendor->vendor_name }}</option>
+                            @endforeach
+                        </select>
+                        @error('lcVendor') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
+                    </label>
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Their bill no</span>
+                        <input type="text" wire:model="lcRef" class="{{ $inputClass }}">
+                    </label>
+                    <label class="block">
+                        <span class="{{ $labelClass }}">Date</span>
+                        <input type="date" wire:model="noteDate" class="{{ $inputClass }}">
+                    </label>
+                    <label class="block md:col-span-4">
+                        <span class="{{ $labelClass }}">What is it</span>
+                        <input type="text" wire:model="noteNarration" class="{{ $inputClass }}" placeholder="e.g. freight, customs duty, clearing">
+                    </label>
+                    <div class="flex items-end gap-2 md:col-span-2">
+                        <button type="button" wire:click="closeAction" class="{{ $btn }}">Close</button>
+                        <button type="button" wire:click="saveLandedCost" wire:loading.attr="disabled" wire:confirm="Add this cost to the items of this bill?" class="{{ $btnPrimary }}">Add Landed Cost</button>
+                    </div>
+                    <p class="text-xs text-erp-mute md:col-span-6">Freight, duty or clearing that arrives after the goods. It is spread over this bill's items and added to their cost, and the amount becomes payable to the vendor you pick here.</p>
+                </div>
+            @elseif ($action === 'pay')
                 <div class="grid gap-4 border-b border-erp-line bg-slate-50 p-5 md:grid-cols-5">
                     <label class="block">
                         <span class="{{ $labelClass }}">Amount (open {{ $money($viewing->open_amount) }})</span>
@@ -326,7 +370,7 @@
                     <dt class="text-erp-mute">Tax</dt><dd class="text-right tabular-nums">{{ $money($viewing->tax_amount) }}</dd>
                     @if ((float) $viewing->other_charges)<dt class="text-erp-mute">Other charges</dt><dd class="text-right tabular-nums">{{ $money($viewing->other_charges) }}</dd>@endif
                     <dt class="font-bold text-erp-ink">Total</dt><dd class="text-right font-bold tabular-nums text-erp-ink">{{ $money($viewing->total) }}</dd>
-                    @if ($isBill && $viewing->status === 'posted')
+                    @if ($payable && $viewing->status === 'posted')
                         <dt class="text-erp-mute">Paid / credited</dt><dd class="text-right tabular-nums">{{ $money($viewing->paid) }}</dd>
                         <dt class="font-bold text-rose-700">Open</dt><dd class="text-right font-bold tabular-nums text-rose-700">{{ $money($viewing->open_amount) }}</dd>
                     @endif
@@ -334,7 +378,7 @@
                 @if ($viewing->narration)<p class="mt-3 text-sm text-erp-mute">{{ $viewing->narration }}</p>@endif
             </div>
 
-            @if ($isBill && ($viewing->notes->count() || $payments->count()))
+            @if ($payable && ($viewing->notes->count() || $payments->count()))
                 <div class="grid gap-6 border-t border-erp-line p-5 md:grid-cols-2">
                     <div>
                         <h3 class="text-sm font-bold text-erp-ink">Payments</h3>
@@ -415,8 +459,8 @@
                                 <td class="px-3 py-3">{{ $bill->vendor_name }}</td>
                                 <td class="px-3 py-3">{{ $bill->vendor_ref }}</td>
                                 <td class="px-3 py-3">{{ $branchNames[$bill->branch_id] ?? '' }}</td>
-                                <td class="px-3 py-3 text-right tabular-nums">{{ $bill->type === 'bill' ? '' : '− ' }}{{ $money($bill->total) }}</td>
-                                <td class="px-3 py-3 text-right tabular-nums {{ $bill->open_amount >= 1 ? 'font-semibold text-rose-700' : 'text-erp-mute' }}">{{ $bill->type === 'bill' && $bill->status === 'posted' ? $money($bill->open_amount) : '' }}</td>
+                                <td class="px-3 py-3 text-right tabular-nums">{{ in_array($bill->type, \App\Models\VendorBill::PAYABLE, true) ? '' : '− ' }}{{ $money($bill->total) }}</td>
+                                <td class="px-3 py-3 text-right tabular-nums {{ $bill->open_amount >= 1 ? 'font-semibold text-rose-700' : 'text-erp-mute' }}">{{ in_array($bill->type, \App\Models\VendorBill::PAYABLE, true) && $bill->status === 'posted' ? $money($bill->open_amount) : '' }}</td>
                                 <td class="px-5 py-3"><span class="rounded-full px-2.5 py-0.5 text-xs font-bold {{ $statusColors[$bill->status] ?? '' }}">{{ ucfirst($bill->status) }}</span></td>
                             </tr>
                         @empty

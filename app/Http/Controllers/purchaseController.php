@@ -472,6 +472,22 @@ class purchaseController extends Controller
         return $gen_res;
     }
 
+    /** PO line ke ek unit pe freight ka hissa (shipment × line value / PO ki kul value / line qty); shipment na ho to 0 */
+    private function shipmentPerUnit(int $poId, int $lineId): float
+    {
+        $shipment = (float) DB::table('purchase_account_details')->where('purchase_id', $poId)->value('shipment');
+        if ($shipment <= 0) {
+            return 0.0;
+        }
+        $lines = DB::table('purchase_item_details')->where('purchase_id', $poId)->get(['p_item_details_id', 'quantity', 'price']);
+        $total = $lines->sum(fn ($l) => (float) $l->quantity * (float) $l->price);
+        $line = $lines->firstWhere('p_item_details_id', $lineId);
+        if (!$line || $total <= 0 || (float) $line->quantity <= 0) {
+            return 0.0;
+        }
+        return $shipment * ((float) $line->quantity * (float) $line->price / $total) / (float) $line->quantity;
+    }
+
     public function addGrn(Request $request, purchase $purchase, inventory $inventory, stock $stockApp)
     {
 
@@ -499,6 +515,9 @@ class purchaseController extends Controller
             'date' => date('Y-m-d H:s:i'),
 
         ];
+        // Phase 2.5: PO ka freight (purchase_account_details.shipment) lot ki cost me — PO lines ki value (qty × price) ke hisaab se
+        $stock['cost_price'] = round((float) $request->cp + $this->shipmentPerUnit((int) $request->po, (int) $request->item_details_id), 4);
+
         // Phase 2.2: PO line ka batch / expiry lot tak (FEFO + Expiry Report)
         $poLine = DB::table('purchase_item_details')->where('p_item_details_id', $request->item_details_id)->first(['batch_no', 'expiry_date']);
         $stock += \Custom_Helper::lotExpiryFields($poLine->batch_no ?? null, $poLine->expiry_date ?? null);
@@ -519,7 +538,7 @@ class purchaseController extends Controller
             'branch_id' => session('branch'),
             'qty' => $request->rec,
             'stock' => $stk,
-            'cost' => $request->cp,
+            'cost' => $stock['cost_price'], // Phase 2.5: freight ke saath
             'retail' => $request->rp,
             'narration' => 'Stock Purchase through Purchase Order',
         ];

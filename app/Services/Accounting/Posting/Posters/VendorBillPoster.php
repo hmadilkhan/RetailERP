@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
  *   Vendor Bill  : Dr Inventory (subtotal − discount + other charges), Dr Input Tax / Cr Accounts Payable
  *   Debit Note   : Dr Accounts Payable / Cr Inventory (amount), Cr Input Tax          (maal wapas)
  *   Credit Note  : Dr Accounts Payable / Cr Purchase Discounts & Rebates             (vendor ka rebate)
+ *   Landed Cost  : Dr Inventory / Cr Accounts Payable (payee: transporter ya wahi vendor) — lots ki cost bhi badhti hai
  * Cancel (status cancelled) → document gayab → engine purani entry reverse karta hai.
  * Stock report rows ("(Stock Adjustment) Vendor Bill / Debit Note …") StockAdjustmentPoster nahi uthata, aur
  * vendor_ledger ki "Vendor Bill / Debit Note / Credit Note …" rows VendorAdjustmentPoster nahi — warna double.
@@ -49,6 +50,7 @@ class VendorBillPoster implements Poster
             $narration = match ($row->type) {
                 'debit_note' => 'Debit Note ' . $row->doc_no . ' — ' . $row->vendor_name . ' (against ' . $row->against_doc . ')',
                 'credit_note' => 'Credit Note ' . $row->doc_no . ' — ' . $row->vendor_name . ' (against ' . $row->against_doc . ')',
+                'landed_cost' => 'Landed Cost ' . $row->doc_no . ' — ' . $row->vendor_name . ' (on ' . $row->against_doc . ')',
                 default => 'Vendor Bill ' . $row->doc_no . ' — ' . $row->vendor_name . ($row->vendor_ref ? ' (Bill# ' . $row->vendor_ref . ')' : ''),
             };
             $doc = new PostingDocument((string) $row->id, $date, $row->branch_id ? (int) $row->branch_id : null, $narration, (int) $row->id);
@@ -61,6 +63,8 @@ class VendorBillPoster implements Poster
                 $doc->debit('accounts_payable', $row->total)
                     ->credit('inventory', $goods)
                     ->credit('input_tax', $row->tax_amount);
+            } elseif ($row->type === 'landed_cost') {
+                $doc->debit('inventory', $row->total)->credit('accounts_payable', $row->total);
             } else {
                 $doc->debit('accounts_payable', $row->total)->credit('purchase_discounts', $row->total);
             }

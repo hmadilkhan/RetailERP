@@ -35,6 +35,7 @@ return [
     'tax_rules' => 'Tax Rules',
     'purchase_order' => 'Purchase Order',
     'vendor_bills' => 'Vendor Bills',
+    'vendor_scorecard' => 'Vendor Scorecard',
     'inventory' => 'Inventory',
     'inventory_details' => 'Inventory Details',
     'inventory_department' => 'Inventory Department',

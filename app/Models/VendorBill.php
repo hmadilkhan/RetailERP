@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 /** Phase 2.1: vendor bill / debit note / credit note — App\Services\Purchases\VendorBillService. */
 class VendorBill extends Model
 {
-    const TYPES = ['bill' => 'Vendor Bill', 'debit_note' => 'Debit Note', 'credit_note' => 'Credit Note'];
-    const PREFIX = ['bill' => 'VB', 'debit_note' => 'DN', 'credit_note' => 'CN'];
+    const TYPES = ['bill' => 'Vendor Bill', 'debit_note' => 'Debit Note', 'credit_note' => 'Credit Note', 'landed_cost' => 'Landed Cost'];
+    const PREFIX = ['bill' => 'VB', 'debit_note' => 'DN', 'credit_note' => 'CN', 'landed_cost' => 'LC'];
+    const PAYABLE = ['bill', 'landed_cost']; // jin ka paisa dena hai (Pay)
 
     protected $guarded = [];
 
@@ -39,9 +40,9 @@ class VendorBill extends Model
         return $this->belongsTo(self::class, 'against_bill_id');
     }
 
-    /** vendor ko abhi kitna dena hai (sirf bill) */
+    /** vendor ko abhi kitna dena hai (bill / landed cost) */
     public function getOpenAmountAttribute(): float
     {
-        return $this->type === 'bill' && $this->status === 'posted' ? round((float) $this->total - (float) $this->paid, 2) : 0.0;
+        return in_array($this->type, self::PAYABLE, true) && $this->status === 'posted' ? round((float) $this->total - (float) $this->paid, 2) : 0.0;
     }
 }

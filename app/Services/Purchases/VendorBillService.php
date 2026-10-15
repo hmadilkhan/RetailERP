@@ -264,11 +264,77 @@ class VendorBillService
         });
     }
 
-    /** Bill ki payment — cash (branch ka cash_ledger) ya bank (bank_deposit_details). */
+    /**
+     * Phase 2.5 — Landed Cost: bill post hone ke baad aane wala freight / duty / clearing. Bill ki lines pe value ya qty ke
+     * hisaab se baant kar lots ki cost_price badhti hai (ValuationService agle run me average + COGS khud theek karta hai),
+     * payee vendor (transporter ya wahi vendor) ke ledger me credit, GL: Dr Inventory / Cr AP. Pay se payment.
+     */
+    public function landedCost(int $companyId, int $billId, float $amount, string $method, int $payeeVendorId, string $date,
+                               ?string $reference = null, ?string $narration = null, $userId = null): VendorBill
+    {
+        $this->assertVendor($companyId, $payeeVendorId);
+        $amount = round($amount, 2);
+        if ($amount <= 0) {
+            throw new RuntimeException('Enter the landed cost amount.');
+        }
+        if (!in_array($method, ['value', 'qty'], true)) {
+            throw new RuntimeException('Choose how to spread the cost.');
+        }
+
+        return DB::transaction(function () use ($companyId, $billId, $amount, $method, $payeeVendorId, $date, $reference, $narration, $userId) {
+            $bill = VendorBill::where('company_id', $companyId)->where('type', 'bill')->where('status', 'posted')->lockForUpdate()->findOrFail($billId);
+            $lines = $bill->lines()->whereNotNull('stock_id')->get();
+            $base = $lines->sum(fn ($l) => $method === 'qty' ? (float) $l->qty : (float) $l->amount);
+            if ($lines->isEmpty() || $base <= 0) {
+                throw new RuntimeException('This bill has no items to spread the cost over.');
+            }
+
+            $doc = VendorBill::create([
+                'company_id' => $companyId,
+                'branch_id' => $bill->branch_id,
+                'vendor_id' => $payeeVendorId,
+                'type' => 'landed_cost',
+                'doc_no' => $this->nextDocNo($companyId, 'landed_cost'),
+                'vendor_ref' => trim((string) $reference) ?: null,
+                'bill_date' => $date,
+                'against_bill_id' => $bill->id,
+                'subtotal' => $amount,
+                'total' => $amount,
+                'status' => 'posted',
+                'narration' => $narration ?: null,
+                'created_by' => $userId,
+                'posted_by' => $userId,
+                'posted_at' => now(),
+            ]);
+
+            $left = $amount;
+            foreach ($lines->values() as $i => $line) {
+                $share = $i === $lines->count() - 1 ? $left : round($amount * ($method === 'qty' ? (float) $line->qty : (float) $line->amount) / $base, 2);
+                $left = round($left - $share, 2);
+                $perUnit = (float) $line->qty > 0 ? $share / (float) $line->qty : 0;
+                $doc->lines()->create([
+                    'product_id' => $line->product_id,
+                    'against_line_id' => $line->id,
+                    'qty' => $line->qty,
+                    'unit_price' => round($perUnit, 4),
+                    'amount' => $share,
+                    'landed_cost' => round($perUnit, 4),
+                ]);
+                DB::table('inventory_stock')->where('stock_id', $line->stock_id)
+                    ->update(['cost_price' => DB::raw('ROUND(cost_price + ' . round($perUnit, 4) . ', 4)')]);
+            }
+
+            $label = $doc->doc_no . ' on ' . $bill->doc_no . ($doc->vendor_ref ? ' (Bill# ' . $doc->vendor_ref . ')' : '');
+            $this->ledger($payeeVendorId, 0, (int) round($amount), 'Landed Cost ' . $label, $date . ' ' . date('H:i:s'));
+            return $doc->fresh('lines');
+        });
+    }
+
+    /** Bill / Landed Cost ki payment — cash (branch ka cash_ledger) ya bank (bank_deposit_details). */
     public function pay(int $companyId, int $billId, float $amount, string $mode, ?int $bankAccountId, ?string $reference, $branchId = null): int
     {
         return DB::transaction(function () use ($companyId, $billId, $amount, $mode, $bankAccountId, $reference, $branchId) {
-            $bill = VendorBill::where('company_id', $companyId)->where('type', 'bill')->where('status', 'posted')->lockForUpdate()->findOrFail($billId);
+            $bill = VendorBill::where('company_id', $companyId)->whereIn('type', VendorBill::PAYABLE)->where('status', 'posted')->lockForUpdate()->findOrFail($billId);
             $amount = (int) round($amount);
             if ($amount <= 0 || $amount > round($bill->open_amount) ) {
                 throw new RuntimeException('Payment must be between 1 and the open amount (' . $this->num($bill->open_amount) . ').');
