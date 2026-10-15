@@ -434,6 +434,13 @@
             }
 
             function onSaved(resp) {
+                if (resp && resp.approval === 'pending') { // Phase 2.4: approval rule — stock abhi nahi badla
+                    notify('success', resp.message);
+                    setTimeout(function () {
+                        window.location = '{{ url('/stockadjustment') }}';
+                    }, 2500);
+                    return;
+                }
                 if (resp == 1) {
                     notify('success', 'Stock adjusted successfully.');
                     setTimeout(function () {

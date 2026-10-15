@@ -539,6 +539,39 @@ class TransferController extends Controller
     return $result;
   }
 
+  /**
+   * Phase 2.4: transfer ki value (lots ki cost × qty + shipment) pe approval rule. Approved request ho aur value us se
+   * zyada na ho to null (challan bane); warna pending request + transfer status 5 aur 409 response (UI challan / status 8 nahi karta).
+   */
+  private function transferApprovalGate(Request $request, $transferOrder, $trfdetails, int $sourceBranchId)
+  {
+    $approval = app(\App\Services\Approvals\ApprovalService::class);
+    $companyId = (int) session('company_id');
+    $value = (float) $request->shipmentamt;
+    foreach ($trfdetails as $detail) {
+      $value += $this->resolveTransferPrices((int) $detail->product_id, $sourceBranchId)['cost_price'] * (float) $detail->Transfer_Qty;
+    }
+    $role = $approval->approverFor($companyId, 'transfer', $sourceBranchId, $value, (int) session('roleId'));
+    if (!$role) {
+      return null;
+    }
+
+    $transferId = (int) $transferOrder->transfer_id;
+    $approvedAmount = DB::table('approval_requests')->where('module', 'transfer')->where('subject_id', $transferId)->where('status', 'approved')->max('amount');
+    if ($approvedAmount !== null && $value <= (float) $approvedAmount + 0.01) {
+      return null;
+    }
+    if (!$approval->pendingFor('transfer', $transferId)) {
+      $names = DB::table('branch')->whereIn('branch_id', [$sourceBranchId, (int) $transferOrder->branch_to])->pluck('branch_name', 'branch_id');
+      $approval->request($companyId, 'transfer', $sourceBranchId, $value, $role, $transferId,
+        'Transfer #' . ($transferOrder->transfer_No ?? $transferId) . ' — ' . ($names[$sourceBranchId] ?? $sourceBranchId) . ' → ' . ($names[(int) $transferOrder->branch_to] ?? $transferOrder->branch_to),
+        null, session('userid'));
+      DB::table('transfer_without_demand')->where('transfer_id', $transferId)->update(['status_id' => 5]); // Pending
+      DB::table('transfer_item_details')->where('transfer_id', $transferId)->where('transfer_type', 'without_demand')->update(['status_id' => 5]);
+    }
+    return response()->json(['approval' => 'pending', 'message' => 'Sent for approval. Place the order again after it is approved.'], 409);
+  }
+
   public function insert_direct_chalan(Request $request, transfer $transfer)
   {
 
@@ -555,6 +588,11 @@ class TransferController extends Controller
       $trfdetails = $transfer->trf_details($request->transferid);
       if (sizeof($trfdetails) === 0) {
         return 0;
+      }
+
+      // Phase 2.4: approval rule lage to challan (stock A → B) tab tak nahi jab tak transfer Approved na ho
+      if ($blocked = $this->transferApprovalGate($request, $transferOrder, $trfdetails, $sourceBranchId)) {
+        return $blocked;
       }
 
       return DB::transaction(function () use ($request, $transfer, $trfdetails, $sourceBranchId, $destinationBranchId) {

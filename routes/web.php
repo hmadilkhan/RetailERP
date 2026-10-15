@@ -815,6 +815,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/stock-list', [StockController::class, 'index']);
     Route::get('/expiry-report', \App\Livewire\Inventory\ExpiryReport::class)->name('expiry-report')->middleware('auth'); // Phase 2.2
     Route::get('/reorder-suggestions', \App\Livewire\Inventory\ReorderSuggestions::class)->name('reorder-suggestions')->middleware('auth'); // Phase 2.3
+    Route::get('/approvals', \App\Livewire\Approvals\Approvals::class)->name('approvals')->middleware('auth'); // Phase 2.4
     Route::get('/stock-details/{id}/{branch}', [StockController::class, 'getStock']);
     Route::get('/branchwise-stock', [StockController::class, 'brnchwisestock']);
     Route::get('/stockReportPDF', [StockController::class, 'stockReportPDF']);

@@ -212,7 +212,14 @@
                     credentials: 'same-origin',
                     ...options
                 });
-                if (!response.ok) throw new Error('Request failed. Please try again.');
+                if (!response.ok) {
+                    // server ka message dikhao (e.g. Phase 2.4 approval: "Sent for approval")
+                    let data = null;
+                    try { data = await response.json(); } catch (e) { data = null; }
+                    const error = new Error((data && data.message) || 'Request failed. Please try again.');
+                    if (data && data.approval) error.approval = data.approval;
+                    throw error;
+                }
                 const contentType = response.headers.get('content-type') || '';
                 return contentType.includes('application/json') ? response.json() : response.text();
             }
@@ -515,6 +522,11 @@
                     await changeStatus(8);
                     window.location.assign(urls.list);
                 } catch (error) {
+                    if (error.approval === 'pending') {
+                        showMessage(error.message, 'success');
+                        setTimeout(() => window.location.assign(urls.list), 2500);
+                        return;
+                    }
                     showMessage(error.message);
                     setBusy(button, false, 'Placing...');
                 }

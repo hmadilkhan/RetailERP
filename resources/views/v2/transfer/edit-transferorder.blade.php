@@ -537,11 +537,12 @@
                         });
                     }
                 },
-                error: function() {
+                error: function(xhr) {
+                    const data = xhr && xhr.responseJSON;
                     swal({
-                        title: "Error",
-                        text: "Delivery challan could not be created.",
-                        type: "error"
+                        title: data && data.approval === 'pending' ? "Sent for approval" : "Error",
+                        text: (data && data.message) || "Delivery challan could not be created.",
+                        type: data && data.approval === 'pending' ? "info" : "error"
                     });
                 }
             });

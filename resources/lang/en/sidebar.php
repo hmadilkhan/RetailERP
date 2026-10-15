@@ -17,6 +17,7 @@ return [
     'stock_details' => 'Stock Details',
     'expiry_report' => 'Expiry Report',
     'reorder_suggestions' => 'Reorder Suggestions',
+    'approvals' => 'Approvals',
     'pos_sales_receipts' => 'POS Sales Receipts',
     'accounts_section' => 'Accounts Section',
     'accounts_operations' => 'Accounts Operations',

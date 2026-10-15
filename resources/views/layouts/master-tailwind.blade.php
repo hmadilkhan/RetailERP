@@ -1415,6 +1415,8 @@
                     </div>
                 @endif
 
+                @include('partials.approvals-alert')
+
                 @yield('content')
                 @isset($slot)
                     {{ $slot }}

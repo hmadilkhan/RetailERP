@@ -3,6 +3,7 @@
 namespace App\Livewire\Purchases;
 
 use App\Models\VendorBill;
+use App\Services\Approvals\ApprovalService;
 use App\Services\Purchases\VendorBillService;
 use Illuminate\Support\Facades\DB;
 use Livewire\Attributes\Title;
@@ -169,7 +170,8 @@ class VendorBills extends Component
                 'narration' => $this->narration,
                 'lines' => $this->lines,
             ], $this->billId, session('userid'));
-            if ($post) {
+            $waiting = $post ? $this->approvalGate($bill) : null;
+            if ($post && !$waiting) {
                 $bill = $service->post((int) session('company_id'), $bill->id, session('userid'));
             }
         } catch (RuntimeException $e) {
@@ -177,7 +179,7 @@ class VendorBills extends Component
             return;
         }
 
-        session()->flash('vb_message', $post ? $bill->doc_no . ' posted — stock added and vendor balance updated.' : $bill->doc_no . ' saved as draft.');
+        session()->flash('vb_message', $waiting ?? ($post ? $bill->doc_no . ' posted — stock added and vendor balance updated.' : $bill->doc_no . ' saved as draft.'));
         $this->cancelForm();
         $this->viewId = $bill->id;
     }
@@ -185,7 +187,27 @@ class VendorBills extends Component
     public function post(int $id): void
     {
         $service = app(VendorBillService::class);
+        if ($waiting = $this->approvalGate($this->bill($id))) {
+            session()->flash('vb_message', $waiting);
+            return;
+        }
         $this->run(fn () => $service->post((int) session('company_id'), $id, session('userid')), 'Bill posted — stock added and vendor balance updated.');
+    }
+
+    /** Phase 2.4: approval rule lage to post nahi — request (ek hi) aur message; null = post kar sakte ho */
+    private function approvalGate(VendorBill $bill): ?string
+    {
+        $approval = app(ApprovalService::class);
+        $role = $approval->approverFor((int) session('company_id'), 'vendor_bill', (int) $bill->branch_id, (float) $bill->total, (int) session('roleId'));
+        if (!$role) {
+            return null;
+        }
+        if (!$approval->pendingFor('vendor_bill', $bill->id)) {
+            $vendor = DB::table('vendors')->where('id', $bill->vendor_id)->value('vendor_name');
+            $approval->request((int) session('company_id'), 'vendor_bill', (int) $bill->branch_id, (float) $bill->total, $role, $bill->id,
+                'Vendor Bill ' . $bill->doc_no . ' — ' . $vendor . ($bill->vendor_ref ? ' (Bill# ' . $bill->vendor_ref . ')' : ''), null, session('userid'));
+        }
+        return $bill->doc_no . ' sent for approval. It will be posted (stock and vendor balance) once approved.';
     }
 
     public function cancelBill(int $id): void
@@ -296,6 +318,8 @@ class VendorBills extends Component
         return view('livewire.purchases.vendor-bills', [
             'bills' => $bills,
             'viewing' => $viewing,
+            'waitingApproval' => $viewing && $viewing->status === 'draft' && ApprovalService::enabled()
+                && app(ApprovalService::class)->pendingFor('vendor_bill', $viewing->id),
             'productNames' => $productNames,
             'returned' => $viewing && $viewing->type === 'bill' ? $service->returnedQty($viewing->id) : [],
             'payments' => $viewing && $viewing->type === 'bill' ? $this->payments($viewing) : collect(),

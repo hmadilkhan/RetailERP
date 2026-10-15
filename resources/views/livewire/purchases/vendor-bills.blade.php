@@ -171,6 +171,7 @@
                     <h2 class="mt-1 text-lg font-bold text-erp-ink">
                         {{ $typeNames[$viewing->type] }} {{ $viewing->doc_no }}
                         <span class="ml-2 rounded-full px-2.5 py-0.5 text-xs font-bold {{ $statusColors[$viewing->status] ?? '' }}">{{ ucfirst($viewing->status) }}</span>
+                        @if ($waitingApproval)<span class="ml-1 rounded-full bg-sky-50 px-2.5 py-0.5 text-xs font-bold text-sky-700">Waiting for approval</span>@endif
                     </h2>
                     <p class="mt-0.5 text-sm text-erp-mute">
                         {{ $vendors->firstWhere('id', $viewing->vendor_id)->vendor_name ?? 'Vendor #' . $viewing->vendor_id }}

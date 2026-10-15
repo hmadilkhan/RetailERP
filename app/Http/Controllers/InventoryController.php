@@ -2331,65 +2331,33 @@ class InventoryController extends Controller
 
     public function update_stockadjustment(inventory $inventory, request $request, stock $stockApp)
     {
-        $quantity = abs((float) $request->qty);
-        $stockIds = array_filter((array) $request->stockid);
+        $data = [
+            'sign' => '-',
+            'stock_ids' => array_values(array_filter((array) $request->stockid)),
+            'qty' => abs((float) $request->qty),
+            'narration' => (string) $request->narration,
+            'user_id' => session('userid'),
+        ];
+        $applier = app(\App\Services\Inventory\StockAdjustmentApplier::class);
 
-        if ($quantity <= 0 || empty($stockIds)) {
-            return response()->json(['message' => 'Please enter a quantity and select at least one GRN lot.'], 422);
-        }
-
-        // Chune hue active lots, purane se naye (FIFO)
-        $lots = DB::table('inventory_stock')
-            ->whereIn('stock_id', $stockIds)
-            ->where('status_id', 1)
-            ->where('balance', '>', 0)
-            ->orderBy('stock_id')
-            ->get();
-
-        if ($lots->isEmpty() || $lots->pluck('product_id')->unique()->count() > 1 || $lots->pluck('branch_id')->unique()->count() > 1) {
-            return response()->json(['message' => 'Selected GRN lots are not valid. Please reload and select again.'], 422);
-        }
-
-        $available = (float) $lots->sum('balance');
-        if ($quantity - $available > 0.0001) {
-            return response()->json(['message' => 'Selected lots have only ' . (float) $available . ' in stock. Select more lots or reduce the quantity.'], 422);
-        }
-
-        $productid = $lots->first()->product_id;
-        $branchId = $lots->first()->branch_id;
-
-        DB::transaction(function () use ($lots, $quantity, $productid, $inventory, $stockApp, $request) {
-            $remaining = $quantity;
-            foreach ($lots as $lot) {
-                if ($remaining <= 0.0001) {
-                    break;
-                }
-
-                // Har lot se sirf utna kaato jitna baqi hai
-                $deduct = min($remaining, (float) $lot->balance);
-                $newbal = (float) $lot->balance - $deduct;
-                $items = $newbal > 0.0001 ? ['balance' => $newbal] : ['balance' => 0, 'status_id' => 2];
-
-                $inventory->update_balance_stock($lot->stock_id, $items);
-                $this->stockreport($stockApp, $productid, $lot->stock_id, -$deduct, $lot->cost_price, $lot->retail_price, $request->narration, $lot->branch_id);
-                $remaining -= $deduct;
+        // Phase 2.4: approval rule lage to stock abhi nahi ghatta
+        $lot = $data['stock_ids'] ? DB::table('inventory_stock')->whereIn('stock_id', $data['stock_ids'])->first(['product_id', 'branch_id']) : null;
+        if ($lot && $data['qty'] > 0) {
+            $approval = app(\App\Services\Approvals\ApprovalService::class);
+            $value = $applier->negativeValue($data['stock_ids'], $data['qty']);
+            if ($role = $approval->approverFor((int) session('company_id'), 'stock_adjustment', (int) $lot->branch_id, $value, (int) session('roleId'))) {
+                $product = DB::table('inventory_general')->where('id', $lot->product_id)->value('product_name');
+                $approval->request((int) session('company_id'), 'stock_adjustment', (int) $lot->branch_id, $value, $role, null,
+                    'Stock -' . $data['qty'] . ' ' . $product . ($request->narration ? ' — ' . $request->narration : ''), $data, session('userid'));
+                return response()->json(['approval' => 'pending', 'message' => 'Sent for approval. Stock will be removed once it is approved.']);
             }
-        });
-
-        $inventory = DB::table("inventory_general")->where("id", $productid)->get();
-        $terminals = DB::table("terminal_details")->where("branch_id", $branchId)->where("status_id", 1)->get();
-        foreach ($terminals as $value) {
-            $items = [
-                "branchId" => $branchId,
-                "terminalId" => $value->terminal_id,
-                "productId" => $productid,
-                "status" => 1,
-                "date" => date("Y-m-d"),
-                "time" => date("H:i:s"),
-            ];
-            DB::table("inventory_download_status")->insert($items);
         }
-        $this->sendPushNotification($inventory[0]->item_code, $inventory[0]->product_name, "update");
+
+        try {
+            $applier->negative($data);
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
         return 1;
     }
 
@@ -2447,88 +2415,29 @@ class InventoryController extends Controller
             return response()->json(['message' => 'Selected branch is inactive. Please reload the page and select an active branch.'], 422);
         }
 
-        //grn ban rahi ha
-        $grn = $purchase->getGrn();
-        $grn = $grn + 1;
-        $gen = [
-            'GRN' => "GRN-" . $grn,
+        $data = [
+            'sign' => '+',
+            'product_id' => (int) $request->productid,
+            'qty' => (float) $request->qty,
+            'amount' => $request->amount,
+            'narration' => (string) $request->narration,
+            'branch_id' => (int) $branchId,
+            'batch_no' => $request->batch_no,
+            'expiry_date' => $request->expiry_date,
             'user_id' => session('userid'),
-            'created_at' => date('Y-m-d H:s:i'),
-            'updated_at' => date('Y-m-d H:s:i'),
-        ];
-        $gen_res = $purchase->receiving_general($gen);
-
-        //grn stock adjustment insert
-        $fields = [
-            'GRN' => $gen_res,
-            'item_id' => $request->productid,
-            'qty_rec' => $request->qty,
         ];
 
-        $stock_id = $inventory->insertgeneral('purchase_rec_stock_adjustment', $fields);
-
-        //get uom here
-        $um = $inventory->getproductdetails($request->productid);
-
-        //get stock from inventory stock
-        //        $stocked = $inventory->getbalance_byproduct($request->productid);
-        //        $invenStock = empty($stocked) ? 0 : $stocked[0]->stock;
-        //        $invenStock = $invenStock + $request->qty;
-
-
-        $items = [
-            'grn_id' => $gen_res,
-            'product_id' => $request->productid,
-            'uom' => $um[0]->uom_id,
-            'cost_price' => $request->amount,
-            'retail_price' => "0.00",
-            'wholesale_price' => "0.00",
-            'discount_price' => "0.00",
-            'qty' => $request->qty,
-            'balance' => $request->qty,
-            'status_id' => 1,
-            'branch_id' => $branchId,
-        ] + \Custom_Helper::lotExpiryFields($request->batch_no, $request->expiry_date); // Phase 2.2
-        // return $items;
-        //        //insert stock table
-        $stockadd = $inventory->insertgeneral('inventory_stock', $items);
-
-        //get last stock from stock report
-        $lastStock = $stock->getLastStock($request->productid);
-        $stk = empty($lastStock) ? 0 : $lastStock[0]->stock;
-        $stk = $stk + $request->qty;
-
-        //stock report k table main insert
-        $items = [
-            'date' => date('Y-m-d H:s:i'),
-            'product_id' => $request->productid,
-            'foreign_id' => $stockadd,
-            'branch_id' => $branchId,
-            'qty' => $request->qty,
-            'stock' => $stk,
-            'cost' => $request->amount,
-            'retail' => "0.00",
-            'narration' => "(Stock Adjustment) " . $request->narration,
-            'adjustment_mode' => "1", // 1 for positive
-
-        ];
-        $result = $inventory->insertgeneral('inventory_stock_report_table', $items);
-        $inventory = DB::table("inventory_general")->where("id", $request->productid)->get();
-
-        $terminals = DB::table("terminal_details")->where("branch_id", $branchId)->where("status_id", 1)->get();
-        foreach ($terminals as $value) {
-            $items = [
-                "branchId" => $branchId,
-                "terminalId" => $value->terminal_id,
-                "productId" => $request->productid,
-                "status" => 1,
-                "date" => date("Y-m-d"),
-                "time" => date("H:i:s"),
-            ];
-            DB::table("inventory_download_status")->insert($items);
+        // Phase 2.4: company ka approval rule lage to stock abhi nahi badalta — request ban kar Approvals me jati hai
+        $approval = app(\App\Services\Approvals\ApprovalService::class);
+        $value = (float) $request->qty * (float) $request->amount;
+        if ($role = $approval->approverFor((int) session('company_id'), 'stock_adjustment', (int) $branchId, $value, (int) session('roleId'))) {
+            $product = DB::table('inventory_general')->where('id', $request->productid)->value('product_name');
+            $approval->request((int) session('company_id'), 'stock_adjustment', (int) $branchId, $value, $role, null,
+                'Stock +' . (float) $request->qty . ' ' . $product . ($request->narration ? ' — ' . $request->narration : ''), $data, session('userid'));
+            return response()->json(['approval' => 'pending', 'message' => 'Sent for approval. Stock will be added once it is approved.']);
         }
 
-        $this->sendPushNotification($inventory[0]->item_code, $inventory[0]->product_name, "update");
+        app(\App\Services\Inventory\StockAdjustmentApplier::class)->positive($data);
         return 1;
     }
 
