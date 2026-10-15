@@ -15,6 +15,7 @@ return [
     'view_delivery_challan' => 'عرض مذكرة التسليم',
     'stock_details' => 'تفاصيل المخزون',
     'expiry_report' => 'تقرير انتهاء الصلاحية',
+    'reorder_suggestions' => 'اقتراحات إعادة الطلب',
     'pos_sales_receipts' => 'إيصالات مبيعات نقاط البيع',
     'accounts_section' => 'قسم الحسابات',
     'accounts_operations' => 'عمليات الحسابات',
