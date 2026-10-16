@@ -161,6 +161,7 @@ return [
     'cost_centers' => 'مراكز التكلفة',
     'budgets' => 'الميزانيات',
     'quickbooks_sync' => 'مزامنة QuickBooks',
+    'sales_tax' => 'ضريبة المبيعات',
     'general_ledger' => 'دفتر الأستاذ العام',
     'posting_rules' => 'قواعد الترحيل',
     'financial_statements' => 'القوائم المالية',
