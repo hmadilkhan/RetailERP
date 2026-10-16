@@ -46,6 +46,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(new \App\Jobs\SyncQuickBooksCustomersJob)->dailyAt("11:00");
         $schedule->job(new \App\Jobs\SyncQuickBooksItemsJob)->dailyAt("12:00");
         $schedule->job(new \App\Jobs\SyncQuickBooksInvoiceJob)->dailyAt("13:00");
+        $schedule->command('quickbooks:sync-journals')->everyThirtyMinutes()->withoutOverlapping(); // Phase 3.6
         $schedule->command('app:website-schedule-command')->everyMinute();
         $schedule->call(fn () => app(SendDailyFollowupRemindersJob::class)->handle(app(\App\Services\Crm\LeadNotificationService::class)))->dailyAt('08:00');
     }

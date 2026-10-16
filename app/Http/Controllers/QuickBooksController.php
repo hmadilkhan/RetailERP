@@ -53,6 +53,34 @@ class QuickBooksController extends Controller
         }
     }
 
+    /** Phase 3.6: "Connect to QuickBooks" — Intuit login pe bhejo (sirf Admin / Sub-Admin, apni company ke liye). */
+    public function connect(Request $request)
+    {
+        abort_unless(in_array((int) session('roleId'), [1, 2], true), 403);
+        $state = bin2hex(random_bytes(16));
+        $request->session()->put('qbo_oauth', ['state' => $state, 'company_id' => (int) session('company_id')]);
+        return redirect()->away($this->authService->authorizationUrl($state));
+    }
+
+    /** Intuit wapas yahan bhejta hai (QUICKBOOKS_REDIRECT_URI isi URL pe hona chahiye). */
+    public function callback(Request $request)
+    {
+        $pending = $request->session()->pull('qbo_oauth');
+        if (!$pending || !hash_equals($pending['state'], (string) $request->query('state')) || (int) $pending['company_id'] !== (int) session('company_id')) {
+            return redirect('quickbooks-sync')->with('qbo_error', 'QuickBooks connection could not be verified. Please try again.');
+        }
+        if ($request->query('error') || !$request->query('code') || !$request->query('realmId')) {
+            return redirect('quickbooks-sync')->with('qbo_error', 'QuickBooks connection was cancelled.');
+        }
+        try {
+            $this->authService->connect((int) $pending['company_id'], (string) $request->query('code'), (string) $request->query('realmId'));
+        } catch (Exception $e) {
+            Log::error('QuickBooks connect failed: ' . $e->getMessage());
+            return redirect('quickbooks-sync')->with('qbo_error', 'QuickBooks connection failed: ' . $e->getMessage());
+        }
+        return redirect('quickbooks-sync')->with('qbo_message', 'QuickBooks connected.');
+    }
+
     private function customerService(Request $request): QuickBooksCustomerService
     {
         $companyId = $request->session()->get('company_id') ?? optional(auth()->user())->company_id;

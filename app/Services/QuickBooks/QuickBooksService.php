@@ -24,7 +24,7 @@ abstract class QuickBooksService
             'ClientSecret' =>  $config['client_secret'],
             'accessTokenKey' =>  $setting->qb_access_token,
             'refreshTokenKey' =>  $setting->qb_refresh_token,
-            'QBORealmID' =>  $config['realm_id'],
+            'QBORealmID' =>  ($setting->realm_id ?? null) ?: $config['realm_id'], // company ka realm (Phase 3.6), warna purana env
             'baseUrl' =>  $config['base_url'],
         ]);
     }

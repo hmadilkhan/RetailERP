@@ -170,6 +170,7 @@ return [
     'fixed_assets' => 'Fixed Assets',
     'cost_centers' => 'Cost Centers',
     'budgets' => 'Budgets',
+    'quickbooks_sync' => 'QuickBooks Sync',
     'general_ledger' => 'General Ledger',
     'posting_rules' => 'Posting Rules',
     'financial_statements' => 'Financial Statements',
