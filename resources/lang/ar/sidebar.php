@@ -155,6 +155,7 @@ return [
     'chart_of_accounts' => 'دليل الحسابات',
     'fiscal_years' => 'السنوات المالية',
     'journal_entries' => 'قيود اليومية',
+    'bank_reconciliation' => 'تسوية البنك',
     'general_ledger' => 'دفتر الأستاذ العام',
     'posting_rules' => 'قواعد الترحيل',
     'financial_statements' => 'القوائم المالية',

@@ -165,6 +165,7 @@ return [
     'chart_of_accounts' => 'Chart of Accounts',
     'fiscal_years' => 'Fiscal Years',
     'journal_entries' => 'Journal Entries',
+    'bank_reconciliation' => 'Bank Reconciliation',
     'general_ledger' => 'General Ledger',
     'posting_rules' => 'Posting Rules',
     'financial_statements' => 'Financial Statements',
