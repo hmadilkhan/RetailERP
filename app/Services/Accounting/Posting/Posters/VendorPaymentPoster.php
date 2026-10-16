@@ -14,9 +14,14 @@ use Illuminate\Support\Facades\DB;
  * Manual "adjustment" screen ke debits (koi link nahi, cash_ledger bhi nahi) aur "PO receipt adjustment" rows post nahi hote —
  * un ka contra account nahi pata (agla hissa). vendor_ledger.created_at DB default = UTC → Pakistan date.
  * cash_ledger ki "Payment to Vendor" rows post nahi hoti (double count).
+ * Phase 4.5: foreign currency bill ki payment (fx_payments) — AP bill ke rate pe (ledger debit), cash / bank payment ke rate pe;
+ * farq → Exchange Gain / Loss (cash zyada gaya = loss = Dr).
  */
 class VendorPaymentPoster implements Poster
 {
+    /** fx_payments table hai? null = check (test me override) */
+    public static ?bool $fxTable = null;
+
     public function sourceType(): string
     {
         return 'vendor_payment';
@@ -42,6 +47,11 @@ class VendorPaymentPoster implements Poster
             WHERE v.user_id = ? AND vl.debit > 0 AND {$dateSql} BETWEEN ? AND ?
             GROUP BY vl.vendor_account_id, d, vl.debit, vl.po_no, v.vendor_name, g.branch_id", [$companyId, $from, $to]);
 
+        $fx = [];
+        if ($rows && (self::$fxTable ??= \Illuminate\Support\Facades\Schema::hasTable('fx_payments'))) {
+            $fx = DB::table('fx_payments')->whereIn('ledger_id', array_column($rows, 'id'))->pluck('cash', 'ledger_id')->all();
+        }
+
         foreach ($rows as $row) {
             $paidFrom = (int) $row->bankid > 0
                 ? $accounts->mapped('bank_account', (int) $row->bankid, 'bank')
@@ -50,7 +60,11 @@ class VendorPaymentPoster implements Poster
                 . ((int) $row->bankid > 0 && $row->cheque ? ' — cheque ' . $row->cheque : '');
 
             $doc = new PostingDocument((string) $row->id, $row->d, $row->branch_id ? (int) $row->branch_id : null, $narration, (int) $row->id);
-            $doc->debit('accounts_payable', $row->debit)->credit($paidFrom, $row->debit);
+            $cash = isset($fx[$row->id]) ? (float) $fx[$row->id] : (float) $row->debit;
+            $doc->debit('accounts_payable', $row->debit)->credit($paidFrom, $cash);
+            if (abs($cash - (float) $row->debit) >= 0.005) {
+                $doc->debit('fx_gain_loss', $cash - (float) $row->debit, 'Exchange difference');
+            }
             yield $doc;
         }
     }

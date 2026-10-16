@@ -63,6 +63,24 @@
                         @error('dueDate') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                 </div>
+                @if (count($currencies) || $currency !== '')
+                    {{-- Phase 4.5: foreign currency bill --}}
+                    <div class="grid grid-cols-2 gap-3">
+                        <label class="block">
+                            <span class="{{ $labelClass }}">Currency</span>
+                            <select wire:model.live="currency" class="{{ $inputClass }}">
+                                <option value="">{{ $baseCurrency }}</option>
+                                @foreach ($currencies as $c)<option value="{{ $c }}">{{ $c }}</option>@endforeach
+                            </select>
+                        </label>
+                        @if ($currency !== '')
+                            <label class="block">
+                                <span class="{{ $labelClass }}">1 {{ $currency }} = ? {{ $baseCurrency }}</span>
+                                <input type="number" step="any" min="0" wire:model.live.debounce.400ms="fxRate" class="{{ $inputClass }}">
+                            </label>
+                        @endif
+                    </div>
+                @endif
             </div>
 
             <div class="border-t border-erp-line p-5">
@@ -148,7 +166,10 @@
                         <dt class="text-erp-mute">Discount</dt><dd class="text-right tabular-nums">− {{ $money($formTotals['discount']) }}</dd>
                         <dt class="text-erp-mute">Tax</dt><dd class="text-right tabular-nums">{{ $money($formTotals['tax_amount']) }}</dd>
                         <dt class="text-erp-mute">Other charges</dt><dd class="text-right tabular-nums">{{ $money((float) ($otherCharges ?: 0)) }}</dd>
-                        <dt class="font-bold text-erp-ink">Bill Total</dt><dd class="text-right font-bold tabular-nums text-erp-ink">{{ $money($formTotals['total']) }}</dd>
+                        <dt class="font-bold text-erp-ink">Bill Total{{ $currency !== '' ? ' (' . $currency . ')' : '' }}</dt><dd class="text-right font-bold tabular-nums text-erp-ink">{{ $money($formTotals['total']) }}</dd>
+                        @if ($currency !== '' && (float) $fxRate > 0)
+                            <dt class="text-erp-mute">In {{ $baseCurrency }}</dt><dd class="text-right tabular-nums text-erp-mute">{{ $money($formTotals['total'] * (float) $fxRate) }}</dd>
+                        @endif
                     </dl>
                 @endif
             </div>
@@ -255,10 +276,17 @@
             @elseif ($action === 'pay')
                 <div class="grid gap-4 border-b border-erp-line bg-slate-50 p-5 md:grid-cols-5">
                     <label class="block">
-                        <span class="{{ $labelClass }}">Amount (open {{ $money($viewing->open_amount) }})</span>
-                        <input type="number" step="1" min="1" wire:model="payAmount" class="{{ $inputClass }}">
+                        <span class="{{ $labelClass }}">Amount{{ !empty($viewing->currency) ? ' in ' . $viewing->currency . ' (open ' . $money($viewing->open_amount / (float) $viewing->fx_rate) . ')' : ' (open ' . $money($viewing->open_amount) . ')' }}</span>
+                        <input type="number" step="{{ !empty($viewing->currency) ? 'any' : '1' }}" min="0" wire:model="payAmount" class="{{ $inputClass }}">
                         @error('payAmount') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
+                    @if (!empty($viewing->currency))
+                        <label class="block">
+                            <span class="{{ $labelClass }}">Rate today (bill {{ (float) $viewing->fx_rate }})</span>
+                            <input type="number" step="any" min="0" wire:model="payRate" class="{{ $inputClass }}">
+                            @error('payRate') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
+                        </label>
+                    @endif
                     <label class="block">
                         <span class="{{ $labelClass }}">Paid From</span>
                         <select wire:model.live="payMode" class="{{ $inputClass }}">
@@ -379,6 +407,9 @@
                     <dt class="text-erp-mute">Tax</dt><dd class="text-right tabular-nums">{{ $money($viewing->tax_amount) }}</dd>
                     @if ((float) $viewing->other_charges)<dt class="text-erp-mute">Other charges</dt><dd class="text-right tabular-nums">{{ $money($viewing->other_charges) }}</dd>@endif
                     <dt class="font-bold text-erp-ink">Total</dt><dd class="text-right font-bold tabular-nums text-erp-ink">{{ $money($viewing->total) }}</dd>
+                    @if (!empty($viewing->currency))
+                        <dt class="text-erp-mute">In {{ $viewing->currency }}</dt><dd class="text-right tabular-nums text-erp-mute">{{ $money($viewing->fx_total) }} @ {{ (float) $viewing->fx_rate }}</dd>
+                    @endif
                     @if ($payable && $viewing->status === 'posted')
                         <dt class="text-erp-mute">Paid / credited</dt><dd class="text-right tabular-nums">{{ $money($viewing->paid) }}</dd>
                         <dt class="font-bold text-rose-700">Open</dt><dd class="text-right font-bold tabular-nums text-rose-700">{{ $money($viewing->open_amount) }}</dd>

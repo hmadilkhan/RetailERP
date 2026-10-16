@@ -65,6 +65,7 @@ class AccountingSetupService
         ['4900', 'Other Income', 'Revenue', '4000', false, 'other_income'],
         // fixed asset bechne / hatane pe book value se farq (Phase 3.3) — nafa credit, nuqsan debit
         ['4950', 'Gain / Loss on Asset Disposal', 'Revenue', '4000', false, 'asset_disposal'],
+        ['4960', 'Exchange Gain / Loss', 'Revenue', '4000', false, 'fx_gain_loss'],
 
         ['5000', 'Cost of Sales', 'Expense', null, true, null],
         ['5100', 'Cost of Goods Sold', 'Expense', '5000', false, 'cogs'],

@@ -38,6 +38,7 @@ return [
     'vendor_scorecard' => 'Vendor Scorecard',
     'request_for_quotation' => 'Request for Quotation',
     'po_matching' => 'PO Matching',
+    'exchange_rates' => 'Exchange Rates',
     'inventory' => 'Inventory',
     'inventory_details' => 'Inventory Details',
     'inventory_department' => 'Inventory Department',

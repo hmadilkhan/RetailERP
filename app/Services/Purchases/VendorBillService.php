@@ -32,12 +32,23 @@ class VendorBillService
     {
         $this->assertVendor($companyId, (int) $data['vendor_id']);
         $this->assertBranch($companyId, (int) $data['branch_id']);
+        // Phase 4.5: foreign currency — rate x se base me (saari raqam columns base me hi rehti hain)
+        $fx = $this->fxInput($companyId, $data);
+        if ($fx) {
+            foreach ($data['lines'] as &$row) {
+                $row['fx_unit_price'] = (float) ($row['unit_price'] ?? 0);
+                $row['unit_price'] = (float) ($row['unit_price'] ?? 0) * $fx['rate'];
+                $row['discount'] = (float) ($row['discount'] ?? 0) * $fx['rate'];
+            }
+            unset($row);
+            $data['other_charges'] = round((float) ($data['other_charges'] ?? 0) * $fx['rate'], 2);
+        }
         $lines = $this->buildLines($companyId, $data['lines'] ?? [], (float) ($data['other_charges'] ?? 0));
         if (!$lines) {
             throw new RuntimeException('Add at least one item.');
         }
 
-        return DB::transaction(function () use ($companyId, $data, $id, $userId, $lines) {
+        return DB::transaction(function () use ($companyId, $data, $id, $userId, $lines, $fx) {
             $bill = $id ? VendorBill::where('company_id', $companyId)->lockForUpdate()->findOrFail($id) : new VendorBill();
             if ($bill->exists && $bill->status !== 'draft') {
                 throw new RuntimeException('Only a draft bill can be edited.');
@@ -55,6 +66,10 @@ class VendorBillService
                 'narration' => trim((string) ($data['narration'] ?? '')) ?: null,
                 'status' => 'draft',
             ] + $this->totals($lines, (float) ($data['other_charges'] ?? 0)));
+            if (app(CurrencyService::class)->ready()) {
+                $bill->fill(['currency' => $fx['currency'] ?? null, 'fx_rate' => $fx['rate'] ?? 1,
+                    'fx_total' => $fx ? round((float) $bill->total / $fx['rate'], 2) : null]);
+            }
             if (!$bill->exists) {
                 $bill->doc_no = $this->nextDocNo($companyId, 'bill');
                 $bill->created_by = $userId;
@@ -330,14 +345,37 @@ class VendorBillService
         });
     }
 
-    /** Bill / Landed Cost ki payment — cash (branch ka cash_ledger) ya bank (bank_deposit_details). */
-    public function pay(int $companyId, int $billId, float $amount, string $mode, ?int $bankAccountId, ?string $reference, $branchId = null): int
+    /**
+     * Bill / Landed Cost ki payment — cash (branch ka cash_ledger) ya bank (bank_deposit_details).
+     * Phase 4.5: foreign currency bill → $amount foreign me, $payRate (khali = us din ka rate): AP bill ke rate pe kam
+     * (vendor_ledger), cash / bank payment ke rate pe; farq fx_payments → Exchange Gain / Loss (VendorPaymentPoster).
+     */
+    public function pay(int $companyId, int $billId, float $amount, string $mode, ?int $bankAccountId, ?string $reference, $branchId = null, ?float $payRate = null): int
     {
-        return DB::transaction(function () use ($companyId, $billId, $amount, $mode, $bankAccountId, $reference, $branchId) {
+        return DB::transaction(function () use ($companyId, $billId, $amount, $mode, $bankAccountId, $reference, $branchId, $payRate) {
             $bill = VendorBill::where('company_id', $companyId)->whereIn('type', VendorBill::PAYABLE)->where('status', 'posted')->lockForUpdate()->findOrFail($billId);
-            $amount = (int) round($amount);
-            if ($amount <= 0 || $amount > round($bill->open_amount) ) {
-                throw new RuntimeException('Payment must be between 1 and the open amount (' . $this->num($bill->open_amount) . ').');
+            $fx = null;
+            if (!empty($bill->currency)) {
+                $billRate = (float) $bill->fx_rate;
+                $fxOpen = round($bill->open_amount / $billRate, 2);
+                $payRate = $payRate ?: app(CurrencyService::class)->rate($companyId, $bill->currency, date('Y-m-d'));
+                if (!$payRate || $payRate <= 0) {
+                    throw new RuntimeException('Enter today\'s ' . $bill->currency . ' rate.');
+                }
+                if ($amount <= 0 || $amount > $fxOpen + 0.009) {
+                    throw new RuntimeException('Payment must be between 0 and the open amount (' . $bill->currency . ' ' . $this->num($fxOpen) . ').');
+                }
+                $cleared = abs($amount - $fxOpen) < 0.01 ? (int) round($bill->open_amount) : min((int) round($amount * $billRate), (int) round($bill->open_amount));
+                $fx = ['currency' => $bill->currency, 'fx_amount' => round($amount, 2), 'bill_rate' => $billRate, 'pay_rate' => $payRate,
+                    'cleared' => $cleared, 'cash' => (int) round($amount * $payRate)];
+                $amount = $fx['cash'];
+                $ledgerAmount = $cleared;
+            } else {
+                $amount = (int) round($amount);
+                if ($amount <= 0 || $amount > round($bill->open_amount) ) {
+                    throw new RuntimeException('Payment must be between 1 and the open amount (' . $this->num($bill->open_amount) . ').');
+                }
+                $ledgerAmount = $amount;
             }
             if ($mode === 'bank') {
                 $ok = DB::table('bank_account_generaldetails')->where('bank_account_id', $bankAccountId)
@@ -349,7 +387,10 @@ class VendorBillService
 
             $vendor = DB::table('vendors')->where('id', $bill->vendor_id)->value('vendor_name');
             $narration = 'Payment to Vendor ' . $vendor . ' — ' . $bill->doc_no . ($bill->vendor_ref ? ' (Bill# ' . $bill->vendor_ref . ')' : '');
-            $ledgerId = $this->ledger((int) $bill->vendor_id, $amount, 0, $narration, null);
+            $ledgerId = $this->ledger((int) $bill->vendor_id, $ledgerAmount, 0, $narration . ($fx ? ' — ' . $fx['currency'] . ' ' . $this->num($fx['fx_amount']) . ' @ ' . $this->num($fx['pay_rate']) : ''), null);
+            if ($fx) {
+                DB::table('fx_payments')->insert($fx + ['company_id' => $companyId, 'vendor_bill_id' => $bill->id, 'ledger_id' => $ledgerId, 'created_at' => now(), 'updated_at' => now()]);
+            }
 
             $paymentId = DB::table('vendor_payment')->insertGetId([
                 'bankid' => $mode === 'bank' ? $bankAccountId : 0,
@@ -387,7 +428,7 @@ class VendorBillService
                 ]);
             }
 
-            $bill->update(['paid' => round((float) $bill->paid + $amount, 2)]);
+            $bill->update(['paid' => round((float) $bill->paid + $ledgerAmount, 2)]);
             return $paymentId;
         });
     }
@@ -427,7 +468,7 @@ class VendorBillService
                 throw new RuntimeException('Discount cannot be more than the line amount.');
             }
             $lot = \Custom_Helper::lotExpiryFields($row['batch_no'] ?? null, $row['expiry_date'] ?? null);
-            $lines[] = [
+            $lines[] = (isset($row['fx_unit_price']) ? ['fx_unit_price' => round((float) $row['fx_unit_price'], 4)] : []) + [
                 'product_id' => $product,
                 'qty' => $qty,
                 'unit_price' => $price,
@@ -557,6 +598,24 @@ class VendorBillService
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
         ]);
+    }
+
+    /** Phase 4.5: ['currency', 'rate'] foreign bill ke liye, base / khali = null */
+    private function fxInput(int $companyId, array $data): ?array
+    {
+        $currency = strtoupper(trim((string) ($data['currency'] ?? '')));
+        $cs = app(CurrencyService::class);
+        if ($currency === '' || $currency === $cs->base($companyId)) {
+            return null;
+        }
+        if (!$cs->ready()) {
+            throw new RuntimeException('Foreign currency bills are not set up on this server yet.');
+        }
+        $rate = (float) str_replace(',', '', (string) ($data['fx_rate'] ?? 0)) ?: $cs->rate($companyId, $currency, (string) ($data['bill_date'] ?? date('Y-m-d')));
+        if (!$rate || $rate <= 0) {
+            throw new RuntimeException('Enter the ' . $currency . ' exchange rate.');
+        }
+        return ['currency' => $currency, 'rate' => round($rate, 6)];
     }
 
     private function assertVendor(int $companyId, int $vendorId): void

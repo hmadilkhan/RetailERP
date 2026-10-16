@@ -34,6 +34,8 @@ class VendorBills extends Component
     public $dueDate = '';
     public $otherCharges = '';
     public $narration = '';
+    public $currency = '';        // Phase 4.5: khali = base currency
+    public $fxRate = '';
     public array $lines = [];
     public $productSearch = '';
 
@@ -44,6 +46,7 @@ class VendorBills extends Component
     public $payMode = 'cash';
     public $payBank = '';
     public $payRef = '';
+    public $payRate = '';         // foreign bill ki payment ka rate
     public array $returnQty = []; // bill line id => qty
     public $noteDate = '';
     public $noteAmount = '';
@@ -92,14 +95,20 @@ class VendorBills extends Component
         $this->dueDate = $bill->due_date?->toDateString() ?? '';
         $this->otherCharges = (float) $bill->other_charges ? (string) (float) $bill->other_charges : '';
         $this->narration = (string) $bill->narration;
+        $rate = !empty($bill->currency) ? (float) $bill->fx_rate : 1.0;
+        if (!empty($bill->currency)) {
+            $this->currency = $bill->currency;
+            $this->fxRate = (string) $rate;
+            $this->otherCharges = (float) $bill->other_charges ? (string) round((float) $bill->other_charges / $rate, 2) : '';
+        }
         $names = DB::table('inventory_general')->whereIn('id', $bill->lines->pluck('product_id'))->pluck('product_name', 'id');
         foreach ($bill->lines as $line) {
             $this->lines[] = [
                 'product_id' => $line->product_id,
                 'name' => $names[$line->product_id] ?? ('#' . $line->product_id),
                 'qty' => (string) (float) $line->qty,
-                'unit_price' => (string) (float) $line->unit_price,
-                'discount' => (float) $line->discount ? (string) (float) $line->discount : '',
+                'unit_price' => (string) (float) ($rate != 1.0 ? ($line->fx_unit_price ?? round((float) $line->unit_price / $rate, 4)) : $line->unit_price),
+                'discount' => (float) $line->discount ? (string) round((float) $line->discount / $rate, 2) : '',
                 'tax_rate' => (float) $line->tax_rate ? (string) (float) $line->tax_rate : '',
                 'batch_no' => (string) $line->batch_no,
                 'expiry_date' => $line->expiry_date ? substr((string) $line->expiry_date, 0, 10) : '',
@@ -107,6 +116,14 @@ class VendorBills extends Component
         }
         $this->showForm = true;
         $this->viewId = null;
+    }
+
+    /** Phase 4.5: currency chuni → bill date ka rate */
+    public function updatedCurrency(): void
+    {
+        $this->fxRate = $this->currency !== ''
+            ? (string) (app(\App\Services\Purchases\CurrencyService::class)->rate((int) session('company_id'), $this->currency, $this->billDate ?: date('Y-m-d')) ?? '')
+            : '';
     }
 
     public function cancelForm(): void
@@ -173,6 +190,8 @@ class VendorBills extends Component
                 'due_date' => $this->dueDate,
                 'other_charges' => $this->otherCharges ?: 0,
                 'narration' => $this->narration,
+                'currency' => $this->currency,
+                'fx_rate' => $this->fxRate,
                 'lines' => $this->lines,
             ], $this->billId, session('userid'));
             $waiting = $post ? $this->approvalGate($bill) : null;
@@ -251,7 +270,12 @@ class VendorBills extends Component
             $this->lcVendor = (string) $this->bill($this->viewId)->vendor_id;
         }
         if ($action === 'pay' && $this->viewId) {
-            $this->payAmount = (string) round($this->bill($this->viewId)->open_amount);
+            $bill = $this->bill($this->viewId);
+            $this->payAmount = (string) round($bill->open_amount);
+            if (!empty($bill->currency)) { // Phase 4.5: foreign me baqi + aaj ka rate
+                $this->payAmount = (string) round($bill->open_amount / (float) $bill->fx_rate, 2);
+                $this->payRate = (string) (app(\App\Services\Purchases\CurrencyService::class)->rate((int) session('company_id'), $bill->currency, date('Y-m-d')) ?? '');
+            }
         }
     }
 
@@ -259,7 +283,7 @@ class VendorBills extends Component
     {
         $this->resetErrorBag();
         $this->action = '';
-        $this->payAmount = $this->payBank = $this->payRef = $this->noteAmount = $this->noteNarration = '';
+        $this->payAmount = $this->payBank = $this->payRef = $this->payRate = $this->noteAmount = $this->noteNarration = '';
         $this->lcAmount = $this->lcVendor = $this->lcRef = '';
         $this->lcMethod = 'value';
         $this->payMode = 'cash';
@@ -269,9 +293,9 @@ class VendorBills extends Component
     public function pay(): void
     {
         $service = app(VendorBillService::class);
-        $this->validate(['payAmount' => 'required|numeric|min:1', 'payMode' => 'required|in:cash,bank'], [], ['payAmount' => 'amount']);
+        $this->validate(['payAmount' => 'required|numeric|min:0.01', 'payMode' => 'required|in:cash,bank', 'payRate' => 'nullable|numeric|min:0'], [], ['payAmount' => 'amount', 'payRate' => 'rate']);
         $this->run(fn () => $service->pay((int) session('company_id'), (int) $this->viewId, (float) $this->payAmount, $this->payMode,
-            $this->payBank ? (int) $this->payBank : null, $this->payRef, session('branch')), 'Payment saved.');
+            $this->payBank ? (int) $this->payBank : null, $this->payRef, session('branch'), $this->payRate !== '' ? (float) $this->payRate : null), 'Payment saved.');
     }
 
     public function saveDebitNote(): void
@@ -353,6 +377,8 @@ class VendorBills extends Component
             'banks' => DB::table('bank_account_generaldetails')->whereIn('branch_id_company', $service->branchIds($companyId))->orderBy('account_title')->get(['bank_account_id', 'account_title', 'account_no']),
             'taxes' => DB::table('taxes')->where('company_id', $companyId)->where('status_id', 1)->where('show_in_purchase', 1)->get(['id', 'name', 'value']),
             'searchResults' => $searchResults,
+            'currencies' => app(\App\Services\Purchases\CurrencyService::class)->currencies($companyId),
+            'baseCurrency' => app(\App\Services\Purchases\CurrencyService::class)->base($companyId),
             'formTotals' => $this->showForm ? $service->totals($formLines, (float) ($this->otherCharges ?: 0)) : null,
         ])->layout('layouts.master-tailwind');
     }
@@ -391,6 +417,7 @@ class VendorBills extends Component
         $this->resetErrorBag();
         $this->billId = null;
         $this->branchId = $this->vendorId = $this->vendorRef = $this->billDate = $this->dueDate = $this->otherCharges = $this->narration = $this->productSearch = '';
+        $this->currency = $this->fxRate = '';
         $this->lines = [];
     }
 }

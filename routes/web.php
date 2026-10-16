@@ -552,6 +552,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/vendor-scorecard', \App\Livewire\Purchases\VendorScorecard::class)->name('vendor-scorecard')->middleware('auth'); // Phase 2.6
     Route::get('/rfqs', \App\Livewire\Purchases\Rfqs::class)->name('rfqs')->middleware('auth'); // Phase 3.5
     Route::get('/po-matching', \App\Livewire\Purchases\PoMatching::class)->name('po-matching')->middleware('auth'); // Phase 4.4
+    Route::get('/exchange-rates', \App\Livewire\Purchases\ExchangeRates::class)->name('exchange-rates')->middleware('auth'); // Phase 4.5
 
 
 

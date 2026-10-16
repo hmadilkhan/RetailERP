@@ -37,6 +37,7 @@ return [
     'vendor_scorecard' => 'تقييم الموردين',
     'request_for_quotation' => 'طلب عروض الأسعار',
     'po_matching' => 'مطابقة أوامر الشراء',
+    'exchange_rates' => 'أسعار الصرف',
     'inventory' => 'المخزون',
     'inventory_details' => 'تفاصيل المخزون',
     'inventory_department' => 'قسم المخزون',
