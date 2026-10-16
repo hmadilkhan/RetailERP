@@ -172,6 +172,7 @@ return [
     'budgets' => 'Budgets',
     'quickbooks_sync' => 'QuickBooks Sync',
     'sales_tax' => 'Sales Tax',
+    'accounting_health' => 'Accounting Health',
     'general_ledger' => 'General Ledger',
     'posting_rules' => 'Posting Rules',
     'financial_statements' => 'Financial Statements',

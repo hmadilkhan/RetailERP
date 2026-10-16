@@ -1026,6 +1026,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/quickbooks/connect', [QuickBooksController::class, 'connect'])->middleware('auth');
     Route::get('/quickbooks/callback', [QuickBooksController::class, 'callback'])->middleware('auth');
     Route::get('/sales-tax', \App\Livewire\Accounting\SalesTax::class)->name('sales-tax')->middleware('auth'); // Phase 4.1
+    Route::get('/accounting-health', \App\Livewire\Accounting\AccountingHealth::class)->name('accounting-health')->middleware('auth'); // Phase 4.2
     Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
     Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);
     Route::post('/cashLedgerDeposit', [BankController::class, 'insert_cashLedger']);

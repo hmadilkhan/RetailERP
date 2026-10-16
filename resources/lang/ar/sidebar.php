@@ -162,6 +162,7 @@ return [
     'budgets' => 'الميزانيات',
     'quickbooks_sync' => 'مزامنة QuickBooks',
     'sales_tax' => 'ضريبة المبيعات',
+    'accounting_health' => 'سلامة المحاسبة',
     'general_ledger' => 'دفتر الأستاذ العام',
     'posting_rules' => 'قواعد الترحيل',
     'financial_statements' => 'القوائم المالية',
