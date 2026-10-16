@@ -475,7 +475,7 @@ class VendorBillService
     }
 
     /** vendor_ledger row — balance = pichla + debit − credit (minus = payable) */
-    private function ledger(int $vendorId, int $debit, int $credit, string $narration, ?string $when): int
+    public function ledger(int $vendorId, int $debit, int $credit, string $narration, ?string $when): int
     {
         $last = DB::table('vendor_ledger')->where('vendor_id', $vendorId)->orderByDesc('vendor_account_id')->lockForUpdate()->value('balance');
         $row = [

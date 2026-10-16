@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 /** Phase 2.1: vendor bill / debit note / credit note — App\Services\Purchases\VendorBillService. */
 class VendorBill extends Model
 {
-    const TYPES = ['bill' => 'Vendor Bill', 'debit_note' => 'Debit Note', 'credit_note' => 'Credit Note', 'landed_cost' => 'Landed Cost'];
-    const PREFIX = ['bill' => 'VB', 'debit_note' => 'DN', 'credit_note' => 'CN', 'landed_cost' => 'LC'];
-    const PAYABLE = ['bill', 'landed_cost']; // jin ka paisa dena hai (Pay)
+    const TYPES = ['bill' => 'Vendor Bill', 'debit_note' => 'Debit Note', 'credit_note' => 'Credit Note', 'landed_cost' => 'Landed Cost', 'po_bill' => 'PO Bill'];
+    const PREFIX = ['bill' => 'VB', 'debit_note' => 'DN', 'credit_note' => 'CN', 'landed_cost' => 'LC', 'po_bill' => 'PB'];
+    const PAYABLE = ['bill', 'landed_cost', 'po_bill']; // jin ka paisa dena hai (Pay)
 
     protected $guarded = [];
 

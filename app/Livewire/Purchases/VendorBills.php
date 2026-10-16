@@ -220,6 +220,10 @@ class VendorBills extends Component
         $service = app(VendorBillService::class);
         $bill = $this->bill($id);
         $wasDraft = $bill->status === 'draft';
+        if ($bill->type === 'po_bill') { // Phase 4.4
+            $this->run(fn () => app(\App\Services\Purchases\PoMatchService::class)->cancel((int) session('company_id'), $id), 'PO bill cancelled — difference reversed.');
+            return;
+        }
         if ($this->run(fn () => $service->cancel((int) session('company_id'), $id, session('userid')), $wasDraft ? 'Draft deleted.' : 'Bill cancelled — stock removed and vendor balance reversed.') && $wasDraft) {
             $this->viewId = null;
         }

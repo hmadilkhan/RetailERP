@@ -36,6 +36,7 @@ return [
     'vendor_bills' => 'فواتير الموردين',
     'vendor_scorecard' => 'تقييم الموردين',
     'request_for_quotation' => 'طلب عروض الأسعار',
+    'po_matching' => 'مطابقة أوامر الشراء',
     'inventory' => 'المخزون',
     'inventory_details' => 'تفاصيل المخزون',
     'inventory_department' => 'قسم المخزون',

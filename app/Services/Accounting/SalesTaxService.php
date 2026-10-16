@@ -263,7 +263,7 @@ class SalesTaxService
     private function purchaseQuery(int $companyId, string $from, string $to, ?int $branchId)
     {
         return DB::table('vendor_bill_lines as l')->join('vendor_bills as b', 'b.id', '=', 'l.vendor_bill_id')
-            ->where('b.company_id', $companyId)->where('b.status', 'posted')->whereIn('b.type', ['bill', 'debit_note'])
+            ->where('b.company_id', $companyId)->where('b.status', 'posted')->whereIn('b.type', ['bill', 'po_bill', 'debit_note'])
             ->whereBetween('b.bill_date', [$from, $to])
             ->when($branchId, fn ($q) => $q->where('b.branch_id', $branchId));
     }

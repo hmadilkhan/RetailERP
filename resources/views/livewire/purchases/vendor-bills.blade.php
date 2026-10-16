@@ -182,7 +182,16 @@
                     </p>
                 </div>
                 <div class="flex flex-wrap gap-2">
-                    @if ($viewing->status === 'draft')
+                    @if ($viewing->type === 'po_bill')
+                        {{-- Phase 4.4: PO se juda bill — edit / post / match PO Matching pe --}}
+                        <a href="{{ url('po-matching') }}?bill={{ $viewing->id }}" class="{{ $viewing->status === 'draft' ? $btnPrimary : $btn }} inline-flex items-center">{{ $viewing->status === 'draft' ? 'Open in PO Matching' : 'View match' }}</a>
+                        @if ($viewing->status === 'posted' && $viewing->open_amount >= 1)
+                            <button type="button" wire:click="openAction('pay')" class="{{ $btnPrimary }}">Pay</button>
+                        @endif
+                        @if ($viewing->status === 'posted' && (float) $viewing->paid == 0)
+                            <button type="button" wire:click="cancelBill({{ $viewing->id }})" wire:confirm="Cancel this PO bill? The difference booked to the vendor will be reversed." class="{{ $btn }} text-rose-700">Cancel Bill</button>
+                        @endif
+                    @elseif ($viewing->status === 'draft')
                         <button type="button" wire:click="edit({{ $viewing->id }})" class="{{ $btn }}">Edit</button>
                         <button type="button" wire:click="cancelBill({{ $viewing->id }})" wire:confirm="Delete this draft?" class="{{ $btn }} text-rose-700">Delete</button>
                         <button type="button" wire:click="post({{ $viewing->id }})" wire:confirm="Post this bill? Items will be added to stock and the vendor balance will go up." class="{{ $btnPrimary }}">Post</button>

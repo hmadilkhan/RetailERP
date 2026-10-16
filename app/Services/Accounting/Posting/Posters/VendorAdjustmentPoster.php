@@ -42,6 +42,7 @@ class VendorAdjustmentPoster implements Poster
               AND COALESCE(vl.narration, '') NOT LIKE 'Vendor Bill %' AND COALESCE(vl.narration, '') NOT LIKE 'Debit Note %'
               AND COALESCE(vl.narration, '') NOT LIKE 'Credit Note %'
               AND COALESCE(vl.narration, '') NOT LIKE 'Landed Cost %'
+              AND COALESCE(vl.narration, '') NOT LIKE 'PO Bill %'
               AND NOT EXISTS (SELECT 1 FROM vendor_payment_details vpd WHERE vpd.account_id = vl.vendor_account_id)
               AND {$dateSql} BETWEEN ? AND ?", [$companyId, $from, $to]);
 
