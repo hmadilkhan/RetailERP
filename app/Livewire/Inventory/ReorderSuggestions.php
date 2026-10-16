@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Inventory;
 
+use App\Services\Inventory\DemandForecastService;
 use App\Services\Inventory\ExpiryService;
 use App\Services\Inventory\ReplenishmentService;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -17,6 +18,7 @@ class ReorderSuggestions extends Component
     use WithPagination;
 
     public $branchId = '';
+    public $method = 'forecast'; // forecast (Phase 4.3) | average
     public $salesDays = 30;
     public $coverDays = 7;
     public $departmentId = '';
@@ -40,7 +42,7 @@ class ReorderSuggestions extends Component
 
     public function updating($name): void
     {
-        if (in_array($name, ['branchId', 'salesDays', 'coverDays', 'departmentId', 'show', 'search'], true)) {
+        if (in_array($name, ['branchId', 'method', 'salesDays', 'coverDays', 'departmentId', 'show', 'search'], true)) {
             $this->resetPage();
             if ($name === 'branchId') {
                 $this->selected = $this->orderQty = [];
@@ -96,7 +98,7 @@ class ReorderSuggestions extends Component
         }
         $this->run(function () use ($ids) {
             $n = app(ReplenishmentService::class)->fillFromSales((int) session('company_id'), (int) $this->branchId, $ids,
-                (int) $this->salesDays, (int) $this->coverDays, session('userid'));
+                (int) $this->salesDays, (int) $this->coverDays, session('userid'), $this->rates());
             session()->flash('rs_message', $n . ' product level(s) set from sales. Products without sales were skipped.');
         }, null);
     }
@@ -132,6 +134,7 @@ class ReorderSuggestions extends Component
 
         return view('livewire.inventory.reorder-suggestions', [
             'rows' => $paginator,
+            'accuracy' => $this->method === 'forecast' && $this->rows() ? app(DemandForecastService::class)->forecast((int) $this->branchId)['accuracy'] : null,
             'summary' => ['products' => count($all), 'needed' => count($needed), 'out' => count(array_filter($all, fn ($r) => $r['on_hand'] <= 0 && $r['daily'] > 0))],
             'selectedCount' => count(array_filter($this->selected)),
             'branches' => DB::table('branch')->whereIn('branch_id', $allowed ?: [0])->where('status_id', 1)->orderBy('branch_name')->get(['branch_id', 'branch_name']),
@@ -152,7 +155,13 @@ class ReorderSuggestions extends Component
             return $this->rowsCache = [];
         }
         return $this->rowsCache = app(ReplenishmentService::class)->suggestions((int) session('company_id'), (int) $this->branchId,
-            (int) $this->salesDays, (int) $this->coverDays, $this->departmentId !== '' ? (int) $this->departmentId : null);
+            (int) $this->salesDays, (int) $this->coverDays, $this->departmentId !== '' ? (int) $this->departmentId : null, $this->rates());
+    }
+
+    /** forecast ke rates (product => daily, trend) ya null = simple average */
+    private function rates(): ?array
+    {
+        return $this->method === 'forecast' ? app(DemandForecastService::class)->forecast((int) $this->branchId)['rates'] : null;
     }
 
     private function filtered(): array

@@ -24,7 +24,7 @@
         <div class="rounded-lg border border-erp-line bg-white p-5 shadow-sm">
             <div class="{{ $labelClass }}">Out of stock, still selling</div>
             <div class="mt-2 text-2xl font-bold text-amber-700">{{ $summary['out'] }}</div>
-            <div class="mt-1 text-sm text-erp-mute">sold in the last {{ $salesDays }} days, nothing on hand</div>
+            <div class="mt-1 text-sm text-erp-mute">still selling, nothing on hand</div>
         </div>
         <div class="rounded-lg border border-erp-line bg-white p-5 shadow-sm">
             <div class="{{ $labelClass }}">Products tracked</div>
@@ -40,6 +40,17 @@
                 Suggests what this branch should order: <b>on hand + in transit</b> is compared with the <b>reorder point</b> (the higher of the minimum and daily sales × lead time).
                 Minimum comes from the branch level, or the product's Qty Reminder if no level is set. Tick products and <b>Create Demand</b> to send a pending demand to head office.
             </p>
+            @if ($method === 'forecast')
+                <p class="mt-2 text-xs text-erp-mute">
+                    Forecast = weekly sales of the last 26 weeks, recent weeks weighted more (a product's weeks before its first sale are ignored). ↑ / ↓ = last 4 weeks vs the 8 before.
+                    @if ($accuracy)
+                        Tested on this branch's past 16 weeks: forecast was off by <b class="{{ $accuracy['forecast_error'] <= $accuracy['average_error'] ? 'text-emerald-700' : 'text-amber-700' }}">{{ $accuracy['forecast_error'] }}%</b>
+                        vs <b>{{ $accuracy['average_error'] }}%</b> for a simple 28-day average{{ $accuracy['forecast_error'] > $accuracy['average_error'] ? ' — for this branch the simple average has been closer' : '' }}.
+                    @else
+                        Not enough past sales in this branch to measure accuracy.
+                    @endif
+                </p>
+            @endif
         </div>
         <div class="grid gap-3 border-b border-erp-line p-5 md:grid-cols-6">
             <label class="block md:col-span-2">
@@ -51,7 +62,14 @@
                 </select>
             </label>
             <label class="block">
-                <span class="{{ $labelClass }}">Sales period</span>
+                <span class="{{ $labelClass }}">Daily sales from</span>
+                <select wire:model.live="method" class="mt-1 {{ $cellInput }}">
+                    <option value="forecast">Forecast (recent weeks count more)</option>
+                    <option value="average">Simple average</option>
+                </select>
+            </label>
+            <label class="block">
+                <span class="{{ $labelClass }}">{{ $method === 'forecast' ? 'Compare with average of' : 'Sales period' }}</span>
                 <select wire:model.live="salesDays" class="mt-1 {{ $cellInput }}">
                     @foreach ([7, 14, 30, 60, 90] as $d)
                         <option value="{{ $d }}">Last {{ $d }} days</option>
@@ -118,7 +136,7 @@
                             <td class="px-3 py-3"><span class="font-semibold text-erp-ink">{{ $row['name'] }}</span> <span class="text-erp-mute">{{ $row['code'] }}</span></td>
                             <td class="px-3 py-3 text-right tabular-nums {{ $row['on_hand'] <= 0 ? 'font-bold text-rose-700' : '' }}">{{ $qty($row['on_hand']) }}</td>
                             <td class="px-3 py-3 text-right tabular-nums">{{ $row['inbound'] ? $qty($row['inbound']) : '' }}</td>
-                            <td class="px-3 py-3 text-right tabular-nums">{{ $row['daily'] ? $qty($row['daily']) : '' }}</td>
+                            <td class="px-3 py-3 text-right tabular-nums" title="Average of last {{ $salesDays }} days: {{ $qty($row['average']) }}">{{ $row['daily'] ? $qty($row['daily']) : '' }}@if ($method === 'forecast' && in_array($row['trend'], ['up', 'down', 'new'], true))<span class="ml-1 text-xs {{ $row['trend'] === 'down' ? 'text-rose-600' : 'text-emerald-600' }}">{{ ['up' => '↑', 'down' => '↓', 'new' => 'new'][$row['trend']] }}</span>@endif</td>
                             <td class="px-3 py-3 text-right tabular-nums">{{ $row['days_left'] === null ? '' : $qty($row['days_left']) }}</td>
                             <td class="px-3 py-3">
                                 @if ($editId === $id)

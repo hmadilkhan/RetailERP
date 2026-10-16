@@ -28,7 +28,7 @@ class ReplenishmentService
     /**
      * @return array<int, array> product_id => row (sirf woh products jin ka stock / bikri / level / reminder hai)
      */
-    public function suggestions(int $companyId, int $branchId, int $salesDays = 30, int $coverDays = 7, ?int $departmentId = null): array
+    public function suggestions(int $companyId, int $branchId, int $salesDays = 30, int $coverDays = 7, ?int $departmentId = null, ?array $rates = null): array
     {
         $salesDays = max(7, min(365, $salesDays));
         $from = date('Y-m-d', strtotime('-' . $salesDays . ' days'));
@@ -66,7 +66,8 @@ class ReplenishmentService
             $level = $levels[$id] ?? null;
             $stock = (float) ($onHand[$id] ?? 0);
             $incoming = (float) ($inbound[$id] ?? 0);
-            $daily = max(0, (float) ($sold[$id] ?? 0)) / $salesDays;
+            // Phase 4.3: forecast (DemandForecastService) diya ho to roz ki bikri wahi, warna pichle N din ki average
+            $daily = $rates !== null ? max(0, (float) ($rates[$id]['daily'] ?? 0)) : max(0, (float) ($sold[$id] ?? 0)) / $salesDays;
             $reminder = (float) ($p->reminder_qty ?? 0);
             $min = $level && $level->min_qty !== null ? (float) $level->min_qty : $reminder;
             if ($stock == 0 && $incoming == 0 && $daily == 0 && !$level && $reminder <= 0) {
@@ -99,6 +100,8 @@ class ReplenishmentService
                 'on_hand' => $stock,
                 'inbound' => $incoming,
                 'daily' => round($daily, 3),
+                'average' => round(max(0, (float) ($sold[$id] ?? 0)) / $salesDays, 3),
+                'trend' => $rates[$id]['trend'] ?? null,
                 'days_left' => $daily > 0 ? round(max(0, $stock) / $daily, 1) : null,
                 'min' => $min,
                 'min_source' => $level && $level->min_qty !== null ? 'level' : ($reminder > 0 ? 'reminder' : null),
@@ -120,12 +123,18 @@ class ReplenishmentService
      */
     private function explodeRecipes(int $branchId, array $sold): array
     {
-        if (!$sold) {
-            return $sold;
+        return $sold ? $this->explode($this->recipeMap($branchId, array_keys($sold)), $sold) : $sold;
+    }
+
+    /** product_id => recipe lines (item_id, usage_qty, w) — is branch ki recipe, warna kisi bhi branch ki */
+    public function recipeMap(int $branchId, array $productIds): array
+    {
+        if (!$productIds) {
+            return [];
         }
         $rows = DB::table('recipy_general as g')->join('recipy_details as d', 'd.recipy_id', '=', 'g.recipy_id')
             ->leftJoin('inventory_general as i', 'i.id', '=', 'd.item_id')
-            ->where('g.status_id', 1)->whereIn('g.product_id', array_keys($sold))->whereRaw('(d.usage_qty + 0) > 0')
+            ->where('g.status_id', 1)->whereIn('g.product_id', $productIds)->whereRaw('(d.usage_qty + 0) > 0')
             ->orderByRaw('g.branch_id = ? DESC', [$branchId])
             ->get(['g.product_id', 'g.branch_id', 'd.item_id', DB::raw('(d.usage_qty + 0) AS usage_qty'), DB::raw('CASE WHEN (i.weight_qty + 0) > 1 THEN (i.weight_qty + 0) ELSE 1 END AS w')]);
 
@@ -134,7 +143,12 @@ class ReplenishmentService
             $branch = $lines->first()->branch_id; // pehli = is branch ki (agar ho)
             $recipes[(int) $productId] = $lines->where('branch_id', $branch);
         }
+        return $recipes;
+    }
 
+    /** bikri (product => qty) ko recipe ingredients me baanto */
+    public function explode(array $recipes, array $sold): array
+    {
         $out = [];
         foreach ($sold as $productId => $qty) {
             if (!isset($recipes[$productId])) {
@@ -148,7 +162,6 @@ class ReplenishmentService
         return $out;
     }
 
-    /** product_id => raste me qty (challan bina GRN + PO ka bacha maal) */
     public function inbound(int $branchId): array
     {
         $out = [];
@@ -228,9 +241,9 @@ class ReplenishmentService
     }
 
     /** bikri se levels: min = bikri × lead time, max = bikri × (lead time + cover) — sirf jin ki bikri hai */
-    public function fillFromSales(int $companyId, int $branchId, array $productIds, int $salesDays, int $coverDays, $userId = null): int
+    public function fillFromSales(int $companyId, int $branchId, array $productIds, int $salesDays, int $coverDays, $userId = null, ?array $rates = null): int
     {
-        $rows = $this->suggestions($companyId, $branchId, $salesDays, $coverDays);
+        $rows = $this->suggestions($companyId, $branchId, $salesDays, $coverDays, null, $rates);
         $n = 0;
         foreach ($productIds as $id) {
             $r = $rows[(int) $id] ?? null;
