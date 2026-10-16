@@ -1020,6 +1020,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/bank-reconciliation', \App\Livewire\Accounting\BankReconciliation::class)->name('bank-reconciliation')->middleware('auth'); // Phase 3.1
     Route::get('/fixed-assets', \App\Livewire\Accounting\FixedAssets::class)->name('fixed-assets')->middleware('auth'); // Phase 3.3
     Route::get('/cost-centers', \App\Livewire\Accounting\CostCenters::class)->name('cost-centers')->middleware('auth'); // Phase 3.4
+    Route::get('/budgets', \App\Livewire\Accounting\Budgets::class)->name('budgets')->middleware('auth'); // Phase 3.2
     Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
     Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);
     Route::post('/cashLedgerDeposit', [BankController::class, 'insert_cashLedger']);
