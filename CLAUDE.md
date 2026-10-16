@@ -135,6 +135,16 @@ Ye bugs client ko **ghalat financial numbers** de rahe hain. Feature gap nahi, r
 - [x] **3.6** QuickBooks full invoice + journal sync
   **Scope (2026-10-16):** live: sirf Wild (company 7) ka `quickbook_settings` row (token har 30 min refresh), realm env se (global), purane customer / item / invoice jobs `needs_qb_*` flags pe — **ye nahi chhede**. Accounting ab GL me hai, isliye full invoice ki jagah **journal mode**: har posted journal entry (`sync_from_date` se) → QBO JournalEntry (DocNumber = entry_no, date, lines account mapping se; reversal apni alag entry), `qbo_journal_sync` (synced / failed + error, 5 koshish, mapping save / Retry pe dobara), bhejne se pehle DocNumber dhoondna (duplicate nahi). `qbo_account_map` (hamara account → QBO account), Auto-match (QBO account number = code, warna naam). **QuickBooks Sync** page (Accounts Operations): Connect / Reconnect (OAuth, company ka `realm_id`; `QUICKBOOKS_REDIRECT_URI` = `/quickbooks/callback` Intuit app me register hona chahiye), sync on / off + from date, Sent / Waiting / Failed, Sync now, mapping, Not sent list. `quickbooks:sync-journals` har 30 min. Fixes: token refresh ab har company ka (pehle sirf pehli row), `redirect_url` config key, realm company ka (na ho to env). **Asal QuickBooks pe test nahi hua** (local credentials nahi; fake client se).
 
+## Phase 4 — Tax, planning & go-live (proposal, 2026-10-16)
+
+> Phase 0–3 ke baad audit ki "kya nahi" list me jo baqi hai. Order user confirm kare.
+
+- [ ] **4.1 Sales tax ledger + return** — GL se mahana Output Tax (POS / web sales) vs Input Tax (Vendor Bills), payable / refundable, FBR invoice register se milan; `TaxController` sirf rate CRUD hai.
+- [ ] **4.2 Accounting health / go-live** — ek screen: suspense balance, unvalued sales, unmapped accounts / banks, posting errors, unreconciled bank, QBO failed; Wild ka test data saaf karne ka tareeqa; pehle asal client ka pilot.
+- [ ] **4.3 Demand forecasting → reorder** — sales history (season / weekday) se agle hafton ki bikri, Reorder Suggestions me raftaar ki jagah forecast; `SalesForecastService` (sales-chat) se alag.
+- [ ] **4.4 PO three-way match + GR/IR** — sirf jab koi client PO / GRN use kare (abhi saal me ~5 GRN).
+- [ ] **4.5 Multi-currency** — foreign currency Vendor Bill (rate + exchange gain / loss); abhi demand nahi.
+
 ### Target
 
 | | Abhi | Phase 1+2 ke baad |
