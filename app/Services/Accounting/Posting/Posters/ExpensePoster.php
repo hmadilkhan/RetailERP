@@ -3,6 +3,7 @@
 namespace App\Services\Accounting\Posting\Posters;
 
 use App\Services\Accounting\Posting\AccountResolver;
+use App\Services\Accounting\Posting\CostCenterResolver;
 use App\Services\Accounting\Posting\Poster;
 use App\Services\Accounting\Posting\PostingDocument;
 use App\Services\Accounting\Posting\SourceQuery;
@@ -49,7 +50,8 @@ class ExpensePoster implements Poster
             $doc = new PostingDocument((string) $row->exp_id, $row->d, (int) $row->branch_id,
                 trim('Expense #' . $row->exp_id . ' — ' . ($row->expense_category ?? '') . ' — ' . $row->expense_details, ' —'),
                 (int) $row->exp_id);
-            $doc->debit($accounts->mapped('expense_category', (int) $row->exp_cat_id, 'general_expense'), $row->net_amount)
+            $doc->debit($accounts->mapped('expense_category', (int) $row->exp_cat_id, 'general_expense'), $row->net_amount, null,
+                    CostCenterResolver::forCompany($companyId)->expenseCategory((int) $row->exp_cat_id)) // Phase 3.4
                 ->credit($paidFrom, $row->net_amount);
             yield $doc;
         }

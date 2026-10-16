@@ -84,6 +84,7 @@ class JournalEntries extends Component
             'debit' => (float) $l->debit > 0 ? (string) $l->debit : '',
             'credit' => (float) $l->credit > 0 ? (string) $l->credit : '',
             'narration' => (string) $l->narration,
+            'cost_center_id' => (string) ($l->cost_center_id ?? ''),
         ])->all();
         $this->showForm = true;
     }
@@ -177,6 +178,7 @@ class JournalEntries extends Component
             'branches' => Branch::where('company_id', $companyId)->where('status_id', 1)->orderBy('branch_name')->get(['branch_id', 'branch_name']),
             'branchNames' => Branch::where('company_id', $companyId)->pluck('branch_name', 'branch_id'),
             'viewing' => $this->viewId ? JournalEntry::where('company_id', $companyId)->with(['lines.account', 'reversalOf', 'reversedBy'])->find($this->viewId) : null,
+            'costCenters' => $this->costCenters($companyId), // Phase 3.4 — khali ho to column nahi
             'totalDebit' => $debits / 100,
             'totalCredit' => $credits / 100,
             'difference' => ($debits - $credits) / 100,
@@ -220,9 +222,18 @@ class JournalEntries extends Component
         return JournalEntry::where('company_id', session('company_id'))->findOrFail($id);
     }
 
+    private function costCenters(int $companyId)
+    {
+        try {
+            return \Illuminate\Support\Facades\DB::table('cost_centers')->where('company_id', $companyId)->where('is_active', 1)->orderBy('code')->get(['id', 'code', 'name']);
+        } catch (\Throwable $e) {
+            return collect(); // migration se pehle
+        }
+    }
+
     private function blankLine(): array
     {
-        return ['account_id' => '', 'debit' => '', 'credit' => '', 'narration' => ''];
+        return ['account_id' => '', 'debit' => '', 'credit' => '', 'narration' => '', 'cost_center_id' => ''];
     }
 
     private function cents($value): int

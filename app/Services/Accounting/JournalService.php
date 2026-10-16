@@ -72,7 +72,7 @@ class JournalService
             }
 
             $lines = $entry->lines->map(fn ($l) => [
-                'account_id' => $l->account_id, 'debit' => $l->debit, 'credit' => $l->credit, 'narration' => $l->narration,
+                'account_id' => $l->account_id, 'debit' => $l->debit, 'credit' => $l->credit, 'narration' => $l->narration, 'cost_center_id' => $l->cost_center_id,
             ])->all();
             $this->cleanLines($entry->company_id, $lines, true); // balance + accounts dobara check
             $this->periodFor($entry->company_id, $entry->entry_date->toDateString());
@@ -108,7 +108,7 @@ class JournalService
             }
 
             $lines = $entry->lines->map(fn ($l) => [
-                'account_id' => $l->account_id, 'debit' => $l->credit, 'credit' => $l->debit, 'narration' => $l->narration,
+                'account_id' => $l->account_id, 'debit' => $l->credit, 'credit' => $l->debit, 'narration' => $l->narration, 'cost_center_id' => $l->cost_center_id,
             ])->all();
 
             $reversal = $this->createPosted($entry->company_id, [
@@ -178,7 +178,14 @@ class JournalService
             if (($debit > 0) === ($credit > 0)) {
                 throw new RuntimeException("Line {$n}: enter either a debit or a credit.");
             }
-            $clean[] = ['account_id' => (int) $accountId, 'debit_cents' => $debit, 'credit_cents' => $credit, 'narration' => $line['narration'] ?? null];
+            $clean[] = ['account_id' => (int) $accountId, 'debit_cents' => $debit, 'credit_cents' => $credit, 'narration' => $line['narration'] ?? null,
+                'cost_center_id' => !empty($line['cost_center_id']) ? (int) $line['cost_center_id'] : null];
+        }
+
+        // Phase 3.4: cost center isi company ka ho
+        $centers = array_unique(array_filter(array_column($clean, 'cost_center_id')));
+        if ($centers && \Illuminate\Support\Facades\DB::table('cost_centers')->where('company_id', $companyId)->whereIn('id', $centers)->count() !== count($centers)) {
+            throw new RuntimeException('Select a valid cost center.');
         }
 
         if (empty($clean)) {
@@ -225,6 +232,7 @@ class JournalService
                 'debit' => $this->toAmount($line['debit_cents']),
                 'credit' => $this->toAmount($line['credit_cents']),
                 'narration' => $line['narration'],
+                'cost_center_id' => $line['cost_center_id'] ?? null,
             ]);
         }
     }

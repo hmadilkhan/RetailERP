@@ -20,15 +20,16 @@ class PostingDocument
     ) {
     }
 
-    public function debit($account, $amount, ?string $narration = null): self
+    // $costCenter (Phase 3.4): sirf diya ho to line me key — warna purane documents ka hash na badle
+    public function debit($account, $amount, ?string $narration = null, ?int $costCenter = null): self
     {
-        $this->lines[] = ['account' => $account, 'debit' => (float) $amount, 'credit' => 0.0, 'narration' => $narration];
+        $this->lines[] = ['account' => $account, 'debit' => (float) $amount, 'credit' => 0.0, 'narration' => $narration] + ($costCenter ? ['cost_center' => $costCenter] : []);
         return $this;
     }
 
-    public function credit($account, $amount, ?string $narration = null): self
+    public function credit($account, $amount, ?string $narration = null, ?int $costCenter = null): self
     {
-        $this->lines[] = ['account' => $account, 'debit' => 0.0, 'credit' => (float) $amount, 'narration' => $narration];
+        $this->lines[] = ['account' => $account, 'debit' => 0.0, 'credit' => (float) $amount, 'narration' => $narration] + ($costCenter ? ['cost_center' => $costCenter] : []);
         return $this;
     }
 }

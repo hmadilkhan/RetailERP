@@ -157,6 +157,7 @@ return [
     'journal_entries' => 'قيود اليومية',
     'bank_reconciliation' => 'تسوية البنك',
     'fixed_assets' => 'الأصول الثابتة',
+    'cost_centers' => 'مراكز التكلفة',
     'general_ledger' => 'دفتر الأستاذ العام',
     'posting_rules' => 'قواعد الترحيل',
     'financial_statements' => 'القوائم المالية',

@@ -51,6 +51,7 @@
                             <th class="w-40 px-3 py-2 text-right {{ $labelClass }}">Debit</th>
                             <th class="w-40 px-3 py-2 text-right {{ $labelClass }}">Credit</th>
                             <th class="px-3 py-2 {{ $labelClass }}">Line Note</th>
+                            @if ($costCenters->count())<th class="px-3 py-2 {{ $labelClass }}">Cost Center</th>@endif
                             <th class="w-10 px-3 py-2"></th>
                         </tr>
                     </thead>
@@ -73,6 +74,14 @@
                                 <td class="px-3 py-2"><input type="number" step="0.01" min="0" wire:model.live.debounce.400ms="lines.{{ $i }}.debit" class="{{ $cellInput }} text-right"></td>
                                 <td class="px-3 py-2"><input type="number" step="0.01" min="0" wire:model.live.debounce.400ms="lines.{{ $i }}.credit" class="{{ $cellInput }} text-right"></td>
                                 <td class="min-w-[12rem] px-3 py-2"><input type="text" wire:model="lines.{{ $i }}.narration" class="{{ $cellInput }}"></td>
+                                @if ($costCenters->count())
+                                    <td class="min-w-[10rem] px-3 py-2">
+                                        <select wire:model="lines.{{ $i }}.cost_center_id" class="{{ $cellInput }}">
+                                            <option value="">—</option>
+                                            @foreach ($costCenters as $cc)<option value="{{ $cc->id }}">{{ $cc->code }} {{ $cc->name }}</option>@endforeach
+                                        </select>
+                                    </td>
+                                @endif
                                 <td class="px-3 py-2 text-right">
                                     <button type="button" wire:click="removeLine({{ $i }})" class="text-rose-500 hover:text-rose-700" title="Remove line">&times;</button>
                                 </td>
@@ -143,7 +152,7 @@
                     @foreach ($viewing->lines as $line)
                         <tr>
                             <td class="px-5 py-2"><span class="font-mono text-xs font-bold text-erp-mute">{{ $line->account->code }}</span> {{ $line->account->name }}</td>
-                            <td class="px-5 py-2 text-erp-mute">{{ $line->narration }}</td>
+                            <td class="px-5 py-2 text-erp-mute">{{ $line->narration }}@if ($line->cost_center_id && ($cc = $costCenters->firstWhere('id', $line->cost_center_id))) <span class="ml-1 rounded bg-slate-100 px-1.5 text-xs font-semibold text-slate-600">{{ $cc->code }}</span>@endif</td>
                             <td class="px-5 py-2 text-right">{{ (float) $line->debit ? $money($line->debit) : '' }}</td>
                             <td class="px-5 py-2 text-right">{{ (float) $line->credit ? $money($line->credit) : '' }}</td>
                         </tr>

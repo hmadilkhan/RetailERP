@@ -167,6 +167,7 @@ return [
     'journal_entries' => 'Journal Entries',
     'bank_reconciliation' => 'Bank Reconciliation',
     'fixed_assets' => 'Fixed Assets',
+    'cost_centers' => 'Cost Centers',
     'general_ledger' => 'General Ledger',
     'posting_rules' => 'Posting Rules',
     'financial_statements' => 'Financial Statements',

@@ -24,6 +24,11 @@ class AccountResolver
         $this->loadSystem();
     }
 
+    public function companyId(): int
+    {
+        return $this->companyId;
+    }
+
     /** system_key ya account id → account id */
     public function id($account): int
     {

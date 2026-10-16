@@ -59,6 +59,7 @@ class PostingService
      */
     public function sync(int $companyId, string $from, string $to, ?array $only = null): array
     {
+        CostCenterResolver::flush(); // Phase 3.4: qaide har run me taaza
         $setting = AccountingSetting::where('company_id', $companyId)->first();
         if (!$setting || !$setting->enabled || !$setting->posting_start_date) {
             throw new RuntimeException('Automatic posting is not turned on for this company.');
@@ -104,6 +105,7 @@ class PostingService
      */
     public function preview(int $companyId, string $from, string $to, ?array $only = null): array
     {
+        CostCenterResolver::flush(); // Phase 3.4: qaide har run me taaza
         $accounts = new AccountResolver($companyId, true);
         if (!$only || in_array('pos_sales', $only, true)) {
             $this->valuation->compute($companyId, $from, $to); // sirf memory me — SalesPoster ka COGS
@@ -238,8 +240,10 @@ class PostingService
                 continue;
             }
             $side = $net > 0 ? 'debit' : 'credit';
-            $key = $id . ':' . $side . ':' . ($line['narration'] ?? '');
-            $sum[$key] = ($sum[$key] ?? ['account_id' => $id, 'side' => $side, 'cents' => 0, 'narration' => $line['narration'] ?? null]);
+            // Phase 3.4: line ka cost center, warna branch ka default (sirf income / expense) — koi qaida na ho to null
+            $cc = $line['cost_center'] ?? CostCenterResolver::forCompany($accounts->companyId())->branchDefault($doc->branchId, $id);
+            $key = $id . ':' . $side . ':' . ($line['narration'] ?? '') . ($cc ? ':cc' . $cc : '');
+            $sum[$key] = ($sum[$key] ?? ['account_id' => $id, 'side' => $side, 'cents' => 0, 'narration' => $line['narration'] ?? null] + ($cc ? ['cost_center_id' => $cc] : []));
             $sum[$key]['cents'] += abs($net);
         }
 
@@ -269,7 +273,7 @@ class PostingService
                 'debit' => $l['side'] === 'debit' ? $amount : 0,
                 'credit' => $l['side'] === 'credit' ? $amount : 0,
                 'narration' => $l['narration'],
-            ];
+            ] + (!empty($l['cost_center_id']) ? ['cost_center_id' => $l['cost_center_id']] : []);
         }
         // pehle debits, phir credits; andar account order
         usort($lines, fn ($a, $b) => [(float) $a['credit'] > 0, $a['account_id']] <=> [(float) $b['credit'] > 0, $b['account_id']]);
