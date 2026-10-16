@@ -550,6 +550,7 @@ Route::middleware(['statusCheck'])->group(function () {
     // Phase 2.1: Vendor Bills (purchase invoice, debit / credit note, payment)
     Route::get('/vendor-bills', \App\Livewire\Purchases\VendorBills::class)->name('vendor-bills')->middleware('auth');
     Route::get('/vendor-scorecard', \App\Livewire\Purchases\VendorScorecard::class)->name('vendor-scorecard')->middleware('auth'); // Phase 2.6
+    Route::get('/rfqs', \App\Livewire\Purchases\Rfqs::class)->name('rfqs')->middleware('auth'); // Phase 3.5
 
 
 

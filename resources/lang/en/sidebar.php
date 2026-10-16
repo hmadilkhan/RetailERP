@@ -36,6 +36,7 @@ return [
     'purchase_order' => 'Purchase Order',
     'vendor_bills' => 'Vendor Bills',
     'vendor_scorecard' => 'Vendor Scorecard',
+    'request_for_quotation' => 'Request for Quotation',
     'inventory' => 'Inventory',
     'inventory_details' => 'Inventory Details',
     'inventory_department' => 'Inventory Department',

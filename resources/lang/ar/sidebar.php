@@ -35,6 +35,7 @@ return [
     'purchase_order' => 'أمر الشراء',
     'vendor_bills' => 'فواتير الموردين',
     'vendor_scorecard' => 'تقييم الموردين',
+    'request_for_quotation' => 'طلب عروض الأسعار',
     'inventory' => 'المخزون',
     'inventory_details' => 'تفاصيل المخزون',
     'inventory_department' => 'قسم المخزون',
