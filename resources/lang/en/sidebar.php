@@ -166,6 +166,7 @@ return [
     'fiscal_years' => 'Fiscal Years',
     'journal_entries' => 'Journal Entries',
     'bank_reconciliation' => 'Bank Reconciliation',
+    'fixed_assets' => 'Fixed Assets',
     'general_ledger' => 'General Ledger',
     'posting_rules' => 'Posting Rules',
     'financial_statements' => 'Financial Statements',

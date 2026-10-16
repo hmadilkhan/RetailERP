@@ -156,6 +156,7 @@ return [
     'fiscal_years' => 'السنوات المالية',
     'journal_entries' => 'قيود اليومية',
     'bank_reconciliation' => 'تسوية البنك',
+    'fixed_assets' => 'الأصول الثابتة',
     'general_ledger' => 'دفتر الأستاذ العام',
     'posting_rules' => 'قواعد الترحيل',
     'financial_statements' => 'القوائم المالية',

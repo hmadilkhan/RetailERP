@@ -1018,6 +1018,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/opening-balances', \App\Livewire\Accounting\OpeningBalances::class)->name('opening-balances')->middleware('auth');
     Route::get('/inventory-valuation', \App\Livewire\Accounting\InventoryValuation::class)->name('inventory-valuation')->middleware('auth');
     Route::get('/bank-reconciliation', \App\Livewire\Accounting\BankReconciliation::class)->name('bank-reconciliation')->middleware('auth'); // Phase 3.1
+    Route::get('/fixed-assets', \App\Livewire\Accounting\FixedAssets::class)->name('fixed-assets')->middleware('auth'); // Phase 3.3
     Route::get('/create-deposit/{id}', [BankController::class, 'show_deposit']);
     Route::get('/cash-deposit', [BankController::class, 'cash_ledger']);
     Route::post('/cashLedgerDeposit', [BankController::class, 'insert_cashLedger']);
