@@ -23,6 +23,7 @@ use App\WebsiteDetail;
 use App\WebsiteProduct;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
+use App\Services\Inventory\BranchAvailabilityService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Config;
@@ -88,8 +89,22 @@ class InventoryController extends Controller
             $request->input('rp', ''),
             $request->input('ref', ''),
             $request->boolean('inactive') ? 2 : 1,
-            $request->boolean('nonstock') ? 1 : 0
+            $request->boolean('nonstock') ? 1 : 0,
+            $request->input('ba_branch')
         )->appends($request->query());
+
+        // Branch Availability (Admin / Sub-Admin): bulk button, badge, filter
+        $baBranches = [];
+        $baCounts = [];
+        if (in_array((int) session('roleId'), [2, 17], true) && BranchAvailabilityService::ready()) {
+            $baService = app(BranchAvailabilityService::class);
+            $baBranches = $baService->branches((int) session('company_id'));
+            if (count($baBranches) > 1) {
+                $baCounts = $baService->disabledCounts((int) session('company_id'), collect($inventories->items())->pluck('id')->all());
+            } else {
+                $baBranches = [];
+            }
+        }
         // if(Auth::user()->username == 'demoadmin'){
         //    return $inventories;
         // }
@@ -97,7 +112,7 @@ class InventoryController extends Controller
         // if (in_array(Auth::user()->username, ['fn1009'])) {
         //     return view('Inventory.inventory', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
         // } else {
-            return view('v2.inventory.list', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList'));
+            return view('v2.inventory.list', compact('inventory', 'inventories', 'department', 'subdepartment', 'uom', 'branch', 'vendors', 'references', 'websites', 'tagsList', 'brandList', 'baBranches', 'baCounts'));
         // }
         // } else {
         //     $inventory = '';
@@ -438,6 +453,11 @@ class InventoryController extends Controller
                 "time" => date("H:i:s"),
             ];
             DB::table("inventory_download_status")->insert($items);
+        }
+
+        $this->saveBranchAvailability($request, (int) $productid);
+        if (!empty($request->chkstock)) {
+            app(BranchAvailabilityService::class)->warnIfDisabled((int) session('branch'), [(int) $productid]); // BA.6
         }
 
         if (!empty($request->vendor)) {
@@ -1475,6 +1495,8 @@ class InventoryController extends Controller
             DB::table("inventory_download_status")->insert($items);
         }
 
+        $this->saveBranchAvailability($request, (int) $request->id);
+
         DB::table('vendor_product')->where("product_id", $request->id)->update(['status' => 0]);
         if (!empty($request->vendor)) {
             foreach ($request->vendor as $singleVendor) {
@@ -1723,6 +1745,7 @@ class InventoryController extends Controller
 
             if (DB::table('inventory_stock')->insert($items)) {
                 session(['status' => '']);
+                app(BranchAvailabilityService::class)->warnIfDisabled((int) $request->branch, [(int) $request->product]); // BA.6
                 return redirect("stock-opening");
             } else {
                 return 0;
@@ -2278,6 +2301,42 @@ class InventoryController extends Controller
             ->where('s.status', 1)
             ->orderBy('s.sub_depart_name')
             ->get(['s.sub_department_id', 's.sub_depart_name']);
+    }
+
+    // Branch Availability: Inventory List → Bulk Actions (sirf Admin / Sub-Admin)
+    public function branchAvailabilityBulk(Request $request, BranchAvailabilityService $service)
+    {
+        if (!in_array((int) session('roleId'), [2, 17], true)) {
+            return response()->json(['message' => 'Only Admin / Sub-Admin can change branch availability.'], 403);
+        }
+        try {
+            $result = $service->bulk(
+                (int) session('company_id'),
+                (array) $request->input('ids', []),
+                (string) $request->input('mode', ''),
+                (array) $request->input('branches', []),
+                auth()->id()
+            );
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
+
+        return response()->json($result);
+    }
+
+    // Branch Availability: product form ka section (sirf Admin / Sub-Admin, sirf jab form me section tha)
+    private function saveBranchAvailability(Request $request, int $productId): void
+    {
+        if (!$request->filled('branch_availability') || !in_array((int) session('roleId'), [2, 17], true)
+            || !BranchAvailabilityService::ready()) {
+            return;
+        }
+        app(BranchAvailabilityService::class)->setForProduct(
+            (int) session('company_id'),
+            $productId,
+            (array) $request->input('available_branches', []),
+            auth()->id()
+        );
     }
 
     // Packing UOM (stock Unit Measure me, Carton sirf entry/display) aur purana conversion (weight_qty > 1) ek product pe saath nahi chal sakte

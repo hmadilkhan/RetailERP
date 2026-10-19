@@ -125,6 +125,7 @@ class VendorBillService
 
             $this->ledger((int) $bill->vendor_id, 0, (int) round($bill->total), 'Vendor Bill ' . $label, $when);
             $bill->update(['status' => 'posted', 'grn_id' => $grnId, 'posted_by' => $userId, 'posted_at' => now()]);
+            app(\App\Services\Inventory\BranchAvailabilityService::class)->warnIfDisabled((int) $bill->branch_id, $lines->pluck('product_id')->all()); // BA.6
             return $bill->fresh('lines');
         });
     }

@@ -573,6 +573,7 @@ Route::middleware(['statusCheck'])->group(function () {
     Route::get('/edit-invent/{id}/', [InventoryController::class, 'getData'])->name('edit-invent');
     Route::post('/insert-inventory', [InventoryController::class, 'insert'])->name('insert');
     Route::post('/update-inventory', [InventoryController::class, 'modify'])->name('update');
+    Route::post('/inventory/branch-availability/bulk', [InventoryController::class, 'branchAvailabilityBulk'])->name('inventory.branch-availability.bulk');
     Route::post('/getSubdepartBydepartID', [InventoryController::class, 'getSubDepart'])->name('getSubdepart');
     Route::post('/delete-invent', [InventoryController::class, 'deleteInvent']);
     Route::post('/multiple-active-invent', [InventoryController::class, 'multipleActiveInvent']);

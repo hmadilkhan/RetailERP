@@ -47,6 +47,7 @@ class StockAdjustmentApplier
 
         $this->report($productId, $stockId, $branchId, $qty, $d['amount'], '0.00', $d['narration'] ?? '', '1', $now);
         $this->afterChange($branchId, $productId);
+        app(\App\Services\Inventory\BranchAvailabilityService::class)->warnIfDisabled($branchId, [$productId]); // BA.6
         return $stockId;
     }
 

@@ -11,6 +11,7 @@
         $qty = fn ($v) => rtrim(rtrim(number_format((float) $v, 4, '.', ','), '0'), '.');
     @endphp
 
+    @include('partials.branch-availability-alert')
     @if (session()->has('vb_message'))
         <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800"
              x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 4000)" x-transition.opacity>{{ session('vb_message') }}</div>

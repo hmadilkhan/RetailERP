@@ -14,6 +14,18 @@
     $selectedInventoryType = old('inventory_type', $isEdit ? ($product->inventory_type_id ?? '') : 1);
     $websiteIsRestaurant = ($websiteType ?? null) === 'restaurant';
 
+    // Branch Availability (Admin / Sub-Admin): kin branches ke POS me product jaye
+    $baBranches = [];
+    $baDisabled = [];
+    if (in_array((int) session('roleId'), [2, 17], true) && \App\Services\Inventory\BranchAvailabilityService::ready()) {
+        $baService = app(\App\Services\Inventory\BranchAvailabilityService::class);
+        $baBranches = $baService->branches((int) session('company_id'));
+        $baDisabled = $isEdit && $product ? $baService->disabledBranches((int) session('company_id'), (int) $product->id) : [];
+    }
+    $baEnabled = old('branch_availability')
+        ? array_map('intval', (array) old('available_branches', []))
+        : array_values(array_diff(array_map('intval', array_keys($baBranches)), $baDisabled));
+
     $field = function ($name, $fallback = '') use ($product, $price) {
         $map = [
             'pctcode' => $product->pct_code ?? '',
@@ -341,6 +353,26 @@
                             <input type="number" name="priority" id="priority" value="{{ $field('priority') }}" class="{{ $inputClass }}" placeholder="0">
                         </label>
                     </div>
+                    @if (count($baBranches) > 1)
+                        <div class="rounded-lg border border-erp-line bg-slate-50 p-4">
+                            <input type="hidden" name="branch_availability" value="1">
+                            <p class="text-sm font-bold text-erp-text">Branch Availability</p>
+                            <p class="mt-1 text-xs text-erp-mute">POS on the unticked branches will not get this product. Stock stays as it is.</p>
+                            <label class="mt-3 flex cursor-pointer items-center gap-3 text-sm font-bold text-erp-text">
+                                <input type="checkbox" id="baAll" class="rounded border-erp-line text-erp focus:ring-erp" {{ count($baEnabled) === count($baBranches) ? 'checked' : '' }}>
+                                All branches
+                            </label>
+                            <div class="mt-2 max-h-56 space-y-1 overflow-y-auto border-t border-erp-line pt-2">
+                                @foreach ($baBranches as $baId => $baName)
+                                    <label class="flex cursor-pointer items-center gap-3 py-1 pl-4 text-sm text-erp-text">
+                                        <input type="checkbox" name="available_branches[]" value="{{ $baId }}" class="ba-branch rounded border-erp-line text-erp focus:ring-erp" {{ in_array((int) $baId, $baEnabled, true) ? 'checked' : '' }}>
+                                        {{ $baName }}
+                                    </label>
+                                @endforeach
+                            </div>
+                            <p id="baNoneWarning" class="mt-2 hidden text-xs font-bold text-rose-600">No branch selected — this product will not show on any POS.</p>
+                        </div>
+                    @endif
                     @if (!$isEdit)
                         <div class="rounded-lg border border-erp-line bg-slate-50 p-4">
                             <label class="flex cursor-pointer items-center gap-3 text-sm font-bold text-erp-text">
@@ -418,6 +450,20 @@
 @push('scripts')
     <script src="{{ asset('ckeditor/ckeditor.js') }}"></script>
     <script>
+        (function () {
+            const all = document.getElementById('baAll');
+            if (!all) return;
+            const boxes = () => Array.from(document.querySelectorAll('.ba-branch'));
+            const sync = () => {
+                const ticked = boxes().filter(b => b.checked).length;
+                all.checked = ticked === boxes().length;
+                document.getElementById('baNoneWarning').classList.toggle('hidden', ticked > 0);
+            };
+            all.addEventListener('change', () => { boxes().forEach(b => b.checked = all.checked); sync(); });
+            boxes().forEach(b => b.addEventListener('change', sync));
+            sync();
+        })();
+
         document.addEventListener('DOMContentLoaded', function () {
             var $ = window.jQuery;
             if (!$) {

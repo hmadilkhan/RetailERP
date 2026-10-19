@@ -313,7 +313,7 @@ class inventory extends Model
         return $query->paginate(50);
     }
 
-    public function getInventoryForPagewiseByFilters($code = "", $name = "", $dept = "", $sdept = "", $retail_price = "", $ref = "", $status = "", $nonstock = 0)
+    public function getInventoryForPagewiseByFilters($code = "", $name = "", $dept = "", $sdept = "", $retail_price = "", $ref = "", $status = "", $nonstock = 0, $disabledInBranch = null)
     {
         if ($status == "") {
             $status = 1;
@@ -353,7 +353,7 @@ class inventory extends Model
             // Stock lots / POS variations / addons / tags pehle join hote the — har product ki rows
             // lots × variations × addons × tags guna ho jati thin (company 120: 26s per query).
             // Ab sab per-product subquery / EXISTS se.
-            ->where(function ($query) use ($code, $name, $dept, $sdept, $retail_price, $ref, $nonstock, $ids, $stockBranches) {
+            ->where(function ($query) use ($code, $name, $dept, $sdept, $retail_price, $ref, $nonstock, $ids, $stockBranches, $disabledInBranch) {
 
                 if ($nonstock == 0) {
                     // Sirf wo products jin ka in branches me koi lot hai (pehle wala inner-join filter)
@@ -380,6 +380,10 @@ class inventory extends Model
                 }
                 if ($nonstock == 1) {
                     $query->whereRaw('NOT EXISTS (SELECT 1 FROM inventory_stock s2 WHERE s2.product_id = invent.id AND s2.branch_id IN (' . $stockBranches . '))');
+                }
+                // Branch Availability: sirf wo products jo is branch ke POS me band hain
+                if (!empty($disabledInBranch) && \App\Services\Inventory\BranchAvailabilityService::ready()) {
+                    $query->whereRaw('EXISTS (SELECT 1 FROM product_branch_availability pba WHERE pba.product_id = invent.id AND pba.branch_id = ?)', [(int) $disabledInBranch]);
                 }
             })
             ->select(

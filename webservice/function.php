@@ -221,7 +221,7 @@ function getInventory($id)
 {
     if (!empty($id) && $id > 0) {
 
-        $result = $GLOBALS['crud']->runQuery("SELECT b.id,b.item_code,b.department_id,b.product_name,b.sub_department_id,b.isPos,b.isOnline,(Select SUM(balance) from inventory_stock where product_id = a.product_id and branch_id = a.branch_id) as qty,c.name,(SELECT cost_price FROM `inventory_stock` where stock_id = (Select MAX(stock_id) from inventory_stock where product_id = a.product_id)) as cost_price,d.cost_price as new_cost_price,d.actual_price,d.tax_rate,d.tax_amount,d.retail_price,d.wholesale_price,d.discount_price,b.image,'Inventory' as status,e.reminder_qty as reminderqty,b.product_description,b.short_description,b.weight_qty as weight_qty  FROM inventory_stock a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_uom c on c.uom_id = b.uom_id INNER JOIN inventory_price d on d.product_id = b.id and d.status_id = 1 INNER JOIN inventory_qty_reminders e on e.inventory_id = b.id where a.branch_id = $id and b.status = 1 and b.isHide = 0  GROUP BY a.product_id  
+        $result = $GLOBALS['crud']->runQuery("SELECT b.id,b.item_code,b.department_id,b.product_name,b.sub_department_id,b.isPos,b.isOnline,(Select SUM(balance) from inventory_stock where product_id = a.product_id and branch_id = a.branch_id) as qty,c.name,(SELECT cost_price FROM `inventory_stock` where stock_id = (Select MAX(stock_id) from inventory_stock where product_id = a.product_id)) as cost_price,d.cost_price as new_cost_price,d.actual_price,d.tax_rate,d.tax_amount,d.retail_price,d.wholesale_price,d.discount_price,b.image,'Inventory' as status,e.reminder_qty as reminderqty,b.product_description,b.short_description,b.weight_qty as weight_qty  FROM inventory_stock a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_uom c on c.uom_id = b.uom_id INNER JOIN inventory_price d on d.product_id = b.id and d.status_id = 1 INNER JOIN inventory_qty_reminders e on e.inventory_id = b.id where a.branch_id = $id and b.status = 1 and b.isHide = 0 " . branch_availability_filter("b.id", (int) $id) . "  GROUP BY a.product_id  
 											UNION
 											SELECT a.product_id as id,a.item_code,b.department_id,a.item_name,b.sub_department_id,a.isPos,a.isOnline,a.quantity,c.name,(SELECT cost_price FROM `inventory_stock` where stock_id = (Select MAX(stock_id) from inventory_stock where product_id = a.product_id))as cost_price,d.cost_price as new_cost_price,d.actual_price,d.tax_rate,d.tax_amount,d.retail_price,d.wholesale_price,d.discount_price,b.image,'Open' as status,'' as reminderqty,b.product_description,b.short_description,b.weight_qty as weight_qty  FROM pos_products_gen_details a INNER JOIN inventory_general b on b.id = a.product_id LEFt JOin inventory_uom c on c.uom_id = a.uom  INNER JOIN pos_product_price d on d.pos_item_id = a.pos_item_id and d.status_id = 1 INNER JOIN inventory_price e on e.product_id = a.product_id and e.status_id = 1 WHERE a.branch_id = $id and a.status_id = 1 and a.isHide = 0");
         //    $result = $GLOBALS['crud']->runQuery("SELECT b.id,b.item_code,b.department_id,b.product_name,(Select SUM(balance) from inventory_stock where product_id = a.product_id and branch_id = a.branch_id) as qty,c.name,a.cost_price,a.retail_price,a.wholesale_price,a.discount_price,b.image FROM inventory_stock a INNER JOIN inventory_general b on b.id = a.product_id INNER JOIN inventory_uom c on c.uom_id = a.uom where a.branch_id = '$id' and b.status = 1  GROUP BY a.product_id");
@@ -242,7 +242,7 @@ function getUpdatedInventory($terminalId)
 {
     if (!empty($terminalId) && $terminalId > 0) {
 
-        $result = $GLOBALS['crud']->runQuery("SELECT b.*,c.*,d.name as uom,(Select SUM(balance) from inventory_stock where product_id = inventory_download_status.productId and branch_id = inventory_download_status.branchId) as qty,'inventory' as status FROM `inventory_download_status` INNER JOIN (SELECT id,department_id,sub_department_id,uom_id,product_mode,item_code,product_name,product_description,short_description,image from inventory_general) b on b.id = inventory_download_status.productId INNER JOIN (Select product_id,actual_price,tax_rate,tax_amount,retail_price,wholesale_price,online_price,discount_price from inventory_price where status_id = 1 ) c on c.product_id = inventory_download_status.productId INNER JOIN (Select uom_id,name from inventory_uom ) d on d.uom_id = b.uom_id where terminalId = ".$terminalId." and status = 1 group by productId");
+        $result = $GLOBALS['crud']->runQuery("SELECT b.*,c.*,d.name as uom,(Select SUM(balance) from inventory_stock where product_id = inventory_download_status.productId and branch_id = inventory_download_status.branchId) as qty,'inventory' as status FROM `inventory_download_status` INNER JOIN (SELECT id,department_id,sub_department_id,uom_id,product_mode,item_code,product_name,product_description,short_description,image from inventory_general) b on b.id = inventory_download_status.productId INNER JOIN (Select product_id,actual_price,tax_rate,tax_amount,retail_price,wholesale_price,online_price,discount_price from inventory_price where status_id = 1 ) c on c.product_id = inventory_download_status.productId INNER JOIN (Select uom_id,name from inventory_uom ) d on d.uom_id = b.uom_id where terminalId = ".$terminalId." and status = 1" . branch_availability_filter("inventory_download_status.productId", "inventory_download_status.branchId") . " group by productId");
 
         if (!empty($result) && sizeof($result) > 0) {
             return json_encode($result);
@@ -482,6 +482,21 @@ function lot_order()
         $order = !empty($col) ? " ORDER BY (expiry_date IS NULL), expiry_date, stock_id" : " ORDER BY stock_id";
     }
     return $order;
+}
+
+// Branch Availability: product_branch_availability ki row = product us branch ke POS me band.
+// Table na ho (migration se pehle deploy) to khali string → purani query.
+function branch_availability_filter($productColumn, $branchExpr)
+{
+    static $ready = null;
+    if ($ready === null) {
+        $table = $GLOBALS['crud']->runQuery("SHOW TABLES LIKE 'product_branch_availability'");
+        $ready = !empty($table);
+    }
+    if (!$ready) {
+        return "";
+    }
+    return " AND NOT EXISTS (SELECT 1 FROM product_branch_availability pba WHERE pba.product_id = " . $productColumn . " AND pba.branch_id = " . $branchExpr . ")";
 }
 
 // Branch pe negative stock ki permission (branch.allow_negative_stock = 1)

@@ -1438,6 +1438,7 @@
                 @endif
 
                 @include('partials.approvals-alert')
+                @include('partials.branch-availability-alert')
 
                 @yield('content')
                 @isset($slot)

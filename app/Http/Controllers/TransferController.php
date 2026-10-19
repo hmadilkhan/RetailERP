@@ -283,6 +283,7 @@ class TransferController extends Controller
         'date' => date('Y-m-d'),
       ];
       $stock = $transfer->insert_stock($items);
+      app(\App\Services\Inventory\BranchAvailabilityService::class)->warnIfDisabled((int) session('branch'), [(int) $request->item_id]); // BA.6
       return $grn_general;
     } else {
 
@@ -311,6 +312,7 @@ class TransferController extends Controller
         'date' => date('Y-m-d'),
       ];
       $stock = $transfer->insert_stock($items);
+      app(\App\Services\Inventory\BranchAvailabilityService::class)->warnIfDisabled((int) session('branch'), [(int) $request->item_id]); // BA.6
       return 1;
     }
   }

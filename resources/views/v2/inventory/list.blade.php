@@ -109,6 +109,14 @@
                                 <option value="{{ $reference->refrerence }}" {{ request('ref') === $reference->refrerence ? 'selected' : '' }}>{{ $reference->refrerence }}</option>
                             @endforeach
                         </select>
+                        @if (count($baBranches ?? []) > 1)
+                            <select name="ba_branch" data-placeholder="POS off in branch" class="v2-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                                <option value="">POS off in branch: any</option>
+                                @foreach ($baBranches as $baId => $baName)
+                                    <option value="{{ $baId }}" {{ (string) request('ba_branch') === (string) $baId ? 'selected' : '' }}>POS off in {{ $baName }}</option>
+                                @endforeach
+                            </select>
+                        @endif
                     </div>
                     <div class="flex justify-end">
                         <button type="submit" class="rounded-lg border border-erp bg-erp px-5 py-2 text-sm font-bold text-white transition hover:bg-erp-dark">Search</button>
@@ -128,6 +136,9 @@
                     <button type="button" data-bulk="uom" class="bulk-action rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text hover:border-erp">UOM</button>
                     <button type="button" data-bulk="tax" class="bulk-action rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text hover:border-erp">Tax</button>
                     <button type="button" data-bulk="price" class="bulk-action rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text hover:border-erp">Price</button>
+                    @if (count($baBranches ?? []) > 1)
+                        <button type="button" data-bulk="branchAvailability" class="bulk-action rounded-lg border border-erp-line bg-white px-3 py-2 text-xs font-bold text-erp-text hover:border-erp">Branch Availability</button>
+                    @endif
                     <button type="button" data-bulk="images" class="bulk-action rounded-lg border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-700 hover:bg-violet-100">Generate Images</button>
                     <button type="button" data-bulk="sunmi" class="bulk-action rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700 hover:bg-sky-100">Sunmi ESL</button>
                     <button type="button" data-bulk="activate" class="bulk-action rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700 hover:bg-emerald-100">Activate</button>
@@ -178,6 +189,9 @@
                                                 @endforeach
                                                 @if (!empty($item->website_name))
                                                     <span class="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700 ring-1 ring-sky-200">{{ $item->website_name }}</span>
+                                                @endif
+                                                @if (!empty($baCounts[$item->id]))
+                                                    <span class="rounded-md bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700 ring-1 ring-amber-200" title="POS branches where this product is on">POS {{ count($baBranches) - $baCounts[$item->id] }} / {{ count($baBranches) }} branches</span>
                                                 @endif
                                             </div>
                                         </div>
@@ -509,6 +523,7 @@
             if (action === 'uom') return selectBulk('Change UOM', uoms, 'uom_id', 'name', value => post("{{ url('update_product_uom') }}", { inventid: ids, uomId: value }));
             if (action === 'tax') return taxBulk();
             if (action === 'price') return priceBulk(ids);
+            if (action === 'branchAvailability') return branchAvailabilityBulk(ids);
             if (action === 'images') return generateImages(ids, null);
             if (action === 'sunmi') return sunmiCloud(ids);
             if (action === 'activate') return confirmPost('Activate selected products?', "{{ url('/multiple-active-invent') }}", { inventid: ids });
@@ -862,6 +877,35 @@
                     op: document.getElementById('onlinePercent').value,
                     departmentId: ''
                 }).then(() => window.location.reload());
+            });
+        }
+
+        const baBranches = @json($baBranches ?? []);
+
+        function branchAvailabilityBulk(ids) {
+            const boxes = Object.entries(baBranches).map(([id, name]) =>
+                `<label class="flex items-center gap-2 py-1 text-sm"><input type="checkbox" class="ba-bulk-branch rounded border-erp-line text-erp focus:ring-erp" value="${id}"> ${name}</label>`).join('');
+            openModal('Branch Availability (' + ids.length + ' products)', `
+                <select id="baMode" class="w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                    <option value="only">Show on POS only in these branches (turn off everywhere else)</option>
+                    <option value="disable">Turn off POS in these branches</option>
+                    <option value="enable">Turn on POS in these branches</option>
+                </select>
+                <div class="max-h-56 overflow-y-auto rounded-lg border border-erp-line px-3 py-2">${boxes}</div>
+                <p class="text-xs text-erp-mute">Stock is not changed. Products only stop showing on the POS of turned-off branches.</p>
+            `, () => {
+                const mode = document.getElementById('baMode').value;
+                const branches = Array.from(document.querySelectorAll('.ba-bulk-branch:checked')).map(input => input.value);
+                if (!branches.length && mode !== 'only') return alert('Select at least one branch.');
+                if (!branches.length && !confirm('No branch selected — these products will not show on any POS. Continue?')) return;
+                post("{{ route('inventory.branch-availability.bulk') }}", { ids, mode, branches })
+                    .then(res => res.json().then(body => ({ ok: res.ok, body })))
+                    .then(({ ok, body }) => {
+                        if (!ok) throw new Error(body.message || 'Could not update branch availability.');
+                        alert('Done. Turned off: ' + body.disabled + ', turned on: ' + body.enabled + '.');
+                        window.location.reload();
+                    })
+                    .catch(error => alert(error.message));
             });
         }
 

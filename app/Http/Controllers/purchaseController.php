@@ -546,6 +546,7 @@ class purchaseController extends Controller
 
         $return = $purchase->changeReturnStatus($request->po, $request->rec);
         //$update = $purchase->changeStatus($request->po,3);
+        app(\App\Services\Inventory\BranchAvailabilityService::class)->warnIfDisabled((int) $request->branch, [(int) $request->itemid]); // BA.6
         return 1;
     }
 

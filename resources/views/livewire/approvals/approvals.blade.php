@@ -9,6 +9,7 @@
         $tabs = ['pending' => 'Waiting for me (' . $pendingCount . ')', 'mine' => 'My requests', 'history' => 'History'] + ($isOwner ? ['rules' => 'Rules'] : []);
     @endphp
 
+    @include('partials.branch-availability-alert')
     @if (session()->has('ap_message'))
         <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-5 py-3 text-sm font-semibold text-emerald-800"
              x-data="{ show: true }" x-show="show" x-init="setTimeout(() => show = false, 5000)" x-transition.opacity>{{ session('ap_message') }}</div>
