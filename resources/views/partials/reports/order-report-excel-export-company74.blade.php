@@ -12,7 +12,7 @@
 
             <td colspan="8" style="font-size:18px;font-weight:bold;">
 
-                {{ $branch[0]->company->name . ' - ' . $branch[0]->branch_name . ' (' . $branch[0]->code . ')' }}</td>
+                {{ ($branch->first()?->company?->name ?? '-') . ' - ' . ($branch->first()?->branch_name ?? '-') . ' (' . ($branch->first()?->code ?? '-') . ')' }}</td>
 
         </tr>
 
@@ -106,9 +106,9 @@
 
                         <td style="text-align: center;">{{ $value->web == 1 ? 'Website' : 'POS' }}</td>
 
-                        <td style="text-align: center;">{{ $value->branchrelation->branch_name }}</td>
+                        <td style="text-align: center;">{{ $value->branchrelation?->branch_name ?? '-' }}</td>
 
-                        <td style="text-align: center;">{{ $value->terminal->terminal_name }}</td>
+                        <td style="text-align: center;">{{ $value->terminal?->terminal_name ?? '-' }}</td>
 
                         <td style="text-align: left;">{{ !empty($value->customer) ? $value->customer->name : '-' }}</td>
 
@@ -120,17 +120,17 @@
 
                         <td style="text-align: center;">
 
-                            {{ !empty($value->payment) ? $value->payment->payment_mode : 0 }}</td>
+                            {{ !empty($value->payment) ? $value->payment->payment_mode : '-' }}</td>
 
                         <td style="text-align: center;">
 
-                            {{ !empty($value->salesperson) ? $value->salesperson->fullname : 0 }}</td>
+                            {{ !empty($value->salesperson) ? $value->salesperson->fullname : '-' }}</td>
 
                         <td style="text-align: center;">{{ $value->orderdetails_count . '/' . $value->amount_sum }}</td>
 
                         <td style="text-align: center;">{{ date('d-m-Y', strtotime($value->delivery_date)) }}</td>
 
-                        <td style="text-align: center;">{{ $value->orderStatus->order_status_name }}</td>
+                        <td style="text-align: center;">{{ $value->orderStatus?->order_status_name ?? '-' }}</td>
 
                         <td style="text-align: center;">{{ $value->total_amount }}</td>
 

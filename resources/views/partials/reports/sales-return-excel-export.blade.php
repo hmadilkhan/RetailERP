@@ -33,7 +33,7 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ $row->order->receipt_no ?? 'N/A' }}</td>
-                    <td>{{ $row->inventory->product_name }}</td>
+                    <td>{{ $row->inventory?->product_name ?? '-' }}</td>
                     <td>{{ $row->qty }}</td>
                     <td>{{ number_format($row->amount) }}</td>
                     <td>{{ date('d M Y', strtotime($row->timestamp)) }}</td>

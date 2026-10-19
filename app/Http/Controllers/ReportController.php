@@ -652,9 +652,9 @@ class ReportController extends Controller
         $request->department = explode(",", $request->department);
 
         if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", (new order)->allowedBranchIds())->pluck("terminal_id"))->pluck("opening_id");
         } else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
-            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->whereIn("branch_id", $request->branch)->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+            $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", (new order)->allowedBranchIds($request->branch))->pluck("terminal_id"))->pluck("opening_id");
         } else {
             $openingIds = SalesOpening::whereBetween("date", [$request->fromdate, $request->todate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
         }
@@ -670,10 +670,10 @@ class ReportController extends Controller
                 $q->whereBetween("date", [$request->fromdate, $request->todate]);
             })
             ->when(!empty($request->branch) &&  $request->branch[0] != 'all', function ($q) use ($request) {
-                $q->whereIn("branch", $request->branch);
+                $q->whereIn("branch", (new order)->allowedBranchIds($request->branch));
             })
             ->when(!empty($request->branch) && $request->branch[0] == "all", function ($q) use ($request) {
-                $q->whereIn("branch", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+                $q->whereIn("branch", (new order)->allowedBranchIds());
             })
             ->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
                 $query->whereIn('terminal_id', $request->terminal);
@@ -697,7 +697,7 @@ class ReportController extends Controller
                 });
             })
             ->when($request->customerNo != "", function ($query) use ($request) {
-                $query->where('customers.mobile', $request->customerNo);
+                $query->whereHas('customer', fn ($c) => $c->where('mobile', $request->customerNo));
             })
             ->when($request->sales_tax != "", function ($query) {
                 $query->where("fbrInvNumber", '!=', "");

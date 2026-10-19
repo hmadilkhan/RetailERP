@@ -2,7 +2,7 @@
     <table id="widget-product-list" class="table table-striped nowrap dt-responsive nowrap" width="100%" cellspacing="0">
         <tr>
             <td colspan="8" style="font-size:18px;font-weight:bold;">
-                {{ $branch[0]->company->name . ' - ' . $branch[0]->branch_name . ' (' . $branch[0]->code . ')' }}</td>
+                {{ ($branch->first()?->company?->name ?? '-') . ' - ' . ($branch->first()?->branch_name ?? '-') . ' (' . ($branch->first()?->code ?? '-') . ')' }}</td>
         </tr>
         <tr>
             <td colspan="8" style="font-size:18px;font-weight:bold;">From {{ $dates['from'] }} To {{ $dates['to'] }}
@@ -71,23 +71,23 @@
                         <td style="text-align: center;">{{ date('d M Y', strtotime($value->date)) }}</td>
                         <td style="text-align: center;">{{ date('H:i a', strtotime($value->time)) }}</td>
                         <td style="text-align: center;">{{ $value->web == 1 ? 'Website' : 'POS' }}</td>
-                        <td style="text-align: center;">{{ $value->branchrelation->branch_name }}</td>
-                        <td style="text-align: center;">{{ $value->terminal->terminal_name }}</td>
+                        <td style="text-align: center;">{{ $value->branchrelation?->branch_name ?? '-' }}</td>
+                        <td style="text-align: center;">{{ $value->terminal?->terminal_name ?? '-' }}</td>
                         <td style="text-align: left;">{{ !empty($value->customer) ? $value->customer->name : '-' }}
                         <td style="text-align: left;">{{ !empty($value->customer) ? $value->customer->mobile : '-' }}
                         </td>
                         <td style="text-align: center;">{{ !empty($value->mode) ? $value->mode->order_mode : '-' }}</td>
                         <td style="text-align: center;">
-                            {{ !empty($value->payment) ? $value->payment->payment_mode : 0 }}</td>
+                            {{ !empty($value->payment) ? $value->payment->payment_mode : '-' }}</td>
                         <td style="text-align: center;">
-                            {{ !empty($value->salesperson) ? $value->salesperson->fullname : 0 }}</td>
+                            {{ !empty($value->salesperson) ? $value->salesperson->fullname : '-' }}</td>
                         @if (session('company_id') != 102)
                             <td style="text-align: center;">{{ $value->orderdetails_count . '/' . $value->amount_sum }}
                             </td>
                             
                         @endif
                         <td style="text-align: center;">{{ date('d-m-Y', strtotime($value->delivery_date)) }}</td>
-                        <td style="text-align: center;">{{ $value->orderStatus->order_status_name }}</td>
+                        <td style="text-align: center;">{{ $value->orderStatus?->order_status_name ?? '-' }}</td>
                         @if (session('company_id') != 102)
                             <td style="text-align: center;">{{ $value->total_amount }}</td>
                             <td style="text-align: center;">{{ $value->inventory_department ?? "N/A" }}
@@ -95,13 +95,13 @@
                         @else
                             <td style="text-align: center;">{{ $value->actual_amount }}</td>
                             <td style="text-align: center;">
-                                {{ $value->payment_id == 3 ? $value->orderAccount->receive_amount : $value->total_amount }}
+                                {{ $value->payment_id == 3 ? ($value->orderAccount?->receive_amount ?? 0) : $value->total_amount }}
                             </td>
                             <td style="text-align: center;">
-                                {{ $value->payment_id == 3 ? $value->actual_amount - $value->orderAccount->receive_amount : 0 }}
+                                {{ $value->payment_id == 3 ? (float) $value->actual_amount - (float) ($value->orderAccount?->receive_amount ?? 0) : 0 }}
                             </td>
                         @endif
-                        @if (session('company_id') == 102 && $value->orderStatus->order_status_name == 'Order Picked Up')
+                        @if (session('company_id') == 102 && $value->orderStatus?->order_status_name == 'Order Picked Up')
                             @foreach ($value->statusLogs as $log)
                                 @if ($log->status_id == 10)
                                     <td style="text-align: center;">{{ $log->name }}</td>

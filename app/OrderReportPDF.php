@@ -11,7 +11,7 @@ class OrderReportPDF extends FPDF
     function Header()
     {
         $this->SetFont('Arial', 'B', 18);
-        $this->Cell(0, 10, ($this->branch == "all" ?  "All Branches" :  $this->branch[0]->company->name . ' - ' .$this->branch[0]->branch_name. ' (' . $this->branch[0]->code . ')' ), 0, 1, 'C'); //,0,'C'
+        $this->Cell(0, 10, ($this->branch == "all" ?  "All Branches" :  ($this->branch->first()?->company?->name ?? '-') . ' - ' . ($this->branch->first()?->branch_name ?? '-') . ' (' . ($this->branch->first()?->code ?? '-') . ')' ), 0, 1, 'C'); //,0,'C'
         $this->SetFont('Arial', 'B', 14);
         $this->Cell(0, 10, 'From ' . $this->dates['from'] . ' To ' . $this->dates['to'], 0, 1, 'C');
         $this->Ln(5);
@@ -71,8 +71,8 @@ class OrderReportPDF extends FPDF
         $this->Cell(25, 10, date('d M Y', strtotime($value->date)), 1,0,'C');
         $this->Cell(20, 10, date('H:i a', strtotime($value->time)), 1,0,'C');
         $this->Cell(25, 10, $value->web == 1 ? 'Website' : 'POS', 1);
-        $this->Cell(30, 10, $value->branchrelation->branch_name, 1);
-        $this->Cell(30, 10, $value->terminal->terminal_name, 1);
+        $this->Cell(30, 10, $value->branchrelation?->branch_name ?? '-', 1);
+        $this->Cell(30, 10, $value->terminal?->terminal_name ?? '-', 1);
         $this->Cell(40, 10, !empty($value->customer) ? $value->customer->name : '-', 1);
         $this->Cell(30, 10, !empty($value->mode) ? $value->mode->order_mode : '-', 1);
         $this->Cell(40, 10, !empty($value->payment) ? $value->payment->payment_mode : '-', 1);
@@ -82,12 +82,12 @@ class OrderReportPDF extends FPDF
             $this->Cell(25, 10, $value->orderdetails_count . '/' . $value->amount_sum, 1,0,'C');
         }
         $this->Cell(25, 10, date('d-m-Y', strtotime($value->delivery_date)), 1,0,'C');
-        $this->Cell(25, 10, $value->orderStatus->order_status_name, 1,0,'C');
+        $this->Cell(25, 10, $value->orderStatus?->order_status_name ?? '-', 1,0,'C');
 
         if ($session('company_id') != 102) {
-            $this->Cell(25, 10, number_format($value->total_amount,0), 1, 0,'C');
+            $this->Cell(25, 10, number_format((float) $value->total_amount,0), 1, 0,'C');
         } else {
-            $this->Cell(25, 10, number_format($value->actual_amount,0), 1, 0,'C');
+            $this->Cell(25, 10, number_format((float) $value->actual_amount,0), 1, 0,'C');
         }
         $this->Ln();
     }
