@@ -85,6 +85,7 @@ class OrderController extends Controller
 
         // Fetch order details
         $order = $orderService->getOrderWithRelations($orderId);
+        abort_if(!$order, 404);
 
         if ($order && $order->website) {
             $record = $orderApp->web_onlineOrderDetails($order->url_orderid);
@@ -106,7 +107,8 @@ class OrderController extends Controller
         // Retrieve other necessary data
         $received = $orderService->getTotalReceived($orderId);
         $statuses = OrderStatus::all();
-        $ledgerDetails = $orderService->getCustomerLedgerDetails($customer, $order->customer->id, $orderId);
+        // Walk-in order (customer_id 0) ka customer nahi hota
+        $ledgerDetails = $order->customer ? $orderService->getCustomerLedgerDetails($customer, $order->customer->id, $orderId) : [];
         $provider = $orderService->getServiceProvider($order->sales_person_id);
         if ($order->wallet_id != "") {
             $wallet = $orderService->getServiceProvider($order->wallet_id);

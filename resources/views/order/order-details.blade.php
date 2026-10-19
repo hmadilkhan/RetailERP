@@ -220,7 +220,7 @@
                         <div class="col-xl-4 ">
                             <h3 class="font-size-24 text-center mb-4">Branch #</h3>
                             <h1 class="fs-1 text-center mb-4">{{ $order->branchrelation->branch_name }}</h1>
-                            <h2 class="font-size-28 text-center mb-2">Customer : {{ ucwords($order->customer->name) }}</h2>
+                            <h2 class="font-size-28 text-center mb-2">Customer : {{ ucwords($order->customer?->name ?? 'Walk-in') }}</h2>
                             @if ($order->web == 1)
                                 <h3 class="font-size-24 text-center mb-2">Order ID : {{ $order->url_orderid }}</h3>
                             @else
@@ -509,15 +509,15 @@
                                         </tr>
                                         <tr>
                                             <td>Customer : </td>
-                                            <td class="text-end">{{ $order->customer->name }}</td>
+                                            <td class="text-end">{{ $order->customer?->name ?? 'Walk-in' }}</td>
                                         </tr>
                                         <tr>
                                             <td>Contact Number :</td>
-                                            <td class="text-end">{{ $order->customer->mobile }}</td>
+                                            <td class="text-end">{{ $order->customer?->mobile }}</td>
                                         </tr>
                                         <tr>
                                             <td>Membership Number :</td>
-                                            <td class="text-end">{{ $order->customer->membership_card_no }}</td>
+                                            <td class="text-end">{{ $order->customer?->membership_card_no }}</td>
                                         </tr>
                                         <tr>
                                             <td>Payment Method :</td>
