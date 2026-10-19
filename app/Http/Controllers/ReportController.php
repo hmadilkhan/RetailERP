@@ -909,25 +909,17 @@ class ReportController extends Controller
     public function getTerminals(Request $request)
     {
         $branch = $request->branch;
-
-        $terminals = Terminal::query()->where("status_id", 1);
-
-        if (is_array($branch) && !empty($branch)) {
-            if (!in_array("all", $branch)) {
-                $terminals->whereIn("branch_id", $branch);
-            } else {
-                $terminals->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
-            }
-        } elseif ($branch == "all") {
-            $terminals->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
-        } elseif ($branch != "") {
-            $terminals->where("branch_id", $branch);
-        } else {
+        if ($branch === null || $branch === "" || $branch === []) {
             return response()->json(["terminal" => []]);
         }
 
+        // Sirf chuni hui branches jo user ki apni hain ("all" = user ki saari branches)
+        $branchIds = (new \App\order)->allowedBranchIds($branch);
+
         return response()->json([
-            "terminal" => $terminals
+            "terminal" => Terminal::query()
+                ->where("status_id", 1)
+                ->whereIn("branch_id", $branchIds)
                 ->select("terminal_id", "terminal_name")
                 ->orderBy("terminal_name")
                 ->get()

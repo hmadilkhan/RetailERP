@@ -2101,9 +2101,10 @@
         }
 
         $("#branch").change(function() {
+            // "All" pehle hatao, warna terminals ['all', id] se saari branches ke aate hain
+            clearAllFromControl($(this).val(), 'branch');
             getTerminal();
             getServiceProviderByBranch($("#branch").val(), "#orderserviceprovider");
-            clearAllFromControl($(this).val(), 'branch');
         })
 
         $("#terminal").change(function() {
@@ -2120,7 +2121,7 @@
 
 
         function clearAllFromControl(values, controlId) {
-            var selectedValues = values;
+            var selectedValues = values || [];
             // If "All" is selected, unselect other options
             if (selectedValues.includes('all')) {
                 // Deselect other options
@@ -2401,6 +2402,10 @@
 
         function clearControl(controlId) {
             $("#" + controlId).val('all').trigger('change.select2')
+            if (controlId === 'branch') {
+                getTerminal();
+                getServiceProviderByBranch($("#branch").val(), "#orderserviceprovider");
+            }
         }
 
         $("#category").change(function() {

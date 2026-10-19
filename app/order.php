@@ -145,9 +145,9 @@ class order extends Model
 		}
 
 		if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
-			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", $this->allowedBranchIds())->pluck("terminal_id"))->pluck("opening_id");
 		} else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
-			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->whereIn("branch_id", $request->branch)->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", $this->allowedBranchIds($request->branch))->pluck("terminal_id"))->pluck("opening_id");
 		} else {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
 		}
@@ -187,13 +187,13 @@ class order extends Model
 				$query->where('sales_receipts.machine_terminal_count', $request->machineOrderNo);
 			})
 			->when(!empty($request->branch) &&  $request->branch[0] != 'all', function ($query) use ($request) {
-				$query->whereIn('sales_receipts.branch', $request->branch);
+				$query->whereIn('sales_receipts.branch', $this->allowedBranchIds($request->branch));
 			})
 			// ->when($request->branch == "" && $request->branch != "all", function ($query) use ($request) {
 			// 	$query->where('sales_receipts.branch', session('branch'));
 			// })
 			->when(!empty($request->branch) && $request->branch[0] == "all", function ($query) use ($request) {
-				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+				$query->whereIn('sales_receipts.branch', $this->allowedBranchIds());
 			})
 			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
 				$query->whereIn('sales_receipts.terminal_id', $request->terminal);
@@ -286,9 +286,9 @@ class order extends Model
 		}
 
 		if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
-			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", $this->allowedBranchIds())->pluck("terminal_id"))->pluck("opening_id");
 		} else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
-			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->whereIn("branch_id", $request->branch)->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", $this->allowedBranchIds($request->branch))->pluck("terminal_id"))->pluck("opening_id");
 		} else {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
 		}
@@ -317,13 +317,13 @@ class order extends Model
 				$query->where('sales_receipts.machine_terminal_count', $request->machineOrderNo);
 			})
 			->when(!empty($request->branch) &&  $request->branch[0] != 'all', function ($query) use ($request) {
-				$query->whereIn('sales_receipts.branch', $request->branch);
+				$query->whereIn('sales_receipts.branch', $this->allowedBranchIds($request->branch));
 			})
 			// ->when($request->branch == "" && $request->branch != "all", function ($query) use ($request) {
 			// 	$query->where('sales_receipts.branch', session('branch'));
 			// })
 			->when(!empty($request->branch) && $request->branch[0] == "all", function ($query) use ($request) {
-				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+				$query->whereIn('sales_receipts.branch', $this->allowedBranchIds());
 			})
 			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
 				$query->whereIn('sales_receipts.terminal_id', $request->terminal);
@@ -381,10 +381,10 @@ class order extends Model
 			->whereBetween("date", [$request->first, $request->second])
 
 			->when(!empty($request->branch) &&  $request->branch[0] != 'all', function ($query) use ($request) {
-				$query->whereIn('sales_receipts.branch', $request->branch);
+				$query->whereIn('sales_receipts.branch', $this->allowedBranchIds($request->branch));
 			})
 			->when(!empty($request->branch) && $request->branch[0] == "all", function ($query) {
-				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+				$query->whereIn('sales_receipts.branch', $this->allowedBranchIds());
 			})
 			->when(!empty($request->terminal) && $request->terminal[0] != "all", function ($query) use ($request) {
 				$query->whereIn('sales_receipts.terminal_id', $request->terminal);
@@ -447,7 +447,7 @@ class order extends Model
 	public function getTotalNofOrdersByStatusQuery($request)
 	{
 		if ($request->branch == "all") {
-			$openingIds = SalesOpening::whereBetween("date", [$request->first, $request->second])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+			$openingIds = SalesOpening::whereBetween("date", [$request->first, $request->second])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", $this->allowedBranchIds())->pluck("terminal_id"))->pluck("opening_id");
 		} else {
 			$openingIds = SalesOpening::whereBetween("date", [$request->first, $request->second])->where("terminal_id", $request->terminal)->pluck("opening_id");
 		}
@@ -480,7 +480,7 @@ class order extends Model
 				$query->where('sales_receipts.branch', session('branch'));
 			})
 			->when($request->branch == "all", function ($query) use ($request) {
-				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+				$query->whereIn('sales_receipts.branch', $this->allowedBranchIds());
 			})
 			->when($request->terminal != "" && $request->branch != "all", function ($query) use ($request) {
 				$query->where('sales_receipts.terminal_id', $request->terminal);
@@ -533,9 +533,9 @@ class order extends Model
 		}
 
 		if (!empty($request->branch) && $request->branch[0] == "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
-			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", $this->allowedBranchIds())->pluck("terminal_id"))->pluck("opening_id");
 		} else if (!empty($request->branch) &&  $request->branch[0] != "all" && !empty($request->terminal) && $request->terminal[0] == "all") {
-			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", DB::table("branch")->whereIn("branch_id", $request->branch)->pluck("branch_id"))->pluck("terminal_id"))->pluck("opening_id");
+			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", DB::table("terminal_details")->whereIn("branch_id", $this->allowedBranchIds($request->branch))->pluck("terminal_id"))->pluck("opening_id");
 		} else {
 			$openingIds = SalesOpening::whereBetween("date", [$fromDate, $toDate])->whereIn("terminal_id", $request->terminal)->pluck("opening_id");
 		}
@@ -562,7 +562,7 @@ class order extends Model
 				$query->where('sales_receipts.branch', session('branch'));
 			})
 			->when($request->branch == "all", function ($query) use ($request) {
-				$query->whereIn('sales_receipts.branch', DB::table("branch")->where("company_id", session("company_id"))->pluck("branch_id"));
+				$query->whereIn('sales_receipts.branch', $this->allowedBranchIds());
 			})
 			->when($request->terminal != "" && $request->branch != "all", function ($query) use ($request) {
 				$query->where('sales_receipts.terminal_id', $request->terminal);
@@ -1222,13 +1222,28 @@ class order extends Model
 
 	public function getBranch()
 	{
-		if (session('roleId') == 2 or session('roleId') == 17 or session('roleId') == 19 or session('roleId') == 20  or session('roleId') == 10) {
-			$result = DB::table('branch')->where('company_id', session('company_id'))->get();
+		return DB::table('branch')->whereIn('branch_id', $this->allowedBranchIds())->get();
+	}
+
+	// User ki branches: Sub-Admin / admin roles = company ki saari, baaki = apni branch + user_branches.
+	// $selected diya ho to sirf us me se allowed wali ("all" = saari allowed).
+	public function allowedBranchIds($selected = null)
+	{
+		$companyBranches = DB::table('branch')->where('company_id', session('company_id'));
+
+		if (in_array((int) session('roleId'), [2, 17, 19, 20, 10], true)) {
+			$ids = $companyBranches->pluck('branch_id');
 		} else {
-			$result = DB::table('branch')->where('branch_id', session('branch'))->get();
+			$own = DB::table('user_branches')->where('user_id', auth()->id())->pluck('branch_id')->push(session('branch'));
+			$ids = $companyBranches->whereIn('branch_id', $own)->pluck('branch_id');
 		}
 
-		return $result;
+		$selected = array_filter((array) $selected, fn ($id) => $id !== null && $id !== '');
+		if (!empty($selected) && !in_array('all', $selected)) {
+			$ids = $ids->intersect(array_map('intval', $selected))->values();
+		}
+
+		return $ids;
 	}
 
 	public function getTerminal($branch)
