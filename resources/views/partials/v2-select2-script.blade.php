@@ -1,3 +1,6 @@
+{{-- v2 layout: har <select> searchable select2 (inline — live server pe public/ ki nayi files git pull se nahi pahunchtin) --}}
+<script>
+@verbatim
 /*
  * v2 layout (master-tailwind): har <select> ko searchable select2 banata hai.
  *
@@ -360,3 +363,5 @@
     }
     window.addEventListener('load', function () { setTimeout(start, 0); });
 })();
+@endverbatim
+</script>

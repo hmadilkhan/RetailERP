@@ -1549,7 +1549,7 @@
     <script>
         (window.jQuery && window.jQuery.fn.select2) || document.write('<script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"><\/script>');
     </script>
-    <script src="{{ asset('js/v2-select2.js') }}?v={{ @filemtime(public_path('js/v2-select2.js')) }}"></script>
+    @include('partials.v2-select2-script')
     @livewireScripts
 </body>
 
