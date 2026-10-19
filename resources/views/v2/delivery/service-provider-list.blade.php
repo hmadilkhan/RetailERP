@@ -146,10 +146,6 @@
             if (this.value === 'inactive') loadInactiveProviders();
             applyProviderFilters();
         });
-        if (window.jQuery) jQuery('#providerStatusFilter').on('change.select2', function () {
-            if (this.value === 'inactive') loadInactiveProviders();
-            applyProviderFilters();
-        });
 
         function loadInactiveProviders() {
             fetch("{{ url('/inacive-getserviceprovider') }}")

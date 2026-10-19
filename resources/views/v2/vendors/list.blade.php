@@ -129,9 +129,6 @@
 
         document.getElementById('vendorFilter').addEventListener('input', applyVendorFilters);
         document.getElementById('vendorStatusFilter').addEventListener('change', applyVendorFilters);
-        if (window.jQuery) {
-            jQuery('#vendorStatusFilter').on('change.select2', applyVendorFilters);
-        }
         applyVendorFilters();
 
         function deleteVendor(id, name, companyName) {

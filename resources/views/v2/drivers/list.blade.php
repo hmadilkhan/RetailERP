@@ -105,7 +105,6 @@
         }
         document.getElementById('driverFilter').addEventListener('input', applyDriverFilters);
         document.getElementById('driverStatusFilter').addEventListener('change', applyDriverFilters);
-        if (window.jQuery) jQuery('#driverStatusFilter').on('change.select2', applyDriverFilters);
         applyDriverFilters();
 
         function changeDriverStatus(id, mode) {

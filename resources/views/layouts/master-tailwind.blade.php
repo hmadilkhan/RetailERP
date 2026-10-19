@@ -117,7 +117,8 @@
             || request()->is('terminal-permissions')
             || request()->is('terminal-manager');
     @endphp
-    @if (($tailwindSelect2Assets || $tailwindPurchaseAssets || $tailwindDiscountAssets) && !$tailwindLegacyAssets)
+    {{-- select2 har page pe (public/js/v2-select2.js saare <select> ko searchable banata hai); legacy pages html-libs se laate hain --}}
+    @if (!$tailwindLegacyAssets)
         <link rel="stylesheet" href="{{ asset('components/select2/dist/css/select2.min.css') }}" />
     @endif
     @if ($tailwindDiscountAssets && !$tailwindLegacyAssets)
@@ -263,11 +264,33 @@
                 padding-right: 0.75rem;
             }
         }
-        @if ($tailwindSelect2Assets || $tailwindPurchaseAssets || $tailwindDiscountAssets)
             .billing-select2.select2-hidden-accessible + .select2-container,
-            .v2-select2.select2-hidden-accessible + .select2-container {
+            .v2-select2:not(.v2-select2-fit).select2-hidden-accessible + .select2-container {
                 width: 100% !important;
                 min-width: 0;
+            }
+            .v2-select2.v2-select2-fit.select2-hidden-accessible + .select2-container {
+                min-width: 0;
+                max-width: 100%;
+            }
+            .v2-select2.select2-hidden-accessible + .select2-container.v2-select2-sm .select2-selection--single,
+            .v2-select2.select2-hidden-accessible + .select2-container.v2-select2-sm .select2-selection--multiple {
+                min-height: 2rem;
+            }
+            .v2-select2.select2-hidden-accessible + .select2-container.v2-select2-sm .select2-selection__rendered {
+                font-size: 0.75rem;
+            }
+            .v2-select2.select2-hidden-accessible + .select2-container--disabled .select2-selection--single,
+            .v2-select2.select2-hidden-accessible + .select2-container--disabled .select2-selection--multiple {
+                background: #f1f5f9;
+                cursor: not-allowed;
+            }
+            /* Tailwind modals (z-50 … z-[9999]) ke upar dropdown dikhe */
+            body > .select2-container--open {
+                z-index: 100000;
+            }
+            body > .select2-container--open .select2-dropdown {
+                z-index: 100001;
             }
             .billing-select2.select2-hidden-accessible + .select2-container .select2-selection--single,
             .v2-select2.select2-hidden-accessible + .select2-container .select2-selection--single,
@@ -363,7 +386,6 @@
             .v2-select2-dropdown .select2-results__option--highlighted[aria-selected] {
                 background: #4CAF50;
             }
-        @endif
         @if ($tailwindLegacyAssets || $tailwindDiscountAssets)
             .content-wrapper,
             .container-fluid {
@@ -1520,6 +1542,14 @@
     @endif
     @stack('scripts')
     @yield('scriptcode_three')
+    {{-- Saare <select> searchable (select2). Page scripts ke baad taake page ki apni select2 (ajax waghera) pehle lage. --}}
+    <script>
+        window.jQuery || document.write('<script src="{{ asset('components/Jquery/dist/jquery.min.js') }}"><\/script>');
+    </script>
+    <script>
+        (window.jQuery && window.jQuery.fn.select2) || document.write('<script src="{{ asset('components/select2/dist/js/select2.full.min.js') }}"><\/script>');
+    </script>
+    <script src="{{ asset('js/v2-select2.js') }}?v={{ @filemtime(public_path('js/v2-select2.js')) }}"></script>
     @livewireScripts
 </body>
 

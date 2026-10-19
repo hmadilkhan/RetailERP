@@ -102,7 +102,6 @@
         }
         document.getElementById('vehicleFilter').addEventListener('input', applyVehicleFilters);
         document.getElementById('vehicleStatusFilter').addEventListener('change', applyVehicleFilters);
-        if (window.jQuery) jQuery('#vehicleStatusFilter').on('change.select2', applyVehicleFilters);
         applyVehicleFilters();
 
         function changeVehicleStatus(id, mode) {
