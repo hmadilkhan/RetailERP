@@ -1,0 +1,723 @@
+<title>Sabify Accounting Manual</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: ledger-book manual — left contents rail on wide screens, one reading column; Dr/Cr tables are the signature element */
+:root {
+  --bg: #f6f8f7;
+  --paper: #ffffff;
+  --fg: #16201c;
+  --muted: #56655f;
+  --line: #d6e0db;
+  --accent: #1b6a55;
+  --accent-soft: #e2efe9;
+  --warn: #8a5300;
+  --warn-soft: #fbf0dc;
+  --danger: #a12f29;
+  --danger-soft: #f8e4e2;
+  --font-display: "IBM Plex Sans Condensed", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f1412; --paper: #151c19; --fg: #e3ebe7; --muted: #98a9a2; --line: #2a3632;
+    --accent: #63c3a3; --accent-soft: #17302a; --warn: #e3ac52; --warn-soft: #2e2513;
+    --danger: #ee8d86; --danger-soft: #391d1b; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f1412; --paper: #151c19; --fg: #e3ebe7; --muted: #98a9a2; --line: #2a3632;
+  --accent: #63c3a3; --accent-soft: #17302a; --warn: #e3ac52; --warn-soft: #2e2513;
+  --danger: #ee8d86; --danger-soft: #391d1b; color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15.5px; line-height: 1.65; }
+.wrap {
+  max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 32px 64px;
+  display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 48px;
+}
+@media (max-width: 900px) { .wrap { grid-template-columns: minmax(0, 1fr); gap: 24px; } .toc { position: static !important; max-height: none !important; } }
+
+/* contents rail */
+.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; max-height: calc(100vh - 32px); overflow-y: auto; font-size: 13.5px; }
+.toc .label { font-family: var(--font-mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+.toc ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.toc a { display: block; padding: 5px 10px; border-radius: 6px; color: var(--fg); text-decoration: none; }
+.toc a:hover, .toc a:focus-visible { background: var(--accent-soft); color: var(--accent); outline: none; }
+.toc .sub { padding-left: 14px; color: var(--muted); font-size: 12.5px; }
+
+main { min-width: 0; }
+main > * + * { margin-top: 0; }
+.doc { background: var(--paper); border: 1px solid var(--line); border-radius: 10px; padding: clamp(20px, 4vw, 48px); }
+
+/* cover */
+.cover { border-bottom: 2px solid var(--fg); padding-bottom: 24px; margin-bottom: 8px; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(32px, 5vw, 46px); line-height: 1.08; margin: 8px 0 12px; text-wrap: balance; letter-spacing: -.01em; }
+.lede { font-size: 17px; color: var(--muted); max-width: 64ch; margin: 0; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px 20px; margin-top: 16px; font-family: var(--font-mono); font-size: 12px; color: var(--muted); }
+
+section.part { margin-top: 48px; }
+.part-no { font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+h2 { font-family: var(--font-display); font-weight: 700; font-size: clamp(25px, 3.4vw, 31px); line-height: 1.15; margin: 4px 0 14px; text-wrap: balance; }
+h3 { font-family: var(--font-display); font-weight: 600; font-size: 20px; line-height: 1.25; margin: 32px 0 8px; text-wrap: balance; }
+h4 { font-size: 15px; font-weight: 600; margin: 18px 0 6px; }
+p, li { max-width: 72ch; }
+p { margin: 0 0 12px; }
+ul, ol { margin: 0 0 14px; padding-left: 22px; }
+li + li { margin-top: 4px; }
+strong { font-weight: 600; }
+a { color: var(--accent); }
+
+/* menu path */
+.path { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px; font-family: var(--font-mono); font-size: 12.5px; background: var(--accent-soft); color: var(--accent); padding: 3px 9px; border-radius: 5px; }
+.path b { font-weight: 500; }
+.btn { font-family: var(--font-mono); font-size: 12.5px; border: 1px solid var(--line); background: var(--bg); padding: 1px 7px; border-radius: 5px; white-space: nowrap; }
+.who { display: inline-block; font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); padding: 1px 8px; border-radius: 999px; margin-left: 6px; vertical-align: middle; }
+
+/* screen card header */
+.screen-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin: 8px 0 12px; }
+
+/* numbered steps — the order matters here */
+ol.steps { counter-reset: s; list-style: none; padding-left: 0; display: grid; gap: 10px; }
+ol.steps > li { counter-increment: s; position: relative; padding-left: 40px; max-width: 74ch; }
+ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: 1px; width: 26px; height: 26px; border-radius: 50%; background: var(--fg); color: var(--paper); font-family: var(--font-mono); font-size: 12.5px; display: grid; place-items: center; }
+
+/* big setup steps */
+.setup-step { border-top: 1px solid var(--line); padding-top: 20px; margin-top: 24px; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; }
+.setup-step .n { font-family: var(--font-display); font-weight: 700; font-size: 34px; line-height: 1; color: var(--accent); }
+.setup-step h3 { margin-top: 0; }
+@media (max-width: 520px) { .setup-step { grid-template-columns: minmax(0, 1fr); gap: 4px; } }
+
+/* callouts */
+.note { border-left: 3px solid var(--accent); background: var(--accent-soft); padding: 10px 14px; border-radius: 0 6px 6px 0; margin: 12px 0 16px; max-width: 74ch; }
+.note.warn { border-color: var(--warn); background: var(--warn-soft); }
+.note.danger { border-color: var(--danger); background: var(--danger-soft); }
+.note strong:first-child { display: block; font-size: 12px; font-family: var(--font-mono); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 2px; }
+.note p:last-child, .note ul:last-child { margin-bottom: 0; }
+
+/* tables */
+.tbl { overflow-x: auto; margin: 12px 0 18px; border: 1px solid var(--line); border-radius: 8px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 11.5px; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 500; background: var(--bg); }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--font-mono); font-size: 13px; }
+td code, li code, p code { font-family: var(--font-mono); font-size: 12.5px; background: var(--bg); padding: 0 4px; border-radius: 4px; border: 1px solid var(--line); }
+
+/* journal voucher — Dr/Cr ledger table */
+.jv { border: 1px solid var(--fg); border-radius: 6px; margin: 12px 0 18px; overflow-x: auto; max-width: 640px; }
+.jv .jv-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px; padding: 8px 12px; border-bottom: 1px solid var(--fg); font-family: var(--font-mono); font-size: 12px; }
+.jv table th { background: transparent; }
+.jv td.acct { white-space: nowrap; }
+.jv td.acct.cr { padding-left: 34px; }
+.jv tfoot td { border-top: 1px solid var(--fg); font-weight: 600; }
+
+/* decision grid */
+.choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 12px 0 18px; }
+.choice > div { border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; min-width: 0; }
+.choice h4 { margin-top: 0; }
+.choice p:last-child { margin-bottom: 0; }
+
+/* checklist */
+ul.check { list-style: none; padding-left: 0; display: grid; gap: 6px; }
+ul.check li { padding-left: 28px; position: relative; }
+ul.check li::before { content: ""; position: absolute; left: 2px; top: 5px; width: 14px; height: 14px; border: 1.5px solid var(--fg); border-radius: 3px; }
+
+dl.gloss { display: grid; grid-template-columns: minmax(150px, 220px) minmax(0, 1fr); gap: 0; border-top: 1px solid var(--line); margin: 12px 0; }
+dl.gloss dt, dl.gloss dd { margin: 0; padding: 9px 0; border-bottom: 1px solid var(--line); }
+dl.gloss dt { font-weight: 600; padding-right: 16px; }
+@media (max-width: 560px) { dl.gloss { grid-template-columns: minmax(0, 1fr); } dl.gloss dt { border-bottom: 0; padding-bottom: 0; } }
+
+.foot { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* print / PDF: always light, no rail, page breaks before each part */
+@media print {
+  :root, :root[data-theme="dark"] {
+    --bg: #f6f8f7; --paper: #ffffff; --fg: #16201c; --muted: #56655f; --line: #d6e0db;
+    --accent: #1b6a55; --accent-soft: #e2efe9; --warn: #8a5300; --warn-soft: #fbf0dc;
+    --danger: #a12f29; --danger-soft: #f8e4e2; color-scheme: light;
+  }
+  @page { size: A4; margin: 16mm 14mm 18mm; }
+  body { background: #fff; font-size: 11pt; }
+  .wrap { display: block; padding: 0; max-width: none; }
+  .toc { display: none; }
+  .doc { border: 0; padding: 0; border-radius: 0; }
+  .print-toc { display: block !important; }
+  section.part { break-before: page; margin-top: 0; }
+  h2, h3, h4 { break-after: avoid; }
+  .setup-step, .jv, .note, .tbl, .choice > div, ol.steps > li { break-inside: avoid; }
+  a { color: inherit; text-decoration: none; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+.print-toc { display: none; }
+.print-toc ol { columns: 2; column-gap: 32px; padding-left: 18px; }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+<div class="wrap">
+  <nav class="toc" aria-label="Fehrist">
+    <div class="label">Fehrist</div>
+    <ol>
+      <li><a href="#samjho">1. Accounting kya karti hai</a></li>
+      <li><a href="#tayyari">2. Shuru se pehle tayyari</a></li>
+      <li><a href="#setup">3. Setup — 8 qadam</a></li>
+      <li><a href="#roz">4. Roz ka kaam</a></li>
+      <li><a href="#screens">5. Har screen ka process</a></li>
+      <li><a href="#s-coa" class="sub">Chart of Accounts</a></li>
+      <li><a href="#s-fy" class="sub">Fiscal Years</a></li>
+      <li><a href="#s-posting" class="sub">Posting Rules</a></li>
+      <li><a href="#s-jv" class="sub">Journal Entries</a></li>
+      <li><a href="#s-gl" class="sub">General Ledger</a></li>
+      <li><a href="#s-fs" class="sub">Financial Statements</a></li>
+      <li><a href="#s-iv" class="sub">Inventory Valuation</a></li>
+      <li><a href="#s-vb" class="sub">Vendor Bills</a></li>
+      <li><a href="#s-po" class="sub">PO Matching</a></li>
+      <li><a href="#s-fx" class="sub">Exchange Rates</a></li>
+      <li><a href="#s-rfq" class="sub">Request for Quotation</a></li>
+      <li><a href="#s-bank" class="sub">Bank Reconciliation</a></li>
+      <li><a href="#s-fa" class="sub">Fixed Assets</a></li>
+      <li><a href="#s-cc" class="sub">Cost Centers</a></li>
+      <li><a href="#s-budget" class="sub">Budgets</a></li>
+      <li><a href="#s-tax" class="sub">Sales Tax</a></li>
+      <li><a href="#s-health" class="sub">Accounting Health</a></li>
+      <li><a href="#s-qbo" class="sub">QuickBooks Sync</a></li>
+      <li><a href="#mahina">6. Mahine / saal ka aakhir</a></li>
+      <li><a href="#masle">7. Aam masle aur hal</a></li>
+      <li><a href="#alfaaz">8. Alfaaz ke maani</a></li>
+    </ol>
+  </nav>
+
+  <main>
+  <article class="doc">
+
+    <header class="cover">
+      <div class="eyebrow">Sabify ERP · User Manual</div>
+      <h1>Sabify Accounting Manual</h1>
+      <p class="lede">Kisi company me accounting shuru karne se le kar har mahine ke aakhir tak — har screen ka kaam, aasaan Roman Urdu me, qadam ba qadam.</p>
+      <div class="meta"><span>Version 1.0</span><span>October 2026</span><span>Implementation team + company accountant ke liye</span></div>
+    </header>
+
+    <div class="print-toc">
+      <h3>Fehrist</h3>
+      <ol>
+        <li>Accounting kya karti hai</li>
+        <li>Shuru se pehle tayyari</li>
+        <li>Setup — 8 qadam</li>
+        <li>Roz ka kaam</li>
+        <li>Har screen ka process</li>
+        <li>Mahine / saal ka aakhir</li>
+        <li>Aam masle aur hal</li>
+        <li>Alfaaz ke maani</li>
+      </ol>
+    </div>
+
+    <!-- 1 -->
+    <section class="part" id="samjho">
+      <div class="part-no">Hissa 1</div>
+      <h2>Accounting kya karti hai</h2>
+      <p>Sabify me POS, purchases, expenses, payroll aur bank ka kaam pehle se hota hai. <strong>Accounting module</strong> in sab ko ek jagah — <strong>General Ledger</strong> — me double-entry ke qaide se likhta hai. Is se company ko asal <strong>Profit &amp; Loss</strong>, <strong>Balance Sheet</strong>, <strong>Trial Balance</strong> aur <strong>Cash Flow</strong> milte hain.</p>
+      <p>Sab se zaroori baat: <strong>staff ko alag se ledger me kuch likhna nahi padta.</strong> Cashier POS pe sale karta hai, manager expense dalta hai, purchase wala Vendor Bill banata hai — system har 15 minute baad khud in sab ki ledger entries bana deta hai. Isay <em>automatic posting</em> kehte hain.</p>
+
+      <h3>Ek sale ledger me kaise jati hai</h3>
+      <p>Maan lijiye branch ne aaj 21,000 ki cash sale ki (18% sales tax ke saath), aur maal ki cost 12,500 thi. System raat tak is din ki ek entry banata hai:</p>
+      <div class="jv" role="table" aria-label="Misaal: POS sale ki journal entry">
+        <div class="jv-head"><span>JV-000231 · POS sales — Main Branch</span><span>16-10-2026</span></div>
+        <table>
+          <thead><tr><th>Account</th><th class="num">Debit</th><th class="num">Credit</th></tr></thead>
+          <tbody>
+            <tr><td class="acct">1110 Cash in Hand</td><td class="num">21,000.00</td><td class="num"></td></tr>
+            <tr><td class="acct cr">4100 Sales</td><td class="num"></td><td class="num">17,796.61</td></tr>
+            <tr><td class="acct cr">2130 Output Tax (GST)</td><td class="num"></td><td class="num">3,203.39</td></tr>
+            <tr><td class="acct">5100 Cost of Goods Sold</td><td class="num">12,500.00</td><td class="num"></td></tr>
+            <tr><td class="acct cr">1140 Inventory</td><td class="num"></td><td class="num">12,500.00</td></tr>
+          </tbody>
+          <tfoot><tr><td>Total</td><td class="num">33,500.00</td><td class="num">33,500.00</td></tr></tfoot>
+        </table>
+      </div>
+      <p>Har entry me <strong>Debit ka jod = Credit ka jod</strong> hota hai. Isi liye Trial Balance hamesha barabar aata hai.</p>
+
+      <h3>Kaun kya kar sakta hai</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Kaam</th><th>Kaun</th></tr></thead>
+        <tbody>
+          <tr><td>Kisi company ki accounting on / off karna, Backfill</td><td>Super Admin (Sabify team) — <span class="path">Operations › Accounting Setup</span></td></tr>
+          <tr><td>Accounting ke saare screens (Accounts Operations menu)</td><td>Company ke Admin / Sub-Admin (package me shamil ho)</td></tr>
+          <tr><td>Sales tax return record karna, rate farq accept karna (PO Bill)</td><td>Sirf Admin / Sub-Admin</td></tr>
+          <tr><td>Locked mahina unlock, band saal reopen</td><td>Sirf Super Admin</td></tr>
+          <tr><td>Vendor Bills, Exchange Rates, RFQ</td><td>Jis role ko Purchase Order ki permission hai</td></tr>
+        </tbody>
+      </table></div>
+      <div class="note"><strong>Menu kab nazar aata hai</strong><p>Accounting ke screens sirf us company ko sidebar me dikhte hain jis ki accounting on ki gayi ho. Sales Tax, Vendor Bills, PO Matching, Exchange Rates aur RFQ har company ko dikhte hain.</p></div>
+    </section>
+
+    <!-- 2 -->
+    <section class="part" id="tayyari">
+      <div class="part-no">Hissa 2</div>
+      <h2>Shuru karne se pehle tayyari</h2>
+      <p>Accounting on karne se pehle company ke saath baith kar ye cheezein tay kar lein aur jama kar lein. Yahi aadha kaam hai.</p>
+
+      <h3>Faisle jo pehle lene hain</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Sawal</th><th>Aam jawab</th></tr></thead>
+        <tbody>
+          <tr><td>Company ka maali saal (fiscal year) kis mahine se shuru hota hai?</td><td>Pakistan me aksar <strong>July</strong> (July–June). Ek dafa saal ban jaye to ye badal nahi sakta.</td></tr>
+          <tr><td>Accounting kis tareekh se shuru karni hai (start date)?</td><td>Kisi mahine ki <strong>pehli tareekh</strong>, behtar hai maali saal ki pehli tareekh.</td></tr>
+          <tr><td>Purana data ledger me chahiye ya nahi?</td><td>Agar purana data saaf hai to Backfill; warna start date se naya shuru + Opening Balances. (Hissa 3, qadam 3)</td></tr>
+          <tr><td>Kya company customer ledger "ulta" likhti hai (bill credit me)?</td><td>Customer ka ek ledger dekh lein. Ulta ho to setup me ek checkbox lagana hai (qadam 7).</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Start date se ek din pehle ke ye figures jama karein</h3>
+      <ul class="check">
+        <li>Har branch ka <strong>cash</strong> (gin kar)</li>
+        <li>Har <strong>bank account</strong> ka balance — bank statement se</li>
+        <li><strong>Stock</strong> — physical count, cost ke saath (stock count ka sheet)</li>
+        <li><strong>Customers</strong> se lena hai — har customer ka udhaar (list)</li>
+        <li><strong>Vendors</strong> ko dena hai — har vendor ka payable (list)</li>
+        <li><strong>Fixed assets</strong> — furniture, machines, gaadi: khareed ki keemat, tareekh, ab tak ka depreciation</li>
+        <li>Koi <strong>loan</strong>, advance tax, salaries payable, owner ka capital</li>
+      </ul>
+      <div class="note warn"><strong>Yaad rakhein</strong><p>System "Fill from system" se ye figures khud bhi bhar deta hai, lekin wo sirf andaza hota hai. Asal ginti aur bank statement se milana zaroori hai — ghalat opening = ghalat Balance Sheet.</p></div>
+    </section>
+
+    <!-- 3 -->
+    <section class="part" id="setup">
+      <div class="part-no">Hissa 3</div>
+      <h2>Setup — 8 qadam (ek dafa)</h2>
+      <p>Ye qadam isi tarteeb se karein. Har qadam ke baad agle pe jayein.</p>
+
+      <div class="setup-step"><div class="n">1</div><div>
+        <h3>Accounting on karein</h3>
+        <div class="screen-head"><span class="path">Operations › <b>Accounting Setup</b></span><span class="who">Super Admin</span></div>
+        <ol class="steps">
+          <li><strong>Company</strong> dropdown se company chunein.</li>
+          <li><strong>Fiscal Year</strong> ka start mahina chunein (aam taur pe July).</li>
+          <li><span class="btn">Enable Accounting</span> dabayein.</li>
+        </ol>
+        <p>System khud bana deta hai: <strong>43 accounts ka Chart of Accounts</strong> (Cash, Bank, Inventory, Sales, COGS, Expenses waghera), <strong>is saal ka fiscal year</strong> aur us ke <strong>12 mahine</strong>. Ab company ke sidebar me <span class="path">Accounts Operations</span> ke andar accounting ke screens aa jate hain.</p>
+        <div class="note"><strong>Dobara dabana safe hai</strong><p>Accounting on ho to button "Re-check setup" ban jata hai — kuch double nahi hota. <span class="btn">Turn Off</span> sirf menu chhupata hai; data delete nahi hota.</p></div>
+      </div></div>
+
+      <div class="setup-step"><div class="n">2</div><div>
+        <h3>Chart of Accounts dekh lein</h3>
+        <div class="screen-head"><span class="path">Accounts Operations › <b>Chart of Accounts</b></span></div>
+        <p>Company ke accountant ke saath accounts ki list dekhein. Jo account chahiye wo bana lein, jo naam badalna ho badal lein.</p>
+        <ol class="steps">
+          <li>Naya account: <span class="btn">+ Account</span> (top level) ya kisi group ke saamne <span class="btn">+ Sub</span>.</li>
+          <li>Code, naam aur parent group bharein, <span class="btn">Save</span>.</li>
+          <li>Rent (6200), Utilities (6300), Bank Charges (6400) pehle se hain. Company ke apne kharche ke alag heads banayein — maslan <em>6600 Fuel</em>, <em>6700 Marketing</em> — taake P&amp;L saaf aaye. Jo head na bane wo <em>6900 General Expenses</em> me jata hai.</li>
+        </ol>
+        <p><strong>System</strong> wale accounts (Cash, Sales, Inventory, AP waghera) delete nahi hote, sirf un ka code / naam badal sakta hai — automatic posting inhi ko use karti hai.</p>
+      </div></div>
+
+      <div class="setup-step"><div class="n">3</div><div>
+        <h3>Start date tay karein — purana data ya naya shuru</h3>
+        <div class="screen-head"><span class="path">Operations › <b>Accounting Setup</b></span><span class="who">Super Admin</span></div>
+        <div class="choice">
+          <div>
+            <h4>Raasta A — Naya shuru (zyada tar companies)</h4>
+            <p>Purana data adhoora / ghalat ho ya sirf aage ka hisaab chahiye.</p>
+            <ol class="steps">
+              <li><strong>Automatic Posting From</strong> = start date (maslan 01-07-2026) → <span class="btn">Save</span>.</li>
+              <li>Qadam 4 me Opening Balances (start date se ek din pehle, 30-06-2026).</li>
+            </ol>
+          </div>
+          <div>
+            <h4>Raasta B — Purana data bhi (Backfill)</h4>
+            <p>Company ka purana POS / purchase / expense data saaf hai aur pichle saal bhi chahiye.</p>
+            <ol class="steps">
+              <li><strong>Post Older Data (Backfill)</strong> me <strong>Cut-off Date</strong> dalein (jis din se history chahiye).</li>
+              <li><span class="btn">Preview</span> — dekhein kitne saal / entries banengi aur kahan farq hai.</li>
+              <li>Theek ho to <span class="btn">Run Backfill</span>. Purane fiscal years khud ban jate hain.</li>
+              <li>Cut-off se ek din pehle ka hisaab Opening Balances me (qadam 4).</li>
+            </ol>
+          </div>
+        </div>
+        <div class="note warn"><strong>Dhyan</strong><p>Automatic posting har 15 minute me sirf <strong>pichle 45 din</strong> dekhti hai. Agar 45 din se purana data badla jaye (maslan purani sale edit), to Backfill dobara chalana padta hai — dobara chalana safe hai, sirf farq post hota hai.</p></div>
+      </div></div>
+
+      <div class="setup-step"><div class="n">4</div><div>
+        <h3>Opening Balances dalein</h3>
+        <div class="screen-head"><span class="path">Accounts Operations › <b>Opening Balances</b></span></div>
+        <ol class="steps">
+          <li><strong>Opening Date</strong> = start date se ek din pehle.</li>
+          <li><span class="btn">Fill from system</span> dabayein — system cash, bank, stock, customers aur vendors ka andaza bhar deta hai, har line ke saath note ke yeh raqam kahan se aayi. (Is waqt kuch save nahi hota.)</li>
+          <li>Hissa 2 wali asal figures se har line milayein aur theek karein. Fixed assets, loans, capital haath se dalein (<strong>Find Account</strong> se account dhoondein).</li>
+          <li><span class="btn">Save &amp; Post</span>. Debit aur Credit ka jo farq bache wo khud <strong>Opening Balance Equity</strong> me chala jata hai.</li>
+        </ol>
+        <p>Ghalti ho jaye to screen dobara khol kar theek karein aur phir Save &amp; Post — purani opening entry khud reverse ho kar nayi lag jati hai.</p>
+      </div></div>
+
+      <div class="setup-step"><div class="n">5</div><div>
+        <h3>Posting Rules — kaunsi cheez kis account me jaye</h3>
+        <div class="screen-head"><span class="path">Accounts Operations › <b>Posting Rules</b></span></div>
+        <ol class="steps">
+          <li><strong>Expense Categories</strong>: har expense category ke saamne us ka expense account chunein (Rent → 6200 Rent). Jo khali chhodein wo <em>General Expenses</em> me jayegi.</li>
+          <li><strong>Bank Accounts</strong>: Sabify ke har bank account ke saamne Chart of Accounts ka bank account chunein (har bank ka alag GL account behtar hai).</li>
+          <li><strong>POS Payment Modes</strong>: Card / JazzCash / EasyPaisa / Online kis account me jayein. Default theek ho to rehne dein.</li>
+          <li><span class="btn">Save Mappings</span>, phir <span class="btn">Post Now</span> — pehli posting abhi chal jayegi.</li>
+          <li>Neeche <strong>Needs Attention</strong> list dekhein — jo document post nahi hua us ki wajah wahan likhi hoti hai.</li>
+        </ol>
+      </div></div>
+
+      <div class="setup-step"><div class="n">6</div><div>
+        <h3>Products ki cost theek karein</h3>
+        <div class="screen-head"><span class="path">Accounts Operations › <b>Inventory Valuation</b></span></div>
+        <p>Profit tabhi sahi aata hai jab har bikne wale product ki <strong>cost</strong> maloom ho. System har product ki <em>moving average cost</em> khud nikalta hai (khareed, opening stock aur adjustment se).</p>
+        <ol class="steps">
+          <li><strong>Show</strong> me <em>Needs cost</em> chunein — ye products bik rahe hain magar cost nahi.</li>
+          <li>In ki cost Opening Stock / Vendor Bill / Stock Adjustment se dalwayein.</li>
+          <li><span class="btn">Recalculate now</span> — nayi average cost lag jati hai.</li>
+        </ol>
+        <p>Jab tak cost nahi, us sale ki COGS 0 jati hai aur profit zyada dikhta hai.</p>
+      </div></div>
+
+      <div class="setup-step"><div class="n">7</div><div>
+        <h3>Customer ledger ka sign (sirf zaroorat pe)</h3>
+        <div class="screen-head"><span class="path">Operations › <b>Accounting Setup</b></span><span class="who">Super Admin</span></div>
+        <p>Kuch companies customer ke ledger me bill ko <em>credit</em> aur wasooli ko <em>debit</em> likhti hain (ulta). Agar aisa ho to <strong>Customer ledger: Credit increases balance</strong> tick karke <span class="btn">Save</span> karein, warna Accounts Receivable minus me aayega.</p>
+      </div></div>
+
+      <div class="setup-step"><div class="n">8</div><div>
+        <h3>Accounting Health se check karein</h3>
+        <div class="screen-head"><span class="path">Accounts Operations › <b>Accounting Health</b></span></div>
+        <p>Ye page poore ledger ko check karke batata hai kya theek hai aur kya nahi. Har item ke saath likha hota hai kya karna hai, aur <span class="btn">Open →</span> se seedha us screen pe le jata hai.</p>
+        <ol class="steps">
+          <li>Laal (<strong>Fix first</strong>) items pehle theek karein — ye reports ko ghalat bana rahe hain.</li>
+          <li>Phir peele (<strong>Check</strong>) items.</li>
+          <li><span class="btn">Run checks again</span> — sab hara ho jaye to company live hai.</li>
+        </ol>
+        <div class="note"><strong>Go-live ka matlab</strong><p>Trial Balance barabar, Suspense ~0, cash minus nahi, ledger ka Inventory stock value ke qareeb, aur Financial Statements me Balance Sheet "Balanced". Pehle mahine ke aakhir pe accountant ke saath P&amp;L aur Balance Sheet zaroor milayein.</p></div>
+      </div></div>
+    </section>
+
+    <!-- 4 -->
+    <section class="part" id="roz">
+      <div class="part-no">Hissa 4</div>
+      <h2>Roz ka kaam</h2>
+      <h3>Jo system khud karta hai</h3>
+      <p>Neeche wale kaam staff apni purani screens pe karta rahe — ledger entry har 15 minute me khud ban jati hai.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Jab ye ho</th><th>Ledger me (Debit → Credit)</th></tr></thead>
+        <tbody>
+          <tr><td>POS / website sale (branch ka har din ek entry)</td><td>Cash / Bank / Customer → Sales + Output Tax; Cost of Goods Sold → Inventory</td></tr>
+          <tr><td>Sale return</td><td>Sales Returns → Cash / Customer</td></tr>
+          <tr><td>Customer se wasooli</td><td>Cash / Bank → Accounts Receivable</td></tr>
+          <tr><td>Expense (Paid From cash ya bank)</td><td>Expense account → Cash / Bank</td></tr>
+          <tr><td>Vendor Bill post</td><td>Inventory + Input Tax → Accounts Payable</td></tr>
+          <tr><td>Vendor ko payment</td><td>Accounts Payable → Cash / Bank</td></tr>
+          <tr><td>PO ka maal aaya (GRN)</td><td>Inventory → Accounts Payable</td></tr>
+          <tr><td>Opening stock</td><td>Inventory → Opening Balance Equity</td></tr>
+          <tr><td>Stock adjustment (+ / −)</td><td>Inventory ↔ Inventory Gain / Loss</td></tr>
+          <tr><td>Branch transfer</td><td>Inventory (lene wali) ↔ Inventory (dene wali), Inter-branch Clearing ke zariye</td></tr>
+          <tr><td>Payslip (payroll)</td><td>Salaries → Salaries Payable / Employee Advances</td></tr>
+          <tr><td>Har mahine 1 tareekh</td><td>Depreciation Expense → Accumulated Depreciation</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Jo staff ko sahi tareeqe se karna hai</h3>
+      <ul>
+        <li><strong>Khareed (purchase)</strong> hamesha <span class="path">Vendors and Purchases › Vendor Bills</span> se karein — stock, vendor ka balance aur input tax ek saath sahi lagte hain. Sirf Stock Adjustment se maal dalne pe vendor ka payable aur tax ledger me nahi aata.</li>
+        <li><strong>Expense</strong> dalte waqt <em>Paid From</em> (Cash ya Bank + account) zaroor chunein.</li>
+        <li><strong>Vendor payment</strong> Vendor Bill ke <span class="btn">Pay</span> button se karein, taake payment bill se jud jaye.</li>
+        <li><strong>Product cost</strong>: naya product ho to us ki cost bhi dalein.</li>
+        <li>Jo cheez kisi screen se nahi aati (loan, owner ka paisa, bank charges, kisi ghalti ki durusti) wo <span class="path">Journal Entries</span> se manual entry.</li>
+      </ul>
+    </section>
+
+    <!-- 5 -->
+    <section class="part" id="screens">
+      <div class="part-no">Hissa 5</div>
+      <h2>Har screen ka process</h2>
+      <p>Har screen ke saath: kahan milegi, kab use karni hai, aur kaise.</p>
+
+      <h3 id="s-coa">Chart of Accounts</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Chart of Accounts</b></span></div>
+      <p><strong>Kab:</strong> naya kharche ka head, naya bank, naya loan account chahiye ho.</p>
+      <ol class="steps">
+        <li><span class="btn">+ Sub</span> us group ke saamne dabayein jis ke andar account chahiye (maslan Expenses ke andar).</li>
+        <li>Code, naam, type bharein → <span class="btn">Save</span>.</li>
+        <li>Jis account pe entries lag chuki hon wo delete nahi hota — <span class="btn">Deactivate</span> karein.</li>
+      </ol>
+
+      <h3 id="s-fy">Fiscal Years</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Fiscal Years</b></span></div>
+      <p><strong>Kab:</strong> mahina band karna, naya saal banana, saal band karna.</p>
+      <ul>
+        <li><strong>Close</strong> (mahina) — us mahine me nayi entry nahi lagti. <strong>Reopen</strong> se khul jata hai.</li>
+        <li><strong>Lock</strong> — pakka band; sirf Super Admin <strong>Unlock</strong> kar sakta hai. Audit ke baad lagayein.</li>
+        <li><span class="btn">+ Next Fiscal Year</span> — agla saal saal khatam hone se pehle bana lein, warna naye saal ki sales post nahi hongi.</li>
+        <li><span class="btn">Close Fiscal Year</span> — saal ka profit / loss <em>Retained Earnings</em> me chala jata hai aur saare mahine band ho jate hain.</li>
+      </ul>
+
+      <h3 id="s-posting">Posting Rules</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Posting Rules</b></span></div>
+      <p><strong>Kab:</strong> nayi expense category, naya bank account, ya koi document post nahi ho raha.</p>
+      <ol class="steps">
+        <li>Nayi category / bank ke saamne account chunein → <span class="btn">Save Mappings</span>.</li>
+        <li><span class="btn">Post Now</span> — 15 minute ka intezar kiye baghair posting chala dein.</li>
+        <li><strong>Needs Attention</strong> me jo error ho us ki wajah padh kar theek karein (maslan "No fiscal year" = agla saal banayein).</li>
+      </ol>
+      <div class="note warn"><strong>Mapping badalne ke baad</strong><p>Nayi mapping sirf aage ki aur pichle 45 din ki entries pe lagti hai. Purani entries ke liye Super Admin se Backfill dobara chalwayein.</p></div>
+
+      <h3 id="s-jv">Journal Entries (manual entry)</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Journal Entries</b></span></div>
+      <p><strong>Kab:</strong> owner ne paisa dala / nikala, loan liya, bank charges, ya kisi account se doosre me durusti.</p>
+      <ol class="steps">
+        <li><span class="btn">+ Journal Entry</span> dabayein, <strong>Date</strong> aur <strong>Narration</strong> (kya hua) likhein.</li>
+        <li>Har line pe account aur Debit <em>ya</em> Credit dalein. Neeche total — dono barabar hon to "Balanced".</li>
+        <li><span class="btn">Save Draft</span> (baad me) ya <span class="btn">Save &amp; Post</span> (abhi ledger me). Draft ko baad me kholein to <span class="btn">Post</span>.</li>
+      </ol>
+      <p><strong>Ghalat entry:</strong> posted entry edit / delete nahi hoti. Entry kholein → <span class="btn">Reverse</span> → Reversal Date + Reason. System ulti entry bana deta hai; phir sahi entry dobara dalein.</p>
+      <div class="jv" role="table" aria-label="Misaal: owner ne bank me capital dala">
+        <div class="jv-head"><span>Misaal · Owner ne 5 lakh bank me dale</span><span>Manual JV</span></div>
+        <table>
+          <thead><tr><th>Account</th><th class="num">Debit</th><th class="num">Credit</th></tr></thead>
+          <tbody>
+            <tr><td class="acct">1120 Bank Accounts</td><td class="num">500,000.00</td><td class="num"></td></tr>
+            <tr><td class="acct cr">3100 Owner's Capital</td><td class="num"></td><td class="num">500,000.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="s-gl">General Ledger</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>General Ledger</b></span></div>
+      <p><strong>Kab:</strong> kisi ek account ki poori tafseel dekhni ho (maslan Cash me kya aaya kya gaya).</p>
+      <ol class="steps">
+        <li>Account chunein (group chunein to us ke saare accounts), From / To date, branch.</li>
+        <li>Opening, har entry, running balance aur closing nazar aata hai. Entry no pe click → poori entry.</li>
+      </ol>
+
+      <h3 id="s-fs">Financial Statements</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Financial Statements</b></span></div>
+      <p><strong>Kab:</strong> mahine / saal ka nateeja dekhna, owner ya bank ko report deni.</p>
+      <ul>
+        <li><strong>Trial Balance</strong> — har account ka Debit / Credit; neeche dono barabar hone chahiye.</li>
+        <li><strong>Income Statement</strong> (P&amp;L) — Sales − Cost of Sales = Gross Profit − Expenses = Net Profit.</li>
+        <li><strong>Balance Sheet</strong> — Assets = Liabilities + Equity. "Balanced" likha aana chahiye.</li>
+        <li><strong>Cash Flow</strong> — cash kahan se aaya (Operating / Investing / Financing) aur kahan gaya.</li>
+      </ul>
+      <p>From / To date aur Branch chunein. Kisi figure pe click se General Ledger khulta hai. <span class="btn">Print</span> se kaghaz pe.</p>
+
+      <h3 id="s-iv">Inventory Valuation</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Inventory Valuation</b></span></div>
+      <p><strong>Kab:</strong> stock ki value dekhni, ya profit ghalat lag raha ho.</p>
+      <ul>
+        <li>Upar: stock ki kul value aur ledger ke Inventory se farq.</li>
+        <li><strong>Show</strong>: <em>Needs cost</em> (cost nahi), <em>Negative stock</em> (minus stock), <em>With cost</em>.</li>
+        <li><span class="btn">Recalculate now</span> — cost theek karne ke baad.</li>
+      </ul>
+
+      <h3 id="s-vb">Vendor Bills</h3>
+      <div class="screen-head"><span class="path">Vendors and Purchases › <b>Vendor Bills</b></span></div>
+      <p><strong>Kab:</strong> har khareed (bina PO). Ye stock badhata hai, vendor ka payable aur input tax lagata hai.</p>
+      <h4>Naya bill</h4>
+      <ol class="steps">
+        <li><span class="btn">+ New Bill</span>: <strong>Branch</strong> (maal yahan aayega), <strong>Vendor</strong>, vendor ka invoice no, <strong>Bill Date</strong>, Due Date.</li>
+        <li><strong>Add Item</strong> me product dhoondein; qty, rate, discount, tax %, (zaroorat ho to) batch / expiry.</li>
+        <li><strong>Other charges</strong> (freight waghera) — items ki cost me khud baant diya jata hai.</li>
+        <li><span class="btn">Save Draft</span> ya <span class="btn">Save &amp; Post</span>. Post pe stock, vendor balance aur ledger teeno.</li>
+      </ol>
+      <h4>Bill ke baad</h4>
+      <ul>
+        <li><span class="btn">Pay</span> — cash (branch) ya bank (account + cheque no). Thoda thoda bhi de sakte hain.</li>
+        <li><span class="btn">Return Goods (Debit Note)</span> — maal vendor ko wapas: stock kam, payable kam.</li>
+        <li><span class="btn">Credit Note</span> — vendor ne discount / rebate diya (maal wapas nahi).</li>
+        <li><span class="btn">Add Landed Cost</span> — baad me aaya freight / duty / clearing; items ki cost badh jati hai, transporter ko payable.</li>
+        <li><span class="btn">Cancel Bill</span> — sirf jab payment / note na ho aur maal bika na ho.</li>
+      </ul>
+      <div class="note"><strong>Approval</strong><p>Agar company ne Approvals me Vendor Bill ka rule lagaya ho to post karne pe bill "Waiting for approval" me jata hai; approve hone pe khud post ho jata hai.</p></div>
+
+      <h3 id="s-po">PO Matching (Purchase Order wali companies)</h3>
+      <div class="screen-head"><span class="path">Vendors and Purchases › <b>PO Matching</b></span></div>
+      <p><strong>Kab:</strong> company Purchase Order + GRN use karti hai aur vendor ka invoice aaya hai. Is me PO, aaya hua maal (GRN) aur invoice teeno milaye jate hain.</p>
+      <ol class="steps">
+        <li>List me PO ke saamne <span class="btn">Enter invoice</span>. Draft khud ban jata hai — jitna maal aaya aur abhi bill nahi hua, PO ke rate pe.</li>
+        <li>Vendor ka invoice no, date bharein. Invoice me jo qty / rate / tax hai wahi dalein. Kisi item ki qty 0 = wo agle bill me.</li>
+        <li><span class="btn">Save &amp; check</span> — har item ka PO cost vs invoice cost aur farq % dikhta hai.</li>
+        <li><span class="btn">Post</span>. Rate 2% se zyada alag ho to Admin / Sub-Admin "Accept rate difference" tick kare.</li>
+      </ol>
+      <p>Stock aur vendor balance GRN pe pehle hi lag chuke hote hain, is liye PO Bill <strong>sirf farq</strong> post karta hai (aur tax ko Input Tax me). Payment Vendor Bills se.</p>
+
+      <h3 id="s-fx">Exchange Rates (foreign currency khareed)</h3>
+      <div class="screen-head"><span class="path">Vendors and Purchases › <b>Exchange Rates</b></span></div>
+      <ol class="steps">
+        <li>Currency (USD, AED…), Date aur rate (1 USD = ? PKR) → <span class="btn">Save rate</span>. Rate jab badle naya dalein.</li>
+        <li>Vendor Bill me <strong>Currency</strong> chunein — us din ka rate khud aa jata hai. Rates dollar me likhein; system PKR me save karta hai.</li>
+        <li>Pay karte waqt amount dollar me + aaj ka rate. Bill aur payment ke rate ka farq <strong>4960 Exchange Gain / Loss</strong> me khud jata hai.</li>
+      </ol>
+
+      <h3 id="s-rfq">Request for Quotation</h3>
+      <div class="screen-head"><span class="path">Vendors and Purchases › <b>Request for Quotation</b></span></div>
+      <p><strong>Kab:</strong> kai vendors se rate le kar sab se sasta chunna ho.</p>
+      <ol class="steps">
+        <li><span class="btn">+ New RFQ</span>: title, branch, items + qty, aur vendors (<em>Select vendors linked to these items</em> se khud tick) → <span class="btn">Create RFQ</span>.</li>
+        <li><span class="btn">Copy request text</span> — WhatsApp / email pe vendors ko bhejein.</li>
+        <li>Jawab aaye to har vendor ke saamne <span class="btn">Enter quote</span>: rate, discount %, tax %, delivery din. Na de to <em>Declined</em>.</li>
+        <li><strong>Comparison</strong> me har item pe sabse sasta hara; "Lowest full quote" wala vendor upar. <strong>Buy from</strong> me har item ka vendor chunein.</li>
+        <li><span class="btn">Create Vendor Bills</span> — har vendor ka draft bill ban jata hai; maal aane pe Vendor Bills se post.</li>
+      </ol>
+
+      <h3 id="s-bank">Bank Reconciliation</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Bank Reconciliation</b></span></div>
+      <p><strong>Kab:</strong> har mahine — bank statement aur ledger ka bank account milana.</p>
+      <ol class="steps">
+        <li>Naya statement: bank account, mahina (from / to), statement ka opening aur closing balance.</li>
+        <li><span class="btn">Import</span> se bank ki CSV / Excel statement (Date + Amount, ya Debit / Credit columns), ya lines haath se.</li>
+        <li><span class="btn">Auto-match</span> — barabar raqam aur qareeb ki tareekh wali lines khud jud jati hain.</li>
+        <li>Baqi: statement line pe click, ledger ki line(s) tick → <span class="btn">Match</span>. Bank charges / profit jaisi cheez jo ledger me nahi: us line pe <span class="btn">Create entry</span>.</li>
+        <li>Farq 0 ho jaye to <span class="btn">Mark Reconciled</span> — statement lock ho jata hai.</li>
+      </ol>
+
+      <h3 id="s-fa">Fixed Assets</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Fixed Assets</b></span></div>
+      <ol class="steps">
+        <li>Naya asset: naam, asset account, cost, salvage (aakhir ki keemat), umar (mahine), tareeqa (straight line / declining %), kab se depreciation, pehle ka depreciation (purana asset ho to).</li>
+        <li>Abhi khareeda hai to "paid from" chunein — khareed ki entry bhi ban jati hai.</li>
+        <li>Depreciation har mahine 1 tareekh ko khud lagti hai; chahein to <span class="btn">Run depreciation</span>.</li>
+        <li>Becha / khatam hua to <span class="btn">Sell / Dispose</span>: tareekh + kitne me bika — gain / loss khud <em>4950</em> me.</li>
+      </ol>
+
+      <h3 id="s-cc">Cost Centers</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Cost Centers</b></span></div>
+      <p><strong>Kab:</strong> profit department / project / shop-wise dekhna ho.</p>
+      <ol class="steps">
+        <li>Centers tab: code + naam (SHOP, KITCHEN, MKT…).</li>
+        <li>Rules tab: branch ka default center, aur expense category ka center → Save. Aage ki automatic entries pe khud lagta hai.</li>
+        <li>Manual Journal Entry me har line pe cost center chun sakte hain.</li>
+        <li>Report tab: har cost center ka P&amp;L.</li>
+      </ol>
+
+      <h3 id="s-budget">Budgets</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Budgets</b></span></div>
+      <ol class="steps">
+        <li>Fiscal year, naam, (chahein to) branch / cost center → <span class="btn">+ New Budget</span>.</li>
+        <li>Edit Budget: har income / expense account ke 12 mahine. Saal ki raqam likh kar <span class="btn">↦</span> = 12 me barabar; ya <em>Fill from last year's actuals</em> + % (maslan +10).</li>
+        <li><span class="btn">Save</span>. <strong>Budget vs Actual</strong> tab me mahine chun kar farq dekhein — hara = budget se behtar, laal = bura.</li>
+      </ol>
+
+      <h3 id="s-tax">Sales Tax</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Sales Tax</b></span></div>
+      <p><strong>Kab:</strong> har mahine ki sales tax return se pehle.</p>
+      <ul>
+        <li><strong>Monthly Summary</strong> — mahine wise sales (bina tax), FBR output tax, input tax (Vendor Bills se), FBR payable / refund, SRB. <strong>Not sent to FBR</strong> = FBR wali branch ki tax wali receipts jin pe FBR invoice number nahi — inhe zaroor dekhein.</li>
+        <li><strong>Sales Register</strong> — receipt wise list, <span class="btn">Download CSV</span>.</li>
+        <li><strong>Purchase Register</strong> — vendor bills, vendor ka NTN / STRN.</li>
+      </ul>
+      <h4>Return record karna</h4>
+      <ol class="steps">
+        <li>Mahina khatam hone ke baad Summary me <span class="btn">File FBR</span> (ya File SRB).</li>
+        <li>Jama ki gayi raqam, CPR / PSID no, tareekh. Accounting on ho to <strong>Post to ledger</strong> + <strong>Paid from</strong> account.</li>
+        <li><span class="btn">Record Return</span>. Ghalti ho to Returns Filed me Delete — ledger entry khud reverse.</li>
+      </ol>
+      <div class="note"><strong>Input tax</strong><p>Input tax sirf Vendor Bills / PO Bills se aata hai. Jo khareed Stock Adjustment ya opening se dali gayi us ka tax claim yahan nazar nahi aayega.</p></div>
+
+      <h3 id="s-health">Accounting Health</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>Accounting Health</b></span></div>
+      <p><strong>Kab:</strong> har hafte ek dafa, aur mahina band karne se pehle zaroor.</p>
+      <div class="tbl"><table>
+        <thead><tr><th>Rang</th><th>Matlab</th><th>Kya karein</th></tr></thead>
+        <tbody>
+          <tr><td>Fix first (laal)</td><td>Numbers ghalat hain</td><td>Foran theek karein — likhi hui hidayat + Open →</td></tr>
+          <tr><td>Check (peela)</td><td>Dhyan dein</td><td>Is hafte theek karein</td></tr>
+          <tr><td>Next step (neela)</td><td>Agla kaam</td><td>Maslan purane mahine band karna</td></tr>
+          <tr><td>OK (hara)</td><td>Sab theek</td><td>—</td></tr>
+        </tbody>
+      </table></div>
+      <p>Nateeja 10 minute ke liye yaad rehta hai; kuch theek karne ke baad <span class="btn">Run checks again</span>.</p>
+
+      <h3 id="s-qbo">QuickBooks Sync (sirf jo company QuickBooks use kare)</h3>
+      <div class="screen-head"><span class="path">Accounts Operations › <b>QuickBooks Sync</b></span><span class="who">Admin / Sub-Admin</span></div>
+      <ol class="steps">
+        <li><span class="btn">Connect to QuickBooks</span> → Intuit pe login → wapas Sabify me "Connected".</li>
+        <li><span class="btn">Load QuickBooks accounts</span> → <span class="btn">Auto-match</span> (code / naam se) → har "needs link" account ke saamne QuickBooks account → <span class="btn">Save mapping</span>.</li>
+        <li><em>Send journal entries automatically</em> tick + kis tareekh se → <span class="btn">Save</span>.</li>
+        <li>Har 30 minute me khud jata hai; <span class="btn">Sync now</span> se abhi. <strong>Not sent</strong> list me wajah; theek karke <span class="btn">Retry failed</span>.</li>
+      </ol>
+    </section>
+
+    <!-- 6 -->
+    <section class="part" id="mahina">
+      <div class="part-no">Hissa 6</div>
+      <h2>Mahine aur saal ke aakhir ka kaam</h2>
+      <h3>Har mahine (agle mahine ke pehle hafte me)</h3>
+      <ol class="steps">
+        <li><strong>Accounting Health</strong> kholein, laal / peele items theek karein.</li>
+        <li><strong>Bank Reconciliation</strong> — har bank ka statement milayein.</li>
+        <li><strong>Fixed Assets</strong> — depreciation lagi hai ya nahi (1 tareekh ko khud lagti hai).</li>
+        <li><strong>Sales Tax</strong> — Not sent to FBR dekhein, return jama karke <em>File FBR</em> se record.</li>
+        <li><strong>Inventory Valuation</strong> — Needs cost wale products ki cost.</li>
+        <li><strong>Financial Statements</strong> — Trial Balance, P&amp;L, Balance Sheet; owner / accountant ko dein.</li>
+        <li><strong>Fiscal Years</strong> — pichla mahina <span class="btn">Close</span> karein.</li>
+      </ol>
+      <h3>Saal ke aakhir</h3>
+      <ol class="steps">
+        <li>Saal khatam hone se pehle <span class="btn">+ Next Fiscal Year</span> se agla saal bana lein.</li>
+        <li>Aakhri mahine ka upar wala saara kaam + stock count se Inventory milana.</li>
+        <li>Accountant / auditor ki adjustments Journal Entries se.</li>
+        <li><span class="btn">Close Fiscal Year</span> — profit Retained Earnings me, saal band. Audit ke baad mahine <span class="btn">Lock</span>.</li>
+      </ol>
+    </section>
+
+    <!-- 7 -->
+    <section class="part" id="masle">
+      <div class="part-no">Hissa 7</div>
+      <h2>Aam masle aur un ka hal</h2>
+      <div class="tbl"><table>
+        <thead><tr><th>Masla</th><th>Wajah</th><th>Hal</th></tr></thead>
+        <tbody>
+          <tr><td>Aaj ki sale ledger me nahi</td><td>Posting har 15 minute; ya ruk gayi</td><td>Posting Rules › Post Now. Health me "Automatic posting is running" laal ho to Sabify team ko batayein.</td></tr>
+          <tr><td>"No fiscal year" error</td><td>Agle saal ka fiscal year nahi bana</td><td>Fiscal Years › + Next Fiscal Year, phir Post Now</td></tr>
+          <tr><td>"Period is closed" error</td><td>Band mahine ki tareekh pe entry</td><td>Entry agle khule mahine ki tareekh pe, ya mahina Reopen (Locked ho to Super Admin)</td></tr>
+          <tr><td>Suspense / Rounding me raqam</td><td>Receipt ka total aur tafseel nahi milte (purana / kharab data)</td><td>General Ledger me 2190 kholein, din dekhein, receipt theek karein ya JV se sahi account me</td></tr>
+          <tr><td>Adjustments Clearing me raqam</td><td>Manual cash / vendor / customer adjustment jis ka doosra account pata nahi</td><td>Accountant JV se sahi account me le jaye</td></tr>
+          <tr><td>Profit bahut zyada</td><td>Products ki cost nahi → COGS 0</td><td>Inventory Valuation › Needs cost</td></tr>
+          <tr><td>Cash minus me</td><td>Opening cash nahi dala</td><td>Opening Balances</td></tr>
+          <tr><td>Customers (AR) minus me</td><td>Customer opening nahi / ledger ulta likha</td><td>Opening Balances; Accounting Setup me ledger sign</td></tr>
+          <tr><td>Galat posted entry</td><td>—</td><td>Journal Entries › Reverse, phir sahi entry. Kabhi delete nahi.</td></tr>
+          <tr><td>Purani (45 din se pehle ki) sale badli, ledger nahi badla</td><td>Roz ki posting sirf 45 din dekhti hai</td><td>Super Admin Accounting Setup se Backfill dobara chalaye</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <!-- 8 -->
+    <section class="part" id="alfaaz">
+      <div class="part-no">Hissa 8</div>
+      <h2>Alfaaz ke maani</h2>
+      <dl class="gloss">
+        <dt>Debit / Credit</dt><dd>Har entry ke do pehlu. Asset aur kharcha debit se badhte hain; liability, capital aur aamdani credit se.</dd>
+        <dt>General Ledger</dt><dd>Saari entries ki kitaab, account wise.</dd>
+        <dt>Journal Entry (JV)</dt><dd>Ek lein-dein ki entry — kam az kam do lines, Debit = Credit.</dd>
+        <dt>Chart of Accounts</dt><dd>Company ke saare accounts ki list, groups me.</dd>
+        <dt>Fiscal year / Period</dt><dd>Maali saal (12 mahine) / us ka ek mahina.</dd>
+        <dt>Trial Balance</dt><dd>Har account ka balance; Debit aur Credit ka jod barabar hona chahiye.</dd>
+        <dt>Accounts Receivable (AR)</dt><dd>Customers se lena hai.</dd>
+        <dt>Accounts Payable (AP)</dt><dd>Vendors ko dena hai.</dd>
+        <dt>COGS</dt><dd>Cost of Goods Sold — bika hua maal kitne ka pada tha.</dd>
+        <dt>Moving average cost</dt><dd>Har khareed ke baad product ki nayi ausat cost; COGS isi se.</dd>
+        <dt>Input / Output Tax</dt><dd>Khareed pe diya gaya tax / sale pe liya gaya tax. Farq FBR ko.</dd>
+        <dt>Opening Balance Equity</dt><dd>Opening Balances ka farq yahan aata hai; accountant baad me Capital / Retained Earnings me le jata hai.</dd>
+        <dt>Suspense / Rounding (2190)</dt><dd>Jo raqam kisi account me fit na ho; isay ~0 rehna chahiye.</dd>
+        <dt>Adjustments Clearing (2195)</dt><dd>Manual adjustments jin ka doosra account pata nahi.</dd>
+        <dt>Retained Earnings</dt><dd>Pichle saalon ka jama profit; saal band karne pe P&amp;L yahan jata hai.</dd>
+        <dt>Depreciation</dt><dd>Asset ki keemat ka har mahine kharche me jana.</dd>
+        <dt>Reconciliation</dt><dd>Do record milana — maslan bank statement aur ledger.</dd>
+        <dt>Backfill</dt><dd>Purane data ki ledger entries ek saath banana.</dd>
+        <dt>Reverse</dt><dd>Ghalat entry ki ulti entry — asal entry mitaye baghair durusti.</dd>
+      </dl>
+      <div class="foot">Sabify ERP · Accounting Manual v1.0 · October 2026. Sawal ya masla ho to Sabify support team se rabta karein.</div>
+    </section>
+
+  </article>
+  </main>
+</div>
