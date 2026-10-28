@@ -187,6 +187,7 @@
                     <label class="block">
                         <span class="{{ $labelClass }}">Weight | Qty</span>
                         <input type="number" step="0.01" name="weight" id="weight" value="{{ $field('weight') }}" class="{{ $inputClass }}" placeholder="0">
+                        @error('weight') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Conversion UOM <span class="text-rose-600">*</span></span>
@@ -226,38 +227,47 @@
                     <label class="block">
                         <span class="{{ $labelClass }}">Qty Reminder <span class="text-rose-600">*</span></span>
                         <input type="number" min="0" name="reminder" id="reminder" value="{{ $field('reminder') }}" required class="{{ $inputClass }}" placeholder="0">
+                        @error('reminder') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Cost Price</span>
                         <input type="number" step="0.01" min="0" name="cost_price" id="cost_price" value="{{ $field('cost_price') }}" class="{{ $inputClass }}" placeholder="0.00">
+                        @error('cost_price') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Actual Price <span class="text-rose-600">*</span></span>
                         <input type="number" step="0.01" min="0" name="ap" id="ap" value="{{ $field('ap') }}" required class="{{ $inputClass }}" placeholder="0.00">
+                        @error('ap') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Tax Rate</span>
                         <input type="number" step="0.01" min="0" name="taxrate" id="taxrate" value="{{ $field('taxrate') }}" class="{{ $inputClass }}" placeholder="0">
+                        @error('taxrate') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Tax Amount</span>
                         <input type="number" step="0.01" min="0" name="taxamount" id="taxamount" value="{{ $field('taxamount') }}" class="{{ $inputClass }}" placeholder="0.00">
+                        @error('taxamount') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Retail Price <span class="text-rose-600">*</span></span>
                         <input type="number" step="0.01" min="0" name="rp" id="rp" value="{{ $field('rp') }}" required class="{{ $inputClass }}" placeholder="0.00">
+                        @error('rp') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Wholesale Price</span>
                         <input type="number" step="0.01" min="0" name="wp" id="wp" value="{{ $field('wp') }}" class="{{ $inputClass }}" placeholder="0.00">
+                        @error('wp') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Discount Price</span>
                         <input type="number" step="0.01" min="0" name="dp" id="dp" value="{{ $field('dp') }}" class="{{ $inputClass }}" placeholder="0.00">
+                        @error('dp') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                     <label class="block">
                         <span class="{{ $labelClass }}">Online Price</span>
                         <input type="number" step="0.01" min="0" name="op" id="op" value="{{ $field('op') }}" class="{{ $inputClass }}" placeholder="0.00">
+                        @error('op') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
                 </div>
             </section>
@@ -351,6 +361,7 @@
                         <label class="block">
                             <span class="{{ $labelClass }}">Product Priority</span>
                             <input type="number" name="priority" id="priority" value="{{ $field('priority') }}" class="{{ $inputClass }}" placeholder="0">
+                            @error('priority') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                         </label>
                     </div>
                     @if (count($baBranches) > 1)

@@ -203,8 +203,16 @@ class InventoryController extends Controller
             'cuom'          => 'required',
             'depart'        => 'required',
             'subDepart'     => 'required',
-            'rp'            => 'required',
-            'ap'            => 'required',
+            'rp'            => 'required|numeric|min:0',
+            'ap'            => 'required|numeric|min:0',
+            'cost_price'    => 'nullable|numeric|min:0',
+            'taxrate'       => 'nullable|numeric|min:0',
+            'taxamount'     => 'nullable|numeric|min:0',
+            'wp'            => 'nullable|numeric|min:0',
+            'dp'            => 'nullable|numeric|min:0',
+            'op'            => 'nullable|numeric|min:0',
+            'weight'        => 'nullable|numeric|min:0',
+            'priority'      => 'nullable|integer',
             'product_mode'  => 'required',
             // 'image'         => 'nullable|image|mimes:jpeg,png,jpg,gif,webp,tiff|min:10|max:100',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
@@ -215,12 +223,12 @@ class InventoryController extends Controller
             $rules['poscode'] = 'required';
             $rules['posname'] = 'required';
             $rules['posuom'] = 'required';
-            $rules['posprice'] = 'required';
+            $rules['posprice'] = 'required|numeric|min:0';
         }
 
         if(isset($request->chkstock)) {
-            $rules['stock_cost'] = 'required';
-            $rules['stock_qty'] = 'required';
+            $rules['stock_cost'] = 'required|numeric|min:0';
+            $rules['stock_qty'] = 'required|numeric|min:0';
         }
 
         if(isset($request->showProductWebsite) && !empty($request->website) && $request->op == 0) {
@@ -301,7 +309,7 @@ class InventoryController extends Controller
             'item_code'           => $request->code,
             'product_name'        => $request->name,
             'product_description' => $request->description,
-            'inventory_type_id'   => $request->inventory_type,
+            'inventory_type_id'   => $request->filled('inventory_type') ? $request->inventory_type : 1,
             'image'               => $imageName,
             'url'                 => $imageData,
             'status'              => 1,
@@ -345,14 +353,14 @@ class InventoryController extends Controller
 
         //inventory price insert here
         $items = [
-            'cost_price'      => $request->cost_price,
+            'cost_price'      => $request->input('cost_price') ?? 0,
             'actual_price'    => $request->ap,
-            'tax_rate'        => $request->taxrate,
-            'tax_amount'      => $request->taxamount,
+            'tax_rate'        => $request->input('taxrate') ?? 0,
+            'tax_amount'      => $request->input('taxamount') ?? 0,
             'retail_price'    => $request->rp,
-            'wholesale_price' => $request->wp,
-            'online_price'    => $request->op,
-            'discount_price'  => $request->dp,
+            'wholesale_price' => $request->input('wp') ?? 0,
+            'online_price'    => $request->input('op') ?? 0,
+            'discount_price'  => $request->input('dp') ?? 0,
             'product_id'      => $productid,
             'status_id'       => 1,
         ];
@@ -1323,7 +1331,7 @@ class InventoryController extends Controller
             'item_code'            => $request->code,
             'product_name'         => $request->name,
             'product_description'  => $request->description,
-            'inventory_type_id'  => $request->inventory_type,
+            'inventory_type_id'  => $request->filled('inventory_type') ? $request->inventory_type : 1,
             'status'               => 1,
             'created_at'           => date('Y-m-d H:s:i'),
             'updated_at'           => date('Y-m-d H:s:i'),

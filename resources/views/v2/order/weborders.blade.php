@@ -12,6 +12,48 @@
             <div class="rounded-lg border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium text-rose-800 shadow-sm">{{ Session::get('error') }}</div>
         @endif
 
+        @php
+            $statusCards = [
+                1  => ['label' => 'Pending',         'accent' => 'bg-amber-500',   'soft' => 'bg-amber-50 text-amber-600',     'ring' => 'ring-amber-400',   'icon' => 'M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z'],
+                2  => ['label' => 'Processing',      'accent' => 'bg-sky-500',     'soft' => 'bg-sky-50 text-sky-600',         'ring' => 'ring-sky-400',     'icon' => 'M4 4v5h5M20 20v-5h-5M5.6 15A8 8 0 0018.4 9M18.4 9A8 8 0 005.6 15'],
+                10 => ['label' => 'Order Picked Up', 'accent' => 'bg-violet-500',  'soft' => 'bg-violet-50 text-violet-600',   'ring' => 'ring-violet-400',  'icon' => 'M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm10 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z'],
+                4  => ['label' => 'Delivered',       'accent' => 'bg-emerald-500', 'soft' => 'bg-emerald-50 text-emerald-600', 'ring' => 'ring-emerald-400', 'icon' => 'M5 13l4 4L19 7'],
+                5  => ['label' => 'Canceled',        'accent' => 'bg-rose-500',    'soft' => 'bg-rose-50 text-rose-600',       'ring' => 'ring-rose-400',    'icon' => 'M6 18L18 6M6 6l12 12'],
+            ];
+            $allOrdersCollection = collect($allOrders ?? []);
+            $cardFilters = request()->only(['first', 'second', 'customer', 'receipt', 'branch', 'website']);
+        @endphp
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            @foreach ($statusCards as $cardStatusId => $card)
+                @php
+                    $cardOrders = $allOrdersCollection->filter(fn($o) => (int) $o->status === $cardStatusId);
+                    $isActiveCard = (int) ($statusId ?? 0) === $cardStatusId;
+                    $cardUrl = route('getWebOrderFilter', array_merge($cardFilters, $isActiveCard ? [] : ['status' => $cardStatusId], ['page_mode' => 1]));
+                @endphp
+                <a href="{{ $cardUrl }}" title="{{ $isActiveCard ? 'Click to clear this filter' : 'Show only ' . $card['label'] . ' orders' }}"
+                   class="group relative block overflow-hidden rounded-xl border border-erp-line bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md {{ $isActiveCard ? 'ring-2 ' . $card['ring'] : '' }}">
+                    <span class="absolute inset-y-0 left-0 w-1.5 {{ $card['accent'] }}"></span>
+                    <div class="flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <div class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">{{ $card['label'] }}</div>
+                            <div class="mt-2 text-3xl font-extrabold leading-none text-erp-ink" data-card-count="{{ $cardStatusId }}">{{ $cardOrders->count() }}</div>
+                            <div class="mt-1 text-xs font-medium text-erp-mute">{{ $cardOrders->count() === 1 ? 'order' : 'orders' }}</div>
+                        </div>
+                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $card['soft'] }}">
+                            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="{{ $card['icon'] }}"/></svg>
+                        </span>
+                    </div>
+                    @if ($cardStatusId === 1)
+                        <div class="mt-4 border-t border-erp-line pt-3">
+                            <div class="text-[11px] font-bold uppercase tracking-[0.12em] text-erp-mute">Pending Amount</div>
+                            <div class="mt-0.5 text-lg font-bold text-amber-600" data-card-amount="1">{{ number_format($cardOrders->sum('total_amount'), 2) }}</div>
+                        </div>
+                    @endif
+                </a>
+            @endforeach
+        </div>
+
         <section class="rounded-lg border border-erp-line bg-white shadow-sm">
             <div class="border-b border-erp-line px-5 py-4">
                 <h2 class="text-base font-bold text-erp-ink">Order Details</h2>
@@ -46,6 +88,17 @@
                         <option value="">Select Branch</option>
                         @foreach($branch as $value)
                             <option {{ $branchFilter == $value->branch_id ? 'selected' : '' }} value="{{ $value->branch_id }}">{{ $value->branch_name }}</option>
+                        @endforeach
+                    </select>
+                </label>
+                <label class="block">
+                    <span class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Select Status</span>
+                    <select id="status_filter" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <option value="">All Statuses</option>
+                        @foreach($orders as $val)
+                            @if (trim((string) $val->order_status_name) !== '')
+                                <option {{ (int) ($statusId ?? 0) === (int) $val->order_status_id ? 'selected' : '' }} value="{{ $val->order_status_id }}">{{ $val->order_status_name }}</option>
+                            @endif
                         @endforeach
                     </select>
                 </label>
@@ -87,7 +140,7 @@
                     </thead>
                     <tbody class="divide-y divide-erp-line">
                         @forelse($totalorders as $value)
-                            <tr id="tbRow{{ $value->id }}" class="{{ $value->isSeen == 1 ? 'bg-slate-50' : '' }}">
+                            <tr id="tbRow{{ $value->id }}" data-status="{{ $value->status }}" data-amount="{{ $value->total_amount }}" class="{{ $value->isSeen == 1 ? 'bg-slate-50' : '' }}">
                                 <td class="px-5 py-3 font-semibold text-erp-ink">{{ $value->url_orderid }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ $value->date }}</td>
                                 <td class="px-5 py-3 text-erp-text">{{ date('h:i a', strtotime($value->time)) }}</td>
@@ -177,11 +230,25 @@
             const branch = document.getElementById('branch').value;
             const customer = document.getElementById('customer').value;
             const website = document.getElementById('website') ? document.getElementById('website').value : '';
+            const status = document.getElementById('status_filter').value;
 
-            if (fromdate || todate || receipt || branch || customer || website) {
-                window.location = "{{ route('getWebOrderFilter') }}?first=" + fromdate + "&second=" + todate + "&customer=" + customer + "&receipt=" + receipt + "&branch=" + branch + "&website=" + website + "&page_mode=1";
+            if (fromdate || todate || receipt || branch || customer || website || status) {
+                window.location = "{{ route('getWebOrderFilter') }}?first=" + fromdate + "&second=" + todate + "&customer=" + customer + "&receipt=" + receipt + "&branch=" + branch + "&website=" + website + "&status=" + status + "&page_mode=1";
             }
         });
+
+        // Keep the status cards in step with status changes / new orders without a reload.
+        function adjustCard(statusId, countDelta, amount) {
+            const count = document.querySelector('[data-card-count="' + statusId + '"]');
+            if (count) count.textContent = Math.max(0, parseInt(count.textContent, 10) + countDelta);
+            if (String(statusId) === '1') {
+                const amt = document.querySelector('[data-card-amount="1"]');
+                if (amt) {
+                    const current = parseFloat(amt.textContent.replace(/,/g, '')) || 0;
+                    amt.textContent = numberWithCommas(Math.max(0, current + countDelta * amount).toFixed(2));
+                }
+            }
+        }
 
         function statusChange(id, receipt, receiptNo) {
             const value = document.getElementById(id).value;
@@ -216,6 +283,13 @@
             })
                 .then(res => res.json())
                 .then(() => {
+                    const row = document.getElementById('tbRow' + receipt);
+                    if (row && row.dataset.status !== String(status)) {
+                        const amount = parseFloat(row.dataset.amount) || 0;
+                        adjustCard(row.dataset.status, -1, amount);
+                        adjustCard(status, 1, amount);
+                        row.dataset.status = String(status);
+                    }
                     orderSeen(receiptNo, receipt);
                     closeModal('order-status-modal');
                     showToast('Status changed successfully');
@@ -284,6 +358,9 @@
 
                         const tr = document.createElement('tr');
                         tr.id = 'tbRow' + order.id;
+                        tr.dataset.status = String(order.status);
+                        tr.dataset.amount = order.total_amount;
+                        adjustCard(order.status, 1, parseFloat(order.total_amount) || 0);
                         tr.className = 'bg-erp-light/30';
                         tr.innerHTML = `
                             <td class="px-5 py-3 font-semibold text-erp-ink">${order.url_orderid}</td>

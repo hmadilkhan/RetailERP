@@ -417,8 +417,10 @@ class OrderController extends Controller
         $branch       = $order->getBranch();
         $website      = DB::table('website_details')->where('company_id', Auth::user()->company_id)->select('id', 'name')->get();
         $totalorders  = $order->getWebOrders(DB::table("user_branches")->where('user_id', Auth::user()->id)->pluck('branch_id')->implode(','), 0);
+        $allOrders    = $totalorders;
+        $statusId     = null;
         $riders       = $order->getRiders();
-        return view('v2.order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders', 'website'));
+        return view('v2.order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'allOrders', 'statusId', 'riders', 'website'));
     }
 
     public function websiteOrders(Request $Request, order $order, Customer $customer)
@@ -525,10 +527,15 @@ class OrderController extends Controller
         $mode         = $order->ordersMode();
         $branch       = $order->getBranch();
         $riders       = $order->getRiders();
-        $totalorders  = $order->getWebsiteOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch, $websiteId);
+        // Cards count every status for the chosen filters; the status filter only narrows the table.
+        $allOrders    = $order->getWebsiteOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch, $websiteId);
+        $statusId     = $request->filled('status') ? (int) $request->status : null;
+        $totalorders  = $statusId === null
+            ? $allOrders
+            : array_values(array_filter($allOrders, fn($o) => (int) $o->status === $statusId));
         $website      = DB::table('website_details')->where('company_id', session('company_id'))->select('id', 'name')->get();
 
-        return view('v2.order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'riders', 'website', 'websiteId'));
+        return view('v2.order.weborders', compact('orders', 'customer', 'mode', 'branch', 'paymentMode', 'totalorders', 'allOrders', 'statusId', 'riders', 'website', 'websiteId'));
     }
 
     /* public function inline_receiptDetails(Request $request){
