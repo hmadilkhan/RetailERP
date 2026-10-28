@@ -12,48 +12,6 @@
             <div class="rounded-lg border border-rose-200 bg-rose-50 px-5 py-4 text-sm font-medium text-rose-800 shadow-sm">{{ Session::get('error') }}</div>
         @endif
 
-        @php
-            $statusCards = [
-                1  => ['label' => 'Pending',         'accent' => 'bg-amber-500',   'soft' => 'bg-amber-50 text-amber-600',     'ring' => 'ring-amber-400',   'icon' => 'M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z'],
-                2  => ['label' => 'Processing',      'accent' => 'bg-sky-500',     'soft' => 'bg-sky-50 text-sky-600',         'ring' => 'ring-sky-400',     'icon' => 'M4 4v5h5M20 20v-5h-5M5.6 15A8 8 0 0018.4 9M18.4 9A8 8 0 005.6 15'],
-                10 => ['label' => 'Order Picked Up', 'accent' => 'bg-violet-500',  'soft' => 'bg-violet-50 text-violet-600',   'ring' => 'ring-violet-400',  'icon' => 'M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm10 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z'],
-                4  => ['label' => 'Delivered',       'accent' => 'bg-emerald-500', 'soft' => 'bg-emerald-50 text-emerald-600', 'ring' => 'ring-emerald-400', 'icon' => 'M5 13l4 4L19 7'],
-                5  => ['label' => 'Canceled',        'accent' => 'bg-rose-500',    'soft' => 'bg-rose-50 text-rose-600',       'ring' => 'ring-rose-400',    'icon' => 'M6 18L18 6M6 6l12 12'],
-            ];
-            $allOrdersCollection = collect($allOrders ?? []);
-            $cardFilters = request()->only(['first', 'second', 'customer', 'receipt', 'branch', 'website']);
-        @endphp
-
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            @foreach ($statusCards as $cardStatusId => $card)
-                @php
-                    $cardOrders = $allOrdersCollection->filter(fn($o) => (int) $o->status === $cardStatusId);
-                    $isActiveCard = (int) ($statusId ?? 0) === $cardStatusId;
-                    $cardUrl = route('getWebOrderFilter', array_merge($cardFilters, $isActiveCard ? [] : ['status' => $cardStatusId], ['page_mode' => 1]));
-                @endphp
-                <a href="{{ $cardUrl }}" title="{{ $isActiveCard ? 'Click to clear this filter' : 'Show only ' . $card['label'] . ' orders' }}"
-                   class="group relative block overflow-hidden rounded-xl border border-erp-line bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md {{ $isActiveCard ? 'ring-2 ' . $card['ring'] : '' }}">
-                    <span class="absolute inset-y-0 left-0 w-1.5 {{ $card['accent'] }}"></span>
-                    <div class="flex items-start justify-between gap-3">
-                        <div class="min-w-0">
-                            <div class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">{{ $card['label'] }}</div>
-                            <div class="mt-2 text-3xl font-extrabold leading-none text-erp-ink" data-card-count="{{ $cardStatusId }}">{{ $cardOrders->count() }}</div>
-                            <div class="mt-1 text-xs font-medium text-erp-mute">{{ $cardOrders->count() === 1 ? 'order' : 'orders' }}</div>
-                        </div>
-                        <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl {{ $card['soft'] }}">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="{{ $card['icon'] }}"/></svg>
-                        </span>
-                    </div>
-                    @if ($cardStatusId === 1)
-                        <div class="mt-4 border-t border-erp-line pt-3">
-                            <div class="text-[11px] font-bold uppercase tracking-[0.12em] text-erp-mute">Pending Amount</div>
-                            <div class="mt-0.5 text-lg font-bold text-amber-600" data-card-amount="1">{{ number_format($cardOrders->sum('total_amount'), 2) }}</div>
-                        </div>
-                    @endif
-                </a>
-            @endforeach
-        </div>
-
         <section class="rounded-lg border border-erp-line bg-white shadow-sm">
             <div class="border-b border-erp-line px-5 py-4">
                 <h2 class="text-base font-bold text-erp-ink">Order Details</h2>
@@ -119,6 +77,56 @@
                 <button type="button" id="fetch" class="rounded-lg border border-erp bg-erp px-6 py-2 text-sm font-bold text-white transition hover:bg-erp-dark">Fetch</button>
             </div>
         </section>
+
+        @php
+            $statusCards = [
+                1  => ['label' => 'Pending',         'grad' => 'from-amber-400 to-orange-500',  'bar' => 'bg-gradient-to-r from-amber-400 to-orange-500',  'dot' => 'bg-amber-500',   'soft' => 'bg-amber-50 text-amber-700',     'ring' => 'ring-amber-400',   'icon' => 'M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z'],
+                2  => ['label' => 'Processing',      'grad' => 'from-sky-400 to-blue-600',      'bar' => 'bg-gradient-to-r from-sky-400 to-blue-600',      'dot' => 'bg-sky-500',     'soft' => 'bg-sky-50 text-sky-700',         'ring' => 'ring-sky-400',     'icon' => 'M4 4v5h5M20 20v-5h-5M5.6 15A8 8 0 0018.4 9M18.4 9A8 8 0 005.6 15'],
+                10 => ['label' => 'Order Picked Up', 'grad' => 'from-violet-400 to-purple-600', 'bar' => 'bg-gradient-to-r from-violet-400 to-purple-600', 'dot' => 'bg-violet-500',  'soft' => 'bg-violet-50 text-violet-700',   'ring' => 'ring-violet-400',  'icon' => 'M3 7h11v9H3zM14 10h4l3 3v3h-7zM7 19a1.5 1.5 0 100-3 1.5 1.5 0 000 3zm10 0a1.5 1.5 0 100-3 1.5 1.5 0 000 3z'],
+                4  => ['label' => 'Delivered',       'grad' => 'from-emerald-400 to-green-600', 'bar' => 'bg-gradient-to-r from-emerald-400 to-green-600', 'dot' => 'bg-emerald-500', 'soft' => 'bg-emerald-50 text-emerald-700', 'ring' => 'ring-emerald-400', 'icon' => 'M5 13l4 4L19 7'],
+                5  => ['label' => 'Canceled',        'grad' => 'from-rose-400 to-red-600',      'bar' => 'bg-gradient-to-r from-rose-400 to-red-600',      'dot' => 'bg-rose-500',    'soft' => 'bg-rose-50 text-rose-700',       'ring' => 'ring-rose-400',    'icon' => 'M6 18L18 6M6 6l12 12'],
+            ];
+            $allOrdersCollection = collect($allOrders ?? []);
+            $cardFilters = request()->only(['first', 'second', 'customer', 'receipt', 'branch', 'website']);
+        @endphp
+
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+            @foreach ($statusCards as $cardStatusId => $card)
+                @php
+                    $cardOrders = $allOrdersCollection->filter(fn($o) => (int) $o->status === $cardStatusId);
+                    $isActiveCard = (int) ($statusId ?? 0) === $cardStatusId;
+                    $cardUrl = route('getWebOrderFilter', array_merge($cardFilters, $isActiveCard ? [] : ['status' => $cardStatusId], ['page_mode' => 1]));
+                @endphp
+                <a href="{{ $cardUrl }}" title="{{ $isActiveCard ? 'Click to clear this filter' : 'Show only ' . $card['label'] . ' orders' }}"
+                   class="group relative flex flex-col overflow-hidden rounded-2xl border bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-1 hover:shadow-lg {{ $isActiveCard ? 'border-transparent ring-2 ' . $card['ring'] : 'border-erp-line' }}">
+                    <span class="absolute inset-x-0 top-0 h-1 {{ $card['bar'] }}"></span>
+
+                    <div class="flex items-center justify-between gap-3">
+                        <span class="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">
+                            <span class="h-2 w-2 rounded-full {{ $card['dot'] }}"></span>{{ $card['label'] }}
+                        </span>
+                        <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br {{ $card['grad'] }} text-white shadow-sm transition group-hover:scale-110">
+                            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="{{ $card['icon'] }}"/></svg>
+                        </span>
+                    </div>
+
+                    <div class="mt-4 flex items-baseline gap-2">
+                        <span class="text-4xl font-extrabold leading-none tracking-tight text-erp-ink" data-card-count="{{ $cardStatusId }}">{{ $cardOrders->count() }}</span>
+                        <span class="text-sm font-medium text-erp-mute">orders</span>
+                    </div>
+
+                    <div class="mt-4 rounded-xl px-3.5 py-3 {{ $card['soft'] }}">
+                        <div class="text-[11px] font-bold uppercase tracking-[0.12em] opacity-70">Total Amount</div>
+                        <div class="mt-0.5 truncate text-xl font-extrabold tracking-tight" data-card-amount="{{ $cardStatusId }}">{{ number_format($cardOrders->sum('total_amount'), 2) }}</div>
+                    </div>
+
+                    <div class="mt-4 flex items-center justify-between text-xs font-bold text-erp-mute transition group-hover:text-erp-dark">
+                        <span>{{ $isActiveCard ? 'Showing these orders' : 'View orders' }}</span>
+                        <span>{{ $isActiveCard ? '✕ Clear' : '→' }}</span>
+                    </div>
+                </a>
+            @endforeach
+        </div>
 
         <section class="rounded-lg border border-erp-line bg-white shadow-sm">
             <div class="overflow-x-auto">
@@ -241,12 +249,10 @@
         function adjustCard(statusId, countDelta, amount) {
             const count = document.querySelector('[data-card-count="' + statusId + '"]');
             if (count) count.textContent = Math.max(0, parseInt(count.textContent, 10) + countDelta);
-            if (String(statusId) === '1') {
-                const amt = document.querySelector('[data-card-amount="1"]');
-                if (amt) {
-                    const current = parseFloat(amt.textContent.replace(/,/g, '')) || 0;
-                    amt.textContent = numberWithCommas(Math.max(0, current + countDelta * amount).toFixed(2));
-                }
+            const amt = document.querySelector('[data-card-amount="' + statusId + '"]');
+            if (amt) {
+                const current = parseFloat(amt.textContent.replace(/,/g, '')) || 0;
+                amt.textContent = numberWithCommas(Math.max(0, current + countDelta * amount).toFixed(2));
             }
         }
 
