@@ -78,8 +78,9 @@
                         @endforeach
                     </select>
                     <select name="invoice_type" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="Select invoice type">
-                        <option value="monthly" {{ ($invoiceType ?? 'monthly') == 'monthly' ? 'selected' : '' }}>Monthly</option>
-                        <option value="previous_due" {{ ($invoiceType ?? 'monthly') == 'previous_due' ? 'selected' : '' }}>Previous Due</option>
+                        <option value="all" {{ ($invoiceType ?? 'all') == 'all' ? 'selected' : '' }}>All</option>
+                        <option value="monthly" {{ ($invoiceType ?? 'all') == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                        <option value="previous_due" {{ ($invoiceType ?? 'all') == 'previous_due' ? 'selected' : '' }}>Previous Due</option>
                     </select>
                     <select name="status" class="billing-select2 h-10 rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp" data-placeholder="All Statuses">
                         <option value="">All Statuses</option>

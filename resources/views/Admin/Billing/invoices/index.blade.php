@@ -40,8 +40,9 @@
                     <div class="col-md-3">
                         <label>Invoice Type</label>
                         <select name="invoice_type" class="form-control select2 billing-select2">
-                            <option value="monthly" {{ ($invoiceType ?? 'monthly') == 'monthly' ? 'selected' : '' }}>Monthly</option>
-                            <option value="previous_due" {{ ($invoiceType ?? 'monthly') == 'previous_due' ? 'selected' : '' }}>Previous Due</option>
+                            <option value="all" {{ ($invoiceType ?? 'all') == 'all' ? 'selected' : '' }}>All</option>
+                            <option value="monthly" {{ ($invoiceType ?? 'all') == 'monthly' ? 'selected' : '' }}>Monthly</option>
+                            <option value="previous_due" {{ ($invoiceType ?? 'all') == 'previous_due' ? 'selected' : '' }}>Previous Due</option>
                         </select>
                     </div>
                     <div class="col-md-3">

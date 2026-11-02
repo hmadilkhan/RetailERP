@@ -155,18 +155,21 @@ class BillingController extends Controller
 
     public function index(Request $request)
     {
-        $invoiceType = $request->invoice_type === 'previous_due' ? 'previous_due' : 'monthly';
+        // No type chosen (or "All") = every invoice; Monthly / Previous Due narrow it down.
+        $invoiceType = in_array($request->invoice_type, ['monthly', 'previous_due'], true) ? $request->invoice_type : 'all';
         $query = Invoice::with('company')
             ->withCount('payments')
             ->withMax('payments', 'payment_date');
 
-        $query->where(function ($innerQuery) use ($invoiceType) {
-            if ($invoiceType === 'monthly') {
-                $innerQuery->whereNull('invoice_type')
-                    ->orWhere('invoice_type', 'monthly');
-            } else {
-                $innerQuery->where('invoice_type', $invoiceType);
-            }
+        $query->when($invoiceType !== 'all', function ($typeQuery) use ($invoiceType) {
+            $typeQuery->where(function ($innerQuery) use ($invoiceType) {
+                if ($invoiceType === 'monthly') {
+                    $innerQuery->whereNull('invoice_type')
+                        ->orWhere('invoice_type', 'monthly');
+                } else {
+                    $innerQuery->where('invoice_type', $invoiceType);
+                }
+            });
         });
 
         if (!empty($request->company_id)) {
@@ -196,13 +199,15 @@ class BillingController extends Controller
             $paymentSummaryQuery = DB::table('invoice_payments as ip')
                 ->join('invoices', 'invoices.id', '=', 'ip.invoice_id')
                 ->whereBetween('ip.payment_date', [$paymentMonthStart, $paymentMonthEnd])
-                ->where(function ($innerQuery) use ($invoiceType) {
-                    if ($invoiceType === 'monthly') {
-                        $innerQuery->whereNull('invoices.invoice_type')
-                            ->orWhere('invoices.invoice_type', 'monthly');
-                    } else {
-                        $innerQuery->where('invoices.invoice_type', $invoiceType);
-                    }
+                ->when($invoiceType !== 'all', function ($typeQuery) use ($invoiceType) {
+                    $typeQuery->where(function ($innerQuery) use ($invoiceType) {
+                        if ($invoiceType === 'monthly') {
+                            $innerQuery->whereNull('invoices.invoice_type')
+                                ->orWhere('invoices.invoice_type', 'monthly');
+                        } else {
+                            $innerQuery->where('invoices.invoice_type', $invoiceType);
+                        }
+                    });
                 });
 
             if (!empty($request->company_id)) {
