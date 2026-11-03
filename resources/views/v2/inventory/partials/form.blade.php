@@ -113,9 +113,15 @@
                         <span class="{{ $labelClass }}">Sub Department <span class="text-rose-600">*</span></span>
                         <select id="subDepart" name="subDepart" required data-placeholder="Select Sub Department" class="{{ $selectClass }}">
                             <option value="">Select Sub Department</option>
-                            @foreach ($subdepartment ?? [] as $val)
-                                <option value="{{ $val->sub_department_id }}" @selected(old('subDepart', $product->sub_department_id ?? '') == $val->sub_department_id)>{{ $val->sub_depart_name }}</option>
-                            @endforeach
+                            {{-- Options load via AJAX once a department is chosen (loadSubDepartments); only the selected department's ones are pre-rendered. --}}
+                            @php($selectedDepart = old('depart', $product->department_id ?? ''))
+                            @if ($selectedDepart !== '' && $selectedDepart !== null)
+                                @foreach ($subdepartment ?? [] as $val)
+                                    @if ((string) ($val->department_id ?? '') === (string) $selectedDepart)
+                                        <option value="{{ $val->sub_department_id }}" @selected(old('subDepart', $product->sub_department_id ?? '') == $val->sub_department_id)>{{ $val->sub_depart_name }}</option>
+                                    @endif
+                                @endforeach
+                            @endif
                         </select>
                         @error('subDepart') <span class="mt-1 block text-xs font-semibold text-rose-600">{{ $message }}</span> @enderror
                     </label>
