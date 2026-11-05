@@ -65,6 +65,11 @@ class User extends Authenticatable
 
     public function canImpersonate(): bool
     {
+        // Temporary: Admin ke liye Impersonate (Login As) band — AdminHiddenFeatures
+        if (\App\Support\AdminHiddenFeatures::active()) {
+            return false;
+        }
+
         return (int) session('roleId') === 1;
     }
 

@@ -15,6 +15,9 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    // Temporary: Admin login pe Billing Section + Impersonate + WhatsApp Access chhupao (App\Support\AdminHiddenFeatures)
+    'hide_admin_billing_impersonate' => env('HIDE_ADMIN_BILLING_IMPERSONATE', true),
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

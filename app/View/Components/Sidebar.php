@@ -45,6 +45,9 @@ class Sidebar extends Component
             $result = $result->reject(fn ($page) => in_array($page->page_url, self::ACCOUNTING_PAGES))->values();
         }
 
+        // Temporary: Admin ke liye Billing Section chhupao
+        $result = \App\Support\AdminHiddenFeatures::filterSidebarPages($result);
+
         return view('components.sidebar', compact('result'));
     }
 }

@@ -46,6 +46,8 @@ class WhatsAppAccessManager extends Component
     public function mount(): void
     {
         abort_unless(session('roleId') == 1, 403);
+        // Temporary: Admin ke liye WhatsApp Access band (AdminHiddenFeatures)
+        abort_if(\App\Support\AdminHiddenFeatures::active(), 403);
 
         if ((int) session('roleId') === 1) {
             $this->paginationTheme = 'tailwind';

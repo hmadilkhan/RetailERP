@@ -231,7 +231,8 @@ Whenever add new page in the backend please make sure to add the translation in 
                 @endforeach
             @endif
 
-            @if(session('roleId') == 1)
+            {{-- Temporary: Admin ke liye WhatsApp Access chhupa (AdminHiddenFeatures) --}}
+            @if(session('roleId') == 1 && !\App\Support\AdminHiddenFeatures::active())
                 <li class="nav-level">Admin Tools<span></span></li>
                 <li class="treeview {{ $currentUrl == 'whatsapp-access-manager' ? 'active' : '' }}">
                     <a href="{{ route('whatsapp.access.manager') }}" class="bg-success">

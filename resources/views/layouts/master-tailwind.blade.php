@@ -1051,6 +1051,9 @@
                 $sidebarPages = \Illuminate\Support\Facades\DB::table('pages_details')
                     ->whereIn('id', $sidebarPageIds)
                     ->get();
+
+                // Temporary: Admin ke liye Billing Section chhupao
+                $sidebarPages = \App\Support\AdminHiddenFeatures::filterSidebarPages($sidebarPages);
             }
         }
 
@@ -1273,7 +1276,8 @@
                         <li class="px-3 py-3 text-sm font-semibold text-slate-400">No menu items available.</li>
                     @endforelse
 
-                    @if (session('roleId') == 1)
+                    {{-- Temporary: Admin ke liye WhatsApp Access chhupa (AdminHiddenFeatures) --}}
+                    @if (session('roleId') == 1 && !\App\Support\AdminHiddenFeatures::active())
                         <li class="v2-sidebar-section px-3 pb-1 pt-5 text-[11px] font-bold uppercase tracking-[0.22em] text-slate-500">
                             Admin Tools
                         </li>
