@@ -5,7 +5,7 @@ namespace App\Support;
 use Illuminate\Support\Collection;
 
 /**
- * Temporary: Admin (roleId 1) ke login pe Billing Section, Impersonate (Login As) aur WhatsApp Access chhupana.
+ * Temporary: Admin (roleId 1) ke login pe Billing Section, Impersonate (Login As), WhatsApp Access aur Users list ka Password column chhupana.
  * Wapas laane ke liye .env me HIDE_ADMIN_BILLING_IMPERSONATE=false (ya line hata do) aur `php artisan config:clear`.
  */
 class AdminHiddenFeatures

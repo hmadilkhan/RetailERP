@@ -148,7 +148,8 @@
                             <th>Photo</th>
                             <th>Full Name</th>
                             <th>Username</th>
-                            @if (session('roleId') == 1)
+                            {{-- Temporary: Password column chhupa (AdminHiddenFeatures) --}}
+                            @if (session('roleId') == 1 && !\App\Support\AdminHiddenFeatures::active())
                                 <th>Password</th>
                             @endif
                             <th>Role</th>
@@ -168,7 +169,7 @@
                                 </td>
                                 <td><strong>{{ $value->fullname }}</strong></td>
                                 <td>{{ $value->username }}</td>
-                                @if (session('roleId') == 1)
+                                @if (session('roleId') == 1 && !\App\Support\AdminHiddenFeatures::active())
                                     <td>{{ $value->show_password }}</td>
                                 @endif
                                 <td>{{ $value->role_name }}</td>
