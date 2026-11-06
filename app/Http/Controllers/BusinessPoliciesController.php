@@ -24,38 +24,40 @@ class BusinessPoliciesController extends Controller
 
       public function tax_create()
     {
-    	return view('Business_Policy.create-tax');
+    	return view('v2.business-policy.create-tax');
     }
 
     public function insert_tax(businessPolicies $policy, Request $request)
     {
+        $request->validate([
+            'taxname' => 'required|string|max:100',
+            'taxpercentage' => 'required|numeric|min:0|max:100',
+        ], [
+            'taxname.required' => 'Tax head name is required.',
+            'taxpercentage.required' => 'Tax percentage is required.',
+            'taxpercentage.numeric' => 'Tax percentage must be a number.',
+            'taxpercentage.min' => 'Tax percentage must be between 0 and 100.',
+            'taxpercentage.max' => 'Tax percentage must be between 0 and 100.',
+        ]);
 
-    	 $rules = [
-                'taxname' => 'required',
-                'taxpercentage' => 'required',
+        $taxName = trim($request->taxname);
+        $exsist = $policy->tax_esists($taxName, session('company_id'));
 
-            ];
-             $this->validate($request, $rules);
-             $exsist = $policy->tax_esists($request->taxname);
+        if ($exsist[0]->counter > 0) {
+            return back()->withInput()->withErrors(['taxname' => 'A tax with this name already exists.']);
+        }
 
-             if ($exsist[0]->counter == 0) {
-             
-    	$items = [
-    		'name' => $request->taxname,
-    		'value' => $request->taxpercentage,
+        $items = [
+            'name' => $taxName,
+            'value' => $request->taxpercentage,
             'show_in_purchase' => ($request->purchase == "on" ? 1 : 0),
             'show_in_pos' => ($request->pos == "on" ? 1 : 0),
-    		'company_id' => session('company_id'),
-    		'status_id' => 1,
-    	];
-    	 $result = $policy->insert_tax($items);
-    	 return redirect('/BusinessPolicy');
-    	}
-    	else
-    	{
-    	return 0;	
-    	}
+            'company_id' => session('company_id'),
+            'status_id' => 1,
+        ];
+        $policy->insert_tax($items);
 
+        return redirect('/BusinessPolicy')->with('success', 'Tax rule created successfully.');
     }
 
     public function delete_tax(businessPolicies $policy, Request $request)
@@ -65,34 +67,50 @@ class BusinessPoliciesController extends Controller
     	
     }
 
-       public function show_tax(businessPolicies $policy, Request $request)
+    public function show_tax(businessPolicies $policy, Request $request)
     {
-    	$details = $policy->get_tax_rules_id(Crypt::decrypt($request->id));
-    	return view('Business_Policy.edit-tax', compact('details'));	
+        $details = $policy->get_tax_rules_id(Crypt::decrypt($request->id), session('company_id'));
+        abort_if(count($details) === 0, 404);
+        return view('v2.business-policy.edit-tax', compact('details'));
     }
 
     public function update_tax(businessPolicies $policy, Request $request)
     {
-        $result = $policy->tax_update($request->taxid);
+        $request->validate([
+            'taxid' => 'required|integer',
+            'taxname' => 'required|string|max:100',
+            'taxpercentage' => 'required|numeric|min:0|max:100',
+        ], [
+            'taxname.required' => 'Tax head name is required.',
+            'taxpercentage.required' => 'Tax percentage is required.',
+            'taxpercentage.numeric' => 'Tax percentage must be a number.',
+            'taxpercentage.min' => 'Tax percentage must be between 0 and 100.',
+            'taxpercentage.max' => 'Tax percentage must be between 0 and 100.',
+        ]);
 
-        $items = [
-            'name' => $request->taxname,
+        // Only the company's own active tax can be edited.
+        abort_if(count($policy->get_tax_rules_id($request->taxid, session('company_id'))) === 0, 404);
+
+        $taxName = trim($request->taxname);
+        $exsist = $policy->tax_esists($taxName, session('company_id'), $request->taxid);
+
+        if ($exsist[0]->counter > 0) {
+            return back()->withInput()->withErrors(['taxname' => 'A tax with this name already exists.']);
+        }
+
+        // Existing behaviour: the old rule is made inactive and a new rule is created.
+        $policy->tax_update($request->taxid);
+
+        $policy->insert_tax([
+            'name' => $taxName,
             'value' => $request->taxpercentage,
             'show_in_purchase' => ($request->purchase == "on" ? 1 : 0),
             'show_in_pos' => ($request->pos == "on" ? 1 : 0),
             'company_id' => session('company_id'),
             'status_id' => 1,
-        ];
-        $result = $policy->insert_tax($items);
+        ]);
 
-//    	$items = [
-//    		'name' => $request->taxname,
-//    		'value' => $request->taxpercentage,
-//    		'company_id' => session('company_id'),
-//    		'status_id' => 1,
-//    	];
-//    	$result = $policy->tax_edit($request->taxid, $items);
-    	 return redirect('/BusinessPolicy');
+        return redirect('/BusinessPolicy')->with('success', 'Tax rule updated successfully.');
     }
 
 

@@ -12,8 +12,8 @@ class businessPolicies extends Model
         return $result;
     }
 
-    public function tax_esists($taxname){
-    	$result = DB::select('SELECT COUNT(id) AS counter FROM taxes WHERE name = ?',[$taxname]);
+    public function tax_esists($taxname, $companyId = null, $exceptId = 0){
+    	$result = DB::select('SELECT COUNT(id) AS counter FROM taxes WHERE name = ? AND company_id = ? AND status_id = 1 AND id <> ?',[$taxname, $companyId, $exceptId]);
     	return $result;
     }
 
@@ -27,9 +27,9 @@ class businessPolicies extends Model
         return $result;
     }
 
-    public function get_tax_rules_id($id){
+    public function get_tax_rules_id($id, $companyId = null){
     	$result = DB::select('SELECT a.id, a.name, a.value, b.status_name,a.show_in_purchase,a.show_in_pos FROM taxes a INNER JOIN accessibility_mode b ON b.status_id = a.status_id
-			WHERE a.status_id = 1 and a.id = ?',[$id]);
+			WHERE a.status_id = 1 and a.id = ? AND (? IS NULL OR a.company_id = ?)',[$id, $companyId, $companyId]);
     	return $result;
     }
 
