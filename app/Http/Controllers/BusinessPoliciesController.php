@@ -24,7 +24,7 @@ class BusinessPoliciesController extends Controller
 
       public function tax_create()
     {
-    	return view('Business_Policy.create-tax', compact(0));
+    	return view('Business_Policy.create-tax');
     }
 
     public function insert_tax(businessPolicies $policy, Request $request)
@@ -104,7 +104,7 @@ class BusinessPoliciesController extends Controller
 
      public function createtaxslabs()
     {
-        return view('Business_Policy.create-tax-slabs', compact(0));  
+        return view('Business_Policy.create-tax-slabs');  
     }
 
       public function store_taxslabs(businessPolicies $policy, Request $request)
