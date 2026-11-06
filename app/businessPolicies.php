@@ -22,8 +22,12 @@ class businessPolicies extends Model
     	return $result;
     }
 
-     public function tax_update($id){
-       $result = DB::table('taxes')->where('id', $id)->update(['status_id'=>2]);
+     public function tax_update($id, $companyId = null){
+       $query = DB::table('taxes')->where('id', $id);
+       if ($companyId !== null) {
+           $query->where('company_id', $companyId);
+       }
+       $result = $query->update(['status_id'=>2]);
         return $result;
     }
 

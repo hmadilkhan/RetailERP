@@ -62,9 +62,9 @@ class BusinessPoliciesController extends Controller
 
     public function delete_tax(businessPolicies $policy, Request $request)
     {
-    	$result = $policy->tax_update($request->id);
-    	return 1;
-    	
+        // Only the logged-in company's own tax can be made inactive.
+        $result = $policy->tax_update($request->id, session('company_id'));
+        return $result ? 1 : 0;
     }
 
     public function show_tax(businessPolicies $policy, Request $request)
