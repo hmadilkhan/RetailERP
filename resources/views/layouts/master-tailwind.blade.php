@@ -200,6 +200,48 @@
             padding-left: 0 !important;
             padding-right: 0 !important;
         }
+        /*
+         * Sidebar Alpine / livewire.js pe nahi chalta (neeche inline script). Pehle <aside> pe x-cloak tha:
+         * jis user ke browser me livewire.js load / start na ho (antivirus, firewall, ad-blocker, toota network)
+         * us ka sidebar aur hamburger hamesha chhupe rehte the.
+         */
+        aside.v2-sidebar {
+            transform: translateX(-100%);
+        }
+        aside.v2-sidebar.is-open {
+            transform: translateX(0);
+        }
+        .v2-sidebar-overlay {
+            display: none;
+        }
+        .v2-sidebar-overlay.is-open {
+            display: block;
+        }
+        .v2-menu > ul {
+            display: none;
+        }
+        .v2-menu.is-open > ul {
+            display: block;
+        }
+        .v2-menu.is-open > button .v2-sidebar-chevron {
+            transform: rotate(180deg);
+        }
+        @media (min-width: 1024px) {
+            aside.v2-sidebar,
+            aside.v2-sidebar.is-open {
+                transform: none;
+            }
+            .v2-sidebar-overlay,
+            .v2-sidebar-overlay.is-open {
+                display: none;
+            }
+            .v2-app-shell.v2-shell-collapsed {
+                padding-left: 5rem;
+            }
+            .v2-app-shell.v2-shell-expanded {
+                padding-left: 18rem;
+            }
+        }
         @media (min-width: 1024px) {
             .v2-sidebar.is-collapsed {
                 width: 5rem;
@@ -1119,19 +1161,12 @@
         });
     @endphp
 
-    <div x-data="{ sidebarOpen: false, sidebarExpanded: false }" class="min-h-screen">
-        <div x-show="sidebarOpen" x-cloak @click="sidebarOpen = false"
-            class="fixed inset-0 z-30 bg-slate-950/50 backdrop-blur-sm lg:hidden"></div>
+    {{-- x-data sirf page content ke purane Alpine scope ke liye; sidebar neeche wale inline script se chalta hai --}}
+    <div x-data class="min-h-screen">
+        <div class="v2-sidebar-overlay fixed inset-0 z-30 bg-slate-950/50 backdrop-blur-sm"></div>
 
         <aside
-            @mouseenter="sidebarExpanded = true"
-            @mouseleave="sidebarExpanded = false"
-            :class="[
-                sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
-                sidebarExpanded ? 'is-expanded lg:w-72' : 'is-collapsed lg:w-20'
-            ]"
-            x-cloak
-            class="v2-sidebar fixed inset-y-0 left-0 z-40 flex w-72 transform flex-col bg-erp-panel text-white shadow-menu transition-all duration-300 lg:translate-x-0">
+            class="v2-sidebar is-collapsed fixed inset-y-0 left-0 z-40 flex w-72 flex-col bg-erp-panel text-white shadow-menu transition-all duration-300">
             <div class="border-b border-white/10 px-5 py-6">
                 <a href="{{ url('/dashboard') }}"
                     class="v2-sidebar-compact hidden h-12 items-center justify-center rounded-lg bg-white/[0.04] text-3xl font-bold leading-none text-[#2faa4f] transition hover:bg-white/[0.08]"
@@ -1177,24 +1212,23 @@
 
                             @if (!$hasChildren)
                                 <li>
-                                    <a href="{{ url('/' . $pages->page_url) }}" @click="sidebarOpen = false"
-                                        class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $isActive ? 'bg-white text-erp-ink' : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
+                                    <a href="{{ url('/' . $pages->page_url) }}"                                        class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $isActive ? 'bg-white text-erp-ink' : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                                         <i class="{{ $pages->icofont }} w-5 shrink-0 text-center {{ $isActive ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
                                         <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($pages) }}</span>
                                     </a>
                                 </li>
                             @else
-                                <li x-data="{ open: {{ $hasActiveChild ? 'true' : 'false' }} }">
-                                    <button type="button" @click="open = !open"
+                                <li class="v2-menu {{ $hasActiveChild ? 'is-open' : '' }}">
+                                    <button type="button" data-v2-menu-toggle aria-expanded="{{ $hasActiveChild ? 'true' : 'false' }}"
                                         class="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-semibold transition {{ $hasActiveChild ? 'bg-white text-erp-ink' : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                                         <i class="{{ $pages->icofont }} w-5 shrink-0 text-center {{ $hasActiveChild ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
                                         <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($pages) }}</span>
-                                        <svg :class="open ? 'rotate-180' : ''" class="v2-sidebar-chevron h-4 w-4 shrink-0 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg class="v2-sidebar-chevron h-4 w-4 shrink-0 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
                                         </svg>
                                     </button>
 
-                                    <ul x-show="open" x-cloak class="mt-1 space-y-1 border-l border-white/10 pl-3">
+                                    <ul class="mt-1 space-y-1 border-l border-white/10 pl-3">
                                         @foreach ($children as $childs)
                                             @php
                                                 $grandchildren = $sidebarPages->where('parent_id', $childs->id);
@@ -1205,24 +1239,23 @@
 
                                             @if (!$childHasChildren)
                                                 <li>
-                                                    <a href="{{ url('/' . $childs->page_url) }}" @click="sidebarOpen = false"
-                                                        class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $childActive ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
+                                                    <a href="{{ url('/' . $childs->page_url) }}"                                                        class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $childActive ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                         <i class="{{ $childs->icofont }} w-5 shrink-0 text-center {{ $childActive ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
                                                         <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($childs) }}</span>
                                                     </a>
                                                 </li>
                                             @else
-                                                <li x-data="{ open: {{ $hasActiveGrandchild ? 'true' : 'false' }} }">
-                                                    <button type="button" @click="open = !open"
+                                                <li class="v2-menu {{ $hasActiveGrandchild ? 'is-open' : '' }}">
+                                                    <button type="button" data-v2-menu-toggle aria-expanded="{{ $hasActiveGrandchild ? 'true' : 'false' }}"
                                                         class="group flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm font-semibold transition {{ $hasActiveGrandchild ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                         <i class="{{ $childs->icofont }} w-5 shrink-0 text-center {{ $hasActiveGrandchild ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
                                                         <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($childs) }}</span>
-                                                        <svg :class="open ? 'rotate-180' : ''" class="v2-sidebar-chevron h-4 w-4 shrink-0 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
+                                                        <svg class="v2-sidebar-chevron h-4 w-4 shrink-0 text-slate-500 transition-transform" viewBox="0 0 20 20" fill="currentColor">
                                                             <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 11.168l3.71-3.938a.75.75 0 1 1 1.08 1.04l-4.25 4.5a.75.75 0 0 1-1.08 0l-4.25-4.5a.75.75 0 0 1 .02-1.06Z" clip-rule="evenodd" />
                                                         </svg>
                                                     </button>
 
-                                                    <ul x-show="open" x-cloak class="mt-1 space-y-1 border-l border-white/10 pl-3">
+                                                    <ul class="mt-1 space-y-1 border-l border-white/10 pl-3">
                                                         @foreach ($grandchildren as $grandchild)
                                                             @php
                                                                 $greatGrandchildren = $sidebarPages->where('parent_id', $grandchild->id);
@@ -1230,8 +1263,7 @@
                                                                 $hasActiveGreatGrandchild = $sidebarHasActiveDescendant($grandchild);
                                                             @endphp
                                                             <li>
-                                                                <a href="{{ url('/' . $grandchild->page_url) }}" @click="sidebarOpen = false"
-                                                                    class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $grandchildActive || $hasActiveGreatGrandchild ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
+                                                                <a href="{{ url('/' . $grandchild->page_url) }}"                                                                    class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $grandchildActive || $hasActiveGreatGrandchild ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                                     <i class="{{ $grandchild->icofont }} w-5 shrink-0 text-center {{ $grandchildActive || $hasActiveGreatGrandchild ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
                                                                     <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($grandchild) }}</span>
                                                                 </a>
@@ -1243,8 +1275,7 @@
                                                                                 $greatGrandchildActive = $sidebarIsActive($grandgrandchild);
                                                                             @endphp
                                                                             <li>
-                                                                                <a href="{{ url('/' . $grandgrandchild->page_url) }}" @click="sidebarOpen = false"
-                                                                                    class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $greatGrandchildActive ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
+                                                                                <a href="{{ url('/' . $grandgrandchild->page_url) }}"                                                                                    class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $greatGrandchildActive ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                                                     <i class="{{ $grandgrandchild->icofont }} w-5 shrink-0 text-center {{ $greatGrandchildActive ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
                                                                                     <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ $sidebarLabel($grandgrandchild) }}</span>
                                                                                 </a>
@@ -1261,8 +1292,7 @@
 
                                         @if (\Illuminate\Support\Str::snake(strtolower($pages->page_name)) === 'billing_section')
                                             <li>
-                                                <a href="{{ route('billing.delivery-history') }}" @click="sidebarOpen = false"
-                                                    class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $currentUrl == 'billing/delivery-history' ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
+                                                <a href="{{ route('billing.delivery-history') }}"                                                    class="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-semibold transition {{ $currentUrl == 'billing/delivery-history' ? 'bg-white text-erp-ink' : 'text-slate-400 hover:bg-white/10 hover:text-white' }}">
                                                     <i class="icofont icofont-history w-5 shrink-0 text-center {{ $currentUrl == 'billing/delivery-history' ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
                                                     <span class="v2-sidebar-full min-w-0 flex-1 truncate">{{ __('sidebar.delivery_history') }}</span>
                                                 </a>
@@ -1282,8 +1312,7 @@
                             Admin Tools
                         </li>
                         <li>
-                            <a href="{{ route('whatsapp.access.manager') }}" @click="sidebarOpen = false"
-                                class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $currentUrl == 'whatsapp-access-manager' ? 'bg-white text-erp-ink' : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
+                            <a href="{{ route('whatsapp.access.manager') }}"                                class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition {{ $currentUrl == 'whatsapp-access-manager' ? 'bg-white text-erp-ink' : 'text-slate-300 hover:bg-white/10 hover:text-white' }}">
                                 <i class="icofont icofont-ui-social-link w-5 shrink-0 text-center {{ $currentUrl == 'whatsapp-access-manager' ? 'text-erp' : 'text-slate-500 group-hover:text-erp-light' }}"></i>
                                 <span class="v2-sidebar-full min-w-0 flex-1 truncate">WhatsApp Access</span>
                             </a>
@@ -1353,11 +1382,11 @@
             </div>
         </aside>
 
-        <div :class="sidebarExpanded ? 'v2-shell-expanded lg:pl-72' : 'v2-shell-collapsed lg:pl-20'" class="v2-app-shell min-h-screen min-w-0 overflow-x-hidden transition-all duration-300">
+        <div class="v2-app-shell v2-shell-collapsed min-h-screen min-w-0 overflow-x-hidden transition-all duration-300">
             <header class="v2-top-header sticky top-0 z-20 w-full min-w-0 overflow-x-hidden border-b border-erp-line bg-white/90 backdrop-blur-xl">
                 <div class="flex h-16 min-w-0 items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
                     <div class="flex min-w-0 items-center gap-3">
-                        <button type="button" @click="sidebarOpen = true"
+                        <button type="button" data-v2-sidebar-open
                             class="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-erp-line bg-white text-slate-600 transition hover:border-erp hover:text-erp-dark lg:hidden"
                             aria-label="Open ERP menu">
                             <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -1451,6 +1480,65 @@
             </main>
         </div>
     </div>
+
+    {{-- Sidebar ka JS yahin inline: kisi bahar ki file (livewire.js / Alpine / jQuery) pe nahi tikta, isliye wo load na ho tab bhi menu chalta hai. --}}
+    <script>
+        (function () {
+            var aside = document.querySelector('aside.v2-sidebar');
+            if (!aside) {
+                return;
+            }
+            var shell = document.querySelector('.v2-app-shell');
+            var overlay = document.querySelector('.v2-sidebar-overlay');
+
+            function setExpanded(on) {
+                aside.classList.toggle('is-expanded', on);
+                aside.classList.toggle('is-collapsed', !on);
+                if (shell) {
+                    shell.classList.toggle('v2-shell-expanded', on);
+                    shell.classList.toggle('v2-shell-collapsed', !on);
+                }
+            }
+
+            function setOpen(on) {
+                aside.classList.toggle('is-open', on);
+                if (overlay) {
+                    overlay.classList.toggle('is-open', on);
+                }
+            }
+
+            aside.addEventListener('mouseenter', function () { setExpanded(true); });
+            aside.addEventListener('mouseleave', function () { setExpanded(false); });
+
+            document.addEventListener('click', function (e) {
+                var target = e.target;
+                if (!target || !target.closest) {
+                    return;
+                }
+                if (target.closest('[data-v2-sidebar-open]')) {
+                    setOpen(true);
+                    return;
+                }
+                if (overlay && target === overlay) {
+                    setOpen(false);
+                    return;
+                }
+                var toggle = target.closest('[data-v2-menu-toggle]');
+                if (toggle && aside.contains(toggle)) {
+                    var item = toggle.closest('.v2-menu');
+                    var open = !item.classList.contains('is-open');
+                    item.classList.toggle('is-open', open);
+                    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    setOpen(false);
+                }
+            });
+        })();
+    </script>
 
     <form id="tailwind-logout-form" action="{{ route('logout') }}" method="POST" class="hidden">
         @csrf
