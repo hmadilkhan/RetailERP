@@ -35,6 +35,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 		// $schedule->command('test:run')->everyMinute();
+        // First: schedule:run runs events one after another, so anything
+        // listed before this delays the website open / close minute.
+        $schedule->command('app:website-schedule-command')->everyMinute();
 		$schedule->command('app:date-wise-stock-command')->dailyAt("12:00");
         $schedule->command('usage:generate-daily')->dailyAt("06:00");
         // $schedule->command('fbr:generate-monthly')->monthlyOn(1, '06:00');
@@ -47,7 +50,6 @@ class Kernel extends ConsoleKernel
         $schedule->job(new \App\Jobs\SyncQuickBooksItemsJob)->dailyAt("12:00");
         $schedule->job(new \App\Jobs\SyncQuickBooksInvoiceJob)->dailyAt("13:00");
         $schedule->command('quickbooks:sync-journals')->everyThirtyMinutes()->withoutOverlapping(); // Phase 3.6
-        $schedule->command('app:website-schedule-command')->everyMinute();
         $schedule->call(fn () => app(SendDailyFollowupRemindersJob::class)->handle(app(\App\Services\Crm\LeadNotificationService::class)))->dailyAt('08:00');
     }
 

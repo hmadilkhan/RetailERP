@@ -2,9 +2,10 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Website\BranchScheduleService;
+use Carbon\Carbon;
 use Illuminate\Console\Command;
-use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class WebsiteScheduleCommand extends Command
 {
@@ -22,129 +23,50 @@ class WebsiteScheduleCommand extends Command
      */
     protected $description = 'Open/close website branches according to their weekly schedule';
 
+    /** Last minute this command handled. */
+    private const LAST_RUN_KEY = 'website-schedule:last-run';
+
+    /** Never replay more than this many minutes (server down for hours). */
+    private const MAX_CATCH_UP_MINUTES = 60;
+
     /**
      * Execute the console command.
+     *
+     * Every opening / closing time since the last run is applied, not only the
+     * current minute: `schedule:run` runs its events one after another, so at
+     * :00 / :15 / :30 / :45 this command starts after `accounting:post` etc.
+     * and the exact minute (e.g. 15:00) has already passed. A cron tick that
+     * was skipped is caught up the same way.
      */
-    public function handle()
+    public function handle(BranchScheduleService $schedule)
     {
-        $now = now();
-        $currentTime = $now->format("H:i");
-        $today = $now->format("D");
-        $yesterday = $now->copy()->subDay()->format("D");
+        $now = now()->startOfMinute();
 
-        $openBranchIds = $this->branchesOpeningAt($currentTime, $today);
+        $lastRun = Cache::get(self::LAST_RUN_KEY);
+        $from = $lastRun ? Carbon::parse($lastRun) : $now->copy()->subMinute();
 
-        // A branch with back-to-back shifts (13:00-15:00 then 15:00-18:00)
-        // closes and opens on the same minute. The next shift wins, so it must
-        // not be closed at all.
-        $closeBranchIds = $this->branchesClosingAt($currentTime, $today, $yesterday)
-            ->diff($openBranchIds)
-            ->values();
+        if ($from->lt($now->copy()->subMinutes(self::MAX_CATCH_UP_MINUTES))) {
+            $from = $now->copy()->subMinutes(self::MAX_CATCH_UP_MINUTES);
+        }
 
-        if ($openBranchIds->isEmpty() && $closeBranchIds->isEmpty()) {
+        $states = $from->lt($now) ? $schedule->transitions($from, $now) : [];
+
+        Cache::forever(self::LAST_RUN_KEY, $now->toDateTimeString());
+
+        if (empty($states)) {
             return self::SUCCESS;
         }
 
-        if ($openBranchIds->isNotEmpty()) {
-            DB::table("website_branches")
-                ->whereIn("branch_id", $openBranchIds)
-                ->where("status", 1)
-                ->update(["is_open" => 1]);
+        $result = $schedule->apply($states);
+        $time = $now->format('H:i');
 
-            $this->info("[{$currentTime}] Opened branches: " . $openBranchIds->implode(", "));
+        if ($result['opened']) {
+            $this->info("[{$time}] Opened branches: " . implode(', ', $result['opened']));
         }
-
-        if ($closeBranchIds->isNotEmpty()) {
-            DB::table("website_branches")
-                ->whereIn("branch_id", $closeBranchIds)
-                ->where("status", 1)
-                ->update(["is_open" => 0]);
-
-            $this->info("[{$currentTime}] Closed branches: " . $closeBranchIds->implode(", "));
+        if ($result['closed']) {
+            $this->info("[{$time}] Closed branches: " . implode(', ', $result['closed']));
         }
-
-        $this->syncWebsiteStatus($openBranchIds->merge($closeBranchIds)->unique());
 
         return self::SUCCESS;
-    }
-
-    /**
-     * Branch ids whose schedule for today starts at the given time.
-     */
-    private function branchesOpeningAt(string $currentTime, string $today)
-    {
-        return DB::table("website_branches_schedule")
-            ->where("status", 1)
-            ->where("day", $today)
-            ->where("opening_time", $currentTime)
-            ->distinct()
-            ->pluck("branch_id");
-    }
-
-    /**
-     * Branch ids whose schedule ends at the given time.
-     *
-     * A schedule whose closing_time is not after its opening_time runs past
-     * midnight, so that closing belongs to the following calendar day and has
-     * to be matched against yesterday's row.
-     */
-    private function branchesClosingAt(string $currentTime, string $today, string $yesterday)
-    {
-        return DB::table("website_branches_schedule")
-            ->where("status", 1)
-            ->where("closing_time", $currentTime)
-            ->where(function ($query) use ($today, $yesterday) {
-                $query->where(function ($sameDay) use ($today) {
-                    $sameDay->where("day", $today)
-                        ->whereColumn("closing_time", ">", "opening_time");
-                })->orWhere(function ($overnight) use ($yesterday) {
-                    $overnight->where("day", $yesterday)
-                        ->whereColumn("closing_time", "<=", "opening_time");
-                });
-            })
-            ->distinct()
-            ->pluck("branch_id");
-    }
-
-    /**
-     * A website is open while at least one of its active branches is open.
-     * Only the websites touched by this run are recalculated.
-     */
-    private function syncWebsiteStatus(Collection $branchIds)
-    {
-        if ($branchIds->isEmpty()) {
-            return;
-        }
-
-        $websiteIds = DB::table("website_branches")
-            ->whereIn("branch_id", $branchIds)
-            ->where("status", 1)
-            ->distinct()
-            ->pluck("website_id");
-
-        if ($websiteIds->isEmpty()) {
-            return;
-        }
-
-        $openWebsiteIds = DB::table("website_branches")
-            ->whereIn("website_id", $websiteIds)
-            ->where("status", 1)
-            ->where("is_open", 1)
-            ->distinct()
-            ->pluck("website_id");
-
-        $closedWebsiteIds = $websiteIds->diff($openWebsiteIds);
-
-        if ($openWebsiteIds->isNotEmpty()) {
-            DB::table("website_details")
-                ->whereIn("id", $openWebsiteIds)
-                ->update(["is_open" => 1]);
-        }
-
-        if ($closedWebsiteIds->isNotEmpty()) {
-            DB::table("website_details")
-                ->whereIn("id", $closedWebsiteIds)
-                ->update(["is_open" => 0]);
-        }
     }
 }

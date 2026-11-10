@@ -1797,6 +1797,15 @@ class WebsiteController extends Controller
             ->whereNotIn("id", $keptIds)
             ->delete();
 
+        // The scheduler only reacts when an opening / closing minute comes
+        // round, so a shift that already started (or was set to "now") would
+        // wait a whole week. Put the branch in its scheduled state right away.
+        $schedule = app(\App\Services\Website\BranchScheduleService::class);
+        $openNow = $schedule->isOpenAt((int) $branchId, now());
+        if ($openNow !== null) {
+            $schedule->apply([(int) $branchId => $openNow]);
+        }
+
         return redirect()->route("branchTimingList")->with("success", "Branch timings saved successfully.");
     }
 
