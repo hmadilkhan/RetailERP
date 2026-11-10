@@ -24,6 +24,7 @@ use App\WebsiteProduct;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Http\Request;
 use App\Services\Inventory\BranchAvailabilityService;
+use App\Services\Inventory\WebsiteVisibilityService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Config;
@@ -919,6 +920,9 @@ class InventoryController extends Controller
                         ->where('inventory_id', $productid)
                         ->where('status', 1)
                         ->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")]);
+
+                    // naya link = website pe dikhe; pehle ki chhupi link (koi bhi website) bekaar
+                    WebsiteVisibilityService::clearHidden([$productid]);
                 }
             }
             return response()->json('success', 200);
@@ -1230,7 +1234,9 @@ class InventoryController extends Controller
         $websites = DB::table("website_details")->where("company_id", session("company_id"))->where("status", 1)->get();
         $totaladdons = AddonCategory::where("company_id", session("company_id"))->where("mode", "addons")->get();
         $selectedAddons = InventoryAddon::where("product_id", $data[0]->id)->pluck("addon_id");
-        $selectedWebsites = WebsiteProduct::where("inventory_id", $data[0]->id)->where("status", 1)->pluck("website_id");
+        // website pe chhupa product (status 3) bhi linked dikhe — warna edit save link tod deta
+        $selectedWebsites = WebsiteVisibilityService::formWebsites((int) $data[0]->id);
+        $websiteHidden = !empty(WebsiteVisibilityService::hiddenWebsiteIds((int) $data[0]->id));
         $extras = DB::table("extra_products")->whereNull("parent")->get();
         $selectedExtras = DB::table("inventory_extra_products")->where("product_id", $data[0]->id)->pluck("extra_product_id");
 
@@ -1258,7 +1264,7 @@ class InventoryController extends Controller
         }
 
         // if(Auth::user()->username == 'demoadmin'){
-        return view('v2.inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites','websiteType', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo','types', 'selectedVendors'));
+        return view('v2.inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites','websiteType', 'websiteHidden', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags','inventoryVideo','types', 'selectedVendors'));
 
         // }else{
         //  return view('Inventory.edit', compact('data', 'department', 'subdepartment', 'uom', 'branch', 'mode', 'images', 'references', 'prices', 'totaladdons', 'selectedAddons', 'websites', 'selectedWebsites', 'extras', 'selectedExtras', 'tagsList', 'brandList', 'inventoryBrand', 'inventoryTags'));
@@ -1517,12 +1523,14 @@ class InventoryController extends Controller
         }
 
         if (!empty($request->website) && isset($request->showProductWebsite)) {
+            // website pe chhupa tha aur wahi website rakhi → chhupa hi rahe (edit save se dobara na dikhe)
+            $keepHidden = in_array((int) $request->website, WebsiteVisibilityService::hiddenWebsiteIds((int) $request->id), true);
             WebsiteProduct::where("inventory_id", $request->id)->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")]);
             // foreach ($request->website as $website) {
             WebsiteProduct::create([
                 "website_id"   => $request->website,
                 "inventory_id" => $request->id,
-            ]);
+            ] + ($keepHidden ? ["status" => WebsiteVisibilityService::HIDDEN] : []));
             // }
         } else {
             WebsiteProduct::where("inventory_id", $request->id)->update(['status' => 0, 'updated_at' => date("Y-m-d H:i:s")]);
@@ -1642,6 +1650,21 @@ class InventoryController extends Controller
         }
 
         return response()->json('bad request', 500);
+    }
+
+    /** Inventory List → Channels "Website" toggle: linked product ko link tode baghair website pe chhupao / dikhao */
+    public function setWebsiteVisibility(Request $request, WebsiteVisibilityService $service)
+    {
+        $request->validate([
+            'id'    => 'required|integer',
+            'value' => 'required|in:0,1',
+        ]);
+
+        try {
+            return response()->json($service->set((int) $request->id, (int) $request->value === 1, (int) session('company_id')));
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 422);
+        }
     }
 
     /**S

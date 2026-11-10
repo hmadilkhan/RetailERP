@@ -390,6 +390,9 @@ class inventory extends Model
                 'invent.*', 'u.name', 'cu.name as cuom_name', 'cu2.name as cuom2_name', 'pu.name as pack_uom_name', 'dept.department_name', 'sdept.sub_depart_name', 'inventory_product_mode.product_name as category', 'inventory_price.*', 'invent.image as product_image', 'invent.url as product_image_url',
                 DB::raw('(SELECT SUM(s.balance) FROM inventory_stock s WHERE s.product_id = invent.id AND s.branch_id IN (' . $stockBranches . ')) As stock'),
                 'website_details.id as website_id', 'website_details.name as website_name',
+                // website pe linked magar chhupa (website_products.status 3) — Channels ka Website toggle
+                DB::raw('(SELECT wph.website_id FROM website_products wph WHERE wph.inventory_id = invent.id AND wph.status = 3 ORDER BY wph.id DESC LIMIT 1) as website_hidden_id'),
+                DB::raw('(SELECT wdh.name FROM website_products wph JOIN website_details wdh ON wdh.id = wph.website_id WHERE wph.inventory_id = invent.id AND wph.status = 3 ORDER BY wph.id DESC LIMIT 1) as website_hidden_name'),
                 DB::raw('(SELECT COUNT(*) FROM pos_products_gen_details p WHERE p.product_id = invent.id AND p.status_id = 1) as pos_product_count'),
                 DB::raw("(SELECT COUNT(*) FROM inventory_addons a WHERE a.product_id = invent.id AND a.status = 1 AND a.inventory_addon_type = 'general-inventory') as addon_product"),
                 DB::raw("(SELECT GROUP_CONCAT(DISTINCT t.name ORDER BY t.name ASC SEPARATOR ', ') FROM inventory_tags itag JOIN tags t ON t.id = itag.tag_id WHERE itag.inventory_id = invent.id AND itag.status = 1) as tags")

@@ -638,6 +638,7 @@ Route::middleware(['statusCheck'])->group(function () {
 
     Route::post('/product-unlink-from-website', [InventoryController::class, 'unLink_websiteProduct'])->name('website_product_unlink');
     Route::post('/all-product-unlink-from-website', [InventoryController::class, 'allWebsiteProduct_unlink'])->name('all_product_unlink_website');
+    Route::post('/inventory/website-visibility', [InventoryController::class, 'setWebsiteVisibility'])->name('inventory.website-visibility');
     Route::get('/get-pos-orders', [OrderController::class, 'getPOSOrders']);
     Route::get('/get-pos-filter-orders', [OrderController::class, 'getPOSFilterOrders']);
     Route::get('/order-detail/{id}', [OrderController::class, 'orderdetails'])->name("order.details");

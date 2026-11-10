@@ -10,6 +10,7 @@ use App\inventory_department;
 use App\Traits\MediaTrait;
 use App\Models\Inventory;
 use App\WebsiteProduct;
+use App\Services\Inventory\WebsiteVisibilityService;
 use App\Section;
 use Auth, File, Image, Session;
 
@@ -697,15 +698,17 @@ class Inventory_DepartmentController extends Controller
 
             if ($newWebsiteProducts->isNotEmpty()) {
                 WebsiteProduct::insert($newWebsiteProducts->toArray());
+                // isi website pe pehle chhupe the → ab naya link dikhta hai, purani chhupi row bekaar
+                WebsiteVisibilityService::clearHidden($newInventoryIds->values()->all(), (int) $websiteId);
             }
 
             return response()->json('Success!', 200);
         }
 
         if ($statusCode === 'unlink') {
-            // Unlink inventories from the website by marking them as inactive
+            // Unlink inventories from the website by marking them as inactive (website pe chhupe (3) bhi)
             $updated = WebsiteProduct::whereIn('inventory_id', $inventoryIds)
-                ->where('status', 1)
+                ->whereIn('status', [1, WebsiteVisibilityService::HIDDEN])
                 ->update(['status' => 0, 'updated_at' => now()]);
 
             if ($updated) {

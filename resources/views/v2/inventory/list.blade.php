@@ -188,7 +188,9 @@
                                                     <span class="rounded-md bg-rose-50 px-2 py-1 text-xs font-bold text-rose-700 ring-1 ring-rose-200">{{ $tag }}</span>
                                                 @endforeach
                                                 @if (!empty($item->website_name))
-                                                    <span class="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700 ring-1 ring-sky-200">{{ $item->website_name }}</span>
+                                                    <span id="web-badge-{{ $item->id }}" class="rounded-md bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700 ring-1 ring-sky-200" data-name="{{ $item->website_name }}">{{ $item->website_name }}</span>
+                                                @elseif (!empty($item->website_hidden_name))
+                                                    <span id="web-badge-{{ $item->id }}" class="rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-500 ring-1 ring-slate-200" data-name="{{ $item->website_hidden_name }}" title="Linked, hidden on website">{{ $item->website_hidden_name }} · hidden</span>
                                                 @endif
                                                 @if (!empty($baCounts[$item->id]))
                                                     <span class="rounded-md bg-amber-50 px-2 py-0.5 text-xs font-bold text-amber-700 ring-1 ring-amber-200" title="POS branches where this product is on">POS {{ count($baBranches) - $baCounts[$item->id] }} / {{ count($baBranches) }} branches</span>
@@ -238,6 +240,16 @@
                                                 <span class="block h-5 w-9 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-erp after:absolute after:left-[2px] after:top-[2px] after:block after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:after:translate-x-4"></span>
                                             </span>
                                         </label>
+                                        @if (!empty($item->website_name) || !empty($item->website_hidden_name))
+                                            {{-- sirf website se linked product: off = link rehta hai, website pe nahi dikhta --}}
+                                            <label class="flex cursor-pointer flex-col items-center gap-1" title="Show on website ({{ $item->website_name ?: $item->website_hidden_name }}) — off = hidden, link stays">
+                                                <span class="text-[10px] font-bold uppercase tracking-wider text-erp-mute">Website</span>
+                                                <span class="relative inline-flex">
+                                                    <input type="checkbox" class="website-toggle peer sr-only" data-id="{{ $item->id }}" {{ !empty($item->website_name) ? 'checked' : '' }}>
+                                                    <span class="block h-5 w-9 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-sky-500 after:absolute after:left-[2px] after:top-[2px] after:block after:h-4 after:w-4 after:rounded-full after:bg-white after:shadow after:transition-transform after:duration-200 peer-checked:after:translate-x-4"></span>
+                                                </span>
+                                            </label>
+                                        @endif
                                         <label class="flex cursor-pointer flex-col items-center gap-1" title="Hide item">
                                             <span class="text-[10px] font-bold uppercase tracking-wider text-erp-mute">Hidden</span>
                                             <span class="relative inline-flex">
@@ -261,6 +273,8 @@
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="openVendorAssign('{{ $item->id }}')">Assign Vendors</button>
                                         @if ($item->website_id != '')
                                             <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="unlinkWebsite('{{ $item->id }}', '{{ $item->website_id }}')">Unlink Website</button>
+                                        @elseif (!empty($item->website_hidden_id))
+                                            <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="unlinkWebsite('{{ $item->id }}', '{{ $item->website_hidden_id }}')">Unlink Website</button>
                                         @endif
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="openUnlinkTags('{{ $item->id }}')">Unlink Tags</button>
                                         <button type="button" class="block w-full rounded-md px-3 py-2 text-left text-xs font-bold text-erp-text hover:bg-slate-50" onclick="generateSingleImage('{{ $item->id }}', this)">Generate Image</button>
@@ -476,6 +490,34 @@
                     this.checked = !this.checked;
                     alert('Unable to update product channel.');
                 });
+            });
+        });
+
+        // Website toggle: link rehta hai, sirf website pe dikhna / chhupna (website_products.status 1 ↔ 3)
+        document.querySelectorAll('.website-toggle').forEach(toggle => {
+            toggle.addEventListener('change', function () {
+                const visible = this.checked;
+                this.disabled = true;
+                post("{{ route('inventory.website-visibility') }}", { id: this.dataset.id, value: visible ? 1 : 0 })
+                    .then(async res => {
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok) throw new Error(data.message || 'Unable to update website visibility.');
+                        this.checked = !!data.visible;
+                        const badge = document.getElementById('web-badge-' + this.dataset.id);
+                        if (badge) {
+                            const name = data.website_name || badge.dataset.name;
+                            badge.dataset.name = name;
+                            badge.textContent = data.visible ? name : name + ' · hidden';
+                            badge.className = data.visible
+                                ? 'rounded-md bg-sky-50 px-2 py-0.5 text-xs font-bold text-sky-700 ring-1 ring-sky-200'
+                                : 'rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-500 ring-1 ring-slate-200';
+                        }
+                    })
+                    .catch(err => {
+                        this.checked = !visible;
+                        alert(err.message || 'Unable to update website visibility.');
+                    })
+                    .finally(() => { this.disabled = false; });
             });
         });
 

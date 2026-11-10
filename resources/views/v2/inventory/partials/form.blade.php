@@ -355,6 +355,9 @@
                         Show product on website
                     </label>
                     <div id="website-module" class="{{ $websiteEnabled ? '' : 'hidden' }} space-y-4">
+                        @if (!empty($websiteHidden))
+                            <p class="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">Linked but hidden on website. Saving keeps it hidden — turn it on from Inventory List → Channels → Website.</p>
+                        @endif
                         <label class="block">
                             <span class="{{ $labelClass }}">Website</span>
                             <select id="website" name="website" data-placeholder="Select Website" class="{{ $selectClass }}">
