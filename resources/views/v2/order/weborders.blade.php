@@ -60,6 +60,16 @@
                         @endforeach
                     </select>
                 </label>
+                <label class="block">
+                    <span class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Payment Method</span>
+                    @php $paymentParam = request()->get('payment'); @endphp
+                    <select id="payment_filter" class="mt-2 h-10 w-full rounded-lg border-erp-line text-sm shadow-sm focus:border-erp focus:ring-erp">
+                        <option value="">All Payment Methods</option>
+                        @foreach($paymentMode as $val)
+                            <option {{ (string) $paymentParam === (string) $val->payment_id ? 'selected' : '' }} value="{{ $val->payment_id }}">{{ $val->payment_mode }}</option>
+                        @endforeach
+                    </select>
+                </label>
                 @if ($website != null)
                     <label class="block">
                         <span class="text-xs font-bold uppercase tracking-[0.14em] text-erp-mute">Select Website</span>
@@ -73,7 +83,10 @@
                     </label>
                 @endif
             </div>
-            <div class="flex justify-end border-t border-erp-line px-5 py-4">
+            <div class="flex justify-end gap-3 border-t border-erp-line px-5 py-4">
+                @if (request()->has('page_mode'))
+                    <a href="{{ url('web-orders-view') }}" class="rounded-lg border border-erp-line bg-white px-6 py-2 text-sm font-bold text-erp-ink transition hover:bg-erp-soft">Clear filters</a>
+                @endif
                 <button type="button" id="fetch" class="rounded-lg border border-erp bg-erp px-6 py-2 text-sm font-bold text-white transition hover:bg-erp-dark">Fetch</button>
             </div>
         </section>
@@ -87,7 +100,7 @@
                 5  => ['label' => 'Canceled',        'grad' => 'from-rose-400 to-red-600',      'bar' => 'bg-gradient-to-r from-rose-400 to-red-600',      'dot' => 'bg-rose-500',    'soft' => 'bg-rose-50 text-rose-700',       'ring' => 'ring-rose-400',    'icon' => 'M6 18L18 6M6 6l12 12'],
             ];
             $allOrdersCollection = collect($allOrders ?? []);
-            $cardFilters = request()->only(['first', 'second', 'customer', 'receipt', 'branch', 'website']);
+            $cardFilters = request()->only(['first', 'second', 'customer', 'receipt', 'branch', 'website', 'payment']);
         @endphp
 
         <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
@@ -239,9 +252,13 @@
             const customer = document.getElementById('customer').value;
             const website = document.getElementById('website') ? document.getElementById('website').value : '';
             const status = document.getElementById('status_filter').value;
+            const payment = document.getElementById('payment_filter').value;
 
-            if (fromdate || todate || receipt || branch || customer || website || status) {
-                window.location = "{{ route('getWebOrderFilter') }}?first=" + fromdate + "&second=" + todate + "&customer=" + customer + "&receipt=" + receipt + "&branch=" + branch + "&website=" + website + "&status=" + status + "&page_mode=1";
+            if (fromdate || todate || receipt || branch || customer || website || status || payment) {
+                window.location = "{{ route('getWebOrderFilter') }}?first=" + fromdate + "&second=" + todate + "&customer=" + customer + "&receipt=" + receipt + "&branch=" + branch + "&website=" + website + "&status=" + status + "&payment=" + payment + "&page_mode=1";
+            } else {
+                // Koi filter nahi (e.g. "All Statuses") = saare orders.
+                window.location = "{{ url('web-orders-view') }}";
             }
         });
 

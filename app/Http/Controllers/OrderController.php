@@ -528,7 +528,7 @@ class OrderController extends Controller
         $branch       = $order->getBranch();
         $riders       = $order->getRiders();
         // Cards count every status for the chosen filters; the status filter only narrows the table.
-        $allOrders    = $order->getWebsiteOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch, $websiteId);
+        $allOrders    = $order->getWebsiteOrdersFilter($request->first, $request->second, $request->customer, $request->receipt, $request->branch, $websiteId, $request->payment);
         $statusId     = $request->filled('status') ? (int) $request->status : null;
         $totalorders  = $statusId === null
             ? $allOrders

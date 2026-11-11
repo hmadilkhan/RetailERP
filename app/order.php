@@ -846,7 +846,7 @@ class order extends Model
 		return $result;
 	}
 
-	public function getWebsiteOrdersFilter($first, $second, $customer, $receipt, $branch, $websiteId)
+	public function getWebsiteOrdersFilter($first, $second, $customer, $receipt, $branch, $websiteId, $payment = null)
 	{
 		// Sirf user ki allowed branches (pehle koi company / branch filter nahi tha → saari companies ke orders).
 		$branchIds = $this->allowedBranchIds($branch)->map(fn ($id) => (int) $id)->all();
@@ -878,6 +878,12 @@ class order extends Model
 		if (!empty($websiteId)) {
 			$filter .= " and a.website_id = ?";
 			$bindings[] = (int) $websiteId;
+		}
+
+		/********************************** PAYMENT METHOD **************************************/
+		if (!empty($payment)) {
+			$filter .= " and a.payment_id = ?";
+			$bindings[] = (int) $payment;
 		}
 
 		$result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.time,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount, f.payment_mode,a.fbrInvNumber,a.isSeen,c_add.address,c_add.landmark,a.delivery_area_name,a.delivery_charges,a.delivery_type,j.provider_name as service_provider_name from sales_receipts a
