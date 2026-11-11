@@ -848,43 +848,48 @@ class order extends Model
 
 	public function getWebsiteOrdersFilter($first, $second, $customer, $receipt, $branch, $websiteId)
 	{
-		$filter = "";
+		// Sirf user ki allowed branches (pehle koi company / branch filter nahi tha → saari companies ke orders).
+		$branchIds = $this->allowedBranchIds($branch)->map(fn ($id) => (int) $id)->all();
+		if (empty($branchIds)) {
+			return [];
+		}
+
+		$filter   = " and a.branch IN (" . implode(',', $branchIds) . ")";
+		$bindings = [];
 
 		/********************************** DATES **************************************/
 		if (!empty($first)) {
-			$filter .= " and a.date BETWEEN '" . $first . "' and '" . $second . "'";
+			$filter .= " and a.date BETWEEN ? and ?";
+			$bindings[] = $first;
+			$bindings[] = !empty($second) ? $second : $first;
 		}
 		/********************************** CUSTOMER **************************************/
 		if (!empty($customer)) {
-			$filter .= " and a.customer_id = " . $customer . "";
+			$filter .= " and a.customer_id = ?";
+			$bindings[] = (int) $customer;
 		}
 
 		/********************************** RECEIPT **************************************/
 		if (!empty($receipt)) {
-			$filter .= " and a.url_orderid = '" . $receipt . "'";
+			$filter .= " and a.url_orderid = ?";
+			$bindings[] = $receipt;
 		}
-
-		if (!empty($branch)) {
-			$filter .= " and a.branch = " . $branch . "";
-		}
-
 
 		if (!empty($websiteId)) {
-			$filter .= " and a.website_id = " . $websiteId . "";
+			$filter .= " and a.website_id = ?";
+			$bindings[] = (int) $websiteId;
 		}
-
-
 
 		$result = DB::select('SELECT a.id,a.receipt_no,a.url_orderid,b.order_mode,c.name,c.address,a.total_amount,d.order_status_name,g.branch_name as branch,a.date,a.time,a.delivery_date,a.order_mode_id,a.status,c.mobile,e.receive_amount, f.payment_mode,a.fbrInvNumber,a.isSeen,c_add.address,c_add.landmark,a.delivery_area_name,a.delivery_charges,a.delivery_type,j.provider_name as service_provider_name from sales_receipts a
 							INNER JOIN sales_order_mode b on b.order_mode_id = a.order_mode_id
 							INNER JOIN customers c on c.id = a.customer_id
-							INNER JOIN customer_addresses c_add on c_add.id = a.cust_location_id
+							LEFT JOIN customer_addresses c_add on c_add.id = a.cust_location_id
 							INNER JOIN sales_order_status d on d.order_status_id = a.status
 							INNER JOIN branch g on g.branch_id = a.branch
 							INNER JOIN sales_account_general e on e.receipt_id = a.id
 							INNER JOIN sales_payment f on f.payment_id = a.payment_id
 							LEFT JOIN service_provider_details j on j.id = a.wallet_id
-                            where  a.web = 1 ' . $filter . '  order by a.id DESC');
+                            where  a.web = 1 ' . $filter . '  order by a.id DESC', $bindings);
 		return $result;
 	}
 
