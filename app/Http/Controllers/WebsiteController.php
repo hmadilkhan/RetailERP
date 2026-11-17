@@ -1353,12 +1353,14 @@ class WebsiteController extends Controller
                             'website_id'         => $request->website,
                             'branch_id'          => $request->branch,
                             'name'               => $getCity->city_name,
-                            'city_id'            => addslashes($city[$i]),
+                            'city_id'            => (int) $city[$i],
+                            // API (get-customer-record) saved address ko isi column se delivery row se milata hai
+                            'city'               => (int) $city[$i],
                             'is_city'            => 1,
                             'estimate_of_days'   => $request->estimate_day,
                             'charge'             => $request->charges,
                             'min_order'          => $request->min_order == '' ? 0 : $request->min_order,
-                            'min_order'          => $request->delivery_free_on_min_order == '' ? 0 : $request->delivery_free_on_min_order,
+                            'delivery_free_on_min_order' => $request->delivery_free_on_min_order == '' ? 0 : $request->delivery_free_on_min_order,
                             'status'             => 1,
                         ]);
                 }
@@ -1435,7 +1437,9 @@ class WebsiteController extends Controller
         ];
 
         if ($request->iscity == 1) {
-            $columnInsert['city']                = $city;
+            $columnInsert['city']                = (int) $city;
+            $columnInsert['city_id']             = (int) $city;
+            $columnInsert['name']                = optional(DB::table('city')->where('city_id', $city)->first())->city_name;
             $columnInsert['is_city']             = 1;
             $columnInsert['estimate_of_days']    = empty($request->estimate_md) ? $getRecord->estimate_of_days : $request->estimate_md;
         } else {
