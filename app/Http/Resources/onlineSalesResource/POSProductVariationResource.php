@@ -23,7 +23,10 @@ class POSProductVariationResource extends JsonResource
             "discount_value"     => $this->discount_value,
             "discount_code"      => $this->discount_code,
             "actual_price"       => $this->actual_price,
-            "variation"  => new VariationHeadResource(DB::table("addon_categories")->whereIn("id",DB::table("sales_receipt_details")->where(["parent_item_code"=>$this->receipt_detail_id,"mode"=>'variation-product'])->pluck("addon_variation_id"))->get(),$this->receipt_id),
+            // Sub-variations: purane orders me seedha is row ke neeche, naye me 'variation-attribute' row ke neeche
+            "variation"  => new VariationHeadResource(DB::table("addon_categories")->whereIn("id",DB::table("sales_receipt_details")->where("mode",'variation-product')->whereIn("parent_item_code",
+                                DB::table("sales_receipt_details")->where(["parent_item_code"=>$this->receipt_detail_id,"mode"=>'variation-attribute'])->pluck("receipt_detail_id")->push($this->receipt_detail_id)
+                            )->pluck("addon_variation_id"))->get(),$this->receipt_id),
             // "variation"       => new ProductVariationResource(DB::table("addon_categories")->whereIn("id",DB::table("sales_receipt_details")->where(["parent_item_code"=>$this->receipt_detail_id,"mode"=>'variation-product'])->pluck("addon_variation_id"))->get(),$this->receipt_id,$this->receipt_detail_id),
             // "prod_addons"    => new ProductAddonResource(DB::table('addon_categories')->whereIn('id',DB::table('addons')->whereIn('id',DB::table('sales_receipt_addons')->where(['receipt_id'=>$this->receipt_id,'product_id'=>$this->item_code])->pluck('addon_id'))->groupBy('addon_category_id')->pluck('addon_category_id'))->get(),$this->receipt_id,$this->item_code)
 		];

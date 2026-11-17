@@ -63,13 +63,46 @@ class ProductResource extends JsonResource
 
     public function getVariation()
     {
+        if (self::$websiteMode == "shopify") {
+            return new POSProductVariationResource($this->variableProductRow());
+        }
+
+        // Sabify API (generateOrder) ab har website type ke liye product → 'attribute' → 'variable-product'
+        // save karti hai (pehle restaurant ke liye seedha 'variable-product'). Jo rows hain unhi ke hisaab se dikhao.
+        $attributes = DB::table('sales_receipt_details')->where(['receipt_id' => $this->receipt_id, 'parent_item_code' => $this->receipt_detail_id, 'mode' => 'attribute'])->get();
+
+        if ($attributes->isNotEmpty() || self::$websiteMode == "boutique") {
+            return ProductRetailVariationResource::collection($attributes);
+        }
+
         if (self::$websiteMode == "restaurant") {
-            return new POSProductVariationResource(DB::table('sales_receipt_details')->where(['receipt_id' => $this->receipt_id, 'parent_item_code' => $this->receipt_detail_id, 'mode' => 'variable-product'])->first());
-        } else if (self::$websiteMode == "boutique") {
-            return ProductRetailVariationResource::collection(DB::table('sales_receipt_details')->where(['receipt_id' => $this->receipt_id, 'parent_item_code' => $this->receipt_detail_id, 'mode' => 'attribute'])->get());
-            //  return new ProductRetailVariationResource(DB::table("attributes")->whereIn("id",InventoryPos::where("product_id",$this->id)->where("status_id",1)->pluck('attribute'))->get(),$this->id);
-        } else if (self::$websiteMode == "shopify") {
+            // Purane restaurant orders (attribute row ke baghair)
             return new POSProductVariationResource(DB::table('sales_receipt_details')->where(['receipt_id' => $this->receipt_id, 'parent_item_code' => $this->receipt_detail_id, 'mode' => 'variable-product'])->first());
         }
+
+        return null;
+    }
+
+    /**
+     * Purane orders: 'variable-product' seedha product row ke neeche.
+     * Naye orders (Sabify API generateOrder, website type check band hone ke baad):
+     * product → 'attribute' row → 'variable-product' — us ke liye attribute ke neeche bhi dhoondo.
+     */
+    private function variableProductRow()
+    {
+        $row = DB::table('sales_receipt_details')
+            ->where(['receipt_id' => $this->receipt_id, 'parent_item_code' => $this->receipt_detail_id, 'mode' => 'variable-product'])
+            ->first();
+
+        if ($row) {
+            return $row;
+        }
+
+        return DB::table('sales_receipt_details')
+            ->where(['receipt_id' => $this->receipt_id, 'mode' => 'variable-product'])
+            ->whereIn('parent_item_code', DB::table('sales_receipt_details')
+                ->where(['receipt_id' => $this->receipt_id, 'parent_item_code' => $this->receipt_detail_id, 'mode' => 'attribute'])
+                ->pluck('receipt_detail_id'))
+            ->first();
     }
 }
