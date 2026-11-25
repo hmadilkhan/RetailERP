@@ -452,6 +452,9 @@
                                             <i class="icofont icofont-social-whatsapp"></i> Send Voucher
                                         </button>
                                     </form>
+                                    <a href="{{ route('billing.invoices.payments.voucher.download', [$invoice->id, $payment->id]) }}" class="btn btn-sm btn-primary btn-block m-t-5">
+                                        <i class="icofont icofont-download"></i> Download Voucher
+                                    </a>
                                 @else
                                     <span class="text-muted">No voucher</span>
                                 @endif

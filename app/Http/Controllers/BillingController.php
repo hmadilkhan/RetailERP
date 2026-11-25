@@ -841,6 +841,29 @@ class BillingController extends Controller
         }
     }
 
+    public function downloadPaymentVoucher($id, $paymentId, PaymentVoucherService $paymentVoucherService)
+    {
+        $payment = InvoicePayment::with(['voucher.company', 'voucher.paymentMode', 'voucher.invoicePayments.invoice', 'voucher.screenshots'])
+            ->where('invoice_id', $id)
+            ->findOrFail($paymentId);
+
+        if (!$payment->voucher) {
+            return redirect()
+                ->route('billing.invoices.show', $id)
+                ->withErrors(['error' => 'No payment voucher is linked to this payment.']);
+        }
+
+        try {
+            $document = $paymentVoucherService->storeVoucherPdf($payment->voucher);
+        } catch (Throwable $exception) {
+            return redirect()
+                ->route('billing.invoices.show', $id)
+                ->withErrors(['error' => 'Unable to generate payment voucher. ' . $exception->getMessage()]);
+        }
+
+        return Storage::disk('public')->download($document['path'], $document['filename']);
+    }
+
     public function addAdjustment(Request $request, $invoiceId, CustomerCreditService $customerCreditService)
     {
         $data = $request->validate([
