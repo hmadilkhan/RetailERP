@@ -50,8 +50,7 @@
                         <tr>
                             <th class="px-5 py-3 text-left font-bold">User</th>
                             <th class="px-5 py-3 text-left font-bold">Username</th>
-                            {{-- Temporary: Password column chhupa (AdminHiddenFeatures) --}}
-                            @if (session('roleId') == 1 && !\App\Support\AdminHiddenFeatures::active())
+                            @if (session('roleId') == 1)
                                 <th class="px-5 py-3 text-left font-bold">Password</th>
                             @endif
                             <th class="px-5 py-3 text-left font-bold">Role</th>
@@ -76,7 +75,7 @@
                                     </div>
                                 </td>
                                 <td class="px-5 py-4 font-semibold text-erp-text">{{ $value->username }}</td>
-                                @if (session('roleId') == 1 && !\App\Support\AdminHiddenFeatures::active())
+                                @if (session('roleId') == 1)
                                     <td class="px-5 py-4 text-erp-mute">{{ $value->show_password }}</td>
                                 @endif
                                 <td class="px-5 py-4">
