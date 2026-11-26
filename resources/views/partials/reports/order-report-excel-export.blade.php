@@ -35,10 +35,12 @@
                 <th style="background-color: #1a4567;color:white;text-align: center;">Status</th>
                 @if (session('company_id') != 102)
                     <th style="background-color: #1a4567;color:white;text-align: center;">Amount</th>
+                    <th style="background-color: #1a4567;color:white;text-align: center;">Discount</th>
                     <th style="background-color: #1a4567;color:white;text-align: center;">Department</th>
                 @endif
                 @if (session('company_id') == 102)
                     <th style="background-color: #1a4567;color:white;text-align: center;">Total</th>
+                    <th style="background-color: #1a4567;color:white;text-align: center;">Discount</th>
                     <th style="background-color: #1a4567;color:white;text-align: center;">Receive</th>
                     <th style="background-color: #1a4567;color:white;text-align: center;">Balance</th>
                     <th style="background-color: #1a4567;color:white;text-align: center;">Picked Person Name</th>
@@ -90,10 +92,12 @@
                         <td style="text-align: center;">{{ $value->orderStatus?->order_status_name ?? '-' }}</td>
                         @if (session('company_id') != 102)
                             <td style="text-align: center;">{{ $value->total_amount }}</td>
+                            <td style="text-align: center;">{{ Custom_Helper::orderDiscountText($value->order_discount_amount, $value->order_discount_percentage, $value->actual_amount, $value->total_amount) }}</td>
                             <td style="text-align: center;">{{ $value->inventory_department ?? "N/A" }}
                             </td>
                         @else
                             <td style="text-align: center;">{{ $value->actual_amount }}</td>
+                            <td style="text-align: center;">{{ Custom_Helper::orderDiscountText($value->order_discount_amount, $value->order_discount_percentage, $value->actual_amount, $value->total_amount) }}</td>
                             <td style="text-align: center;">
                                 {{ $value->payment_id == 3 ? ($value->orderAccount?->receive_amount ?? 0) : $value->total_amount }}
                             </td>

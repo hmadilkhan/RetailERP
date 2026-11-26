@@ -83,6 +83,27 @@
         vertical-align: middle;
     }
 
+    #order_table td.order-discount-cell {
+        white-space: nowrap;
+        line-height: 1.2;
+    }
+
+    #order_table .order-discount-amt {
+        display: block;
+        font-weight: 600;
+    }
+
+    #order_table .order-discount-pct {
+        display: inline-block;
+        margin-top: 2px;
+        padding: 1px 6px;
+        border-radius: 10px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #b45309;
+        background: #fef3c7;
+    }
+
     #order_table td.order-mobile-cell {
         overflow: visible;
     }
@@ -663,6 +684,7 @@
                 <th>Payment</th>
                 <th>Status</th>
                 <th>Amount</th>
+                <th>Discount</th>
                 <th>Items / Total</th>
                 <th>Sales Person</th>
                 @if(session('company_id') != 74)
@@ -737,6 +759,19 @@
                                 class="label {{ Custom_Helper::getColorName($order->order_status_name) }}">{{ Custom_Helper::getOrderStatus($order->order_status_name, $order->is_sale_return) }}</label>
                         </td>
                         <td>{{ $order->total_amount }}</td>
+                        @php
+                            $disc = Custom_Helper::orderDiscount($order->order_discount_amount ?? 0, $order->order_discount_percentage ?? 0, $order->actual_amount, $order->total_amount);
+                        @endphp
+                        <td class="order-discount-cell">
+                            @if ($disc)
+                                <span class="order-discount-amt">{{ $disc['amount'] }}</span>
+                                @if ($disc['percent'])
+                                    <span class="order-discount-pct">{{ $disc['percent'] }}</span>
+                                @endif
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td>{{ $order->itemcount }}/{{ $order->itemstotalqty }}</td>
                         <td>{{ !empty($order->provider_name) ? $order->provider_name : '-' }}</td>
                         @if(session('company_id') != 74)
@@ -824,7 +859,7 @@
                 @endforeach
             @else
                 <tr>
-                    <td colspan="18" class="text-center">No Record Found</td>
+                    <td colspan="19" class="text-center">No Record Found</td>
                 </tr>
             @endif
         </tbody>

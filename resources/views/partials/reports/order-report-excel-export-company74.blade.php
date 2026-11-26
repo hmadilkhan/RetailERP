@@ -2,7 +2,7 @@
 
     @php
 
-        $detailColspan = 18;
+        $detailColspan = 19;
 
     @endphp
 
@@ -63,6 +63,8 @@
                 <th style="background-color: #1a4567;color:white;text-align: center;">Status</th>
 
                 <th style="background-color: #1a4567;color:white;text-align: center;">Amount</th>
+
+                <th style="background-color: #1a4567;color:white;text-align: center;">Discount</th>
 
                 <th style="background-color: #1a4567;color:white;text-align: center;">Department</th>
 
@@ -133,6 +135,8 @@
                         <td style="text-align: center;">{{ $value->orderStatus?->order_status_name ?? '-' }}</td>
 
                         <td style="text-align: center;">{{ $value->total_amount }}</td>
+
+                        <td style="text-align: center;">{{ Custom_Helper::orderDiscountText($value->order_discount_amount, $value->order_discount_percentage, $value->actual_amount, $value->total_amount) }}</td>
 
                         <td style="text-align: center;">{{ $value->inventory_department ?? 'N/A' }}</td>
 

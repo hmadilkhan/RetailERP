@@ -163,6 +163,10 @@ class order extends Model
 			->leftJoin("user_salesprovider_relation as wallet_relation", "wallet_relation.user_id", "=", "sales_receipts.wallet_id")
 			->leftJoin("service_provider_details", "service_provider_details.id", "=", "sales_person.provider_id")
 			->leftJoin("service_provider_details as wallet", "wallet.id", "=", "wallet_relation.provider_id")
+			// discount: kuch receipts ki 2 subdetail rows hoti hain — sirf aakhri (MAX id), warna row double
+			->leftJoin("sales_account_subdetails as disc_sub", function ($join) {
+				$join->on("disc_sub.id", "=", DB::raw("(SELECT MAX(s2.id) FROM sales_account_subdetails s2 WHERE s2.receipt_id = sales_receipts.id)"));
+			})
 			// ->leftJoin('sales_receipts_services', 'sales_receipts.id', '=', 'sales_receipts_services.sales_receipt_id')
 			// ->leftJoin('sales_receipt_service_types', 'sales_receipts_services.service_type_id', '=', 'sales_receipt_service_types.id')
 			// ->where("sales_receipts.web", "=", 0)
@@ -247,6 +251,8 @@ class order extends Model
 				"sales_payment.payment_mode",
 				"service_provider_details.provider_name",
 				"wallet.provider_name as wallet",
+				"disc_sub.discount_amount as order_discount_amount",
+				"disc_sub.discount_percentage as order_discount_percentage",
 				DB::raw("(Select COUNT(*) from sales_receipt_details where receipt_id = sales_receipts.id) as itemcount"),
 				DB::raw("(Select SUM(total_qty) from sales_receipt_details where receipt_id = sales_receipts.id) as itemstotalqty"),
 				DB::raw("

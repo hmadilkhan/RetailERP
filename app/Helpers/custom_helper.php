@@ -217,6 +217,36 @@ class custom_helper
         return json_encode($response);
     }
 
+    /**
+     * Order discount ka text, e.g. "1,200 (50%)" — discount na ho to null.
+     * POS discount_percentage khali chhodta hai → % = discount ÷ gross (actual_amount, khali ho to net + discount).
+     * Returns [amount, percent|null] ya null.
+     */
+    public static function orderDiscount($amount, $percent, $gross, $net)
+    {
+        $amount = (float) ($amount ?? 0);
+        if ($amount <= 0) {
+            return null;
+        }
+        $percent = (float) ($percent ?? 0);
+        if ($percent <= 0) {
+            $gross = (float) ($gross ?? 0) > 0 ? (float) $gross : (float) ($net ?? 0) + $amount;
+            $percent = $gross > 0 ? $amount / $gross * 100 : 0;
+        }
+
+        return [
+            'amount' => number_format($amount),
+            'percent' => $percent > 0 ? rtrim(rtrim(number_format($percent, 1), '0'), '.') . '%' : null,
+        ];
+    }
+
+    public static function orderDiscountText($amount, $percent, $gross, $net)
+    {
+        $d = self::orderDiscount($amount, $percent, $gross, $net);
+
+        return $d === null ? '-' : $d['amount'] . ($d['percent'] ? ' (' . $d['percent'] . ')' : '');
+    }
+
     public static function getColorName($status)
     {
         if ($status == "Pending") {

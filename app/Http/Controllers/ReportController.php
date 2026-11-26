@@ -725,6 +725,15 @@ class ReportController extends Controller
                     ->join('inventory_department as inv_dept', 'inv_dept.department_id', '=', 'ig.department_id')
                     ->whereColumn('srd.receipt_id', 'sales_receipts.id');
             }, 'inventory_department')
+            // discount: subdetails ki aakhri row (kuch receipts ki 2 hoti hain)
+            ->selectSub(function ($q) {
+                $q->from('sales_account_subdetails as ds')->select('ds.discount_amount')
+                    ->whereColumn('ds.receipt_id', 'sales_receipts.id')->orderByDesc('ds.id')->limit(1);
+            }, 'order_discount_amount')
+            ->selectSub(function ($q) {
+                $q->from('sales_account_subdetails as ds')->select('ds.discount_percentage')
+                    ->whereColumn('ds.receipt_id', 'sales_receipts.id')->orderByDesc('ds.id')->limit(1);
+            }, 'order_discount_percentage')
             ->orderBy("id", "asc")
             ->get();
         // ->toSql();
