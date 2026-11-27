@@ -264,6 +264,17 @@
         return p && p.tagName === 'OPTGROUP' ? p.parentElement : p;
     });
 
+    // <label> ke andar wala select: select2 box pe click label se chhupe select tak jata aur naya Chrome
+    // native list bhi khol deta (select2 + native dono). Click ka label wala default kaam rok do —
+    // select2 khud mousedown pe khulta hai, us pe asar nahi.
+    document.addEventListener('click', function (e) {
+        var t = e.target;
+        var box = t && t.closest ? t.closest('.select2-container') : null;
+        if (box && box.closest('label')) {
+            e.preventDefault();
+        }
+    }, true);
+
     document.addEventListener('reset', function (e) {
         var form = e.target;
         setTimeout(function () {
